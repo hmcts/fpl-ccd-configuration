@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -18,10 +20,12 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -161,5 +165,83 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         if (testingType == 2) {
             assertThat(bundles.get(0).getValue().getPlacementList()).isEqualTo(expectedPlacementListDynamicList);
         }
+    }
+
+    @Test
+    void shouldContainErrorIfSelectedDocumentTypeIsNonUploadable() {
+        Arrays.stream(new DocumentType[] {
+                DocumentType._PARENT_APPLICANTS_DOCUMENTS,
+                DocumentType._PARENT_EXPERT_REPORTS,
+                DocumentType._PARENT_ORDERS,
+                DocumentType._PARENT_RESPONDENTS_STATEMENTS
+            })
+            .forEach(documentType -> {
+                CaseData caseData = CaseData.builder()
+                    .manageDocumentEventData(ManageDocumentEventData.builder()
+                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                        .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
+                                    .build())
+                                .build())
+                            .build())))
+                        .build())
+                    .build();
+
+                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                    "manage-document-upload-new-doc");
+                callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+            });
+    }
+
+    @Test
+    void shouldNotContainsErrorIfSelectedDocumentTypeIsUploadable() {
+        Arrays.stream(new DocumentType[] {
+                DocumentType.COURT_BUNDLE,
+                DocumentType.CASE_SUMMARY,
+                DocumentType.POSITION_STATEMENTS,
+                DocumentType.THRESHOLD,
+                DocumentType.SKELETON_ARGUMENTS,
+                DocumentType.JUDGEMENTS,
+                DocumentType.TRANSCRIPTS,
+                DocumentType.DOCUMENTS_FILED_ON_ISSUE,
+                DocumentType.APPLICANTS_WITNESS_STATEMENTS,
+                DocumentType.CARE_PLAN,
+                DocumentType.PARENT_ASSESSMENTS,
+                DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS,
+                DocumentType.APPLICANTS_OTHER_DOCUMENTS,
+                DocumentType.MEETING_NOTES,
+                DocumentType.CONTACT_NOTES,
+                DocumentType.RESPONDENTS_STATEMENTS,
+                DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
+                DocumentType.GUARDIAN_EVIDENCE,
+                DocumentType.EXPERT_REPORTS,
+                DocumentType.DRUG_AND_ALCOHOL_REPORTS,
+                DocumentType.LETTER_OF_INSTRUCTION,
+                DocumentType.POLICE_DISCLOSURE,
+                DocumentType.MEDICAL_RECORDS,
+                DocumentType.COURT_CORRESPONDENCE,
+                DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
+                DocumentType.PLACEMENT_RESPONSES
+            })
+            .forEach(documentType -> {
+                CaseData caseData = CaseData.builder()
+                    .manageDocumentEventData(ManageDocumentEventData.builder()
+                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                        .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
+                                    .build())
+                                .build())
+                            .build())))
+                        .build())
+                    .build();
+
+                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                    "manage-document-upload-new-doc");
+                assertThat(callbackResponse.getErrors()).isNull();
+            });
     }
 }
