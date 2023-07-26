@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -90,11 +90,22 @@ public class ApproveDraftOrdersController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
+
+        // Start event with concurrency controls
+        CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallbackWithoutChange(oldCaseDetails.getId(),
+            "internal-change-approve-order");
+
+        if (isEmpty(caseDetails)) {
+            // if our callback has failed 3 times, all we have is the prior caseData to send notifications based on
+            caseDetails = oldCaseDetails;
+        }
+
         CaseData caseData = getCaseData(caseDetails);
 
-        coreCaseDataService.triggerEvent(caseData.getId(), "internal-change-approve-order", emptyMap());
-        // DFPL-1171 move publishEvent to post-submitted stage
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(callbackRequest)));
+
+        draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 
     @PostMapping("/post-submit-callback/about-to-submit")
@@ -128,15 +139,5 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
         return respond(caseDetails);
-    }
-
-    @PostMapping("/post-submit-callback/submitted")
-    public void handlePostSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(callbackRequest)));
-
-        draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 }
