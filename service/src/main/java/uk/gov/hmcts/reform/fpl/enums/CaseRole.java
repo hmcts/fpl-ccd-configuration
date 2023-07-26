@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum CaseRole {
     CREATOR,
@@ -54,11 +56,9 @@ public enum CaseRole {
     }
 
     public static List<CaseRole> representativeSolicitors() {
-        return List.of(SOLICITORA, SOLICITORB, SOLICITORC, SOLICITORD, SOLICITORE, SOLICITORF, SOLICITORG, SOLICITORH,
-            SOLICITORI, SOLICITORJ, CAFCASSSOLICITOR,
-            CHILDSOLICITORA, CHILDSOLICITORB, CHILDSOLICITORC, CHILDSOLICITORD, CHILDSOLICITORE, CHILDSOLICITORF,
-            CHILDSOLICITORG, CHILDSOLICITORH, CHILDSOLICITORI, CHILDSOLICITORJ, CHILDSOLICITORK, CHILDSOLICITORL,
-            CHILDSOLICITORM, CHILDSOLICITORN, CHILDSOLICITORO);
+        return Stream.concat(List.of(CAFCASSSOLICITOR).stream(),
+            Stream.concat(respondentSolicitors().stream(), childSolicitors().stream())
+        ).collect(Collectors.toList());
     }
 
     public static List<CaseRole> barristers() {
@@ -67,7 +67,8 @@ public enum CaseRole {
 
     public static List<CaseRole> respondentSolicitors() {
         return List.of(SOLICITORA, SOLICITORB, SOLICITORC, SOLICITORD, SOLICITORE, SOLICITORF, SOLICITORG, SOLICITORH,
-            SOLICITORI, SOLICITORJ);
+            SOLICITORI, SOLICITORJ,
+            SOLICITOR);
     }
 
     public static List<CaseRole> childSolicitors() {
@@ -77,7 +78,7 @@ public enum CaseRole {
     }
 
     public static List<CaseRole> designatedSolicitors() {
-        return List.of(LASOLICITOR, EPSMANAGING, LAMANAGING);
+        return List.of(LASOLICITOR, EPSMANAGING, LAMANAGING, LABARRISTER);
     }
 
     private static String formatName(String name) {

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
@@ -127,7 +127,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
             return DocumentUploaderType.SOLICITOR;
         }
-        if (caseRoles.stream().anyMatch(barristers()::contains)) {
+        if (caseRoles.contains(BARRISTER)) {
             return DocumentUploaderType.BARRISTER;
         }
         if (caseRoles.contains(LASHARED)) {
