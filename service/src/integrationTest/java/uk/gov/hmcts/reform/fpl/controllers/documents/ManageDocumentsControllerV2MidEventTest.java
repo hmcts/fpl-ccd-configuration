@@ -170,208 +170,197 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @Test
     void shouldContainErrorIfSelectedDocumentTypeIsNonUploadable() {
         Arrays.stream(new DocumentType[] {
-                DocumentType._PARENT_APPLICANTS_DOCUMENTS,
-                DocumentType._PARENT_EXPERT_REPORTS,
-                DocumentType._PARENT_ORDERS,
-                DocumentType._PARENT_RESPONDENTS_STATEMENTS
-            })
-            .forEach(documentType -> {
-                CaseData caseData = CaseData.builder()
-                    .manageDocumentEventData(ManageDocumentEventData.builder()
-                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                        .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
-                            .documentTypeDynamicList(DynamicList.builder()
-                                .value(DynamicListElement.builder()
-                                    .code(documentType.name())
-                                    .build())
+            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
+            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+        }).forEach(documentType -> {
+            CaseData caseData = CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                    .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
+                        .documentTypeDynamicList(DynamicList.builder()
+                            .value(DynamicListElement.builder()
+                                .code(documentType.name())
                                 .build())
-                            .build())))
-                        .build())
-                    .build();
+                            .build())
+                        .build())))
+                    .build())
+                .build();
 
-                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-                    "manage-document-upload-new-doc");
-                callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
-            });
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                "manage-document-upload-new-doc");
+            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+        });
     }
 
     @Test
     void shouldContainErrorIfMultipleSelectedDocumentTypesAreNonUploadable() {
         Arrays.stream(new DocumentType[] {
-                DocumentType._PARENT_APPLICANTS_DOCUMENTS,
-                DocumentType._PARENT_EXPERT_REPORTS,
-                DocumentType._PARENT_ORDERS,
-                DocumentType._PARENT_RESPONDENTS_STATEMENTS
-            })
-            .forEach(documentType -> {
-                CaseData caseData = CaseData.builder()
-                    .manageDocumentEventData(ManageDocumentEventData.builder()
-                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                        .uploadableDocumentBundle(List.of(
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(documentType.name())
-                                        .build())
+            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
+            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+        }).forEach(documentType -> {
+            CaseData caseData = CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                    .uploadableDocumentBundle(List.of(
+                        element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
                                     .build())
-                                .build()),
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(documentType.name())
-                                        .build())
-                                    .build())
-                                .build())))
-                        .build())
-                    .build();
-
-                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-                    "manage-document-upload-new-doc");
-                callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
-            });
-    }
-
-    @Test
-    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadable() {
-        Arrays.stream(new DocumentType[] {
-                DocumentType._PARENT_APPLICANTS_DOCUMENTS,
-                DocumentType._PARENT_EXPERT_REPORTS,
-                DocumentType._PARENT_ORDERS,
-                DocumentType._PARENT_RESPONDENTS_STATEMENTS
-            })
-            .forEach(documentType -> {
-                CaseData caseData = CaseData.builder()
-                    .manageDocumentEventData(ManageDocumentEventData.builder()
-                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                        .uploadableDocumentBundle(List.of(
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(documentType.name())
-                                        .build())
-                                    .build())
-                                .build()),
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(DocumentType.CASE_SUMMARY.name())
-                                        .build())
-                                    .build())
-                                .build())))
-                        .build())
-                    .build();
-
-                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-                    "manage-document-upload-new-doc");
-                callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
-            });
-    }
-
-    @Test
-    void shouldNotContainErrorIfSelectedDocumentTypeIsUploadable() {
-        Arrays.stream(new DocumentType[] {
-                DocumentType.COURT_BUNDLE,
-                DocumentType.CASE_SUMMARY,
-                DocumentType.POSITION_STATEMENTS,
-                DocumentType.THRESHOLD,
-                DocumentType.SKELETON_ARGUMENTS,
-                DocumentType.JUDGEMENTS,
-                DocumentType.TRANSCRIPTS,
-                DocumentType.DOCUMENTS_FILED_ON_ISSUE,
-                DocumentType.APPLICANTS_WITNESS_STATEMENTS,
-                DocumentType.CARE_PLAN,
-                DocumentType.PARENT_ASSESSMENTS,
-                DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS,
-                DocumentType.APPLICANTS_OTHER_DOCUMENTS,
-                DocumentType.MEETING_NOTES,
-                DocumentType.CONTACT_NOTES,
-                DocumentType.RESPONDENTS_STATEMENTS,
-                DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
-                DocumentType.GUARDIAN_EVIDENCE,
-                DocumentType.EXPERT_REPORTS,
-                DocumentType.DRUG_AND_ALCOHOL_REPORTS,
-                DocumentType.LETTER_OF_INSTRUCTION,
-                DocumentType.POLICE_DISCLOSURE,
-                DocumentType.MEDICAL_RECORDS,
-                DocumentType.COURT_CORRESPONDENCE,
-                DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
-                DocumentType.PLACEMENT_RESPONSES
-            })
-            .forEach(documentType -> {
-                CaseData caseData = CaseData.builder()
-                    .manageDocumentEventData(ManageDocumentEventData.builder()
-                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                        .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
+                                .build())
+                            .build()),
+                        element(UploadableDocumentBundle.builder()
                             .documentTypeDynamicList(DynamicList.builder()
                                 .value(DynamicListElement.builder()
                                     .code(documentType.name())
                                     .build())
                                 .build())
                             .build())))
-                        .build())
-                    .build();
+                    .build())
+                .build();
 
-                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-                    "manage-document-upload-new-doc");
-                assertThat(callbackResponse.getErrors()).isNull();
-            });
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                "manage-document-upload-new-doc");
+            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+        });
+    }
+
+    @Test
+    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadable() {
+        Arrays.stream(new DocumentType[] {
+            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
+            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+        }).forEach(documentType -> {
+            CaseData caseData = CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                    .uploadableDocumentBundle(List.of(
+                        element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
+                                    .build())
+                                .build())
+                            .build()),
+                        element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(DocumentType.CASE_SUMMARY.name())
+                                    .build())
+                                .build())
+                            .build())))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                "manage-document-upload-new-doc");
+            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+        });
+    }
+
+    @Test
+    void shouldNotContainErrorIfSelectedDocumentTypeIsUploadable() {
+        Arrays.stream(new DocumentType[] {
+            DocumentType.COURT_BUNDLE,
+            DocumentType.CASE_SUMMARY,
+            DocumentType.POSITION_STATEMENTS,
+            DocumentType.THRESHOLD,
+            DocumentType.SKELETON_ARGUMENTS,
+            DocumentType.JUDGEMENTS,
+            DocumentType.TRANSCRIPTS,
+            DocumentType.DOCUMENTS_FILED_ON_ISSUE,
+            DocumentType.APPLICANTS_WITNESS_STATEMENTS,
+            DocumentType.CARE_PLAN,
+            DocumentType.PARENT_ASSESSMENTS,
+            DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS,
+            DocumentType.APPLICANTS_OTHER_DOCUMENTS,
+            DocumentType.MEETING_NOTES,
+            DocumentType.CONTACT_NOTES,
+            DocumentType.RESPONDENTS_STATEMENTS,
+            DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
+            DocumentType.GUARDIAN_EVIDENCE,
+            DocumentType.EXPERT_REPORTS,
+            DocumentType.DRUG_AND_ALCOHOL_REPORTS,
+            DocumentType.LETTER_OF_INSTRUCTION,
+            DocumentType.POLICE_DISCLOSURE,
+            DocumentType.MEDICAL_RECORDS,
+            DocumentType.COURT_CORRESPONDENCE,
+            DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
+            DocumentType.PLACEMENT_RESPONSES
+        }).forEach(documentType -> {
+            CaseData caseData = CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                    .uploadableDocumentBundle(List.of(element(UploadableDocumentBundle.builder()
+                        .documentTypeDynamicList(DynamicList.builder()
+                            .value(DynamicListElement.builder()
+                                .code(documentType.name())
+                                .build())
+                            .build())
+                        .build())))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                "manage-document-upload-new-doc");
+            assertThat(callbackResponse.getErrors()).isNull();
+        });
     }
 
     @Test
     void shouldNotContainErrorIfMultipleSelectedDocumentTypesAreUploadable() {
         Arrays.stream(new DocumentType[] {
-                DocumentType.COURT_BUNDLE,
-                DocumentType.CASE_SUMMARY,
-                DocumentType.POSITION_STATEMENTS,
-                DocumentType.THRESHOLD,
-                DocumentType.SKELETON_ARGUMENTS,
-                DocumentType.JUDGEMENTS,
-                DocumentType.TRANSCRIPTS,
-                DocumentType.DOCUMENTS_FILED_ON_ISSUE,
-                DocumentType.APPLICANTS_WITNESS_STATEMENTS,
-                DocumentType.CARE_PLAN,
-                DocumentType.PARENT_ASSESSMENTS,
-                DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS,
-                DocumentType.APPLICANTS_OTHER_DOCUMENTS,
-                DocumentType.MEETING_NOTES,
-                DocumentType.CONTACT_NOTES,
-                DocumentType.RESPONDENTS_STATEMENTS,
-                DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
-                DocumentType.GUARDIAN_EVIDENCE,
-                DocumentType.EXPERT_REPORTS,
-                DocumentType.DRUG_AND_ALCOHOL_REPORTS,
-                DocumentType.LETTER_OF_INSTRUCTION,
-                DocumentType.POLICE_DISCLOSURE,
-                DocumentType.MEDICAL_RECORDS,
-                DocumentType.COURT_CORRESPONDENCE,
-                DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
-                DocumentType.PLACEMENT_RESPONSES
-            })
-            .forEach(documentType -> {
-                CaseData caseData = CaseData.builder()
-                    .manageDocumentEventData(ManageDocumentEventData.builder()
-                        .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                        .uploadableDocumentBundle(List.of(
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(documentType.name())
-                                        .build())
+            DocumentType.COURT_BUNDLE,
+            DocumentType.CASE_SUMMARY,
+            DocumentType.POSITION_STATEMENTS,
+            DocumentType.THRESHOLD,
+            DocumentType.SKELETON_ARGUMENTS,
+            DocumentType.JUDGEMENTS,
+            DocumentType.TRANSCRIPTS,
+            DocumentType.DOCUMENTS_FILED_ON_ISSUE,
+            DocumentType.APPLICANTS_WITNESS_STATEMENTS,
+            DocumentType.CARE_PLAN,
+            DocumentType.PARENT_ASSESSMENTS,
+            DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS,
+            DocumentType.APPLICANTS_OTHER_DOCUMENTS,
+            DocumentType.MEETING_NOTES,
+            DocumentType.CONTACT_NOTES,
+            DocumentType.RESPONDENTS_STATEMENTS,
+            DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
+            DocumentType.GUARDIAN_EVIDENCE,
+            DocumentType.EXPERT_REPORTS,
+            DocumentType.DRUG_AND_ALCOHOL_REPORTS,
+            DocumentType.LETTER_OF_INSTRUCTION,
+            DocumentType.POLICE_DISCLOSURE,
+            DocumentType.MEDICAL_RECORDS,
+            DocumentType.COURT_CORRESPONDENCE,
+            DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
+            DocumentType.PLACEMENT_RESPONSES
+        }).forEach(documentType -> {
+            CaseData caseData = CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                    .uploadableDocumentBundle(List.of(
+                        element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
                                     .build())
-                                .build()),
-                            element(UploadableDocumentBundle.builder()
-                                .documentTypeDynamicList(DynamicList.builder()
-                                    .value(DynamicListElement.builder()
-                                        .code(documentType.name())
-                                        .build())
+                                .build())
+                            .build()),
+                        element(UploadableDocumentBundle.builder()
+                            .documentTypeDynamicList(DynamicList.builder()
+                                .value(DynamicListElement.builder()
+                                    .code(documentType.name())
                                     .build())
-                                .build())))
-                        .build())
-                    .build();
+                                .build())
+                            .build())))
+                    .build())
+                .build();
 
-                AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-                    "manage-document-upload-new-doc");
-                assertThat(callbackResponse.getErrors()).isNull();
-            });
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+                "manage-document-upload-new-doc");
+            assertThat(callbackResponse.getErrors()).isNull();
+        });
     }
 }
