@@ -104,7 +104,7 @@ public class GatekeepingOrderGenerationService extends
         final List<Element<CustomDirection>> customDirections = nullSafeList(caseData
             .getGatekeepingOrderEventData().getCustomDirections());
 
-        final AtomicInteger directionIndex = new AtomicInteger(1);
+        final AtomicInteger directionIndex = new AtomicInteger(2);
 
         return Stream.of(standardDirections, customDirections)
             .flatMap(Collection::stream)
