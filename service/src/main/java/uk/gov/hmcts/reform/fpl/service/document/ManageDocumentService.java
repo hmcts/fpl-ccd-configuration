@@ -195,7 +195,7 @@ public class ManageDocumentService {
         if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
             return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
         }
-        throw new RuntimeException("unresolved document uploader type");
+        throw new IllegalStateException("Unable to determine document uploader type");
     }
 
     public boolean allowMarkDocumentConfidential(CaseData caseData) {

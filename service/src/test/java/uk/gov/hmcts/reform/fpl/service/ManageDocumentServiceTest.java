@@ -71,6 +71,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -2577,5 +2578,19 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+    }
+
+    @Test
+    void shouldThrowExceptionIfUnableToDetermineDocumentUploaderType() {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.CREATOR));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        IllegalStateException thrownException = assertThrows(IllegalStateException.class,
+            () -> underTest.getUploaderType(caseData));
+        assertThat(thrownException.getMessage()).contains("Unable to determine document uploader type");
     }
 }
