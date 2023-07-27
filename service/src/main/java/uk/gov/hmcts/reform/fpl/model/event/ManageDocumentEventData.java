@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Value
@@ -38,6 +40,10 @@ public class ManageDocumentEventData {
             .map(Field::getName)
             .collect(toList());
         return tempFields;
+    }
+
+    public List<Element<UploadableDocumentBundle>> getUploadableDocumentBundle() {
+        return defaultIfNull(this.uploadableDocumentBundle, new ArrayList<>());
     }
 
 }

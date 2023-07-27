@@ -168,7 +168,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldContainErrorIfSelectedDocumentTypeIsNonUploadable() {
+    void shouldContainErrorIfSelectedDocumentTypeIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
             DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
@@ -193,7 +193,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldContainErrorIfMultipleSelectedDocumentTypesAreNonUploadable() {
+    void shouldContainErrorIfMultipleSelectedDocumentTypesAreNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
             DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
@@ -226,7 +226,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadable() {
+    void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
             DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
@@ -259,7 +259,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotContainErrorIfSelectedDocumentTypeIsUploadable() {
+    void shouldNotContainErrorIfSelectedDocumentTypeIsUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.COURT_BUNDLE,
             DocumentType.CASE_SUMMARY,
@@ -308,7 +308,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotContainErrorIfMultipleSelectedDocumentTypesAreUploadable() {
+    void shouldNotContainErrorIfMultipleSelectedDocumentTypesAreUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.COURT_BUNDLE,
             DocumentType.CASE_SUMMARY,
