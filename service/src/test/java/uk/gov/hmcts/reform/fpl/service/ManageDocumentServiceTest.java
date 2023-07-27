@@ -2593,4 +2593,50 @@ class ManageDocumentServiceTest {
             () -> underTest.getUploaderType(caseData));
         assertThat(thrownException.getMessage()).contains("Unable to determine document uploader type");
     }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {"BARRISTER",
+        "SOLICITOR",
+        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE",
+        "SOLICITORF", "SOLICITORG", "SOLICITORH", "SOLICITORI", "SOLICITORJ",
+        "CAFCASSSOLICITOR",
+        "CHILDSOLICITORA", "CHILDSOLICITORB", "CHILDSOLICITORC", "CHILDSOLICITORD", "CHILDSOLICITORE",
+        "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
+        "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
+    })
+    void shouldNotAllowMarkDocumentConfidential(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(false);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {"LASHARED", "LASOLICITOR", "EPSMANAGING", "LAMANAGING", "LABARRISTER"})
+    void shouldAllowMarkDocumentConfidential(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+    }
+
+    @Test
+    void shouldAllowMarkDocumentConfidentialForHmctsUser() {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
+        when(userService.isHmctsUser()).thenReturn(true);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+    }
 }
