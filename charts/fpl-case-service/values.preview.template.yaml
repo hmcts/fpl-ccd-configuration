@@ -87,10 +87,14 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    devcpuRequests: 500m
-    devmemoryRequests: 512Mi
-    devcpuLimits: 1
-    devmemoryLimits: 1Gi
+    memoryRequests: 2Gi
+    cpuRequests: 2000m
+    memoryLimits: 4Gi
+    cpuLimits: 3500m
+    devmemoryRequests: 6Gi
+    devcpuRequests: 2000m
+    devmemoryLimits: 8Gi
+    devcpuLimits: 4500m
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10
