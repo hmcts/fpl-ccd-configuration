@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
@@ -64,6 +65,7 @@ public class TestingSupportController {
     private static final String POPULATE_EVENT_ID_TEMPLATE = "populateCase-%s";
 
     private final IdamClient idamClient;
+    private final RoleAssignmentService roleAssignmentService;
     private final RequestData requestData;
     private final AuthTokenGenerator authToken;
 
@@ -205,4 +207,10 @@ public class TestingSupportController {
 
         return reference;
     }
+
+    @GetMapping("/testing-support/assign-system-role")
+    public void assignSystemUserRole() {
+        roleAssignmentService.assignSystemUserRole();
+    }
+
 }
