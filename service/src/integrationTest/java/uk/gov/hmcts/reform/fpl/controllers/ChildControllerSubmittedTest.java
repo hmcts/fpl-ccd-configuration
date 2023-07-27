@@ -173,6 +173,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .caseDetails(asCaseDetails(caseData))
                 .eventId(UPDATE_CASE_EVENT)
                 .build());
+
         when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
             .thenReturn(StartEventResponse.builder()
                 .caseDetails(asCaseDetails(caseData))
