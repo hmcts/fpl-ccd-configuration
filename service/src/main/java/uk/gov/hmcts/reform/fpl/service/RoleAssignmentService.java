@@ -49,6 +49,8 @@ public class RoleAssignmentService {
     public void assignCaseRole(Long caseId, List<String> userIds, String role, RoleCategory roleCategory,
                                ZonedDateTime startTime, ZonedDateTime endTime) {
         String systemUserToken = systemUserService.getSysUserToken();
+
+        log.info("Attempting to assign role {} on case {}", role, caseId);
         amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
             .requestedRoles(buildRoleAssignments(caseId, userIds, role, roleCategory, startTime, endTime))
             .roleRequest(RoleRequest.builder()
@@ -127,7 +129,8 @@ public class RoleAssignmentService {
                 .build()))
             .roleRequest(RoleRequest.builder()
                 .assignerId(systemUserService.getUserId(systemUserToken))
-                .reference("fpl-system-user")
+                .reference("public-law-case-allocator-system-user")
+                .process("public-law-system-users")
                 .replaceExisting(true)
                 .build())
             .build());

@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -281,7 +283,10 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(request), getCaseDataBefore(request)));
+        final CaseData caseData = getCaseData(request);
+
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
+        publishEvent(new NewAllocatedJudgeEvent(caseData.getAllocatedJudge(), caseData.getId()));
         triggerPostSubmissionHearingEvents(request);
         triggerPostSealingEvents(request);
     }
@@ -370,12 +375,14 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private void triggerPostSubmissionHearingEvents(CallbackRequest request) {
-
         final CaseData caseData = getCaseData(request);
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking.getJudgeAndLegalAdvisor(), hearingBooking,
+                        caseData.getId()));
+
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
                     }

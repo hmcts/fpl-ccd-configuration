@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.am.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,36 +11,29 @@ import java.util.Map;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleAssignment {
 
     private String id;
 
-    @Builder.Default
-    private String actorIdType = "IDAM";
+    private String actorIdType;
 
-    @Builder.Default
-    private Map<String, Object> attributes = Map.of();
+    private Map<String, Object> attributes;
 
-    @Builder.Default
-    private List<String> authorisations = List.of();
+    private List<String> authorisations;
 
-    @Builder.Default
-    private List<String> notes = List.of();
+    private List<String> notes;
 
-    @Builder.Default
-    private ZonedDateTime beginTime = ZonedDateTime.now();
+    private ZonedDateTime beginTime;
 
-    @Builder.Default
-    private ZonedDateTime endTime = ZonedDateTime.now().plusYears(10);
+    private ZonedDateTime endTime;
 
-    @Builder.Default
-    private ZonedDateTime created = ZonedDateTime.now();
+    private ZonedDateTime created;
 
-    @Builder.Default
-    private String status = "CREATE_REQUESTED";
+    private String status;
 
-    @Builder.Default
-    private String classification = "PUBLIC";
+    private String classification;
 
     private String actorId;
     private GrantType grantType;
