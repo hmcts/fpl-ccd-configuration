@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -168,7 +167,7 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
         Element<ManagedDocument> expectedElement = element(ManagedDocument.builder()
             .document(TestDataHelper.testDocumentReference()).build());
         when(manageDocumentService.uploadDocuments(any(), any(), any()))
-            .thenReturn(Map.of ("parentAssessmentList", List.of(expectedElement)));
+            .thenReturn(Map.of("parentAssessmentList", List.of(expectedElement)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         assertThat((List) response.getData().get("parentAssessmentList")).isNotEmpty();
