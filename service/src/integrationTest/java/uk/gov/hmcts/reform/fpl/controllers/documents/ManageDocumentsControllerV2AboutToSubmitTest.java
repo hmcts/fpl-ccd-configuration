@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(ManageDocumentsControllerV2.class)
@@ -66,19 +68,19 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
             .build();
     }
 
-    private UserDetails buildUserDetailsWithJudiciaryRole() {
+    private UserDetails buildUserDetailsWithSolicitorRole() {
         return UserDetails.builder()
             .id(USER_ID)
             .surname("Hudson")
             .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(List.of("caseworker-publiclaw-judiciary"))
+            .email("solicitor1@solicitors.uk")
+            .roles(List.of("caseworker-publiclaw-solicitor"))
             .build();
     }
 
     @ParameterizedTest
     @EnumSource(value = ManageDocumentAction.class, names = {"UPLOAD_DOCUMENTS", "REMOVE_DOCUMENTS"})
-    void shouldNotPopulateTemporaryFields(ManageDocumentAction action) {
+    void shouldNotPopulateTemporaryFieldsByLA(ManageDocumentAction action) {
         givenCurrentUser(buildUserDetailsWithLARole());
         given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(LASOLICITOR));
 
@@ -95,9 +97,67 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(value = ManageDocumentAction.class, names = {"UPLOAD_DOCUMENTS", "REMOVE_DOCUMENTS"})
+    void shouldNotPopulateTemporaryFieldsByCourtAdmin(ManageDocumentAction action) {
+        givenCurrentUser(buildUserDetailsWithCourtAdminRole());
+        given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet());
+        given(userService.isHmctsUser()).willReturn(true);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(action)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ManageDocumentAction.class, names = {"UPLOAD_DOCUMENTS", "REMOVE_DOCUMENTS"})
+    void shouldNotPopulateTemporaryFieldsBySolicitor(ManageDocumentAction action) {
+        givenCurrentUser(buildUserDetailsWithSolicitorRole());
+        given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(SOLICITORA));
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(action)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        CaseData responseData = extractCaseData(response);
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
     @SuppressWarnings("unchecked")
-    void shouldPopulateFieldsInUploadDocumentAction() {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldPopulateFieldsInUploadDocumentAction(int testingType) {
+        switch (testingType) {
+            case 1:
+                givenCurrentUser(buildUserDetailsWithLARole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(LASOLICITOR));
+                given(userService.isHmctsUser()).willReturn(false);
+                break;
+            case 2:
+                givenCurrentUser(buildUserDetailsWithCourtAdminRole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet());
+                given(userService.isHmctsUser()).willReturn(true);
+                break;
+            case 3:
+                givenCurrentUser(buildUserDetailsWithSolicitorRole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(SOLICITORA));;
+                given(userService.isHmctsUser()).willReturn(false);
+                break;
+        }
+
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .manageDocumentEventData(ManageDocumentEventData.builder()

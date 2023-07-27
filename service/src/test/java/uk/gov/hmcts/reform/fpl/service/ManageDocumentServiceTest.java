@@ -7,15 +7,18 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -61,6 +64,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -119,8 +123,6 @@ class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
-
-
 
     @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -2432,8 +2434,6 @@ class ManageDocumentServiceTest {
         assertThat(updatedNoticeDocument.getResponseDescription()).isEqualTo("LA response");
     }
 
-
-
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
@@ -2502,5 +2502,80 @@ class ManageDocumentServiceTest {
                     .filename(filename)
                     .build())
             .build();
+    }
+
+    private static final long CASE_ID = 12345L;
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {
+        "SOLICITOR",
+        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE",
+        "SOLICITORF", "SOLICITORG", "SOLICITORH", "SOLICITORI", "SOLICITORJ",
+        "CAFCASSSOLICITOR",
+        "CHILDSOLICITORA", "CHILDSOLICITORB", "CHILDSOLICITORC", "CHILDSOLICITORD",
+        "CHILDSOLICITORE", "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI",
+        "CHILDSOLICITORJ", "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN",
+        "CHILDSOLICITORO"
+    })
+    void shouldReturnSolicitorUploaderType(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.SOLICITOR);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {"BARRISTER"})
+    void shouldReturnBarristerUploaderType(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.BARRISTER);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {"LASHARED"})
+    void shouldReturnSecondaryLocalAuthorityUploaderType(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY);
+    }
+
+    @Test
+    void shouldReturnHMCTSUploaderType() {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
+        when(userService.isHmctsUser()).thenReturn(true);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.HMCTS);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {"LASOLICITOR", "EPSMANAGING", "LAMANAGING", "LABARRISTER"})
+    void shouldReturnDesignatedLocalAuthorityUploaderType(CaseRole caseRole) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.getUploaderType(caseData)).isEqualTo(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
     }
 }

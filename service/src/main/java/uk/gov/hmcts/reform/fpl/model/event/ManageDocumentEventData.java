@@ -25,7 +25,7 @@ public class ManageDocumentEventData {
     @Temp
     ManageDocumentAction manageDocumentAction;
     @Temp
-    List<Element<UploadableDocumentBundle>> uploadableDocumentBundle;
+    List<Element<UploadableDocumentBundle>> uploadableDocumentBundle = new ArrayList<>();
     @Temp
     String hasConfidentialParty;
     @Temp
@@ -40,10 +40,6 @@ public class ManageDocumentEventData {
             .map(Field::getName)
             .collect(toList());
         return tempFields;
-    }
-
-    public List<Element<UploadableDocumentBundle>> getUploadableDocumentBundle() {
-        return defaultIfNull(this.uploadableDocumentBundle, new ArrayList<>());
     }
 
 }
