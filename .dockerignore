@@ -6,5 +6,5 @@
 
 !lib/applicationinsights-agent-*.jar
 !lib/AI-Agent.xml
-
+!lib/*.json
 !build/libs/*.jar

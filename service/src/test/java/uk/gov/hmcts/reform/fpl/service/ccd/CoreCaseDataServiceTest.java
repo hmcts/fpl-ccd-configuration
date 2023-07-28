@@ -99,6 +99,14 @@ class CoreCaseDataServiceTest {
                 CASE_TYPE, Long.toString(CASE_ID), true,
                 buildCaseDataContent(eventId, eventToken, eventData));
         }
+
+        @Test
+        void shouldPerformPostSubmitCallbackWithoutChange() {
+            StartEventResponse startEventResponse = buildStartEventResponse(eventId, eventToken);
+            when(concurrencyHelper.startEvent(CASE_ID, eventId)).thenReturn(startEventResponse);
+            service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
+            verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
+        }
     }
 
     @Test
@@ -157,7 +165,11 @@ class CoreCaseDataServiceTest {
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {
-        return StartEventResponse.builder().eventId(eventId).token(eventToken).build();
+        return StartEventResponse.builder()
+            .eventId(eventId)
+            .token(eventToken)
+            .caseDetails(CaseDetails.builder().data(Map.of()).build())
+            .build();
     }
 
     private CaseDataContent buildCaseDataContent(String eventId, String eventToken, Object eventData) {
