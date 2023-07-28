@@ -2807,6 +2807,25 @@ class ManageDocumentServiceTest {
         }
     }
 
+    private String getFieldNameSuffix(DocumentUploaderType uploaderType, int confidentiality) {
+        String suffix = List.of(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY,
+            DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY).contains(uploaderType) ? "LA" : "";
+        suffix = List.of(DocumentUploaderType.HMCTS).contains(uploaderType) ? "CTSC" : suffix;
+        suffix = confidentiality == 1 ? suffix : "";
+        return suffix;
+    }
+
+    private CaseData prepareCaseDataForUploadDocumentJourney(
+        List<Element<UploadableDocumentBundle>> uploadableDocumentBundle) {
+        return CaseData.builder().id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadableDocumentBundle(uploadableDocumentBundle)
+                .build())
+            .build();
+    }
+
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, int confidentiality,
@@ -2816,11 +2835,9 @@ class ManageDocumentServiceTest {
         UUID elementId = UUID.randomUUID();
 
         DocumentReference expectedDocument = TestDataHelper.testDocumentReference();
-        CaseData caseData = CaseData.builder().id(CASE_ID)
-            .manageDocumentEventData(ManageDocumentEventData.builder()
-                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
-                .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
-                .uploadableDocumentBundle(List.of(element(elementId, UploadableDocumentBundle.builder()
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementId, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
                             .code(DocumentType.CASE_SUMMARY.name())
@@ -2828,18 +2845,57 @@ class ManageDocumentServiceTest {
                         .build())
                     .document(expectedDocument)
                     .confidential(toConfidential(confidentiality))
-                    .build())))
-                .build())
-            .build();
+                    .build())
+            )
+        );
 
-        String suffix = List.of(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY,
-            DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY).contains(uploaderType) ? "LA" : "";
-        suffix = List.of(DocumentUploaderType.HMCTS).contains(uploaderType) ? "CTSC" : suffix;
-        suffix = confidentiality == 1 ? suffix : "";
-
+        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
             .containsKey("caseSummaryList" + suffix)
             .extracting("caseSummaryList" + suffix).asList()
             .contains(element(elementId, CaseSummary.builder().document(expectedDocument).build()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, int confidentiality,
+                                                                 DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementIdOne = UUID.randomUUID();
+        UUID elementIdTwo = UUID.randomUUID();
+
+        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
+        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.CASE_SUMMARY.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .confidential(toConfidential(confidentiality))
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.CASE_SUMMARY.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .confidential(toConfidential(confidentiality))
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
+        assertThat(underTest.uploadDocuments(caseData))
+            .containsKey("caseSummaryList" + suffix)
+            .extracting("caseSummaryList" + suffix).asList()
+            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne).build()))
+            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo).build()));
     }
 }
