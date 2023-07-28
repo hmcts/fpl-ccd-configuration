@@ -26,11 +26,13 @@ public enum DocumentType {
     COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
         (document, documentUploaderType) -> HearingCourtBundle.builder().courtBundle(List.of(
-                            element(CourtBundle.builder().document(document).build()))).build(),
+                            element(CourtBundle.builder().document(document).uploaderType(documentUploaderType)
+                                .build()))).build(),
         10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
-        (document, documentUploaderType) -> CaseSummary.builder().document(document).build(),
+        (document, documentUploaderType) -> CaseSummary.builder().document(document).uploaderType(documentUploaderType)
+            .build(),
         20),
     POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"),
         false, false, false, false,
@@ -42,7 +44,8 @@ public enum DocumentType {
         40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
-        (document, documentUploaderType) -> SkeletonArgument.builder().document(document).build(),
+        (document, documentUploaderType) -> SkeletonArgument.builder().document(document)
+            .uploaderType(documentUploaderType).build(),
         50),
     AA_PARENT_ORDERS("Orders", null,
         false, false, false, false,
@@ -98,7 +101,8 @@ public enum DocumentType {
         180),
     RESPONDENTS_STATEMENTS("└─ Respondent statements", standardResolver("respStmtList"),
         false, false, false, false,
-        (document, documentUploaderType) -> RespondentStatementV2.builder().document(document).build(),
+        (document, documentUploaderType) -> RespondentStatementV2.builder().document(document)
+            .uploaderType(documentUploaderType).build(),
         190),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false, false,

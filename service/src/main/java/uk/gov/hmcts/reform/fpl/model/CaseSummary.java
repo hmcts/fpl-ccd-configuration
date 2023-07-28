@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -16,11 +17,13 @@ public class CaseSummary extends HearingDocument {
                        LocalDateTime dateTimeUploaded,
                        String uploadedBy,
                        String hearing,
-                       String hasConfidentialAddress) {
+                       String hasConfidentialAddress,
+                       DocumentUploaderType uploaderType) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
         super.document = document;
         super.hasConfidentialAddress = hasConfidentialAddress;
+        super.uploaderType = uploaderType;
     }
 }

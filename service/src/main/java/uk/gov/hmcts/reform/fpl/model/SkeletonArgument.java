@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,8 @@ public class SkeletonArgument extends HearingDocument {
                             String hearing,
                             String partyName,
                             UUID partyId,
-                            String hasConfidentialAddress) {
+                            String hasConfidentialAddress,
+                            DocumentUploaderType uploaderType) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
@@ -32,5 +34,6 @@ public class SkeletonArgument extends HearingDocument {
         this.partyName = partyName;
         this.partyId = partyId;
         this.hearingId = hearingId;
+        super.uploaderType = uploaderType;
     }
 }

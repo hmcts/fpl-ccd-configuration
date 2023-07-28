@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -2856,7 +2857,8 @@ class ManageDocumentServiceTest {
         assertThat(underTest.uploadDocuments(caseData))
             .containsKey("caseSummaryList" + suffix)
             .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementId, CaseSummary.builder().document(expectedDocument).build()));
+            .contains(element(elementId, CaseSummary.builder().document(expectedDocument)
+                .uploaderType(uploaderType).build()));
     }
 
     @ParameterizedTest
@@ -2898,8 +2900,10 @@ class ManageDocumentServiceTest {
         assertThat(underTest.uploadDocuments(caseData))
             .containsKey("caseSummaryList" + suffix)
             .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne).build()))
-            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo).build()));
+            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()));
     }
 
     @ParameterizedTest
@@ -2943,10 +2947,139 @@ class ManageDocumentServiceTest {
         assertThat(actual)
             .containsKey("caseSummaryList" + suffix)
             .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne).build()));
+            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()));
         assertThat(actual)
             .containsKey("caseSummaryList")
             .extracting("caseSummaryList").asList()
-            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo).build()));
+            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()));
+    }
+
+    // parentAssessmentList
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality,
+                                                                     DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementId = UUID.randomUUID();
+
+        DocumentReference expectedDocument = TestDataHelper.testDocumentReference();
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementId, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .build())
+                        .build())
+                    .document(expectedDocument)
+                    .confidential(toConfidential(confidentiality))
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
+        assertThat(underTest.uploadDocuments(caseData))
+            .containsKey("parentAssessmentList" + suffix)
+            .extracting("parentAssessmentList" + suffix).asList()
+            .contains(element(elementId, ManagedDocument.builder().document(expectedDocument)
+                .uploaderType(uploaderType).build()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessment(int loginType, Confidentiality confidentiality,
+                                                                      DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementIdOne = UUID.randomUUID();
+        UUID elementIdTwo = UUID.randomUUID();
+
+        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
+        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .confidential(toConfidential(confidentiality))
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .confidential(toConfidential(confidentiality))
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
+        assertThat(underTest.uploadDocuments(caseData))
+            .containsKey("parentAssessmentList" + suffix)
+            .extracting("parentAssessmentList" + suffix).asList()
+            .contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+            .contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessmentWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementIdOne = UUID.randomUUID();
+        UUID elementIdTwo = UUID.randomUUID();
+
+        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
+        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .confidential("YES")
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .confidential("NO")
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
+        Map<String, Object> actual = underTest.uploadDocuments(caseData);
+        assertThat(actual)
+            .containsKey("parentAssessmentList" + suffix)
+            .extracting("parentAssessmentList" + suffix).asList()
+            .contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()));
+        assertThat(actual)
+            .containsKey("parentAssessmentList")
+            .extracting("parentAssessmentList").asList()
+            .contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()));
     }
 }

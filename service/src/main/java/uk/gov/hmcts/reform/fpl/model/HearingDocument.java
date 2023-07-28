@@ -26,7 +26,7 @@ public class HearingDocument extends DocumentMetaData implements WithDocument {
     private String removalReason;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;
-    private DocumentUploaderType uploaderType;
+    protected DocumentUploaderType uploaderType;
 
     public String getHasConfidentialAddress() {
         return (document != null && (!YesNo.isYesOrNo(hasConfidentialAddress)))

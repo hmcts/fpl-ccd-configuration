@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -23,13 +24,15 @@ public class CourtBundle extends HearingDocument {
                        String uploadedBy,
                        String hearing,
                        List<String> confidential,
-                       String hasConfidentialAddress) {
+                       String hasConfidentialAddress,
+                       DocumentUploaderType uploaderType) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
         super.document = document;
         this.confidential = confidential;
         super.hasConfidentialAddress = hasConfidentialAddress;
+        super.uploaderType = uploaderType;
     }
 
     @JsonIgnore
