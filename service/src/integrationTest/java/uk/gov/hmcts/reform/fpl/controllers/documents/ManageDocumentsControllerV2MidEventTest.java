@@ -168,8 +168,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @Test
     void shouldContainErrorIfSelectedDocumentTypeIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
-            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
-            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+            DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
+            DocumentType.AA_PARENT_ORDERS, DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS
         }).forEach(documentType -> {
             CaseData caseData = CaseData.builder()
                 .manageDocumentEventData(ManageDocumentEventData.builder()
@@ -193,8 +193,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @Test
     void shouldContainErrorIfMultipleSelectedDocumentTypesAreNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
-            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
-            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+            DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
+            DocumentType.AA_PARENT_ORDERS, DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS
         }).forEach(documentType -> {
             CaseData caseData = CaseData.builder()
                 .manageDocumentEventData(ManageDocumentEventData.builder()
@@ -226,8 +226,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @Test
     void shouldContainErrorIfOneOfTheeSelectedDocumentTypesIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
-            DocumentType._PARENT_APPLICANTS_DOCUMENTS, DocumentType._PARENT_EXPERT_REPORTS,
-            DocumentType._PARENT_ORDERS, DocumentType._PARENT_RESPONDENTS_STATEMENTS
+            DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
+            DocumentType.AA_PARENT_ORDERS, DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS
         }).forEach(documentType -> {
             CaseData caseData = CaseData.builder()
                 .manageDocumentEventData(ManageDocumentEventData.builder()

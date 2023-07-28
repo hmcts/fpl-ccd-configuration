@@ -44,7 +44,7 @@ public enum DocumentType {
         false, false, false, false,
         (document, documentUploaderType) -> SkeletonArgument.builder().document(document).build(),
         50),
-    _PARENT_ORDERS("Orders", null,
+    AA_PARENT_ORDERS("Orders", null,
         false, false, false, false,
         null,
         60),
@@ -56,7 +56,7 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         80),
-    _PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
+    AA_PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
         false, false, false, false,
         null,
         90),
@@ -92,7 +92,7 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         170),
-    _PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
+    AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
         false, false, false, false,
         null,
         180),
@@ -108,7 +108,7 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         210),
-    _PARENT_EXPERT_REPORTS("Expert Reports", null,
+    AA_PARENT_EXPERT_REPORTS("Expert Reports", null,
         false, false, false, false,
         null,
         220),
@@ -172,13 +172,11 @@ public enum DocumentType {
 
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
         switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY:
-            case SECONDARY_LOCAL_AUTHORITY:
+            case DESIGNATED_LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY:
                 return isConfidential ? LA : NON_CONFIDENTIAL;
             case HMCTS:
                 return isConfidential ? CTSC : NON_CONFIDENTIAL;
-            case SOLICITOR:
-            case BARRISTER:
+            case SOLICITOR, BARRISTER:
             default:
                 return NON_CONFIDENTIAL;
         }

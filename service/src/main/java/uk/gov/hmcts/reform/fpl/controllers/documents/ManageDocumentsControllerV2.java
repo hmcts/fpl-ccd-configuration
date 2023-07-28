@@ -71,13 +71,12 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
-        if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
-            if (unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
-                bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
-                    && !bundle.getDocumentTypeSelected().isUploadable())) {
-                return respond(caseDetails, List.of(
-                    "You cannot upload any document to the document type selected."));
-            }
+        if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())
+            && unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
+            bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
+                && !bundle.getDocumentTypeSelected().isUploadable())) {
+            return respond(caseDetails, List.of(
+                "You cannot upload any document to the document type selected."));
         }
 
         return respond(caseDetails);

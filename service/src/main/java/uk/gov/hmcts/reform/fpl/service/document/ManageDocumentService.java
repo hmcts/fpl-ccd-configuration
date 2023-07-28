@@ -152,7 +152,7 @@ public class ManageDocumentService {
             if (pd != null) {
                 return pd.getReadMethod().invoke(caseData);
             } else {
-                throw new RuntimeException("unable to get property descriptor from CaseData.class: "
+                throw new IllegalArgumentException("unable to get property descriptor from CaseData.class: "
                     + splitFieldName[0]);
             }
         } else {
@@ -279,7 +279,7 @@ public class ManageDocumentService {
                         Object bean = getDocumentListHolder(fieldName, caseData);
                         docs = (List<Element<?>>) pd.getReadMethod().invoke(bean);
                     } catch (Exception ex) {
-                        throw new RuntimeException("Unable to read bean property: " + fieldName);
+                        throw new IllegalArgumentException("Unable to read bean property: " + fieldName);
                     }
                     if (docs == null) {
                         docs = new ArrayList<>();
@@ -309,8 +309,7 @@ public class ManageDocumentService {
         switch (uploaderType) {
             case SOLICITOR:
                 return !documentType.isHiddenFromSolicitorUpload();
-            case DESIGNATED_LOCAL_AUTHORITY:
-            case SECONDARY_LOCAL_AUTHORITY:
+            case DESIGNATED_LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY:
                 return !documentType.isHiddenFromLAUpload();
             case HMCTS:
                 return !documentType.isHiddenFromCTSCUpload();
