@@ -298,7 +298,7 @@ public class ManageDocumentService {
         }
     }
 
-    public boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
+    private boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case SOLICITOR:
                 return !documentType.isHiddenFromSolicitorUpload();
@@ -315,14 +315,14 @@ public class ManageDocumentService {
     }
 
     public DynamicList buildDocumentTypeDynamicList(CaseData caseData, boolean hasPlacementNotices) {
-        final List<Pair<String, String>> courts = Arrays.stream(DocumentType.values())
+        final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
             .filter(documentType -> isVisible(documentType, getUploaderType(caseData)))
             .filter(documentType -> !documentType.isHiddenFromUpload())
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());
-        return dynamicListService.asDynamicList(courts);
+        return dynamicListService.asDynamicList(documentTypes);
     }
 
     public Map<String, Object> baseEventData(CaseData caseData) {
