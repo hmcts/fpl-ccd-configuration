@@ -51,6 +51,7 @@ public class GatekeepingOrderGenerationService extends
     private final OrdersLookupService ordersConfig;
     private final CourtService courtService;
 
+    @SuppressWarnings("java:S3252")
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
