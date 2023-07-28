@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -2656,7 +2657,7 @@ class ManageDocumentServiceTest {
 
     private static Stream<Arguments> buildDocumentTypeDynamicListArgs() {
         List<Arguments> args = new ArrayList<>();
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i < 5; i++) {
             for (int b = 0; b < 2; b++) {
                 List<Pair<String, String>> expected = List.of(
                     toPair(DocumentType.COURT_BUNDLE),
@@ -2706,11 +2707,16 @@ class ManageDocumentServiceTest {
                 when(userService.isHmctsUser()).thenReturn(false);
                 break;
             case 2:
+                // local authority
+                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASHARED));
+                when(userService.isHmctsUser()).thenReturn(false);
+                break;
+            case 3:
                 // solicitor
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.SOLICITORA));
                 when(userService.isHmctsUser()).thenReturn(false);
                 break;
-            case 3:
+            case 4:
                 // HMCTS admin
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
                 when(userService.isHmctsUser()).thenReturn(true);
@@ -2755,6 +2761,85 @@ class ManageDocumentServiceTest {
                 .uploadableDocumentBundle(List.of())
                 .build())
             .build();
+
         assertThat(underTest.uploadDocuments(caseData)).isEqualTo(Map.of());
+    }
+
+    private static Stream<Arguments> buildUploadingDocumentArgs() {
+        List<Arguments> args = new ArrayList<>();
+        for (int i = 1; i < 5; i++) {
+            DocumentUploaderType uploaderType = null;
+            switch (i) {
+                case 1:
+                    uploaderType = DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+                    break;
+                case 2:
+                    uploaderType = DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+                    break;
+                case 3:
+                    uploaderType = DocumentUploaderType.SOLICITOR;
+                    break;
+                case 4:
+                    uploaderType = DocumentUploaderType.HMCTS;
+                    break;
+                default:
+                    break;
+            }
+            // loginType
+            for (int b = 0; b < 3; b++) {
+                // confidentiality
+                args.add(Arguments.of(i, b, uploaderType));
+            }
+        }
+        return args.stream();
+    }
+
+    private String toConfidential(int type) {
+        switch (type) {
+            case 0:
+                return null;
+            case 1:
+                return YES.name();
+            case 2:
+                return NO.name();
+            default:
+                return null;
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, int confidentiality,
+                                                                DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementId = UUID.randomUUID();
+
+        DocumentReference expectedDocument = TestDataHelper.testDocumentReference();
+        CaseData caseData = CaseData.builder().id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadableDocumentBundle(List.of(element(elementId, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.CASE_SUMMARY.name())
+                            .build())
+                        .build())
+                    .document(expectedDocument)
+                    .confidential(toConfidential(confidentiality))
+                    .build())))
+                .build())
+            .build();
+
+        String suffix = List.of(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY,
+            DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY).contains(uploaderType) ? "LA" : "";
+        suffix = List.of(DocumentUploaderType.HMCTS).contains(uploaderType) ? "CTSC" : suffix;
+        suffix = confidentiality == 1 ? suffix : "";
+
+        assertThat(underTest.uploadDocuments(caseData))
+            .containsKey("caseSummaryList" + suffix)
+            .extracting("caseSummaryList" + suffix).asList()
+            .contains(element(elementId, CaseSummary.builder().document(expectedDocument).build()));
     }
 }

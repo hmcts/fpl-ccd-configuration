@@ -285,7 +285,7 @@ public class ManageDocumentService {
                         docs = new ArrayList<>();
                     }
                 }
-                docs.add(element(dt.getWithDocumentBuilder().apply(document, uploaderType)));
+                docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(document, uploaderType)));
                 ret.put(actualFieldName, docs);
             }
         });
