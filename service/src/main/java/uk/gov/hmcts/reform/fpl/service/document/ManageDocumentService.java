@@ -148,8 +148,13 @@ public class ManageDocumentService {
     private Object getDocumentListHolder(String fieldName, CaseData caseData) throws Exception {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 2) {
-            return BeanUtils.getPropertyDescriptor(CaseData.class, splitFieldName[0]).getReadMethod()
-                .invoke(caseData);
+            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(CaseData.class, splitFieldName[0]);
+            if (pd != null) {
+                return pd.getReadMethod().invoke(caseData);
+            } else {
+                throw new RuntimeException("unable to get property descriptor from CaseData.class: "
+                    + splitFieldName[0]);
+            }
         } else {
             return caseData;
         }
