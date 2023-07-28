@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Data
 @SuperBuilder(toBuilder = true)
+@EqualsAndHashCode
 @AllArgsConstructor
 public class DocmosisOrder implements DocmosisData {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
