@@ -47,9 +47,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        final boolean hasPlacementNotice = caseData.getPlacementEventData().getPlacements().stream()
-            .anyMatch(el -> el.getValue().getPlacementNotice() != null);
-
         caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(manageDocumentService
             .allowMarkDocumentConfidential(caseData)));
         caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
@@ -58,7 +55,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         caseDetails.getData().put("uploadableDocumentBundle", List.of(
             element(UploadableDocumentBundle.builder()
                 .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(
-                    caseData, hasPlacementNotice))
+                    caseData))
                 .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
                     Placement::getChildName))
                 .build())

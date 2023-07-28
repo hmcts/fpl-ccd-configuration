@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
@@ -66,12 +69,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -145,6 +149,9 @@ class ManageDocumentServiceTest {
 
     @InjectMocks
     private ManageDocumentService underTest;
+
+    @Mock
+    private DynamicListService dynamicListService;
 
     @BeforeEach
     void before() {
@@ -2638,5 +2645,94 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+    }
+
+    private static Pair<String, String> toPair(DocumentType documentType) {
+        return Pair.of(documentType.name(), documentType.getDescription());
+    }
+
+    private static Stream<Arguments> buildDocumentTypeDynamicListArgs() {
+        List<Arguments> args = new ArrayList<>();
+        for (int i = 1; i < 4; i++) {
+            for (int b = 0; b < 2; b++) {
+                List<Pair<String, String>> expected = List.of(
+                    toPair(DocumentType.COURT_BUNDLE),
+                    toPair(DocumentType.CASE_SUMMARY),
+                    toPair(DocumentType.POSITION_STATEMENTS),
+                    toPair(DocumentType.THRESHOLD),
+                    toPair(DocumentType.SKELETON_ARGUMENTS),
+                    toPair(DocumentType._PARENT_ORDERS),
+                    toPair(DocumentType.JUDGEMENTS),
+                    toPair(DocumentType.TRANSCRIPTS),
+                    toPair(DocumentType._PARENT_APPLICANTS_DOCUMENTS),
+                    toPair(DocumentType.DOCUMENTS_FILED_ON_ISSUE),
+                    toPair(DocumentType.APPLICANTS_WITNESS_STATEMENTS),
+                    toPair(DocumentType.CARE_PLAN),
+                    toPair(DocumentType.PARENT_ASSESSMENTS),
+                    toPair(DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS),
+                    toPair(DocumentType.APPLICANTS_OTHER_DOCUMENTS),
+                    toPair(DocumentType.MEETING_NOTES),
+                    toPair(DocumentType.CONTACT_NOTES),
+                    toPair(DocumentType._PARENT_RESPONDENTS_STATEMENTS),
+                    toPair(DocumentType.RESPONDENTS_STATEMENTS),
+                    toPair(DocumentType.RESPONDENTS_WITNESS_STATEMENTS),
+                    toPair(DocumentType.GUARDIAN_EVIDENCE),
+                    toPair(DocumentType._PARENT_EXPERT_REPORTS),
+                    toPair(DocumentType.EXPERT_REPORTS),
+                    toPair(DocumentType.DRUG_AND_ALCOHOL_REPORTS),
+                    toPair(DocumentType.LETTER_OF_INSTRUCTION),
+                    toPair(DocumentType.POLICE_DISCLOSURE),
+                    toPair(DocumentType.MEDICAL_RECORDS),
+                    toPair(DocumentType.COURT_CORRESPONDENCE),
+                    toPair(DocumentType.NOTICE_OF_ACTING_OR_ISSUE),
+                    b == 0 ? toPair(DocumentType.PLACEMENT_RESPONSES) : Pair.of("", ""));
+                args.add(Arguments.of(i, b == 0, expected.stream()
+                    .filter(p -> !Pair.of("", "").equals(p))
+                    .collect(Collectors.toList())
+                ));
+            }
+        }
+        return args.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildDocumentTypeDynamicListArgs")
+    void shouldBuildDocumentTypeDynamicList(int loginType,
+                                            boolean hasPlacement,
+                                            List<Pair<String, String>> expectedPairList) {
+        switch (loginType) {
+            case 1:
+                // local authority
+                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASOLICITOR));
+                when(userService.isHmctsUser()).thenReturn(false);
+                break;
+            case 2:
+                // solicitor
+                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.SOLICITORA));
+                when(userService.isHmctsUser()).thenReturn(false);
+                break;
+            case 3:
+                // HMCTS admin
+                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
+                when(userService.isHmctsUser()).thenReturn(true);
+                break;
+        }
+
+        CaseData caseData = hasPlacement ?
+            CaseData.builder().id(CASE_ID)
+                .placementEventData(PlacementEventData.builder().placements(
+                    List.of(element(Placement.builder()
+                        .placementNotice(TestDataHelper.testDocumentReference())
+                        .build()))
+                ).build())
+                .build()
+            : CaseData.builder().id(CASE_ID).build();
+
+        DynamicList expectedDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder().label("SUCCESS").code("SUCCESS").build())
+            .build();
+        when(dynamicListService.asDynamicList(expectedPairList)).thenReturn(expectedDynamicList);
+
+        assertThat(underTest.buildDocumentTypeDynamicList(caseData)).isEqualTo(expectedDynamicList);
     }
 }

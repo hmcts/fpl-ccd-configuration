@@ -31,7 +31,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -150,8 +149,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         }
         final DynamicList expectedDynamicList = DynamicList.builder().build();
 
-        when(manageDocumentService.buildDocumentTypeDynamicList(any(), anyBoolean()))
-            .thenReturn(expectedDynamicList);
+        when(manageDocumentService.buildDocumentTypeDynamicList(any())).thenReturn(expectedDynamicList);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "manage-document-action-selection");

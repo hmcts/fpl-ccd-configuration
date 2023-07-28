@@ -69,7 +69,7 @@ public enum DocumentType {
         defaultWithDocumentBuilder(),
         110),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
-        false, false, true, false,
+        false, false, false, false,
         defaultWithDocumentBuilder(),
         120),
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"),

@@ -314,7 +314,9 @@ public class ManageDocumentService {
         }
     }
 
-    public DynamicList buildDocumentTypeDynamicList(CaseData caseData, boolean hasPlacementNotices) {
+    public DynamicList buildDocumentTypeDynamicList(CaseData caseData) {
+        boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null);
         final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
             .filter(documentType -> isVisible(documentType, getUploaderType(caseData)))
             .filter(documentType -> !documentType.isHiddenFromUpload())
