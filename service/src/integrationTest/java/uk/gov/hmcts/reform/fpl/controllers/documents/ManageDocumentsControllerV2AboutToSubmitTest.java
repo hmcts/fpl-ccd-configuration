@@ -166,7 +166,7 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
 
         Element<ManagedDocument> expectedElement = element(ManagedDocument.builder()
             .document(TestDataHelper.testDocumentReference()).build());
-        when(manageDocumentService.uploadDocuments(any(), any(), any()))
+        when(manageDocumentService.uploadDocuments(any()))
             .thenReturn(Map.of("parentAssessmentList", List.of(expectedElement)));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);

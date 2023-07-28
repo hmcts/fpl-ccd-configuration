@@ -92,9 +92,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         Map<String, Object> updatedData = new HashMap<>();
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
-            updatedData.putAll(manageDocumentService.uploadDocuments(caseData, manageDocumentService
-                    .getUploaderType(caseData),
-                eventData.getUploadableDocumentBundle()));
+            updatedData.putAll(manageDocumentService.uploadDocuments(caseData));
         }
         caseDetailsMap.putAll(updatedData);
         removeTemporaryFields(caseDetailsMap, temporaryFields());

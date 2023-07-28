@@ -204,8 +204,10 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, Object> uploadDocuments(CaseData caseData, DocumentUploaderType uploaderType,
-                                               List<Element<UploadableDocumentBundle>> elements) {
+    public Map<String, Object> uploadDocuments(CaseData caseData) {
+        DocumentUploaderType uploaderType = getUploaderType(caseData);
+        List<Element<UploadableDocumentBundle>> elements  = caseData.getManageDocumentEventData()
+            .getUploadableDocumentBundle();
         final Map<String, Object> ret = new HashMap<>();
         elements.forEach(e -> {
             DocumentType dt = e.getValue().getDocumentTypeSelected();

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -50,6 +52,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
@@ -2563,7 +2566,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnHMCTSUploaderType() {
+    void shouldReturnHmctsUploaderType() {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
         when(userService.isHmctsUser()).thenReturn(true);
 
@@ -2695,11 +2698,7 @@ class ManageDocumentServiceTest {
         return args.stream();
     }
 
-    @ParameterizedTest
-    @MethodSource("buildDocumentTypeDynamicListArgs")
-    void shouldBuildDocumentTypeDynamicList(int loginType,
-                                            boolean hasPlacement,
-                                            List<Pair<String, String>> expectedPairList) {
+    private void initialiseUserService(int loginType) {
         switch (loginType) {
             case 1:
                 // local authority
@@ -2717,15 +2716,23 @@ class ManageDocumentServiceTest {
                 when(userService.isHmctsUser()).thenReturn(true);
                 break;
         }
+    }
 
-        CaseData caseData = hasPlacement ?
-            CaseData.builder().id(CASE_ID)
-                .placementEventData(PlacementEventData.builder().placements(
-                    List.of(element(Placement.builder()
+    @ParameterizedTest
+    @MethodSource("buildDocumentTypeDynamicListArgs")
+    void shouldBuildDocumentTypeDynamicList(int loginType,
+                                            boolean hasPlacement,
+                                            List<Pair<String, String>> expectedPairList) {
+        initialiseUserService(loginType);
+
+        CaseData caseData = hasPlacement ? CaseData.builder().id(CASE_ID)
+            .placementEventData(
+                PlacementEventData.builder()
+                    .placements(List.of(element(Placement.builder()
                         .placementNotice(TestDataHelper.testDocumentReference())
-                        .build()))
-                ).build())
-                .build()
+                        .build())))
+                    .build())
+            .build()
             : CaseData.builder().id(CASE_ID).build();
 
         DynamicList expectedDynamicList = DynamicList.builder()
@@ -2734,5 +2741,20 @@ class ManageDocumentServiceTest {
         when(dynamicListService.asDynamicList(expectedPairList)).thenReturn(expectedDynamicList);
 
         assertThat(underTest.buildDocumentTypeDynamicList(caseData)).isEqualTo(expectedDynamicList);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldReturnEmptyMapIfUploadableBundleIsEmpty(int loginType) {
+        initialiseUserService(loginType);
+
+        CaseData caseData = CaseData.builder().id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                .documentAcknowledge(List.of("ACK_RELATED_TO_CASE"))
+                .uploadableDocumentBundle(List.of())
+                .build())
+            .build();
+        assertThat(underTest.uploadDocuments(caseData)).isEqualTo(Map.of());
     }
 }
