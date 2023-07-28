@@ -129,6 +129,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
 class ManageDocumentServiceTest {
+
+    enum Confidentiality {
+        YES, NO, NULL
+    }
+
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
@@ -2785,33 +2790,31 @@ class ManageDocumentServiceTest {
                 default:
                     break;
             }
-            // loginType
-            for (int b = 0; b < 3; b++) {
-                // confidentiality
-                args.add(Arguments.of(i, b, uploaderType));
+            for (Confidentiality c : Confidentiality.values()) {
+                args.add(Arguments.of(i, c, uploaderType));
             }
         }
         return args.stream();
     }
 
-    private String toConfidential(int type) {
-        switch (type) {
-            case 0:
-                return null;
-            case 1:
+    private String toConfidential(Confidentiality confidentiality) {
+        switch (confidentiality) {
+            case YES:
                 return YES.name();
-            case 2:
+            case NO:
                 return NO.name();
+            case NULL:
+                return null;
             default:
                 return null;
         }
     }
 
-    private String getFieldNameSuffix(DocumentUploaderType uploaderType, int confidentiality) {
+    private String getFieldNameSuffix(DocumentUploaderType uploaderType, Confidentiality confidentiality) {
         String suffix = List.of(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY,
             DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY).contains(uploaderType) ? "LA" : "";
         suffix = List.of(DocumentUploaderType.HMCTS).contains(uploaderType) ? "CTSC" : suffix;
-        suffix = confidentiality == 1 ? suffix : "";
+        suffix = confidentiality == Confidentiality.YES ? suffix : "";
         return suffix;
     }
 
@@ -2828,7 +2831,7 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, int confidentiality,
+    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, Confidentiality confidentiality,
                                                                 DocumentUploaderType uploaderType) {
         initialiseUserService(loginType);
 
@@ -2858,7 +2861,7 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, int confidentiality,
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, Confidentiality confidentiality,
                                                                  DocumentUploaderType uploaderType) {
         initialiseUserService(loginType);
 
@@ -2896,6 +2899,54 @@ class ManageDocumentServiceTest {
             .containsKey("caseSummaryList" + suffix)
             .extracting("caseSummaryList" + suffix).asList()
             .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne).build()))
+            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo).build()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummaryWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        UUID elementIdOne = UUID.randomUUID();
+        UUID elementIdTwo = UUID.randomUUID();
+
+        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
+        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.CASE_SUMMARY.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .confidential("YES")
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.CASE_SUMMARY.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .confidential("NO")
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
+        Map<String, Object> actual = underTest.uploadDocuments(caseData);
+        assertThat(actual)
+            .containsKey("caseSummaryList" + suffix)
+            .extracting("caseSummaryList" + suffix).asList()
+            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne).build()));
+        assertThat(actual)
+            .containsKey("caseSummaryList")
+            .extracting("caseSummaryList").asList()
             .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo).build()));
     }
 }
