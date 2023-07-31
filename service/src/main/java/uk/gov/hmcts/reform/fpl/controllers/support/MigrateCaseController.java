@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -54,8 +55,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
-        "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
@@ -63,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
-        "DFPL-1486", this::run1486
+        "DFPL-1486", this::run1486,
+        "DFPL-796", this::run796
     );
 
     @PostMapping("/about-to-submit")
@@ -232,6 +232,10 @@ public class MigrateCaseController extends CallbackController {
 
         log.info("Migration {id = {}}, updating case {}", migrationId, caseId);
 
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(caseData));
+        Set<String> caseFields = caseDetails.getData().keySet();
+        if(caseFields.contains("documentViewLA") || caseFields.contains("documentViewHMCTS")
+           || caseFields.contains("documentViewNC")) {
+            caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(caseData));
+        }
     }
 }
