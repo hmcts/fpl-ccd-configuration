@@ -227,16 +227,18 @@ public class MigrateCaseController extends CallbackController {
 
     private void run796(CaseDetails caseDetails) {
         String migrationId = "DFPL-796";
+        Long caseId = caseDetails.getId();
 
-        CaseData caseData = getCaseData(caseDetails);
-        Long caseId = caseData.getId();
-
-        log.info("Migration {id = {}}, updating case {}", migrationId, caseId);
 
         Set<String> caseFields = caseDetails.getData().keySet();
-        if(caseFields.contains("documentViewLA") || caseFields.contains("documentViewHMCTS")
-           || caseFields.contains("documentViewNC")) {
+        if (caseFields.contains("documentViewLA") || caseFields.contains("documentViewHMCTS")
+            || caseFields.contains("documentViewNC")) {
+
+            CaseData caseData = getCaseData(caseDetails);
+            log.info("Migration {id = {}}, updating case {}", migrationId, caseId);
             caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(caseData));
+        } else {
+            log.info("Migration {id = {}}, skip case {}", migrationId, caseId);
         }
     }
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
@@ -32,7 +34,9 @@ import java.util.NoSuchElementException;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
@@ -61,6 +65,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseSubmissionChecker caseSubmissionChecker;
+
+    @SpyBean
+    private MigrateCaseService migrateCaseService;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -293,5 +300,36 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThat(responseData.getSendToCtsc()).isEqualTo("Yes");
         }
 
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Dfpl796 {
+
+        private final String migrationId = "DFPL-796";
+
+        @Test
+        void shouldRefreshDocumentView() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1L)
+                .data(Map.of("documentViewLA", "documents","migrationId", migrationId))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            verify(migrateCaseService).refreshDocumentViews(any());
+        }
+
+        @Test
+        void shouldNotRefreshDocumentViewWhenViewNotExist() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(1L)
+                .data(Map.of("migrationId", migrationId))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            verifyNoInteractions(migrateCaseService);
+        }
     }
 }
