@@ -55,6 +55,7 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
