@@ -76,7 +76,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
                 && !bundle.getDocumentTypeSelected().isUploadable())) {
             return respond(caseDetails, List.of(
-                "You cannot upload any document to the document type selected."));
+                "You are trying to upload a document to a parent folder, you need to choose one of the available sub folders."));
         }
 
         return respond(caseDetails);

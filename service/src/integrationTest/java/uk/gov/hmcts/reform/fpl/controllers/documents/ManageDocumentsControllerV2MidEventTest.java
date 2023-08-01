@@ -186,7 +186,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+                + "you need to choose one of the available sub folders.");
         });
     }
 
@@ -219,7 +220,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+                + "you need to choose one of the available sub folders.");
         });
     }
 
@@ -252,7 +254,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You cannot upload any document to the document type selected.");
+            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+                + "you need to choose one of the available sub folders.");
         });
     }
 
