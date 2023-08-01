@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "courtBundle",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "courtBundleNC",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-superuser"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  }
+]
