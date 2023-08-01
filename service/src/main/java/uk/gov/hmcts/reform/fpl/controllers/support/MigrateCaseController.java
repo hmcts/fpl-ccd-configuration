@@ -63,7 +63,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
-        "DFPL-1486", this::run1486
+        "DFPL-1649", this::run1649
     );
 
     @PostMapping("/about-to-submit")
@@ -219,8 +219,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
 
-    private void run1486(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1486";
-        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    private void run1649(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1649";
+        long expectedCaseId = 1686829053861234L;
+        UUID expectedHearingId = UUID.fromString("55ecd69a-d4f3-4a1b-81ff-7144aa5f46f8");
+        UUID expectedCourtBundleId = UUID.fromString("7f14382f-c16e-497e-ab8c-f3f76e212a6c");
+        String messageId = "dd7e4072-41dd-46fa-a3dc-de32ee9bde93";
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId);
+        migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId, expectedHearingId, expectedCourtBundleId);
     }
 }
