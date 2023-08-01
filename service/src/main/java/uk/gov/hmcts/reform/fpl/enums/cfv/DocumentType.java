@@ -25,9 +25,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public enum DocumentType {
     COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
-        (document, documentUploaderType) -> HearingCourtBundle.builder().courtBundle(List.of(
-                            element(CourtBundle.builder().document(document).uploaderType(documentUploaderType)
-                                .build()))).build(),
+        (document, documentUploaderType) -> HearingCourtBundle.builder()
+            .courtBundle(List.of(
+                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
+            ))
+            .courtBundleNC(List.of(
+                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
+            ))
+            .build(),
         10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
