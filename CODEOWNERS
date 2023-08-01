@@ -1,3 +1,11 @@
-# These owners will be the default owners for everything in the repo.
+# https://help.github.com/en/articles/about-code-owners
 
-# * @geek-soft
+* @hmcts/fpl-developers
+
+# Renovate files
+gradle/wrapper/gradle-wrapper.properties
+Dockerfile
+build.gradle
+charts/**/Chart.yaml
+infrastructure/state.tf
+.github/workflows/*.yaml
