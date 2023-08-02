@@ -227,12 +227,18 @@ public class ManageDocumentService {
                         isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
                             : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
                     caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-                    caseData.setPlacementNoticeResponses(List.of(element(PlacementNoticeDocument.builder()
+                    List<Element<PlacementNoticeDocument>> placementNoticeResponses =
+                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses");
+                    if (placementNoticeResponses == null) {
+                        placementNoticeResponses = new ArrayList<>();
+                    }
+                    placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
                         .type(isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
                             : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
                         .response(e.getValue().getDocument())
                         .uploaderType(uploaderType)
-                        .build())));
+                        .build()));
+                    caseData.setPlacementNoticeResponses(placementNoticeResponses);
                     if (ret.containsKey("placements")) {
                         caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
                             ret.get("placements"));
@@ -243,11 +249,18 @@ public class ManageDocumentService {
                 } else {
                     Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData);
                     caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-                    caseData.setPlacementNoticeResponses(List.of(element(PlacementNoticeDocument.builder()
+
+                    List<Element<PlacementNoticeDocument>> placementNoticeResponses =
+                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses");
+                    if (placementNoticeResponses == null) {
+                        placementNoticeResponses = new ArrayList<>();
+                    }
+                    placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
                         .type(resolveType(e.getValue().getPlacementNoticeRecipientType()))
                         .response(e.getValue().getDocument())
                         .uploaderType(uploaderType)
-                        .build())));
+                        .build()));
+                    caseData.setPlacementNoticeResponses(placementNoticeResponses);
                     if (ret.containsKey("placements")) {
                         caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
                             ret.get("placements"));
