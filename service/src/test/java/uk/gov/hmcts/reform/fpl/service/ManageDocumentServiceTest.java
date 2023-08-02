@@ -2814,7 +2814,6 @@ class ManageDocumentServiceTest {
             case NO:
                 return NO.name();
             case NULL:
-                return null;
             default:
                 return null;
         }
@@ -2837,132 +2836,6 @@ class ManageDocumentServiceTest {
                 .uploadableDocumentBundle(uploadableDocumentBundle)
                 .build())
             .build();
-    }
-
-    @ParameterizedTest
-    @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, Confidentiality confidentiality,
-                                                                DocumentUploaderType uploaderType) {
-        initialiseUserService(loginType);
-
-        UUID elementId = UUID.randomUUID();
-
-        DocumentReference expectedDocument = TestDataHelper.testDocumentReference();
-        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
-            List.of(
-                element(elementId, UploadableDocumentBundle.builder()
-                    .documentTypeDynamicList(DynamicList.builder()
-                        .value(DynamicListElement.builder()
-                            .code(DocumentType.CASE_SUMMARY.name())
-                            .build())
-                        .build())
-                    .document(expectedDocument)
-                    .confidential(toConfidential(confidentiality))
-                    .build())
-            )
-        );
-
-        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
-        assertThat(underTest.uploadDocuments(caseData))
-            .containsKey("caseSummaryList" + suffix)
-            .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementId, CaseSummary.builder().document(expectedDocument)
-                .uploaderType(uploaderType).build()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, Confidentiality confidentiality,
-                                                                 DocumentUploaderType uploaderType) {
-        initialiseUserService(loginType);
-
-        UUID elementIdOne = UUID.randomUUID();
-        UUID elementIdTwo = UUID.randomUUID();
-
-        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
-        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
-
-        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
-            List.of(
-                element(elementIdOne, UploadableDocumentBundle.builder()
-                    .documentTypeDynamicList(DynamicList.builder()
-                        .value(DynamicListElement.builder()
-                            .code(DocumentType.CASE_SUMMARY.name())
-                            .build())
-                        .build())
-                    .document(expectedDocumentOne)
-                    .confidential(toConfidential(confidentiality))
-                    .build()),
-                element(elementIdTwo, UploadableDocumentBundle.builder()
-                    .documentTypeDynamicList(DynamicList.builder()
-                        .value(DynamicListElement.builder()
-                            .code(DocumentType.CASE_SUMMARY.name())
-                            .build())
-                        .build())
-                    .document(expectedDocumentTwo)
-                    .confidential(toConfidential(confidentiality))
-                    .build())
-            )
-        );
-
-        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
-        assertThat(underTest.uploadDocuments(caseData))
-            .containsKey("caseSummaryList" + suffix)
-            .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
-                .uploaderType(uploaderType).build()))
-            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
-                .uploaderType(uploaderType).build()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleCaseSummaryWithDiffConfidentiality(
-        int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
-        initialiseUserService(loginType);
-
-        UUID elementIdOne = UUID.randomUUID();
-        UUID elementIdTwo = UUID.randomUUID();
-
-        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
-        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
-
-        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
-            List.of(
-                element(elementIdOne, UploadableDocumentBundle.builder()
-                    .documentTypeDynamicList(DynamicList.builder()
-                        .value(DynamicListElement.builder()
-                            .code(DocumentType.CASE_SUMMARY.name())
-                            .build())
-                        .build())
-                    .document(expectedDocumentOne)
-                    .confidential("YES")
-                    .build()),
-                element(elementIdTwo, UploadableDocumentBundle.builder()
-                    .documentTypeDynamicList(DynamicList.builder()
-                        .value(DynamicListElement.builder()
-                            .code(DocumentType.CASE_SUMMARY.name())
-                            .build())
-                        .build())
-                    .document(expectedDocumentTwo)
-                    .confidential("NO")
-                    .build())
-            )
-        );
-
-        String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
-        Map<String, Object> actual = underTest.uploadDocuments(caseData);
-        assertThat(actual)
-            .containsKey("caseSummaryList" + suffix)
-            .extracting("caseSummaryList" + suffix).asList()
-            .contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
-                .uploaderType(uploaderType).build()));
-        assertThat(actual)
-            .containsKey("caseSummaryList")
-            .extracting("caseSummaryList").asList()
-            .contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
-                .uploaderType(uploaderType).build()));
     }
 
     private void tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType documentType,
@@ -3001,6 +2874,16 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
             suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, Confidentiality confidentiality,
+                                                                DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.CASE_SUMMARY,
+            suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
                 .uploaderType(uploaderType).build())));
     }
 
@@ -3089,6 +2972,19 @@ class ManageDocumentServiceTest {
             list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, Confidentiality confidentiality,
+                                                                 DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.CASE_SUMMARY,
+            suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+                && list.contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3192,6 +3088,19 @@ class ManageDocumentServiceTest {
                 ManagedDocument.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
                 ManagedDocument.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummaryWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.CASE_SUMMARY,
+            suffix -> "caseSummaryList" + suffix, loginType, uploaderType,
+            list -> list.contains(element(elementIdOne,
+                CaseSummary.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+            list -> list.contains(element(elementIdTwo,
+                CaseSummary.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
