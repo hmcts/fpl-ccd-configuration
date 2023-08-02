@@ -221,53 +221,37 @@ public class ManageDocumentService {
                     || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
                 boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
 
-                PlacementEventData eventData = null;
-                if (isLocalAuthority || isSolicitor) {
-                    Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData,
-                        isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
-                            : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
-                    caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-                    List<Element<PlacementNoticeDocument>> placementNoticeResponses =
-                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses");
-                    if (placementNoticeResponses == null) {
-                        placementNoticeResponses = new ArrayList<>();
-                    }
-                    placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
-                        .type(isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT
-                            : PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-                        .response(e.getValue().getDocument())
-                        .uploaderType(uploaderType)
-                        .build()));
-                    caseData.setPlacementNoticeResponses(placementNoticeResponses);
-                    if (ret.containsKey("placements")) {
-                        caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
-                            ret.get("placements"));
-                    }
-
-                    eventData = isLocalAuthority ? updatePlacementNoticesLA(caseData) :
-                        updatePlacementNoticesSolicitor(caseData);
-                } else {
-                    Map<String, Object>  initialisedPlacement = initialisePlacementHearingResponseFields(caseData);
-                    caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
-
-                    List<Element<PlacementNoticeDocument>> placementNoticeResponses =
-                        (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses");
-                    if (placementNoticeResponses == null) {
-                        placementNoticeResponses = new ArrayList<>();
-                    }
-                    placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
-                        .type(resolveType(e.getValue().getPlacementNoticeRecipientType()))
-                        .response(e.getValue().getDocument())
-                        .uploaderType(uploaderType)
-                        .build()));
-                    caseData.setPlacementNoticeResponses(placementNoticeResponses);
-                    if (ret.containsKey("placements")) {
-                        caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
-                            ret.get("placements"));
-                    }
-
-                    eventData = updatePlacementNoticesAdmin(caseData);
+                Map<String, Object> initialisedPlacement = (isSolicitor || isLocalAuthority)
+                    ? initialisePlacementHearingResponseFields(caseData,
+                    isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT :
+                        PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+                    : initialisePlacementHearingResponseFields(caseData);
+                caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
+                List<Element<PlacementNoticeDocument>> placementNoticeResponses =
+                    (List<Element<PlacementNoticeDocument>>) initialisedPlacement.get("placementNoticeResponses");
+                if (placementNoticeResponses == null) {
+                    placementNoticeResponses = new ArrayList<>();
                 }
+                placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
+                    .type(
+                        (isSolicitor || isLocalAuthority)
+                            ? (isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT :
+                            PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
+                            : resolveType(e.getValue().getPlacementNoticeRecipientType()))
+                    .response(e.getValue().getDocument())
+                    .uploaderType(uploaderType)
+                    .build()));
+                caseData.setPlacementNoticeResponses(placementNoticeResponses);
+                if (ret.containsKey("placements")) {
+                    caseData.getPlacementEventData().setPlacements((List<Element<Placement>>)
+                        ret.get("placements"));
+                }
+
+                PlacementEventData eventData = isLocalAuthority || isSolicitor
+                    ? (isLocalAuthority ? updatePlacementNoticesLA(caseData)
+                    : updatePlacementNoticesSolicitor(caseData))
+                    : updatePlacementNoticesAdmin(caseData);
+
                 ret.put("placements", eventData.getPlacements());
                 ret.put("placementsNonConfidential", eventData
                     .getPlacementsNonConfidential(false));
@@ -1153,17 +1137,13 @@ public class ManageDocumentService {
         PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
         map.put("placement", data.getPlacement());
         map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
-            doc -> doc.getValue().getType() == type
+            doc -> type == null ? true : (doc.getValue().getType() == type)
         ));
         return map;
     }
 
     public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
-        Map<String, Object> map = new HashMap<>();
-        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
-        map.put("placement", data.getPlacement());
-        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments());
-        return map;
+        return initialisePlacementHearingResponseFields(caseData, null);
     }
 
     public PlacementEventData updatePlacementNoticesLA(CaseData caseData) {
