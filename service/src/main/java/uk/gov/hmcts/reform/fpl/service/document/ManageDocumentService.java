@@ -322,7 +322,8 @@ public class ManageDocumentService {
         switch (uploaderType) {
             case SOLICITOR:
                 return !documentType.isHiddenFromSolicitorUpload();
-            case DESIGNATED_LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY:
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
                 return !documentType.isHiddenFromLAUpload();
             case HMCTS:
                 return !documentType.isHiddenFromCTSCUpload();

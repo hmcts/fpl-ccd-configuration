@@ -181,11 +181,13 @@ public enum DocumentType {
 
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
         switch (uploaderType) {
-            case DESIGNATED_LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY:
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
                 return isConfidential ? LA : NON_CONFIDENTIAL;
             case HMCTS:
                 return isConfidential ? CTSC : NON_CONFIDENTIAL;
-            case SOLICITOR, BARRISTER:
+            case SOLICITOR:
+            case BARRISTER:
             default:
                 return NON_CONFIDENTIAL;
         }

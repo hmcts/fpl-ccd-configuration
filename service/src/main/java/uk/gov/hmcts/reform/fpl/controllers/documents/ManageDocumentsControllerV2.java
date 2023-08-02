@@ -73,10 +73,11 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())
             && unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
-            bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
-                && !bundle.getDocumentTypeSelected().isUploadable())) {
-            return respond(caseDetails, List.of(
-                "You are trying to upload a document to a parent folder, you need to choose one of the available sub folders."));
+                bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
+                    && !bundle.getDocumentTypeSelected().isUploadable())) {
+            return respond(caseDetails,
+                List.of("You are trying to upload a document to a parent folder, "
+                    + "you need to choose one of the available sub folders."));
         }
 
         return respond(caseDetails);
