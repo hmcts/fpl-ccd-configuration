@@ -72,8 +72,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -162,6 +165,12 @@ class ManageDocumentServiceTest {
 
     @Mock
     private DynamicListService dynamicListService;
+
+    UUID elementIdOne = UUID.randomUUID();
+    UUID elementIdTwo = UUID.randomUUID();
+
+    DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
+    DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
 
     @BeforeEach
     void before() {
@@ -2956,11 +2965,11 @@ class ManageDocumentServiceTest {
                 .uploaderType(uploaderType).build()));
     }
 
-    // parentAssessmentList
-    @ParameterizedTest
-    @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality,
-                                                                     DocumentUploaderType uploaderType) {
+    // template
+    private void tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType documentType,
+                                                                    Function<String, String> test,
+                                                                    int loginType, Confidentiality confidentiality,
+                                                                    DocumentUploaderType uploaderType) {
         initialiseUserService(loginType);
 
         UUID elementId = UUID.randomUUID();
@@ -2971,7 +2980,7 @@ class ManageDocumentServiceTest {
                 element(elementId, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
-                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .code(documentType.name())
                             .build())
                         .build())
                     .document(expectedDocument)
@@ -2982,30 +2991,33 @@ class ManageDocumentServiceTest {
 
         String suffix = getFieldNameSuffix(uploaderType, confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
-            .containsKey("parentAssessmentList" + suffix)
-            .extracting("parentAssessmentList" + suffix).asList()
+            .containsKey(test.apply(suffix))
+            .extracting(test.apply(suffix)).asList()
             .contains(element(elementId, ManagedDocument.builder().document(expectedDocument)
                 .uploaderType(uploaderType).build()));
     }
 
+    // parentAssessmentList
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleParentAssessment(int loginType, Confidentiality confidentiality,
-                                                                      DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality,
+                                                                     DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
+            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType);
+    }
+
+    void tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType documentType,
+                                                           Function<String, String> test,
+                                                           int loginType, Confidentiality confidentiality,
+                                                           DocumentUploaderType uploaderType,
+                                                           Predicate<List> matcher) {
         initialiseUserService(loginType);
-
-        UUID elementIdOne = UUID.randomUUID();
-        UUID elementIdTwo = UUID.randomUUID();
-
-        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
-        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
-
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
             List.of(
                 element(elementIdOne, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
-                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .code(documentType.name())
                             .build())
                         .build())
                     .document(expectedDocumentOne)
@@ -3014,7 +3026,7 @@ class ManageDocumentServiceTest {
                 element(elementIdTwo, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
-                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .code(documentType.name())
                             .build())
                         .build())
                     .document(expectedDocumentTwo)
@@ -3025,33 +3037,81 @@ class ManageDocumentServiceTest {
 
         String suffix = getFieldNameSuffix(uploaderType, confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
-            .containsKey("parentAssessmentList" + suffix)
-            .extracting("parentAssessmentList" + suffix).asList()
-            .contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
-                .uploaderType(uploaderType).build()))
-            .contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
-                .uploaderType(uploaderType).build()));
+            .containsKey(test.apply(suffix))
+            .extracting(test.apply(suffix)).asList()
+            .matches(matcher);
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleParentAssessmentWithDiffConfidentiality(
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessment(int loginType, Confidentiality confidentiality,
+                                                                      DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.PARENT_ASSESSMENTS,
+            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+                && list.contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()))
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    @SuppressWarnings("unchecked")
+    void shouldPopulateDocumentListWhenUploadMultipleCourtBundle(int loginType, Confidentiality confidentiality,
+                                                                 DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.COURT_BUNDLE,
+            suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType,
+            confidentiality, uploaderType,
+            list -> {
+                List<Element> flist = (List<Element>) list.stream()
+                    .filter(p -> elementIdOne.equals(((Element) p).getId())
+                        || elementIdTwo.equals(((Element) p).getId()))
+                    .collect(Collectors.toList());
+                if (flist.size() != 2) {
+                    return false;
+                } else {
+                    return flist.stream().allMatch((s) -> {
+                        Object wrapped = s.getValue();
+                        if (wrapped.getClass().isAssignableFrom(HearingCourtBundle.class)) {
+                            DocumentReference expectedDocument = elementIdOne.equals(s.getId()) ? expectedDocumentOne
+                                : expectedDocumentTwo;
+
+                            HearingCourtBundle hcb = (HearingCourtBundle) wrapped;
+                            boolean test = hcb.getCourtBundle() != null;
+                            test = test && hcb.getCourtBundle().size() == 1;
+                            test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
+                            test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue().getUploaderType());
+                            test = test && hcb.getCourtBundleNC() != null;
+                            test = test && hcb.getCourtBundleNC().size() == 1;
+                            test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
+                                .getDocument());
+                            test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue()
+                                .getUploaderType());
+                            return test;
+                        }
+                        return false;
+                    });
+                }
+            }
+        );
+    }
+
+    private void tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(
+        DocumentType documentType,
+        Function<String, String> test,
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        DocumentUploaderType uploaderType,
+        Predicate<List> matcher1,
+        Predicate<List> matcher2) {
         initialiseUserService(loginType);
-
-        UUID elementIdOne = UUID.randomUUID();
-        UUID elementIdTwo = UUID.randomUUID();
-
-        DocumentReference expectedDocumentOne = TestDataHelper.testDocumentReference();
-        DocumentReference expectedDocumentTwo = TestDataHelper.testDocumentReference();
 
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
             List.of(
                 element(elementIdOne, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
-                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .code(documentType.name())
                             .build())
                         .build())
                     .document(expectedDocumentOne)
@@ -3060,7 +3120,7 @@ class ManageDocumentServiceTest {
                 element(elementIdTwo, UploadableDocumentBundle.builder()
                     .documentTypeDynamicList(DynamicList.builder()
                         .value(DynamicListElement.builder()
-                            .code(DocumentType.PARENT_ASSESSMENTS.name())
+                            .code(documentType.name())
                             .build())
                         .build())
                     .document(expectedDocumentTwo)
@@ -3072,14 +3132,82 @@ class ManageDocumentServiceTest {
         String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
         assertThat(actual)
-            .containsKey("parentAssessmentList" + suffix)
-            .extracting("parentAssessmentList" + suffix).asList()
-            .contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
-                .uploaderType(uploaderType).build()));
+            .containsKey(test.apply(suffix))
+            .extracting(test.apply(suffix)).asList()
+            .matches(matcher1);
         assertThat(actual)
-            .containsKey("parentAssessmentList")
-            .extracting("parentAssessmentList").asList()
-            .contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
-                .uploaderType(uploaderType).build()));
+            .containsKey(test.apply(""))
+            .extracting(test.apply("")).asList()
+            .matches(matcher2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessmentWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.PARENT_ASSESSMENTS,
+            suffix -> "parentAssessmentList" + suffix, loginType, uploaderType,
+            list -> list.contains(element(elementIdOne,
+                ManagedDocument.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+            list -> list.contains(element(elementIdTwo,
+                ManagedDocument.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCourtBundleWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.COURT_BUNDLE,
+            suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType, uploaderType,
+            list -> {
+                Optional<Element> op = list.stream().filter(p -> elementIdOne.equals(((Element) p).getId()))
+                    .findAny();
+                if (!op.isPresent()) {
+                    return false;
+                } else {
+                    Object wrapped = op.get().getValue();
+                    if (wrapped.getClass().isAssignableFrom(HearingCourtBundle.class)) {
+                        HearingCourtBundle hcb = (HearingCourtBundle) wrapped;
+                        boolean test = hcb.getCourtBundle() != null;
+                        test = test && hcb.getCourtBundle().size() == 1;
+                        test = test && expectedDocumentOne.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
+                        test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue().getUploaderType());
+                        test = test && hcb.getCourtBundleNC() != null;
+                        test = test && hcb.getCourtBundleNC().size() == 1;
+                        test = test && expectedDocumentOne.equals(hcb.getCourtBundleNC().get(0).getValue()
+                            .getDocument());
+                        test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue().getUploaderType());
+                        return test;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            list -> {
+                Optional<Element> op = list.stream().filter(p -> elementIdTwo.equals(((Element) p).getId()))
+                    .findAny();
+                if (!op.isPresent()) {
+                    return false;
+                } else {
+                    Object wrapped = op.get().getValue();
+                    if (wrapped.getClass().isAssignableFrom(HearingCourtBundle.class)) {
+                        HearingCourtBundle hcb = (HearingCourtBundle) wrapped;
+                        boolean test = hcb.getCourtBundle() != null;
+                        test = test && hcb.getCourtBundle().size() == 1;
+                        test = test && expectedDocumentTwo.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
+                        test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue().getUploaderType());
+                        test = test && hcb.getCourtBundleNC() != null;
+                        test = test && hcb.getCourtBundleNC().size() == 1;
+                        test = test && expectedDocumentTwo.equals(hcb.getCourtBundleNC().get(0).getValue()
+                            .getDocument());
+                        test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue().getUploaderType());
+                        return test;
+                    } else {
+                        return false;
+                    }
+                }
+            });
     }
 }
