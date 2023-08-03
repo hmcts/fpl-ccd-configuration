@@ -126,13 +126,39 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsV2",
-    "CaseFieldID": "manageDocumentRemoveDocInstructionLabel",
+    "CaseFieldID": "manageDocumentRemoveDocInstructionLabelOne",
     "DisplayContext": "READONLY",
     "PageID": "RemoveDocuments",
     "PageLabel": "Remove documents",
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "manageDocumentAction=\"REMOVE_DOCUMENTS\""
+    "PageShowCondition": "manageDocumentAction=\"REMOVE_DOCUMENTS\"",
+    "FieldShowCondition": "allowSelectDocumentTypeToRemoveDocument=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "manageDocumentRemoveDocInstructionLabelTwo",
+    "DisplayContext": "READONLY",
+    "PageID": "RemoveDocuments",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "allowSelectDocumentTypeToRemoveDocument=\"NO\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "allowSelectDocumentTypeToRemoveDocument",
+    "PageID": "RemoveDocuments",
+    "DisplayContext": "READONLY",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "documentAcknowledge=\"DO_NOT_SHOW\""
   }
 ]

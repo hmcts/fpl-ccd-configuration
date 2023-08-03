@@ -2632,7 +2632,7 @@ class ManageDocumentServiceTest {
         "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
         "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
     })
-    void shouldNotAllowMarkDocumentConfidential(CaseRole caseRole) {
+    void shouldPopulatePropertiesForSolicitorUsers(CaseRole caseRole) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
         when(userService.isHmctsUser()).thenReturn(false);
 
@@ -2641,11 +2641,12 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(false);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
     }
 
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {"LASHARED", "LASOLICITOR", "EPSMANAGING", "LAMANAGING", "LABARRISTER"})
-    void shouldAllowMarkDocumentConfidential(CaseRole caseRole) {
+    void shouldPopulatePropertiesForLAUsers(CaseRole caseRole) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
         when(userService.isHmctsUser()).thenReturn(false);
 
@@ -2654,10 +2655,11 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
     }
 
     @Test
-    void shouldAllowMarkDocumentConfidentialForHmctsUser() {
+    void shouldPopulatePropertiesForHmctsUser() {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
         when(userService.isHmctsUser()).thenReturn(true);
 
@@ -2666,6 +2668,7 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(true);
     }
 
     private static Pair<String, String> toPair(DocumentType documentType) {

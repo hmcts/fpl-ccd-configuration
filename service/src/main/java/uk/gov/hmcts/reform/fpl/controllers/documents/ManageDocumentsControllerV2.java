@@ -48,6 +48,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(manageDocumentService
             .allowMarkDocumentConfidential(caseData)));
+        caseDetails.getData().put("allowSelectDocumentTypeToRemoveDocument", YesNo.from(manageDocumentService
+            .allowSelectDocumentTypeToRemoveDocument(caseData)));
         caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
             .HMCTS == manageDocumentService.getUploaderType(caseData)));
         caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));

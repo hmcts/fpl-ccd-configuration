@@ -48,7 +48,11 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldPopulateAllowMarkDocumentConfidential(boolean allow) {
-        CaseData caseData = CaseData.builder().build();
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                .build())
+            .build();
 
         when(manageDocumentService.allowMarkDocumentConfidential(any())).thenReturn(allow);
 
@@ -57,6 +61,25 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
         CaseData responseCaseData = extractCaseData(callbackResponse);
         assertThat(responseCaseData.getManageDocumentEventData().getAllowMarkDocumentConfidential())
+            .isEqualTo(allow ? "YES" : "NO");
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPopulateAllowSelectDocumentTypeToRemoveDocument(boolean allow) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build())
+            .build();
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(allow);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-action-selection");
+
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        assertThat(responseCaseData.getManageDocumentEventData().getAllowSelectDocumentTypeToRemoveDocument())
             .isEqualTo(allow ? "YES" : "NO");
     }
 

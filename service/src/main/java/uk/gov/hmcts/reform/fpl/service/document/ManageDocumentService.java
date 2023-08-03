@@ -208,6 +208,10 @@ public class ManageDocumentService {
             .contains(getUploaderType(caseData));
     }
 
+    public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
+        return List.of(DocumentUploaderType.HMCTS).contains(getUploaderType(caseData));
+    }
+
     @SuppressWarnings("unchecked")
     public Map<String, Object> uploadDocuments(CaseData caseData) {
         DocumentUploaderType uploaderType = getUploaderType(caseData);
