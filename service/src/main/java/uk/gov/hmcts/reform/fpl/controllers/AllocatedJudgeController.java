@@ -63,9 +63,12 @@ public class AllocatedJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         // Fill in judge details
-        if (caseData.getEnterManually().equals(YesNo.NO)
-            && !isEmpty(caseData.getJudicialUser())
-            && !isEmpty(caseData.getJudicialUser().getPersonalCode())) {
+        if (caseData.getEnterManually().equals(YesNo.NO)) {
+
+            if (isEmpty(caseData.getJudicialUser()) || isEmpty(caseData.getJudicialUser().getPersonalCode())) {
+                return respond(caseDetails,
+                    List.of("You must search for a judge or enter their details manually"));
+            }
 
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
