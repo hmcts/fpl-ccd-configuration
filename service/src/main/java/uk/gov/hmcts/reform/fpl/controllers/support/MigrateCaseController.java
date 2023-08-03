@@ -70,7 +70,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1352", this::run1352
+        "DFPL-1352", this::run1352,
+        "DFPL-1486", this::run1486
     );
 
     @PostMapping("/about-to-submit")
@@ -91,50 +92,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run702(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        var caseId = caseData.getId();
-        String caseName = caseData.getCaseName();
-
-        String courtCode = null;
-        if (caseData.getOrders() != null && StringUtils.isNotEmpty(caseData.getOrders().getCourt())) {
-            courtCode = caseData.getOrders().getCourt();
-        } else if (caseData.getCourt() != null) {
-            courtCode = caseData.getCourt().getCode();
-        }
-        if (courtCode == null) {
-            throw new AssertionError(format("Migration {id = DFPL-702, case reference = {}, case state = {}} "
-                + "doesn't have court info so unable to set caseManagementLocation "
-                + "which is mandatory in global search.", caseId, caseData.getState().getValue()));
-        }
-
-        // migrating top level fields: case names
-        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
-        if (lookedUpCourt.isPresent()) {
-            caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
-                .baseLocation(lookedUpCourt.get().getEpimmsId())
-                .region(lookedUpCourt.get().getRegionId())
-                .build());
-
-            caseDetails.getData().put("caseNameHmctsInternal", caseName);
-            caseDetails.getData().put("caseManagementCategory", DynamicList.builder()
-                .value(DynamicListElement.builder().code("FPL").label("Family Public Law").build())
-                .listItems(List.of(
-                    DynamicListElement.builder().code("FPL").label("Family Public Law").build()
-                ))
-                .build());
-        } else {
-            throw new AssertionError(format("Migration {id = DFPL-702, case reference = {}, case state = {}} fail to "
-                + "lookup ePIMMS ID for court {}", caseId, caseData.getState().getValue(), courtCode));
-        }
-    }
-
-    private void run702rollback(CaseDetails caseDetails) {
-        caseDetails.getData().remove("caseManagementLocation");
-        caseDetails.getData().remove("caseNameHmctsInternal");
-        caseDetails.getData().remove("caseManagementCategory");
     }
 
     @PostMapping("/submitted")
@@ -256,4 +213,8 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().put("sendToCtsc", "Yes");
     }
 
+    private void run1486(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1486";
+        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    }
 }
