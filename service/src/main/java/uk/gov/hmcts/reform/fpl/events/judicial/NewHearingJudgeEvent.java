@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 @RequiredArgsConstructor
 public class NewHearingJudgeEvent {
 
-    private final JudgeAndLegalAdvisor hearingJudge;
     private final HearingBooking hearing;
     private final Long caseId;
 

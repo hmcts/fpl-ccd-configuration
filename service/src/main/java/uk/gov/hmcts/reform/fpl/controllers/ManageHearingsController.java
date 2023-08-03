@@ -15,12 +15,14 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,6 +90,7 @@ public class ManageHearingsController extends CallbackController {
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
+    private final JudicialService judicialService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -319,17 +323,44 @@ public class ManageHearingsController extends CallbackController {
 
     @PostMapping("validate-judge-email/mid-event")
     public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
-
-        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+        // todo - refactor me, triple nested if!!!
+        if (caseData.getUseAllocatedJudge().equals(NO)) {
+            final Optional<String> error = judicialService.validateHearingJudge(caseData);
 
             if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
             }
+
+            if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
+
+                Optional<JudicialUserProfile> jup = judicialService
+                    .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+
+                if (jup.isPresent()) {
+                    caseDetails.getData().put("judgeAndLegalAdvisor",
+                        JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
+                            .legalAdvisorName(caseData.getLegalAdvisorName())
+                            .build());
+                } else {
+                    return respond(caseDetails,
+                        List.of("No Judge could be found, please retry your search or enter their"
+                            + " details manually."));
+                }
+            } else {
+                // entered the judge manually
+                caseDetails.getData().put("judgeAndLegalAdvisor",
+                    JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                        .legalAdvisorName(caseData.getLegalAdvisorName())
+                        .build());
+            }
+        } else {
+            caseDetails.getData().put("judgeAndLegalAdvisor",
+                JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build());
         }
 
         return respond(caseDetails);
@@ -447,6 +478,8 @@ public class ManageHearingsController extends CallbackController {
 
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData.getId()));
+
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
                     }

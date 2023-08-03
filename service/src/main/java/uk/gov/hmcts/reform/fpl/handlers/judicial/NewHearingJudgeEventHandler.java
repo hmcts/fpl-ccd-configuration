@@ -26,8 +26,8 @@ public class NewHearingJudgeEventHandler {
 
     @Async
     @EventListener
-    public void handleNewAllocatedJudge(final NewHearingJudgeEvent event) {
-        JudgeAndLegalAdvisor hearingJudge = event.getHearingJudge();
+    public void handleNewHearingJudge(final NewHearingJudgeEvent event) {
+        JudgeAndLegalAdvisor hearingJudge = event.getHearing().getJudgeAndLegalAdvisor();
         if (isEmpty(hearingJudge)) {
             // no allocated judge, return
             log.error("No hearing judge to attempt role assignment on");
