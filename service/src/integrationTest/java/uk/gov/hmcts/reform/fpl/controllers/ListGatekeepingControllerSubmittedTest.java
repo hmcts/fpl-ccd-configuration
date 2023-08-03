@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
@@ -104,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final long CASE_ID = 12345L;
@@ -173,6 +177,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     @Captor
     private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
 
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
+
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
 
@@ -205,6 +215,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     }
 
     @Test
+    @Order(2)
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
@@ -216,7 +227,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -225,15 +236,21 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
-        // start but don't finish
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
+    @Order(1)
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
@@ -241,21 +258,24 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
 
         postSubmittedEvent(caseDetails);
 
-        verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(CASE_ID,
+            "internal-update-case-summary");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
-            eq(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20))));
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+            eq(caseSummary("Yes", "Case management",
+                LocalDate.of(2050, 5, 20))));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(CASE_ID, "internal-change-add-gatekeeping");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
+        verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -464,6 +484,22 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         givenFplService();
 
+        given(uploadDocumentService.uploadPDF(eq(NOTICE_OF_HEARING_BINARY), any()))
+            .willReturn(NOTICE_OF_HEARING_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_RESPONDENT);
+
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+
+        given(documentConversionService.convertToPdfBytes(any())).willReturn(NOTICE_OF_HEARING_BINARY);
+
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
             .willReturn(NOTICE_OF_HEARING_BINARY);
 
@@ -482,7 +518,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
-
         verify(notificationClient, never()).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
             eq(CAFCASS_EMAIL),
@@ -495,8 +530,11 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             same(NOTICE_OF_HEARING),
             noticeOfHearingCafcassDataCaptor.capture()
         );
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
+            .startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .submitEvent(any(), eq(CASE_ID), anyMap());
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
 
@@ -514,6 +552,8 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .isEqualTo("1 hour before the hearing");
         assertThat(noticeOfHearingCafcassData.getHearingTime())
             .isEqualTo("1:00pm - 2:00pm");
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -545,7 +585,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -558,9 +598,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -596,7 +639,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -609,8 +652,9 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         // start don't finish
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
@@ -647,7 +691,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -657,8 +701,12 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoInteractions(notificationClient);
 
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
@@ -692,7 +740,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .build();
 
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(caseDetails)
+            .caseDetails(caseDetails.toBuilder().build())
             .eventId(i.getArgument(1))
             .token("token")
             .build());
@@ -701,10 +749,16 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), anyMap());
-        // start but no updates
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
