@@ -10,9 +10,10 @@ plugins {
   id 'org.owasp.dependencycheck' version '8.0.2' apply true
 }
 
-allprojects {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 repositories {

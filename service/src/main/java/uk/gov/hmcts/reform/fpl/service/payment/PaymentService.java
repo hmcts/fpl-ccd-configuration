@@ -92,6 +92,7 @@ public class PaymentService {
     }
 
     public void makePaymentForC2(Long caseId, CaseData caseData) {
+        // todo - deprecate this as only called in deprecated flow
         C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         String localAuthorityName =
             localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
@@ -110,8 +111,9 @@ public class PaymentService {
     public void makePaymentForAdditionalApplications(Long caseId, CaseData caseData, FeesData feesData) {
         final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
 
-        String localAuthorityName =
-            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa());
+        final String localAuthorityName = nonNull(caseData.getCaseLocalAuthority())
+            ? localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            : getApplicant(caseData).getName();
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             pbaPayment.getPbaNumber(),

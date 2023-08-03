@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12323L;
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -41,10 +43,10 @@ class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(eq(CASE_ID),
             eq("internal-update-task-list"), any());
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(eq(CASE_ID),
             eq("internal-update-case-summary"), any());
 
     }
