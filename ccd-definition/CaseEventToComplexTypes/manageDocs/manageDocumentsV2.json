@@ -45,7 +45,7 @@
     "ListElementCode": "confidential",
     "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\" AND uploadableDocumentBundle.documentTypeDynamicList!=\"PLACEMENT_RESPONSES\""
   },
   {
     "LiveFrom": "01/01/2017",

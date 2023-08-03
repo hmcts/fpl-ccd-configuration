@@ -2839,12 +2839,11 @@ class ManageDocumentServiceTest {
     }
 
     private void tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType documentType,
-                                                                    Function<String, String> test,
+                                                                    Function<String, String> fieldNameProvider,
                                                                     int loginType, Confidentiality confidentiality,
                                                                     DocumentUploaderType uploaderType,
                                                                     Predicate<List> matcher) {
         initialiseUserService(loginType);
-
 
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
             List.of(
@@ -2862,8 +2861,8 @@ class ManageDocumentServiceTest {
 
         String suffix = getFieldNameSuffix(uploaderType, confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
-            .containsKey(test.apply(suffix))
-            .extracting(test.apply(suffix)).asList()
+            .containsKey(fieldNameProvider.apply(suffix))
+            .extracting(fieldNameProvider.apply(suffix)).asList()
             .matches(matcher);
     }
 
@@ -2928,7 +2927,7 @@ class ManageDocumentServiceTest {
     }
 
     void tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType documentType,
-                                                           Function<String, String> test,
+                                                           Function<String, String> fieldNameProvider,
                                                            int loginType, Confidentiality confidentiality,
                                                            DocumentUploaderType uploaderType,
                                                            Predicate<List> matcher) {
@@ -2958,8 +2957,8 @@ class ManageDocumentServiceTest {
 
         String suffix = getFieldNameSuffix(uploaderType, confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
-            .containsKey(test.apply(suffix))
-            .extracting(test.apply(suffix)).asList()
+            .containsKey(fieldNameProvider.apply(suffix))
+            .extracting(fieldNameProvider.apply(suffix)).asList()
             .matches(matcher);
     }
 
@@ -3035,7 +3034,7 @@ class ManageDocumentServiceTest {
 
     private void tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(
         DocumentType documentType,
-        Function<String, String> test,
+        Function<String, String> fieldNameProvider,
         int loginType,
         DocumentUploaderType uploaderType,
         Predicate<List> matcher1,
@@ -3068,12 +3067,12 @@ class ManageDocumentServiceTest {
         String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
         assertThat(actual)
-            .containsKey(test.apply(suffix))
-            .extracting(test.apply(suffix)).asList()
+            .containsKey(fieldNameProvider.apply(suffix))
+            .extracting(fieldNameProvider.apply(suffix)).asList()
             .matches(matcher1);
         assertThat(actual)
-            .containsKey(test.apply(""))
-            .extracting(test.apply("")).asList()
+            .containsKey(fieldNameProvider.apply(""))
+            .extracting(fieldNameProvider.apply("")).asList()
             .matches(matcher2);
     }
 
@@ -3158,5 +3157,190 @@ class ManageDocumentServiceTest {
                     }
                 }
             });
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulatePlacementsWhenUploadingSinglePlacementResponse(int loginType, Confidentiality ignoreMe,
+                                                                      DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PLACEMENT_RESPONSES.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .build())
+            )
+        );
+
+        UUID placementLAId = UUID.randomUUID();
+        UUID placementRespondentId = UUID.randomUUID();
+        UUID placementAdminId = UUID.randomUUID();
+
+        Placement placement = Placement.builder().noticeDocuments(List.of()).build();
+        Placement placementLA = Placement.builder().noticeDocuments(List.of(
+            element(elementIdOne, PlacementNoticeDocument.builder()
+                .uploaderType(uploaderType)
+                .response(expectedDocumentOne)
+                .build())
+        )).build();
+        Placement placementRespondent = Placement.builder().noticeDocuments(List.of()).build();
+        Placement placementAdmin = Placement.builder().noticeDocuments(List.of()).build();
+
+        when(placementService.preparePlacementFromExisting(caseData)).thenReturn(
+            PlacementEventData.builder()
+                .placement(placement)
+                .placements(List.of(element(placement)))
+                .build()
+        );
+        when(placementService.savePlacementNoticeResponses(any(), eq(PlacementNoticeDocument.RecipientType
+            .LOCAL_AUTHORITY))).thenReturn(PlacementEventData.builder()
+            .placement(placementLA)
+            .placements(List.of(element(placementLAId, placementLA)))
+            .build()
+        );
+        when(placementService.savePlacementNoticeResponses(any(), eq(PlacementNoticeDocument.RecipientType
+            .RESPONDENT))).thenReturn(PlacementEventData.builder()
+            .placement(placementRespondent)
+            .placements(List.of(element(placementRespondentId, placementRespondent)))
+            .build()
+        );
+        when(placementService.savePlacementNoticeResponsesAdmin(any())).thenReturn(
+            PlacementEventData.builder()
+                .placement(placementAdmin)
+                .placements(List.of(element(placementAdminId, placementAdmin)))
+                .build()
+        );
+
+        Predicate<List> matcher = (list) -> {
+            boolean test = true;
+            switch (uploaderType) {
+                case DESIGNATED_LOCAL_AUTHORITY:
+                case SECONDARY_LOCAL_AUTHORITY:
+                    test = test && list.contains(element(placementLAId, placementLA));
+                    return test;
+                case HMCTS:
+                    test = test && list.contains(element(placementAdminId, placementAdmin));
+                    return test;
+                case SOLICITOR:
+                    test = test && list.contains(element(placementRespondentId, placementRespondent));
+                    return test;
+                default:
+                    break;
+            }
+            return false;
+        };
+
+        Map<String, Object> actual = underTest.uploadDocuments(caseData);
+        assertThat(actual)
+            .containsKey("placements")
+            .containsKey("placementsNonConfidential")
+            .containsKey("placementsNonConfidentialNotices")
+            .extracting("placements").asList()
+            .matches(matcher);
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultiplePlacementResponses(
+        int loginType, Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        initialiseUserService(loginType);
+
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PLACEMENT_RESPONSES.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(DocumentType.PLACEMENT_RESPONSES.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .build())
+
+            )
+        );
+
+        UUID placementLAId = UUID.randomUUID();
+        UUID placementRespondentId = UUID.randomUUID();
+        UUID placementAdminId = UUID.randomUUID();
+
+        Placement placement = Placement.builder().noticeDocuments(List.of()).build();
+        Placement placementLA = Placement.builder().noticeDocuments(List.of(
+            element(elementIdOne, PlacementNoticeDocument.builder()
+                .uploaderType(uploaderType)
+                .response(expectedDocumentOne)
+                .build()),
+            element(elementIdTwo, PlacementNoticeDocument.builder()
+                .uploaderType(uploaderType)
+                .response(expectedDocumentTwo)
+                .build())
+        )).build();
+        Placement placementRespondent = Placement.builder().noticeDocuments(List.of()).build();
+        Placement placementAdmin = Placement.builder().noticeDocuments(List.of()).build();
+
+        when(placementService.preparePlacementFromExisting(caseData)).thenReturn(
+            PlacementEventData.builder()
+                .placement(placement)
+                .placements(List.of(element(placement)))
+                .build()
+        );
+        when(placementService.savePlacementNoticeResponses(any(), eq(PlacementNoticeDocument.RecipientType
+            .LOCAL_AUTHORITY))).thenReturn(PlacementEventData.builder()
+            .placement(placementLA)
+            .placements(List.of(element(placementLAId, placementLA)))
+            .build()
+        );
+        when(placementService.savePlacementNoticeResponses(any(), eq(PlacementNoticeDocument.RecipientType
+            .RESPONDENT))).thenReturn(PlacementEventData.builder()
+            .placement(placementRespondent)
+            .placements(List.of(element(placementRespondentId, placementRespondent)))
+            .build()
+        );
+        when(placementService.savePlacementNoticeResponsesAdmin(any())).thenReturn(
+            PlacementEventData.builder()
+                .placement(placementAdmin)
+                .placements(List.of(element(placementAdminId, placementAdmin)))
+                .build()
+        );
+
+        Predicate<List> matcher = (list) -> {
+            boolean test = true;
+            switch (uploaderType) {
+                case DESIGNATED_LOCAL_AUTHORITY:
+                case SECONDARY_LOCAL_AUTHORITY:
+                    test = test && list.contains(element(placementLAId, placementLA));
+                    return test;
+                case HMCTS:
+                    test = test && list.contains(element(placementAdminId, placementAdmin));
+                    return test;
+                case SOLICITOR:
+                    test = test && list.contains(element(placementRespondentId, placementRespondent));
+                    return test;
+                default:
+                    break;
+            }
+            return false;
+        };
+
+        Map<String, Object> actual = underTest.uploadDocuments(caseData);
+        assertThat(actual)
+            .containsKey("placements")
+            .containsKey("placementsNonConfidential")
+            .containsKey("placementsNonConfidentialNotices")
+            .extracting("placements").asList()
+            .matches(matcher);
     }
 }

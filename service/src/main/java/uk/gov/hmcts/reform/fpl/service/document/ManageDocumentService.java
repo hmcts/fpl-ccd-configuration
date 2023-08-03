@@ -237,7 +237,7 @@ public class ManageDocumentService {
                         (isSolicitor || isLocalAuthority)
                             ? (isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT :
                             PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
-                            : resolveType(e.getValue().getPlacementNoticeRecipientType()))
+                            : null)
                     .response(e.getValue().getDocument())
                     .uploaderType(uploaderType)
                     .build()));
@@ -1138,7 +1138,7 @@ public class ManageDocumentService {
         map.put("placement", data.getPlacement());
         map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
             doc -> type == null ? true : (doc.getValue().getType() == type)
-        ));
+        ).collect(toList()));
         return map;
     }
 
