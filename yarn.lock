@@ -3978,12 +3978,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4, mkdirp@npm:~1.0.4":
+"mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
+  languageName: node
+  linkType: hard
+
+"mkdirp@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "mkdirp@npm:3.0.1"
+  bin:
+    mkdirp: dist/cjs/src/bin.js
+  checksum: 972deb188e8fb55547f1e58d66bd6b4a3623bf0c7137802582602d73e6480c1c2268dcbafbfb1be466e00cc7e56ac514d7fd9334b7cf33e3e2ab547c16f83a8d
   languageName: node
   linkType: hard
 
@@ -4014,17 +4023,17 @@ __metadata:
   linkType: hard
 
 "mocha-junit-reporter@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "mocha-junit-reporter@npm:2.2.0"
+  version: 2.2.1
+  resolution: "mocha-junit-reporter@npm:2.2.1"
   dependencies:
     debug: ^4.3.4
     md5: ^2.3.0
-    mkdirp: ~1.0.4
+    mkdirp: ^3.0.0
     strip-ansi: ^6.0.1
     xml: ^1.0.1
   peerDependencies:
     mocha: ">=2.2.5"
-  checksum: 476dc12b676b8313ddac8ed27c5b43c86d6d54770efa0081a35a58f3a6717a504cc871058850da0611e7fc42e17201332390dc516096d51a189f12ff2141d420
+  checksum: 752c30b1ef7c99eff6d82104f1b7a8179a21f3afefa3df38edb4e2478986a7c74d28b6c4525da5109cba8a4bf31cf697f4cff7584a3784fb9fc40be804fd7351
   languageName: node
   linkType: hard
 
