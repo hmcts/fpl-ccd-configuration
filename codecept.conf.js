@@ -48,7 +48,7 @@ exports.config = {
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.DISABLE_WEB_SECURITY === 'true' ? [`--disable-web-security`,] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
+
       },
       windowSize: '1280x960',
     },

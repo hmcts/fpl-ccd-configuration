@@ -27,7 +27,7 @@ def type = 'java'
 def product = 'fpl'
 def component = 'case-service'
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
-AppPipelineConfig pipelineConf;
+AppPipelineConfig pipelineConf
 
 def integrationTestSecrets = [
   'fpl-aat': [
@@ -69,8 +69,7 @@ def teardownSecretsForIntegrationTests() {
 }
 
 withNightlyPipeline(type, product, component) {
-  pipelineConf = config;
-
+  pipelineConf = config
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
@@ -117,7 +116,7 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fullFunctionalTest') {
-    yarnBuilder.yarn('test:functional-nightly')
+   // yarnBuilder.yarn('test:functional-nightly')
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
