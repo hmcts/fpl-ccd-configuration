@@ -7,7 +7,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.PlacementNoticeRecipientType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -287,19 +286,6 @@ public class ManageDocumentService {
             }
         });
         return ret;
-    }
-
-    private PlacementNoticeDocument.RecipientType resolveType(PlacementNoticeRecipientType t) {
-        switch (t) {
-            case LOCAL_AUTHORITY:
-                return PlacementNoticeDocument.RecipientType.RESPONDENT;
-            case CAFCASS:
-                return PlacementNoticeDocument.RecipientType.CAFCASS;
-            case RESPONDENT:
-                return PlacementNoticeDocument.RecipientType.RESPONDENT;
-            default:
-                throw new IllegalStateException("unrecognised type: " + t);
-        }
     }
 
     private boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
