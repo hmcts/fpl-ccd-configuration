@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -2888,6 +2889,26 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadASingleSkeletonArgument(int loginType, Confidentiality confidentiality,
+                                                                     DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.SKELETON_ARGUMENTS,
+            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadASingleRespondentStatement(int loginType, Confidentiality confidentiality,
+                                                                        DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.RESPONDENTS_STATEMENTS,
+            suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadASingleCourtBundle(int loginType, Confidentiality confidentiality,
                                                                 DocumentUploaderType uploaderType) {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.COURT_BUNDLE,
@@ -2984,6 +3005,32 @@ class ManageDocumentServiceTest {
             list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgument(int loginType, Confidentiality confidentiality,
+                                                                      DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.SKELETON_ARGUMENTS,
+            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+                && list.contains(element(elementIdTwo, SkeletonArgument.builder().document(expectedDocumentTwo)
+                .uploaderType(uploaderType).build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleRespondentStatement(int loginType, Confidentiality confidentiality,
+                                                                         DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.RESPONDENTS_STATEMENTS,
+            suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
+            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+                .uploaderType(uploaderType).build()))
+                && list.contains(element(elementIdTwo, RespondentStatementV2.builder().document(expectedDocumentTwo)
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3100,6 +3147,32 @@ class ManageDocumentServiceTest {
                 CaseSummary.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
                 CaseSummary.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgumentWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.SKELETON_ARGUMENTS,
+            suffix -> "skeletonArgumentList" + suffix, loginType, uploaderType,
+            list -> list.contains(element(elementIdOne,
+                SkeletonArgument.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+            list -> list.contains(element(elementIdTwo,
+                SkeletonArgument.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleRespondentStatementWithDiffConfidentiality(
+        int loginType,
+        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.RESPONDENTS_STATEMENTS,
+            suffix -> "respStmtList" + suffix, loginType, uploaderType,
+            list -> list.contains(element(elementIdOne,
+                RespondentStatementV2.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+            list -> list.contains(element(elementIdTwo,
+                RespondentStatementV2.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
