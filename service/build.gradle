@@ -508,6 +508,7 @@ bootWithCCD {
         environment key, value
       }
     }
+
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
     environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
