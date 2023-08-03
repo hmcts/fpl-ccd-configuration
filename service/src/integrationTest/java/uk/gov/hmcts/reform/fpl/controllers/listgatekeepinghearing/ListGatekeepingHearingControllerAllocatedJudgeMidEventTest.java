@@ -20,7 +20,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 
 @WebMvcTest(ListGatekeepingHearingController.class)
 @OverrideAutoConfiguration(enabled = true)
