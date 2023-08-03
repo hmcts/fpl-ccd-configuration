@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProvide
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +31,10 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
 
     private static final String LOCAL_AUTHORITY_CODE = "LA_CODE";
     private static final String LOCAL_AUTHORITY_NAME = "LA name";
+    private static final List<Element<LocalAuthority>> APPLICANTS = wrapElements(LocalAuthority.builder()
+        .id(LOCAL_AUTHORITY_CODE)
+        .name(LOCAL_AUTHORITY_NAME)
+        .build());
     private static final long CCD_NUMBER = 1234567890123456L;
     private static final String FORMATTED_CCD_NUMBER = "1234-5678-9012-3456";
     private static final String CASE_NAME = "Test case1";
@@ -55,6 +61,8 @@ class UnregisteredRepresentativeSolicitorContentProviderTest extends AbstractEma
         when(caseData.getId()).thenReturn(CCD_NUMBER);
         when(caseData.getCaseName()).thenReturn(CASE_NAME);
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getApplicantName()).thenReturn(Optional.of(LOCAL_AUTHORITY_NAME));
+        when(caseData.getLocalAuthorities()).thenReturn(APPLICANTS);
         when(caseData.getAllChildren()).thenReturn(children);
 
         when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);

@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -41,6 +42,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String MESSAGE = "Some note";
     private static final String REPLY = "Reply";
     private static final String LAST_NAME = "Davidson";
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -109,7 +111,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }
@@ -161,7 +163,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper).submitEvent(any(),
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
     }

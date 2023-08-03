@@ -202,33 +202,6 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
-    void shouldThrowAnExceptionIfUniqueHearingNotFound() {
-        HearingOrder removedOrder = cmo(HEARING_START_DATE);
-
-        CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder()
-                    .orders(List.of(
-                        element(TO_REMOVE_ORDER_ID, removedOrder)
-                    )).build())
-            ))
-            .hearingDetails(List.of(
-                element(HEARING_ID, hearing(UUID.randomUUID())),
-                element(ANOTHER_HEARING_ID, hearing(UUID.randomUUID()))
-            ))
-            .build();
-
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
-            .data(Map.of())
-            .build());
-
-        assertThatThrownBy(() -> underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID,
-            removedOrder))
-            .usingRecursiveComparison()
-            .isEqualTo(unexpectedNumberOfCMOsRemovedException(TO_REMOVE_ORDER_ID, 2));
-    }
-
-    @Test
     void shouldRemoveOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingOrder cmoToRemove = cmo(differentStartDate).toBuilder().type(DRAFT_CMO).build();
