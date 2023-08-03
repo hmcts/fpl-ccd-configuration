@@ -9,3 +9,5 @@ build.gradle
 charts/**/Chart.yaml
 infrastructure/state.tf
 .github/workflows/*.yaml
+package.json
+yarn.lock
