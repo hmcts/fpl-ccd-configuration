@@ -35,7 +35,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @Slf4j
@@ -62,7 +61,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1671", this::run1671
+        "DFPL-1671a", this::run1671a,
+        "DFPL-1671b", this::run1671b
     );
 
     @PostMapping("/about-to-submit")
@@ -194,8 +194,8 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1671(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1671";
+    private void run1671a(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1671a";
         var possibleCaseIds = List.of(1688467790769085L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
@@ -205,6 +205,12 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
             migrationId, UUID.fromString("8741757f-7a3c-49f6-b4be-8863842cf254")));
+    }
+
+    private void run1671b(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1671b";
+        var possibleCaseIds = List.of(1688467790769085L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
             migrationId, UUID.fromString("01a9566a-e3e9-4e28-b23e-e3ae94c0716a")));
