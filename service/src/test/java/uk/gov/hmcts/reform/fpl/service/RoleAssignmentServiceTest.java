@@ -78,14 +78,14 @@ class RoleAssignmentServiceTest {
     @Nested
     class BuildAssignments {
 
-        private final ZonedDateTime NOW = ZonedDateTime.now();
+        private final ZonedDateTime now = ZonedDateTime.now();
 
         @Test
         void shouldBuildRoleAssignmentWithGivenProperties() {
             RoleAssignment role = underTest.buildRoleAssignment(12345L, "userId", "role", RoleCategory.JUDICIAL,
-                NOW, NOW);
+                now, now);
 
-            role.setCreated(NOW); // override the default behaviour, as now() is hard to test, millisecond delays!
+            role.setCreated(now); // override the default behaviour, as now() is hard to test, millisecond delays!
 
             RoleAssignment expected = RoleAssignment.builder()
                 .actorId("userId")
@@ -94,14 +94,14 @@ class RoleAssignmentServiceTest {
                 .grantType(GrantType.SPECIFIC)
                 .roleCategory(RoleCategory.JUDICIAL)
                 .roleType(RoleType.CASE)
-                .beginTime(NOW)
-                .endTime(NOW)
+                .beginTime(now)
+                .endTime(now)
                 .roleName("role")
                 .readOnly(false)
                 .actorIdType("IDAM")
                 .authorisations(List.of())
                 .notes(List.of())
-                .created(NOW)
+                .created(now)
                 .status("CREATE_REQUESTED")
                 .classification("PUBLIC")
                 .build();

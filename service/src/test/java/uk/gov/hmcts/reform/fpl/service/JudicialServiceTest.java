@@ -34,9 +34,9 @@ import static org.mockito.quality.Strictness.LENIENT;
 @MockitoSettings(strictness = LENIENT)
 class JudicialServiceTest {
 
-    public final Long CASE_ID = 12345L;
-    public final String USER_TOKEN = "USER";
-    public final String SERVICE_TOKEN = "SERVICE";
+    private static final Long CASE_ID = 12345L;
+    private static final String USER_TOKEN = "USER";
+    private static final String SERVICE_TOKEN = "SERVICE";
 
     @Mock
     private SystemUserService systemUserService;
@@ -59,25 +59,25 @@ class JudicialServiceTest {
 
     @Nested
     class Migrations {
-        private final String JUDGE_1_ID = "judge 1 id";
-        private final String JUDGE_2_ID = "judge 2 id";
+        private static final String JUDGE_1_ID = "judge 1 id";
+        private static final String JUDGE_2_ID = "judge 2 id";
 
-        private final JudgeAndLegalAdvisor JUDGE_1 = JudgeAndLegalAdvisor.builder()
+        private static final JudgeAndLegalAdvisor JUDGE_1 = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge1@test.com")
             .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
             .build();
 
-        private final JudgeAndLegalAdvisor JUDGE_2 = JudgeAndLegalAdvisor.builder()
+        private static final JudgeAndLegalAdvisor JUDGE_2 = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge2@test.com")
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
             .build();
 
-        private final HearingBooking HEARING_1 = HearingBooking.builder()
+        private static final HearingBooking HEARING_1 = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(5))
             .judgeAndLegalAdvisor(JUDGE_1)
             .build();
 
-        private final HearingBooking HEARING_2 = HearingBooking.builder()
+        private static final HearingBooking HEARING_2 = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(10))
             .judgeAndLegalAdvisor(JUDGE_2)
             .build();

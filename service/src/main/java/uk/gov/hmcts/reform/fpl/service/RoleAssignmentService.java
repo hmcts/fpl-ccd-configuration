@@ -37,8 +37,9 @@ public class RoleAssignmentService {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
 
-    /***
+    /**
      * Create a role assignment in AM. This will REPLACE the existing role assignment.
+     *
      * @param caseId the case to assign the role on
      * @param userIds the users to assign the role to
      * @param role the role name they will be assigned, e.g. allocated-judge

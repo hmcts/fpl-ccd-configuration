@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.rd.model;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

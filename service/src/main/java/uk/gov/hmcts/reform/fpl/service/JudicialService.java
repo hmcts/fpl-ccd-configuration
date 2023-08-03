@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVIS
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JudicialService {
 
-    private final int HEARING_EXPIRY_OFFSET_MINS = 5;
+    private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
     private final SystemUserService systemUserService;
     private final JudicialApi judicialApi;
@@ -53,7 +52,7 @@ public class JudicialService {
     private final ValidateEmailService validateEmailService;
 
     /**
-     * Delete a set of allocated-[users] on a specific case
+     * Delete a set of allocated-[users] on a specific case.
      *
      * @param caseId the case to delete allocated-[users] on
      */
@@ -92,7 +91,7 @@ public class JudicialService {
 
     /**
      * Assign a judge case-role on a specific case, regardless of if there are any existing users with that role
-     * on the case
+     * on the case.
      *
      * @param caseId the case id to add a case role on
      * @param userId the user to add a case role to
@@ -104,7 +103,7 @@ public class JudicialService {
 
     /**
      * Assign a legal adviser case-role on a specific case, regardless of if there are any existing users with that role
-     * on the case
+     * on the case.
      *
      * @param caseId the case id to add a case role on
      * @param userId the user to add a case role to
@@ -115,7 +114,7 @@ public class JudicialService {
     }
 
     /**
-     * Assign an allocated-judge on a case, and REMOVE all existing allocated-[users]
+     * Assign an allocated-judge on a case, and REMOVE all existing allocated-[users].
      *
      * @param caseId the case id to add a case role on
      * @param userId the user to assign allocated-judge to
@@ -130,7 +129,7 @@ public class JudicialService {
     }
 
     /**
-     * Assign an allocated-legal-adviser on a case, and REMOVE all existing allocated-[users]
+     * Assign an allocated-legal-adviser on a case, and REMOVE all existing allocated-[users].
      *
      * @param caseId the case id to add a case role on
      * @param userId the user to assign allocated-legal-adviser to
@@ -248,7 +247,7 @@ public class JudicialService {
     }
 
     /**
-     * Gets the allocated judge on the case, and checks for a valid email address
+     * Gets the allocated judge on the case, and checks for a valid email address.
      * @param caseData the caseData to search through
      * @return an Optional Judge if they exist and have a valid email
      */
@@ -262,7 +261,7 @@ public class JudicialService {
     }
 
     /**
-     * Gets the set of all hearing judges on the case, and checks each for a valid email address
+     * Gets the set of all hearing judges on the case, and checks each for a valid email address.
      * @param caseData the caseData to search through
      * @return a Set of JudgeAndLegalAdvisor objects if they exist and have a valid email
      */
@@ -350,8 +349,8 @@ public class JudicialService {
                     : sorted.get(i + 1).getStartDate().minusMinutes(HEARING_EXPIRY_OFFSET_MINS) // else next hearing
                     .atZone(ZoneId.systemDefault());
 
-                RoleAssignment role = roleAssignmentService.buildRoleAssignment(caseId, user.get(), caseRole, roleCategory,
-                    ZonedDateTime.now(), endDate);
+                RoleAssignment role = roleAssignmentService.buildRoleAssignment(caseId, user.get(), caseRole,
+                    roleCategory, ZonedDateTime.now(), endDate);
                 log.info("{}", role);
                 return role;
             })
