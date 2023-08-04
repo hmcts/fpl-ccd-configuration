@@ -62,7 +62,7 @@ class RoleAssignmentServiceTest {
                 .extracting("actorId", "roleType", "roleCategory", "attributes", "roleName",
                     "grantType", "status")
                 .containsExactly("systemUserId", RoleType.ORGANISATION, RoleCategory.SYSTEM,
-                    Map.of("jurisdiction", "PUBLICLAW", "caseType", "CARE_SUPERVISION_EPO"),
+                    Map.of("jurisdiction", "PUBLICLAW", "primaryLocation", "UK"),
                     "case-allocator", GrantType.STANDARD, "CREATE_REQUESTED");
 
             assertThat(req.getRoleRequest()).extracting("assignerId", "reference", "replaceExisting",
