@@ -234,7 +234,7 @@ public enum DocumentType {
             .build();
     }
 
-    public List<String> getCaseDataJsonPropertyNames() {
+    public List<String> getJsonFieldNames() {
         return Arrays.stream(ConfidentialLevel.values())
             .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
             .filter(Objects::nonNull)
@@ -249,6 +249,12 @@ public enum DocumentType {
         } else {
             return splitFieldNames[1];
         }
+    }
+
+    public static DocumentType fromJsonFieldName(String fieldName) {
+        return Arrays.stream(DocumentType.values())
+            .filter(dt -> dt.getJsonFieldNames().contains(fieldName))
+            .findFirst().orElse(null);
     }
 
 }
