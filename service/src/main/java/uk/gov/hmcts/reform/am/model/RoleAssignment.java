@@ -31,7 +31,8 @@ public class RoleAssignment {
 
     private ZonedDateTime created;
 
-    private String status;
+    @Builder.Default
+    private String status = "CREATE_REQUESTED";
 
     private String classification;
 

@@ -23,10 +23,10 @@ import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignments;
 
 @Slf4j
 @Service
@@ -172,33 +172,5 @@ public class RoleAssignmentService {
     public void deleteRoleAssignment(RoleAssignment roleToDelete) {
         String systemUserToken = systemUserService.getSysUserToken();
         amApi.deleteRoleAssignment(systemUserToken, authTokenGenerator.generate(), roleToDelete.getId());
-    }
-
-    public RoleAssignment buildRoleAssignment(Long caseId, String userId, String role,
-                                              RoleCategory roleCategory, ZonedDateTime beginTime,
-                                              ZonedDateTime endTime) {
-        return RoleAssignment.builder()
-            .actorId(userId)
-            .attributes(Map.of("caseId", caseId.toString(),
-                "caseType", CASE_TYPE,
-                "jurisdiction", JURISDICTION,
-                "substantive", "Y"))
-            .grantType(GrantType.SPECIFIC)
-            .roleCategory(roleCategory)
-            .roleType(RoleType.CASE)
-            .beginTime(beginTime)
-            .endTime(endTime)
-            .roleName(role)
-            .readOnly(false)
-            .build();
-    }
-
-
-    public List<RoleAssignment> buildRoleAssignments(Long caseId, List<String> userIds, String role,
-                                                     RoleCategory roleCategory, ZonedDateTime beginTime,
-                                                     ZonedDateTime endTime) {
-        return userIds.stream()
-            .map(user -> buildRoleAssignment(caseId, user, role, roleCategory, beginTime, endTime))
-            .collect(Collectors.toList());
     }
 }

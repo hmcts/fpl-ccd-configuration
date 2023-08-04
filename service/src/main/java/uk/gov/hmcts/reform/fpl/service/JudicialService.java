@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
 @Service
@@ -77,7 +78,7 @@ public class JudicialService {
 
         // loop through all role assignments, and recreate them in AM with the new endTime
         List<RoleAssignment> newRoleAssignments = judgesAndLegalAdvisers.stream()
-            .map(ra -> roleAssignmentService.buildRoleAssignment(
+            .map(ra -> buildRoleAssignment(
                 caseId,
                 ra.getActorId(),
                 ra.getRoleName(),
@@ -349,7 +350,7 @@ public class JudicialService {
                     : sorted.get(i + 1).getStartDate().minusMinutes(HEARING_EXPIRY_OFFSET_MINS) // else next hearing
                     .atZone(ZoneId.systemDefault());
 
-                RoleAssignment role = roleAssignmentService.buildRoleAssignment(caseId, user.get(), caseRole,
+                RoleAssignment role = buildRoleAssignment(caseId, user.get(), caseRole,
                     roleCategory, ZonedDateTime.now(), endDate);
                 log.info("{}", role);
                 return role;
