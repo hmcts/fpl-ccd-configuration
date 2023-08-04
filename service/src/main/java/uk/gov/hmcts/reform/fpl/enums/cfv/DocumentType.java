@@ -11,9 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
@@ -229,6 +232,23 @@ public enum DocumentType {
             .document(document)
             .uploaderType(uploaderType)
             .build();
+    }
+
+    public List<String> getCaseDataJsonPropertyNames() {
+        return Arrays.stream(ConfidentialLevel.values())
+            .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
+            .filter(Objects::nonNull)
+            .map(f -> removeNested(f))
+            .collect(Collectors.toList());
+    }
+
+    private String removeNested(String fieldName) {
+        String[] splitFieldNames = fieldName.split("\\.");
+        if (splitFieldNames.length == 1) {
+            return fieldName;
+        } else {
+            return splitFieldNames[1];
+        }
     }
 
 }
