@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.REMOVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -40,27 +43,75 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
     private final ManageDocumentService manageDocumentService;
 
+    @PostMapping("/manage-document-type-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleManageDocumentTypeSelected(
+        @RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
+
+        if (REMOVE_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
+            DocumentType documentTypeSelected = DocumentType.valueOf(eventData.getAvailableDocumentTypesForRemoval()
+                .getValue().getCode());
+            if (!documentTypeSelected.isUploadable()) {
+                return respond(caseDetails, List.of("You are trying to remove a document from a parent folder, "
+                    + "you need to choose one of the available sub folders."));
+            }
+
+            DynamicList availableDocumentsToBeRemoved = manageDocumentService
+                .buildAvailableDocumentsToBeRemoved(caseData, documentTypeSelected);
+            caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
+        }
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/manage-document-action-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleManageDocumentActionSelected(
         @RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
-        caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(manageDocumentService
-            .allowMarkDocumentConfidential(caseData)));
-        caseDetails.getData().put("allowSelectDocumentTypeToRemoveDocument", YesNo.from(manageDocumentService
-            .allowSelectDocumentTypeToRemoveDocument(caseData)));
-        caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
-            .HMCTS == manageDocumentService.getUploaderType(caseData)));
-        caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
-        caseDetails.getData().put("uploadableDocumentBundle", List.of(
-            element(UploadableDocumentBundle.builder()
-                .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(
-                    caseData))
-                .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
-                    Placement::getChildName))
-                .build())
-        ));
+        if (REMOVE_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
+            boolean allowSelectDocumentTypeToRemoveDocument = manageDocumentService
+                .allowSelectDocumentTypeToRemoveDocument(caseData);
+            caseDetails.getData().put("allowSelectDocumentTypeToRemoveDocument",
+                YesNo.from(allowSelectDocumentTypeToRemoveDocument));
+            if (allowSelectDocumentTypeToRemoveDocument) {
+                DynamicList availableDocumentTypesForRemoval = manageDocumentService
+                    .buildDocumentTypeDynamicListForRemoval(caseData);
+                if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
+                    caseDetails.getData().put("availableDocumentTypesForRemoval", availableDocumentTypesForRemoval);
+                } else {
+                    return respond(caseDetails, List.of("There is no document to be removed."));
+                }
+            } else {
+                // LA or Solicitor flow
+                DynamicList availableDocumentsToBeRemoved = manageDocumentService
+                    .buildAvailableDocumentsToBeRemoved(caseData);
+                if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {
+                    caseDetails.getData().put("documentsToBeRemoved", availableDocumentsToBeRemoved);
+                } else {
+                    return respond(caseDetails, List.of("There is no document to be removed."));
+                }
+            }
+        } else {
+            caseDetails.getData().put("allowMarkDocumentConfidential", YesNo.from(manageDocumentService
+                .allowMarkDocumentConfidential(caseData)));
+
+            caseDetails.getData().put("askForPlacementNoticeRecipientType", YesNo.from(DocumentUploaderType
+                .HMCTS == manageDocumentService.getUploaderType(caseData)));
+            caseDetails.getData().put("hasConfidentialParty", YesNo.from(caseData.hasConfidentialParty()));
+            caseDetails.getData().put("uploadableDocumentBundle", List.of(
+                element(UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(manageDocumentService.buildDocumentTypeDynamicList(
+                        caseData))
+                    .placementList(asDynamicList(caseData.getPlacementEventData().getPlacements(), null,
+                        Placement::getChildName))
+                    .build())
+            ));
+        }
 
         return respond(caseDetails);
     }
@@ -72,9 +123,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
 
-        if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())
-            && unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
-                bundle -> !bundle.getDocumentTypeSelected().isUploadable())) {
+        if (unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
+            bundle -> !bundle.getDocumentTypeSelected().isUploadable())) {
             return respond(caseDetails,
                 List.of("You are trying to upload a document to a parent folder, "
                     + "you need to choose one of the available sub folders."));
@@ -93,6 +143,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         Map<String, Object> updatedData = new HashMap<>();
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
             updatedData.putAll(manageDocumentService.uploadDocuments(caseData));
+        } else {
+            updatedData.putAll(manageDocumentService.removeDocuments(caseData));
         }
         caseDetailsMap.putAll(updatedData);
         removeTemporaryFields(caseDetailsMap, temporaryFields());

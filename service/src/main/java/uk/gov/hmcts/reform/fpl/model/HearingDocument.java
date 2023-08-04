@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 public class HearingDocument extends DocumentMetaData implements WithDocument {
     protected String hearing;
     protected DocumentReference document;
+    @Setter
     private String removalReason;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;

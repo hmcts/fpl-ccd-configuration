@@ -7,7 +7,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -38,9 +40,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -53,6 +59,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,11 +70,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -131,10 +140,15 @@ public class ManageDocumentService {
     public static final String PLACEMENT_LIST_KEY = "manageDocumentsPlacementList";
     public static final String DOCUMENT_ACKNOWLEDGEMENT_KEY = "ACK_RELATED_TO_CASE";
 
+    private static final String DOCUMENT_TO_BE_REMOVED_SEPARATOR = "###";
+
     private static final Predicate<Element<SupportingEvidenceBundle>> HMCTS_FILTER =
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
+
+    @Autowired
+    private CaseConverter caseConverter;
 
     private String getDocumentListActualFieldName(String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
@@ -210,6 +224,105 @@ public class ManageDocumentService {
 
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
         return List.of(DocumentUploaderType.HMCTS).contains(getUploaderType(caseData));
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> removeDocuments(CaseData caseData) {
+        ManageDocumentEventData eventData = caseData.getManageDocumentEventData();
+
+        String removalReason;
+        if (ManageDocumentRemovalReason.OTHER == eventData.getManageDocumentRemoveDocReason()) {
+            removalReason = eventData.getManageDocumentRemoveDocAnotherReason();
+        } else {
+            removalReason = eventData.getManageDocumentRemoveDocReason().getDescription();
+        }
+
+        DynamicListElement selected = eventData.getDocumentsToBeRemoved().getValue();
+
+        String[] split = selected.getCode().split(DOCUMENT_TO_BE_REMOVED_SEPARATOR);
+        String fieldName = split[0];
+        DocumentType documentType = DocumentType.fromFieldName(fieldName);
+        UUID documentElementId = UUID.fromString(split[1]);
+
+        // getting list of removed element
+        List<Element> listOfRemovedElement = this.readFromFieldName(caseData, documentType.getFieldNameOfRemovedList());
+        if (listOfRemovedElement == null) {
+            listOfRemovedElement = new ArrayList<>();
+        }
+
+        List<Element> listOfElement = this.readFromFieldName(caseData, fieldName);
+        if (documentType == DocumentType.COURT_BUNDLE) {
+            HearingDocuments hearingDocuments = caseData.getHearingDocuments();
+            switch (fieldName) {
+                case "hearingDocuments.courtBundleListV2":
+                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListV2());
+                    break;
+                case "hearingDocuments.courtBundleListLA":
+                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListLA());
+                    break;
+                case "hearingDocuments.courtBundleListCTSC":
+                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListCTSC());
+                    break;
+                default:
+                    throw new IllegalStateException("unrecognised field name: " + fieldName);
+            }
+
+            Element<HearingCourtBundle> hcbElement = Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
+                    Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
+                        hearingDocuments.getCourtBundleListLA().stream()))
+                .filter(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream().filter(
+                cb -> documentElementId.equals(cb.getId())
+            ).findAny().isPresent()).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
+
+
+            Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
+                .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
+                    throw new IllegalStateException("Fail to locate the target document");
+                });
+            Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
+                .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
+                    throw new IllegalStateException("Fail to locate the target document (nc)");
+                });
+
+            if (hcbElement.getValue().getCourtBundle().size() == 1
+                && hcbElement.getValue().getCourtBundleNC().size() == 1) {
+                // multiple court bundles(nc) keep hcbElement, otherwise remove it
+                listOfElement.remove(hcbElement);
+            }
+            hcbElement.getValue().getCourtBundle().remove(target);
+            hcbElement.getValue().getCourtBundleNC().remove(targetNC);
+
+            boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
+                .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
+            Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
+                .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
+                .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
+                    .courtBundle(new ArrayList<>())
+                    .courtBundleNC(new ArrayList<>())
+                    .build()));
+            target.getValue().setRemovalReason(removalReason); // Setting the removal reason
+            targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
+            hcbFromRemovedList.getValue().getCourtBundle().add(target);
+            hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
+            if (isNewHearingCourtBundleInRemovedList) {
+                listOfRemovedElement.add(hcbFromRemovedList);
+            }
+        } else {
+            Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
+                .orElseThrow(() -> {
+                    throw new IllegalStateException("Fail to locate the target document");
+                });
+
+            listOfElement.remove(target);
+            ((WithDocument) target.getValue()).setRemovalReason(removalReason); // Setting the removal reason
+            listOfRemovedElement.add(target); // Putting it to removed list for backing up
+        }
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
+        ret.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()), listOfRemovedElement);
+        return ret;
     }
 
     @SuppressWarnings("unchecked")
@@ -319,6 +432,140 @@ public class ManageDocumentService {
         final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
             .filter(documentType -> !isHiddenFromUpload(documentType, getUploaderType(caseData)))
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
+            .sorted(comparing(DocumentType::getDisplayOrder))
+            .map(dt -> Pair.of(dt.name(), dt.getDescription()))
+            .collect(toList());
+        return dynamicListService.asDynamicList(documentTypes);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Element> readFromFieldName(CaseData caseData, String fieldName) {
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 1) {
+            try {
+                return (List<Element>) BeanUtils.getPropertyDescriptor(CaseData.class, fieldName)
+                    .getReadMethod().invoke(caseData);
+            } catch (Exception ex) {
+                throw new RuntimeException(format("Fail to grep the documents' filename - %s", fieldName), ex);
+            }
+        } else if (splitFieldName.length == 2 && splitFieldName[0].equals("hearingDocuments")) {
+            String actualFieldName = splitFieldName[1];
+            List<Element> listOfElement = null;
+            try {
+                listOfElement = (List<Element>) BeanUtils.getPropertyDescriptor(HearingDocuments.class, actualFieldName)
+                    .getReadMethod().invoke(caseData.getHearingDocuments());
+            } catch (Exception ex) {
+                throw new RuntimeException("Fail to grep the documents' from hearingDocuments", ex);
+            }
+            if (listOfElement != null) {                ;
+                if (DocumentType.fromJsonFieldName(actualFieldName) == DocumentType.COURT_BUNDLE) {
+                    return listOfElement.stream()
+                        .flatMap(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream())
+                        .collect(toList());
+                } else {
+                    return listOfElement;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private Map<String, List<Element>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
+                                                                     ConfidentialLevel level) {
+        Map<String, List<Element>> ret = new HashMap<String, List<Element>>();
+        if (documentType.getBaseFieldNameResolver() != null) {
+            String fieldName = documentType.getBaseFieldNameResolver().apply(level);
+            List<Element> listOfElement = readFromFieldName(caseData, fieldName);
+            if (listOfElement != null) {
+                ret.put(fieldName, listOfElement);
+            }
+        }
+        return ret;
+    }
+
+    private List<Pair<String, String>> toListOfPair(DocumentUploaderType currentUploaderType,
+                                                    Map<String, List<Element>> fieldNameToListOfElement) {
+        final List<Pair<String, String>> ret = new ArrayList<>();
+        for (Map.Entry<String, List<Element>> entrySet : fieldNameToListOfElement.entrySet()) {
+            String fieldName = entrySet.getKey();
+            for (Element e : entrySet.getValue()) {
+                WithDocument wd = ((WithDocument) e.getValue());
+                DocumentReference document = wd.getDocument();
+                DocumentUploaderType currentUserUploaderType = currentUploaderType;
+                DocumentUploaderType documentUploaderType = wd.getUploaderType();
+
+                if (currentUserUploaderType != DocumentUploaderType.HMCTS) {
+                    switch (currentUserUploaderType) {
+                        case DESIGNATED_LOCAL_AUTHORITY:
+                        case SECONDARY_LOCAL_AUTHORITY:
+                            if (documentUploaderType == DocumentUploaderType.HMCTS) {
+                                continue;
+                            }
+                            break;
+                        case SOLICITOR:
+                            if (documentUploaderType != DocumentUploaderType.SOLICITOR) {
+                                continue;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                ret.add(Pair.of(fieldName + DOCUMENT_TO_BE_REMOVED_SEPARATOR + e.getId(), document.getFilename()));
+            }
+        }
+        return ret;
+    }
+
+    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData) {
+        return buildAvailableDocumentsToBeRemoved(caseData, null);
+    }
+
+    public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData, DocumentType documentType) {
+        DocumentUploaderType currentUserType = getUploaderType(caseData);
+
+        Map<String, List<Element>> fieldNameToListOfElementMap = new HashMap<>();
+        for (DocumentType dt : documentType != null ? List.of(documentType) : Arrays.stream(DocumentType.values())
+            .filter(DocumentType::isUploadable).toList()) {
+            for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
+                switch (level) {
+                    case LA:
+                        return currentUserType != DocumentUploaderType.SOLICITOR;
+                    case CTSC:
+                        return currentUserType == DocumentUploaderType.HMCTS;
+                    case NON_CONFIDENTIAL:
+                        return true;
+                    default:
+                        return false;
+                }
+            }).collect(toList())) {
+                fieldNameToListOfElementMap.putAll(toFieldNameToListOfElementMap(caseData, dt, level));
+            }
+        }
+        // TODO handling PlacementResponse;
+        return dynamicListService.asDynamicList(toListOfPair(currentUserType, fieldNameToListOfElementMap));
+    }
+
+    public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
+        Map<String, Object> map = caseConverter.toMap(caseData);
+
+        Set<DocumentType> availableDocumentTypes = Arrays.stream(DocumentType.values())
+            .map(DocumentType::getJsonFieldNames)
+            .flatMap(List::stream)
+            .filter(name -> map.containsKey(name))
+            .filter(name -> !(Optional.ofNullable((List) map.get(name))).orElse(List.of()).isEmpty())
+            .map(name -> DocumentType.fromJsonFieldName(name))
+            .collect(toSet());
+
+        Set<DocumentType> finalDocumentTypes = new HashSet<>(availableDocumentTypes);
+        finalDocumentTypes.addAll(availableDocumentTypes.stream().map(d -> d.getParentFolder())
+            .filter(Objects::nonNull)
+            .collect(toList()));
+
+        // TODO handling PlacementResponse;
+
+        final List<Pair<String, String>> documentTypes =
+            finalDocumentTypes.stream()
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());
