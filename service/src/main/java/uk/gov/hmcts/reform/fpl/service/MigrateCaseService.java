@@ -1183,16 +1183,20 @@ public class MigrateCaseService {
         Map<String, Object> ret = new HashMap<>();
         ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET), "swetList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_CHRONOLOGY), "socialWorkChronList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList")); // TODO
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(GENOGRAM), "genogramList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(CHECKLIST_DOCUMENT), "checklistDocList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
-        if (ret.containsKey("otherDocFiledList")) {
-            ((List) ret.get("otherDocFiledList")).addAll((List)
-                migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList")
-                    .get("otherDocFiledList"));
-        } else {
-            ret.putAll(migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList"));
+        if (ret.containsKey("otherDocFiledList") || ret.containsKey("otherDocFiledListLA")
+            || ret.containsKey("otherDocFiledListCTSC")) {
+            Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
+            for (String key : temp.keySet()) {
+                if (ret.containsKey(key)) {
+                    ((List) ret.get(key)).addAll((List) temp.get(key));
+                } else {
+                    ret.put(key, temp.get(key));
+                }
+            }
         }
         return ret;
     }
