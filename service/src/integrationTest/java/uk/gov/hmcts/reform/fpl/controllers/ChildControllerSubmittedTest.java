@@ -42,6 +42,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -62,7 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final State NON_RESTRICTED_STATE = SUBMITTED;
-
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String ORGANISATION_NAME = "Test organisation";
     private static final String ORGANISATION_ID = "dun dun duuuuuuuun *synthy*";
     private static final String MAIN_SOLICITOR_FIRST_NAME = "dun dun duuuuuuuun *orchestral*";
@@ -173,6 +174,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .caseDetails(asCaseDetails(caseData))
                 .eventId(UPDATE_CASE_EVENT)
                 .build());
+
         when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
             .thenReturn(StartEventResponse.builder()
                 .caseDetails(asCaseDetails(caseData))
@@ -200,8 +202,9 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .build()
         );
 
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), eq(changeRequest));
-        verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), eq(Map.of()));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(any(), eq(CASE_ID), eq(changeRequest));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), eq(Map.of()));
     }
 
     @Test
