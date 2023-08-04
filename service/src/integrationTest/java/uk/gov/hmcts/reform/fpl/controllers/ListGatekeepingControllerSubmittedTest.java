@@ -487,9 +487,9 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             noticeOfHearingCafcassDataCaptor.capture()
         );
 
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
-            .startEvent(eq(CASE_ID), any());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(1))
             .submitEvent(any(), eq(CASE_ID), anyMap());
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
