@@ -125,7 +125,7 @@ public class RoleAssignmentService {
                 .grantType(GrantType.STANDARD)
                 .roleCategory(RoleCategory.SYSTEM)
                 .roleName("case-allocator")
-                .attributes(Map.of("jurisdiction", JURISDICTION, "caseType", CASE_TYPE))
+                .attributes(Map.of("jurisdiction", JURISDICTION, "primaryLocation", "UK"))
                 .readOnly(false)
                 .build()))
             .roleRequest(RoleRequest.builder()
