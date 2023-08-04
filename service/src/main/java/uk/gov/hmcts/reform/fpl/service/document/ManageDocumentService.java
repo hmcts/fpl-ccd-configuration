@@ -288,7 +288,7 @@ public class ManageDocumentService {
         return ret;
     }
 
-    private boolean isVisible(DocumentType documentType, DocumentUploaderType uploaderType) {
+    private boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case SOLICITOR:
                 return !documentType.isHiddenFromSolicitorUpload();
@@ -308,7 +308,7 @@ public class ManageDocumentService {
         boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
             .anyMatch(el -> el.getValue().getPlacementNotice() != null);
         final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
-            .filter(documentType -> isVisible(documentType, getUploaderType(caseData)))
+            .filter(documentType -> isUploadable(documentType, getUploaderType(caseData)))
             .filter(documentType -> !documentType.isHiddenFromUpload())
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
