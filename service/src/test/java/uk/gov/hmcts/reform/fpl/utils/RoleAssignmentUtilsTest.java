@@ -39,8 +39,6 @@ class RoleAssignmentUtilsTest {
                 .roleName("role")
                 .readOnly(false)
                 .actorIdType("IDAM")
-                .authorisations(List.of())
-                .notes(List.of())
                 .created(now)
                 .status("CREATE_REQUESTED")
                 .classification("PUBLIC")

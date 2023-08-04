@@ -17,7 +17,8 @@ public class RoleAssignment {
 
     private String id;
 
-    private String actorIdType;
+    @Builder.Default
+    private String actorIdType = "IDAM";
 
     private Map<String, Object> attributes;
 
@@ -34,7 +35,8 @@ public class RoleAssignment {
     @Builder.Default
     private String status = "CREATE_REQUESTED";
 
-    private String classification;
+    @Builder.Default
+    private String classification = "PUBLIC";
 
     private String actorId;
     private GrantType grantType;
