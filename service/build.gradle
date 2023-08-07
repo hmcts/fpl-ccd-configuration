@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.559'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.771'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -285,12 +285,12 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j           : '2.16.0',
-  pdfbox          : '2.0.24',
+  pdfbox          : '2.0.29',
   mockito         : '3.7.7',
   serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
-  lombok          : '1.18.22'
+  lombok          : '1.18.28'
 ]
 
 dependencies {
@@ -310,7 +310,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
@@ -407,7 +407,7 @@ dependencies {
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.9.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.10.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
@@ -464,7 +464,7 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.6'
   }
 }
 
@@ -508,6 +508,7 @@ bootWithCCD {
         environment key, value
       }
     }
+
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
     environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
