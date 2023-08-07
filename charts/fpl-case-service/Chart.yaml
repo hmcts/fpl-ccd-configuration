@@ -1,7 +1,7 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.60
+version: 1.12.61
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
@@ -24,7 +24,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-mo-webapp.enabled
   - name: idam-pr
-    version: 2.2.7
+    version: 2.3.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: aac-manage-case-assignment
