@@ -60,7 +60,7 @@ public class ApplicationDocumentsService {
                     setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
                 }
                 return document;
-            }).collect(Collectors.toList());
+            }).toList();
     }
 
     private void handleExistingDocuments(Element<ApplicationDocument> document,

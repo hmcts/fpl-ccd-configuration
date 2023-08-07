@@ -503,6 +503,6 @@ class TaskListServiceTest {
 
         return events.stream()
             .map(event -> task(event, state))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

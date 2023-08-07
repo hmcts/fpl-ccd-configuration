@@ -35,27 +35,27 @@ public class TestLogger extends ListAppender<ILoggingEvent> implements AutoClose
         return this.list.stream()
             .filter(event -> Level.ERROR.equals(event.getLevel()))
             .map(e -> e.getThrowableProxy().getClassName())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<String> getErrorThrowableMessages() {
         return this.list.stream()
             .filter(event -> Level.ERROR.equals(event.getLevel()))
             .map(e -> e.getThrowableProxy().getMessage())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<String> get(Level level) {
         return this.list.stream()
             .filter(event -> level.equals(event.getLevel()))
             .map(ILoggingEvent::getFormattedMessage)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<String> get() {
         return this.list.stream()
             .map(ILoggingEvent::getFormattedMessage)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public void reset() {

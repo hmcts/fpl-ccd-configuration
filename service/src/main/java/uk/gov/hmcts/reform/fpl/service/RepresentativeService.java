@@ -250,7 +250,7 @@ public class RepresentativeService {
             }
             return unwrapElements(currentRepresentatives.stream()
                 .filter(representative -> servingPreferences.equals(representative.getValue().getServingPreferences()))
-                .collect(Collectors.toList()));
+                .toList());
         } else {
             return emptyList();
         }

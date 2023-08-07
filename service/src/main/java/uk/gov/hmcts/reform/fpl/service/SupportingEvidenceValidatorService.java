@@ -18,6 +18,6 @@ public class SupportingEvidenceValidatorService {
         return supportingEvidenceBundle.stream()
             .map(validatorService::validateGroup)
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

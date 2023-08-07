@@ -286,7 +286,7 @@ class NoticeOfProceedingsServiceTest {
                     .filename(template.getDocumentTitle())
                     .build())
                 .build()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

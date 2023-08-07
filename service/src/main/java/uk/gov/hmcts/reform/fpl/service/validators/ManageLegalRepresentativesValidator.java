@@ -30,7 +30,7 @@ public class ManageLegalRepresentativesValidator {
             Optional.ofNullable(legalRepresentatives).orElse(newArrayList()).stream(),
             (legalRepresentativeElement, idx) ->
                 performBasicValidation(legalRepresentativeElement.getValue(), idx, legalRepresentatives.size())
-        ).flatMap(Collection::stream).collect(Collectors.toList());
+        ).flatMap(Collection::stream).toList();
     }
 
     private List<String> performBasicValidation(LegalRepresentative legalRepresentative, long currentRepresentativeIdx,

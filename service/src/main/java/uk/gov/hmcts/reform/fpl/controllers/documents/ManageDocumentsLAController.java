@@ -189,7 +189,7 @@ public class ManageDocumentsLAController extends CallbackController {
         if (FURTHER_EVIDENCE_DOCUMENTS.equals(caseData.getManageDocumentLA().getType())) {
             List<Element<ApplicationDocument>> swetDocs = caseData.getApplicationDocuments().stream()
                 .filter(df -> !StringUtils.isEmpty(df.getValue().getIncludedInSWET()))
-                .collect(Collectors.toList());
+                .toList();
             if (!swetDocs.isEmpty()) {
                 Pattern pattern = Pattern.compile("(?s)(?!.*<[^>\\d\\n]+>*).*");
                 if (swetDocs.stream()

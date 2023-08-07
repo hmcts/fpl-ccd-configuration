@@ -89,6 +89,6 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                     child.setFinalOrderIssuedType(null);
                 }
                 return element;
-            }).collect(Collectors.toList());
+            }).toList();
     }
 }

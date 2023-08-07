@@ -51,7 +51,7 @@ public class ManageLegalRepresentativesController extends CallbackController {
         List<String> emails = caseData.getLegalRepresentatives().stream()
             .map(Element::getValue)
             .map(LegalRepresentative::getEmail)
-            .collect(Collectors.toList());
+            .toList();
 
         List<String> errors = validateEmailService.validate(emails, "LA Legal Representative");
 

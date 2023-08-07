@@ -135,7 +135,7 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
 
         var hearingList = hearings.stream()
             .map(element -> Map.of("code", element.getId().toString(), "label", element.getValue().toLabel()))
-            .collect(Collectors.toList());
+            .toList();
 
         return Map.of("list_items", hearingList, "value", emptyValueMap);
     }

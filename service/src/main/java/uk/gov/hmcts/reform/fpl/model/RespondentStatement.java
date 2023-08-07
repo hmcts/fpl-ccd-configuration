@@ -32,13 +32,13 @@ public class RespondentStatement implements ConfidentialBundle {
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+            .toList();
     }
 }

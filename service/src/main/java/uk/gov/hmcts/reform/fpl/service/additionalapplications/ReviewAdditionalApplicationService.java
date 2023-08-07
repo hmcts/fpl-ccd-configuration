@@ -56,7 +56,7 @@ public class ReviewAdditionalApplicationService {
         if (caseData.getAdditionalApplicationsBundle() != null) {
             return caseData.getAdditionalApplicationsBundle().stream()
                 .filter(bundleElement -> !YES.equals(bundleElement.getValue().getApplicationReviewed()))
-                .collect(Collectors.toList());
+                .toList();
         } else {
             return new ArrayList<>();
         }
@@ -88,6 +88,6 @@ public class ReviewAdditionalApplicationService {
                 }
                 return existingBundle;
             }
-        ).collect(Collectors.toList());
+        ).toList();
     }
 }

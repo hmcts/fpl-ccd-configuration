@@ -44,7 +44,7 @@ public class ColleaguesToNotifyController extends CallbackController {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(Element::getValue)
-            .collect(Collectors.toList());
+            .toList();
 
         if (represented.isEmpty()) {
             List<String> errors = List.of("There is no one this user is representing on this case.");
@@ -71,7 +71,7 @@ public class ColleaguesToNotifyController extends CallbackController {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(Element::getValue)
-            .collect(Collectors.toList());
+            .toList();
 
         if (represented.isEmpty()) {
             List<String> errors = List.of("There is no one this user is representing on this case.");

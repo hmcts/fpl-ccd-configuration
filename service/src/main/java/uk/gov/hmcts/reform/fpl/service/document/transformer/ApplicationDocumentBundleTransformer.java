@@ -75,7 +75,7 @@ public class ApplicationDocumentBundleTransformer {
             type -> {
                 List<ApplicationDocument> documents = unwrapElements(applicationDocuments).stream()
                     .filter(document -> type == document.getDocumentType())
-                    .collect(Collectors.toList());
+                    .toList();
 
                 List<DocumentView> documentViews = getApplicationDocumentsView(documents);
 
@@ -96,7 +96,7 @@ public class ApplicationDocumentBundleTransformer {
             = getApplicationDocumentsForView(applicationDocuments, includeConfidential);
         return applicantStatementDocuments.stream()
             .sorted(comparing(doc -> doc.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getApplicantStatements(CaseData caseData,
@@ -120,7 +120,7 @@ public class ApplicationDocumentBundleTransformer {
 
         return applicantStatementDocuments.stream()
             .sorted(comparing(doc -> doc.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getApplicantStatementsFromHearingEvidence(
@@ -144,7 +144,7 @@ public class ApplicationDocumentBundleTransformer {
         return nullSafeList(furtherEvidenceDocuments).stream()
             .filter(doc -> (APPLICANT_STATEMENT == doc.getValue().getType())
                 && (includeConfidential || !doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<ApplicationDocument>> getApplicationDocumentsForView(
@@ -153,7 +153,7 @@ public class ApplicationDocumentBundleTransformer {
 
         return nullSafeList(applicationDocuments).stream()
             .filter(doc -> includeConfidential || !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<DocumentView> getApplicationDocumentsView(List<ApplicationDocument> applicationDocuments) {
@@ -175,7 +175,7 @@ public class ApplicationDocumentBundleTransformer {
                     .confidential(doc.isConfidentialDocument())
                     .build())
                 .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
-                .collect(Collectors.toList());
+                .toList();
         }
         return applicationDocs;
     }

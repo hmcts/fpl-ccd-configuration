@@ -1756,7 +1756,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .code(element.getKey())
                 .label(element.getValue())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         final DynamicListElement selectedItem = items.stream()
             .filter(item -> Objects.equals(selected, item.getCode()))

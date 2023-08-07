@@ -157,7 +157,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
             return List.of();
         }
 
-        return children.stream().map(Element::getId).collect(Collectors.toList());
+        return children.stream().map(Element::getId).toList();
     }
 
     @JsonIgnore

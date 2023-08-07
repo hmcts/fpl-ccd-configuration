@@ -128,7 +128,7 @@ public class ResendCafcassEmails implements Job {
         }
         List<Element<GeneratedOrder>> ordersToSend = caseData.getOrderCollection().stream()
             .filter(el -> checkOrderDate(el, datesToResend))
-            .collect(Collectors.toList());
+            .toList();
 
         int resentEmails = 0;
         for (Element<GeneratedOrder> order : ordersToSend) {
@@ -209,7 +209,7 @@ public class ResendCafcassEmails implements Job {
 
         List<Element<HearingOrder>> sealedCMOsToResend = caseData.getSealedCMOs().stream()
             .filter(el -> dates.contains(el.getValue().getDateIssued()))
-            .collect(Collectors.toList());
+            .toList();
 
         int resentEmails = 0;
         for (Element<HearingOrder> cmo : sealedCMOsToResend) {
@@ -249,7 +249,7 @@ public class ResendCafcassEmails implements Job {
 
         List<Element<HearingBooking>> hearings = caseData.getHearingDetails().stream()
             .filter(el -> dateTimes.contains(el.getValue().getStartDate()))
-            .collect(Collectors.toList());
+            .toList();
 
         int resentEmails = 0;
         for (Element<HearingBooking> booking : hearings) {

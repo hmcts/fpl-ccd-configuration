@@ -219,7 +219,7 @@ public class PlacementService {
         // Get all other notice responses - we cannot have edited these
         List<Element<PlacementNoticeDocument>> otherDocs = allCurrentNotices.stream().filter(
             el -> el.getValue().getType() != type
-        ).collect(Collectors.toList());
+        ).toList();
 
         // merge the existing notices with the LA/Solicitor list of responses
         otherDocs.addAll(responses);
@@ -443,7 +443,7 @@ public class PlacementService {
                 Element<Child> child = getChildByPlacementId(caseData, placementId);
                 String childName = child.getValue().asLabel();
                 return element(placementId, childName);
-            }).collect(Collectors.toList());
+            }).toList();
     }
 
     public Placement getPlacementById(CaseData caseData, UUID placementId) {

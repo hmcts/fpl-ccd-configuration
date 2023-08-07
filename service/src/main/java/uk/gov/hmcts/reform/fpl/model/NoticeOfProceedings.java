@@ -26,6 +26,6 @@ public class NoticeOfProceedings {
 
         return proceedingTypes.stream()
             .map(ProceedingType::getTemplate)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

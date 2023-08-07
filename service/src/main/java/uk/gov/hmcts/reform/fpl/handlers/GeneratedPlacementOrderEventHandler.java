@@ -95,7 +95,7 @@ public class GeneratedPlacementOrderEventHandler {
 
         List<Respondent> respondentsToNotify = childPlacement.getPlacementRespondentsToNotify().stream()
             .map(Element::getValue)
-            .collect(Collectors.toList());
+            .toList();
 
         Set<String> emailRecipients = new HashSet<>();
         List<Recipient> postRecipients = new ArrayList<>();

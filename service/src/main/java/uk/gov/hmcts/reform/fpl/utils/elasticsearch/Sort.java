@@ -13,6 +13,6 @@ public class Sort implements  ESClause<List<Object>> {
 
     @Override
     public List<Object> toMap() {
-        return this.clauses.stream().map(ESClause::toMap).collect(Collectors.toList());
+        return this.clauses.stream().map(ESClause::toMap).toList();
     }
 }

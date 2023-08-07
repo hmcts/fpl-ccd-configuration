@@ -68,7 +68,7 @@ public class RepresentativesInbox {
         return caseData.getAllRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
             .map(this::extractEmailsForSolicitorAndColleagues)
-            .flatMap(Collection::stream).collect(Collectors.toList())
+            .flatMap(Collection::stream).toList()
             .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -79,7 +79,7 @@ public class RepresentativesInbox {
         return caseData.getAllChildren().stream()
             .filter(child -> shouldSend(preference, child))
             .map(this::extractEmailsForSolicitorAndColleagues)
-            .flatMap(Collection::stream).collect(Collectors.toList())
+            .flatMap(Collection::stream).toList()
             .stream()
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -111,7 +111,7 @@ public class RepresentativesInbox {
             .map(elements -> elements.stream()
                 .map(Element::getValue)
                 .map(Colleague::getEmail)
-                .collect(Collectors.toList())
+                .toList()
             ).orElse(new ArrayList<>());
         Optional.ofNullable(element.getValue().getSolicitor()).ifPresent(
             el -> colleagues.add(el.getEmail())

@@ -16,7 +16,7 @@ public class ChildrenTestHelper {
     public static List<Pair<UUID, String>> buildPairsFromChildrenList(List<Element<Child>> children) {
         return children.stream()
             .map(childElement -> Pair.of(childElement.getId(), childElement.getValue().getParty().getFullName()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
 }

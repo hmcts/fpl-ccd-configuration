@@ -114,6 +114,6 @@ public class ApplicantController extends CallbackController {
             .map(Applicant::getParty)
             .map(ApplicantParty::getEmail)
             .map(EmailAddress::getEmail)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

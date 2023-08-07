@@ -74,7 +74,7 @@ class BankHolidaysServiceTest {
             BankHolidays.Division.builder()
                 .events(Stream.of(dateOfEvent)
                     .map(date -> BankHolidays.Division.Event.builder().date(date).build())
-                    .collect(Collectors.toList()))
+                    .toList())
                 .build()).build();
     }
 }

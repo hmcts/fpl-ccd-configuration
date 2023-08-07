@@ -101,7 +101,7 @@ public class RespondentService {
             .map(Element::getValue)
             .filter(respondent -> !isNull(respondent.getLegalRepresentation()) && respondent.getLegalRepresentation()
                 .equals(YES.getValue()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<String> getRespondentSolicitorEmails(List<Respondent> respondents) {
@@ -110,7 +110,7 @@ public class RespondentService {
             .map(Respondent::getSolicitor)
             .map(RespondentSolicitor::getEmail)
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
@@ -125,7 +125,7 @@ public class RespondentService {
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasRegisteredOrganisation())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<Respondent> getRespondentsWithUnregisteredSolicitors(List<Element<Respondent>> respondents) {
@@ -133,7 +133,7 @@ public class RespondentService {
             .stream()
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasUnregisteredOrganisation())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public boolean hasAddressChange(List<Element<Respondent>> after, List<Element<Respondent>> before) {

@@ -45,7 +45,7 @@ public class OrdersNeededController extends CallbackController {
         OrderType.SECURE_ACCOMMODATION_ORDER,
         OrderType.EDUCATION_SUPERVISION_ORDER);
     public static final List<String> STANDALONE_ORDER_TYPE_NAME = STANDALONE_ORDER_TYPE.stream().map(OrderType::name)
-        .collect(Collectors.toList());
+        .toList();
     private final HmctsCourtLookupConfiguration courtLookup;
     private final CourtLookUpService courtLookUpService;
     private final DfjAreaLookUpService dfjAreaLookUpService;

@@ -14,6 +14,6 @@ public class Must implements ESClause {
 
     @Override
     public Map<String, Object> toMap() {
-        return Map.of("must", this.clauses.stream().map(ESClause::toMap).collect(Collectors.toList()));
+        return Map.of("must", this.clauses.stream().map(ESClause::toMap).toList());
     }
 }

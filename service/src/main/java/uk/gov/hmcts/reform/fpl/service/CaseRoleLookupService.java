@@ -21,6 +21,6 @@ public class CaseRoleLookupService {
             .map(SolicitorRole::from)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

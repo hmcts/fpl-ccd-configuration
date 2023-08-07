@@ -43,7 +43,7 @@ public class CaseSubmissionDocumentAnnexGenerator {
                 .title(entry.getKey())
                 .description(generateDescription(entry.getValue(), applicationLanguage))
                 .build()
-        ).collect(Collectors.toList());
+        ).toList();
     }
 
     private String generateTitle(Element<ApplicationDocument> document,

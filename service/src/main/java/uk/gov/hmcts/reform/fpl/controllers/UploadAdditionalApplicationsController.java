@@ -178,7 +178,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 .map(Element::getValue)
                 .map(HearingOrder::from)
                 .map(ElementUtils::element)
-                .collect(Collectors.toList());
+                .toList();
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
@@ -248,7 +248,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle
                     = caseDataCurrent.getAdditionalApplicationsBundle().stream()
                     .filter(bundle -> !bundle.getId().equals(lastBundleId))
-                    .collect(Collectors.toList());
+                    .toList();
 
                 additionalApplicationsBundle.add(0, element(lastBundleId, bundleBuilder.build()));
 

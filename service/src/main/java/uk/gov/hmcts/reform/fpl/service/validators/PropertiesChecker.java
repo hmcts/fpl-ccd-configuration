@@ -46,7 +46,7 @@ public abstract class PropertiesChecker implements EventChecker {
     private static void checkProperties(List<String> properties) {
         List<String> invalidProperties = properties.stream()
                 .filter(prop -> !AVAILABLE_PROPERTIES.contains(prop))
-                .collect(Collectors.toList());
+                .toList();
         if (!invalidProperties.isEmpty()) {
             throw new IllegalArgumentException(
                     String.format("Properties %s not found in %s", invalidProperties, CaseData.class.getSimpleName()));

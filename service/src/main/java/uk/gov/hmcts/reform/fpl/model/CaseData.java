@@ -535,7 +535,7 @@ public class CaseData extends CaseDataParent {
     public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
         return getRepresentativesElementsByServedPreference(preference).stream()
             .map(Element::getValue)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @JsonIgnore

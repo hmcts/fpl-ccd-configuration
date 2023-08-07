@@ -48,7 +48,7 @@ public class TranslatableItemService {
             .flatMap(Collection::stream)
             .filter(item -> !item.getValue().hasBeenTranslated())
             .filter(item -> defaultIfNull(item.getValue().getTranslationRequirements(), NO).isNeedAction())
-            .collect(Collectors.toList());
+            .toList();
 
         return listService.asDynamicList(
             translatableOrders,

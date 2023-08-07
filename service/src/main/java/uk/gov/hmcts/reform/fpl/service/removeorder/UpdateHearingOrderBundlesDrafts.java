@@ -49,7 +49,7 @@ public class UpdateHearingOrderBundlesDrafts {
                     }
 
                     return hearingOrdersBundleElement;
-                }).collect(Collectors.toList());
+                }).toList();
         }
         return updatedHearingOrderBundle;
     }

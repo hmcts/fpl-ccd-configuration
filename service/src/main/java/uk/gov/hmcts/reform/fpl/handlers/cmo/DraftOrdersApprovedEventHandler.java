@@ -232,7 +232,7 @@ public class DraftOrdersApprovedEventHandler {
             .stream()
             .filter(order -> order.getNeedTranslation() == YesNo.NO)
             .map(HearingOrder::getOrder)
-            .collect(Collectors.toList());
+            .toList();
 
         final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
 

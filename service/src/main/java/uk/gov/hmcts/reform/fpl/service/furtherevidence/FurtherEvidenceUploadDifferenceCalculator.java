@@ -36,7 +36,7 @@ public class FurtherEvidenceUploadDifferenceCalculator {
             .map(it -> it.getUuid())
             .collect(Collectors.toSet());
 
-        return getElements(caseData).stream().filter(el -> change.contains(el.getId())).collect(Collectors.toList());
+        return getElements(caseData).stream().filter(el -> change.contains(el.getId())).toList();
 
 
     }
@@ -48,19 +48,19 @@ public class FurtherEvidenceUploadDifferenceCalculator {
         list.addAll(getFurtherEvidenceDocuments(caseData));
         return list.stream().filter(p ->
             p.getValue().getNeedTranslation() == YesNo.YES && !p.getValue().hasBeenTranslated()
-        ).collect(Collectors.toList());
+        ).toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getHearingFurtherEvidenceDocuments(CaseData caseData) {
         return caseData.getHearingFurtherEvidenceDocuments()
             .stream()
             .flatMap(x -> x.getValue().getSupportingEvidenceBundle().stream())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getRespondentStatements(CaseData caseData) {
         return caseData.getRespondentStatements().stream()
-            .flatMap(a -> a.getValue().getSupportingEvidenceBundle().stream()).collect(Collectors.toList());
+            .flatMap(a -> a.getValue().getSupportingEvidenceBundle().stream()).toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocuments(CaseData caseData) {

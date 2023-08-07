@@ -255,7 +255,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
         List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .toList();
         List<Element<HearingOrder>> draftCMOs = List.of();
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
 

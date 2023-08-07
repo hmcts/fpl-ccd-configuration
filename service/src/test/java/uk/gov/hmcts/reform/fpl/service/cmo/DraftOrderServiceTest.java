@@ -954,7 +954,7 @@ class DraftOrderServiceTest {
                 .code(hearing.getId())
                 .label(hearing.getValue().toLabel())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         listItems.addAll(0, Arrays.asList(additionalItems));
 

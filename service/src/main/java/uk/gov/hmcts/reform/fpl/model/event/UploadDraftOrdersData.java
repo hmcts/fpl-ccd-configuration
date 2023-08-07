@@ -136,7 +136,7 @@ public class UploadDraftOrdersData {
                 orderToSendTranslationRequirements9
             ).stream()
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .toList();
         return i < orderToSendTranslationRequirements.size() ? orderToSendTranslationRequirements.get(i) : null;
     }
 

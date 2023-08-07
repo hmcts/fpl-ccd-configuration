@@ -82,7 +82,7 @@ public class HearingOrdersBundle {
 
         return hearingOrders.stream()
             .filter(order -> status.equals(order.getValue().getStatus()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @JsonIgnore
@@ -90,7 +90,7 @@ public class HearingOrdersBundle {
         if (isNotEmpty(orders)) {
             return orders.stream()
                 .filter(hearingOrderElement -> hearingOrderElement.getValue().getType().isCmo())
-                .collect(Collectors.toList());
+                .toList();
         }
 
         return List.of();

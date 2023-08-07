@@ -16,13 +16,13 @@ public class ChildRepresentativeDiffCalculator extends SimplePartyRepresentative
     protected List<Child> getRegistered(List<Element<Child>> children) {
         return unwrapElements(children).stream()
             .filter(WithSolicitor::hasRegisteredOrganisation)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
     protected List<Child> getUnregistered(List<Element<Child>> children) {
         return unwrapElements(children).stream()
             .filter(WithSolicitor::hasUnregisteredOrganisation)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

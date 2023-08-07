@@ -218,7 +218,7 @@ public class UploadAdditionalApplicationsService {
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     private List<Element<Supplement>> getSupplementsBundle(
@@ -233,7 +233,7 @@ public class UploadAdditionalApplicationsService {
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
-        }).collect(Collectors.toList());
+        }).toList();
 
     }
 

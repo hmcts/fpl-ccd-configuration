@@ -160,7 +160,7 @@ class DraftsOrdersUploadedEventHandlerTest {
                         .build()
                 )
                 .map(Element::newElement)
-                .collect(Collectors.toList());
+                .toList();
 
         HearingOrdersBundle selectedHearingBundle = selectedHearingBundleTemp.toBuilder()
                 .orders(collect)
@@ -442,7 +442,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .order(TestDataHelper.testDocumentReference())
             .dateSent(LocalDate.now())
             .build())
-            .collect(Collectors.toList());
+            .toList();
 
         return HearingOrdersBundle.builder()
             .hearingId(hearingId)

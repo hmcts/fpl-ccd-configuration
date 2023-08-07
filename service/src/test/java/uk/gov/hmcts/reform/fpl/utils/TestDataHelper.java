@@ -376,7 +376,7 @@ public class TestDataHelper {
                 .code(listElement.getKey())
                 .label(listElement.getValue())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         return DynamicList.builder()
             .listItems(listItems)

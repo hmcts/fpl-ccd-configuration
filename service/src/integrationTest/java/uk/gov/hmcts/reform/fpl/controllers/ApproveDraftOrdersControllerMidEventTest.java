@@ -103,7 +103,7 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
                 .code(bundle.getId())
                 .label(bundle.getValue().getHearingName())
                 .build())
-                .collect(Collectors.toList()))
+                .toList())
             .build();
 
         ReviewDraftOrdersData expectedPageData = ReviewDraftOrdersData.builder()

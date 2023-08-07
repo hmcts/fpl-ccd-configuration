@@ -82,7 +82,7 @@ public class CaseInitiationService {
             .getOutsourcingLocalAuthorities(orgId, outsourcingType)
             .stream()
             .sorted(comparing(LocalAuthorityName::getName))
-            .collect(Collectors.toList());
+            .toList();
 
         Optional<LocalAuthorityName> userLocalAuthority = localAuthorities.getUserLocalAuthority();
 

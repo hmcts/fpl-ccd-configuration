@@ -262,7 +262,7 @@ public class CaseDataGeneratorHelper {
         }
         List<DynamicListElement> listItems = codeAndValues.entrySet().stream()
             .map(kv -> DynamicListElement.builder().code(kv.getKey()).label(kv.getValue()).build())
-            .collect(Collectors.toList());
+            .toList();
         return DynamicList.builder()
             .listItems(listItems)
             .value(listItems.get(selected))

@@ -35,7 +35,7 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
 
     private List<Element<SupportingEvidenceBundle>> getElements(CaseData caseData) {
         return caseData.getRespondentStatements().stream()
-            .flatMap(a -> a.getValue().getSupportingEvidenceBundle().stream()).collect(Collectors.toList());
+            .flatMap(a -> a.getValue().getSupportingEvidenceBundle().stream()).toList();
     }
 
     @Override
@@ -65,8 +65,8 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
             it -> element(it.getId(), it.getValue().toBuilder()
                 .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()
                     .map(decorator.translatedBundle(document, selectedOrderId))
-                    .collect(Collectors.toList()))
-                .build())).collect(Collectors.toList());
+                    .toList())
+                .build())).toList();
     }
 
 }

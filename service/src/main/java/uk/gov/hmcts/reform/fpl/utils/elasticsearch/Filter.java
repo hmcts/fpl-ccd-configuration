@@ -15,6 +15,6 @@ public class Filter implements ESClause<Map<String, Object>> {
 
     @Override
     public Map<String, Object> toMap() {
-        return Map.of("filter", clauses.stream().map(ESClause::toMap).collect(Collectors.toList()));
+        return Map.of("filter", clauses.stream().map(ESClause::toMap).toList());
     }
 }

@@ -105,6 +105,6 @@ public class RespondentValidator {
                     }
                 }
                 return addErrs;
-            }).flatMap(List::stream).collect(Collectors.toList());
+            }).flatMap(List::stream).toList();
     }
 }

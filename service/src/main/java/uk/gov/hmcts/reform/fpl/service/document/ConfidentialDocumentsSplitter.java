@@ -18,7 +18,7 @@ public class ConfidentialDocumentsSplitter {
 
         List<Element<SupportingEvidenceBundle>> nonConfidentialCopy = documents.stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+            .toList();
 
         caseDetailsMap.putIfNotEmpty(nonConfidentialPrefix, nonConfidentialCopy);
     }

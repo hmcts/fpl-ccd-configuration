@@ -107,7 +107,7 @@ public class LocalAuthorityRecipientsService {
 
         return unwrapElements(caseData.getLegalRepresentatives()).stream()
             .map(LegalRepresentative::getEmail)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<String> getFallbackInbox() {

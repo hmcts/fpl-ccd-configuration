@@ -101,7 +101,7 @@ public class EmailNotificationHelper {
             .stream()
             .map(EmailAddress::getEmail)
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static String buildHearingDateText(HearingBooking hearingBooking) {

@@ -45,7 +45,7 @@ public class UploadC2DocumentsService {
                     .dateTimeUploaded(time.now())
                     .uploadedBy(uploadedBy)
                     .build())
-                .collect(Collectors.toList());
+                .toList();
 
         C2DocumentBundle.C2DocumentBundleBuilder c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(uploadedBy)

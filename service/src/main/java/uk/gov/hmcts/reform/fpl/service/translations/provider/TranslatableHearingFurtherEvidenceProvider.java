@@ -37,7 +37,7 @@ public class TranslatableHearingFurtherEvidenceProvider implements TranslatableL
         return caseData.getHearingFurtherEvidenceDocuments()
             .stream()
             .flatMap(x -> x.getValue().getSupportingEvidenceBundle().stream())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class TranslatableHearingFurtherEvidenceProvider implements TranslatableL
             it -> element(it.getId(), it.getValue().toBuilder()
                 .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()
                     .map(decorator.translatedBundle(document, selectedOrderId))
-                    .collect(Collectors.toList()))
-                .build())).collect(Collectors.toList());
+                    .toList())
+                .build())).toList();
     }
 
 

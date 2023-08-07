@@ -36,7 +36,7 @@ public class AmendableOrderListBuilder {
             .map(provider -> provider.provideListItems(caseData))
             .flatMap(Collection::stream)
             .sorted(comparator)
-            .collect(Collectors.toList());
+            .toList();
 
         return listService.asDynamicList(
             amendableOrders,

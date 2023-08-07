@@ -18,6 +18,6 @@ public class ConfidentialBundleHelper {
         return confidentialBundle.stream()
             .map(ConfidentialBundle::getSupportingEvidenceBundle)
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

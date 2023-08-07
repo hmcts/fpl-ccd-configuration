@@ -94,7 +94,7 @@ public class DraftOrdersRemovedEventHandlerTest {
 
         List<Element<HearingOrder>> caseManagementOrdersBefore = Stream.of(ORDER_TO_BE_REMOVED,
                 element(OTHER_ORDER_ID, additionalOrder))
-            .collect(Collectors.toList());
+            .toList();
 
         HearingOrdersBundle hearingOrdersBundleBefore = HearingOrdersBundle.builder()
             .hearingId(HEARING.getId())
@@ -157,7 +157,7 @@ public class DraftOrdersRemovedEventHandlerTest {
 
         final List<Element<HearingOrder>> caseManagementOrdersBefore = Stream.of(ORDER_TO_BE_REMOVED,
                 element(OTHER_ORDER_ID, additionalOrder))
-            .collect(Collectors.toList());
+            .toList();
 
         final HearingOrdersBundle hearingOrdersBundleBefore = HearingOrdersBundle.builder()
             .hearingId(HEARING.getId())

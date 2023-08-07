@@ -202,7 +202,7 @@ public class CaseSubmissionGenerationService
                     .map(label -> label.replace("child[ren]", GrammarHelper.getChildGrammar(numOfChildren))
                         .replace("[is] [are]", GrammarHelper.getIsOrAreGrammar(numOfChildren))
                         .replace("live[s]", (numOfChildren > 1) ? "live" : "lives"))
-                    .collect(Collectors.toList())
+                    .toList()
                 : new ArrayList<>())
             .groundReason(grounds.getGroundDetails())
             .directionsAppliedFor(order.getEducationSupervisionOrderDirectionsAppliedFor())

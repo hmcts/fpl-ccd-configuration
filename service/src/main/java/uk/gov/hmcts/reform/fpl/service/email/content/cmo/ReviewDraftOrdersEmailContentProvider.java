@@ -75,7 +75,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .documentLinks(List.of())
             .attachedDocuments(orders.stream()
                 .map(order -> linkToAttachedDocument(order.getOrder()))
-                .collect(Collectors.toList()))
+                .toList())
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))

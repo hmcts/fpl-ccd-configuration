@@ -96,7 +96,7 @@ public class CaseAccessService {
                     .userId(user)
                     .caseRole(caseRole.formattedName())
                     .build())
-                .collect(Collectors.toList());
+                .toList();
 
             AddCaseAssignedUserRolesRequest addCaseAssignedUserRolesRequest =
                 AddCaseAssignedUserRolesRequest.builder()

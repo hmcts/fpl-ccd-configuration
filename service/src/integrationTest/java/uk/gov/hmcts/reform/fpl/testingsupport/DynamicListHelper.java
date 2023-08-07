@@ -64,6 +64,6 @@ public class DynamicListHelper {
                 .label(option.getLeft())
                 .code(option.getRight().toString())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 }

@@ -81,6 +81,6 @@ public class TranslatableFurtherEvidenceProvider implements TranslatableListItem
                 new ArrayList<>())
             .stream()
             .map(decorator.translatedBundle(document, selectedOrderId))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

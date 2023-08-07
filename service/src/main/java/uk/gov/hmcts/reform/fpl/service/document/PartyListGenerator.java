@@ -39,20 +39,20 @@ public class PartyListGenerator {
     private List<Element<String>> buildChildElement(List<Element<Child>> children) {
         return children.stream()
             .map(child -> element(child.getId(), "Child - " + child.getValue().toParty().getFullName()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<String>> buildRespondentElements(List<Element<Respondent>> respondents) {
         return respondents.stream()
             .map(respondent -> element(respondent.getId(),
                 "Respondent - " + respondent.getValue().toParty().getFullName()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<String>> buildApplicantElements(List<Element<LocalAuthority>> localAuthorities) {
         return localAuthorities.stream()
             .map(localAuthority -> element(localAuthority.getId(),
                 "Applicant - " + localAuthority.getValue().getName()))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

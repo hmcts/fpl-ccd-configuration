@@ -84,7 +84,7 @@ public class RespondentsCommonFormatHelper {
         selected = defaultIfNull(orderSelector, Selector.builder().build())
                 .getSelected().stream()
                 .map(respondentsAndOthersNames::get)
-                .collect(Collectors.toList());
+                .toList();
 
         if (isNotEmpty(additionalNamesSeparatedByNewline)) {
             selected.addAll(Arrays.asList(additionalNamesSeparatedByNewline.split("\n")));

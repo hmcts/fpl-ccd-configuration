@@ -355,7 +355,7 @@ public class ManageDocumentService {
                     Stream.of(additionalBundle.getC2DocumentBundle(),
                             additionalBundle.getOtherApplicationsBundle())
                         .filter(Objects::nonNull))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     public Map<String, Object> initialiseHearingDocumentFields(CaseData caseData) {
@@ -467,7 +467,7 @@ public class ManageDocumentService {
     private <T extends HearingDocument> List<Element<T>> buildHearingDocumentsList(CaseData caseData,
            UUID selectedHearingId, List<Element<T>> hearingDocumentList, T hearingDocument) {
         List<Element<T>> list = hearingDocumentList.stream().filter(el -> !el.getId().equals(selectedHearingId))
-            .collect(Collectors.toList());
+            .toList();
         if (isNotEmpty(caseData.getHearingDetails())) {
             list.add(element(selectedHearingId, hearingDocument));
         }
@@ -484,7 +484,7 @@ public class ManageDocumentService {
             List<Element<PositionStatementRespondent>> resultList = hearingDocumentList.stream()
                 .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
                                && doc.getValue().getRespondentId().equals(respondentStatement.getRespondentId())))
-                .collect(Collectors.toList());
+                .toList();
             resultList.add(element(respondentStatement));
             return resultList;
         }
@@ -501,7 +501,7 @@ public class ManageDocumentService {
             List<Element<PositionStatementChild>> resultList = hearingDocumentList.stream()
                 .filter(doc -> !(doc.getValue().getHearingId().equals(selectedHearingId)
                                && doc.getValue().getChildId().equals(respondentStatement.getChildId())))
-                .collect(Collectors.toList());
+                .toList();
 
             resultList.add(element(respondentStatement));
             return resultList;
@@ -523,7 +523,7 @@ public class ManageDocumentService {
         HearingBooking hearingBooking = getHearingBooking(caseData, selectedHearingId);
         List<Element<CourtBundle>> courtBundleNC = caseData.getManageDocumentsCourtBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+            .toList();
 
         return buildCourtBundlesList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
@@ -688,7 +688,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> documents) {
         return defaultIfNull(documents, new ArrayList<Element<SupportingEvidenceBundle>>()).stream()
             .sorted(comparing(bundle -> bundle.getValue().getDateTimeUploaded(), nullsLast(reverseOrder())))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     //This is unfiltered, LA can see/edit HMCTS confidential statements for a respondent
@@ -770,7 +770,7 @@ public class ManageDocumentService {
                 DocumentWithConfidentialAddress.builder()
                     .name(supportingEvidenceBundle.getValue().getName())
                     .document(supportingEvidenceBundle.getValue().getDocument()).build()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<DocumentWithConfidentialAddress>> buildDocumentWithConfidentialAddressFromCourtBundles(
@@ -787,8 +787,8 @@ public class ManageDocumentService {
                             .document(courtBundle.getValue().getDocument())
                             .name("Court bundle of " + hearingCourtBundle.getHearing())
                             .build()))
-                    .collect(Collectors.toList()))
-            .flatMap(List::stream).collect(Collectors.toList());
+                    .toList())
+            .flatMap(List::stream).toList();
     }
 
     private <T extends HearingDocument> List<Element<DocumentWithConfidentialAddress>>
@@ -801,7 +801,7 @@ public class ManageDocumentService {
                 DocumentWithConfidentialAddress.builder()
                     .name(getHearingDocumentName(hearingDocument.getValue()))
                     .document(hearingDocument.getValue().getDocument()).build()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public void addConfidentialDocumentIfNotEmpty(
@@ -830,13 +830,13 @@ public class ManageDocumentService {
         List<Element<DocumentWithConfidentialAddress>> resultList =
             Optional.ofNullable(caseData.getDocumentsWithConfidentialAddress()).orElse(new ArrayList<>());
 
-        List<UUID> existingDocUuid = existingList.stream().map(Element::getId).collect(Collectors.toList());
+        List<UUID> existingDocUuid = existingList.stream().map(Element::getId).toList();
 
         // remove the existing document from the documentsWithConfidentialAddress list
         resultList.removeAll(resultList.stream()
             .filter(confidentialDoc ->
                 existingDocUuid.contains(confidentialDoc.getId()))
-            .collect(Collectors.toList()));
+            .toList());
 
         // add the updated version document into the documentsWithConfidentialAddress list
         resultList.addAll(editedList);
@@ -863,7 +863,7 @@ public class ManageDocumentService {
 
         List<Element<SupportingEvidenceBundle>> supportingEvidences = bundles.stream()
             .filter(selectedFilter)
-            .collect(Collectors.toList());
+            .toList();
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
     }

@@ -117,7 +117,7 @@ public class CaseAccessDataStoreConsumerTest {
                 .organisationId(orgId)
                 .caseRole(caseRole.formattedName())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         return AddCaseAssignedUserRolesRequest.builder()
             .caseAssignedUserRoles(caseAssignedRoles)

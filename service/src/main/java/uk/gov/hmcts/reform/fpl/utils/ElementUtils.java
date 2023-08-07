@@ -107,7 +107,7 @@ public class ElementUtils {
     public static <T> List<Element<T>> findElements(T elementToFind, List<Element<T>> elements) {
         return nullSafeCollection(elements).stream()
             .filter(element -> Objects.equals(element.getValue(), elementToFind))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static <T> List<UUID> findElementsId(T elementToFind, List<Element<T>> elements) {

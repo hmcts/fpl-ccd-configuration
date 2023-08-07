@@ -93,7 +93,7 @@ public class RecordFinalDecisionsService {
         List<Element<Child>> allChildren = caseData.getAllChildren();
         allChildren.addAll(updatedChildren);
 
-        return allChildren.stream().distinct().collect(Collectors.toList());
+        return allChildren.stream().distinct().toList();
     }
 
     public List<String> validateChildSelector(CaseData caseData) {

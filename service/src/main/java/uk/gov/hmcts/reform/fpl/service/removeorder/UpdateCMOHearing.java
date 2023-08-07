@@ -24,7 +24,7 @@ public class UpdateCMOHearing {
             List<Element<HearingBooking>> matchingLabel = caseData.getAllHearings()
                 .stream()
                 .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
-                .collect(Collectors.toList());
+                .toList();
 
             if (matchingLabel.size() != 1) {
                 throw new UnexpectedNumberOfCMOsRemovedException(
@@ -44,7 +44,7 @@ public class UpdateCMOHearing {
         if (caseData.getCancelledHearingDetails() != null) {
             return caseData.getCancelledHearingDetails().stream()
                 .map(Element::getValue)
-                .collect(Collectors.toList())
+                .toList()
                 .contains(hearingToUnlink);
         }
         return false;

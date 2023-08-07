@@ -265,14 +265,14 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .stream()
                         .map(Supplement::getDocument)
                         .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                        .toList());
 
             documents.addAll(
                 unwrapElements(bundle.getC2DocumentBundle().getSupportingEvidenceBundle())
                     .stream()
                         .map(SupportingEvidenceBundle::getDocument)
                         .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                        .toList());
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {
@@ -284,14 +284,14 @@ public class AdditionalApplicationsUploadedEventHandler {
                     .stream()
                         .map(Supplement::getDocument)
                         .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                        .toList());
 
             documents.addAll(
                 unwrapElements(bundle.getOtherApplicationsBundle().getSupportingEvidenceBundle())
                     .stream()
                         .map(SupportingEvidenceBundle::getDocument)
                         .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                        .toList());
         }
 
         return documents;

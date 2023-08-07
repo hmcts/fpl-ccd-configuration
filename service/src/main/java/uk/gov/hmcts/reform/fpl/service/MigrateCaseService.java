@@ -133,9 +133,9 @@ public class MigrateCaseService {
                         documentsSentToParty.getValue().toBuilder()
                             .documentsSentToParty(documentsSentToParty.getValue().getDocumentsSentToParty().stream()
                                 .filter(documentSent -> !docUuidsToBeRemoved.contains(documentSent.getId()))
-                                .collect(Collectors.toList())).build());
+                                .toList()).build());
                 }
-            }).collect(Collectors.toList());
+            }).toList();
 
         return Map.of("documentsSentToParties", resultDocumentsSentToParties);
     }

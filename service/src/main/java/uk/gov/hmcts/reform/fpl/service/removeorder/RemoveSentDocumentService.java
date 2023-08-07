@@ -57,7 +57,7 @@ public class RemoveSentDocumentService {
         return caseData.getDocumentsSentToParties().stream()
             .map(c -> c.getValue().getDocumentsSentToParty())
             .flatMap(Collection::stream)
-            .collect(Collectors.toList()).stream().filter(document -> selectedDocId.equals(document.getId()))
+            .toList().stream().filter(document -> selectedDocId.equals(document.getId()))
             .findAny()
             .orElseThrow(() -> new RemovableSentDocumentNotFoundException(selectedDocId));
     }

@@ -139,7 +139,7 @@ public class FurtherEvidenceUploadedEventTestData {
         return supportingEvidenceBundle.stream()
                 .map(evidenceBundle -> element(evidenceBundle.getId(),
                     evidenceBundle.getValue().toBuilder().type(null).build()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static CaseData buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(final String uploadedBy) {
@@ -336,7 +336,7 @@ public class FurtherEvidenceUploadedEventTestData {
                 );
 
             })
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static CourtBundle createDummyCourtBundle(String uploadedBy, boolean confidential) {

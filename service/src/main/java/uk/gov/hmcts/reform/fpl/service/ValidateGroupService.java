@@ -19,6 +19,6 @@ public class ValidateGroupService {
 
     public <T> List<String> validateGroup(T data, Class<?>...groups) {
         return validator.validate(data, groups).stream()
-            .map(ConstraintViolation::getMessage).collect(Collectors.toList());
+            .map(ConstraintViolation::getMessage).toList();
     }
 }

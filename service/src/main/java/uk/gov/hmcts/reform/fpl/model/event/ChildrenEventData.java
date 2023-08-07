@@ -90,7 +90,7 @@ public class ChildrenEventData {
         if (!YesNo.YES.getValue().equals(childrenHaveRepresentation)) {
             fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
-                .collect(Collectors.toList());
+                .toList();
         }
 
         if (YesNo.YES.getValue().equals(childrenHaveSameRepresentation)) {
@@ -98,7 +98,7 @@ public class ChildrenEventData {
             fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
                 .filter(field -> !excludedFields.contains(field))
-                .collect(Collectors.toList());
+                .toList();
         }
 
         fields.add(OptionCountBuilder.CASE_FIELD);

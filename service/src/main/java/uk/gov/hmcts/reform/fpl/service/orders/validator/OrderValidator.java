@@ -21,7 +21,7 @@ public class OrderValidator {
         return orderType.getQuestionsBlocks().stream()
             .filter(questionBlock -> shouldValidate(orderSection, questionBlock))
             .flatMap(questionBlock -> validate(caseData, questionBlock).stream())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<String> validate(CaseData caseData, OrderQuestionBlock questionBlock) {

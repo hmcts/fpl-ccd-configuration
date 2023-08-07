@@ -15,7 +15,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
             .flatMap(order -> order.getQuestionsBlocks().stream())
             .flatMap(questionBlock -> questionBlock.getTransientDataFields().stream())
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
 
         fields.addAll(List.of(
             "manageOrdersOperation",

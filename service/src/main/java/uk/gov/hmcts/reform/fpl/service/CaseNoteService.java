@@ -41,6 +41,6 @@ public class CaseNoteService {
     }
 
     public List<Element<CaseNote>> removeCaseNote(UUID elementId, List<Element<CaseNote>> caseNotes) {
-        return caseNotes.stream().filter(el -> !el.getId().equals(elementId)).collect(Collectors.toList());
+        return caseNotes.stream().filter(el -> !el.getId().equals(elementId)).toList();
     }
 }

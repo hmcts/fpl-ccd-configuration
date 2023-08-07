@@ -28,10 +28,10 @@ public class FamilyAssistancePrePopulator implements QuestionBlockOrderPrePopula
     public Map<String, Object> prePopulate(CaseData caseData) {
         List<Element<String>> parties = caseData.getAllRespondents().stream()
             .map(el -> element(el.getId(), el.getValue().getParty().getFullName()))
-            .collect(Collectors.toList());
+            .toList();
         parties.addAll(caseData.getAllChildren().stream()
             .map(el -> element(el.getId(), el.getValue().getParty().getFullName()))
-            .collect(Collectors.toList()));
+            .toList());
 
         return Map.of("manageOrdersPartyToBeBefriended1", asDynamicList(parties, label -> label),
             "manageOrdersPartyToBeBefriended2", asDynamicList(parties, label -> label),

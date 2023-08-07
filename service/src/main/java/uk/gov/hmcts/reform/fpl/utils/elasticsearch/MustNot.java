@@ -14,6 +14,6 @@ public class MustNot implements ESClause {
 
     @Override
     public Map<String, Object> toMap() {
-        return Map.of("must_not", this.clauses.stream().map(ESClause::toMap).collect(Collectors.toList()));
+        return Map.of("must_not", this.clauses.stream().map(ESClause::toMap).toList());
     }
 }

@@ -34,7 +34,7 @@ public class RemoveOrderService {
         List<Element<RemovableOrder>> blankOrders = getRemovableOrderList(caseData).stream()
             .filter(order -> order.getValue().isRemovable())
             .map(order -> (Element<RemovableOrder>) order)
-            .collect(Collectors.toList());
+            .toList();
 
         return asDynamicList(blankOrders, selected, RemovableOrder::asLabel);
     }

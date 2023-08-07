@@ -84,7 +84,7 @@ public class NotifyGatekeeperController extends CallbackController {
         List<String> emails = gatekeeperEmails.stream()
             .map(Element::getValue)
             .map(EmailAddress::getEmail)
-            .collect(Collectors.toList());
+            .toList();
 
         List<String> errors;
 

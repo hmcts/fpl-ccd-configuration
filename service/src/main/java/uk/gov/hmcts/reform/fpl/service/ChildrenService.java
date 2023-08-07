@@ -190,7 +190,7 @@ public class ChildrenService {
 
         return selectedChildren.stream()
             .map(children::get)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public boolean hasAddressChange(List<Element<Child>> after, List<Element<Child>> before) {

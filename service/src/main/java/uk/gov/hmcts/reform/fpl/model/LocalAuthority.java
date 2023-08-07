@@ -54,6 +54,6 @@ public class LocalAuthority {
             .filter(colleague -> YES.getValue().equals(colleague.getNotificationRecipient()))
             .map(Colleague::getEmail)
             .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

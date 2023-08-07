@@ -108,6 +108,6 @@ public class ChildrenUpdatedEventHandler {
     private List<Child> getChildrenForRepresentative(List<Child> children, RespondentSolicitor representative) {
         return children.stream()
             .filter(child -> Objects.equals(child.getSolicitor(), representative))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

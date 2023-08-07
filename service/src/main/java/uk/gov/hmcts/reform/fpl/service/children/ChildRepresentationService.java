@@ -58,7 +58,7 @@ public class ChildRepresentationService {
                 .mapToObj(idx -> element(children.get(idx).getId(), children.get(idx).getValue().toBuilder()
                     .solicitor(selectSpecifiedRepresentative(eventData, idx))
                     .build()))
-                .collect(Collectors.toList())
+                .toList()
         );
     }
 

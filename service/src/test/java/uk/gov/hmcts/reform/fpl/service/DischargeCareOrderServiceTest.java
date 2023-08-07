@@ -244,13 +244,13 @@ class DischargeCareOrderServiceTest {
 
     private static CaseData caseWithOrders(List<GeneratedOrder> orders) {
         return CaseData.builder()
-            .orderCollection(orders.stream().map(ElementUtils::element).collect(Collectors.toList()))
+            .orderCollection(orders.stream().map(ElementUtils::element).toList())
             .build();
     }
 
     private static CaseData caseWithOrders(List<GeneratedOrder> orders, List<Integer> selectedCareOrders) {
         return CaseData.builder()
-            .orderCollection(orders.stream().map(ElementUtils::element).collect(Collectors.toList()))
+            .orderCollection(orders.stream().map(ElementUtils::element).toList())
             .children1(testChildren())
             .careOrderSelector(ofNullable(selectedCareOrders)
                 .map(selected -> Selector.builder().selected(selected).build()).orElse(null))

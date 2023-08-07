@@ -179,7 +179,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
                 .caseDataId(caseData.getId().toString())
                 .userId(userId)
                 .build())
-            .collect(Collectors.toList());
+            .toList();
 
         return AddCaseAssignedUserRolesRequest.builder()
             .caseAssignedUserRoles(assignments)

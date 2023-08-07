@@ -72,7 +72,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
                 .code(bundle.getId())
                 .label(bundle.getValue().getHearingName())
                 .build())
-                .collect(Collectors.toList()))
+                .toList())
             .build();
 
         CaseData responseData = extractCaseData(response);

@@ -68,7 +68,7 @@ public class LocalAuthorityService {
                 .code(localAuthorityCode)
                 .name(getLocalAuthorityName(localAuthorityCode))
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private Optional<String> getLocalAuthorityFromOrganisation() {

@@ -184,7 +184,7 @@ public class CaseExtensionService {
                 })
                 .flatMap(List::stream)
                 .map(error -> String.join(" ",  error, "for child", location[0]))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String getCaseSummaryExtensionDetails(CaseData caseData, List<Element<Child>> children1) {

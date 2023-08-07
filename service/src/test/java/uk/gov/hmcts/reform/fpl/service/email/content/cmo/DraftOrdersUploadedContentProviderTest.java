@@ -167,7 +167,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
     private List<HearingOrder> orders(String... titles) {
         return Stream.of(titles)
             .map(title -> HearingOrder.builder().title(title).build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private JudgeAndLegalAdvisor judge(JudgeOrMagistrateTitle title, String name) {

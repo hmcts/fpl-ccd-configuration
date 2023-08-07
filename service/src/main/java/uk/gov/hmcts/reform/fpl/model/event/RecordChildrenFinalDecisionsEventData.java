@@ -85,7 +85,7 @@ public class RecordChildrenFinalDecisionsEventData {
         List<String> fields =
             getFieldsListWithAnnotation(RecordChildrenFinalDecisionsEventData.class, Temp.class).stream()
             .map(Field::getName)
-            .collect(Collectors.toList());
+            .toList();
 
         fields.addAll(List.of("optionCount", "close_case_label", "children_label", "orderAppliesToAllChildren",
             "finalDecisionDate"));

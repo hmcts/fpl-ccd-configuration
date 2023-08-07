@@ -51,7 +51,7 @@ public class UploadDocumentTransformer {
                         .documentName(document.getDocumentTitle())
                         .build());
             }
-        ).collect(Collectors.toList());
+        ).toList();
 
     }
 }

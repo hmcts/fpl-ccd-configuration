@@ -390,7 +390,7 @@ class OthersServiceTest {
             (e) -> DynamicListElement.builder()
                 .code(e.getId()).label(e.getValue().getName())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
         builder.listItems(listItems);
         builder.value(listItems.get(selectedIdx));
         return builder.build();

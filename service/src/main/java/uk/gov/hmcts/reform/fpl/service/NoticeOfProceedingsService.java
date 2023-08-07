@@ -110,13 +110,13 @@ public class NoticeOfProceedingsService {
                                                                     List<DocmosisTemplates> templateTypes) {
         return templateTypes.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, template))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Document> uploadDocuments(List<DocmosisDocument> documents) {
         return documents.stream()
             .map(document -> uploadDocumentService.uploadPDF(document.getBytes(), document.getDocumentTitle()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<DocumentBundle>> createNoticeOfProceedingDocumentBundle(List<Document> uploadedDocuments,
@@ -133,13 +133,13 @@ public class NoticeOfProceedingsService {
                     .translationRequirements(noticeOfProceedingsLanguageFactory.calculate(caseData))
                     .build())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Element<DocumentBundle>> getRemovedDocumentBundles(
         List<Element<DocumentBundle>> noticeOfProceedingBundle, List<DocmosisTemplates> templateTypes) {
         List<String> templateTypeTitles = templateTypes.stream().map(DocmosisTemplates::getDocumentTitle)
-            .collect(Collectors.toList());
+            .toList();
 
         ImmutableList.Builder<Element<DocumentBundle>> removedDocumentBundles = ImmutableList.builder();
 

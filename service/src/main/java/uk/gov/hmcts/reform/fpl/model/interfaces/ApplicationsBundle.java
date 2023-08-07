@@ -28,6 +28,6 @@ public interface ApplicationsBundle extends ConfidentialBundle, SelectableItem {
             .map(Element::getValue)
             .map(SupportingEvidenceBundle::getDocument)
             .map(ElementUtils::element)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

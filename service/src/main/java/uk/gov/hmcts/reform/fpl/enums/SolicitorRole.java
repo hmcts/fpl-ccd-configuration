@@ -57,7 +57,7 @@ public enum SolicitorRole {
     public static List<SolicitorRole> values(Representing representing) {
         return Arrays.stream(SolicitorRole.values())
             .filter(role -> role.representing == representing)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public Optional<Element<WithSolicitor>> getRepresentedPerson(CaseData caseData) {
