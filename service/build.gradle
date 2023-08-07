@@ -96,13 +96,13 @@ tasks.withType(JavaCompile) {
 }
 
 //Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
-tasks.withType(Test) {
+/*tasks.withType(Test) {
   useJUnitPlatform()
 
   testLogging {
     exceptionFormat = 'full'
   }
-}
+}*/
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
