@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 
 @Service

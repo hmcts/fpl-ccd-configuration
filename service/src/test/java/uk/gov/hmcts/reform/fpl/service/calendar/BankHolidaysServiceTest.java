@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 
 import java.time.LocalDate;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.Month.FEBRUARY;

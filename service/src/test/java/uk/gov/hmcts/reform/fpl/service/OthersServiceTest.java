@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;

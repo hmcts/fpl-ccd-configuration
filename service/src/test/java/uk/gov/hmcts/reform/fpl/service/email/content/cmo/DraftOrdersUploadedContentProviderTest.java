@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
