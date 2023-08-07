@@ -169,7 +169,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .build()))
             .build();
 
-
         var internalChangeStartEventResponse = StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(UPDATE_CASE_EVENT)
@@ -177,14 +176,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         when(concurrencyHelper.startEvent(eq(CASE_ID), eq(UPDATE_CASE_EVENT)))
             .thenReturn(internalChangeStartEventResponse);
-
-        var internalUpdateStartEventResponse = StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId("internal-update-case-summary")
-            .build();
-
-        when(concurrencyHelper.startEvent(eq(CASE_ID), eq("internal-update-case-summary")))
-            .thenReturn(internalUpdateStartEventResponse);
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
@@ -209,8 +200,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(eq(internalChangeStartEventResponse), eq(CASE_ID), eq(changeRequest));
-        /*verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(internalUpdateStartEventResponse), eq(CASE_ID), eq(Map.of()));*/
     }
 
     @Test
