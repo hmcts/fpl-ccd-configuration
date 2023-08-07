@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.time.LocalDate.now;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;

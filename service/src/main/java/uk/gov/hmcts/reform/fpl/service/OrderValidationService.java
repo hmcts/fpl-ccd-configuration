@@ -12,7 +12,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Service

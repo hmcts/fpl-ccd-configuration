@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.TestInstancePreDestroyCallback;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 
 public class TestLogsExtension implements AfterTestExecutionCallback, TestInstancePostProcessor,
     TestInstancePreDestroyCallback {

@@ -36,7 +36,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;

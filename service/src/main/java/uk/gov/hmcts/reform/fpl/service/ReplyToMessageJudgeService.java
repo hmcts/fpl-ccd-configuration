@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;

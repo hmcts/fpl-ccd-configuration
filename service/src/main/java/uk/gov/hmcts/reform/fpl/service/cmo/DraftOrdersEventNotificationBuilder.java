@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;

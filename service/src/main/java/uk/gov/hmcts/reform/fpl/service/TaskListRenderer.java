@@ -19,7 +19,6 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;

@@ -41,7 +41,6 @@ import static java.time.LocalTime.NOON;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.time.format.FormatStyle.LONG;
 import static java.util.Locale.UK;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.emptyList;
 import static org.mockito.ArgumentMatchers.any;

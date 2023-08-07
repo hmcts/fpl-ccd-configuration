@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;

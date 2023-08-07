@@ -20,7 +20,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static java.time.Month.JUNE;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.REPRESENTING_RESPONDENT_1;

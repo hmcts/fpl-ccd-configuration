@@ -54,7 +54,6 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.apache.commons.lang3.StringUtils.EMPTY;

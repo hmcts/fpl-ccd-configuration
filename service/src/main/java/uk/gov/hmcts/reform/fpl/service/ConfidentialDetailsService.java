@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;

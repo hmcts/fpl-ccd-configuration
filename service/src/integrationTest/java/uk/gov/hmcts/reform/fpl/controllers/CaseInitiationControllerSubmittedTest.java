@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static java.util.Set.of;
 import static java.util.UUID.randomUUID;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;

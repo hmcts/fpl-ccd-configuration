@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;

@@ -39,7 +39,6 @@ import static com.google.common.collect.ImmutableSet.of;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;

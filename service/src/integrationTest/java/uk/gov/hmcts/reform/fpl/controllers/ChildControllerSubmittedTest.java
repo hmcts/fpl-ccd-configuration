@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;

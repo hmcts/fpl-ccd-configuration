@@ -10,7 +10,6 @@ import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import static java.util.stream.Collectors.toList;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = LocalValidatorFactoryBean.class)

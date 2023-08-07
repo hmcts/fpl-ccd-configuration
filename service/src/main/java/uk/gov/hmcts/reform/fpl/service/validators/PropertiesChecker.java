@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 
-import static java.util.stream.Collectors.toList;
 
 public abstract class PropertiesChecker implements EventChecker {
 

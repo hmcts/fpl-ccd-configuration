@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;

@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;

@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

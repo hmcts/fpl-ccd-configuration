@@ -16,7 +16,6 @@ import uk.gov.service.notify.NotificationList;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})

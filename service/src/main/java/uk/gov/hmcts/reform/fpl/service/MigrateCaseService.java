@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;

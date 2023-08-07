@@ -21,7 +21,6 @@ import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Configuration

@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.UUID.randomUUID;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;

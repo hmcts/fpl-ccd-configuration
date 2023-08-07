@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 public abstract class CompoundEventChecker implements EventChecker {

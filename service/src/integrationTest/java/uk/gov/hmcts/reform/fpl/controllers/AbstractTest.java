@@ -30,7 +30,6 @@ import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.List.of;
-import static java.util.stream.Collectors.toList;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("integration-test")

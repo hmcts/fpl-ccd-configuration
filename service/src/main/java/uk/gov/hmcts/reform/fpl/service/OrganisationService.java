@@ -27,7 +27,6 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.ORGANISATION_CACHE;
 import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.REQUEST_SCOPED_CACHE_MANAGER;

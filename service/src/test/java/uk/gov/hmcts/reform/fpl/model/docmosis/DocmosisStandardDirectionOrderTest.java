@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;

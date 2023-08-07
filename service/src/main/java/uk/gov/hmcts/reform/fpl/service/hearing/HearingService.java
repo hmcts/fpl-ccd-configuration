@@ -16,7 +16,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Service

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.User;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.hmcts.reform.fpl.util.Poller.poll;
 

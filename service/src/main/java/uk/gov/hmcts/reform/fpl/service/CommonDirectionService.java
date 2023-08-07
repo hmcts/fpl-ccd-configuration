@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;

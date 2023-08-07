@@ -37,7 +37,6 @@ import static java.time.format.FormatStyle.LONG;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;

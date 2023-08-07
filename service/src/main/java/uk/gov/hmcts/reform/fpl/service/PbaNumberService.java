@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumbers;

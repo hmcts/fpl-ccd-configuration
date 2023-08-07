@@ -12,7 +12,6 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Configuration

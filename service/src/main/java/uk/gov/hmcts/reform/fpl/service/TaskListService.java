@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;

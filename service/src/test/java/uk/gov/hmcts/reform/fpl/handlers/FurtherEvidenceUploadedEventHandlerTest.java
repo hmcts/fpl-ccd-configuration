@@ -63,7 +63,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;

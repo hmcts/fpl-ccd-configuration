@@ -43,7 +43,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;

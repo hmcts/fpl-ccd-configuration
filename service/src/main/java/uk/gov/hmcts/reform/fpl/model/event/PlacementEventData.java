@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
