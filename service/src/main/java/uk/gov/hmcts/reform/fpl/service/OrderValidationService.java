@@ -30,7 +30,7 @@ public class OrderValidationService {
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .distinct()
-                .collect(toList());
+                .toList();
         }
 
         return emptyList();

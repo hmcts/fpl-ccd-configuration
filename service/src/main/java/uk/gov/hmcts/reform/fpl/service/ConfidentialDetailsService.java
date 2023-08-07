@@ -23,7 +23,7 @@ public class ConfidentialDetailsService {
             .filter(element -> element.getValue() != null)
             .filter(element -> element.getValue().containsConfidentialDetails())
             .map(item -> element(item.getId(), item.getValue().extractConfidentialDetails()))
-            .collect(toList());
+            .toList();
     }
 
     public <T extends ConfidentialParty<T>> List<Element<T>> removeConfidentialDetails(List<Element<T>> details) {
@@ -36,7 +36,7 @@ public class ConfidentialDetailsService {
                     return item;
                 }
             })
-            .collect(toList());
+            .toList();
     }
 
     public <T extends ConfidentialParty<T>> void addConfidentialDetailsToCase(CaseDetails caseDetails,

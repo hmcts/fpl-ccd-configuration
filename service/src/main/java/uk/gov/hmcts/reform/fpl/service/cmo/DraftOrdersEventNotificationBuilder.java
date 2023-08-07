@@ -37,7 +37,7 @@ public class DraftOrdersEventNotificationBuilder {
 
         List<Element<HearingOrder>> c21s = orders.stream()
             .filter(order -> !order.getValue().getType().isCmo())
-            .collect(toList());
+            .toList();
 
         //If CMO is the only approved/rejected order, then publish specific event for CMO (and generic for others)
         if (optionalCmo.isPresent()) {

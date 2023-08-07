@@ -126,7 +126,7 @@ public abstract class ChangeFromOtherUtils {
                     .telephoneNumber(Telephone.builder().telephoneNumber("777777777").build())
                     .build())
                 .build())
-        ).collect(toList());
+        ).toList();
     }
 
     public static List<Element<LocalAuthority>> localAuthorities() {
@@ -147,7 +147,7 @@ public abstract class ChangeFromOtherUtils {
                     .telephone("123456789")
                     .address(buildHiddenAddress(e.getValue().getName()))
                     .build())
-        ).collect(toList());
+        ).toList();
     }
 
     public static Respondent prepareExpectedTransformedConfidentialRespondent() {

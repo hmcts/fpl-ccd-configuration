@@ -200,7 +200,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     private static OrganisationUsers organisation(String... userIds) {
         List<OrganisationUser> users = Stream.of(userIds)
             .map(id -> OrganisationUser.builder().userIdentifier(id).build())
-            .collect(toList());
+            .toList();
 
         return OrganisationUsers.builder().users(users).build();
     }

@@ -48,7 +48,7 @@ public class HearingService {
         return Stream.concat(activeHearings.stream(), cancelledHearings.stream())
             .filter(it -> !it.getValue().isVacated())
             .filter(endsBeforeTodayAtMidnight())
-            .collect(toList());
+            .toList();
     }
 
     private Predicate<Element<HearingBooking>> endsBeforeTodayAtMidnight() {

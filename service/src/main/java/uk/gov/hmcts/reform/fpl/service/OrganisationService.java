@@ -113,7 +113,7 @@ public class OrganisationService {
                 Status.ACTIVE, false)
             .getUsers()
             .stream()
-            .collect(toList());
+            .toList();
     }
 
     private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
@@ -122,6 +122,6 @@ public class OrganisationService {
             .getUsers()
             .stream()
             .map(OrganisationUser::getUserIdentifier)
-            .collect(toList());
+            .toList();
     }
 }

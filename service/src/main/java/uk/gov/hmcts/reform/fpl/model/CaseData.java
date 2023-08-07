@@ -546,7 +546,7 @@ public class CaseData extends CaseDataParent {
             return representatives.stream()
                 .filter(Objects::nonNull)
                 .filter(representative -> preference == representative.getValue().getServingPreferences())
-                .collect(toList());
+                .toList();
         }
         return emptyList();
     }
@@ -598,7 +598,7 @@ public class CaseData extends CaseDataParent {
     }
 
     public Optional<Other> findOther(int sequenceNo) {
-        List<Other> allOthers = this.getAllOthers().stream().map(Element::getValue).collect(toList());
+        List<Other> allOthers = this.getAllOthers().stream().map(Element::getValue).toList();
 
         return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
     }
@@ -874,7 +874,7 @@ public class CaseData extends CaseDataParent {
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
             .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
-            .collect(toList());
+            .toList();
     }
 
     @JsonUnwrapped
@@ -898,7 +898,7 @@ public class CaseData extends CaseDataParent {
             .map(Element::getValue)
             .flatMap((HearingOrdersBundle hearingOrdersBundle)
                 -> hearingOrdersBundle.getOrders().stream())
-            .collect(toList());
+            .toList();
     }
 
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
@@ -914,48 +914,48 @@ public class CaseData extends CaseDataParent {
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),
             defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()))
-            .flatMap(Collection::stream).collect(toList());
+            .flatMap(Collection::stream).toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getAllNonCancelledHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()))
-            .flatMap(Collection::stream).collect(toList());
+            .flatMap(Collection::stream).toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getPastHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> !hearingBooking.getValue().startsAfterToday())
-            .collect(toList());
+            .toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getPastAndTodayHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrBefore())
-            .collect(toList());
+            .toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getFutureHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> hearingBooking.getValue().startsAfterToday())
-            .collect(toList());
+            .toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getFutureAndTodayHearings() {
         return defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> hearingBooking.getValue().startsTodayOrAfter())
-            .collect(toList());
+            .toList();
     }
 
     @JsonIgnore
     public List<Element<HearingBooking>> getToBeReListedHearings() {
         return defaultIfNull(cancelledHearingDetails, new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearingBooking -> hearingBooking.getValue().isToBeReListed())
-            .collect(toList());
+            .toList();
     }
 
     private final Object cmoToReviewList;

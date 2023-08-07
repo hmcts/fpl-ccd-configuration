@@ -61,7 +61,7 @@ public class DynamicListService {
                 .code(codeProducer.apply(element))
                 .label(valueProducer.apply(element))
                 .build())
-            .collect(toList());
+            .toList();
 
         DynamicListElement selectedItem = items.stream()
             .filter(item -> item.hasCode(selectedCode))

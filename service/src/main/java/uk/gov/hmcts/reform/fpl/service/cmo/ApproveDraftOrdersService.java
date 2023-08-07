@@ -215,7 +215,7 @@ public class ApproveDraftOrdersService {
     public List<Element<HearingOrder>> getCMOsReadyForApproval(CaseData caseData) {
         return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
-            .collect(toList());
+            .toList();
     }
 
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
@@ -235,7 +235,7 @@ public class ApproveDraftOrdersService {
     public void reviewC21Orders(CaseData caseData, Map<String, Object> data,
                                 Element<HearingOrdersBundle> selectedOrdersBundle) {
         List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue().getOrders().stream()
-            .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
+            .filter(order -> !order.getValue().getType().isCmo()).toList();
 
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
@@ -292,7 +292,7 @@ public class ApproveDraftOrdersService {
 
         rejectedOrders.addAll(ordersToBeSent.stream()
             .filter(bundle -> bundle.getValue().getRequestedChanges() != null)
-            .collect(toList()));
+            .toList());
 
         if (!rejectedOrders.isEmpty()) {
             data.put(REFUSED_ORDERS, rejectedOrders);

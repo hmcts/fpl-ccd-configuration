@@ -52,7 +52,7 @@ public class TaskListService {
                 .event(event)
                 .state(getTaskState(caseData, event))
                 .build())
-            .collect(toList());
+            .toList();
     }
 
     private TaskState getTaskState(CaseData caseData, Event event) {

@@ -320,7 +320,7 @@ public class TestDataHelper {
                                                      byte[]... binaries) {
         List<String> documents = Stream.of(binaries)
             .map(Base64.getEncoder()::encodeToString)
-            .collect(toList());
+            .toList();
         Map<String, Object> parameters = Map.of(
             "caseId", caseId,
             "documentName", order.getFilename(),
@@ -405,7 +405,7 @@ public class TestDataHelper {
             .map(day -> BankHolidays.Division.Event.builder()
                 .date(day)
                 .build())
-            .collect(toList());
+            .toList();
 
         return BankHolidays.builder()
             .englandAndWales(BankHolidays.Division.builder()

@@ -39,7 +39,7 @@ public class LocalAuthorityIdLookupConfiguration {
         List<String> localAuthorityCodes = mapping.entrySet().stream()
             .filter(mapping -> StringUtils.equalsIgnoreCase(mapping.getValue(), organisationId))
             .map(Map.Entry::getKey)
-            .collect(toList());
+            .toList();
 
         if (localAuthorityCodes.size() > 1) {
             throw new IllegalStateException(format("Multiple local authorities %s configured for organisation %s",

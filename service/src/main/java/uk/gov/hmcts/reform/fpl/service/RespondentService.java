@@ -221,7 +221,7 @@ public class RespondentService {
             }
             return selector.getSelected().stream()
                 .map(respondents::get)
-                .collect(toList());
+                .toList();
         }
     }
 

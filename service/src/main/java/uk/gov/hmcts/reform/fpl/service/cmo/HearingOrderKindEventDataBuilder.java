@@ -77,7 +77,7 @@ public class HearingOrderKindEventDataBuilder {
 
         final List<Element<HearingOrder>> nonCMODraftOrders = draftOrders.stream()
             .filter(draftOrder -> C21.equals(draftOrder.getValue().getType()))
-            .collect(toList());
+            .toList();
 
         if (isEmpty(nonCMODraftOrders)) {
             nonCMODraftOrders.add(element(identityService.generateId(), HearingOrder.builder().build()));

@@ -141,7 +141,7 @@ class DocumentsListRenderer {
     private List<String> renderItems(List<Pair<String, String>> props) {
         List<String> lines = new ArrayList<>();
         lines.add("<dl class=\"govuk-summary-list\">");
-        lines.addAll(props.stream().map(tuple -> renderItem(tuple.getKey(), tuple.getValue())).collect(toList()));
+        lines.addAll(props.stream().map(tuple -> renderItem(tuple.getKey(), tuple.getValue())).toList());
         lines.add("</dl>");
 
         return lines;

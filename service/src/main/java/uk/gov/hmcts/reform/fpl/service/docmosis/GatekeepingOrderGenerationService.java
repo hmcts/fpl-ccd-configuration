@@ -111,7 +111,7 @@ public class GatekeepingOrderGenerationService extends
             .map(Element::getValue)
             .sorted(comparing(StandardDirection::getAssignee))
             .map(direction -> toDocmosisDirection(direction, directionIndex.getAndAdd(1)))
-            .collect(toList());
+            .toList();
     }
 
     private DocmosisDirection toDocmosisDirection(StandardDirection direction, int index) {

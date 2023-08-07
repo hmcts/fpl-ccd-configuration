@@ -143,7 +143,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .map(token -> StartEventResponse.builder()
                 .caseDetails(CaseDetails.builder().data(Map.of()).build())
                 .eventId("updateRepresentation").token(token).build())
-            .collect(toList());
+            .toList();
 
         when(concurrencyHelper.startEvent(any(), eq("updateRepresentation")))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));
@@ -385,7 +385,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
 
         final List<Map<String, ChangeOrganisationRequest>> update = Stream.of(expectedChange1, expectedChange2)
             .map(changeRequest -> Map.of("changeOrganisationRequestField", changeRequest))
-            .collect(toList());
+            .toList();
 
         final List<String> expectedCaseEvents = List.of("internal-update-case-summary",
             "internal-change-UPDATE_CASE", "updateRepresentation");
@@ -401,7 +401,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         }, Duration.ofSeconds(10));
 
         List<String> temp = startEventCaptor.getAllValues().stream()
-            .map(StartEventResponse::getEventId).collect(toList());
+            .map(StartEventResponse::getEventId).toList();
 
         assertThat(temp).asList().containsAll(expectedCaseEvents);
 

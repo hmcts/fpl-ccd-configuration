@@ -103,7 +103,7 @@ public class CaseDataExtractionService {
             .map(element -> element.getValue().getParty())
             .map(this::buildChild)
             .distinct()
-            .collect(toList());
+            .toList();
     }
 
     public String getApplicantName(CaseData caseData) {
@@ -124,7 +124,7 @@ public class CaseDataExtractionService {
         return respondents.stream()
             .map(element -> element.getValue().getParty())
             .map(this::buildRespondent)
-            .collect(toList());
+            .toList();
     }
 
 

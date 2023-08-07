@@ -83,7 +83,7 @@ public class OrderGenerationApiTest extends AbstractApiTest {
             .flatMap(Collection::stream)
             .map(Element::getValue)
             .map(SentDocument::getLetterId)
-            .collect(toList());
+            .toList();
 
         assertThat(letterIds).isNotEmpty().doesNotContainNull();
     }

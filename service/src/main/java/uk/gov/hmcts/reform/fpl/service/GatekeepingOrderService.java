@@ -269,7 +269,7 @@ public class GatekeepingOrderService {
                 }
             })
             .filter(Objects::nonNull)
-            .collect(toList());
+            .toList();
 
         eventData.setStandardDirections(wrapElements(standardDirections));
 

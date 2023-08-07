@@ -217,7 +217,7 @@ public class FurtherEvidenceUploadedEventHandler {
                     .map(Element::getValue);
 
                 List<String> newDocumentNames = newHearingDocuments.stream()
-                    .map(doc -> doc.getDocument().getFilename()).collect(toList());
+                    .map(doc -> doc.getDocument().getFilename()).toList();
                 furtherEvidenceNotificationService.sendNotificationWithHearing(caseData, recipients,
                     uploader.getFullName(), newDocumentNames, hearingBookings);
             }
@@ -381,10 +381,10 @@ public class FurtherEvidenceUploadedEventHandler {
                 switch (uploaderType) {
                     case HMCTS:
                         return unwrapElements(bundle.getSupportingEvidenceNC()).stream().map(
-                            SupportingEvidenceBundle::getDocument).collect(toList());
+                            SupportingEvidenceBundle::getDocument).toList();
                     case DESIGNATED_LOCAL_AUTHORITY:
                         return unwrapElements(bundle.getSupportingEvidenceLA()).stream().map(
-                            SupportingEvidenceBundle::getDocument).collect(toList());
+                            SupportingEvidenceBundle::getDocument).toList();
                     default:
                         return unwrapElements(bundle.getAllDocumentReferences());
                 }
@@ -417,7 +417,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         .documentReferences(data)
                         .documentTypes(data.stream()
                                 .map(DocumentReference::getType)
-                                .collect(toList()))
+                                .toList())
                         .documentType(ADDITIONAL_APPLICATIONS)
                         .build())
                 );
@@ -430,10 +430,10 @@ public class FurtherEvidenceUploadedEventHandler {
                 switch (uploaderType) {
                     case HMCTS:
                         return unwrapElements(bundle.getSupportingEvidenceNC()).stream().map(
-                            SupportingEvidenceBundle::getDocument).collect(toList());
+                            SupportingEvidenceBundle::getDocument).toList();
                     case DESIGNATED_LOCAL_AUTHORITY:
                         return unwrapElements(bundle.getSupportingEvidenceLA()).stream().map(
-                            SupportingEvidenceBundle::getDocument).collect(toList());
+                            SupportingEvidenceBundle::getDocument).toList();
                     default:
                         return unwrapElements(bundle.getAllC2DocumentReferences());
                 }
@@ -466,7 +466,7 @@ public class FurtherEvidenceUploadedEventHandler {
                         .documentReferences(data)
                         .documentTypes(data.stream()
                                 .map(DocumentReference::getType)
-                                .collect(toList()))
+                                .toList())
                         .documentType(ADDITIONAL_APPLICATIONS)
                         .build())
                 );
@@ -494,7 +494,7 @@ public class FurtherEvidenceUploadedEventHandler {
                                 .documentReferences(data)
                                 .documentTypes(data.stream()
                                         .map(DocumentReference::getType)
-                                        .collect(toList()))
+                                        .toList())
                                 .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build())
                 );
@@ -534,7 +534,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .documentReferences(data)
                             .documentTypes(data.stream()
                                     .map(DocumentReference::getType)
-                                    .collect(toList()))
+                                    .toList())
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build())
                 );
@@ -568,7 +568,7 @@ public class FurtherEvidenceUploadedEventHandler {
             .filter(newDoc -> hasNewDocumentUploaded(beforeSupportingEvidenceBundle, newDoc))
             .filter(newDoc -> Optional.ofNullable(additionalPredicate).orElse((x) -> true)
                 .test(newDoc.getValue()))
-            .collect(toList());
+            .toList();
     }
 
     private DocumentInfo getNewGeneralEvidence(CaseData caseData, CaseData caseDataBefore,
@@ -592,7 +592,7 @@ public class FurtherEvidenceUploadedEventHandler {
                             .documentReferences(data)
                             .documentTypes(data.stream()
                                     .map(DocumentReference::getType)
-                                    .collect(toList()))
+                                    .toList())
                             .documentType(FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                             .build()
                         )
@@ -656,7 +656,7 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private List<String> getDocumentNames(List<FurtherDocument> documentBundle) {
-        return documentBundle.stream().map(FurtherDocument::getName).collect(toList());
+        return documentBundle.stream().map(FurtherDocument::getName).toList();
     }
 
     private List<DocumentReference> getDocumentReferencesHavingPdfExtension(List<SupportingEvidenceBundle>
@@ -881,7 +881,7 @@ public class FurtherEvidenceUploadedEventHandler {
 
     private List<Element<SupportingEvidenceBundle>> concatEvidenceBundles(List<Element<SupportingEvidenceBundle>> b1,
                                                                           List<Element<SupportingEvidenceBundle>> b2) {
-        return Stream.concat(b1.stream(), b2.stream()).collect(toList());
+        return Stream.concat(b1.stream(), b2.stream()).toList();
     }
 
     @Async

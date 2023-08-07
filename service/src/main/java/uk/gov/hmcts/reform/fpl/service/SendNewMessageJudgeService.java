@@ -283,19 +283,19 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             .map(PlacementSupportingDocument::getDocument)
             .filter(Objects::nonNull)
             .map(DocumentReference::getFilename)
-            .collect(toList());
+            .toList();
 
         final List<String> confidentialDocuments = unwrapElements(placement.getConfidentialDocuments()).stream()
             .map(PlacementConfidentialDocument::getDocument)
             .filter(Objects::nonNull)
             .map(DocumentReference::getFilename)
-            .collect(toList());
+            .toList();
 
         final List<String> noticesResponses = unwrapElements(placement.getNoticeDocuments()).stream()
             .map(PlacementNoticeDocument::getResponse)
             .filter(Objects::nonNull)
             .map(DocumentReference::getFilename)
-            .collect(toList());
+            .toList();
 
         final StringBuilder fileNamesBuilder = new StringBuilder();
 

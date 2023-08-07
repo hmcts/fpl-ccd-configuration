@@ -76,7 +76,7 @@ public class RemovalToolData {
     public static List<String> temporaryFields() {
         List<String> tempFields = getFieldsListWithAnnotation(RemovalToolData.class, Temp.class).stream()
             .map(Field::getName)
-            .collect(toList());
+            .toList();
         tempFields.addAll(otherTemporaryFields);
         return tempFields;
     }

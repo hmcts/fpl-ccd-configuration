@@ -107,7 +107,7 @@ public abstract class AbstractTest {
                 .caseRole(caseRoleName)
                 .caseDataId(caseId.toString())
                 .build())
-            .collect(toList());
+            .toList();
 
         given(caseAccessApi.getUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, of(caseId.toString()), of(userId)))
             .willReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(assignedRoles).build());

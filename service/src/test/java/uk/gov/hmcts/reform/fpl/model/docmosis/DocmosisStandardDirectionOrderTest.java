@@ -63,7 +63,7 @@ class DocmosisStandardDirectionOrderTest {
     private List<DocmosisDirection> directionsForAllAssignees() {
         return Stream.of(DirectionAssignee.values())
             .map(this::direction)
-            .collect(toList());
+            .toList();
     }
 
     private DocmosisDirection direction(DirectionAssignee assignee) {

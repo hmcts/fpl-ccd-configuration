@@ -64,7 +64,7 @@ public class PeopleInCaseHelper {
         return representatives.stream()
             .map(representative -> String.format("%s%n%s", representative.getFullName(),
                 representative.getAddress().getAddressAsString(", ")))
-            .collect(toList());
+            .toList();
     }
 
     private static Optional<RespondentParty> getFirstRespondentParty(List<Element<Respondent>> respondents) {

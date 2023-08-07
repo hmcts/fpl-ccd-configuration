@@ -1254,7 +1254,7 @@ class PlacementServiceTest {
         final List<Pair<UUID, String>> pairs = Stream.of(children)
             .map(child -> Pair.of(child.getId(), format("%s %s",
                 child.getValue().getParty().getFirstName(), child.getValue().getParty().getLastName())))
-            .collect(toList());
+            .toList();
 
         return buildDynamicList(pairs);
     }
@@ -1275,7 +1275,7 @@ class PlacementServiceTest {
                 respondent.getValue().getParty().getLastName(),
                 respondent.getValue().getParty().getRelationshipToChild()
             )))
-            .collect(toList());
+            .toList();
 
         return buildDynamicList(pairs);
     }

@@ -382,7 +382,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     private List<Element<Direction>> fullyPopulatedDirections() {
         return Stream.of(DirectionAssignee.values())
             .map(assignee -> element(null, fullyPopulatedDirection(assignee)))
-            .collect(toList());
+            .toList();
     }
 
     private List<Element<Direction>> buildDirections(Direction direction) {

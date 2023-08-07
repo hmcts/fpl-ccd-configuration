@@ -233,7 +233,7 @@ public class CaseSubmissionGenerationService
             .grounds(grounds.getGrounds().stream()
                 .sorted(Comparator.comparingInt(SecureAccommodationOrderGround::getDisplayOrder))
                 .map(SecureAccommodationOrderGround::getLabel)
-                .collect(toList()))
+                .toList())
             .reasonAndLength(grounds.getReasonAndLength())
             .build();
 
@@ -288,7 +288,7 @@ public class CaseSubmissionGenerationService
             .childOrChildren(GrammarHelper.getChildGrammar(numOfChildren))
             .isOrAre(GrammarHelper.getIsOrAreGrammar(numOfChildren))
             .particularsOfChildren(orders.getParticularsOfChildren().stream()
-                .map(ParticularsOfChildren::getLabel).collect(toList()))
+                .map(ParticularsOfChildren::getLabel).toList())
             .particularsOfChildrenDetails(orders.getParticularsOfChildrenDetails())
             .directionsAppliedFor(orders.getChildRecoveryOrderDirectionsAppliedFor())
             .grounds(grounds.getGrounds().stream()
@@ -297,7 +297,7 @@ public class CaseSubmissionGenerationService
                 .map(ground -> ground
                     .replace("[has] [have]", GrammarHelper.geHasOrHaveGrammar(numOfChildren, true))
                     .replace("[is] [are]", GrammarHelper.getIsOrAreGrammar(numOfChildren)))
-                .collect(toList()))
+                .toList())
             .reason(grounds.getReason())
             .build();
 
@@ -597,7 +597,7 @@ public class CaseSubmissionGenerationService
             .map(Respondent::getParty)
             .filter(Objects::nonNull)
             .map(respondent -> buildRespondent(respondent, applicationLanguage))
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisApplicant> buildDocmosisApplicants(CaseData caseData) {
@@ -622,7 +622,7 @@ public class CaseSubmissionGenerationService
             .map(Applicant::getParty)
             .filter(Objects::nonNull)
             .map(applicant -> buildApplicant(applicant, legacySolicitor))
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisChild> buildDocmosisChildren(final List<Element<Child>> children,
@@ -633,7 +633,7 @@ public class CaseSubmissionGenerationService
             .map(Child::getParty)
             .filter(Objects::nonNull)
             .map(child -> buildChild(child, applicationLanguage))
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisOtherParty> buildDocmosisOthers(final List<Element<Other>> other,
@@ -642,7 +642,7 @@ public class CaseSubmissionGenerationService
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(other1 -> buildOtherParty(other1, applicationLanguage))
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisProceeding> buildDocmosisProceedings(final List<Element<Proceeding>> proceedings,
@@ -651,7 +651,7 @@ public class CaseSubmissionGenerationService
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(proceeding -> buildProceeding(proceeding, applicationLanguage))
-            .collect(toList());
+            .toList();
     }
 
     private DocmosisProceeding buildProceeding(final Proceeding proceeding,

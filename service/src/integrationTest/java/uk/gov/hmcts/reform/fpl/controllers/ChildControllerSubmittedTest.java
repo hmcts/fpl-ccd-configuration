@@ -117,7 +117,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
             .map(token -> StartEventResponse.builder()
                 .caseDetails(CaseDetails.builder().data(Map.of()).build())
                 .eventId("updateRepresentation").token(token).build())
-            .collect(toList());
+            .toList();
 
         when(concurrencyHelper.startEvent(any(), eq("updateRepresentation")))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));

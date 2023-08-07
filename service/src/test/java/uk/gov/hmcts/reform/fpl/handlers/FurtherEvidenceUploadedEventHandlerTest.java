@@ -1060,7 +1060,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                     .document(PDF_DOCUMENT_3)
                     .build()))
-                .collect(toList());
+                .toList();
 
             verifyCafcassNotificationTemplate(uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),
@@ -1119,7 +1119,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
                     .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                         .confidential(newConfidential ? List.of("CONFIDENTIAL") : null)
                         .build()))
-                    .collect(toList());
+                    .toList();
             verifyCafcassNotificationTemplate(
                 uploaderType,
                 (caseData) ->  getCorrespondenceDocuments(caseData, uploaderType).addAll(beforeCorrespondences),
@@ -1220,9 +1220,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
                         .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                             .document(PDF_DOCUMENT_3)
                             .build()))
-                        .collect(toList()))
+                        .toList())
                     .build()))
-                .collect(toList());
+                .toList();
 
             verifyNotificationTemplate(
                 uploaderType,
@@ -1719,15 +1719,15 @@ class FurtherEvidenceUploadedEventHandlerTest {
                             .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                                     .document(PDF_DOCUMENT_3)
                                 .build()))
-                            .collect(toList()))
+                            .toList())
                         .build()))
-                    .collect(toList());
+                    .toList();
             } else {
                 afterDocuments = ((List<Element<SupportingEvidenceBundle>>) documents).stream()
                     .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                         .document(PDF_DOCUMENT_3)
                         .build()))
-                    .collect(toList());
+                    .toList();
             }
 
             verifyNotificationTemplate(
@@ -1808,16 +1808,16 @@ class FurtherEvidenceUploadedEventHandlerTest {
                                 .confidential(seb.getValue().getConfidential() != null
                                     ? null : List.of("CONFIDENTIAL"))
                                 .build()))
-                            .collect(toList()))
+                            .toList())
                         .build()))
-                    .collect(toList());
+                    .toList();
             } else {
                 afterDocuments = ((List<Element<SupportingEvidenceBundle>>) documents).stream()
                     .map(seb -> element(seb.getId(), seb.getValue().toBuilder()
                         .confidential(seb.getValue().getConfidential() != null
                             ? null : List.of("CONFIDENTIAL"))
                         .build()))
-                    .collect(toList());
+                    .toList();
             }
 
             verifyNotificationTemplate(uploaderType,

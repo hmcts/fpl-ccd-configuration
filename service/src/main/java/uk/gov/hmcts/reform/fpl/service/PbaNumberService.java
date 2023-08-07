@@ -37,7 +37,7 @@ public class PbaNumberService {
             .addAll(applicantsPartitionedByEmptyPbaNumber.get(false)
                 .stream()
                 .map(this::updatePbaNumber)
-                .collect(toList()))
+                .toList())
             .build();
     }
 

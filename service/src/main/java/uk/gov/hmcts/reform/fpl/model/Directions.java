@@ -103,7 +103,7 @@ public class Directions {
                 .custom("Yes")
                 .readOnly("No")
                 .build()))
-            .collect(toList());
+            .toList();
     }
 
     private List<Element<Direction>> orderByRespondent(List<Element<Direction>> directions) {

@@ -71,7 +71,7 @@ class CommonDirectionServiceTest {
 
         List<Element<Direction>> directionWithCustomFlag = directions.stream()
             .filter(element -> element.getValue().getCustom() != null && element.getValue().getCustom().equals("Yes"))
-            .collect(toList());
+            .toList();
 
         assertThat(directionWithCustomFlag).hasSize(1);
     }
@@ -86,7 +86,7 @@ class CommonDirectionServiceTest {
 
         List<Element<Direction>> courtDirections = directions.stream()
             .filter(element -> element.getValue().getAssignee().equals(COURT))
-            .collect(toList());
+            .toList();
 
         assertThat(courtDirections).hasSize(2);
     }
@@ -99,7 +99,7 @@ class CommonDirectionServiceTest {
             buildDirections(CAFCASS, "Yes"),
             buildDirections(COURT, "Yes"))
             .flatMap(Collection::stream)
-            .collect(toList()));
+            .toList());
 
         assertThat(directions).isEqualTo(expectedDirections);
     }
@@ -188,6 +188,6 @@ class CommonDirectionServiceTest {
             buildDirections(OTHERS, (String) null), //TO replicate CMO behaviour
             buildDirections(COURT, "Yes"))
             .flatMap(Collection::stream)
-            .collect(toList());
+            .toList();
     }
 }

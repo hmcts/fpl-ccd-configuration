@@ -92,7 +92,7 @@ public class ManageLocalAuthoritiesService {
             .distinct()
             .sorted(comparing(Court::getName))
             .map(court -> Pair.of(court.getCode(), court.getName()))
-            .collect(toList());
+            .toList();
 
         return dynamicListService.asDynamicList(courts);
     }
@@ -113,7 +113,7 @@ public class ManageLocalAuthoritiesService {
                         .distinct()
                         .sorted(comparing(Court::getName))
                         .map(court -> Pair.of(court.getCode(), court.getName()))
-                        .collect(toList());
+                        .toList();
                     if (!groupedCourts.isEmpty()) {
                         courts.add(regionDummyEntry);
                     }
@@ -126,7 +126,7 @@ public class ManageLocalAuthoritiesService {
                     .distinct()
                     .sorted(comparing(Court::getName))
                     .map(court -> Pair.of(court.getCode(), court.getName()))
-                    .collect(toList()));
+                    .toList());
         }
     }
 

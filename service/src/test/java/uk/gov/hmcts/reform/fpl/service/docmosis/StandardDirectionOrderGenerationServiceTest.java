@@ -268,7 +268,7 @@ class StandardDirectionOrderGenerationServiceTest {
                 .directionType("Direction")
                 .assignee(assignee)
                 .build()))
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisDirection> expectedDirections() {
@@ -279,7 +279,7 @@ class StandardDirectionOrderGenerationServiceTest {
                 .title(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
                 .assignee(direction.getValue().getAssignee())
                 .build())
-            .collect(toList());
+            .toList();
     }
 
     private List<DocmosisChild> getExpectedChildren() {

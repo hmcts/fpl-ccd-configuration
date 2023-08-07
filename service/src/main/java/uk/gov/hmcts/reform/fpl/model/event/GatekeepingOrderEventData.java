@@ -79,7 +79,7 @@ public class GatekeepingOrderEventData {
                 directionsForCafcassUpdated, directionsForCourtUpdated, directionsForRespondents, directionsForOthers)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
-            .collect(toList());
+            .toList();
     }
 
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
@@ -93,7 +93,7 @@ public class GatekeepingOrderEventData {
     public static List<String> temporaryFields() {
         return getFieldsListWithAnnotation(GatekeepingOrderEventData.class, Temp.class).stream()
             .map(Field::getName)
-            .collect(toList());
+            .toList();
     }
 
     public List<Element<StandardDirection>> resetStandardDirections() {

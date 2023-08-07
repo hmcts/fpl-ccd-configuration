@@ -48,7 +48,7 @@ public class CommonDirectionService {
                 caseData.getCourtDirections(),
                 getElements(caseData.getCourtDirectionsCustom(), COURT))
                 .flatMap(Collection::stream)
-                .collect(toList());
+                .toList();
     }
 
     private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
@@ -59,7 +59,7 @@ public class CommonDirectionService {
                     .custom("Yes")
                     .readOnly("No")
                     .build()))
-                .collect(toList()))
+                .toList())
             .orElseGet(Collections::emptyList);
     }
 
@@ -72,7 +72,7 @@ public class CommonDirectionService {
     public List<Element<Direction>> removeCustomDirections(List<Element<Direction>> directions) {
         return directions.stream()
             .filter(element -> !"Yes".equals(element.getValue().getCustom()))
-            .collect(toList());
+            .toList();
     }
 
     /**
@@ -84,7 +84,7 @@ public class CommonDirectionService {
     public List<Element<Direction>> removeUnnecessaryDirections(List<Element<Direction>> directions) {
         return directions.stream()
             .filter(this::removeDirection)
-            .collect(toList());
+            .toList();
     }
 
     private boolean removeDirection(Element<Direction> element) {

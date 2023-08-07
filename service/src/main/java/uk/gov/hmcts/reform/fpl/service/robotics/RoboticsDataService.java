@@ -251,7 +251,7 @@ public class RoboticsDataService {
         List<OrderType> selectedOrderTypes = orders.getOrderType()
             .stream()
             .filter(Objects::nonNull)
-            .collect(toList());
+            .toList();
 
         if (selectedOrderTypes.size() > 1) {
             return selectedOrderTypes.stream()

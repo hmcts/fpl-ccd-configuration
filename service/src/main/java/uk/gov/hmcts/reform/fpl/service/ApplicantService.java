@@ -69,7 +69,7 @@ public class ApplicantService {
                         .value(applicantBuilder.leadApplicantIndicator("Yes").build())
                         .build();
                 })
-                .collect(toList());
+                .toList();
         }
         return applicants;
     }

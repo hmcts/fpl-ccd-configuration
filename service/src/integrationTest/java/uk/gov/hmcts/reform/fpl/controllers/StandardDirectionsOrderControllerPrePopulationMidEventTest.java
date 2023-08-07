@@ -171,7 +171,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
     }
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
-        return directions.stream().map(ElementUtils::element).collect(toList());
+        return directions.stream().map(ElementUtils::element).toList();
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor() {

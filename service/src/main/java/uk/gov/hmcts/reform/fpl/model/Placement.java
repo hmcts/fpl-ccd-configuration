@@ -68,7 +68,7 @@ public class Placement implements SelectableItem {
                     .response(null)
                     .responseDescription(null)
                     .build()))
-                .collect(toList());
+                .toList();
 
             placementBuilder.noticeDocuments(nonConfidentialNotices);
         }

@@ -85,7 +85,7 @@ public class ApplicantLocalAuthorityService {
         final List<String> colleaguesEmails = unwrapElements(colleagues)
             .stream()
             .map(Colleague::getEmail)
-            .collect(toList());
+            .toList();
 
         return validateEmailService.validate(colleaguesEmails, "Colleague");
     }

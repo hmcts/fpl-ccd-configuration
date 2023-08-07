@@ -29,7 +29,7 @@ public class MlaLookupConfiguration {
             this.mapping = LookupConfigParser.parse(config, value -> Stream.of(value.split("\\|"))
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotBlank)
-                .collect(toList()));
+                .toList());
         }
     }
 

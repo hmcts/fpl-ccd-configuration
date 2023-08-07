@@ -112,7 +112,7 @@ public class OthersService {
             }
             return selector.getSelected().stream()
                 .map(others::get)
-                .collect(toList());
+                .toList();
         }
     }
 
@@ -154,7 +154,7 @@ public class OthersService {
 
     // This finds firstOther element id in confidential others that doesn't match.
     private Other getFirstOther(List<Element<Other>> confidentialOthers, List<Element<Other>> others) {
-        List<UUID> ids = others.stream().map(Element::getId).collect(toList());
+        List<UUID> ids = others.stream().map(Element::getId).toList();
 
         if (!others.isEmpty()) {
             return confidentialOthers.stream()

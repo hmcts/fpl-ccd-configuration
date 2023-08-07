@@ -42,7 +42,7 @@ public class TestLogsExtension implements AfterTestExecutionCallback, TestInstan
                     throw new RuntimeException(e);
                 }
             })
-            .collect(toList());
+            .toList();
     }
 
     @Override

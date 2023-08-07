@@ -184,7 +184,7 @@ public class ManageHearingsController extends CallbackController {
 
             List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings()
                 .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
-                .collect(toList());
+                .toList();
 
             Collections.reverse(nonCancelledHearings);
 

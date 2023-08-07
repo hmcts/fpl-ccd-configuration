@@ -43,7 +43,7 @@ public class UndeliveredEmailsFinder implements Job {
                 .filter(email -> email.getCompletedAt().isPresent())
                 .filter(email -> email.getCompletedAt().get().isAfter(reportFrom))
                 .map(UndeliveredEmail::fromNotification)
-                .collect(toList());
+                .toList();
 
             if (undeliveredEmails.isEmpty()) {
                 log.info("Job '{}' did not find any undelivered emails", jobName);

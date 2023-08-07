@@ -29,7 +29,7 @@ public class PaymentService {
     private List<Payment> pollPayments(Long caseId, User user, Predicate<Payment> paymentPredicate) {
         return pollPayment(caseId, user, emails -> emails.stream().anyMatch(paymentPredicate)).stream()
             .filter(paymentPredicate)
-            .collect(toList());
+            .toList();
     }
 
     private List<Payment> pollPayment(Long caseId, User user, Predicate<List<Payment>> emails) {

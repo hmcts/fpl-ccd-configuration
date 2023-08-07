@@ -21,7 +21,7 @@ public abstract class PropertiesChecker implements EventChecker {
             CaseDataParent.class.getDeclaredFields())
         .flatMap(Arrays::stream)
         .map(Field::getName)
-        .collect(toList());
+        .toList();
 
     @Autowired
     private javax.validation.Validator validator;
@@ -32,7 +32,7 @@ public abstract class PropertiesChecker implements EventChecker {
                 .filter(violation -> propertiesToBeValidated.contains(getViolatedProperty(violation)))
                 .map(ConstraintViolation::getMessage)
                 .distinct()
-                .collect(toList());
+                .toList();
     }
 
     private String getViolatedProperty(ConstraintViolation<CaseData> violation) {

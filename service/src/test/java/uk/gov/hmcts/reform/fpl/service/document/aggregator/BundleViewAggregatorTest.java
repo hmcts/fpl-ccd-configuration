@@ -80,7 +80,7 @@ class BundleViewAggregatorTest {
             FURTHER_EVIDENCE_BUNDLE_VIEWS,
             RESPONDENT_STATEMENT_BUNDLE_VIEWS,
             OTHER_DOCUMENTS_BUNDLE_VIEWS
-        ).flatMap(Collection::stream).collect(toList()));
+        ).flatMap(Collection::stream).toList());
     }
 
     @Test

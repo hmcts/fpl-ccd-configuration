@@ -236,7 +236,7 @@ public class DraftOrderService {
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
         return cmoDrafts.stream()
             .map(Element::getId)
-            .collect(toList())
+            .toList()
             .contains(draft.getId());
     }
 
@@ -285,7 +285,7 @@ public class DraftOrderService {
 
         bundlesForReview.addAll(bundles.stream().filter(this::containsHearingDraftCmo)
                 .map(element -> element(cloneHearingOrdersBundle(element.getValue())))
-                .collect(toList()));
+                .toList());
 
         filterOrders(bundlesForReview, not(DRAFT_CMO::equals));
         filterOrders(bundles, DRAFT_CMO::equals);
@@ -305,7 +305,7 @@ public class DraftOrderService {
                     hearingOrderElement.getId(),
                     hearingOrderElement.getValue().toBuilder().build())
                 )
-                .collect(toList());
+                .toList();
         HearingOrdersBundle clonedHearingOrdersBundle = hearingOrdersBundle.toBuilder()
                 .orders(new ArrayList<>())
                 .build();
@@ -360,7 +360,7 @@ public class DraftOrderService {
         return hearings.stream()
             .filter(hearing -> associatedToUnreviewedCMO(hearing, unsealedOrders)
                 || !hearing.getValue().hasCMOAssociation())
-            .collect(toList());
+            .toList();
     }
 
     private void insertOrder(List<Element<HearingOrder>> unsealedOrders, Element<HearingOrder> order, UUID id) {

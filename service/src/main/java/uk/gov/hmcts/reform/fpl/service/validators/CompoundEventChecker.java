@@ -26,13 +26,13 @@ public abstract class CompoundEventChecker implements EventChecker {
 
                 List<String> formattedEventErrors = eventErrors.getErrors().stream()
                     .map(error -> format("• %s", error))
-                    .collect(toList());
+                    .toList();
 
                 formattedEventErrors.add(0, groupName);
 
                 return formattedEventErrors.stream();
             })
-            .collect(toList());
+            .toList();
     }
 
     public List<EventValidationErrors> validateEvents(CaseData caseData, List<Event> events) {
@@ -42,9 +42,9 @@ public abstract class CompoundEventChecker implements EventChecker {
                 .errors(eventChecker.validate(event, caseData).stream()
                     .distinct()
                     .sorted()
-                    .collect(toList()))
+                    .toList())
                 .build())
             .filter(eventErrors -> isNotEmpty(eventErrors.getErrors()))
-            .collect(toList());
+            .toList();
     }
 }

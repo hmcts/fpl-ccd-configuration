@@ -63,7 +63,7 @@ public class OtherDocumentsTransformer {
                 .uploadedAt(isNotEmpty(doc.getScannedDate())
                     ? formatLocalDateTimeBaseUsingFormat(doc.getScannedDate(), TIME_DATE) : null)
                 .title(doc.getFileName()).build())
-            .collect(toList());
+            .toList();
     }
 
     private List<DocumentView> getHearingFurtherEvidenceView(
@@ -85,7 +85,7 @@ public class OtherDocumentsTransformer {
                     ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
                 .title(doc.getName())
                 .build())
-            .collect(toList());
+            .toList();
     }
 
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundles(
@@ -112,7 +112,7 @@ public class OtherDocumentsTransformer {
                 .document(doc.getDocument())
                 .title(doc.getDocumentTitle())
                 .fileName(doc.getDocumentTitle()).build())
-            .collect(toList());
+            .toList();
     }
 
     private DocumentBundleView buildBundle(List<DocumentView> documents) {

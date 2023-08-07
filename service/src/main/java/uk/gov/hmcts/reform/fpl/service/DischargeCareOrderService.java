@@ -35,7 +35,7 @@ public class DischargeCareOrderService {
         return caseData.getOrderCollection().stream()
             .map(Element::getValue)
             .filter(order -> OrderHelper.isOfType(order, CARE_ORDER))
-            .collect(toList());
+            .toList();
     }
 
     public List<GeneratedOrder> getSelectedCareOrders(CaseData caseData) {
@@ -47,7 +47,7 @@ public class DischargeCareOrderService {
         } else {
             return caseData.getCareOrderSelector().getSelected().stream()
                 .map(careOrders::get)
-                .collect(toList());
+                .toList();
         }
     }
 
@@ -56,7 +56,7 @@ public class DischargeCareOrderService {
             .flatMap(order -> (isEmpty(order.getChildren()) ? caseData.getAllChildren() : order.getChildren()).stream())
             .map(Element::getValue)
             .filter(distinct(child -> Arrays.asList(child.getParty().getFullName(), child.getParty().getDateOfBirth())))
-            .collect(toList());
+            .toList();
     }
 
     public String getOrdersLabel(List<GeneratedOrder> careOrders) {

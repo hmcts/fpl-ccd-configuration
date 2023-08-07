@@ -77,7 +77,7 @@ public class StandardDirectionsService {
         return ordersLookupService.getStandardDirectionOrder().getStandardDirections()
             .stream()
             .map(configuration -> constructDirectionForCCD(hearingStartDate, configuration))
-            .collect(toList());
+            .toList();
     }
 
     private Element<Direction> constructDirectionForCCD(LocalDateTime hearingDate, DirectionConfiguration direction) {

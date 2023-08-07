@@ -62,12 +62,12 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
         List<Element<SupportingEvidenceBundle>> hmctsDocuments = nullSafeList(caseData.getFurtherEvidenceDocuments())
             .stream()
             .filter(doc -> (view.isIncludeConfidentialHMCTS() || !doc.getValue().isConfidentialDocument()))
-            .collect(toList());
+            .toList();
 
         List<Element<SupportingEvidenceBundle>> laDocuments = nullSafeList(caseData.getFurtherEvidenceDocumentsLA())
             .stream()
             .filter(doc -> (view.isIncludeConfidentialLA() || !doc.getValue().isConfidentialDocument()))
-            .collect(toList());
+            .toList();
 
         List<Element<SupportingEvidenceBundle>> solicitorDocuments = nullSafeList(
             caseData.getFurtherEvidenceDocumentsSolicitor());

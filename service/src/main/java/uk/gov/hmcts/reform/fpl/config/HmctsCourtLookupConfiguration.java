@@ -31,7 +31,7 @@ public class HmctsCourtLookupConfiguration {
 
         return entry.getValue().stream()
             .map(this::convert)
-            .collect(toList());
+            .toList();
     }
 
     private Court convert(String value) {

@@ -135,7 +135,7 @@ public class TaskListRenderer {
             additionalInformation,
             sentApplication)
             .filter(TaskSection::hasAnyTask)
-            .collect(toList());
+            .toList();
     }
 
     private List<String> renderSection(TaskSection sec) {
@@ -192,7 +192,7 @@ public class TaskListRenderer {
             .flatMap(task -> task.getErrors()
                 .stream()
                 .map(error -> format("%s in the %s", error, taskListRenderElements.renderLink(task.getEvent()))))
-            .collect(toList());
+            .toList();
 
         return taskListRenderElements.renderCollapsible("Why can't I submit my application?", errors);
     }

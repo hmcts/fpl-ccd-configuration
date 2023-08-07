@@ -91,7 +91,7 @@ public class ChildrenService {
         return caseData.getAllChildren().stream()
             .filter(child -> !YES.getValue().equals(child.getValue().getFinalOrderIssued())
                 && child.getValue().getFinalDecisionReason() == null)
-            .collect(toList());
+            .toList();
     }
 
     /**
@@ -145,7 +145,7 @@ public class ChildrenService {
         return range(0, caseData.getAllChildren().size())
             .filter(idx -> YES.getValue().equals(caseData.getAllChildren().get(idx).getValue().getFinalOrderIssued()))
             .boxed()
-            .collect(toList());
+            .toList();
     }
 
     public List<Element<Child>> getSelectedChildren(CaseData caseData) {
@@ -166,7 +166,7 @@ public class ChildrenService {
 
         return selector.getSelected().stream()
             .map(children::get)
-            .collect(toList());
+            .toList();
     }
 
     private boolean useAllChildren(String appliesToAllChildren) {

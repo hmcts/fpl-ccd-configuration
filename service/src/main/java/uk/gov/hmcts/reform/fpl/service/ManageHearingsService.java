@@ -128,7 +128,7 @@ public class ManageHearingsService {
         List<Element<HearingBooking>> nonCancelledHearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> sortedNonCancelledHearings = nonCancelledHearings
             .stream().sorted(Comparator.comparing(hearingBooking -> hearingBooking.getValue().getStartDate()))
-            .collect(toList());
+            .toList();
 
         Collections.reverse(sortedNonCancelledHearings);
 
@@ -341,7 +341,7 @@ public class ManageHearingsService {
         if (exists) {
             caseData.setHearingDetails(hearingBookings.stream()
                 .map(hearing -> hearing.getId().equals(hearingBooking.getId()) ? hearingBooking : hearing)
-                .collect(toList()));
+                .toList());
         } else {
             caseData.addHearingBooking(hearingBooking);
         }
@@ -684,7 +684,7 @@ public class ManageHearingsService {
                         hearingOrderElement.getValue().setHearing(hearing.getValue().toLabel());
                     }
                     return hearingOrderElement;
-                }).collect(toList());
+                }).toList();
 
             caseData.toBuilder().draftUploadedCMOs(updatedDraftOrders).build();
         }

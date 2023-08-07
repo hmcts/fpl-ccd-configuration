@@ -75,7 +75,7 @@ public class PlacementEventData {
         }
         return placements.stream()
             .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
-            .collect(toList());
+            .toList();
     }
 
     public void setPlacement(Placement placement) {

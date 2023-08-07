@@ -30,14 +30,14 @@ public class ElementUtils {
         return Stream.of(elements)
             .filter(Objects::nonNull)
             .map(element -> Element.<T>builder().value(element).build())
-            .collect(toList());
+            .toList();
     }
 
     public static <T> List<Element<T>> wrapElements(List<T> elements) {
         return nullSafeCollection(elements).stream()
             .filter(Objects::nonNull)
             .map(element -> Element.<T>builder().value(element).build())
-            .collect(toList());
+            .toList();
     }
 
     @SafeVarargs
@@ -45,14 +45,14 @@ public class ElementUtils {
         return Stream.of(elements)
             .filter(Objects::nonNull)
             .map(ElementUtils::element)
-            .collect(toList());
+            .toList();
     }
 
     public static <T> List<Element<T>> wrapElementsWithUUIDs(List<T> elements) {
         return nullSafeCollection(elements).stream()
             .filter(Objects::nonNull)
             .map(ElementUtils::element)
-            .collect(toList());
+            .toList();
     }
 
     @SafeVarargs
@@ -61,7 +61,7 @@ public class ElementUtils {
         return Stream.of(elements)
             .filter(Objects::nonNull)
             .map(ElementUtils::element)
-            .collect(toList());
+            .toList();
     }
 
     @Deprecated // use wrapElementsWithUUIDs instead
@@ -69,7 +69,7 @@ public class ElementUtils {
         return nullSafeCollection(elements).stream()
             .filter(Objects::nonNull)
             .map(ElementUtils::element)
-            .collect(toList());
+            .toList();
     }
 
     public static <T> List<T> unwrapElements(List<Element<T>> elements) {
@@ -77,7 +77,7 @@ public class ElementUtils {
             .stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
-            .collect(toList());
+            .toList();
     }
 
     public static <T> Element<T> element(T element) {
@@ -113,7 +113,7 @@ public class ElementUtils {
     public static <T> List<UUID> findElementsId(T elementToFind, List<Element<T>> elements) {
         return findElements(elementToFind, elements).stream()
             .map(Element::getId)
-            .collect(toList());
+            .toList();
     }
 
     public static <T> DynamicList asDynamicList(List<Element<T>> elements,
@@ -134,7 +134,7 @@ public class ElementUtils {
                 .code(element.getId())
                 .label(labelProducer.apply(element.getValue()))
                 .build())
-            .collect(toList());
+            .toList();
 
         items.addAll(0, additionalItems);
 
@@ -179,6 +179,6 @@ public class ElementUtils {
     public static <T> List<Element<T>> removeElementWithUUID(List<Element<T>> elements, UUID id) {
         return nullSafeCollection(elements).stream()
             .filter(element -> !element.getId().equals(id))
-            .collect(toList());
+            .toList();
     }
 }

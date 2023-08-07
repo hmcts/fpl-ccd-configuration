@@ -20,7 +20,7 @@ public abstract class AbstractValidationTest {
     private Validator validator;
 
     public <T> List<String> validate(T object, Class<?>... groups) {
-        return validator.validate(object, groups).stream().map(ConstraintViolation::getMessage).collect(toList());
+        return validator.validate(object, groups).stream().map(ConstraintViolation::getMessage).toList();
     }
 
 }

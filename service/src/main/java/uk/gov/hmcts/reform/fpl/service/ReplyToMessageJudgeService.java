@@ -167,7 +167,7 @@ public class ReplyToMessageJudgeService extends MessageJudgeService {
                 }
 
                 return judicialMessageElement;
-            }).collect(toList());
+            }).toList();
     }
 
     private String buildMessageHistory(JudicialMessage reply, JudicialMessage previousMessage, String sender) {

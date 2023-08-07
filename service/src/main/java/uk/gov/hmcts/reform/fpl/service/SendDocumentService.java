@@ -45,7 +45,7 @@ public class SendDocumentService {
                 .map(doc -> DocumentReferenceWithLanguage.builder()
                     .documentReference(doc)
                     .build())
-                .collect(toList()),
+                .toList(),
             parties));
     }
 
@@ -58,7 +58,7 @@ public class SendDocumentService {
 
         List<Recipient> deliverableRecipients = recipients.stream()
             .filter(Recipient::isDeliverable)
-            .collect(toList());
+            .toList();
 
         if (recipients.size() != deliverableRecipients.size()) {
             log.error("Case {} has {} recipients with incomplete postal information", caseData.getId(),
@@ -73,7 +73,7 @@ public class SendDocumentService {
                     caseData.getId(),
                     caseData.getFamilyManCaseNumber(),
                     document.getLanguage()).stream())
-                .collect(toList());
+                .toList();
 
             // Pop the audit trail on the case data if successful
             caseService.performPostSubmitCallback(caseData.getId(), UPDATE_CASE_EVENT,
@@ -108,7 +108,7 @@ public class SendDocumentService {
                 .filter(respondent -> !respondent.getValue().isDeceasedOrNFA())
                 .map(respondent -> respondent.getValue().getParty().toBuilder()
                         .address(getPartyAddress(respondent, caseData)).build())
-                .collect(toList());
+                .toList();
         }
 
         return emptyList();
