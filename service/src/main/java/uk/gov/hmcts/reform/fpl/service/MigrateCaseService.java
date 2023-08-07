@@ -75,7 +75,7 @@ public class MigrateCaseService {
                 if (el.getId().equals(bundleId)) {
                     List<Element<HearingOrder>> orders = el.getValue().getOrders().stream()
                         .filter(orderEl -> !orderEl.getId().equals(orderId))
-                        .toList();
+                        .collect(toList());
                     el.getValue().setOrders(orders);
                 }
                 return el;
