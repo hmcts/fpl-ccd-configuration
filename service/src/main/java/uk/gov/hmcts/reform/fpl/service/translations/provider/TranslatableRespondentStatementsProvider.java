@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.unmodifiableList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;

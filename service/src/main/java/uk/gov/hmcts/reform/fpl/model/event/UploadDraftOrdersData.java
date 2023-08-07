@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;

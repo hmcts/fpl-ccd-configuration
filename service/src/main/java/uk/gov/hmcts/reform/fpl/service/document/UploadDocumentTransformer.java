@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;

@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 

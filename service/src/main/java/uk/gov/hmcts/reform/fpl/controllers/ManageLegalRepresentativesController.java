@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.validators.ManageLegalRepresentativesValidator;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 

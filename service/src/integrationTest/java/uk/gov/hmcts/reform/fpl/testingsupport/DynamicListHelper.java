@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 

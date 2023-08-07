@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConfidentialBundleHelper {
 

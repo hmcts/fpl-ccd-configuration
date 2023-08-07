@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;

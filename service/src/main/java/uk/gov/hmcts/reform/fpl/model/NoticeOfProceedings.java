@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Data
 @Builder(toBuilder = true)

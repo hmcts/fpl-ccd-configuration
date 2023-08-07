@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 

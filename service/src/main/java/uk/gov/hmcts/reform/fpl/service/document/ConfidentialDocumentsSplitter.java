@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Component
 public class ConfidentialDocumentsSplitter {

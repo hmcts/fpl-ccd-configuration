@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 

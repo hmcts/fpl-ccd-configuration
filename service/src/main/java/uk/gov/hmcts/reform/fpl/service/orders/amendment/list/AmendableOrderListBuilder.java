@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;

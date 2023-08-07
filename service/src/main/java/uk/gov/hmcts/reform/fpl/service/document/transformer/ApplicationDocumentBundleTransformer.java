@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;

@@ -4,7 +4,7 @@ import lombok.Builder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Builder
 public class Filter implements ESClause<Map<String, Object>> {

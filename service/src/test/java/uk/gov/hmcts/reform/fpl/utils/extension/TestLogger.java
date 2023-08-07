@@ -7,7 +7,7 @@ import ch.qos.logback.core.read.ListAppender;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class TestLogger extends ListAppender<ILoggingEvent> implements AutoCloseable {
 

@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Component
 @RequiredArgsConstructor
