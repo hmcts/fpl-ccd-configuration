@@ -70,10 +70,12 @@ rd_professional:
 
 rd_judicial:
   api:
+    enabled: true
     url: ${RD_JUDICIAL_API_URL:http://localhost:8765}
 
 rd_staff:
   api:
+    enabled: false
     url: ${RD_STAFF_API_URL:http://localhost:8765}
 
 am_role_assignment:

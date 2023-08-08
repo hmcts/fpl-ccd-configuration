@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.config.rd;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.JudicialService.JUDICIAL_PAGE_SIZE;
 
 @Slf4j
@@ -31,12 +33,17 @@ public class JudicialUsersConfiguration {
 
     public JudicialUsersConfiguration(@Autowired JudicialApi judicialApi,
                                       @Autowired SystemUserService systemUserService,
-                                      @Autowired AuthTokenGenerator authTokenGenerator) {
+                                      @Autowired AuthTokenGenerator authTokenGenerator,
+                                      @Value("${rd_judicial.api.enabled:false}") boolean jrdEnabled) {
         this.judicialApi = judicialApi;
         this.systemUserService = systemUserService;
         this.authTokenGenerator = authTokenGenerator;
         log.info("Attempting to gather all judges");
-        mapping = this.getAllJudges();
+        if (jrdEnabled) {
+            mapping = this.getAllJudges();
+        } else {
+            mapping = Map.of();
+        }
         log.info("Loaded {} judges", mapping.size());
     }
 
@@ -54,7 +61,7 @@ public class JudicialUsersConfiguration {
                 .build());
 
         return users.stream()
+            .filter(jup -> !isEmpty(jup.getSidamId()))
             .collect(Collectors.toMap(JudicialUserProfile::getEmailId, JudicialUserProfile::getSidamId));
     }
-
 }

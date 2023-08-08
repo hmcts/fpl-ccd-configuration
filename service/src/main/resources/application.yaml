@@ -341,3 +341,11 @@ contacts:
 
 create-system-user-role:
   enabled: ${CREATE_SYSTEM_USER_ROLE:false}
+
+rd_staff:
+  api:
+    enabled: true
+
+rd_judicial:
+  api:
+    enabled: true

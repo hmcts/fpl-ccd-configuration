@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.config.rd;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -31,12 +32,17 @@ public class LegalAdviserUsersConfiguration {
 
     public LegalAdviserUsersConfiguration(@Autowired SystemUserService systemUserService,
                                           @Autowired AuthTokenGenerator authTokenGenerator,
-                                          @Autowired StaffApi staffApi) {
+                                          @Autowired StaffApi staffApi,
+                                          @Value("${rd_staff.api.enabled:false}") boolean staffEnabled) {
         this.systemUserService = systemUserService;
         this.authTokenGenerator = authTokenGenerator;
         this.staffApi = staffApi;
         log.info("Attempting to gather all legal advisers");
-        mapping = this.getAllLegalAdvisers();
+        if (staffEnabled) {
+            mapping = this.getAllLegalAdvisers();
+        } else {
+            mapping = Map.of();
+        }
         log.info("Loaded {} legal advisers", mapping.size());
     }
 
