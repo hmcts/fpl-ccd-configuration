@@ -12,16 +12,24 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
@@ -159,6 +167,123 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(responseData.getSendToCtsc()).isEqualTo("Yes");
         }
+
+    }
+
+    @Nested
+    class DfplAm {
+
+        private final String migrationId = "DFPL-AM";
+
+        @Test
+        void shouldUpdateAllocatedJudgeId() {
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+        @Test
+        void shouldUpdateAllocatedJudgeIdIfLegalAdviser() {
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+
+        @Test
+        void shouldUpdateHearingJudgeIdIfLegalAdviser() {
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+        @Test
+        void shouldUpdateHearingJudgeIdIfJudge() {
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
 
     }
 }

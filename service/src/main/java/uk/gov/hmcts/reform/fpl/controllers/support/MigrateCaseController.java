@@ -229,10 +229,11 @@ public class MigrateCaseController extends CallbackController {
             uuid.ifPresent(s -> caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
                 .judgeJudicialUser(JudicialUser.builder()
                     .idamId(s)
-                    .build())));
+                    .build())
+                .build()));
         }
 
-        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> hearings = caseData.getAllNonCancelledHearings();
         List<Element<HearingBooking>> modified = hearings.stream()
             .map(el -> {
                 HearingBooking val = el.getValue();
