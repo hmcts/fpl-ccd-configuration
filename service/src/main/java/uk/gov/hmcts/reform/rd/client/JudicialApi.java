@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 
 @FeignClient(
     name = "rd-judicial-api",
-    url = "${judicial_ref_data.api.url}",
+    url = "${rd_judicial.api.url}",
     configuration = FeignClientConfiguration.class
 )
 public interface JudicialApi {

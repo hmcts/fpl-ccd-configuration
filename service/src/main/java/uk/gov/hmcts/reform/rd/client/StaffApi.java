@@ -11,7 +11,7 @@ import java.util.List;
 
 @FeignClient(
     name = "rd-staff-api",
-    url = "${staff_ref_data.api.url}",
+    url = "${rd_staff.api.url}",
     configuration = FeignClientConfiguration.class
 )
 public interface StaffApi {
