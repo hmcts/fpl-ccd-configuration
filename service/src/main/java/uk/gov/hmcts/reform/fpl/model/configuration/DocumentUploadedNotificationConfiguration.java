@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
  * Confidential level configuration for document uploaded notification
  * e.g. sendToCafcassEngland
  * If set to LA, only send notification to cafcass england when a LA level or non-confidential level document is uploaded
- * If null, no notification will be sent cafcass england.
+ * If null, no notification will be sent to cafcass england.
  */
 @Getter
 @Builder
