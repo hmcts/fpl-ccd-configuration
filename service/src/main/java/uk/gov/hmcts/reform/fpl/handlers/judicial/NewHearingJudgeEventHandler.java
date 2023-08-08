@@ -38,7 +38,8 @@ public class NewHearingJudgeEventHandler {
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getIdamId())) {
 
             // have an IDAM ID - use that to grant the role
-            judicialService.assignHearingJudge(event.getCaseId(), hearingJudge.getJudgeJudicialUser().getIdamId(),
+            judicialService.assignHearingJudge(event.getCaseId(),
+                hearingJudge.getJudgeJudicialUser().getIdamId(),
                 event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
                 hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR));
         } else if (!isEmpty(hearingJudge.getJudgeJudicialUser())

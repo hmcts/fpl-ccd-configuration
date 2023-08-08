@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.config.rd;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
@@ -50,6 +53,7 @@ public class LegalAdviserUsersConfiguration {
         return Optional.ofNullable(mapping.getOrDefault(email, null));
     }
 
+    @Retryable(value = FeignException.class, recover = "recoverFailedLegalAdviserCall")
     public Map<String, String> getAllLegalAdvisers() {
         String systemUserToken = systemUserService.getSysUserToken();
 
@@ -58,6 +62,12 @@ public class LegalAdviserUsersConfiguration {
 
         return staff.stream()
             .collect(Collectors.toMap(StaffProfile::getEmailId, StaffProfile::getCaseWorkerId));
+    }
+
+    @Recover
+    public Map<String, String> recoverFailedLegalAdviserCall(FeignException e) {
+        log.error("Could not download list of publiclaw legal advisers from SRD", e);
+        return Map.of();
     }
 
 }

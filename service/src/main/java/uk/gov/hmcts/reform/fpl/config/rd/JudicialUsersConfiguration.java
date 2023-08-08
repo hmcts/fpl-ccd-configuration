@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.config.rd;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
@@ -51,6 +54,7 @@ public class JudicialUsersConfiguration {
         return Optional.ofNullable(mapping.getOrDefault(email, null));
     }
 
+    @Retryable(value = FeignException.class, recover = "recoverFailedJudgeCall")
     public Map<String, String> getAllJudges() {
         String systemUserToken = systemUserService.getSysUserToken();
 
@@ -64,4 +68,11 @@ public class JudicialUsersConfiguration {
             .filter(jup -> !isEmpty(jup.getSidamId()))
             .collect(Collectors.toMap(JudicialUserProfile::getEmailId, JudicialUserProfile::getSidamId));
     }
+
+    @Recover
+    public Map<String, String> recoverFailedJudgeCall(FeignException e) {
+        log.error("Could not download list of publiclaw judiciary from JRD", e);
+        return Map.of();
+    }
+
 }
