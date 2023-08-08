@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
@@ -351,6 +352,12 @@ public class ManageHearingsController extends CallbackController {
                 }
             } else {
                 // entered the judge manually
+                if (caseData.getHearingJudge().getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)) {
+                    Optional<String> possibleEmail = judicialService
+                        .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
+
+
+                }
                 caseDetails.getData().put("judgeAndLegalAdvisor",
                     JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
                         .legalAdvisorName(caseData.getLegalAdvisorName())
