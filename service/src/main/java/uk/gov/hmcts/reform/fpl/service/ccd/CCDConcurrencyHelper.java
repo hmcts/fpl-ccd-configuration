@@ -28,6 +28,7 @@ public class CCDConcurrencyHelper {
     public StartEventResponse startEvent(Long caseId, String eventName) {
         String userToken = systemUserService.getSysUserToken();
         String systemUpdateUserId = systemUserService.getUserId(userToken);
+        log.info("Event name for childControllerSubmittedTest {}", eventName);
 
         return coreCaseDataApi.startEventForCaseWorker(
             userToken,

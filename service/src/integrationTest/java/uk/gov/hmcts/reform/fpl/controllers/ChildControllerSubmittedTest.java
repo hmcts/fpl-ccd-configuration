@@ -228,14 +228,16 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
+            .submitEvent(any(), eq(CASE_ID), any());
+
         /*verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(eq(internalChangeStartEventResponse), eq(CASE_ID), eq(changeRequest));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(eq(internalUpdateStartEventResponse), eq(CASE_ID), any());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(eq(updateRepresentationStartEventResponse), eq(CASE_ID), any());*/
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
-            .submitEvent(any(), eq(CASE_ID), any());
+
     }
 
     @Test
