@@ -94,11 +94,17 @@ public class ManageDocumentsUploadedEventHandler {
     }
 
     /**
-     * Send notification to the given recipient.
+     * Base on the confidential level configuration, send notification to the given recipient.
+     * e.g.
+     * Given: A CTSC level doc and a LA level doc are uploaded
+     * Case 1: Both files are allowed to be sent to a CTSC level user
+     * Case 2: Only LA level doc is allowed to be sent to a LA level user
+     * Case 2: No doc is allowed to be sent to a non-confidential level user
+     *
      * @param event the ManageDocumentsUploadedEvent
      * @param recipients the recipients to be sent
      * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
-     *                             returns the confidential level of the targeted user type on that document type
+     *                                     returns the confidential level of the targeted user type on that document type.
      *                                     e.g. To get the confidential level of respondent solicitor
      *                                          DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
      */
@@ -161,6 +167,7 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
+    @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
     public void sendHearingDocumentsToCafcass(final ManageDocumentsUploadedEvent event) {
@@ -177,13 +184,17 @@ public class ManageDocumentsUploadedEventHandler {
     }
 
     /**
-     * Returns all files uploaded in the event which satisfied the given confidential level
+     * Base on the notification configuration of each file type, returns all files uploaded in the event which satisfy the confidential level configured.
+     * e.g.
+     * Given: A user has CTSC level over DocumentType A and non-confidential level over DocumentType B.
+     * If any, this method will return all newly uploaded documents of DocumentType A and only non-confidential documents of DocumentType B.
+     *
      * @param event the ManageDocumentsUploadedEvent
      * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
-     *                             returns the confidential level of the targeted user type on that document type
-     *                             e.g. To get the confidential level of respondent solicitor
-     *                                  DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
-     * @return
+     *                                     returns the confidential level of the targeted user type on that document type.
+     *                                     e.g. To get the confidential level of respondent solicitor
+     *                                         DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
+     * @return Lists of documents grouped by document type
      */
     private Map<DocumentType, List<Element<NotifyDocumentUploaded>>> consolidateMapByConfiguration(
             ManageDocumentsUploadedEvent event,
