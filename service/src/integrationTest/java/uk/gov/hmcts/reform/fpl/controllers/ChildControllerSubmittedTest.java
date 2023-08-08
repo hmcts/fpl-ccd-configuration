@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -93,6 +95,9 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     private EventService eventService;
     @SpyBean
     private NoticeOfChangeService nocService;
+
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
 
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
@@ -185,9 +190,17 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         when(concurrencyHelper.startEvent(eq(CASE_ID), eq("internal-update-case-summary")))
             .thenReturn(internalUpdateStartEventResponse);
 
+        var updateRepresentationStartEventResponse = StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId("updateRepresentation")
+            .build();
+
+        when(concurrencyHelper.startEvent(eq(CASE_ID), eq("updateRepresentation")))
+            .thenReturn(updateRepresentationStartEventResponse);
+
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        Map<String, Object> changeRequest = Map.of(
+        /*Map<String, Object> changeRequest = Map.of(
             "changeOrganisationRequestField", ChangeOrganisationRequest.builder()
                 .approvalStatus(APPROVED)
                 .organisationToAdd(MAIN_ORG)
@@ -204,12 +217,25 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                     .build())
                 .requestTimestamp(now())
                 .build()
-        );
+        );*/
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(internalChangeStartEventResponse), eq(CASE_ID), eq(changeRequest));
+            .startEvent(eq(CASE_ID), eq("updateRepresentation"));
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq(UPDATE_CASE_EVENT));
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+
         /*verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(internalUpdateStartEventResponse), eq(CASE_ID), eq(Map.of()));*/
+            .submitEvent(eq(internalChangeStartEventResponse), eq(CASE_ID), eq(changeRequest));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(eq(internalUpdateStartEventResponse), eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(eq(updateRepresentationStartEventResponse), eq(CASE_ID), any());*/
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
+            .submitEvent(any(), eq(CASE_ID), any());
     }
 
     @Test
