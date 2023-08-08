@@ -121,8 +121,7 @@ public class ManageDocumentsUploadedEventHandler {
             if (isNotEmpty(recipients)) {
                 List<String> newDocumentNames = documentsToBeSent.values().stream().flatMap(List::stream)
                     .map(Element::getValue)
-                    .map(NotifyDocumentUploaded::getDocument)
-                    .map(DocumentReference::getFilename)
+                    .map(NotifyDocumentUploaded::getName)
                     .collect(toList());
 
                 if (!newDocumentNames.isEmpty()) {
