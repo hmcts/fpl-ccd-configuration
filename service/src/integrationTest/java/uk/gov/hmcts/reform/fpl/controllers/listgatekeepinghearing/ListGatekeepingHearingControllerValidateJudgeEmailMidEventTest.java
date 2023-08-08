@@ -50,7 +50,7 @@ class ListGatekeepingHearingControllerValidateJudgeEmailMidEventTest extends Abs
 
     @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
-        given(jrdApi.findUserByPersonalCode(any(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
+        given(jrdApi.findUsers(any(), any(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
             .build()));
         CaseData caseData = CaseData.builder()
             .useAllocatedJudge(YesNo.NO)

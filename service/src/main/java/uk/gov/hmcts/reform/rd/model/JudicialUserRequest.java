@@ -19,6 +19,9 @@ public class JudicialUserRequest {
     @JsonProperty("personal_code")
     private List<String> personalCode;
 
+    @JsonProperty("ccdServiceName")
+    private String ccdServiceName;
+
     public static JudicialUserRequest fromPersonalCode(String personalCode) {
         return JudicialUserRequest.builder()
             .personalCode(List.of(personalCode))

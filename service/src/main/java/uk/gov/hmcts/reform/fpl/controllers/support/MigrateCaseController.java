@@ -16,7 +16,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
@@ -66,7 +69,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
         "DFPL-1352", this::run1352,
-        "DFPL-1486", this::run1486
+        "DFPL-1486", this::run1486,
+        "DFPL-AM", this::runAM
     );
 
     @PostMapping("/about-to-submit")
@@ -211,5 +215,45 @@ public class MigrateCaseController extends CallbackController {
     private void run1486(CaseDetails caseDetails) {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    }
+
+    private void runAM(CaseDetails caseDetails) {
+        var migrationId = "DFPL-AM";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Judge allocatedJudge = caseData.getAllocatedJudge();
+        if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
+            Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
+            // add the UUID to the allocated judge and save on the case
+            uuid.ifPresent(s -> caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId(s)
+                    .build())));
+        }
+
+        List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+        List<Element<HearingBooking>> modified = hearings.stream()
+            .map(el -> {
+                HearingBooking val = el.getValue();
+                if (!isEmpty(val.getJudgeAndLegalAdvisor())
+                    && !isEmpty(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
+                    Optional<String> uuid = judicialService
+                        .getJudgeUserIdFromEmail(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
+                    if (uuid.isPresent()) {
+                        el.setValue(val.toBuilder()
+                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
+                                    .judgeJudicialUser(JudicialUser.builder()
+                                        .idamId(uuid.get())
+                                        .build())
+                                    .build())
+                            .build());
+                        return el;
+                    }
+                }
+                return el;
+            }).toList();
+
+        caseDetails.getData().put("hearingDetails", modified);
     }
 }

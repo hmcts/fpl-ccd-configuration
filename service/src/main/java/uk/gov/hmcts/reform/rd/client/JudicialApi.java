@@ -21,9 +21,10 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 public interface JudicialApi {
 
     @PostMapping("/refdata/judicial/users")
-    List<JudicialUserProfile> findUserByPersonalCode(
+    List<JudicialUserProfile> findUsers(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @RequestHeader("page_size") int pageSize,
         @RequestBody JudicialUserRequest request
     );
 

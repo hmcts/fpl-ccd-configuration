@@ -18,13 +18,16 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
+import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
+import uk.gov.hmcts.reform.rd.model.StaffProfile;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,9 +47,15 @@ import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignm
 public class JudicialService {
 
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
+    private static final String SERVICE_CODE = "ABA3";
+    private static final String LEGAL_ADVISER_JOB_CODE = "3";
+
+    private static final int JUDICIAL_PAGE_SIZE = 1000;
+    private static final int STAFF_PAGE_SIZE = 500;
 
     private final SystemUserService systemUserService;
     private final JudicialApi judicialApi;
+    private final StaffApi staffApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
     private final RoleAssignmentService roleAssignmentService;
@@ -183,8 +192,9 @@ public class JudicialService {
             return false;
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUserByPersonalCode(systemUserToken,
+        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
             authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
             JudicialUserRequest.fromPersonalCode(personalCode));
 
         return !judges.isEmpty();
@@ -218,8 +228,9 @@ public class JudicialService {
             return Optional.empty();
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        List<JudicialUserProfile> judges = judicialApi.findUserByPersonalCode(systemUserToken,
+        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
             authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
             JudicialUserRequest.fromPersonalCode(personalCode));
 
         if (judges.isEmpty()) {
@@ -361,4 +372,26 @@ public class JudicialService {
         roleAssignmentService.createRoleAssignments(roles);
     }
 
+    public Map<String, String> getAllJudges() {
+        String systemUserToken = systemUserService.getSysUserToken();
+
+        List<JudicialUserProfile> users = judicialApi.findUsers(systemUserToken, authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
+            JudicialUserRequest.builder()
+                .ccdServiceName("PUBLICLAW")
+            .build());
+
+        return users.stream()
+            .collect(Collectors.toMap(JudicialUserProfile::getEmailId, JudicialUserProfile::getSidamId));
+    }
+
+    public Map<String, String> getAllLegalAdvisers() {
+        String systemUserToken = systemUserService.getSysUserToken();
+
+        List<StaffProfile> staff = staffApi.getAllStaffResponseDetails(systemUserToken, authTokenGenerator.generate(),
+            STAFF_PAGE_SIZE, SERVICE_CODE, LEGAL_ADVISER_JOB_CODE);
+
+        return staff.stream()
+            .collect(Collectors.toMap(StaffProfile::getEmailId, StaffProfile::getCaseWorkerId));
+    }
 }
