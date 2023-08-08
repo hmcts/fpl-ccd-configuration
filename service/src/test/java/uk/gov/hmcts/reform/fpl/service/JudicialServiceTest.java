@@ -43,7 +43,6 @@ class JudicialServiceTest {
 
     private static final String EMAIL = "test@test.com";
 
-
     @Mock
     private SystemUserService systemUserService;
     @Mock
@@ -123,7 +122,6 @@ class JudicialServiceTest {
         }
 
     }
-
 
     @Test
     void shouldReturnLegalAdviserEmailIfInMapping() {

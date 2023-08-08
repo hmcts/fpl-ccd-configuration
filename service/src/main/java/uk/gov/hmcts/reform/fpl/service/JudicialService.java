@@ -125,28 +125,18 @@ public class JudicialService {
      * @param caseId the case id to add a case role on
      * @param userId the user to assign allocated-judge to
      */
-    public void assignAllocatedJudge(Long caseId, String userId) {
+    public void assignAllocatedJudge(Long caseId, String userId, boolean isLegalAdviser) {
         // remove existing judges/legal advisers (if any) by setting their role assignment to expire now
         removeExistingAllocatedJudgesAndLegalAdvisers(caseId);
 
         // add new allocated judge
-        roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
-            ZonedDateTime.now().plusYears(10));
-    }
-
-    /**
-     * Assign an allocated-legal-adviser on a case, and REMOVE all existing allocated-[users].
-     *
-     * @param caseId the case id to add a case role on
-     * @param userId the user to assign allocated-legal-adviser to
-     */
-    public void assignAllocatedLegalAdviser(Long caseId, String userId) {
-        // remove existing judges/legal advisers (if any) by setting their role assignment to expire now
-        removeExistingAllocatedJudgesAndLegalAdvisers(caseId);
-
-        // add new allocated judge
-        roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-            ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
+        if (isLegalAdviser) {
+            roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
+                ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
+        } else {
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+                ZonedDateTime.now().plusYears(10));
+        }
     }
 
     /**
@@ -156,25 +146,16 @@ public class JudicialService {
      * @param userId   the user to assign hearing-judge to
      * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
      */
-    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting) {
+    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting, boolean isLegalAdviser) {
         setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
 
-        roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting,
-            ZonedDateTime.now().plusYears(10));
-    }
-
-    /**
-     * Assign a hearing-legal-adviser on a case, and SET all existing hearing-[users] at that time to expire.
-     *
-     * @param caseId   the case id to add a case role on
-     * @param userId   the user to assign hearing-legal-adviser to
-     * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
-     */
-    public void assignHearingLegalAdviser(Long caseId, String userId, ZonedDateTime starting) {
-        setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
-
-        roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
-            ZonedDateTime.now().plusYears(10));
+        if (isLegalAdviser) {
+            roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
+                ZonedDateTime.now().plusYears(10));
+        } else {
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting,
+                ZonedDateTime.now().plusYears(10));
+        }
     }
 
     /**
@@ -289,7 +270,7 @@ public class JudicialService {
 
     // TODO - see if these can be combined/parameterised somehow
     public Optional<String> validateAllocatedJudge(CaseData caseData) {
-        Optional<String> error = Optional.empty();
+        Optional<String> error;
         if (caseData.getEnterManually().equals(YesNo.NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUser());
@@ -302,7 +283,7 @@ public class JudicialService {
     }
 
     public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
-        Optional<String> error = Optional.empty();
+        Optional<String> error;
         if (caseData.getEnterManually().equals(YesNo.NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUser());
@@ -316,7 +297,7 @@ public class JudicialService {
 
 
     public Optional<String> validateHearingJudge(CaseData caseData) {
-        Optional<String> error = Optional.empty();
+        Optional<String> error;
         if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
             // validate judge
             error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());

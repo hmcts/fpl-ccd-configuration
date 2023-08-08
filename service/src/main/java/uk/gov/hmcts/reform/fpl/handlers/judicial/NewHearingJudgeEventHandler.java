@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -38,7 +39,8 @@ public class NewHearingJudgeEventHandler {
 
             // have an IDAM ID - use that to grant the role
             judicialService.assignHearingJudge(event.getCaseId(), hearingJudge.getJudgeJudicialUser().getIdamId(),
-                event.getHearing().getStartDate().atZone(ZoneId.systemDefault()));
+                event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR));
         } else if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getPersonalCode())) {
 
@@ -48,7 +50,8 @@ public class NewHearingJudgeEventHandler {
 
             judge.ifPresentOrElse(judicialUserProfile ->
                     judicialService.assignHearingJudge(event.getCaseId(), judicialUserProfile.getSidamId(),
-                        event.getHearing().getStartDate().atZone(ZoneId.systemDefault())),
+                        event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                        hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)),
                 () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
                     event.getCaseId()));
         } else {

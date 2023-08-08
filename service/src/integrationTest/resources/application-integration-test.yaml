@@ -49,11 +49,11 @@ rd_professional:
   api:
     url: http://fake-rd-professional-api
 
-rd-judicial:
+rd_judicial:
   api:
     url: http://fake-jrd-api
 
-rd-staff:
+rd_staff:
   api:
     url: http://fake-staff-api
 
