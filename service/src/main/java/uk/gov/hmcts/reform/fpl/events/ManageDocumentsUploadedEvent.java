@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.events;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
 public class ManageDocumentsUploadedEvent {
     private final CaseData caseData;
     private final UserDetails initiatedBy;

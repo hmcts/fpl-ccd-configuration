@@ -56,6 +56,7 @@ public class ManageDocumentsUploadedEventHandler {
     public static final String CORRESPONDENCE = "Correspondence";
     public static final String ADDITIONAL_APPLICATIONS = "additional applications"; //TODO TBC obsolete in new flow?
 
+    // TODO unit test
     @Async
     @EventListener
     public void sendDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
@@ -91,6 +92,13 @@ public class ManageDocumentsUploadedEventHandler {
         sendNotification(event,
             furtherEvidenceNotificationService.getChildSolicitorEmails(caseData),
             DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
+    }
+
+    // TODO unit test
+    @Async
+    @EventListener
+    public void sendHearingDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
+        // TODO
     }
 
     /**
@@ -132,6 +140,7 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
+    // TODO unit test
     @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
@@ -166,6 +175,7 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
+    // TODO unit test
     @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener

@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -100,8 +102,10 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         return respond(caseDetailsMap);
     }
 
+    // TODO unit test
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest request) {
-        // TODO DFPL-1609 Notification Logic
+    public void handleSubmitted(@RequestBody CallbackRequest request) throws Exception {
+        publishEvent(manageDocumentService.buildManageDocumentsUploadedEvent(getCaseData(request),
+            getCaseDataBefore(request)));
     }
 }

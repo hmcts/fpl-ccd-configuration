@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -37,17 +39,21 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1146,4 +1152,61 @@ public class ManageDocumentService {
         return placementService.savePlacementNoticeResponsesAdmin(caseData);
     }
 
+    // TODO unit test
+    @SuppressWarnings("`unchecked`")
+    public ManageDocumentsUploadedEvent buildManageDocumentsUploadedEvent(CaseData caseData, CaseData caseDataBefore)
+        throws Exception{
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocuments = new HashMap<>();
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsLA = new HashMap<>();
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsCTSC = new HashMap<>();
+
+        Map<ConfidentialLevel, Map<DocumentType, List<Element<NotifyDocumentUploaded>>>> resultMapByConfidentialLevel =
+            Map.of(ConfidentialLevel.NON_CONFIDENTIAL, newDocuments,
+                ConfidentialLevel.LA, newDocumentsLA,
+                ConfidentialLevel.CTSC, newDocumentsCTSC);
+
+        for(DocumentType documentType : DocumentType.values()) {
+            for(ConfidentialLevel confidentialLevel : resultMapByConfidentialLevel.keySet()) {
+                String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
+
+                List documentList = ObjectHelper.getFieldValue(caseData, fieldName, List.class);
+                List documentListBefore = ObjectHelper.getFieldValue(caseDataBefore, fieldName, List.class);
+
+                if (DocumentType.COURT_BUNDLE.equals(documentType) || DocumentType.CASE_SUMMARY.equals(documentType)
+                    || DocumentType.POSITION_STATEMENTS.equals(documentType)
+                    || DocumentType.SKELETON_ARGUMENTS.equals(documentType)) {
+                    // TODO
+                } else {
+                    // Handle ManagedDocument list
+                    for (Object document : documentList) {
+                        if (documentListBefore.contains(document)) {
+                            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> resultMap =
+                                resultMapByConfidentialLevel.get(confidentialLevel);
+
+                            if (resultMap.containsKey(documentType)) {
+                                resultMap.get(documentType).add((Element<NotifyDocumentUploaded>) document);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return ManageDocumentsUploadedEvent.builder()
+            .caseData(caseData)
+            .initiatedBy(userService.getUserDetails())
+            .newDocuments(newDocuments)
+            .newDocumentsLA(newDocumentsLA)
+            .newDocumentsCTSC(newDocumentsCTSC)
+            .build();
+    }
+
+    public static void main(String[] args) throws Exception {
+        long start = System.currentTimeMillis();
+        String result = ObjectHelper.getFieldValue(
+            CaseData.builder()
+                .manageDocumentEventData(ManageDocumentEventData.builder().allowMarkDocumentConfidential("yes").build())
+                .build(), "manageDocumentEventData.allowMarkDocumentConfidential", String.class);
+        System.out.println((System.currentTimeMillis() - start) + "ms " + result);
+    }
 }
