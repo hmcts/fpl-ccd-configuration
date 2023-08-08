@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
@@ -65,6 +67,12 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     ManageHearingsControllerAboutToSubmitTest() {
         super("manage-hearings");

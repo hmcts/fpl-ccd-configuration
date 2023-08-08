@@ -19,6 +19,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(AllocatedJudgeController.class)
@@ -40,7 +42,7 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
-        given(jrdApi.findUsers(any(), any(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
+        given(jrdApi.findUsers(anyString(), anyString(), anyInt(), any())).willReturn(List.of(JudicialUserProfile.builder()
             .build()));
         CaseData caseData = CaseData.builder()
             .enterManually(YesNo.NO)

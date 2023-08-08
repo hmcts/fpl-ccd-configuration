@@ -5,8 +5,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +30,12 @@ class ManageHearingsControllerHearingInPastMidEventTest extends AbstractCallback
     ManageHearingsControllerHearingInPastMidEventTest() {
         super("manage-hearings");
     }
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldCorrectBothHearingDatesToCorrectOneWhenIncorrectAndPastHearingDatesIsEnabled() {
