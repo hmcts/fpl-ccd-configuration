@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -328,6 +329,8 @@ public class ManageHearingsController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         // todo - refactor me, triple nested if!!!
+
+        JudgeAndLegalAdvisor hearingJudge;
         if (caseData.getUseAllocatedJudge().equals(NO)) {
             final Optional<String> error = judicialService.validateHearingJudge(caseData);
 
@@ -336,39 +339,48 @@ public class ManageHearingsController extends CallbackController {
             }
 
             if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-
+                // not entering manually - lookup the personal_code in JRD
                 Optional<JudicialUserProfile> jup = judicialService
                     .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
 
                 if (jup.isPresent()) {
-                    caseDetails.getData().put("judgeAndLegalAdvisor",
-                        JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                            .legalAdvisorName(caseData.getLegalAdvisorName())
-                            .build());
+                    // we have managed to search the user from the personal code
+                    hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
+                        .legalAdvisorName(caseData.getLegalAdvisorName())
+                        .build();
                 } else {
                     return respond(caseDetails,
                         List.of("No Judge could be found, please retry your search or enter their"
                             + " details manually."));
                 }
             } else {
-                // entered the judge manually
-                if (caseData.getHearingJudge().getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)) {
-                    Optional<String> possibleEmail = judicialService
-                        .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
+                // entered the judge manually - lookup in our mappings and add UUID manually
+                Optional<String> possibleId = judicialService
+                    .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
 
-
-                }
-                caseDetails.getData().put("judgeAndLegalAdvisor",
-                    JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                if (possibleId.isPresent()) {
+                    // we can manually assign the role again based on our knowledge of JRD/SRD
+                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                        .judgeJudicialUser(JudicialUser.builder()
+                            .idamId(possibleId.get())
+                            .build())
                         .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build());
+                        .build();
+                } else {
+                    // We cannot assign manually, just have to leave the judge as is.
+                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                        .legalAdvisorName(caseData.getLegalAdvisorName())
+                        .build();
+                }
             }
         } else {
-            caseDetails.getData().put("judgeAndLegalAdvisor",
-                JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
-                    .legalAdvisorName(caseData.getLegalAdvisorName())
-                    .build());
+            // we want to use the existing allocated judge
+            hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+                .legalAdvisorName(caseData.getLegalAdvisorName())
+                .build();
         }
+
+        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
 
         return respond(caseDetails);
     }

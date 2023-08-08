@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -79,6 +80,18 @@ public class AllocatedJudgeController extends CallbackController {
                 return respond(caseDetails,
                     List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));
             }
+        } else {
+            // entering manually, check against our lookup tables, they may be a legal adviser
+            Optional<String> possibleId = judicialService
+                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
+
+            // if they are in our maps - add their UUID extra info to the case
+            possibleId.ifPresent(s -> caseDetails.getData().put("allocatedJudge",
+                caseData.getAllocatedJudge().toBuilder()
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId(s)
+                        .build())
+                    .build()));
         }
 
         removeTemporaryFields(caseDetails, "judicialUser", "enterManually");
