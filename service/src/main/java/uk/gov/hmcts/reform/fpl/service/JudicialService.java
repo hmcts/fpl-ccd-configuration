@@ -9,25 +9,23 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
-import uk.gov.hmcts.reform.rd.model.StaffProfile;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,19 +45,17 @@ import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignm
 public class JudicialService {
 
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
-    private static final String SERVICE_CODE = "ABA3";
-    private static final String LEGAL_ADVISER_JOB_CODE = "3";
 
-    private static final int JUDICIAL_PAGE_SIZE = 1000;
-    private static final int STAFF_PAGE_SIZE = 500;
+    public static final int JUDICIAL_PAGE_SIZE = 1000;
 
     private final SystemUserService systemUserService;
+    private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
     private final StaffApi staffApi;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final IdamClient idamClient;
     private final RoleAssignmentService roleAssignmentService;
     private final ValidateEmailService validateEmailService;
+    private final JudicialUsersConfiguration judicialUsersConfiguration;
+    private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -183,6 +179,7 @@ public class JudicialService {
 
     /**
      * Calls to Judicial Reference Data to check if a judge exists.
+     *
      * @param personalCode the judge's personal_code to check
      * @return if the judge exist
      */
@@ -202,6 +199,7 @@ public class JudicialService {
 
     /**
      * Validate a JudicialUser field - if they don't have a personalCode then return an error.
+     *
      * @param judicialUser the judicial user to check
      * @return an Optional error message if the judge could not be found or was empty
      */
@@ -219,6 +217,7 @@ public class JudicialService {
 
     /**
      * Attempts to retrieve a Judicial User Profile from Judicial Reference Data based on a given personalCode.
+     *
      * @param personalCode the Judicial user's personalCode
      * @return An optional JudicialUserProfile containing the details of the Judge
      */
@@ -241,7 +240,8 @@ public class JudicialService {
     }
 
     /**
-     * Lookup a specific email address in IDAM.
+     * Lookup a specific email address in our lookup map.
+     *
      * @param email the email to lookup
      * @return an Optional UUID String containing the user's idamId
      */
@@ -250,16 +250,17 @@ public class JudicialService {
         if (isEmpty(email)) {
             return Optional.empty();
         }
-        List<UserDetails> users = idamClient.searchUsers(systemUserService.getSysUserToken(), "email:" + email);
-        if (users.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(users.get(0).getId());
-        }
+        Optional<String> judge = judicialUsersConfiguration.getJudgeUUID(email);
+        Optional<String> legalAdviser = legalAdviserUsersConfiguration.getLegalAdviserUUID(email);
+
+        if (judge.isPresent()) {
+            return judge;
+        } else return legalAdviser;
     }
 
     /**
      * Gets the allocated judge on the case, and checks for a valid email address.
+     *
      * @param caseData the caseData to search through
      * @return an Optional Judge if they exist and have a valid email
      */
@@ -274,6 +275,7 @@ public class JudicialService {
 
     /**
      * Gets the set of all hearing judges on the case, and checks each for a valid email address.
+     *
      * @param caseData the caseData to search through
      * @return a Set of JudgeAndLegalAdvisor objects if they exist and have a valid email
      */
@@ -370,28 +372,5 @@ public class JudicialService {
             .collect(Collectors.toList());
 
         roleAssignmentService.createRoleAssignments(roles);
-    }
-
-    public Map<String, String> getAllJudges() {
-        String systemUserToken = systemUserService.getSysUserToken();
-
-        List<JudicialUserProfile> users = judicialApi.findUsers(systemUserToken, authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
-            JudicialUserRequest.builder()
-                .ccdServiceName("PUBLICLAW")
-            .build());
-
-        return users.stream()
-            .collect(Collectors.toMap(JudicialUserProfile::getEmailId, JudicialUserProfile::getSidamId));
-    }
-
-    public Map<String, String> getAllLegalAdvisers() {
-        String systemUserToken = systemUserService.getSysUserToken();
-
-        List<StaffProfile> staff = staffApi.getAllStaffResponseDetails(systemUserToken, authTokenGenerator.generate(),
-            STAFF_PAGE_SIZE, SERVICE_CODE, LEGAL_ADVISER_JOB_CODE);
-
-        return staff.stream()
-            .collect(Collectors.toMap(StaffProfile::getEmailId, StaffProfile::getCaseWorkerId));
     }
 }

@@ -12,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.rd.client.JudicialApi;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +41,9 @@ class JudicialServiceTest {
     private static final String USER_TOKEN = "USER";
     private static final String SERVICE_TOKEN = "SERVICE";
 
+    private static final String EMAIL = "test@test.com";
+
+
     @Mock
     private SystemUserService systemUserService;
     @Mock
@@ -50,6 +56,12 @@ class JudicialServiceTest {
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private ValidateEmailService validateEmailService;
+
+    @Mock
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
+
+    @Mock
+    private JudicialUsersConfiguration judicialUsersConfiguration;
 
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
@@ -106,6 +118,39 @@ class JudicialServiceTest {
                 .containsExactly(JUDGE_1_ID, JUDGE_2_ID);
         }
 
+    }
+
+
+    @Test
+    void shouldReturnLegalAdviserEmailIfInMapping() {
+        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
+        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.of("UUID"));
+
+        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+        assertThat(uuid.isPresent()).isTrue();
+        assertThat(uuid.get()).isEqualTo("UUID");
+    }
+
+    @Test
+    void shouldReturnJudgeEmailIfInMapping() {
+        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.of("UUID"));
+        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+
+        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+        assertThat(uuid.isPresent()).isTrue();
+        assertThat(uuid.get()).isEqualTo("UUID");
+    }
+
+    @Test
+    void shouldReturnEmptyIfInNeitherMapping() {
+        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
+        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+
+        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+        assertThat(uuid.isPresent()).isFalse();
     }
 
 }

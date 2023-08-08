@@ -61,7 +61,6 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
         assertThat((callbackResponse.getErrors())).isNull();
     }
 
-
     @Test
     void shouldReturnAValidationErrorWhenNoPersonalCode() {
         CaseData caseData = CaseData.builder()
