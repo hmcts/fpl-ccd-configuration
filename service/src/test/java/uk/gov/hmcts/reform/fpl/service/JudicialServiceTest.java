@@ -51,8 +51,6 @@ class JudicialServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private IdamClient idamClient;
-    @Mock
     private RoleAssignmentService roleAssignmentService;
     @Mock
     private ValidateEmailService validateEmailService;
@@ -99,10 +97,16 @@ class JudicialServiceTest {
             when(systemUserService.getSysUserToken()).thenReturn(USER_TOKEN);
             when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
-            when(idamClient.searchUsers(any(), eq("email:" + JUDGE_1.getJudgeEmailAddress())))
-                .thenReturn(List.of(UserDetails.builder().id(JUDGE_1_ID).build()));
-            when(idamClient.searchUsers(any(), eq("email:" + JUDGE_2.getJudgeEmailAddress())))
-                .thenReturn(List.of(UserDetails.builder().id(JUDGE_2_ID).build()));
+            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_1.getJudgeEmailAddress()))
+                .thenReturn(Optional.empty());
+            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_2.getJudgeEmailAddress()))
+                .thenReturn(Optional.of(JUDGE_2_ID));
+
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_1.getJudgeEmailAddress()))
+                .thenReturn(Optional.of(JUDGE_1_ID));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_2.getJudgeEmailAddress()))
+                .thenReturn(Optional.empty());
+
         }
 
         @Test
