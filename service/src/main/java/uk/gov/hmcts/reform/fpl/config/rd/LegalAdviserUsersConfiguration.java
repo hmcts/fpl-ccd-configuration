@@ -35,9 +35,9 @@ public class LegalAdviserUsersConfiguration {
         this.systemUserService = systemUserService;
         this.authTokenGenerator = authTokenGenerator;
         this.staffApi = staffApi;
-        log.info("Attempting to gather all legal-advisers");
+        log.info("Attempting to gather all legal advisers");
         mapping = this.getAllLegalAdvisers();
-        log.info("Obtained all legal-advisers");
+        log.info("Loaded {} legal advisers", mapping.size());
     }
 
     public Optional<String> getLegalAdviserUUID(String email) {

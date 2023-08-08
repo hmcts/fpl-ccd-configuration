@@ -37,7 +37,7 @@ public class JudicialUsersConfiguration {
         this.authTokenGenerator = authTokenGenerator;
         log.info("Attempting to gather all judges");
         mapping = this.getAllJudges();
-        log.info("Obtained all judges");
+        log.info("Loaded {} judges", mapping.size());
     }
 
     public Optional<String> getJudgeUUID(String email) {
