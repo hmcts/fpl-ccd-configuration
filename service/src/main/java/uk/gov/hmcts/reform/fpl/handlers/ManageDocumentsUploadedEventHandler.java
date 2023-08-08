@@ -97,10 +97,10 @@ public class ManageDocumentsUploadedEventHandler {
      * Send notification to the given recipient.
      * @param event the ManageDocumentsUploadedEvent
      * @param recipients the recipients to be sent
-     * @param getConfidentialLevelFunction A function returning the corresponding confidential level of the user type
+     * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
+     *                             returns the confidential level of the targeted user type on that document type
      *                                     e.g. To get the confidential level of respondent solicitor
-     *                                     (documentUploadedNotificationConfiguration) ->
-     *                                         documentUploadedNotificationConfiguration.sendToRespondentSolicitor()
+     *                                          DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
      */
     private void sendNotification(final ManageDocumentsUploadedEvent event, Set<String> recipients,
             Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
@@ -176,20 +176,29 @@ public class ManageDocumentsUploadedEventHandler {
                || POSITION_STATEMENTS.equals(documentType) || SKELETON_ARGUMENTS.equals(documentType);
     }
 
+    /**
+     * Returns all files uploaded in the event which satisfied the given confidential level
+     * @param event the ManageDocumentsUploadedEvent
+     * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
+     *                             returns the confidential level of the targeted user type on that document type
+     *                             e.g. To get the confidential level of respondent solicitor
+     *                                  DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
+     * @return
+     */
     private Map<DocumentType, List<Element<NotifyDocumentUploaded>>> consolidateMapByConfiguration(
             ManageDocumentsUploadedEvent event,
-            Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevel) {
+            Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
 
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> nonConfidentialDocuments =
             event.getNewDocuments().entrySet().stream()
-            .filter(entry -> getConfidentialLevel.apply(entry.getKey().getNotificationConfiguration()) != null)
+            .filter(entry -> getConfidentialLevelFunction.apply(entry.getKey().getNotificationConfiguration()) != null)
             .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
 
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> laLevelDocuments =
             event.getNewDocumentsLA().entrySet().stream()
                 .filter(entry -> {
                     ConfidentialLevel levelConfiguration =
-                        getConfidentialLevel.apply(entry.getKey().getNotificationConfiguration());
+                        getConfidentialLevelFunction.apply(entry.getKey().getNotificationConfiguration());
                     return ConfidentialLevel.LA.equals(levelConfiguration)
                            || ConfidentialLevel.CTSC.equals(levelConfiguration);
                 })
@@ -198,7 +207,7 @@ public class ManageDocumentsUploadedEventHandler {
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> ctscLevelDocuments =
             event.getNewDocumentsLA().entrySet().stream()
                 .filter(entry -> ConfidentialLevel.CTSC
-                    .equals(getConfidentialLevel.apply(entry.getKey().getNotificationConfiguration())))
+                    .equals(getConfidentialLevelFunction.apply(entry.getKey().getNotificationConfiguration())))
                 .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
 
 
