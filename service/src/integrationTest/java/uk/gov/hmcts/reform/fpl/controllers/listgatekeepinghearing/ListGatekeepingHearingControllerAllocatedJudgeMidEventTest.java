@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -31,6 +33,12 @@ class ListGatekeepingHearingControllerAllocatedJudgeMidEventTest extends Abstrac
 
     @MockBean
     private JudicialApi jrdApi;
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
