@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class HearingDocument extends DocumentMetaData implements WithDocument {
+public class HearingDocument extends DocumentMetaData implements WithDocument, NotifyDocumentUploaded {
     protected String hearing;
     protected DocumentReference document;
     private String removalReason;
