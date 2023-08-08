@@ -215,26 +215,4 @@ public class ManageDocumentsUploadedEventHandler {
             .map(Element::getValue).map(NotifyDocumentUploaded::getDocument)
             .collect(toSet());
     }
-
-//    private ConfidentialLevel getLowestLevel(List<ConfidentialLevel> levels) {
-//        int levelOrder = levels.stream().map(level -> {
-//            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(level))
-//                return 0;
-//            else if (ConfidentialLevel.LA.equals(level))
-//                return 1;
-//            else if (ConfidentialLevel.CTSC.equals(level))
-//                return 2;
-//            else
-//                return -1;
-//        }).sorted().findFirst().orElse(-1);
-//
-//        if (levelOrder == 0)
-//            return ConfidentialLevel.NON_CONFIDENTIAL;
-//        else if (levelOrder == 1)
-//            return ConfidentialLevel.LA;
-//        else if (levelOrder == 2)
-//            return ConfidentialLevel.CTSC;
-//        else
-//            return null;
-//    }
 }
