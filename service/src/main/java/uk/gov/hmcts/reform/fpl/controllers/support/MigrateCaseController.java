@@ -57,13 +57,13 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
-        "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
         "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
-        "DFPL-1486", this::run1486
+        "DFPL-1486", this::run1486,
+        "DFPL-1670", this::run1670
     );
 
     @PostMapping("/about-to-submit")
@@ -170,15 +170,6 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedHearingOrderBundleId));
     }
 
-    private void run1466(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1466";
-        var possibleCaseIds = List.of(1665396049325141L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
-    }
-
     private void run1612(CaseDetails caseDetails) {
         var migrationId = "DFPL-1612";
         var possibleCaseIds = List.of(1687780363265112L);
@@ -222,5 +213,14 @@ public class MigrateCaseController extends CallbackController {
     private void run1486(CaseDetails caseDetails) {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    }
+
+    private void run1670(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1670";
+        var possibleCaseIds = List.of(1677837793762548L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
+            migrationId, UUID.fromString("633d03f0-6868-4872-8388-0d78ee2572cb")));
     }
 }
