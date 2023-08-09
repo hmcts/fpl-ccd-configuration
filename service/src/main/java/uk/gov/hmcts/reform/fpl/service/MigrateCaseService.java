@@ -708,7 +708,7 @@ public class MigrateCaseService {
                 migrationId, caseData.getId()));
         }
 
-        return Map.of("correspondentDocument", newCorrespondenceDocuments);
+        return Map.of("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
     public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
