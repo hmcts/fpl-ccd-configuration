@@ -36,7 +36,7 @@ class LegalRepresentativesUpdatedHandlerEmailTemplateTest extends EmailTemplateT
     @Autowired
     private LegalRepresentativesUpdatedHandler underTest;
 
-    //@Test
+    @Test
     void sendToLA() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

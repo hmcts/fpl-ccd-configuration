@@ -39,7 +39,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
     @Nested
     class ProvideListItems {
 
-        //@Test
+        @Test
         void getItems() {
             List<Element<DocumentBundle>> bundles = List.of(element(mock(DocumentBundle.class)));
 
@@ -51,7 +51,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void getItemsIfEmpty() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -65,7 +65,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -81,7 +81,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -93,7 +93,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -107,7 +107,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
     @Nested
     class Accept {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder()
@@ -119,7 +119,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder()
                     .noticeOfProceedingsBundle(List.of(element(UUID_1, DocumentBundle.builder().build())))
@@ -130,7 +130,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             boolean actual = underTest.accept(CaseData.builder()
                     .noticeOfProceedingsBundle(null)
@@ -144,7 +144,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        //@Test
+        @Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -167,7 +167,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderMaintainOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -196,7 +196,7 @@ class TranslatableNoticeOfProceedingsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderNotFound() {
 
             Map<String, Object> actual = underTest.applyTranslatedOrder(CaseData.builder()

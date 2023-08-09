@@ -38,7 +38,7 @@ class OthersCheckerIsStartedTest {
         assertThat(isStarted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenMoreThanOneOthersProvided() {
         final Others others = Others.builder()
                 .firstOther(Other.builder().name("test").build())

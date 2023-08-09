@@ -75,7 +75,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
         when(time.now()).thenReturn(LocalDateTime.of(NOW, LocalTime.NOON));
     }
 
-    //@Test
+    @Test
     void testC110a() throws IOException {
 
         caseData = populatedCaseData().toBuilder()
@@ -97,7 +97,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
         assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
     }
 
-    //@Test
+    @Test
     void testC110aNoLanguageRequirement() throws IOException {
 
         caseData = populatedCaseData().toBuilder()
@@ -117,7 +117,7 @@ class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
         assertThat(c110aContent).isEqualToNormalizingWhitespace(expectedText);
     }
 
-    //@Test
+    @Test
     void testC110aWelsh() throws IOException {
 
         caseData = populatedCaseData().toBuilder()

@@ -56,7 +56,7 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    //@Test
+    @Test
     void shouldFinaliseDocumentsAboutToSubmit() {
         Court court = Court.builder().build();
         when(documentDownloadService.downloadDocument(TEST_DOCUMENT.getBinaryUrl())).thenReturn(TRANSLATED_DOC_BYTES);

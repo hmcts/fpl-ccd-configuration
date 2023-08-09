@@ -48,7 +48,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -66,7 +66,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenApplicantAndSolicitorEmailsAreInvalid() {
         CaseData caseData = CaseData.builder()
             .applicants(wrapElements(buildApplicant("email@example.com"),
@@ -86,7 +86,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
             "Solicitor: Enter an email address in the correct format, for example name@example.com");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenApplicantAndSolicitorEmailsAreValid() {
         CaseData caseData = CaseData.builder()
             .applicants(wrapElements(buildApplicant("email@example.com"),
@@ -101,7 +101,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenSolicitorEmailsIsNull() {
         CaseData caseData = CaseData.builder()
             .applicants(wrapElements(buildApplicant("email@example.com"),

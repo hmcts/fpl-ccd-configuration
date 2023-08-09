@@ -25,7 +25,7 @@ class RecordFinalDecisionsControllerPrePopulationMidEventTest extends AbstractCa
         super("record-final-decisions");
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateChildrenFinalDecisions() {
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(
@@ -42,7 +42,7 @@ class RecordFinalDecisionsControllerPrePopulationMidEventTest extends AbstractCa
         assertThat(response.getData()).containsKey("childFinalDecisionDetails00");
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren(NO.getValue())
@@ -54,7 +54,7 @@ class RecordFinalDecisionsControllerPrePopulationMidEventTest extends AbstractCa
         assertThat(response.getErrors()).containsOnly("Select the children with a final order or other decision");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren(NO.getValue())
@@ -66,7 +66,7 @@ class RecordFinalDecisionsControllerPrePopulationMidEventTest extends AbstractCa
         assertThat(response.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenAppliesToAllChildren() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren(YES.getValue())

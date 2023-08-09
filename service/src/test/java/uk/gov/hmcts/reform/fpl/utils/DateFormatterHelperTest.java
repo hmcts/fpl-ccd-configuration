@@ -41,35 +41,35 @@ class DateFormatterHelperTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldFormatLocalDateInLongFormat() {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, FormatStyle.LONG);
         assertThat(formattedDate).isEqualTo(JANUARY_2019);
     }
 
-    //@Test
+    @Test
     void shouldFormatLocalDateInMediumFormat() {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, FormatStyle.MEDIUM);
         assertThat(formattedDate).isEqualTo("1 Jan 2019");
     }
 
-    //@Test
+    @Test
     void shouldFormatLocalDateInShortFormat() {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, FormatStyle.SHORT);
         assertThat(formattedDate).isEqualTo("01/01/2019");
     }
 
-    //@Test
+    @Test
     void shouldFormatLocalDateInMediumFormatWithLocaleWelsh() {
         LocalDate date = createDate();
         String formattedDate = formatLocalDateToString(date, "d MMMM yyyy", Language.WELSH);
         assertThat(formattedDate).isEqualTo("1 Ionawr 2019");
     }
 
-    //@Test
+    @Test
     void shouldFormatLocalDateTimeInExpectedFormat() {
         LocalDateTime date = createDateTime();
         String formattedDate = formatLocalDateTimeBaseUsingFormat(date, "h:mma, d MMMM yyyy");
@@ -94,57 +94,57 @@ class DateFormatterHelperTest {
         assertThat(exception.getMessage()).isEqualTo("Illegal day of month: " + day);
     }
 
-    //@Test
+    @Test
     void shouldParseAFormattedDateToLocalDateWhenGivenCorrectFormat() {
         LocalDate parsed = parseLocalDateFromStringUsingFormat(JANUARY_2019, DATE);
         assertThat(parsed).isEqualTo(createDate());
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenFormatDoesNotMatchDate() {
         assertThrows(DateTimeParseException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, "d MM y"));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDateIsNull() {
         assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(null, DATE));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDateFormatIsNull() {
         assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, null));
     }
 
-    //@Test
+    @Test
     void shouldParseAFormattedDateTimeToLocalDateTime() {
         LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME);
         assertThat(parsed).isEqualTo(createDateTime());
     }
 
-    //@Test
+    @Test
     void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenMainFormat() {
         LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME, TIME_DATE);
         assertThat(parsed).isEqualTo(createDateTime());
     }
 
-    //@Test
+    @Test
     void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenAlternativeFormat() {
         LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(TIME_JANUARY_2019, DATE_TIME, TIME_DATE);
         assertThat(parsed).isEqualTo(createDateTime());
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDateTimeDoesNotMatchEitherFormat() {
         assertThrows(DateTimeParseException.class,
             () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, "d MM y", "h:mma, yyyy"));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDateTimeIsNull() {
         assertThrows(NullPointerException.class, () -> parseLocalDateTimeFromStringUsingFormat(null, DATE, DATE));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenBothFormatsAreNull() {
         assertThrows(NullPointerException.class,
             () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, null, null));

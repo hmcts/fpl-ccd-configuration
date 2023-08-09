@@ -76,7 +76,7 @@ class GatekeepingOrderEventHandlerTest {
     @InjectMocks
     private GatekeepingOrderEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldNotifyCafcassOfIssuedSDO() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -100,7 +100,7 @@ class GatekeepingOrderEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyCafcassOfIssuedStandaloneSDO() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -124,7 +124,7 @@ class GatekeepingOrderEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyLocalAuthorityOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
@@ -147,7 +147,7 @@ class GatekeepingOrderEventHandlerTest {
             CASE_ID);
     }
 
-    //@Test
+    @Test
     void shouldNotifyCTSCOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
@@ -167,7 +167,7 @@ class GatekeepingOrderEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeam() {
         underTest.notifyTranslationTeam(
             gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, CASE_DATA).toBuilder()
@@ -180,7 +180,7 @@ class GatekeepingOrderEventHandlerTest {
             ORDER, ORDER_TITLE);
     }
 
-    //@Test
+    @Test
     void shouldNotifyNotifyTranslationTeamIfNoLanguageRequirementDefaultsToEmpty() {
         underTest.notifyTranslationTeam(
             gatekeepingOrderEvent(SDO_OR_UDO_AND_NOP, CASE_DATA)
@@ -193,7 +193,7 @@ class GatekeepingOrderEventHandlerTest {
         verifyNoMoreInteractions(translationRequestService);
     }
 
-    //@Test
+    @Test
     void shouldNotifyNotifyTranslationTeamIfNoticeOfProceedingsAreAttached() {
         CaseData caseData = CaseData.builder()
             .noticeOfProceedingsBundle(List.of(

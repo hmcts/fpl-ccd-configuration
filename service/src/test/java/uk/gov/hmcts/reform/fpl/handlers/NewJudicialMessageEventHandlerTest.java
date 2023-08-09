@@ -28,7 +28,7 @@ class NewJudicialMessageEventHandlerTest {
     @InjectMocks
     private NewJudicialMessageEventHandler newJudicialMessageEventHandler;
 
-    //@Test
+    @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageCreated() {
         String recipient = "David@fpla.com";
 

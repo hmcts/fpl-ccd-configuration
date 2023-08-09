@@ -7,12 +7,12 @@ import static uk.gov.hmcts.reform.fpl.utils.BooleanHelper.booleanToYesNo;
 
 public class BooleanHelperTest {
 
-    //@Test
+    @Test
     void shouldReturnYesWhenTrue() {
         assertThat(booleanToYesNo(true)).isEqualTo("Yes");
     }
 
-    //@Test
+    @Test
     void shouldReturnNoWhenFalse() {
         assertThat(booleanToYesNo(false)).isEqualTo("No");
     }

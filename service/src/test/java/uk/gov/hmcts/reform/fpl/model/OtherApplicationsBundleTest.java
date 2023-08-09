@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class OtherApplicationsBundleTest {
 
-    //@Test
+    @Test
     void shouldReturnOnlyNonConfidentialSupportingDocumentsForSupportingEvidenceDocumentsNC() {
         Element<SupportingEvidenceBundle> supportingEvidenceBundle1 = createSupportingEvidenceBundle();
         Element<SupportingEvidenceBundle> supportingEvidenceBundle2
@@ -32,7 +32,7 @@ class OtherApplicationsBundleTest {
             .build());
     }
 
-    //@Test
+    @Test
     void shouldReturnOnlyNonConfidentialSupportingDocumentsUploadedByHmctsForSupportingEvidenceDocumentsLA() {
         Element<SupportingEvidenceBundle> supportingEvidenceBundle1 = createSupportingEvidenceBundle();
         Element<SupportingEvidenceBundle> supportingEvidenceBundle2

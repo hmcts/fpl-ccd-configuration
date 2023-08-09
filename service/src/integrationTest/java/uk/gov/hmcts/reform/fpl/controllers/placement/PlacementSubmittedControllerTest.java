@@ -127,7 +127,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .willReturn(feeResponse(FEE.doubleValue()));
     }
 
-    //@Test
+    @Test
     void shouldMakePaymentAndSendNotificationToPartiesAboutSubmittedPlacementApplication() {
 
         final Placement placement = Placement.builder()
@@ -196,7 +196,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         });
     }
 
-    //@Test
+    @Test
     void shouldNotifyCourtAndApplicantAboutPlacementPaymentFailure() throws NotificationClientException {
 
         final Placement placement = Placement.builder()
@@ -258,7 +258,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             notificationReference(CASE_ID));
     }
 
-    //@Test
+    @Test
     void shouldNotMakePaymentForPlacementIfNotRequired() {
 
         final Placement placement = Placement.builder()
@@ -285,7 +285,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         verifyNoInteractions(feesRegisterApi, paymentApi, notificationClient);
     }
 
-    //@Test
+    @Test
     void shouldNotMakePaymentWhenPlacementIsUpdated() {
 
         final Placement existingApplicationForChild1 = Placement.builder()
@@ -355,7 +355,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .willReturn(StartEventResponse.builder().eventId(INTERNAL_CHANGE_PLACEMENT).token(EVENT_TOKEN).build());
         }
 
-        //@Test
+        @Test
         void shouldSealPlacementApplication() {
             UUID applicationUUID = randomUUID();
 

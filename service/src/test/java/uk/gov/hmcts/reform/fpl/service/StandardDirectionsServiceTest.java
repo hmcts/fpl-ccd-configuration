@@ -48,7 +48,7 @@ class StandardDirectionsServiceTest {
     @Autowired
     private StandardDirectionsService service;
 
-    //@Test
+    @Test
     void shouldPopulateDirectionsWithCaseManagementHearingDate() {
         HearingBooking otherHearing = HearingBooking.builder()
             .type(HearingType.OTHER)
@@ -87,7 +87,7 @@ class StandardDirectionsServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldPopulateDirectionsWithEmptyDate() {
         HearingBooking otherHearing = HearingBooking.builder()
             .type(HearingType.OTHER)
@@ -112,7 +112,7 @@ class StandardDirectionsServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedListOfDirectionsWithPopulatedDatesWhenThereIsHearingDate() {
         LocalDate date = LocalDate.now().plusYears(10);
         given(calendarService.getWorkingDayFrom(date, -2)).willReturn(date.minusDays(2));
@@ -123,14 +123,14 @@ class StandardDirectionsServiceTest {
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(date));
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedListOfDirectionsWithNullDatesWhenThereIsNoHearingDate() {
         List<Element<Direction>> directions = service.getDirections(null);
 
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(null));
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenThereAreEmptyDates() {
         CaseData caseData = CaseData.builder()
             .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
@@ -144,7 +144,7 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDates(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenThereAreNoEmptyDates() {
         CaseData caseData = CaseData.builder()
             .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
@@ -158,7 +158,7 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDates(caseData)).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenAllDirectionsAreEmpty() {
         CaseData caseData = CaseData.builder()
             .allParties(Collections.emptyList())
@@ -172,7 +172,7 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDirections(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenSomeDirectionsAreEmpty() {
         CaseData caseData = CaseData.builder()
             .allParties(List.of(element(Direction.builder()

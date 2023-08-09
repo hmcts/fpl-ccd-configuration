@@ -68,7 +68,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         super("manage-representatives");
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationWithEmailPreference() throws NotificationClientException {
         CaseDetails caseDetailsBefore = buildCaseData(emptyList(), emptyMap());
         CaseDetails caseDetails = buildCaseData(wrapElements(buildRepresentative(EMAIL)), emptyMap());
@@ -85,7 +85,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
     }
 
 
-    //@Test
+    @Test
     void shouldSendNotificationWithDigitalPreference() throws NotificationClientException {
         CaseDetails caseDetailsBefore = buildCaseData(emptyList(), emptyMap());
         CaseDetails caseDetails = buildCaseData(wrapElements(buildRepresentative(DIGITAL_SERVICE)), emptyMap());
@@ -100,7 +100,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             .performPostSubmitCallback(eq(CASE_ID), any(), any());
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationWhenNoPartiesAreUpdatedOrAddedToCase() {
         List<Element<Representative>> representative = wrapElements(buildRepresentative(DIGITAL_SERVICE));
         CaseDetails caseDetailsBefore = buildCaseData(representative, caseSummary());

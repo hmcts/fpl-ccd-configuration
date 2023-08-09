@@ -71,7 +71,7 @@ class ApplicationRemovedEmailContentProviderTest extends AbstractEmailContentPro
         when(time.now()).thenReturn(REMOVAL_DATE);
     }
 
-    //@Test
+    @Test
     void shouldBuildApplicationRemovedParameters() {
         ApplicationRemovedNotifyData expectedParameters = getExpectedParameters();
         ApplicationRemovedNotifyData actualParameters = underTest.getNotifyData(

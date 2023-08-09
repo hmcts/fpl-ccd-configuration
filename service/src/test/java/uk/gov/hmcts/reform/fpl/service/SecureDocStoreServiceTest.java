@@ -58,7 +58,7 @@ class SecureDocStoreServiceTest {
         given(featureToggleService.isSecureDocstoreEnabled()).willReturn(true);
     }
 
-    //@Test
+    @Test
     void shouldReturnFirstUploadedDocument() {
         UploadResponse request = successfulDocumentUploadResponse();
         given(caseDocumentClientApi.uploadDocuments(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), any()))
@@ -69,7 +69,7 @@ class SecureDocStoreServiceTest {
         Assertions.assertThat(document).isEqualTo(request.getDocuments().get(0));
     }
 
-    //@Test
+    @Test
     void downloadDocument() {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();

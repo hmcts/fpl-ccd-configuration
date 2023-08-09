@@ -38,7 +38,7 @@ class OthersListGeneratorTest {
             .build();
     }
 
-    //@Test
+    @Test
     void shouldReturnAllApplicantsList() {
         DynamicList actualDynamicList = underTest.buildOthersList(caseData.getAllOthers());
         assertThat(actualDynamicList.getListItems())

@@ -37,12 +37,12 @@ class AmendOrderToDownloadPrePopulatorTest {
 
     private final AmendOrderToDownloadPrePopulator underTest = new AmendOrderToDownloadPrePopulator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.ORDER_TO_AMEND);
     }
 
-    //@Test
+    @Test
     void getSelectedOrderForSDO() {
         DynamicList amendedOrderList = mock(DynamicList.class);
         DocumentReference orderDocument = mock(DocumentReference.class);
@@ -65,7 +65,7 @@ class AmendOrderToDownloadPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("manageOrdersOrderToAmend", orderDocument));
     }
 
-    //@Test
+    @Test
     void getSelectedOrderForUHO() {
         DynamicList amendedOrderList = mock(DynamicList.class);
         DocumentReference orderDocument = mock(DocumentReference.class);
@@ -88,7 +88,7 @@ class AmendOrderToDownloadPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("manageOrdersOrderToAmend", orderDocument));
     }
 
-    //@Test
+    @Test
     void getSelectedOrderForCMO() {
         DynamicList amendedOrderList = mock(DynamicList.class);
         DocumentReference orderDocument = mock(DocumentReference.class);
@@ -111,7 +111,7 @@ class AmendOrderToDownloadPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("manageOrdersOrderToAmend", orderDocument));
     }
 
-    //@Test
+    @Test
     void getSelectedOrderForOrder() {
         DynamicList amendedOrderList = mock(DynamicList.class);
         DocumentReference orderDocument = mock(DocumentReference.class);
@@ -134,7 +134,7 @@ class AmendOrderToDownloadPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("manageOrdersOrderToAmend", orderDocument));
     }
 
-    //@Test
+    @Test
     void getSelectedOrderForOrderNotFound() {
         DynamicList amendedOrderList = mock(DynamicList.class);
 
@@ -157,7 +157,7 @@ class AmendOrderToDownloadPrePopulatorTest {
             .hasMessage("Could not find amendable order with id \"44444444-4444-4444-4444-444444444444\"");
     }
 
-    //@Test
+    @Test
     void shouldThrowNoDocumentException() {
         DynamicList amendedOrderList = mock(DynamicList.class);
 

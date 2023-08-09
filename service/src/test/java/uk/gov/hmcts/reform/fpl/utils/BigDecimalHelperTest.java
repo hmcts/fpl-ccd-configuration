@@ -12,12 +12,12 @@ import static uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper.toCCDMoneyGBP;
 
 class BigDecimalHelperTest {
 
-    //@Test
+    @Test
     void shouldReturnEmptyStringWhenAmountIsNull() {
         assertThat(toCCDMoneyGBP(null)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAStringRepresentationOfTheAmountInPence() {
         assertThat(toCCDMoneyGBP(BigDecimal.valueOf(12.21))).isEqualTo("1221");
     }
@@ -28,12 +28,12 @@ class BigDecimalHelperTest {
         assertThat(fromCCDMoneyGBP(amount)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnNullWhenStringIsNotANumber() {
         assertThat(fromCCDMoneyGBP("1qazdert")).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnBigDecimalRepresentationInMajorForm() {
         assertThat(fromCCDMoneyGBP("1221")).contains(BigDecimal.valueOf(12.21));
     }

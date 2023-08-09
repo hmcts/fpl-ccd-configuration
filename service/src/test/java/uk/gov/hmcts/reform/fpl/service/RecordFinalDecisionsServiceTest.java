@@ -47,7 +47,7 @@ public class RecordFinalDecisionsServiceTest {
 
     @Nested
     class PrePopulateFields {
-        //@Test
+        @Test
         void shouldPrePopulateExpectedFieldsWhenSingleUnresolvedChildInCase() {
             List<Element<Child>> children = wrapElements(Child.builder().build());
 
@@ -69,7 +69,7 @@ public class RecordFinalDecisionsServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        //@Test
+        @Test
         void shouldPrePopulateExpectedFieldsWhenMultipleUnresolvedChildInCase() {
             List<Element<Child>> children = wrapElements(
                 Child.builder().build(),
@@ -99,7 +99,7 @@ public class RecordFinalDecisionsServiceTest {
     @Nested
     class PopulateFields {
 
-        //@Test
+        @Test
         void shouldPrePopulateExpectedFieldsWhenNoUnresolvedChildInCase() {
             List<Element<Child>> children = emptyList();
 
@@ -121,7 +121,7 @@ public class RecordFinalDecisionsServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        //@Test
+        @Test
         void shouldPopulateExpectedFieldsWhenSingleChildSelected() {
             CaseData caseData = CaseData.builder()
                 .orderAppliesToAllChildren("No")
@@ -142,7 +142,7 @@ public class RecordFinalDecisionsServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        //@Test
+        @Test
         void shouldPopulateExpectedFieldsWhenMultipleChildrenSelected() {
             CaseData caseData = CaseData.builder()
                 .orderAppliesToAllChildren("No")
@@ -166,7 +166,7 @@ public class RecordFinalDecisionsServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        //@Test
+        @Test
         void shouldPopulateExpectedFieldsWhenAppliesToAllChildren() {
             CaseData caseData = CaseData.builder()
                 .orderAppliesToAllChildren("Yes")
@@ -195,7 +195,7 @@ public class RecordFinalDecisionsServiceTest {
 
     @Nested
     class UpdateChildren {
-        //@Test
+        @Test
         void shouldUpdateChildrenWhenSingleChild() {
             List<Element<Child>> children = wrapElements(
                 buildChild("Bart", "Simpson", null, null)
@@ -224,7 +224,7 @@ public class RecordFinalDecisionsServiceTest {
             assertThat(actualChildren).isEqualTo(expectedChildren);
         }
 
-        //@Test
+        @Test
         void shouldUpdateChildrenWhenMultipleChildren() {
             List<Element<Child>> allChildren = wrapElements(
                 buildChild("Bart", "Simpson", null, null),

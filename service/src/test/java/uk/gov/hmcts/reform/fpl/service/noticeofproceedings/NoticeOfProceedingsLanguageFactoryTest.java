@@ -23,14 +23,14 @@ class NoticeOfProceedingsLanguageFactoryTest {
 
     private final NoticeOfProceedingsLanguageFactory underTest = new NoticeOfProceedingsLanguageFactory();
 
-    //@Test
+    @Test
     void testIfNoOrderIsPresent() {
         LanguageTranslationRequirement actual = underTest.calculate(CaseData.builder()
             .build());
         assertThat(actual).isEqualTo(NO);
     }
 
-    //@Test
+    @Test
     void testIfStandardOrderIsPresent() {
         LanguageTranslationRequirement actual = underTest.calculate(CaseData.builder()
                 .standardDirectionOrder(StandardDirectionOrder.builder()
@@ -41,7 +41,7 @@ class NoticeOfProceedingsLanguageFactoryTest {
         assertThat(actual).isEqualTo(TRANSLATION_REQUIREMENTS);
     }
 
-    //@Test
+    @Test
     void testIfUrgentHearingPresent() {
         LanguageTranslationRequirement actual = underTest.calculate(CaseData.builder()
             .urgentHearingOrder(UrgentHearingOrder.builder()
@@ -52,7 +52,7 @@ class NoticeOfProceedingsLanguageFactoryTest {
         assertThat(actual).isEqualTo(TRANSLATION_REQUIREMENTS);
     }
 
-    //@Test
+    @Test
     void testIfUrgentHearingAndStoPresent() {
         LanguageTranslationRequirement actual = underTest.calculate(CaseData.builder()
             .urgentHearingOrder(UrgentHearingOrder.builder()

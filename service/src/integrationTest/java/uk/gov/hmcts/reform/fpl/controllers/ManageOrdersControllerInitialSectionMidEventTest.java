@@ -125,7 +125,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
         );
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)
@@ -193,7 +193,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
         );
     }
 
-    //@Test
+    @Test
     void shouldNotPopulateHiddenFieldValuesWhenCreatingBlankOrderForTheCaseNotInClosedState() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)

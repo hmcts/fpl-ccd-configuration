@@ -33,49 +33,49 @@ class RequestDataTest {
     @Nested
     class NotCachedRequestData {
 
-        //@Test
+        @Test
         void shouldReturnAuthorisationHeaderFromRequest() {
             when(httpServletRequest.getHeader("authorization")).thenReturn(AUTH_TOKEN);
             assertThat(requestData.authorisation()).isEqualTo(AUTH_TOKEN);
         }
 
-        //@Test
+        @Test
         void shouldReturnUserIdFromRequest() {
             when(httpServletRequest.getHeader("user-id")).thenReturn(USER_ID);
             assertThat(requestData.userId()).isEqualTo(USER_ID);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptySetOfUserRolesIfHeaderNotPresent() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn(null);
             assertThat(requestData.userRoles()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptySetOfUserRolesIfHeaderIsEmpty() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn("");
             assertThat(requestData.userRoles()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptySetOfUserRolesIfHeaderIsBlank() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn(" ");
             assertThat(requestData.userRoles()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnUserRolesIfSingleRolePresent() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn("role1");
             assertThat(requestData.userRoles()).containsExactly("role1");
         }
 
-        //@Test
+        @Test
         void shouldReturnAllUserRoles() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn("role1,role2");
             assertThat(requestData.userRoles()).containsExactly("role1", "role2");
         }
 
-        //@Test
+        @Test
         void shouldReturnNormalisedUserRoles() {
             when(httpServletRequest.getHeader("user-roles")).thenReturn(" role1 , role2");
             assertThat(requestData.userRoles()).containsExactly("role1", "role2");
@@ -98,19 +98,19 @@ class RequestDataTest {
             RequestDataCache.remove();
         }
 
-        //@Test
+        @Test
         void shouldReturnAuthorisationHeaderFromCache() {
             assertThat(requestData.authorisation()).isEqualTo(CACHED_AUTH_TOKEN);
             verifyNoInteractions(httpServletRequest);
         }
 
-        //@Test
+        @Test
         void shouldReturnUserIdFromCache() {
             assertThat(requestData.userId()).isEqualTo(CACHED_USER_ID);
             verifyNoInteractions(httpServletRequest);
         }
 
-        //@Test
+        @Test
         void shouldReturnUserRolesFromCache() {
             assertThat(requestData.userRoles()).isEqualTo(CACHED_USER_ROLES);
             verifyNoInteractions(httpServletRequest);

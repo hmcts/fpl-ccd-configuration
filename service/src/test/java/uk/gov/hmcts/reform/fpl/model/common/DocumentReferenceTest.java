@@ -7,7 +7,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.
 
 class DocumentReferenceTest {
 
-    //@Test
+    @Test
     void shouldBuildFromDocumentWhenValidDocument() {
         assertThat(DocumentReference.buildFromDocument(document())).isEqualTo(DocumentReference.builder()
             .url(document().links.self.href)
@@ -16,13 +16,13 @@ class DocumentReferenceTest {
             .build());
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueIfDocumentReferenceIsEmpty() {
         DocumentReference documentReference = DocumentReference.builder().build();
         assertThat(documentReference.isEmpty()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfDocumentReferenceIsFullyPopulated() {
         DocumentReference documentReference = DocumentReference.builder()
             .filename("file.pdf")
@@ -33,7 +33,7 @@ class DocumentReferenceTest {
         assertThat(documentReference.isEmpty()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfDocumentReferenceIsPartiallyEmpty() {
         DocumentReference documentReference = DocumentReference.builder()
             .filename("file.pdf")

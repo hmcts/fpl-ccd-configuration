@@ -43,7 +43,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
         new LocalAuthorityUserIndividualRepresentativeValidator(user, childRepValidator, sanitizer);
 
     @DisplayName("Accept users that do not have HMCTS roles when section is CHILD_REPRESENTATIVES")
-    //@Test
+    @Test
     void acceptsNonHMCTS() {
         when(user.isHmctsUser()).thenReturn(false);
 
@@ -51,7 +51,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Reject users that have HMCTS roles when section is CHILD_REPRESENTATIVES")
-    //@Test
+    @Test
     void acceptsHMCTS() {
         when(user.isHmctsUser()).thenReturn(true);
 
@@ -68,7 +68,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with exception when nothing changes and nothing has been set")
-    //@Test
+    @Test
     void validateStaysNotSet() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -83,7 +83,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with no errors when user initially selects all children don't have same representative and"
                  + "the details have no errors ")
-    //@Test
+    @Test
     void validateNotSetToSetToNoWithNoErrors() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -98,7 +98,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with no errors when user initially selects all children don't have same representative and"
                  + "the details have errors ")
-    //@Test
+    @Test
     void validateNotSetToSetToNoWithErrors() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -112,7 +112,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when nothing changes and nothing has been set")
-    //@Test
+    @Test
     void validateNotSetToSetToYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -124,7 +124,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with errors when the children had different representation and this is changed")
-    //@Test
+    @Test
     void validateSetToNoAndChanged() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -137,7 +137,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with errors when the children had the same representation and this is changed")
-    //@Test
+    @Test
     void validateSetToYesAndChanged() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -150,7 +150,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when nothing changes and the children have the same representative")
-    //@Test
+    @Test
     void validateNoChangeSetYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -163,7 +163,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with no errors when nothing changes and the children have different representatives which "
                  + "are not using the main solicitor")
-    //@Test
+    @Test
     void validateNoChangeSetNoNotMainSolicitor() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -186,7 +186,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with no errors when nothing changes and the children have different representatives which "
                  + "are using the main solicitor")
-    //@Test
+    @Test
     void validateNoChangeSetNoWithMainSolicitor() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -206,7 +206,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with with errors when the children have different representatives and details changed with"
                  + " main representative being used changed from yes to no")
-    //@Test
+    @Test
     void validateSetNoWithChangedRepresentativeUseMainFromYesToNo() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -228,7 +228,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with with errors when the children have different representatives and details changed with"
                  + " main representative being used changed from no to yes")
-    //@Test
+    @Test
     void validateSetNoWithChangedRepresentativeUseMainFromNoToYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -250,7 +250,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with with errors when the children have different representatives and details solicitor "
                  + "changed")
-    //@Test
+    @Test
     void validateSetNoWithChangedRepresentativeDetailsSolicitorChanged() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);
@@ -278,7 +278,7 @@ class LocalAuthorityUserIndividualRepresentativeValidatorTest {
 
     @DisplayName("Validate with with exception when the children have different representatives and details have main"
                  + " representative set to null")
-    //@Test
+    @Test
     void validateSetNoWithChangedRepresentativeUseMainIsNull() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventDataBefore);

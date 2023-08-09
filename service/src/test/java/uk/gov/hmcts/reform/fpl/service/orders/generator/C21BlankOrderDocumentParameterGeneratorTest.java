@@ -40,12 +40,12 @@ class C21BlankOrderDocumentParameterGeneratorTest {
     @InjectMocks
     private C21BlankOrderDocumentParameterGenerator underTest;
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C21_BLANK_ORDER);
     }
 
-    //@Test
+    @Test
     void generate() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -53,7 +53,7 @@ class C21BlankOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedCommonParameters().build());
     }
 
-    //@Test
+    @Test
     void generateForStandaloneApplicationCase() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(null);
 
@@ -61,12 +61,12 @@ class C21BlankOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedNullLaNameParameters().build());
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    //@Test
+    @Test
     void shouldReturnDefaultTitleWhenBlankOrderTitleNotProvided() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 

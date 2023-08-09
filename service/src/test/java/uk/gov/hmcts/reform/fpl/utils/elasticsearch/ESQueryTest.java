@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService.SORT_FIELD;
 
 class ESQueryTest {
-    //@Test
+    @Test
     void shouldCreateQueryWithSizeAndFromFields() {
         ESQuery query = new TestClass();
 
@@ -22,7 +22,7 @@ class ESQueryTest {
         assertThat(queryInContext).usingRecursiveComparison().isEqualTo(expectedContext);
     }
 
-    //@Test
+    @Test
     void shouldCreateQueryWithSizeAndFromFieldsSort() {
         ESQuery query = new TestClass();
         Sort sort = Sort.builder()

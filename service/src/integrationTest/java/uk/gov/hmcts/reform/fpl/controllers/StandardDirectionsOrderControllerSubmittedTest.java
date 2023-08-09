@@ -73,7 +73,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
     }
 
-    //@Test
+    @Test
     void shouldNotTriggerEventsWhenDraft() {
         postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(DRAFT), GATEKEEPING_CASE_DATA));
 
@@ -81,7 +81,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
         verify(concurrencyHelper, never()).submitEvent(any(), any(), any());
     }
 
-    //@Test
+    @Test
     void shouldNotTriggerEventsWhenDraftAfterUrgentHearingOrder() {
         postSubmittedEvent(toCallBackRequest(
             buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT), CASE_MANAGEMENT_CASE_DATA

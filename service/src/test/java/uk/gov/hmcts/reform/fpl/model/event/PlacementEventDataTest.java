@@ -74,7 +74,7 @@ class PlacementEventDataTest {
             .confidentialDocuments(wrapElements(confidentialDocument2, confidentialDocument3))
             .build();
 
-        //@Test
+        @Test
         void shouldReturnNonConfidentialWithoutNoticesResponsesVersionOfExistingPlacements() {
 
             final PlacementEventData underTest = PlacementEventData.builder()
@@ -100,7 +100,7 @@ class PlacementEventDataTest {
                 .containsExactly(nonConfidentialPlacement1, nonConfidentialPlacement2);
         }
 
-        //@Test
+        @Test
         void shouldReturnNonConfidentialWithNoticesResponsesVersionOfExistingPlacements() {
 
             final PlacementEventData underTest = PlacementEventData.builder()
@@ -142,7 +142,7 @@ class PlacementEventDataTest {
     @Nested
     class PlacementSetter {
 
-        //@Test
+        @Test
         void shouldSetChildNameWhenPlacementIsSet() {
 
             final PlacementEventData underTest = PlacementEventData.builder().build();
@@ -162,7 +162,7 @@ class PlacementEventDataTest {
             assertThat(underTest).isEqualTo(expectedPlacementData);
         }
 
-        //@Test
+        @Test
         void shouldNotSetChildNameWhenPlacementDoesNotHaveChildName() {
 
             final PlacementEventData underTest = PlacementEventData.builder().build();

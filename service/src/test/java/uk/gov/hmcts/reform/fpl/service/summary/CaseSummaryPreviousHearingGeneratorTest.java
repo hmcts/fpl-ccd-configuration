@@ -36,14 +36,14 @@ class CaseSummaryPreviousHearingGeneratorTest {
         when(time.now()).thenReturn(NOW);
     }
 
-    //@Test
+    @Test
     void testNoHearings() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithNoSealedCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -62,7 +62,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithNonMatchingSealedCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -87,7 +87,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithMatchingSealedCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -113,7 +113,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testMultipleHearingsSelectsLatestInPast() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -142,7 +142,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testNoHearingsIfAllInFuture() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(

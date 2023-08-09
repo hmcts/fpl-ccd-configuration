@@ -22,7 +22,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
         super("return-application");
     }
 
-    //@Test
+    @Test
     void shouldMigrateSubmittedDocumentToReturnedDocumentBundle() {
         DocumentReference submittedForm = buildSubmittedForm("mockSubmittedForm.pdf");
 
@@ -52,7 +52,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
     }
 
-    //@Test
+    @Test
     void shouldMigrateSubmittedDocumentToReturnedDocumentBundleIfMainApplicationIsRemovedBySuperAdmin() {
         DocumentReference submittedForm = null;
 

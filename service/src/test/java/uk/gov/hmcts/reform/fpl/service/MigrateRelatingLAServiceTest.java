@@ -18,14 +18,14 @@ class MigrateRelatingLAServiceTest {
     @Autowired
     private MigrateRelatingLAService migrateRelatingLAService;
 
-    //@Test
+    @Test
     void shouldReturnEmptyOptionalIfNoConfigForCase() {
         String caseId = "1234";
 
         assertThat(migrateRelatingLAService.getRelatingLAString(caseId)).isEqualTo(Optional.empty());
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectLACodeIfConfigForCase() {
         String caseId = "1234567890";
 

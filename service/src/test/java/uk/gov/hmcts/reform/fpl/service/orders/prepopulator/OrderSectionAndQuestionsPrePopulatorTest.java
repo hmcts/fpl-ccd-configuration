@@ -48,7 +48,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         holder
     );
 
-    //@Test
+    @Test
     void prePopulateWhenNoSectionNorQuestions() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of());
@@ -58,7 +58,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         assertThat(actual).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void prePopulateWhenNoSectionMatched() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of(ANOTHER_ORDER_SECTION,
             anotherSectionPrePopulator));
@@ -70,7 +70,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         verifyNoInteractions(anotherSectionPrePopulator);
     }
 
-    //@Test
+    @Test
     void prePopulateWhenSectionMatched() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of(ORDER_SECTION,
             sectionPrePopulator));
@@ -83,7 +83,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         assertThat(actual).isEqualTo(PRE_POPULATE_SECTION_DATA);
     }
 
-    //@Test
+    @Test
     void prePopulateWhenNoQuestionMatched() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of(
@@ -98,7 +98,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         assertThat(actual).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void prePopulateWhenQuestionMatched() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of(
@@ -113,7 +113,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         assertThat(actual).isEqualTo(PRE_POPULATE_WHICH_CHILDREN_DATA);
     }
 
-    //@Test
+    @Test
     void prePopulateWhenQuestionMatchedAndFilterNullValues() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of(
@@ -131,7 +131,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         assertThat(actual).isEqualTo(Map.of("field1", "value1"));
     }
 
-    //@Test
+    @Test
     void prePopulateWhenMultipleQuestionMatched() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of(
@@ -153,7 +153,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         );
     }
 
-    //@Test
+    @Test
     void prePopulateWhenMultipleQuestionMatchedWithDuplication() {
         when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
         when(holder.questionBlockToPopulator()).thenReturn(Map.of(

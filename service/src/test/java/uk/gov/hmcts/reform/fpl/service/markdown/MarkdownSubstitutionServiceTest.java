@@ -22,7 +22,7 @@ class MarkdownSubstitutionServiceTest {
         }
     };
 
-    //@Test
+    @Test
     void shouldSubstituteValuesProvidedInSubstitutionData() {
         CaseSubmissionSubstitutionData data = CaseSubmissionSubstitutionData.builder()
             .caseName(CASE_NAME)
@@ -34,7 +34,7 @@ class MarkdownSubstitutionServiceTest {
         assertThat(markdownData).isEqualTo(expectedData(CASE_NAME, SURVEY_LINK));
     }
 
-    //@Test
+    @Test
     void shouldNotReplaceFieldsWhenDataIsNotProvided() {
         CaseSubmissionSubstitutionData data = CaseSubmissionSubstitutionData.builder()
             .caseName(CASE_NAME)
@@ -45,7 +45,7 @@ class MarkdownSubstitutionServiceTest {
         assertThat(markdownData).isEqualTo(expectedData(CASE_NAME, "${surveyLink}"));
     }
 
-    //@Test
+    @Test
     void shouldIgnoreVariablesNotInMarkdownTemplate() {
         TestSubstitutionData data = new TestSubstitutionData("pls don't appear");
 

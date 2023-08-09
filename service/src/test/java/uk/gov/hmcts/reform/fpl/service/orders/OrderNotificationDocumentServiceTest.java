@@ -59,7 +59,7 @@ class OrderNotificationDocumentServiceTest {
             .thenReturn(Optional.empty());
     }
 
-    //@Test
+    @Test
     void shouldCreateUploadAndReturnNotificationDocumentWhenOrderIsRegisteredForIt() {
         when(orderDocumentGeneratorHolder.getNotificationDocumentParameterGeneratorByOrderType(A70_PLACEMENT_ORDER))
             .thenReturn(Optional.of(TEST_PARAMETER_GENERATOR));
@@ -75,7 +75,7 @@ class OrderNotificationDocumentServiceTest {
         verify(uploadService).uploadPDF(TEST_GENERATED_DOCUMENT.getBytes(), TEST_GENERATED_DOCUMENT.getDocumentTitle());
     }
 
-    //@Test
+    @Test
     void shouldNotCreateUploadOrReturnNotificationDocumentWhenOrderNotIsRegisteredForIt() {
         Optional<DocumentReference> returnedDocument =
             underTest.createNotificationDocument(createCaseDataWithSelectedOrderType(C21_BLANK_ORDER));

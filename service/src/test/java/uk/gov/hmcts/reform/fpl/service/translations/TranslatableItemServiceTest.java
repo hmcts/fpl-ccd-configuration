@@ -80,7 +80,7 @@ class TranslatableItemServiceTest {
     @Nested
     class GenerateList {
 
-        //@Test
+        @Test
         void returnNothingIfNoProviders() {
             when(providers.getAll()).thenReturn(List.of());
 
@@ -89,7 +89,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(EMTPY_DYNAMIC_LIST);
         }
 
-        //@Test
+        @Test
         void returnNothingIfProviderHasNoTranslatableItems() {
             when(providers.getAll()).thenReturn(List.of(provider1));
             when(provider1.provideListItems(CASE_DATA)).thenReturn(
@@ -102,7 +102,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(EMTPY_DYNAMIC_LIST);
         }
 
-        //@Test
+        @Test
         void returnNothingIfMultipleProviderHasNoTranslatableItems() {
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
             when(provider1.provideListItems(CASE_DATA)).thenReturn(
@@ -119,7 +119,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(EMTPY_DYNAMIC_LIST);
         }
 
-        //@Test
+        @Test
         void returnNothingIfMultipleProvidersHasMultipleTranslatableItems() {
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
             when(provider1.provideListItems(CASE_DATA)).thenReturn(
@@ -148,7 +148,7 @@ class TranslatableItemServiceTest {
                     .build())));
         }
 
-        //@Test
+        @Test
         void returnNothingIfMultipleProvidersHasMultipleTranslatableItemsWithNoRequirement() {
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
             when(provider1.provideListItems(CASE_DATA)).thenReturn(
@@ -181,7 +181,7 @@ class TranslatableItemServiceTest {
     @Nested
     class Finalise {
 
-        //@Test
+        @Test
         void testWhenFirstProviderAccepted() {
 
             CaseData caseData = caseDataWithSelectedUUID(UUID_ID_1);
@@ -206,7 +206,7 @@ class TranslatableItemServiceTest {
 
         }
 
-        //@Test
+        @Test
         void testWhenFirstProviderInMultipleAccepted() {
 
             CaseData caseData = caseDataWithSelectedUUID(UUID_ID_1);
@@ -230,7 +230,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(TRANSFORMED_DATA);
         }
 
-        //@Test
+        @Test
         void testWhenFirstProviderWhenNoAccepted() {
 
             CaseData caseData = caseDataWithSelectedUUID(UUID_ID_1);
@@ -267,7 +267,7 @@ class TranslatableItemServiceTest {
     @Nested
     class GetLastTranslatedItem {
 
-        //@Test
+        @Test
         void lastCreatedSingleTranslated() {
 
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
@@ -285,7 +285,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(element(UUID_ID_1, translatableItem1));
         }
 
-        //@Test
+        @Test
         void lastCreatedSingleMultipleTranslatedGetLatest() {
 
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
@@ -305,7 +305,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(element(UUID_ID_1, translatableItem1));
         }
 
-        //@Test
+        @Test
         void lastCreatedSingleMultipleTranslatedGetLatestInverseOrder() {
 
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
@@ -325,7 +325,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(element(UUID_ID_2, translatableItem2));
         }
 
-        //@Test
+        @Test
         void lastCreatedSingleMultipleTranslatedGetLatestAndNull() {
 
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));
@@ -345,7 +345,7 @@ class TranslatableItemServiceTest {
             assertThat(actual).isEqualTo(element(UUID_ID_2, translatableItem2));
         }
 
-        //@Test
+        @Test
         void exceptionIfNoTranslationFound() {
 
             when(providers.getAll()).thenReturn(List.of(provider1, provider2));

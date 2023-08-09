@@ -15,7 +15,7 @@ class ApproveOrdersTemplateSerializerTest extends SerializerTest {
         super(ApprovedOrdersTemplate.class, new ApprovedOrdersTemplateSerializer());
     }
 
-    //@Test
+    @Test
     void shouldDefaultSerializeFields() {
         ApprovedOrdersTemplate template = ApprovedOrdersTemplate.builder()
             .lastName("Smith").build();
@@ -24,7 +24,7 @@ class ApproveOrdersTemplateSerializerTest extends SerializerTest {
         assertThat(templateMap).containsEntry("respondentLastName", "Smith");
     }
 
-    //@Test
+    @Test
     void shouldCreateAttachedDocumentFieldsFromList() {
         Map<String, Object> map1 = Map.of("key1", "value1");
         Map<String, Object> map2 = Map.of("key2", "value2");

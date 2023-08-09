@@ -112,7 +112,7 @@ class CaseSummaryServiceTest {
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(Map.of("field10", "value10"));
     }
 
-    //@Test
+    @Test
     void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagAndHighCourtFlagAreOff() {
         SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
             .caseSummaryLALanguageRequirement("Yes")
@@ -149,7 +149,7 @@ class CaseSummaryServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagAndHighCourtFlagAreOn() {
         SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
             .caseSummaryLALanguageRequirement("Yes")
@@ -186,7 +186,7 @@ class CaseSummaryServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testAutoCalculatedCaseSummaryLAHiddenWhenWelshFlagIsOn() {
         SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
             .caseSummaryLALanguageRequirement("Yes")
@@ -223,7 +223,7 @@ class CaseSummaryServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testAutoCalculatedCaseSummaryLAHiddenWhenHighCourtFlagIsOn() {
         SyntheticCaseSummary welshFlagData = SyntheticCaseSummary.builder()
             .caseSummaryLALanguageRequirement("Yes")
@@ -260,7 +260,7 @@ class CaseSummaryServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testWhenAllGeneratedFieldsAreDisjointed() {
 
         Map<String, Object> actual = underTest.generateSummaryFields(CASE_DATA);
@@ -280,7 +280,7 @@ class CaseSummaryServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testWhenAllGeneratedFieldsWithNullValuesWillKeep() {
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))
@@ -312,7 +312,7 @@ class CaseSummaryServiceTest {
 
     }
 
-    //@Test
+    @Test
     void testWhenAllGeneratedFieldsWithNullValuesWillOverrideWhenOtherNonNull() {
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))
@@ -341,7 +341,7 @@ class CaseSummaryServiceTest {
 
     }
 
-    //@Test
+    @Test
     void testWhenAllGeneratedFieldsOverrides() {
 
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY0), Mockito.<TypeReference<Map<String, Object>>>any()))

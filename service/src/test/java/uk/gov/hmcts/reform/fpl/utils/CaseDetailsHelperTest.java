@@ -39,13 +39,13 @@ class CaseDetailsHelperTest {
     @Nested
     class FormatCCDCaseNumber {
 
-        //@Test
+        @Test
         void shouldFormatCaseNumberWhen16DigitsProvided() {
             String formattedCaseNumber = formatCCDCaseNumber(1234123412341234L);
             assertThat(formattedCaseNumber).isEqualTo("1234-1234-1234-1234");
         }
 
-        //@Test
+        @Test
         void shouldThrowAnExceptionIfCaseNumberExceeds16Digits() {
             Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> formatCCDCaseNumber(12341234123412341L));
@@ -53,7 +53,7 @@ class CaseDetailsHelperTest {
             assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldThrowAnExceptionIfCaseNumberIsLessThan16Digits() {
             Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> formatCCDCaseNumber(123412341234123L));
@@ -61,7 +61,7 @@ class CaseDetailsHelperTest {
             assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldThrowAnExceptionIfCaseNumberIsNull() {
             Exception exception = assertThrows(IllegalArgumentException.class, () -> formatCCDCaseNumber(null));
 
@@ -72,17 +72,17 @@ class CaseDetailsHelperTest {
     @Nested
     class IsCaseNumber {
 
-        //@Test
+        @Test
         void shouldReturnTrueWhenStringIs16DigitNumber() {
             assertThat(isCaseNumber("1234567898765432")).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseIfStringIsNotANumber() {
             assertThat(isCaseNumber("111-111-111-111")).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReturnTrueWhenStringIsNot16DigitNumber() {
             assertThat(isCaseNumber("123456789")).isFalse();
         }
@@ -106,27 +106,27 @@ class CaseDetailsHelperTest {
             data.clear();
         }
 
-        //@Test
+        @Test
         void shouldRemoveFieldsFromCaseDataMapWhenPresent() {
             removeTemporaryFields(caseDetails, "key1", "key2", "key3", "key4");
 
             assertThat(caseDetails.getData()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotRemoveFieldsThatArePresentInMapWhenNotPassed() {
             removeTemporaryFields(caseDetails, "key1", "key3", "key4");
 
             assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"));
         }
 
-        //@Test
+        @Test
         void shouldRemoveTempFieldsBasedOfGivenClass() {
             removeTemporaryFields(caseDetails, TestClass.class);
             assertThat(caseDetails.getData()).containsOnly(Map.entry("key2", "some value 2"), Map.entry("key4", "4"));
         }
 
-        //@Test
+        @Test
         void shouldRemoveTempFieldsBasedOfGivenClass2() {
 
             final Map<String, Object> actualMap = nullifyTemporaryFields(data, TestClass.class);
@@ -156,7 +156,7 @@ class CaseDetailsHelperTest {
             caseDetails = caseDetailsMap(CaseDetails.builder().data(data).build());
         }
 
-        //@Test
+        @Test
         void shouldNotUpdateAnyFieldsWhenFieldsGroupIsNotSpecified() {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
@@ -168,7 +168,7 @@ class CaseDetailsHelperTest {
                 entry("key2", "some value 2"));
         }
 
-        //@Test
+        @Test
         void shouldNotUpdateAnyFieldsWhenFieldsGroupDoesNotExistsInTargetObject() {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
@@ -180,7 +180,7 @@ class CaseDetailsHelperTest {
                 entry("key2", "some value 2"));
         }
 
-        //@Test
+        @Test
         void shouldAddFieldsFromSingleGroupInTargetObject() {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
@@ -194,7 +194,7 @@ class CaseDetailsHelperTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldAddFieldsFromMultipleGroupsInTargetObject() {
 
             final TestClass target = new TestClass("one", "two", "three", "four");
@@ -207,7 +207,7 @@ class CaseDetailsHelperTest {
                 entry("key3", "three"));
         }
 
-        //@Test
+        @Test
         void shouldRemoveFieldsFromSingleGroupWhenNullInTargetObjects() {
 
             final TestClass target = new TestClass(null, null, null, null);
@@ -217,7 +217,7 @@ class CaseDetailsHelperTest {
             assertThat(caseDetailsMap).containsExactly(entry("key1", "some value 1"));
         }
 
-        //@Test
+        @Test
         void shouldRemoveFieldsFromMultipleGroupsWhenNullInTargetObjects() {
 
             final TestClass target = new TestClass(null, null, null, null);
@@ -227,7 +227,7 @@ class CaseDetailsHelperTest {
             assertThat(actualCaseDetails).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenTargetObjectIsNull() {
 
             assertThatThrownBy(() -> putFields(caseDetails, null, "Group1", "Group2"))
@@ -261,21 +261,21 @@ class CaseDetailsHelperTest {
             assertThat(isInGatekeepingState(caseDetails)).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReturnTrueForCasesInOpenState() {
             CaseDetails caseDetails = CaseDetails.builder().state(OPEN.getValue()).build();
 
             assertThat(isInOpenState(caseDetails)).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldReturnTrueForCasesInReturnedState() {
             CaseDetails caseDetails = CaseDetails.builder().state(RETURNED.getValue()).build();
 
             assertThat(isInReturnedState(caseDetails)).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldReturnTrueForCasesInGatekeepingState() {
             CaseDetails caseDetails = CaseDetails.builder().state(GATEKEEPING.getValue()).build();
 

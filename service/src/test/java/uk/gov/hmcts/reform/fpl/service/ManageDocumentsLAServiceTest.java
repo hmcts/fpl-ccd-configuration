@@ -55,7 +55,7 @@ class ManageDocumentsLAServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
-    //@Test
+    @Test
     void shouldPopulateFieldsWhenAllExpectedFieldsArePresentOnCaseData() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6)))
@@ -122,7 +122,7 @@ class ManageDocumentsLAServiceTest {
                 expectedRespondentStatementList);
     }
 
-    //@Test
+    @Test
     void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndApplicationBundlesAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
@@ -139,7 +139,7 @@ class ManageDocumentsLAServiceTest {
             .containsExactly(null, null, expectedManageDocument);
     }
 
-    //@Test
+    @Test
     void shouldNotPopulateRespondentStatementListWhenRespondentsAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()

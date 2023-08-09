@@ -45,7 +45,7 @@ class UrgentGatekeepingOrderServiceTest {
         when(sealingService.sealDocument(UPLOADED_ORDER, court, SealType.ENGLISH)).thenReturn(SEALED_ORDER);
     }
 
-    //@Test
+    @Test
     void prePopulateHasAllocationDecision() {
         CaseData caseData = CaseData.builder().allocationDecision(mock(Allocation.class)).build();
         assertThat(underTest.prePopulate(caseData)).isEqualTo(GatekeepingOrderEventData.builder()
@@ -54,7 +54,7 @@ class UrgentGatekeepingOrderServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void prePopulateHasNoAllocationDecision() {
         CaseData caseData = mock(CaseData.class);
         Allocation preparedAllocation = mock(Allocation.class);
@@ -68,7 +68,7 @@ class UrgentGatekeepingOrderServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void finaliseWithPrePreparedAllocationDecision() {
         CaseData caseData = CaseData.builder()
             .court(court)
@@ -90,7 +90,7 @@ class UrgentGatekeepingOrderServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void finaliseWithPrePreparedAllocationDecisionAndTranslation() {
         CaseData caseData = CaseData.builder()
             .court(court)
@@ -114,7 +114,7 @@ class UrgentGatekeepingOrderServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void finaliseWithNoPrePreparedAllocationDecision() {
         Allocation enteredAllocation = mock(Allocation.class);
         Allocation updatedAllocation = mock(Allocation.class);
@@ -145,21 +145,21 @@ class UrgentGatekeepingOrderServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void getNoticeOfProceedingsTemplatesWithNoOthers() {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6));
     }
 
-    //@Test
+    @Test
     void getNoticeOfProceedingsTemplatesWithOthers() {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
     }
 
-    //@Test
+    @Test
     void sealDocumentAfterEventSubmitted() {
         UrgentHearingOrder order = UrgentHearingOrder.builder()
             .order(UPLOADED_ORDER)

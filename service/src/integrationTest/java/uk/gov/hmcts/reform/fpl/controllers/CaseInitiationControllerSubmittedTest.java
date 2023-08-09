@@ -71,7 +71,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
         givenFplService();
     }
 
-    //@Test
+    @Test
     void shouldGrantCaseAccessToAllUsersInOrganisation() {
         final Organisation organisation = testOrganisation();
 
@@ -133,7 +133,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
         verifyTaskListUpdated(caseData);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenAccessNotGranted() {
         final Organisation organisation = testOrganisation();
 
@@ -205,7 +205,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
         return OrganisationUsers.builder().users(users).build();
     }
 
-    //@Test
+    @Test
     void shouldInvokeSubmitSupplementaryData() {
         final Organisation organisation = testOrganisation();
 

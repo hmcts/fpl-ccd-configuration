@@ -38,17 +38,17 @@ class C63aDeclarationOfParentageParameterGeneratorTest {
     @InjectMocks
     private C63aDeclarationOfParentageDocumentParameterGenerator underTest;
 
-    //@Test
+    @Test
     void shouldReturnCorrectOrder() {
         assertThat(underTest.accept()).isEqualTo(C63A_DECLARATION_OF_PARENTAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectTemplate() {
         assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
-    //@Test
+    @Test
     void generateDocumentWithoutHearingParty() {
         CaseData caseData = getCaseData("Peter Smith", "is",
             LOCAL_AUTHORITY_NAME, null, null);
@@ -65,7 +65,7 @@ class C63aDeclarationOfParentageParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentWithTwoHearingParties() {
         CaseData caseData = getCaseData("Peter Smith", "is",
             LOCAL_AUTHORITY_NAME, "Mary", "Joseph");
@@ -84,7 +84,7 @@ class C63aDeclarationOfParentageParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentWithOneHearingParty() {
         CaseData caseData = getCaseData("Peter Smith", "is",
             LOCAL_AUTHORITY_NAME, "Mary", null);

@@ -118,7 +118,7 @@ class GatekeepingOrderServiceTest {
     @Autowired
     private GatekeepingOrderService underTest;
 
-    //@Test
+    @Test
     void shouldSetAllocatedJudgeLabel() {
         Judge allocatedJudge = Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
@@ -134,14 +134,14 @@ class GatekeepingOrderServiceTest {
         assertThat(underTest.setAllocatedJudgeLabel(allocatedJudge, issuingJudge)).isEqualTo(expectedJudge);
     }
 
-    //@Test
+    @Test
     void getNoticeOfProceedingsTemplatesWithNoOthers() {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6));
     }
 
-    //@Test
+    @Test
     void getNoticeOfProceedingsTemplatesWithOthers() {
         CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
 
@@ -456,7 +456,7 @@ class GatekeepingOrderServiceTest {
                 .thenReturn(generatedDocument);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenNoHearingAndNoAllocatedJudgeAndNotIssuingJudge() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
@@ -475,7 +475,7 @@ class GatekeepingOrderServiceTest {
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenAllocatedJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
@@ -495,7 +495,7 @@ class GatekeepingOrderServiceTest {
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenFirstCaseManagementHearingIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
@@ -515,7 +515,7 @@ class GatekeepingOrderServiceTest {
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenIssuingJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
@@ -537,7 +537,7 @@ class GatekeepingOrderServiceTest {
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenAllRequiredInformationIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(serviceRoute)
@@ -575,7 +575,7 @@ class GatekeepingOrderServiceTest {
             verifyNoInteractions(gatekeepingOrderGenerationService, documentService);
         }
 
-        //@Test
+        @Test
         void shouldUseReplacementOrderWhenPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -597,7 +597,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldUsePreviouslyPreparedOrderWhenReplacementOrderNotPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -619,7 +619,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldUsePreviouslyCurrentOrderWhenNoPreviousOrderNorReplacement() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -641,7 +641,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenNoHearingAndNoAllocatedJudgeAndNotIssuingJudge() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -659,7 +659,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenAllocatedJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -678,7 +678,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenFirstCaseManagementHearingIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -697,7 +697,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenIssuingJudgeIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -718,7 +718,7 @@ class GatekeepingOrderServiceTest {
             assertThat(actualSealDecision).isEqualTo(expectedSealDecision);
         }
 
-        //@Test
+        @Test
         void shouldPrepareSealDecisionWhenAllRequiredInformationIsPresent() {
             final CaseData caseData = CaseData.builder()
                 .gatekeepingOrderRouter(uploadRoute)
@@ -756,7 +756,7 @@ class GatekeepingOrderServiceTest {
             when(sealingService.sealDocument(uploadedOrder, court, SealType.ENGLISH)).thenReturn(sealedOrder);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToKeepOrderAsDraft() {
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
                 .orderStatus(DRAFT)
@@ -792,7 +792,7 @@ class GatekeepingOrderServiceTest {
             verifyNoInteractions(coreCaseDataService);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrder() {
 
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
@@ -827,7 +827,7 @@ class GatekeepingOrderServiceTest {
             verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderAndTranslate() {
 
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
@@ -889,7 +889,7 @@ class GatekeepingOrderServiceTest {
                 .thenReturn(generatedDocument);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToKeepOrderAsDraft() {
             setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
@@ -916,7 +916,7 @@ class GatekeepingOrderServiceTest {
             verifyNoInteractions(sealingService, gatekeepingOrderGenerationService, documentService);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrder() {
             setupMocks(SDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
@@ -948,7 +948,7 @@ class GatekeepingOrderServiceTest {
             verify(gatekeepingOrderGenerationService).getTemplateData(caseData);
         }
 
-        //@Test
+        @Test
         void shouldBuildGatekeepingOrderWhenDecisionIsToSealOrderWithTranslation() {
             setupMocks(UDO);
             final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()

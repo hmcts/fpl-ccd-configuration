@@ -62,7 +62,7 @@ class CaseSubmissionCheckerTest {
     @Nested
     class Validation {
 
-        //@Test
+        @Test
         void shouldOnlyShowValidEventsIfC1Application() {
             when(caseData.isC1Application()).thenReturn(true);
 
@@ -100,7 +100,7 @@ class CaseSubmissionCheckerTest {
 
         }
 
-        //@Test
+        @Test
         void shouldOnlyShowValidEventsIfRefuseContactApplication() {
             when(caseData.isC1Application()).thenReturn(true);
             when(caseData.isRefuseContactWithChildApplication()).thenReturn(true);
@@ -141,7 +141,7 @@ class CaseSubmissionCheckerTest {
 
         }
 
-        //@Test
+        @Test
         void shouldOnlyShowValidEventsIfContactWithChildInCareApplication() {
             when(caseData.isC1Application()).thenReturn(true);
             when(caseData.isContactWithChildInCareApplication()).thenReturn(true);
@@ -182,7 +182,7 @@ class CaseSubmissionCheckerTest {
 
         }
 
-        //@Test
+        @Test
         void shouldValidateLegacyApplicantInsteadOfLocalAuthorityWhenAdditionalContactFeatureIsToggledOff() {
 
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(false);
@@ -226,7 +226,7 @@ class CaseSubmissionCheckerTest {
             assertThat(isAvailable).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReportEventsErrorIncludingCourtSelectionErrorWhenCourtNotSelected() {
 
             when(caseData.getMultiCourts()).thenReturn(YES);
@@ -274,7 +274,7 @@ class CaseSubmissionCheckerTest {
             verify(eventsChecker, never()).validate(eq(LOCAL_AUTHORITY_DETAILS), any());
         }
 
-        //@Test
+        @Test
         void shouldValidateLocalAuthorityInsteadOfLegacyApplicantWhenAdditionalContactFeatureIsToggledOn() {
 
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
@@ -320,7 +320,7 @@ class CaseSubmissionCheckerTest {
             verify(eventsChecker, never()).validate(eq(ORGANISATION_DETAILS), any());
         }
 
-        //@Test
+        @Test
         void shouldExcludeGroundForApplicationWhenDischargeOfCareApplication() {
 
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
@@ -365,7 +365,7 @@ class CaseSubmissionCheckerTest {
             verify(eventsChecker, never()).validate(eq(GROUNDS), any());
         }
 
-        //@Test
+        @Test
         void shouldReportGroupedErrorsOnlyForRelevantEventsWithErrors() {
             final List<String> ordersNeededErrors = List.of("Orders needed error 1", "Orders needed error 2");
             final List<String> childrenErrors = List.of("Children error 1");
@@ -387,7 +387,7 @@ class CaseSubmissionCheckerTest {
             assertThat(isAvailable).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReportOnlyUniqueErrors() {
             final List<String> ordersNeededErrors = List.of("Orders needed error", "Orders needed error");
             final List<String> childrenErrors = List.of("Children error", "Children error", "Children error");
@@ -408,7 +408,7 @@ class CaseSubmissionCheckerTest {
             assertThat(isAvailable).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReportEmptyGroupedErrorsWhenNoErrorsForRelevantEvents() {
             when(eventsChecker.validate(any(), any())).thenReturn(emptyList());
 
@@ -423,7 +423,7 @@ class CaseSubmissionCheckerTest {
     @Nested
     class GroupedValidation {
 
-        //@Test
+        @Test
         void shouldValidateLocalAuthorityInsteadOfLegacyApplicantWhenAdditionalContactFeatureIsToggledOn() {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(true);
 
@@ -454,7 +454,7 @@ class CaseSubmissionCheckerTest {
             verify(eventsChecker, never()).validate(eq(ORGANISATION_DETAILS), any());
         }
 
-        //@Test
+        @Test
         void shouldValidateLegacyApplicantInsteadOfLocalAuthorityWhenAdditionalContactFeatureIsToggledOff() {
             when(featureToggles.isApplicantAdditionalContactsEnabled()).thenReturn(false);
 
@@ -485,7 +485,7 @@ class CaseSubmissionCheckerTest {
             verify(eventsChecker, never()).validate(eq(APPLICATION_DOCUMENTS), any());
         }
 
-        //@Test
+        @Test
         void shouldReportGroupedErrorsOnlyForRelevantEventsWithErrors() {
             when(eventsChecker.validate(any(), any())).thenReturn(emptyList());
             when(eventsChecker.validate(ORDERS_SOUGHT, caseData)).thenReturn(ordersNeededErrors);
@@ -499,7 +499,7 @@ class CaseSubmissionCheckerTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReportOnlyUniqueErrors() {
             final List<String> ordersNeededErrors = List.of("Orders needed error", "Orders needed error");
             final List<String> childrenErrors = List.of("Children error 1", "Children error 1", "Children error 2");

@@ -52,14 +52,14 @@ class CaseSummaryNextHearingGeneratorTest {
         when(time.now()).thenReturn(NOW);
     }
 
-    //@Test
+    @Test
     void testNoHearings() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithNoDraftCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -78,7 +78,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithNonMatchingDraftCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -103,7 +103,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithAllocatedJudgeIgnored() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -122,7 +122,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithAllocatedJudgeAndEmptyInfoOnHearingJudge() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -142,7 +142,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithAllocatedJudgeSameAsHearingJudge() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -167,7 +167,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithAllocatedJudgeDiffenentThanHearingJudge() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -194,7 +194,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testSingleHearingsWithMatchingDraftCmo() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -220,7 +220,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testMultipleHearingsSelectsLatestInPast() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(
@@ -249,7 +249,7 @@ class CaseSummaryNextHearingGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testNoHearingsIfAllInPast() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(

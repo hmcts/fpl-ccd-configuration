@@ -93,7 +93,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    //@Test
+    @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
@@ -110,7 +110,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
     }
 
-    //@Test
+    @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForSolicitor() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(false);
@@ -125,7 +125,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .hasBody(EMAIL_CONTENT_NO_DOC_NAMES);
     }
 
-    //@Test
+    @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOnForLA() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
@@ -142,7 +142,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
             .hasBody(EMAIL_CONTENT_DOC_NAMES);
     }
 
-    //@Test
+    @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOnForSolicitor() {
 
         when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);

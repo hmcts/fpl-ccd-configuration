@@ -85,7 +85,7 @@ class DocumentMetadataDownloadServiceTest {
                 systemUserService);
     }
 
-    //@Test
+    @Test
     void shouldRetrieveDocumentFromDocumentManagement() {
         Document document = document();
 
@@ -106,7 +106,7 @@ class DocumentMetadataDownloadServiceTest {
                 "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentNotFound() {
         Document document = document();
 
@@ -127,7 +127,7 @@ class DocumentMetadataDownloadServiceTest {
                 "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
 
-    //@Test
+    @Test
     void shouldUseSecureDocStoreIsFeatureToggledOn() {
         when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
 
@@ -167,7 +167,7 @@ class DocumentMetadataDownloadServiceTest {
             "1221560"));
     }
 
-    //@Test
+    @Test
     void shouldUseSystemUserIfNotInRequest() {
         given(requestData.authorisation()).willThrow(new IllegalStateException());
 

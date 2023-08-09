@@ -87,12 +87,12 @@ class OrderValidatorHolderTest {
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
     }
 
-    //@Test
+    @Test
     void blockToValidator() {
         assertThat(underTest.blockToValidator()).isEqualTo(orderQuestionBlockValidators);
     }
 
-    //@Test
+    @Test
     void blockToValidatorCached() {
         underTest.blockToValidator();
         assertThat(underTest.blockToValidator()).isEqualTo(orderQuestionBlockValidators);

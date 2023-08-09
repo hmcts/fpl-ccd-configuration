@@ -49,7 +49,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
             .thenReturn(C2_DOCUMENT_BINARY);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         DocumentReference uploadedC2 = DocumentReference.builder()
             .filename(randomAlphanumeric(10))
@@ -66,7 +66,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedPbaPaymentNotTakenNotification() {
         CaseData caseData = buildCaseData();
 
@@ -80,7 +80,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedMapWithAllocatedJudgeDetails() {
         CaseData caseData = buildCaseData();
 

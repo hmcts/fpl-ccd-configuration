@@ -49,7 +49,7 @@ class OrderRemovalActionsTest {
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
-    //@Test
+    @Test
     void shouldReturnSealedOrderActionWhenGettingActionForSealedCaseManagementOrder() {
         when(sealedCMORemovalAction.isAccepted(SEALED_CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
@@ -57,7 +57,7 @@ class OrderRemovalActionsTest {
             .isEqualTo(sealedCMORemovalAction);
     }
 
-    //@Test
+    @Test
     void shouldReturnDraftCMOOrderActionWhenGettingActionForDraftCaseManagementOrder() {
         when(draftCMORemovalAction.isAccepted(DRAFT_CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
@@ -65,14 +65,14 @@ class OrderRemovalActionsTest {
             .isEqualTo(draftCMORemovalAction);
     }
 
-    //@Test
+    @Test
     void shouldReturnDraftOrderActionWhenGettingActionForDraftOrder() {
         when(draftOrderRemovalAction.isAccepted(DRAFT_ORDER)).thenReturn(true);
 
         assertThat(orderRemovalActions.getAction(DRAFT_ORDER)).isEqualTo(draftOrderRemovalAction);
     }
 
-    //@Test
+    @Test
     void shouldReturnCMOActionWhenGettingActionForCMO() {
         when(generatedOrderRemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(true);
 
@@ -80,7 +80,7 @@ class OrderRemovalActionsTest {
             .isEqualTo(generatedOrderRemovalAction);
     }
 
-    //@Test
+    @Test
     void shouldReturnSDOActionWhenGettingActionForSDO() {
         when(sdoRemovalAction.isAccepted(STANDARD_DIRECTION_ORDER)).thenReturn(true);
 
@@ -88,7 +88,7 @@ class OrderRemovalActionsTest {
             .isEqualTo(sdoRemovalAction);
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionWhenActionTypeFailsToMatchToRemovableOrder() {
         when(sealedCMORemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(false);
 

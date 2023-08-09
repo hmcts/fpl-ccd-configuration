@@ -18,7 +18,7 @@ class LanguageSelectionControllerAboutToSubmitTest extends AbstractCallbackTest 
         super("language-selection");
     }
 
-    //@Test
+    @Test
     void aboutToSubmitShouldPopulateWhenLanguageIsSelected() {
         C110A c110A = C110A.builder()
             .languageRequirementApplication(Language.ENGLISH)

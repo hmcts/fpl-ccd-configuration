@@ -23,7 +23,7 @@ class ListGatekeepingHearingDeciderTest {
     @InjectMocks
     private ListGatekeepingHearingDecider listGatekeepingHearingDecider;
 
-    //@Test
+    @Test
     void shouldReturnGatekeepingOrderEventForStandardDirectionsOrder() {
 
         final DocumentReference documentReference = DocumentReference.builder().build();
@@ -54,7 +54,7 @@ class ListGatekeepingHearingDeciderTest {
         assertThat(gatekeepingOrderEvent.get()).isEqualTo(expectedEvent);
     }
 
-    //@Test
+    @Test
     void shouldReturnGatekeepingOrderEventForUrgentDirectionsOrder() {
 
         final DocumentReference documentReference = DocumentReference.builder().build();
@@ -85,7 +85,7 @@ class ListGatekeepingHearingDeciderTest {
         assertThat(gatekeepingOrderEvent.get()).isEqualTo(expectedEvent);
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionEmptyIfStandardDirectionOrderIsNotSet() {
 
         final CaseData caseData = CaseData.builder()
@@ -98,7 +98,7 @@ class ListGatekeepingHearingDeciderTest {
         assertThat(gatekeepingOrderEvent).isNotPresent();
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionEmptyIfDocumentReferenceIsNotSet() {
 
         final StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()

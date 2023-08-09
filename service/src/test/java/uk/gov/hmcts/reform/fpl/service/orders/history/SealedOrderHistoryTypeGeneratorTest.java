@@ -22,7 +22,7 @@ public class SealedOrderHistoryTypeGeneratorTest {
     private final SealedOrderHistoryTypeGenerator underTest = new SealedOrderHistoryTypeGenerator(
         c43ChildArrangementOrderTitleGenerator);
 
-    //@Test
+    @Test
     void testIfChildArrangementSpecificIssueProhibitedStepsOrder() {
         List<C43OrderType> orders = List.of(CHILD_ARRANGEMENT_ORDER, SPECIFIC_ISSUE_ORDER, PROHIBITED_STEPS_ORDER);
 
@@ -40,7 +40,7 @@ public class SealedOrderHistoryTypeGeneratorTest {
         assertThat(actual).isEqualTo("title (C43)");
     }
 
-    //@Test
+    @Test
     void testIfAnyOtherOrderType() {
         Order order = Order.C21_BLANK_ORDER;
 

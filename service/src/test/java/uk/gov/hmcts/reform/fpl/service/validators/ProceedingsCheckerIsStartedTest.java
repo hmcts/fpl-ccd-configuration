@@ -32,7 +32,7 @@ class ProceedingsCheckerIsStartedTest {
         assertThat(proceedingsChecker.isStarted(caseData)).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenProceedingsNotEmpty() {
         final Proceeding proceeding = Proceeding.builder()
                 .onGoingProceeding("No")

@@ -67,7 +67,7 @@ class PeopleInCaseServiceTest {
 
     private PeopleInCaseService underTest = new PeopleInCaseService();
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenRespondentsAndOthersExistInList() {
         List<Element<Respondent>> respondents = wrapElements(
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build(),
@@ -85,7 +85,7 @@ class PeopleInCaseServiceTest {
         assertThat(actual).isEqualTo(expectedLabel);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenRespondentsAndAdditionalOthersExistInList() {
         List<Element<Respondent>> respondents = wrapElements(
             Respondent.builder().party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
@@ -100,7 +100,7 @@ class PeopleInCaseServiceTest {
         assertThat(actual).isEqualTo(expectedLabel);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenOthersAreEmpty() {
         List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
             .party(RespondentParty.builder().firstName("John").lastName("Smith").build()).build());
@@ -110,7 +110,7 @@ class PeopleInCaseServiceTest {
         assertThat(actual).isEqualTo(expectedLabel);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenRespondentsAreEmpty() {
         Others others = Others.builder()
             .firstOther(Other.builder().name("James Daniels").build())
@@ -123,14 +123,14 @@ class PeopleInCaseServiceTest {
         assertThat(actual).isEqualTo(expectedOthersLabel);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedMessageWhenRespondentsAndOthersAreEmpty() {
         String actual = underTest.buildPeopleInCaseLabel(List.of(), Others.builder().build());
 
         assertThat(actual).isEqualTo("No respondents and others on the case");
     }
 
-    //@Test
+    @Test
     void shouldReturnAllRespondentsAndOthersWhenSelectedAll() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -144,7 +144,7 @@ class PeopleInCaseServiceTest {
         assertThat(unwrapElements(selectedOthers)).isEqualTo(unwrapElements(SELECTED_OTHERS));
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOthers() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -174,7 +174,7 @@ class PeopleInCaseServiceTest {
         assertThat(unwrapElements(selectedOthers)).containsExactly(SELECTED_OTHERS.get(0).getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyWhenNoneOfTheOthersAreSelected() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -186,7 +186,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedOthers(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -198,7 +198,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedOthers(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAllRespondentsWhenSelectedAllPeopleInTheCase() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -209,7 +209,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedRespondents(caseData)).isEqualTo(SELECTED_RESPONDENTS);
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedRespondents() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -220,7 +220,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedRespondents(caseData)).isEqualTo(List.of(SELECTED_RESPONDENTS.get(0)));
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyWhenNoRespondentsAreSelected() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -231,7 +231,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedRespondents(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyWhenSelectedItemsAreEmpty() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)
@@ -242,7 +242,7 @@ class PeopleInCaseServiceTest {
         assertThat(underTest.getSelectedRespondents(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyRespondentsListWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .respondents1(SELECTED_RESPONDENTS)

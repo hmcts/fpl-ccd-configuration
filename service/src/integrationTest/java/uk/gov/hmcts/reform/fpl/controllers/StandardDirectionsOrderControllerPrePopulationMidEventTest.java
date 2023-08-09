@@ -47,7 +47,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
         super("draft-standard-directions");
     }
 
-    //@Test
+    @Test
     void shouldPopulateCorrectHearingDate() {
         LocalDateTime hearingDate = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
 
@@ -63,7 +63,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
                 .isEqualTo("1 January 2020, 12:00am"));
     }
 
-    //@Test
+    @Test
     void shouldShowEmptyPlaceHolderForHearingDateWhenNoHearingDate() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
@@ -74,7 +74,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
                 .isEqualTo("Please enter a hearing date"));
     }
 
-    //@Test
+    @Test
     void shouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
         List<Direction> directions = createDirections();
 
@@ -103,7 +103,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
         assertThat(judgeAndLegalAdvisor.getJudgeLastName()).isEqualTo("Davidson");
     }
 
-    //@Test
+    @Test
     void shouldSetAssignJudgeLabelWhenAllocatedJudgeIsPopulated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("allocatedJudge", testJudge()))
@@ -117,7 +117,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
             .isEqualTo("Case assigned to: Magistrates (JP) Brandon Stark");
     }
 
-    //@Test
+    @Test
     void shouldPopulateUseAllocatedJudgeWithYesWhenJudgeAndAllocatedJudgeAreEqual() {
         CaseDetails caseDetails = buildSameJudgeCaseDetails(testJudge());
 
@@ -128,7 +128,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo("Yes");
     }
 
-    //@Test
+    @Test
     void shouldNotSetAssignedJudgeLabelIfAllocatedJudgeNotSet() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build()))
@@ -186,7 +186,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
 
         private List<Element<HearingBooking>> hearings = List.of(element(mock(HearingBooking.class)));
 
-        //@Test
+        @Test
         void shouldPopulateDateOfIssue() {
             CaseData caseData = CaseData.builder()
                 .sdoRouter(GatekeepingOrderRoute.SERVICE)
@@ -197,7 +197,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
             assertThat(responseData.getDateOfIssue()).isEqualTo(now().toLocalDate());
         }
 
-        //@Test
+        @Test
         void shouldRemoveEmptyPreparedStandardDirectionOrderDocumentIfPresent() {
             CaseData caseData = CaseData.builder()
                 .preparedSDO(DocumentReference.builder().build())
@@ -209,7 +209,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
                 .doesNotContainKey("preparedSDO");
         }
 
-        //@Test
+        @Test
         void shouldPrePopulateExistingJudgeAndLegalAdvisor() {
             JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
 
@@ -228,21 +228,21 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
     @Nested
     class DateOfIssueValidation {
 
-        //@Test
+        @Test
         void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
             CaseDetails caseDetails = caseDetails(now().plusDays(1));
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
             assertThat(response.getErrors()).containsOnlyOnce("Date of issue cannot be in the future");
         }
 
-        //@Test
+        @Test
         void shouldNotReturnErrorsWhenDateOfIssueIsToday() {
             CaseDetails caseDetails = caseDetails(now());
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");
             assertThat(response.getErrors()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnErrorsWhenDateOfIssueIsInPast() {
             CaseDetails caseDetails = caseDetails(now().minusDays(1));
             AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "date-of-issue");

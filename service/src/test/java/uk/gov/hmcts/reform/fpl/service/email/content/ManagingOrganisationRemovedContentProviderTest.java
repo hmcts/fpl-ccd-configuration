@@ -14,7 +14,7 @@ class ManagingOrganisationRemovedContentProviderTest {
 
     private ManagingOrganisationRemovedContentProvider underTest = new ManagingOrganisationRemovedContentProvider();
 
-    //@Test
+    @Test
     void shouldBuildEmailData() {
 
         final Organisation organisation = Organisation.builder()

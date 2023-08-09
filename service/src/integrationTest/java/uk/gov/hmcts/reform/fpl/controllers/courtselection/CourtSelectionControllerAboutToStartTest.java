@@ -25,7 +25,7 @@ class CourtSelectionControllerAboutToStartTest extends AbstractCallbackTest {
         super("select-court");
     }
 
-    //@Test
+    @Test
     void shouldAddListOfCourts() {
 
         final CaseData caseData = CaseData.builder()
@@ -41,7 +41,7 @@ class CourtSelectionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourtsList()).isEqualTo(expectedCourtsList);
     }
 
-    //@Test
+    @Test
     void shouldAddListOfCourtsWithPreselectedCourt() {
 
         final CaseData caseData = CaseData.builder()

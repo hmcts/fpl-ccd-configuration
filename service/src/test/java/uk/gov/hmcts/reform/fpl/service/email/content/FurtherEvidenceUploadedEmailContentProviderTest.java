@@ -35,7 +35,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
     @Autowired
     private FurtherEvidenceUploadedEmailContentProvider underTest;
 
-    //@Test
+    @Test
     void shouldBuildExpectedParametersFromCaseData() {
         FurtherEvidenceDocumentUploadedData expected = FurtherEvidenceDocumentUploadedData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, DOCUMENTS))

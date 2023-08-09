@@ -24,7 +24,7 @@ class CaseManagementOrderTest {
         assertThat(caseManagementOrder.isRemovable()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldFormatSealedCaseManagementOrderAsLabelWithDateIssued() {
         LocalDate issueDate = LocalDate.of(2021, Month.JANUARY, 7);
 
@@ -33,7 +33,7 @@ class CaseManagementOrderTest {
         assertThat(caseManagementOrder.asLabel()).isEqualTo("Sealed case management order issued on 7 January 2021");
     }
 
-    //@Test
+    @Test
     void shouldFormatDraftCaseManagementOrderAsLabelWithDateSent() {
         LocalDate dateSent = LocalDate.of(2021, Month.JANUARY, 10);
 

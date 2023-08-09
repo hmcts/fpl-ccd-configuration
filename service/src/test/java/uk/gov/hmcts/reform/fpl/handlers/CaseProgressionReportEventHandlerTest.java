@@ -53,7 +53,7 @@ class CaseProgressionReportEventHandlerTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
-    //@Test
+    @Test
     void shouldSendNotificationWhenReportFilePresent() throws IOException {
 
         String courtId = "344";
@@ -97,7 +97,7 @@ class CaseProgressionReportEventHandlerTest {
         assertThat(file).doesNotExist();
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationWhenNoReportFilePresent() {
 
         String courtId = "344";

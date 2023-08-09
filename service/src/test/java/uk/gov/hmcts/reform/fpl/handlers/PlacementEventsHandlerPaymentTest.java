@@ -76,7 +76,7 @@ class PlacementEventsHandlerPaymentTest {
     @InjectMocks
     private PlacementEventsHandler underTest;
 
-    //@Test
+    @Test
     void shouldNotTakePaymentWhenItIsNotRequired() {
 
         final Placement placement = Placement.builder()
@@ -102,7 +102,7 @@ class PlacementEventsHandlerPaymentTest {
         verifyNoInteractions(paymentService, eventService, coreCaseDataService, userService, time);
     }
 
-    //@Test
+    @Test
     void shouldTakeCourtPaymentWhenRequiredAndUpdatePaymentTimestamp() {
 
         final LocalDateTime now = LocalDateTime.now();
@@ -140,7 +140,7 @@ class PlacementEventsHandlerPaymentTest {
         verifyNoInteractions(eventService);
     }
 
-    //@Test
+    @Test
     void shouldTakeLocalAuthorityPaymentWhenRequiredAndUpdatePaymentTimestamp() {
         final Placement placement = Placement.builder()
             .childId(randomUUID())
@@ -169,7 +169,7 @@ class PlacementEventsHandlerPaymentTest {
         verifyNoInteractions(eventService);
     }
 
-    //@Test
+    @Test
     void doesExpectedCaseUpdates() {
         final Placement placement = Placement.builder()
             .childId(randomUUID())
@@ -293,7 +293,7 @@ class PlacementEventsHandlerPaymentTest {
             .build());
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationWhenUnrecognisedExceptionThrown() {
 
         final Exception unexpectedException = new RuntimeException();

@@ -61,7 +61,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .willReturn(organisation);
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateLocalAuthorityDetailsFromReferenceData() {
 
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseData()));
@@ -84,7 +84,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         verify(organisationApi).findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN);
     }
 
-    //@Test
+    @Test
     void shouldPopulateLocalAuthorityWithDataFromLegacyApplicant() {
 
         final ApplicantParty legacyApplicant = ApplicantParty.builder()
@@ -125,7 +125,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
     }
 
-    //@Test
+    @Test
     void shouldGetExistingLocalAuthorityDetails() {
 
         final List<Element<Colleague>> colleagues = wrapElements(Colleague.builder()

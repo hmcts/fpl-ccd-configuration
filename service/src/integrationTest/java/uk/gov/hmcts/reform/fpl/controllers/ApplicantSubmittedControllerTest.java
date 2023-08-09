@@ -29,7 +29,7 @@ class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
         super("enter-applicant");
     }
 
-    //@Test
+    @Test
     void shouldUpdateTaskListAndSummary() {
 
         final CaseData caseData = CaseData.builder()

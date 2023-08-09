@@ -41,7 +41,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         super("reply-message-judge");
     }
 
-    //@Test
+    @Test
     void shouldSetHearingLabelWhenNextHearingExists() {
         HearingBooking expectedNextHearing = HearingBooking.builder()
             .startDate(now().plusDays(1))
@@ -74,7 +74,7 @@ class ReplyToMessageJudgeControllerMidEventTest extends AbstractCallbackTest {
             String.format("Next hearing in the case: %s", expectedNextHearing.toLabel()));
     }
 
-    //@Test
+    @Test
     void shouldPopulateRelatedDocumentsAndJudgeReplyFieldsWhenReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage = buildMessage();
 

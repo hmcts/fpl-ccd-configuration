@@ -213,7 +213,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         super("list-gatekeeping-hearing");
     }
 
-    //@Test
+    @Test
     @Order(2)
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -248,7 +248,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     @Order(1)
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -278,7 +278,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
         final DocumentReference noticeOfHearing = testDocumentReference();
@@ -442,7 +442,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresentEnglandLa()
         throws NotificationClientException {
         final DocumentReference noticeOfHearing = testDocumentReference();
@@ -555,7 +555,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
@@ -660,7 +660,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldNotTriggerTemporaryHearingJudgeEventWhenUsingAllocatedJudge() {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)

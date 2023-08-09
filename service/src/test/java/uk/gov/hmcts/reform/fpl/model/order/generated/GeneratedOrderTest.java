@@ -39,19 +39,19 @@ class GeneratedOrderTest {
     public static final String AN_ORDER_TYPE = "anOrderType";
     private static final LocalDateTime DATE_TIME_ISSUED = LocalDateTime.of(2020, 9, 21, 4, 2, 3);
 
-    //@Test
+    @Test
     void testOrderCanAlwaysBeRemoved() {
         assertThat(GeneratedOrder.builder().build().isRemovable()).isEqualTo(true);
     }
 
-    //@Test
+    @Test
     void amendableSortDateApprovalDate() {
         LocalDate approvalDate = LocalDate.of(1, 1, 1);
         GeneratedOrder order = GeneratedOrder.builder().approvalDate(approvalDate).build();
         assertThat(order.amendableSortDate()).isEqualTo(approvalDate);
     }
 
-    //@Test
+    @Test
     void amendableSortDateApprovalDateTime() {
         LocalDate approvalDate = LocalDate.of(1, 1, 1);
         GeneratedOrder order = GeneratedOrder.builder()
@@ -60,37 +60,37 @@ class GeneratedOrderTest {
         assertThat(order.amendableSortDate()).isEqualTo(approvalDate);
     }
 
-    //@Test
+    @Test
     void amendableSortDateDateOfIssue() {
         GeneratedOrder order = GeneratedOrder.builder().dateOfIssue("1 January 0001").build();
         assertThat(order.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
     }
 
-    //@Test
+    @Test
     void amendableSortDateDate() {
         GeneratedOrder order = GeneratedOrder.builder().date("1:11am, 1 January 0001").build();
         assertThat(order.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
     }
 
-    //@Test
+    @Test
     void amendableSortDateNull() {
         GeneratedOrder order = GeneratedOrder.builder().build();
         assertThat(order.amendableSortDate()).isNull();
     }
 
-    //@Test
+    @Test
     void amendableSortDateInvalidDateOfIssueFormat() {
         GeneratedOrder order = GeneratedOrder.builder().dateOfIssue("1:11am, 1 January 0001").build();
         assertThat(order.amendableSortDate()).isNull();
     }
 
-    //@Test
+    @Test
     void amendableSortDateInvalidDateFormat() {
         GeneratedOrder order = GeneratedOrder.builder().date("1 January 0001").build();
         assertThat(order.amendableSortDate()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnTypeAppendedByDateOfIssueWhenTitlePresentAndNewType() {
         GeneratedOrder order = GeneratedOrder.builder()
             .type("dancing in september")
@@ -100,7 +100,7 @@ class GeneratedOrderTest {
         assertThat(order.asLabel()).isEqualTo("dancing in september - 21 September 2020");
     }
 
-    //@Test
+    @Test
     void shouldReturnTitleAppendedByDateOfIssueWhenTitlePresent() {
         GeneratedOrder order = GeneratedOrder.builder()
             .title("do you remember")
@@ -110,7 +110,7 @@ class GeneratedOrderTest {
         assertThat(order.asLabel()).isEqualTo("do you remember - 21st September");
     }
 
-    //@Test
+    @Test
     void shouldReturnTypeAppendedByDateOfIssueWhenTitleNotPresent() {
         GeneratedOrder order = GeneratedOrder.builder()
             .type("dancing in september")
@@ -120,7 +120,7 @@ class GeneratedOrderTest {
         assertThat(order.asLabel()).isEqualTo("dancing in september - 21 September 1978");
     }
 
-    //@Test
+    @Test
     void testOrderTypesNewFormatFinal() {
         GeneratedOrder order = GeneratedOrder.builder()
             .dateTimeIssued(DATE_TIME_ISSUED)
@@ -130,7 +130,7 @@ class GeneratedOrderTest {
         assertThat(order.isFinalOrder()).isTrue();
     }
 
-    //@Test
+    @Test
     void testOrderTypesNewFormatNotFinal() {
         GeneratedOrder order = GeneratedOrder.builder()
             .dateTimeIssued(DATE_TIME_ISSUED)
@@ -140,7 +140,7 @@ class GeneratedOrderTest {
         assertThat(order.isFinalOrder()).isFalse();
     }
 
-    //@Test
+    @Test
     void testOrderTypesNewFormatNotFinalUnknown() {
         GeneratedOrder order = GeneratedOrder.builder()
             .dateTimeIssued(DATE_TIME_ISSUED)
@@ -163,7 +163,7 @@ class GeneratedOrderTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldReturnListOfChildrenIdsWhenExisting() {
         UUID childOneId = UUID.randomUUID();
         UUID childTwoId = UUID.randomUUID();
@@ -177,14 +177,14 @@ class GeneratedOrderTest {
         assertThat(order.getChildrenIDs()).isEqualTo(List.of(childOneId, childTwoId));
     }
 
-    //@Test
+    @Test
     void shouldReturnANEmptyListWhenChildrenDoNotExistOnOrder() {
         GeneratedOrder order = GeneratedOrder.builder().build();
 
         assertThat(order.getChildrenIDs()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAmendedOrderType() {
         GeneratedOrder order = GeneratedOrder.builder()
             .type("generated order type")
@@ -193,7 +193,7 @@ class GeneratedOrderTest {
         assertThat(order.getModifiedItemType()).isEqualTo("generated order type");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOthers() {
         List<Element<Other>>  selectedOthers = List.of(element(testOther("Other 1")));
         GeneratedOrder order = GeneratedOrder.builder()
@@ -204,7 +204,7 @@ class GeneratedOrderTest {
         assertThat(order.getSelectedOthers()).isEqualTo(selectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoSelectedOthers() {
         GeneratedOrder order = GeneratedOrder.builder()
             .type("generated order type")

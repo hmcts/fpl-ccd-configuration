@@ -84,40 +84,40 @@ class DraftCMORemovalActionTest {
     @Captor
     private ArgumentCaptor<Consumer<List<Element<HearingOrdersBundle>>>> updatingCaseDetails;
 
-    //@Test
+    @Test
     void isAcceptedOfDraftCaseManagementOrders() {
         RemovableOrder order = HearingOrder.builder().type(DRAFT_CMO).build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
     }
 
-    //@Test
+    @Test
     void isAcceptedOfAgreedDraftCaseManagementOrder() {
         RemovableOrder order = HearingOrder.builder().type(AGREED_CMO).build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedC21HearingOrder() {
         RemovableOrder order = HearingOrder.builder().type(C21).build();
 
         assertThat(underTest.isAccepted(order)).isFalse();
     }
 
-    //@Test
+    @Test
     void isAcceptedWhenHearingOrderTypeIsNull() {
         RemovableOrder order = HearingOrder.builder().build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedIfAnyOtherClass() {
         assertThat(underTest.isAccepted(mock(RemovableOrder.class))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByCMOId() {
         DocumentReference orderDocument = DocumentReference.builder().build();
         HearingOrder removedOrder = cmo(orderDocument);
@@ -159,7 +159,7 @@ class DraftCMORemovalActionTest {
                 NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByLabel() {
         LocalDateTime startDate = HEARING_START_DATE.plusDays(3);
         DocumentReference orderDocument = DocumentReference.builder().build();
@@ -201,7 +201,7 @@ class DraftCMORemovalActionTest {
                 NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldRemoveOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingOrder cmoToRemove = cmo(differentStartDate).toBuilder().type(DRAFT_CMO).build();
@@ -241,7 +241,7 @@ class DraftCMORemovalActionTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldRemoveCaseManagementOrderWhenOtherCMOisPresent() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -292,7 +292,7 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveCaseManagementOrderWhenPresentOnDraftCaseManagementOrdersOnly() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -329,7 +329,7 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveOrderAssociatedWithCancelledHearingWhenPresentOnDraftCaseManagementOrdersOnly() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -373,7 +373,7 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
         HearingOrder agreedCMO = HearingOrder.builder().type(AGREED_CMO).build();
@@ -426,7 +426,7 @@ class DraftCMORemovalActionTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingAssociationWithARemovedAgreedCaseManagementOrder() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
         HearingOrder agreedCMO = HearingOrder.builder().type(AGREED_CMO).build();
@@ -477,7 +477,7 @@ class DraftCMORemovalActionTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldRemoveCancelledHearingAssociationWithARemovedCaseManagementOrder() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -517,7 +517,7 @@ class DraftCMORemovalActionTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionIfHearingOrderBundleContainingRemovedCMOCannotBeFound() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -537,7 +537,7 @@ class DraftCMORemovalActionTest {
                 TO_REMOVE_ORDER_ID)));
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionIfDraftUploadedCMOContainingRemovedCMOCannotBeFound() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -554,7 +554,7 @@ class DraftCMORemovalActionTest {
                 TO_REMOVE_ORDER_ID)));
     }
 
-    //@Test
+    @Test
     void shouldRemoveDraftCaseManagementOrderAndUnlinkHearing() {
         DocumentReference order = testDocumentReference();
         Element<HearingOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo(testDocumentReference()));
@@ -604,7 +604,7 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveDraftOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo(differentStartDate));
@@ -646,7 +646,7 @@ class DraftCMORemovalActionTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionIfDraftOrderToBeRemovedIsNotFound() {
         UUID alreadyRemovedOrderId = UUID.randomUUID();
         Element<HearingOrder> removedOrder = element(alreadyRemovedOrderId, cmo());

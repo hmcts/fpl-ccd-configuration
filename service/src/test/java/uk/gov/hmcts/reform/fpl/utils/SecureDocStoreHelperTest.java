@@ -37,7 +37,7 @@ class SecureDocStoreHelperTest {
     @Nested
     class DownloadDocument {
 
-        //@Test
+        @Test
         void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
             byte[] resultFromSecureDocStore = "DATA_FROM_NEW".getBytes();
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
@@ -72,7 +72,7 @@ class SecureDocStoreHelperTest {
             }
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenToggledOn() {
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
             when(secureDocStoreService.downloadDocument(DOCUMENT_URL_STRING)).thenThrow(
@@ -115,7 +115,7 @@ class SecureDocStoreHelperTest {
     @Nested
     class GetDocumentMetadata {
 
-        //@Test
+        @Test
         void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
             Document resultFromSecureDocStore = Document.builder().build();
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
@@ -153,7 +153,7 @@ class SecureDocStoreHelperTest {
             }
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenToggledOn() {
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
             when(secureDocStoreService.getDocumentMetadata(DOCUMENT_URL_STRING)).thenThrow(
@@ -199,7 +199,7 @@ class SecureDocStoreHelperTest {
     @Nested
     class UploadDocument {
 
-        //@Test
+        @Test
         void shouldThrownUnsupportedOperationExceptionIfOldApproachNotProvidedWhenToggledOff() {
             Document resultFromSecureDocStore = Document.builder().build();
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
@@ -239,7 +239,7 @@ class SecureDocStoreHelperTest {
             }
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenToggledOn() {
             when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
             when(secureDocStoreService.uploadDocument("DATA".getBytes(), FILE_NAME, CONTENT_TYPE)).thenThrow(

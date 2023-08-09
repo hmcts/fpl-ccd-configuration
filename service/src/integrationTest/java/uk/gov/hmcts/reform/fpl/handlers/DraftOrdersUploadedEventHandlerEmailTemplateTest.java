@@ -56,7 +56,7 @@ class DraftOrdersUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Autowired
     private DraftOrdersUploadedEventHandler underTest;
 
-    //@Test
+    @Test
     void notifyJudge() {
         CaseData caseData = getCaseData();
 

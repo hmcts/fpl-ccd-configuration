@@ -46,7 +46,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         super("enter-children");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenSolicitorUpdatesAlreadySetRepresentative() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -78,7 +78,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         assertThat(response.getErrors()).isEqualTo(List.of("You cannot change a child's legal representative"));
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenSolicitorSetsRepresentativeForTheFirstTime() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -104,7 +104,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         assertThat(response.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenAdminUpdatesAlreadySetRepresentative() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -137,7 +137,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         assertThat(response.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenMandatoryFieldsAreNotPopulated() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -163,7 +163,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         ));
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenEmailsAreNotValid() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -192,7 +192,7 @@ class ChildControllerRepresentationValidationMidEventTest extends AbstractCallba
         ));
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrors() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)

@@ -39,7 +39,7 @@ public class ManageOrderDocumentServiceTest {
         when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_1_CODE)).thenReturn(LOCAL_AUTHORITY_1_NAME);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedSingularGrammar() {
         when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class)));
 
@@ -54,7 +54,7 @@ public class ManageOrderDocumentServiceTest {
         assertThat(manageOrderDocumentService.commonContextElements(CASE_DATA)).isEqualTo(expectedGrammar);
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedPluralGrammar() {
         when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class),
             mock(Child.class)));

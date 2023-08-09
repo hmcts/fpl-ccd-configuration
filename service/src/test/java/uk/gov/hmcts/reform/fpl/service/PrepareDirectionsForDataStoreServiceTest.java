@@ -22,7 +22,7 @@ class PrepareDirectionsForDataStoreServiceTest {
     @Autowired
     private PrepareDirectionsForDataStoreService service;
 
-    //@Test
+    @Test
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiIncludingTextWhenReadOnlyIsYes() {
         UUID uuid = randomUUID();
 
@@ -44,7 +44,7 @@ class PrepareDirectionsForDataStoreServiceTest {
         assertThat(toAddValues).isEqualTo(withHiddenValues);
     }
 
-    //@Test
+    @Test
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiExcludingTextWhenReadOnlyIsNo() {
         UUID uuid = randomUUID();
 

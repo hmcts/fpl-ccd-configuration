@@ -13,7 +13,7 @@ class LanguageRequirementsCheckerTest {
 
     private LanguageRequirementsChecker underTest = new LanguageRequirementsChecker();
 
-    //@Test
+    @Test
     void testValidate() {
         final CaseData anyCaseData = CaseData.builder()
             .languageRequirement("Yes")
@@ -22,12 +22,12 @@ class LanguageRequirementsCheckerTest {
         assertThat(underTest.validate(anyCaseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void testCompletedState() {
         assertThat(underTest.completedState()).isEqualTo(COMPLETED_FINISHED);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsAndCompletedState() {
         final CaseData anyCaseData = CaseData.builder()
             .languageRequirement("Yes")
@@ -38,7 +38,7 @@ class LanguageRequirementsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsAndNonCompletedState() {
         final CaseData caseData = CaseData.builder()
             .languageRequirement(null)

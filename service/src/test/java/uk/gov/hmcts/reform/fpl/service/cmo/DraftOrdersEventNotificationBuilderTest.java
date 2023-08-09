@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersEventNotificationBuilderTest {
     private final DraftOrdersEventNotificationBuilder underTest = new DraftOrdersEventNotificationBuilder();
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoOrdersToBeSent() {
         CaseData caseData = CaseData.builder().build();
 
@@ -34,7 +34,7 @@ class DraftOrdersEventNotificationBuilderTest {
         assertThat(events).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnCMOIssuedEventWhenOnlyCMOApproved() {
         HearingOrder approvedCMO = buildOrder(AGREED_CMO, APPROVED);
         List<Element<HearingOrder>> ordersToBeSent = wrapElements(List.of(approvedCMO));
@@ -49,7 +49,7 @@ class DraftOrdersEventNotificationBuilderTest {
             new CaseManagementOrderIssuedEvent(caseData, approvedCMO)));
     }
 
-    //@Test
+    @Test
     void shouldReturnCMOIssuedAndDraftOrdersRejectedEventsWhenCMOApprovedAndC21sRejected() {
         HearingOrder approvedCMO = buildOrder(AGREED_CMO, APPROVED);
         HearingOrder rejectedC21 = buildOrder(C21, RETURNED);
@@ -67,7 +67,7 @@ class DraftOrdersEventNotificationBuilderTest {
             new DraftOrdersRejected(caseData, List.of(rejectedC21))));
     }
 
-    //@Test
+    @Test
     void shouldReturnDraftOrdersApprovedEventWhenCMOAndC21sApproved() {
         HearingOrder approvedCMO = buildOrder(AGREED_CMO, APPROVED);
         HearingOrder approvedC21 = buildOrder(C21, APPROVED);
@@ -84,7 +84,7 @@ class DraftOrdersEventNotificationBuilderTest {
             new DraftOrdersApproved(caseData, unwrapElements(ordersToBeSent))));
     }
 
-    //@Test
+    @Test
     void shouldReturnCMORejectedEventWhenOnlyCMORejected() {
         HearingOrder rejectedCMO = buildOrder(AGREED_CMO, RETURNED);
 
@@ -100,7 +100,7 @@ class DraftOrdersEventNotificationBuilderTest {
             new CaseManagementOrderRejectedEvent(caseData, rejectedCMO)));
     }
 
-    //@Test
+    @Test
     void shouldReturnCMORejectedAndDraftOrdersApprovedEventsWhenCMORejectedAndC21sApproved() {
         HearingOrder rejectedCMO = buildOrder(AGREED_CMO, RETURNED);
         HearingOrder approvedC21 = buildOrder(C21, APPROVED);
@@ -118,7 +118,7 @@ class DraftOrdersEventNotificationBuilderTest {
             new DraftOrdersApproved(caseData, List.of(approvedC21))));
     }
 
-    //@Test
+    @Test
     void shouldReturnDraftOrdersRejectedEventWhenCMOAndC21sRejected() {
         HearingOrder rejectedCMO = buildOrder(AGREED_CMO, RETURNED);
         HearingOrder rejectedC21 = buildOrder(C21, RETURNED);

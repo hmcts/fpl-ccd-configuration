@@ -57,7 +57,7 @@ class GroundsCheckerIsStartedTest {
         assertThat(groundsChecker.isStarted(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenGroundsForEPOProvided() {
         final CaseData caseData = CaseData.builder()
             .groundsForSecureAccommodationOrder(GroundsForSecureAccommodationOrder.builder()
@@ -77,7 +77,7 @@ class GroundsCheckerIsStartedTest {
         assertThat(groundsChecker.isStarted(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenEmptyGroundsForRefuseContact() {
         final CaseData caseData = CaseData.builder()
             .groundsForRefuseContactWithChild(GroundsForRefuseContactWithChild.builder().build())
@@ -96,7 +96,7 @@ class GroundsCheckerIsStartedTest {
         assertThat(groundsChecker.isStarted(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenGroundsForContactWithChildNotProvided() {
         final CaseData caseData = CaseData.builder()
             .groundsForContactWithChild(GroundsForContactWithChild.builder().build())

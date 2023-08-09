@@ -29,7 +29,7 @@ class DocumentsCheckerTest {
     @Autowired
     private DocumentsChecker documentsChecker;
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenNoDocumentsHaveBeenAdded() {
         final CaseData caseData = CaseData.builder().build();
 
@@ -40,7 +40,7 @@ class DocumentsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenAtLeastOneDocumentNotPresent() {
         final CaseData caseData = CaseData.builder()
                 .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder().build()))
@@ -57,7 +57,7 @@ class DocumentsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenAtLeastOneDocumentHasStatusAttachedButNoBinaryPresents() {
         final CaseData caseData = CaseData.builder()
                 .socialWorkEvidenceTemplateDocument(documentWithoutBinary(ATTACHED))
@@ -77,7 +77,7 @@ class DocumentsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenAtLeastOneDocumentHasMissingStatus() {
         final CaseData caseData = CaseData.builder()
                 .socialWorkEvidenceTemplateDocument(documentWithBinary(null))
@@ -98,7 +98,7 @@ class DocumentsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenAtLeastOneDocumentHasIncludedInSwetStatusButSwetIsNotAttached() {
         final CaseData caseData = CaseData.builder()
                 .socialWorkEvidenceTemplateDocument(documentWithBinary(TO_FOLLOW))
@@ -118,7 +118,7 @@ class DocumentsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenAllDocumentsProvided() {
         final CaseData caseData = CaseData.builder()
                 .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder().build()))

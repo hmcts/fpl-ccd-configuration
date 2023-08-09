@@ -26,7 +26,7 @@ class CourtServiceCheckerTest {
     @InjectMocks
     private CourtServiceChecker courtServiceChecker;
 
-    //@Test
+    @Test
     void testValidate() {
         assertThat(courtServiceChecker.validate(ANY_CASE_DATA)).isEmpty();
     }
@@ -60,7 +60,7 @@ class CourtServiceCheckerTest {
         }
     }
 
-    //@Test
+    @Test
     void testCompletedState() {
         assertThat(courtServiceChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }

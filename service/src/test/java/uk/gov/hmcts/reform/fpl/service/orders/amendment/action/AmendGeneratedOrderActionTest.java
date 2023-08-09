@@ -48,7 +48,7 @@ class AmendGeneratedOrderActionTest {
         when(amendedOrderList.getValueCodeAsUUID()).thenReturn(selectedOrderId);
     }
 
-    //@Test
+    @Test
     void acceptValid() {
         List<Element<GeneratedOrder>> orders = List.of(element(selectedOrderId, mock(GeneratedOrder.class)));
 
@@ -57,7 +57,7 @@ class AmendGeneratedOrderActionTest {
         assertThat(underTest.accept(caseData)).isTrue();
     }
 
-    //@Test
+    @Test
     void acceptInvalid() {
         List<Element<GeneratedOrder>> orders = wrapElements(mock(GeneratedOrder.class));
 
@@ -66,7 +66,7 @@ class AmendGeneratedOrderActionTest {
         assertThat(underTest.accept(caseData)).isFalse();
     }
 
-    //@Test
+    @Test
     void applyAmendedOrder() {
         GeneratedOrder orderToAmend = GeneratedOrder.builder().document(ORIGINAL_DOCUMENT).build();
         Element<GeneratedOrder> nonAmendedOrder1 = element(mock(GeneratedOrder.class));

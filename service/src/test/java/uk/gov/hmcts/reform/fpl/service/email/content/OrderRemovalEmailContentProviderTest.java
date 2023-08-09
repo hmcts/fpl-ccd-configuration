@@ -41,7 +41,7 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
         when(helper.getEldestChildLastName(children)).thenReturn("Smith");
     }
 
-    //@Test
+    @Test
     void shouldGetSDORemovedEmailNotificationParameters() {
         final OrderRemovalTemplate actual = underTest.buildNotificationForOrderRemoval(CASE_DATA, REMOVAL_REASON);
         final OrderRemovalTemplate expectedTemplate = expectedTemplate();
@@ -49,7 +49,7 @@ class OrderRemovalEmailContentProviderTest extends AbstractEmailContentProviderT
         assertThat(actual).isEqualTo(expectedTemplate);
     }
 
-    //@Test
+    @Test
     void shouldGetCMORemovedEmailNotificationParameters() {
         OrderRemovalTemplate actualTemplate = underTest.buildNotificationForOrderRemoval(CASE_DATA, REMOVAL_REASON);
         OrderRemovalTemplate expectedTemplate = expectedTemplate();

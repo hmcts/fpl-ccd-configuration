@@ -29,7 +29,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
     @Autowired
     private LocalAuthorityEmailContentProvider underTest;
 
-    //@Test
+    @Test
     void shouldBuildPlacementNotificationData() {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))

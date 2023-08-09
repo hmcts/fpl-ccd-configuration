@@ -32,7 +32,7 @@ class ValidateGroupServiceTest {
             .getValidator());
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenFamilyManCaseNumberIsNotPopulated() {
         List<String> errors = validateGroupService.validateGroup(CaseData.builder().build(),
             ValidateFamilyManCaseNumberGroup.class);
@@ -40,7 +40,7 @@ class ValidateGroupServiceTest {
         assertThat(errors).containsExactly("Enter Familyman case number");
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenFamilyManCaseNumberAndHearingBookingDetailsIsNotPopulated() {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = validateGroupService.validateGroup(caseData, NoticeOfProceedingsGroup.class);
@@ -51,7 +51,7 @@ class ValidateGroupServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenFamilyManCaseNumberAndHearingBookingDetailsIsPopulated() {
         CaseData caseData = CaseData.builder()
             .hearingDetails(ImmutableList.of(
@@ -67,7 +67,7 @@ class ValidateGroupServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenTimeIsMidNight() {
         CaseData caseData = CaseData.builder()
             .hearingStartDate(LocalDateTime.of(LocalDate.now().plusDays(10), LocalTime.NOON))
@@ -82,7 +82,7 @@ class ValidateGroupServiceTest {
 
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsrWhenEndDateTimeNotSet() {
         CaseData caseData = CaseData.builder()
             .hearingStartDate(LocalDateTime.of(LocalDate.now().plusDays(10), LocalTime.NOON))

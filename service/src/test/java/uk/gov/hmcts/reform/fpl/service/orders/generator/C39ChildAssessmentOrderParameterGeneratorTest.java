@@ -45,17 +45,17 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         when(manageOrderDocumentService.commonContextElements(any())).thenReturn(context);
     }
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(C39_CHILD_ASSESSMENT_ORDER);
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    //@Test
+    @Test
     void generateOrderWithMedicalAssessmentAnd7Days() {
         CaseData caseData = buildCaseDataWithAssessmentType(MEDICAL_ASSESSMENT, false, 7, false);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -63,7 +63,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    //@Test
+    @Test
     void generateOrderWithPsychiatricAssessmentAnd7Days() {
         CaseData caseData = buildCaseDataWithAssessmentType(PSYCHIATRIC_ASSESSMENT, false,7, false);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -71,7 +71,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    //@Test
+    @Test
     void generateOrderWithMedicalAssessmentAnd1Day() {
         CaseData caseData = buildCaseDataWithAssessmentType(MEDICAL_ASSESSMENT, false, 1, false);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -79,7 +79,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    //@Test
+    @Test
     void generateOrderWithPsychiatricAssessmentAnd1Day() {
         CaseData caseData = buildCaseDataWithAssessmentType(PSYCHIATRIC_ASSESSMENT, false,1, false);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -87,7 +87,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    //@Test
+    @Test
     void generateOrderWithChildKeepAwayFromHome() {
         CaseData caseData = buildCaseDataWithAssessmentType(PSYCHIATRIC_ASSESSMENT, true,1, false);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -95,7 +95,7 @@ class C39ChildAssessmentOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    //@Test
+    @Test
     void generateOrderWithCostOrderExist() {
         CaseData caseData = buildCaseDataWithAssessmentType(PSYCHIATRIC_ASSESSMENT, false,1, true);
         DocmosisParameters docParam = underTest.generate(caseData);

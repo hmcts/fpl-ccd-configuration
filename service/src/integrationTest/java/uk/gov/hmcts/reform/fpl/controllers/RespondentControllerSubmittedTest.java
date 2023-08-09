@@ -149,7 +149,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
             .thenAnswer(AdditionalAnswers.returnsElementsOf(startEventResponses));
     }
 
-    //@Test
+    @Test
     void shouldPublishRespondentsUpdatedEventIfNotOpenState() {
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
@@ -214,7 +214,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldNotPublishRespondentsUpdatedEventIfOpenState() {
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
@@ -257,7 +257,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoInteractions(notificationClient);
     }
 
-    //@Test
+    @Test
     void shouldRevokeAccessAndSendNotificationsWhenLegalCounselRemoved() throws NotificationClientException {
         final String legalCounsellorId = "some id";
         final String legalCounsellorEmail = "some email";
@@ -345,7 +345,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     void shouldUpdateRepresentativesAccess() {
         final ChangeOrganisationRequest expectedChange1 = ChangeOrganisationRequest.builder()
             .approvalStatus(APPROVED)
@@ -412,7 +412,7 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
-    //@Test
+    @Test
     @Order(1)
     void shouldNotUpdateRepresentativesAccessWhenCaseNotSubmitted() {
         final CaseData caseData = nocCaseDataBefore.toBuilder()

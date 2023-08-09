@@ -38,14 +38,14 @@ class HearingServiceTest {
     @Nested
     class FindHearing {
 
-        //@Test
+        @Test
         void noSelector() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(), null);
 
             assertThat(actual).isEmpty();
         }
 
-        //@Test
+        @Test
         void noSelectorSelected() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(),
                 selectedItem(null)
@@ -54,7 +54,7 @@ class HearingServiceTest {
             assertThat(actual).isEmpty();
         }
 
-        //@Test
+        @Test
         void selectorWhenNoBookings() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder()
                     .hearingDetails(List.of())
@@ -65,7 +65,7 @@ class HearingServiceTest {
             assertThat(actual).isEmpty();
         }
 
-        //@Test
+        @Test
         void selectorWithoutMatchingBooking() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder()
                     .hearingDetails(
@@ -79,7 +79,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(Optional.empty());
         }
 
-        //@Test
+        @Test
         void selectorMatchingBooking() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder()
                     .hearingDetails(List.of(
@@ -105,7 +105,7 @@ class HearingServiceTest {
             Mockito.when(time.now()).thenReturn(NOW);
         }
 
-        //@Test
+        @Test
         void whenNoHearingDetails() {
 
             List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
@@ -114,7 +114,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of());
         }
 
-        //@Test
+        @Test
         void whenEmptyHearingDetails() {
 
             List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
@@ -123,7 +123,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of());
         }
 
-        //@Test
+        @Test
         void returnInThePast() {
             Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1));
 
@@ -135,7 +135,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of(hearing));
         }
 
-        //@Test
+        @Test
         void returnInThePastCancelled() {
             Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1));
 
@@ -147,7 +147,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of(hearing));
         }
 
-        //@Test
+        @Test
         void returnNow() {
             Element<HearingBooking> hearing = hearing(NOW);
 
@@ -188,7 +188,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of(hearing));
         }
 
-        //@Test
+        @Test
         void doReturnInFutureIfJustBeforeTodayMidnight() {
             Element<HearingBooking> hearing = hearing(NOW.toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
 
@@ -200,7 +200,7 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of(hearing));
         }
 
-        //@Test
+        @Test
         void doNotReturnInFutureIfAfterTodayMidnight() {
             Element<HearingBooking> hearing = hearing(NOW.toLocalDate().plusDays(1).atStartOfDay());
 

@@ -34,7 +34,7 @@ class AdminUserMainRepresentativeValidatorTest {
     );
 
     @DisplayName("Accept users that are admins when section is MAIN_REPRESENTATIVE")
-    //@Test
+    @Test
     void acceptsAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(true);
 
@@ -42,7 +42,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Reject users that are not admins when section is MAIN_REPRESENTATIVE")
-    //@Test
+    @Test
     void acceptsNonAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(false);
 
@@ -59,7 +59,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with exception when the children representation wasn't set and still isn't")
-    //@Test
+    @Test
     void validateNoChangeNotSet() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -73,7 +73,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when the children representation was set to No and hasn't changed")
-    //@Test
+    @Test
     void validateNoChangeSetWhenNo() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -85,7 +85,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when the children representation was set to Yes and hasn't changed")
-    //@Test
+    @Test
     void validateNoChangeSetWhenYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -97,7 +97,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when the children representation was not set and now is set to No")
-    //@Test
+    @Test
     void validateNotSetToSetToNo() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -109,7 +109,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when the children representation was not set and now is set to Yes")
-    //@Test
+    @Test
     void validateNotSetToSetToYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -121,7 +121,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with no errors when the children representation was to set No and now is set to Yes")
-    //@Test
+    @Test
     void validateSetToNoToSetToYes() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -133,7 +133,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with errors when the children representation was not set and solicitor has invalid details")
-    //@Test
+    @Test
     void validateInvalidDetailWhenSetPreviously() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);
@@ -145,7 +145,7 @@ class AdminUserMainRepresentativeValidatorTest {
     }
 
     @DisplayName("Validate with errors when the children representation is Yes and solicitor has invalid details")
-    //@Test
+    @Test
     void validateInvalidDetailWhenNotSetPreviously() {
         when(caseData.getChildrenEventData()).thenReturn(eventData);
         when(caseDataBefore.getChildrenEventData()).thenReturn(eventData);

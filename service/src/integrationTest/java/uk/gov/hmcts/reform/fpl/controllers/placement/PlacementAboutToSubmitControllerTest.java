@@ -31,7 +31,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
     private final Document sealedDocument = testDocument();
     private final DocumentReference application = testDocumentReference("application.doc");
 
-    //@Test
+    @Test
     void shouldSaveNewPlacementApplication() {
 
         final List<Element<PlacementNoticeDocument>> noticeResponses = wrapElements(PlacementNoticeDocument.builder()
@@ -88,7 +88,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
     }
 
-    //@Test
+    @Test
     void shouldUpdateExistingPlacement() {
 
         final List<Element<PlacementNoticeDocument>> noticeResponses = wrapElements(PlacementNoticeDocument.builder()

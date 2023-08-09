@@ -16,7 +16,7 @@ class AmendableUrgentHearingOrderProviderTest {
 
     private final AmendableUrgentHearingOrderProvider underTest = new AmendableUrgentHearingOrderProvider();
 
-    //@Test
+    @Test
     void provideListItemsNonNull() {
         UrgentHearingOrder urgentHearingOrder = mock(UrgentHearingOrder.class);
 
@@ -27,7 +27,7 @@ class AmendableUrgentHearingOrderProviderTest {
         ));
     }
 
-    //@Test
+    @Test
     void provideListItemsNull() {
         when(caseData.getUrgentHearingOrder()).thenReturn(null);
         assertThat(underTest.provideListItems(caseData)).isEmpty();

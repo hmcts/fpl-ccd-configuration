@@ -59,7 +59,7 @@ class DocumentSealingServiceTest {
     @InjectMocks
     private DocumentSealingService documentSealingService;
 
-    //@Test
+    @Test
     void shouldSealAndUploadDocumentWithFileConversion() {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";
@@ -84,7 +84,7 @@ class DocumentSealingServiceTest {
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }
 
-    //@Test
+    @Test
     void shouldHighCourtSealAndUploadDocumentWithFileConversion() {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";
@@ -116,7 +116,7 @@ class DocumentSealingServiceTest {
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
     }
 
-    //@Test
+    @Test
     void shouldHighCourtSealWithoutDateAndUploadDocumentWithFileConversion() {
         final String fileName = "test.doc";
         final String newFileName = "test.pdf";
@@ -148,7 +148,7 @@ class DocumentSealingServiceTest {
         assertThat(actualSealedDocumentReference).isEqualTo(sealedDocumentReference);
     }
 
-    //@Test
+    @Test
     void shouldSealAndUploadDocumentWithoutFileConversion() {
         final String fileName = "test.pdf";
         final byte[] inputDocumentBinaries = readBytes("documents/document.pdf");
@@ -172,7 +172,7 @@ class DocumentSealingServiceTest {
         assertThat(actualDocumentBinaries.getValue()).isEqualTo(expectedSealedDocumentBinaries);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsNotPdf() {
         final String fileName = "test.pdf";
         final byte[] notPdf = new byte[]{1};
@@ -188,7 +188,7 @@ class DocumentSealingServiceTest {
             documentSealingService.sealDocument(inputDocumentReference, court, SealType.ENGLISH));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsKeyEncryptedPdf() {
         final String fileName = "test.pdf";
 
@@ -204,7 +204,7 @@ class DocumentSealingServiceTest {
             documentSealingService.sealDocument(inputDocumentReference, court, SealType.ENGLISH));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsPasswordProtectedPdf() {
         final String fileName = "test.pdf";
 

@@ -48,7 +48,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         super("upload-documents");
     }
 
-    //@Test
+    @Test
     void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
@@ -120,7 +120,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
 
-    //@Test
+    @Test
     void shouldThrowErrorIfCurrentDocumentsIsNull() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);

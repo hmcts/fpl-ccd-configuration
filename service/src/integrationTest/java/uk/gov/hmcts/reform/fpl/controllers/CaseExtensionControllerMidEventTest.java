@@ -196,7 +196,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
 
     }
 
-    //@Test
+    @Test
     void shouldSetSelectChildrensError() {
 
         LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);

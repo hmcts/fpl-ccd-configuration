@@ -54,12 +54,12 @@ class C32CareOrderDocumentParameterGeneratorTest {
     @InjectMocks
     private C32CareOrderDocumentParameterGenerator underTest;
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C32A_CARE_ORDER);
     }
 
-    //@Test
+    @Test
     void singularOrderDetails() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -76,7 +76,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void pluralOrderDetails() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -93,7 +93,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }

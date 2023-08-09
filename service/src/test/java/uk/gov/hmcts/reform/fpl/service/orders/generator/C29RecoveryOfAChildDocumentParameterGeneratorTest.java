@@ -97,17 +97,17 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
     }
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(C29_RECOVERY_OF_A_CHILD);
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
-    //@Test
+    @Test
     void shouldGenerateDocumentWithEntryMessage() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)
@@ -171,7 +171,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldGenerateDocumentWithProduceMessage() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)
@@ -203,7 +203,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldGenerateDocumentWithRemoveMessage() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)
@@ -236,7 +236,7 @@ class C29RecoveryOfAChildDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldGenerateDocumentWithAllActionsPermittedOfficerNameEnteredAndIsExParte() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_CODE)

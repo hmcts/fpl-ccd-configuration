@@ -15,12 +15,12 @@ class RespondentsRefusedValidatorTest {
 
     private final RespondentsRefusedValidator underTest = new RespondentsRefusedValidator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(RESPONDENTS_REFUSED);
     }
 
-    //@Test
+    @Test
     void validateAnyRespondentsSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
@@ -30,7 +30,7 @@ class RespondentsRefusedValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validateNoRespondentsSelected() {
         CaseData caseData = CaseData.builder()
             .respondentsRefusedSelector(Selector.builder().build())

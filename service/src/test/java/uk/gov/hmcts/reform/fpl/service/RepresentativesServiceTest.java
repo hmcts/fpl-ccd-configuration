@@ -120,7 +120,7 @@ class RepresentativesServiceTest {
         verifyNoMoreInteractions(caseService);
     }
 
-    //@Test
+    @Test
     void shouldFailPresenceOfRepresentedPartiesValidation() {
         Representative representative1 = Representative.builder().role(REPRESENTING_RESPONDENT_1).build();
         Representative representative2 = Representative.builder().role(REPRESENTING_PERSON_1).build();
@@ -139,7 +139,7 @@ class RepresentativesServiceTest {
                 + " Choose a person who is associated with this case");
     }
 
-    //@Test
+    @Test
     void shouldPassPresenceOfRepresentedPartiesValidation() {
         Representative representative1 = Representative.builder().role(REPRESENTING_RESPONDENT_1).build();
         Representative representative2 = Representative.builder().role(REPRESENTING_PERSON_1).build();
@@ -165,7 +165,7 @@ class RepresentativesServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldValidateBasicFieldsForSingleRepresentative() {
         Representative representative = Representative.builder().build();
         CaseData caseData = caseWithRepresentatives(representative);
@@ -179,7 +179,7 @@ class RepresentativesServiceTest {
             "Select how Representative wants to get case information");
     }
 
-    //@Test
+    @Test
     void shouldValidateBasicFieldsForMultipleRepresentatives() {
         Representative representative1 = Representative.builder().build();
         Representative representative2 = Representative.builder().build();
@@ -198,7 +198,7 @@ class RepresentativesServiceTest {
             "Select how Representative 2 wants to get case information");
     }
 
-    //@Test
+    @Test
     void shouldValidateEmailPresenceWhenServingPreferenceIsEmail() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -214,7 +214,7 @@ class RepresentativesServiceTest {
         assertThat(validationErrors).containsExactly("Enter an email address for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateEmailWhenServingPreferenceIsEmail() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -231,7 +231,7 @@ class RepresentativesServiceTest {
             + " for example name@example.com for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateAddressPresenceWhenServingPreferenceIsPost() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -249,7 +249,7 @@ class RepresentativesServiceTest {
             "Enter a valid address for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateAddressFormatWhenServingPreferenceIsPost() {
         Representative representative1 = Representative.builder()
             .fullName("John Smith")
@@ -278,7 +278,7 @@ class RepresentativesServiceTest {
             "Enter a valid address for Representative 2");
     }
 
-    //@Test
+    @Test
     void shouldValidateEmailPresenceWhenServingPreferenceIsDigitalService() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -294,7 +294,7 @@ class RepresentativesServiceTest {
         assertThat(validationErrors).containsExactly("Enter an email address for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateEmailWhenServingPreferenceIsDigitalService() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -312,7 +312,7 @@ class RepresentativesServiceTest {
             + " for example name@example.com for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateAccountExistenceWhenServingPreferenceIsDigitalService() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -334,7 +334,7 @@ class RepresentativesServiceTest {
         verify(organisationService).findUserByEmail(representative.getEmail());
     }
 
-    //@Test
+    @Test
     void shouldPassValidationWhenServingPreferenceIsDigitalServiceAndAccountExists() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -354,7 +354,7 @@ class RepresentativesServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnRepresentativesIfPresent() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -371,7 +371,7 @@ class RepresentativesServiceTest {
         assertThat(representatives).isEqualTo(caseData.getRepresentatives());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
         CaseData caseData = CaseData.builder().build();
 
@@ -381,7 +381,7 @@ class RepresentativesServiceTest {
         assertThat(representatives).isEqualTo(expectedRepresentatives);
     }
 
-    //@Test
+    @Test
     void shouldAddUserToCase() {
         final Long caseId = RandomUtils.nextLong();
 
@@ -458,7 +458,7 @@ class RepresentativesServiceTest {
         verify(caseService).addUser(caseId.toString(), representative2UserId, Set.of(LASOLICITOR));
     }
 
-    //@Test
+    @Test
     void shouldLinkRepresentativeWithRepresentable() {
         Long caseId = RandomUtils.nextLong();
 
@@ -501,7 +501,7 @@ class RepresentativesServiceTest {
             .containsExactly(responded2Representative.getId());
     }
 
-    //@Test
+    @Test
     void shouldGetUpdatedRepresentativesWhenNewRepresentativeAdded() {
         CaseData caseDataBefore = CaseData.builder().representatives(emptyList()).build();
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
@@ -514,7 +514,7 @@ class RepresentativesServiceTest {
         assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
-    //@Test
+    @Test
     void shouldGetUpdatedRepresentativesWhenNewRepresentativeAddedToEmptyCaseData() {
         CaseData caseDataBefore = CaseData.builder().build();
         CaseData caseData = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
@@ -527,7 +527,7 @@ class RepresentativesServiceTest {
         assertThat(updatedRepresentatives).isEqualTo(unwrapElements(expectedRepresentatives));
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnyRepresentativesIfNewRepresentativeNotAdded() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
@@ -538,7 +538,7 @@ class RepresentativesServiceTest {
         assertThat(updatedRepresentatives).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnyDigitalRepresentativesIfNewDigitalRepresentativeNotAdded() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(EMAIL);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);
@@ -549,7 +549,7 @@ class RepresentativesServiceTest {
         assertThat(updatedRepresentatives).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnyRepresentativesIfNoRepresentativesExist() {
         CaseData caseDataBefore = CaseData.builder().build();
         CaseData caseData = CaseData.builder().build();
@@ -560,7 +560,7 @@ class RepresentativesServiceTest {
         assertThat(updatedRepresentatives).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldGetUpdatedRepresentativesWhenRepresentativeChanged() {
         CaseData caseDataBefore = buildCaseDataWithRepresentatives(DIGITAL_SERVICE);
         CaseData caseData = buildCaseDataWithRepresentatives(EMAIL);

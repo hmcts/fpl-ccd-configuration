@@ -22,7 +22,7 @@ class OtherProceedingsControllerTest extends AbstractCallbackTest {
         super("enter-other-proceedings");
     }
 
-    //@Test
+    @Test
     void shouldReturnWithErrorWhenOnGoingProceedingIsEmptyString() throws Exception {
         String onGoingProceeding = "";
 
@@ -31,7 +31,7 @@ class OtherProceedingsControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenPOnGoingProceedingIsYes() throws Exception {
         String onGoingProceeding = "Yes";
 
@@ -40,7 +40,7 @@ class OtherProceedingsControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenPOnGoingProceedingIsNo() throws Exception {
         String onGoingProceeding = "No";
 
@@ -49,7 +49,7 @@ class OtherProceedingsControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenPOnGoingProceedingIsDontKnow() throws Exception {
         String onGoingProceeding = "Don't know";
 

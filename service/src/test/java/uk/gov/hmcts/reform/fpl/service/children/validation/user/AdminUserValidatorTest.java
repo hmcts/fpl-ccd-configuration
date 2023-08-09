@@ -13,13 +13,13 @@ class AdminUserValidatorTest {
 
     private final AdminUserValidator underTest = new AdminUserValidator(user) {};
 
-    //@Test
+    @Test
     void acceptsUserAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(true);
         assertThat(underTest.acceptsUser()).isTrue();
     }
 
-    //@Test
+    @Test
     void acceptsUserNotAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(false);
         assertThat(underTest.acceptsUser()).isFalse();

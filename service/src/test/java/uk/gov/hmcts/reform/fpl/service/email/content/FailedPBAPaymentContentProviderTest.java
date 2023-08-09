@@ -35,7 +35,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     @Nested
     class CourtNotifications {
 
-        //@Test
+        @Test
         void shouldReturnDataAboutMainApplication() {
 
             final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
@@ -50,7 +50,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             assertThat(actualParameters).isEqualTo(expectedParameters);
         }
 
-        //@Test
+        @Test
         void shouldReturnDataAboutPlacementApplication() {
 
             final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
@@ -85,7 +85,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
     @Nested
     class ApplicantNotifications {
 
-        //@Test
+        @Test
         void shouldReturnDataAboutMainApplication() {
 
             final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
@@ -99,7 +99,7 @@ class FailedPBAPaymentContentProviderTest extends AbstractEmailContentProviderTe
             assertThat(actualParameters).isEqualTo(expectedParameters);
         }
 
-        //@Test
+        @Test
         void shouldReturnDataAboutPlacementApplication() {
 
             final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()

@@ -29,7 +29,7 @@ class RepresentativeAboutToStartControllerTest extends AbstractCallbackTest {
         super("manage-representatives");
     }
 
-    //@Test
+    @Test
     void shouldPopulateExistingRepresentativesRespondentsAndOthers() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -61,7 +61,7 @@ class RepresentativeAboutToStartControllerTest extends AbstractCallbackTest {
             "Respondent 2 - Sarah Simpson");
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateRepresentatives() {
         CaseDetails caseDetails = CaseDetails.builder().id(RandomUtils.nextLong()).data(emptyMap()).build();
 

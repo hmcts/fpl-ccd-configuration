@@ -29,7 +29,7 @@ class UndeliveredEmailsFoundHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private UndeliveredEmailsFoundHandler underTest;
 
-    //@Test
+    @Test
     void shouldSendUndeliveredEmailsReportToCtsc() {
 
         UndeliveredEmail undeliveredEmail1 = UndeliveredEmail.builder()

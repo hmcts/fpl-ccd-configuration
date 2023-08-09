@@ -45,7 +45,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
     @InjectMocks
     private AdditonalAppLicationDraftOrderUploadedEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldSendNotificationToCafcassWhenDraftOrderPresent() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -92,7 +92,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationToCafcassWhenNoNewApplicationUploaded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -144,7 +144,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationToCafcassWhenNoDraftOrderPresent() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -188,7 +188,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationToCafcassWhenNoC2Present() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -231,7 +231,7 @@ class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationToCafcassWhenNonEnglishLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(

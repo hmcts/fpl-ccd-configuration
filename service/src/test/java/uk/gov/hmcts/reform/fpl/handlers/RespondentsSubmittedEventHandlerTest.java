@@ -53,7 +53,7 @@ class RespondentsSubmittedEventHandlerTest {
     @InjectMocks
     private RespondentsSubmittedEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldOnlySendEmailToUpdatedRegisteredSolicitors() {
         final String recipient1 = "solicitor1@test.com";
         final String recipient2 = "solicitor2@test.com";
@@ -96,7 +96,7 @@ class RespondentsSubmittedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldSendEmailToUnregisteredSolicitor() {
         final String expectedEmail = "test@test.com";
 
@@ -123,7 +123,7 @@ class RespondentsSubmittedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotSendEmailWhenNoRespondentsExist() {
         final CaseData caseData = CaseData.builder().respondents1(emptyList()).build();
 
@@ -135,7 +135,7 @@ class RespondentsSubmittedEventHandlerTest {
         verifyNoInteractions(registeredContentProvider);
     }
 
-    //@Test
+    @Test
     void shouldExecuteAsynchronously() {
         assertClass(RespondentsSubmittedEventHandler.class).hasAsyncMethods(
             "notifyRegisteredRespondentSolicitors",

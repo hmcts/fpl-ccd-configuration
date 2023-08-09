@@ -95,14 +95,14 @@ class CaseConverterTest {
         verify(objectMapper).convertValue(caseDetails.getData(), CaseData.class);
     }
 
-    //@Test
+    @Test
     void shouldReturnNullIfCaseDataIsNull() {
         CaseData actualCaseData = caseConverter.convert(null);
 
         assertThat(actualCaseData).isNull();
     }
 
-    //@Test
+    @Test
     void shouldConvertObjectToMap() {
         DocumentReference document = DocumentReference.builder()
             .binaryUrl("testBinaryUrl")
@@ -123,20 +123,20 @@ class CaseConverterTest {
         assertThat(actualData).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldReturnNullIfObjectIsNull() {
         assertThat(caseConverter.toMap(null)).isNull();
     }
 
 
-    //@Test
+    @Test
     void shouldReturnNullIfConvertedObjectIsNull() {
         CaseData convertedObject = caseConverter.convert(null, CaseData.class);
 
         assertThat(convertedObject).isNull();
     }
 
-    //@Test
+    @Test
     void shouldConvertArbitraryObject() {
         Map<String, Object> objectToBeConverted = Map.of("caseName", "name");
 

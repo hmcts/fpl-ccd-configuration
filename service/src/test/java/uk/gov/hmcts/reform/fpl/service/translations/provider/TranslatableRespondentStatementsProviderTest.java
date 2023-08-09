@@ -41,7 +41,7 @@ class TranslatableRespondentStatementsProviderTest {
     @Nested
     class ProvideListItems {
 
-        //@Test
+        @Test
         void getItems() {
             List<Element<SupportingEvidenceBundle>> bundles =
                 List.of(element(mock(SupportingEvidenceBundle.class)));
@@ -55,7 +55,7 @@ class TranslatableRespondentStatementsProviderTest {
             assertThat(actual).isEqualTo(bundles);
         }
 
-        //@Test
+        @Test
         void getItemsIfEmpty() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -69,7 +69,7 @@ class TranslatableRespondentStatementsProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -90,7 +90,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -107,7 +107,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -121,7 +121,7 @@ class TranslatableRespondentStatementsProviderTest {
     @Nested
     class Accept {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder()
@@ -137,7 +137,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollectionEmpty() {
             boolean actual = underTest.accept(CaseData.builder()
                     .respondentStatements(List.of(element(RespondentStatement.builder().build())))
@@ -148,7 +148,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder()
                     .respondentStatements(List.of(element(RespondentStatement.builder()
@@ -164,7 +164,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             boolean actual = underTest.accept(CaseData.builder()
                     .respondentStatements(null)
@@ -178,7 +178,7 @@ class TranslatableRespondentStatementsProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        //@Test
+        @Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -207,7 +207,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderMaintainOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -241,7 +241,7 @@ class TranslatableRespondentStatementsProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderNotFound() {
             when(time.now()).thenReturn(NOW);
 

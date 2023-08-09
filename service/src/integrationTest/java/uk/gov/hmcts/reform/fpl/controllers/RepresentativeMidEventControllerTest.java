@@ -45,7 +45,7 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
         super("manage-representatives");
     }
 
-    //@Test
+    @Test
     void shouldValidateRepresentativesAndReturnValidationErrors() {
         CaseDetails caseDetails = buildCaseDetails(representativeBuilder.build());
 
@@ -54,7 +54,7 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains("Enter an email address for Representative");
     }
 
-    //@Test
+    @Test
     void shouldValidateRepresentativeAccountExistenceAndReturnValidationErrors() {
         CaseDetails caseDetails = buildCaseDetails(representativeBuilder
             .email(representativeEmail).build());
@@ -73,7 +73,7 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
             .contains("Representative must already have an account with the digital service");
     }
 
-    //@Test
+    @Test
     void shouldSuccessfullyValidateRepresentativeAccountExistence() {
         CaseDetails caseDetails = buildCaseDetails(representativeBuilder
             .email(representativeEmail).build());

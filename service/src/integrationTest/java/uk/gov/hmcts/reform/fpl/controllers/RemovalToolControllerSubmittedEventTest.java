@@ -109,7 +109,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         when(time.now()).thenReturn(LocalDateTime.of(2010, 3, 20, 20, 20, 0));
     }
 
-    //@Test
+    @Test
     void shouldPublishPopulateSDOAndSDORemovedEventsIfNewSDOHasBeenRemoved() throws NotificationClientException {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().removalReason(REMOVAL_REASON).build();
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(emptyList(), wrapElements(previousSDO), emptyList(),
@@ -143,7 +143,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
             eq(notificationReference(CASE_ID)));
     }
 
-    //@Test
+    @Test
     void shouldPublishPopulateSDOAndSDORemovedEventsIfAnAdditionalSDOHasBeenRemoved()
         throws NotificationClientException {
         Element<StandardDirectionOrder> newSDO =
@@ -185,7 +185,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotPublishPopulateSDOAndSDORemovedEventsIfASDOHasNotBeenRemoved() {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().build();
 
@@ -238,7 +238,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         verifyNoInteractions(notificationClient);
     }
 
-    //@Test
+    @Test
     void shouldNotifyLocalAuthorityIfACMOIsRemoved() throws NotificationClientException {
         Element<HearingOrder> previousCMO =
             element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
@@ -263,7 +263,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyLocalAuthorityIfAnAdditionalCMOHasBeenRemoved() throws NotificationClientException {
         Element<HearingOrder> removedCMO =
             element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
@@ -294,7 +294,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         verifyNoMoreInteractions(helper);
     }
 
-    //@Test
+    @Test
     void shouldNotifyCTSCTeamLeadIfAnAdditionalApplicationIsRemoved() throws NotificationClientException {
         given(ctscTeamLeadLookupConfiguration.getEmail())
             .willReturn(CTSC_TEAM_LEAD_EMAIL);
@@ -328,7 +328,7 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyCTSCTeamLeadIfAnApplicationFormIsRemoved() throws NotificationClientException {
         given(ctscTeamLeadLookupConfiguration.getEmail())
             .willReturn(CTSC_TEAM_LEAD_EMAIL);

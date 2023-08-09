@@ -30,12 +30,12 @@ class FamilyAssistanceBefriendValidatorTest {
 
     private final FamilyAssistanceBefriendValidator underTest = new FamilyAssistanceBefriendValidator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(FAMILY_ASSISTANCE_ORDER);
     }
 
-    //@Test
+    @Test
     void shouldAcceptOneUniqueChoices() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -46,7 +46,7 @@ class FamilyAssistanceBefriendValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void shouldAcceptTwoUniqueChoices() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -58,7 +58,7 @@ class FamilyAssistanceBefriendValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void shouldAcceptThreeUniqueChoices() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -71,7 +71,7 @@ class FamilyAssistanceBefriendValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void shouldFailAt2DuplicateChoices() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -83,7 +83,7 @@ class FamilyAssistanceBefriendValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(ERROR_MESSAGE));
     }
 
-    //@Test
+    @Test
     void shouldFailAt2DuplicateChoices_2() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -95,7 +95,7 @@ class FamilyAssistanceBefriendValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(ERROR_MESSAGE));
     }
 
-    //@Test
+    @Test
     void shouldFailAt3DuplicateChoices() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()

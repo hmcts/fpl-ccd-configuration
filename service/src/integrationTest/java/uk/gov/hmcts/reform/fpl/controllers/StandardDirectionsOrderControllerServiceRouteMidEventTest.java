@@ -68,7 +68,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         given(uploadDocumentService.uploadPDF(pdf, draftOrderFileName)).willReturn(DOCUMENT);
     }
 
-    //@Test
+    @Test
     void shouldGenerateDraftStandardDirectionDocumentWhenMinimumViableData() {
         CaseData caseData = populateCaseData(buildTestDirections()).build();
 
@@ -77,7 +77,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         assertThat(response.getStandardDirectionOrder().getOrderDoc()).isEqualTo(DOCUMENT_REFERENCE);
     }
 
-    //@Test
+    @Test
     void shouldMigrateJudgeAndLegalAdvisorWhenUsingAllocatedJudge() {
         CaseData caseDAta = populateCaseData(buildTestDirections())
             .allocatedJudge(getJudge())
@@ -96,7 +96,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyDirectionsListInStandardDirectionOrder() {
         CaseData caseData = populateCaseData(buildTestDirections()).build();
 
@@ -105,7 +105,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         assertThat(response.getStandardDirectionOrder().getDirections()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldPopulateShowNoticeOfProceedingsWhenInGatekeepingState() {
         CaseData caseData = populateCaseData(buildTestDirections()).state(State.GATEKEEPING).build();
 
@@ -114,7 +114,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         assertThat(response.getData().get("showNoticeOfProceedings")).isEqualTo("YES");
     }
 
-    //@Test
+    @Test
     void shouldPopulateShowNoticeOfProceedingsWhenNotInGatekeepingState() {
         CaseData caseData = populateCaseData(buildTestDirections()).state(State.CASE_MANAGEMENT).build();
 

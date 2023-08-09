@@ -149,7 +149,7 @@ class ManageDocumentServiceTest {
         given(userService.isHmctsUser()).willReturn(true);
     }
 
-    //@Test
+    @Test
     void shouldPopulateFieldsWhenPlacementNoticesArePresentOnCaseData() {
         Placement placement = Placement.builder()
             .childName("Test Child")
@@ -185,7 +185,7 @@ class ManageDocumentServiceTest {
 
     }
 
-    //@Test
+    @Test
     void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
         Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
         C2DocumentBundle c2ApplicationBundle1 = buildC2DocumentBundle(futureDate.plusDays(3));
@@ -293,7 +293,7 @@ class ManageDocumentServiceTest {
         assertThat(updates).containsEntry(MANAGE_DOCUMENT_KEY, expectedManageDocument);
     }
 
-    //@Test
+    @Test
     void shouldPopulateHearingListAndLabel() {
         UUID selectHearingId = randomUUID();
         HearingBooking selectedHearingBooking = createHearingBooking(futureDate, futureDate.plusDays(3));
@@ -321,7 +321,7 @@ class ManageDocumentServiceTest {
             .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyHearingListAndLabelWhenTheFurtherEvidenceDocumentsAreNotRelatedToHearings() {
         UUID selectHearingId = randomUUID();
 
@@ -342,7 +342,7 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldThrowAnIllegalStateExceptionWhenFailingToFindAHearingToInitialiseCaseFieldsWith() {
         UUID selectedHearingId = randomUUID();
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -364,7 +364,7 @@ class ManageDocumentServiceTest {
             .hasMessage(String.format("Hearing booking with id %s not found", selectedHearingId));
     }
 
-    //@Test
+    @Test
     void shouldExpandSupportingEvidenceCollectionWhenEmpty() {
         List<Element<SupportingEvidenceBundle>> emptySupportingEvidenceCollection = List.of();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection
@@ -373,7 +373,7 @@ class ManageDocumentServiceTest {
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
     }
 
-    //@Test
+    @Test
     void shouldPersistExistingSupportingEvidenceBundleWhenExists() {
         List<Element<SupportingEvidenceBundle>> supportEvidenceBundle = buildSupportingEvidenceBundle();
         List<Element<SupportingEvidenceBundle>> updatedSupportEvidenceBundle =
@@ -382,7 +382,7 @@ class ManageDocumentServiceTest {
         assertThat(updatedSupportEvidenceBundle).isEqualTo(supportEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldReturnEvidenceBundleWithDefaultTypeWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
             .manageDocumentsRelatedToHearing(NO.getValue())
@@ -399,7 +399,7 @@ class ManageDocumentServiceTest {
             SupportingEvidenceBundle.builder().type(OTHER_REPORTS).build());
     }
 
-    //@Test
+    @Test
     void shouldReturnFurtherEvidenceCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsPresent() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
@@ -416,7 +416,7 @@ class ManageDocumentServiceTest {
         assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingEvidenceCollectionWhenFurtherEvidenceIsRelatedToHearingWithExistingEntryInCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -440,7 +440,7 @@ class ManageDocumentServiceTest {
         assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
-    //@Test
+    @Test
     void shouldReturnOnlyAdminUploadedSupportingEvidenceForHearingWhenBothAdminAndLAUploadedEvidenceExists() {
         Element<SupportingEvidenceBundle> adminEvidence = element(SupportingEvidenceBundle.builder()
             .name("Admin uploaded evidence")
@@ -474,7 +474,7 @@ class ManageDocumentServiceTest {
         assertThat(furtherDocumentBundleCollection).containsExactly(adminEvidence);
     }
 
-    //@Test
+    @Test
     void shouldReturnDefaultSupportingEvidenceWhenOnlyNonHmctsSupportingEvidencePresent() {
         UUID hearingId = UUID.randomUUID();
         List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
@@ -499,7 +499,7 @@ class ManageDocumentServiceTest {
             .containsExactly(SupportingEvidenceBundle.builder().build());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyEvidenceCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
             .manageDocument(buildFurtherEvidenceManagementDocument())
@@ -513,7 +513,7 @@ class ManageDocumentServiceTest {
             .containsExactly(SupportingEvidenceBundle.builder().build());
     }
 
-    //@Test
+    @Test
     void shouldSetDateTimeUploadedOnNewCorrespondenceSupportingEvidenceItems() {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
@@ -532,7 +532,7 @@ class ManageDocumentServiceTest {
         assertThat(existingSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(yesterday);
     }
 
-    //@Test
+    @Test
     void shouldSetNewDateTimeUploadedOnOverwriteOfPreviousDocumentUpload() {
         LocalDateTime yesterday = time.now().minusDays(1);
         UUID updatedId = UUID.randomUUID();
@@ -566,7 +566,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(time.now());
     }
 
-    //@Test
+    @Test
     void shouldPersistUploadedDateTimeWhenDocumentReferenceDoesNotDifferBetweenOldAndNewSupportingEvidence() {
         LocalDateTime yesterday = time.now().minusDays(1);
         UUID updatedId = UUID.randomUUID();
@@ -601,7 +601,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(yesterday);
     }
 
-    //@Test
+    @Test
     void shouldSetDateTimeUploadedAndSolicitorUploadOnNewCorrespondenceSupportingEvidenceItemsUploadedBySolicitor() {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> correspondingDocuments = buildSupportingEvidenceBundle();
@@ -622,7 +622,7 @@ class ManageDocumentServiceTest {
         assertThat(existingSupportingEvidenceBundle.getUploadedBySolicitor()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldBuildNewHearingFurtherEvidenceCollectionIfFurtherEvidenceIsRelatedToHearingAndCollectionDoesNotExist() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -648,7 +648,7 @@ class ManageDocumentServiceTest {
         assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldAppendToExistingEntryIfFurtherHearingEvidenceIsRelatedToHearingAndCollectionEntryExists() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -680,7 +680,7 @@ class ManageDocumentServiceTest {
         assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
     }
 
-    //@Test
+    @Test
     void shouldAppendToNewEntryIfFurtherHearingEvidenceIsRelatedToHearingAndCollectionEntryExists() {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -710,7 +710,7 @@ class ManageDocumentServiceTest {
         assertThat(hearingFurtherEvidenceBundle.getSupportingEvidenceBundle()).isEqualTo(supportingEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldThrowAnIllegalStateExceptionWhenFailingToFindAHearingToAssignToFurtherEvidence() {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -735,7 +735,7 @@ class ManageDocumentServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldPopulateC2SupportingDocumentsListAndLabelWhenSelectedBundleExistsInC2DocumentBundle() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         C2DocumentBundle selectedC2Document = buildC2DocumentBundle(futureDate.plusDays(2));
@@ -761,7 +761,7 @@ class ManageDocumentServiceTest {
             .containsExactly(expectedC2DocumentsDynamicList, selectedC2Document.toLabel());
     }
 
-    //@Test
+    @Test
     void shouldPopulateC2SupportingDocumentsListAndLabelWhenSelectedBundleExistsInAdditionalApplicationsBundle() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         UUID anotherC2DocumentId = UUID.randomUUID();
@@ -796,7 +796,7 @@ class ManageDocumentServiceTest {
             .containsExactly(expectedC2DocumentsDynamicList, selectedC2Document.toLabel());
     }
 
-    //@Test
+    @Test
     void shouldPopulateOtherBundleListAndLabelWhenSelectedBundleExistsInAdditionalApplicationsBundle() {
         UUID selectedBundleId = UUID.randomUUID();
         UUID anotherBundleId = UUID.randomUUID();
@@ -828,7 +828,7 @@ class ManageDocumentServiceTest {
             .containsExactly(expectedC2DocumentsDynamicList, selectedBundle.toLabel());
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenSelectedApplicationBundleIsNotFound() {
         UUID selectedBundleId = randomUUID();
 
@@ -847,7 +847,7 @@ class ManageDocumentServiceTest {
             .hasMessage(String.format("No application bundle found for the selected bundle id, %s", selectedBundleId));
     }
 
-    //@Test
+    @Test
     void shouldGetSelectedC2DocumentEvidenceBundleWhenParentC2SelectedFromDynamicList() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
@@ -875,7 +875,7 @@ class ManageDocumentServiceTest {
         assertThat(c2SupportingEvidenceBundle).isEqualTo(furtherEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldGetSelectedC2DocumentEvidenceBundleWhenParentC2FromAdditionalApplicationsIsSelectedFromDynamicList() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> c2ApplicationEvidenceBundle = buildSupportingEvidenceBundle();
@@ -905,7 +905,7 @@ class ManageDocumentServiceTest {
         assertThat(c2SupportingEvidenceBundle).isEqualTo(c2ApplicationEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldGetSelectedOtherApplicationEvidenceBundleWhenIdFromAdditionalApplicationsIsSelectedFromDynamicList() {
         UUID selectedApplicationBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> otherApplicationEvidenceBundle = buildSupportingEvidenceBundle();
@@ -936,7 +936,7 @@ class ManageDocumentServiceTest {
         assertThat(c2SupportingEvidenceBundle).isEqualTo(otherApplicationEvidenceBundle);
     }
 
-    //@Test
+    @Test
     void shouldGetEmptyC2DocumentEvidenceBundleWhenParentSelectedFromDynamicListButEvidenceBundleIsEmpty() {
         UUID selectedC2DocumentId = UUID.randomUUID();
 
@@ -961,7 +961,7 @@ class ManageDocumentServiceTest {
         assertThat(actualSupportingEvidenceBundle).isEqualTo(SupportingEvidenceBundle.builder().build());
     }
 
-    //@Test
+    @Test
     void shouldReturnUpdatedC2DocumentBundleWithUpdatedSupportingEvidenceEntry() {
         UUID selectedC2DocumentId = randomUUID();
         UUID anotherC2DocumentId = randomUUID();
@@ -997,7 +997,7 @@ class ManageDocumentServiceTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldReturnUpdatedC2DocumentBundleInAdditionalApplicationsBundleWithUpdatedSupportingEvidenceEntry() {
         UUID selectedC2BundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
@@ -1035,7 +1035,7 @@ class ManageDocumentServiceTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldReturnUpdatedOtherApplicationInAdditionalApplicationsBundleWithUpdatedSupportingEvidenceEntry() {
         UUID selectedBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
@@ -1070,7 +1070,7 @@ class ManageDocumentServiceTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldNotUpdatePreviousSupportingEvidenceEntryWhenNoUpdatesWhereMade() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         LocalDateTime uploadDateTime = futureDate.plusDays(2);
@@ -1109,7 +1109,7 @@ class ManageDocumentServiceTest {
         assertThat(thirdC2DocumentUploadTime).isEqualTo(uploadDateTime);
     }
 
-    //@Test
+    @Test
     void shouldNotUpdateAdditionalApplicationsBundlesWhenSelectedApplicationBundleDoesNotExist() {
         UUID selectedBundleId = UUID.randomUUID();
 
@@ -1136,7 +1136,7 @@ class ManageDocumentServiceTest {
         assertThat(updatedBundles).containsEntry(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, applicationsBundles);
     }
 
-    //@Test
+    @Test
     void shouldUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearingAndNewDocumentHasBeenAdded() {
         SupportingEvidenceBundle previousSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
             .dateTimeUploaded(futureDate)
@@ -1181,7 +1181,7 @@ class ManageDocumentServiceTest {
         assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
     }
 
-    //@Test
+    @Test
     void shouldNotUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearing() {
         List<Element<SupportingEvidenceBundle>> previousSupportingEvidenceList
             = buildSupportingEvidenceBundle(futureDate);
@@ -1217,7 +1217,7 @@ class ManageDocumentServiceTest {
         assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
     }
 
-    //@Test
+    @Test
     void shouldSortSupportingEvidenceByDateUploadedInChronologicalOrder() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         Element<SupportingEvidenceBundle> supportingEvidencePast = element(SupportingEvidenceBundle.builder()
@@ -1259,7 +1259,7 @@ class ManageDocumentServiceTest {
         assertThat(updatedBundles).isEqualTo(expectedBundles);
     }
 
-    //@Test
+    @Test
     void shouldReturnUpdatedOtherApplicationUpdatedSupportingEvidenceEntryUploadedBySolicitor() {
         UUID selectedBundleId = UUID.randomUUID();
         UUID evidenceId = randomUUID();
@@ -1306,7 +1306,7 @@ class ManageDocumentServiceTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingFurtherEvidenceBundleElementWhenAllDocumentsForThatHearingAreRemoved() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -1338,7 +1338,7 @@ class ManageDocumentServiceTest {
             .isEqualTo("Case Management hearing 2");
     }
 
-    //@Test
+    @Test
     void shouldNotRemoveHearingFurtherEvidenceBundleElementWhenDocumentsForThatHearingExist() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -1380,7 +1380,7 @@ class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleTwo = List.of(
             element(SupportingEvidenceBundle.builder().build()));
 
-        //@Test
+        @Test
         void shouldGetRespondentStatementsSupportingEvidenceDocumentsWithMatchingRespondentId() {
             CaseData caseData = CaseData.builder()
                 .respondentStatements(List.of(
@@ -1400,7 +1400,7 @@ class ManageDocumentServiceTest {
             assertThat(actualBundle).isEqualTo(supportingEvidenceBundleTwo);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptySupportingEvidenceDocumentsWhenRespondentStatementsDoNotHaveExpectedRespondentId() {
             CaseData caseData = CaseData.builder()
                 .respondentStatements(List.of(
@@ -1421,7 +1421,7 @@ class ManageDocumentServiceTest {
                 .containsExactly(SupportingEvidenceBundle.builder().build());
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptySupportingEvidenceDocumentsWhenCaseDoesNotContainRespondentStatements() {
             CaseData caseData = CaseData.builder().build();
 
@@ -1440,7 +1440,7 @@ class ManageDocumentServiceTest {
         UUID respondentStatementId = UUID.randomUUID();
         UUID supportingEvidenceBundleId = UUID.randomUUID();
 
-        //@Test
+        @Test
         void shouldUpdateExistingRespondentStatementsWithNewBundle() {
             DynamicList respondentStatementList = buildRespondentStatementList();
             List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
@@ -1477,7 +1477,7 @@ class ManageDocumentServiceTest {
                     .build()));
         }
 
-        //@Test
+        @Test
         void shouldAddNewEntryToRespondentStatementsWhenRespondentStatementDoesNotExist() {
             UUID respondentStatementId = UUID.randomUUID();
             DynamicList respondentStatementList = buildRespondentStatementList();
@@ -1525,7 +1525,7 @@ class ManageDocumentServiceTest {
             assertThat(secondRespondentStatement.getValue().getSupportingEvidenceBundle()).isEqualTo(updatedBundle);
         }
 
-        //@Test
+        @Test
         void shouldRemoveRespondentStatementEntryWhenUpdatingExistingWithEmptySupportingEvidence() {
             List<Element<SupportingEvidenceBundle>> updatedBundle = List.of();
 
@@ -1558,7 +1558,7 @@ class ManageDocumentServiceTest {
             assertThat(updatedRespondentStatements).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldThrowAnErrorWhenRespondentCannotBeFound() {
             DynamicList respondentStatementList = buildRespondentStatementList();
 
@@ -1606,7 +1606,7 @@ class ManageDocumentServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldSortDocumentByUploadedDateTime() {
         LocalDateTime now = LocalDateTime.now();
         List<Element<SupportingEvidenceBundle>> documents = new ArrayList<>(wrapElements(
@@ -1619,7 +1619,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(List.of(documents.get(3), documents.get(0), documents.get(1), documents.get(2)));
     }
 
-    //@Test
+    @Test
     void shouldGetSelectedRespondentIdFromDynamicList() {
         UUID selectedRespondentId = randomUUID();
         UUID additionalRespondentId = randomUUID();
@@ -1644,7 +1644,7 @@ class ManageDocumentServiceTest {
         assertThat(underTest.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }
 
-    //@Test
+    @Test
     void shouldGetDocWithConfidentialAddrFromRespondentStatementElements() {
         CaseData caseData = CaseData.builder().build();
         UUID uuid = randomUUID();
@@ -1684,7 +1684,7 @@ class ManageDocumentServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldGetDocWithConfidentialAddrFromHearingCourtBundles() {
         CaseData caseData = CaseData.builder().build();
         UUID uuid1 = randomUUID();
@@ -1746,7 +1746,7 @@ class ManageDocumentServiceTest {
         };
     }
 
-    //@Test
+    @Test
     void shouldReturnNewHearingDocumentListWithCourtBundleWhenNoExistingCourtBundlesPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
 
@@ -1771,7 +1771,7 @@ class ManageDocumentServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnNewCourtBundleListWithCourtBundleWhenNoExistingCourtBundlePresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
 
@@ -1796,7 +1796,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(courtBundle);
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldReturnEditedCourtBundleListWithCourtBundleWhenExistingCourtBundlePresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
@@ -1831,7 +1831,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(editedCourtBundle);
     }
 
-    //@Test
+    @Test
     void shouldReturnAdditionalCourtBundleForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -1867,7 +1867,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(newCourtBundle);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenBuildingCourtBundleListNotWithBookedHearing() {
         UUID selectedHearingId = randomUUID();
         UUID hearingBookingId = randomUUID();
@@ -1886,7 +1886,7 @@ class ManageDocumentServiceTest {
             .isInstanceOf(NoHearingBookingException.class);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenInitialisingCourtBundleListNotWithBookedHearing() {
         UUID selectedHearingId = randomUUID();
         UUID hearingBookingId = randomUUID();
@@ -1904,7 +1904,7 @@ class ManageDocumentServiceTest {
             .isInstanceOf(NoHearingBookingException.class);
     }
 
-    //@Test
+    @Test
     void shouldNotInitialiseCourtBundleFieldsIfBundleHearingDifferentToSelected() {
         UUID selectedHearingId = randomUUID();
         UUID courtBundleHearingId = randomUUID();
@@ -1935,7 +1935,7 @@ class ManageDocumentServiceTest {
         assertThat(result.get(0).getDocument()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenInitialisingCourtBundleFieldsNotWithBookedHearing() {
         UUID selectedHearingId = randomUUID();
         UUID courtBundleHearingId = randomUUID();
@@ -1971,7 +1971,7 @@ class ManageDocumentServiceTest {
         return null;
     }
 
-    //@Test
+    @Test
     void shouldInitialiseHearingDocumentFields() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2020,7 +2020,7 @@ class ManageDocumentServiceTest {
                 .hearingId(selectedHearingId).build());
     }
 
-    //@Test
+    @Test
     void shouldReturnNewCaseSummaryListWhenNoExistingCaseSummaryPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2039,7 +2039,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(List.of(element(selectedHearingId, caseData.getManageDocumentsCaseSummary())));
     }
 
-    //@Test
+    @Test
     void shouldReturnNewPositionStatementChildListWhenNoExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2075,7 +2075,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementChild()));
     }
 
-    //@Test
+    @Test
     void shouldAddNewPositionStatementChildToTheListWhenExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2122,7 +2122,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(List.of(positionStatementChildTwo, caseData.getManageDocumentsPositionStatementChild()));
     }
 
-    //@Test
+    @Test
     void shouldReturnCombinedPositionStatementChildListWhenExistingListPresentForOtherHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2169,7 +2169,7 @@ class ManageDocumentServiceTest {
             .containsExactlyInAnyOrder(positionStatementChild, positionStatementChildTwo);
     }
 
-    //@Test
+    @Test
     void shouldReturnNewPositionStatementRespondentListWhenNoExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2205,7 +2205,7 @@ class ManageDocumentServiceTest {
             .isEqualTo(List.of(caseData.getManageDocumentsPositionStatementRespondent()));
     }
 
-    //@Test
+    @Test
     void shouldAddNewPositionStatementRespondentToTheListWhenExistingListPresentForSelectedHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2254,7 +2254,7 @@ class ManageDocumentServiceTest {
                 caseData.getManageDocumentsPositionStatementRespondent()));
     }
 
-    //@Test
+    @Test
     void shouldReturnNewPositionStatementRespondentListWhenExistingListPresentForOtherHearing() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2302,7 +2302,7 @@ class ManageDocumentServiceTest {
             .containsExactlyInAnyOrder(positionStatementRespondent, positionStatementRespondentTwo);
     }
 
-    //@Test
+    @Test
     void shouldReplaceCaseSummaryIfSameHearing() {
         UUID hearingOne = randomUUID();
         UUID hearingTwo = randomUUID();
@@ -2334,7 +2334,7 @@ class ManageDocumentServiceTest {
             .get(CASE_SUMMARY_LIST_KEY))).containsExactlyInAnyOrder(existingHearingOne, newHearingTwo);
     }
 
-    //@Test
+    @Test
     void shouldAddNewSkeletonArgument() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
@@ -2375,7 +2375,7 @@ class ManageDocumentServiceTest {
             .containsExactly(time.now(), USER, PARTY_NAME, childId);
     }
 
-    //@Test
+    @Test
     void shouldUpdatePlacementNoticesForLA() {
         final DocumentReference laResponseRef = testDocumentReference();
 

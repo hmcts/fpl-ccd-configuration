@@ -602,7 +602,7 @@ class CafcassNotificationServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldNotifyLargeDocumentsWhenIsLargerThanConfiguredLimit() {
         long caseId = 200L;
         String caseLink = "http://localhost:8080/cases/case-details/200";
@@ -648,7 +648,7 @@ class CafcassNotificationServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyChangeOfAddressOfChildren() {
         when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
 
@@ -671,7 +671,7 @@ class CafcassNotificationServiceTest {
                 "which was uploaded to the Public Law Portal entitled", "[GU1234]."));
     }
 
-    //@Test
+    @Test
     void shouldNotifyChangeOfAddressOfRespondents() {
         when(configuration.getRecipientForChangeOfAddress()).thenReturn(RECIPIENT_EMAIL);
 

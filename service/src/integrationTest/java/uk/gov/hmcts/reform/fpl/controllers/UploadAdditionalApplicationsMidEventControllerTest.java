@@ -65,7 +65,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         super("upload-additional-applications");
     }
 
-    //@Test
+    @Test
     void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
@@ -114,7 +114,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsEntry("displayAmountToPay", YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
@@ -140,7 +140,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .containsEntry("displayAmountToPay", YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldAddErrorOnFeeRegisterException() {
         given(feeService.getFeesDataForAdditionalApplications(any()))
             .willThrow((new FeeRegisterException(1, "", new Throwable())));
@@ -155,7 +155,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldDisplayErrorForInvalidPbaNumber() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "12345")))
@@ -166,7 +166,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .extracting("pbaNumber").isEqualTo("PBA12345");
     }
 
-    //@Test
+    @Test
     void shouldNotDisplayErrorForValidPbaNumber() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryPbaPayment", Map.of("pbaNumber", "1234567")))
@@ -177,7 +177,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .isEqualTo("PBA1234567");
     }
 
-    //@Test
+    @Test
     void shouldNotValidatePbaNumberWhenPBAPaymentIsNull() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
             CaseDetails.builder().data(Collections.emptyMap()).build(), "validate");
@@ -194,7 +194,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                 .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
         }
 
-        //@Test
+        @Test
         void shouldPopulateHearingLabelIfRequestingAdjournment() {
             List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
                 .startDate(now().plusDays(15))
@@ -217,7 +217,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("skipPaymentPage")).isEqualTo(YES.getValue());
         }
 
-        //@Test
+        @Test
         void shouldPopulateHearingLabelButNotSkipIfRequestingAdjournmentWithOtherOrder() {
             List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
                 .startDate(now().plusDays(15))
@@ -240,7 +240,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
         }
 
-        //@Test
+        @Test
         void shouldPopulateHearingLabelButNotSkipIfRequestingAdjournmentWithAnotherC2Order() {
             List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
                 .startDate(now().plusDays(15))
@@ -264,7 +264,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         }
 
 
-        //@Test
+        @Test
         void shouldNotPopulateHearingLabelIfNotRequestingAdjournment() {
             List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
                 .startDate(now().plusDays(15))
@@ -286,7 +286,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentIfOtherOrderSelected() {
             CaseData caseData = CaseData.builder()
                 .additionalApplicationType(List.of(OTHER_ORDER))
@@ -301,7 +301,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     @Nested
     class InitialChoice {
 
-        //@Test
+        @Test
         void shouldInitialiseC2DocumentBundleHearingListIfC2Chosen() {
             CaseData caseData = CaseData.builder()
                 .additionalApplicationType(List.of(C2_ORDER))
@@ -313,7 +313,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
         }
 
-        //@Test
+        @Test
         void shouldInitialiseC2DocumentBundleHearingListIfC2AndOtherChosen() {
             CaseData caseData = CaseData.builder()
                 .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
@@ -325,7 +325,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
         }
 
-        //@Test
+        @Test
         void shouldNotInitialiseC2DocumentBundleHearingListIfOnlyOtherOrderChosen() {
             CaseData caseData = CaseData.builder()
                 .additionalApplicationType(List.of(OTHER_ORDER))

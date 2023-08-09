@@ -53,7 +53,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         super("enter-children");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsIfRepresentativeIsUpdatedAndUserIsSolicitor() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -78,7 +78,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         assertThat(response.getErrors()).isEqualTo(List.of("You cannot change the main representative"));
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsIfRepresentativeIsUpdatedAndUserIsAdmin() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -103,7 +103,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         assertThat(response.getErrors()).isNullOrEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsIfMainSolicitorHasInvalidEmail() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -120,7 +120,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         ));
     }
 
-    //@Test
+    @Test
     void shouldPopulateChildrenRepresentationDetails() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -147,7 +147,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         );
     }
 
-    //@Test
+    @Test
     void shouldPullMainSolicitorDetailsToTheRequiredChildrenRepresentationDetails() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -178,7 +178,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         );
     }
 
-    //@Test
+    @Test
     void shouldPullExistingSolicitorDetailsToTheRequiredChildrenRepresentationDetails() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)
@@ -210,7 +210,7 @@ class ChildControllerRepresentationDetailsMidEventTest extends AbstractCallbackT
         );
     }
 
-    //@Test
+    @Test
     void shouldNotUseExistingSolicitorDetailsWhenNoMainRepresentative() {
         CaseData caseData = CaseData.builder()
             .state(SUBMITTED)

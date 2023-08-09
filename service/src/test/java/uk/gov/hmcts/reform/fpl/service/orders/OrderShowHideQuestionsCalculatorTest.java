@@ -47,7 +47,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
-    //@Test
+    @Test
     void calculateAmendment() {
         assertThat(underTest.calculate(AMENED_ORDER)).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
             Map.entry("orderToAmend", "YES"),

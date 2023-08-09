@@ -19,14 +19,14 @@ class CaseSummaryFinalHearingGeneratorTest {
 
     private final CaseSummaryFinalHearingGenerator underTest = new CaseSummaryFinalHearingGenerator();
 
-    //@Test
+    @Test
     void testNoHearings() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testEmptyHearings() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(emptyList())
@@ -35,7 +35,7 @@ class CaseSummaryFinalHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testNoFinalHearings() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(Element.<HearingBooking>builder()
@@ -48,7 +48,7 @@ class CaseSummaryFinalHearingGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testHasFinalHearing() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .hearingDetails(List.of(

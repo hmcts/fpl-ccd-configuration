@@ -32,7 +32,7 @@ class DischargeCareOrderServiceTest {
     @Nested
     class CareOrders {
 
-        //@Test
+        @Test
         void shouldReturnEmptyListOfCareOrders() {
             CaseData caseData = caseWithOrders(emptyList());
 
@@ -41,7 +41,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualCareOrders).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAllCareOrders() {
             GeneratedOrder order1 = order("Interim care order", "1 May 2019");
             GeneratedOrder order2 = order("Interim care order", "2 May 2019");
@@ -63,7 +63,7 @@ class DischargeCareOrderServiceTest {
     @Nested
     class SelectedCareOrders {
 
-        //@Test
+        @Test
         void shouldReturnSelectedCareOrders() {
             GeneratedOrder order1 = order("Interim care order", "1 May 2019");
             GeneratedOrder order2 = order("Interim care order", "2 May 2019");
@@ -79,7 +79,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualCareOrders).containsExactly(order1, order4);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyListWhenNoCareOrderSelected() {
             GeneratedOrder order1 = order("Interim care order", "1 May 2019");
             GeneratedOrder order2 = order("Final care order", "2 May 2019");
@@ -93,7 +93,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualCareOrders).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAllCareOrdersWhenNoSelectionPresent() {
             GeneratedOrder order1 = order("Interim care order", "1 May 2019");
             GeneratedOrder order2 = order("Blank order", "1 May 2019");
@@ -112,7 +112,7 @@ class DischargeCareOrderServiceTest {
     @Nested
     class SelectedCareOrdersChildren {
 
-        //@Test
+        @Test
         void shouldReturnCareOrderChildren() {
             Child child1 = child(testChildParty());
             Child child2 = child(testChildParty());
@@ -132,7 +132,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualChildren).containsExactly(child1);
         }
 
-        //@Test
+        @Test
         void shouldReturnAllSelectedCareOrdersChildren() {
             Child child1 = child(testChildParty());
             Child child2 = child(testChildParty());
@@ -152,7 +152,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualChildren).containsExactly(child1, child3, child4);
         }
 
-        //@Test
+        @Test
         void shouldReturnChildrenWithUniqueNameAndDob() {
             ChildParty.ChildPartyBuilder party = ChildParty.builder()
                 .firstName("Alex")
@@ -183,7 +183,7 @@ class DischargeCareOrderServiceTest {
             assertThat(actualChildren).containsExactly(child1, child2, child3, child4);
         }
 
-        //@Test
+        @Test
         void shouldReturnAllCaseChildrenIfCareOrderDoesNotHaveChildren() {
             GeneratedOrder order = order("Interim care order", "1 May 2019");
 
@@ -198,7 +198,7 @@ class DischargeCareOrderServiceTest {
     @Nested
     class CareOrdersLabel {
 
-        //@Test
+        @Test
         void shouldReturnLabelForSingleCareOrder() {
             Child child = child("John", "Smith");
 
@@ -209,7 +209,7 @@ class DischargeCareOrderServiceTest {
             assertThat(dischargeCareOrderLabel).isEqualTo("Create discharge of care order for John Smith");
         }
 
-        //@Test
+        @Test
         void shouldReturnLabelForMultipleCareOrders() {
             Child child1 = child("John", "Smith");
             Child child2 = child("Alex", "Green");

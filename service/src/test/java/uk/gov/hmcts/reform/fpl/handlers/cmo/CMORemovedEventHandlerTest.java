@@ -40,7 +40,7 @@ class CMORemovedEventHandlerTest {
     @InjectMocks
     private CMORemovedEventHandler eventHandler;
 
-    //@Test
+    @Test
     void shouldSendEmailToLocalAuthorityWhenCaseManagementOrderRemovedFromCase() {
         CaseData caseData = caseData();
         String removalReason = "removal reason details";

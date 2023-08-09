@@ -25,21 +25,21 @@ class ChildRepresentationDetailsFlattenerTest {
     private final ChildRepresentationDetailsFlattener underTest = new ChildRepresentationDetailsFlattener(sanitizer);
     private final RespondentSolicitor childSolicitor = mock(RespondentSolicitor.class);
 
-    //@Test
+    @Test
     void testNullChildren() {
         Map<String, Object> actual = underTest.serialise(null, null);
 
         assertThat(actual).isEqualTo(emptyRepresentation());
     }
 
-    //@Test
+    @Test
     void testEmptyChildren() {
         Map<String, Object> actual = underTest.serialise(List.of(), null);
 
         assertThat(actual).isEqualTo(emptyRepresentation());
     }
 
-    //@Test
+    @Test
     void testSingleChild() {
         when(sanitizer.sanitize(childSolicitor)).thenReturn(childSolicitor);
         when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
@@ -66,7 +66,7 @@ class ChildRepresentationDetailsFlattenerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void testMultiChild() {
         when(sanitizer.sanitize(childSolicitor)).thenReturn(childSolicitor);
         when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
@@ -104,7 +104,7 @@ class ChildRepresentationDetailsFlattenerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void testMainRepresentative() {
         when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
 
@@ -131,7 +131,7 @@ class ChildRepresentationDetailsFlattenerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void testMainRepresentativeWithNoChildRepresentative() {
         when(sanitizer.sanitize(mainRepresentative)).thenReturn(mainRepresentative);
 
@@ -157,7 +157,7 @@ class ChildRepresentationDetailsFlattenerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void testEmptyChildRepresentative() {
         RespondentSolicitor solicitor = RespondentSolicitor.builder().build();
 

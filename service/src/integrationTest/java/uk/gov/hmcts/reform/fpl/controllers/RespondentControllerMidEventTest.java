@@ -35,7 +35,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         super("enter-respondents");
     }
 
-    //@Test
+    @Test
     void shouldReturnMaximumRespondentErrorsWhenNumberOfRespondentsExceeds10() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(
@@ -49,7 +49,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(MAX_RESPONDENTS_ERROR);
     }
 
-    //@Test
+    @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().plusDays(1))))
@@ -60,7 +60,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(DOB_ERROR);
     }
 
-    //@Test
+    @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
         CaseData caseData = CaseData.builder()
             .respondents1(buildRespondents())
@@ -72,7 +72,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR, DOB_ERROR_2);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
@@ -84,7 +84,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondentWithSolicitor(dateNow().plusDays(1), "Test User <e.test@test.com>")))
@@ -97,7 +97,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
             "Representative 1: Enter an email address in the correct format, for example name@example.com");
     }
 
-    //@Test
+    @Test
     void shouldReturnEmailAddressErrorsWhenThereAreMultipleRespondentSolicitors() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(
@@ -114,7 +114,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
             "Representative 2: Enter an email address in the correct format, for example name@example.com");
     }
 
-    //@Test
+    @Test
     void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondentWithSolicitor(dateNow(), "test@test.com")))
@@ -126,7 +126,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnRespondentRemovedValidationErrorsWhenRespondentRemoved() {
         CaseData caseDataBefore = CaseData.builder()
             .respondents1(List.of(element(respondentWithSolicitor(dateNow(), "test@test.com"))))
@@ -144,7 +144,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
     }
 
-    //@Test
+    @Test
     void shouldAllowAdminToUpdateRespondentSolicitorOrganisation() {
 
         Element<Respondent> respondent = element(respondentWithSolicitor(dateNow(), "test@test.com"));
@@ -173,7 +173,7 @@ class RespondentControllerMidEventTest extends AbstractCallbackTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisation() {
 
         Element<Respondent> respondent = element(respondentWithSolicitor(dateNow(), "respondent1@test.com"));

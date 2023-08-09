@@ -56,7 +56,7 @@ class UploadDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(USER);
     }
 
-    //@Test
+    @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithUpdatedDetailsAndUser() {
         List<DocumentSocialWorkOther> updateDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
@@ -76,7 +76,7 @@ class UploadDocumentsServiceTest {
                 USER);
     }
 
-    //@Test
+    @Test
     void shouldUpdateOtherSocialWorkDocumentsListWithNewDocument() {
         List<DocumentSocialWorkOther> updatedDocs = unwrapElements(
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
@@ -93,7 +93,7 @@ class UploadDocumentsServiceTest {
             .containsExactly("/test1 - changed.doc", "/test2.doc");
     }
 
-    //@Test
+    @Test
     void shouldUpdateDocumentWithUpdatedDetailsAndUser() {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
@@ -115,7 +115,7 @@ class UploadDocumentsServiceTest {
             );
     }
 
-    //@Test
+    @Test
     void shouldReturnNullWhenCourtBundleDocumentIsNotAttached() {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(
@@ -125,7 +125,7 @@ class UploadDocumentsServiceTest {
         assertThat(document).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnCurrentDocumentWithUpdatedByAndTimeWhenNoPreviousDocs() {
         Document document =
             uploadDocumentsService.setUpdatedByAndDateAndTimeOnDocuments(

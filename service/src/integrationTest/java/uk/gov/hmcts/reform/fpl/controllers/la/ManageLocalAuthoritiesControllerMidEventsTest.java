@@ -160,7 +160,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
             assertThat(updated.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
         }
 
-        //@Test
+        @Test
         void shouldAddLocalAuthoritiesToBeTransferred() {
 
             final DynamicList expectedDynamicList = dynamicLists.from(
@@ -247,7 +247,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
             givenSystemUser();
         }
 
-        //@Test
+        @Test
         void shouldPrepareDefaultLocalAuthorityToTransferDetials() {
 
             final DynamicList dynamicList = dynamicLists.from(0,
@@ -302,7 +302,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
             assertThat(updatedCaseData.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
         }
 
-        //@Test
+        @Test
         void shouldTakeExistingLocalAuthorityToTransfer() {
 
             final DynamicList dynamicList = dynamicLists.from(0,
@@ -373,7 +373,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
         private final String callback = "transfer/la-details";
 
-        //@Test
+        @Test
         void shouldReturnValidateErrorsWhenProvidedEmailsAreNotValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -397,7 +397,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
                 "Enter local authority solicitor's email address in the correct format, for example name@example.com");
         }
 
-        //@Test
+        @Test
         void shouldAddCourtRelatedFields() {
 
             final LocalAuthoritiesEventData initialEventData = LocalAuthoritiesEventData.builder()
@@ -441,7 +441,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
 
         private final String callback = "transfer-court/court-selection";
 
-        //@Test
+        @Test
         void shouldReturnValidateErrorsWhenSelectedCourtRegion() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
@@ -460,7 +460,7 @@ class ManageLocalAuthoritiesControllerMidEventsTest extends AbstractCallbackTest
                 "Invalid court selected.");
         }
 
-        //@Test
+        @Test
         void shouldNotReturnValidateErrorsWhenSelectedAnyCourts() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)

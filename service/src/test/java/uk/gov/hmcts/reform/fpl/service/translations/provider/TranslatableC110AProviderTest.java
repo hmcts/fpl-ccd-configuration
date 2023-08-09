@@ -32,7 +32,7 @@ class TranslatableC110AProviderTest {
     @Nested
     class ProvideListItems {
 
-        //@Test
+        @Test
         void getC110A() {
             C110A c110A = C110A.builder().build();
 
@@ -44,7 +44,7 @@ class TranslatableC110AProviderTest {
 
         }
 
-        //@Test
+        @Test
         void getItemsIfNoC110A() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -58,7 +58,7 @@ class TranslatableC110AProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -77,7 +77,7 @@ class TranslatableC110AProviderTest {
     @Nested
     class Accept {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder().build(), C110A.COLLECTION_ID);
@@ -86,7 +86,7 @@ class TranslatableC110AProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder().build(), SELECTED_ORDER_ID);
 
@@ -99,7 +99,7 @@ class TranslatableC110AProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        //@Test
+        @Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);

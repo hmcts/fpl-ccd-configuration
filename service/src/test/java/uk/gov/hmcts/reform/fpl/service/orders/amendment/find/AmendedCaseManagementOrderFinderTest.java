@@ -23,7 +23,7 @@ class AmendedCaseManagementOrderFinderTest {
 
     private final AmendedCaseManagementOrderFinder underTest = new AmendedCaseManagementOrderFinder();
 
-    //@Test
+    @Test
     void findOrderIfPresentAmended() {
         when(caseData.getSealedCMOs()).thenReturn(List.of(AMENDED_ELEMENT));
         when(caseDataBefore.getSealedCMOs()).thenReturn(List.of(ORIGINAL_ELEMENT));
@@ -31,7 +31,7 @@ class AmendedCaseManagementOrderFinderTest {
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_CMO);
     }
 
-    //@Test
+    @Test
     void findOrderIfPresentNotAmended() {
         when(caseData.getSealedCMOs()).thenReturn(List.of(ORIGINAL_ELEMENT));
         when(caseDataBefore.getSealedCMOs()).thenReturn(List.of(ORIGINAL_ELEMENT));

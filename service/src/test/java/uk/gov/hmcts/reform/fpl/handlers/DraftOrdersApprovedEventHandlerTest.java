@@ -123,7 +123,7 @@ class DraftOrdersApprovedEventHandlerTest {
     @InjectMocks
     private DraftOrdersApprovedEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldNotifyAdminAndLAOfApprovedOrders() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -156,7 +156,7 @@ class DraftOrdersApprovedEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldGovNotifyCafcassWelsh() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -183,7 +183,7 @@ class DraftOrdersApprovedEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
@@ -206,7 +206,7 @@ class DraftOrdersApprovedEventHandlerTest {
                 caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldSendGridNotifyToCafcassEngland() {
         UUID selectedHearingId = UUID.randomUUID();
         LocalDateTime hearingDateTime = LocalDateTime.of(
@@ -290,7 +290,7 @@ class DraftOrdersApprovedEventHandlerTest {
             );
     }
 
-    //@Test
+    @Test
     void shouldNotSendGridNotifyToCafcassWhenCafcassIsNotEngland() {
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
@@ -313,7 +313,7 @@ class DraftOrdersApprovedEventHandlerTest {
                 any());
     }
 
-    //@Test
+    @Test
     void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
         CaseData caseData = CaseData.builder()
@@ -344,7 +344,7 @@ class DraftOrdersApprovedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyEmailRepresentativesExcludingUnselectedOthers() {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
         CaseData caseData = CaseData.builder()
@@ -374,7 +374,7 @@ class DraftOrdersApprovedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyDigitalRepresentativesWhenNotPresent() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -390,7 +390,7 @@ class DraftOrdersApprovedEventHandlerTest {
         verifyNoInteractions(representativeNotificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyEmailRepresentativesWhenNotPresent() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -406,7 +406,7 @@ class DraftOrdersApprovedEventHandlerTest {
         verifyNoInteractions(representativeNotificationService);
     }
 
-    //@Test
+    @Test
     void shouldPostOrderDocumentToRecipients() {
         final Other firstOther = Other.builder().name("other1")
             .address(Address.builder().postcode("SE1").build()).build();
@@ -450,7 +450,7 @@ class DraftOrdersApprovedEventHandlerTest {
             List.of(representative, respondent, otherParty));
     }
 
-    //@Test
+    @Test
     void shouldPostOrderDocumentToRecipientsWhenServingOthersIsEnabledFilterIfTranslationNeeded() {
         final Other firstOther = Other.builder().name("other1")
             .address(Address.builder().postcode("SE1").build()).build();
@@ -496,7 +496,7 @@ class DraftOrdersApprovedEventHandlerTest {
             List.of(representative, respondent, otherParty));
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfEmpty() {
         underTest.notifyTranslationTeam(
             new DraftOrdersApproved(CASE_DATA, List.of())
@@ -505,7 +505,7 @@ class DraftOrdersApprovedEventHandlerTest {
         verifyNoInteractions(translationRequestService);
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfTranslationRequired() {
         underTest.notifyTranslationTeam(
             new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()
@@ -523,7 +523,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfNoTranslationRequired() {
         underTest.notifyTranslationTeam(
             new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()
@@ -540,7 +540,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfTranslationRequiredMultipleOrders() {
         underTest.notifyTranslationTeam(
             new DraftOrdersApproved(CASE_DATA, List.of(HearingOrder.builder()

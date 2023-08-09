@@ -21,7 +21,7 @@ class CaseSummaryCourtGeneratorTest {
     @InjectMocks
     private CaseSummaryCourtGenerator underTest;
 
-    //@Test
+    @Test
     void shouldBuildCaseSummaryWithCourtName() {
         final String courtName = "Court 1";
         final CaseData caseData = CaseData.builder().build();

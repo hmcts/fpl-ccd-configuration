@@ -28,7 +28,7 @@ class RespondentStatementTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //@Test
+    @Test
     void testRoundTrip() {
         String respondentName = "Sam Watson";
         UUID respondentId = UUID.randomUUID();
@@ -104,7 +104,7 @@ class RespondentStatementTest {
         assertThat(deserialised).isEqualTo(initial);
     }
 
-    //@Test
+    @Test
     void testSerialisationAndDeserialisationIfEmptyBundle() {
         String respondentName = "Sam Watson";
         UUID respondentId = UUID.randomUUID();

@@ -24,7 +24,7 @@ class ListAdminEventNotificationDeciderTest {
     @InjectMocks
     private ListAdminEventNotificationDecider listAdminEventNotificationDecider;
 
-    //@Test
+    @Test
     void shouldReturnListAdminEventForStandardDirectionOrder() {
 
         final String sendToAdminReason = "Reason text";
@@ -58,7 +58,7 @@ class ListAdminEventNotificationDeciderTest {
         assertThat(listAdminEvent.get()).isEqualTo(expectedEvent);
     }
 
-    //@Test
+    @Test
     void shouldReturnListAdminEventForUrgentDirectionOrder() {
 
         final String sendToAdminReason = "Reason text";
@@ -92,7 +92,7 @@ class ListAdminEventNotificationDeciderTest {
         assertThat(listAdminEvent.get()).isEqualTo(expectedEvent);
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionalEmptyIfGatekeepingOrderListOrSendToAdminIsSetToYes() {
 
         final String sendToAdminReason = "Reason text";
@@ -117,7 +117,7 @@ class ListAdminEventNotificationDeciderTest {
         assertThat(listAdminEvent).isNotPresent();
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionalEmptyIfGatekeepingOrderEventDataIsNotSet() {
 
         final String sendToAdminReason = "Reason text";
@@ -138,7 +138,7 @@ class ListAdminEventNotificationDeciderTest {
         assertThat(listAdminEvent).isNotPresent();
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionalEmptyIfStandardDirectionOrderIsNotSet() {
 
         final String sendToAdminReason = "Reason text";
@@ -162,7 +162,7 @@ class ListAdminEventNotificationDeciderTest {
         assertThat(listAdminEvent).isNotPresent();
     }
 
-    //@Test
+    @Test
     void shouldReturnOptionalEmptyIfDocumentReferenceIsNotSet() {
 
         final String sendToAdminReason = "Reason text";

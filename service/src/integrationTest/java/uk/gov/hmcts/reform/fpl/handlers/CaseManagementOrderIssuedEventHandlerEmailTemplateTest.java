@@ -122,7 +122,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
         .hearing("some hearing")
         .build();
 
-    //@Test
+    @Test
     void notifyLocalAuthority() {
         underTest.notifyLocalAuthority(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
@@ -155,7 +155,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             );
     }
 
-    //@Test
+    @Test
     void notifyParties() {
         underTest.notifyCafcass(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
@@ -188,7 +188,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             );
     }
 
-    //@Test
+    @Test
     void notifyCtsc() {
         underTest.notifyAdmin(new CaseManagementOrderIssuedEvent(CASE_DATA, CMO));
 
@@ -213,7 +213,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
             );
     }
 
-    //@Test
+    @Test
     void notifyCafcassViaSendGrid() {
         LocalDateTime hearingDateTime = LocalDateTime.of(
                 LocalDate.of(2022, 5, 18),

@@ -26,7 +26,7 @@ class ResourceExceptionHandlerTest {
     @TestLogs
     private final TestLogger logs = new TestLogger(ResourceExceptionHandler.class);
 
-    //@Test
+    @Test
     void testEmptyHeaders() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 
@@ -41,7 +41,7 @@ class ResourceExceptionHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void testValidHeaders() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
@@ -61,7 +61,7 @@ class ResourceExceptionHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void testSanitisedValidHeaders() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
@@ -82,7 +82,7 @@ class ResourceExceptionHandlerTest {
     }
 
 
-    //@Test
+    @Test
     void testMultipleValidHeaders() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         httpServletRequest.addHeader(USER_ID_HEADER, "e24fb55f-4911-4705-a07e-4f0ed5f62539");
@@ -105,7 +105,7 @@ class ResourceExceptionHandlerTest {
                 + "caseworker-publiclaw-bulkscan2'). " + MESSAGE));
     }
 
-    //@Test
+    @Test
     void testMalformedHeaderID() {
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
         httpServletRequest.addHeader(USER_ID_HEADER, "e24911-4705-a07e-4f0ed5f62539");

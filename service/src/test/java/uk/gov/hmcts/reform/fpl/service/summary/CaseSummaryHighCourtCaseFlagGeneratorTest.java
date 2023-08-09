@@ -11,7 +11,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
 
     private final CaseSummaryHighCourtCaseFlagGenerator  underTest = new CaseSummaryHighCourtCaseFlagGenerator();
 
-    //@Test
+    @Test
     void generateWhenCourtIsNull() {
         CaseData caseData = CaseData.builder().court(null).build();
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);
@@ -22,7 +22,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
         );
     }
 
-    //@Test
+    @Test
     void generateWhenCourtCodeIsEqRcjHighCourtCode() {
         CaseData caseData = CaseData.builder().court(Court.builder().code("100").build()).build();
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);
@@ -33,7 +33,7 @@ class CaseSummaryHighCourtCaseFlagGeneratorTest {
         );
     }
 
-    //@Test
+    @Test
     void generateWhenCourtCodeIsOrdinaryCourtCode() {
         CaseData caseData = CaseData.builder().court(Court.builder().code("117").build()).build();
         SyntheticCaseSummary caseSummary = underTest.generate(caseData);

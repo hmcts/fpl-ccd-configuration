@@ -13,7 +13,7 @@ class TranslatedFileNameGeneratorTest {
 
     private final TranslatedFileNameGenerator underTest = new TranslatedFileNameGenerator();
 
-    //@Test
+    @Test
     void generateIfEnglishToWelsh() {
         String actual = underTest.generate(CaseData.builder()
             .uploadTranslationsEventData(UploadTranslationsEventData.builder()
@@ -26,7 +26,7 @@ class TranslatedFileNameGeneratorTest {
         assertThat(actual).isEqualTo("mario-Welsh.pdf");
     }
 
-    //@Test
+    @Test
     void generateIfWelshToEnglish() {
         String actual = underTest.generate(CaseData.builder()
             .uploadTranslationsEventData(UploadTranslationsEventData.builder()

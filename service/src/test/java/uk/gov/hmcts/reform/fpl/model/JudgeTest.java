@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
 class JudgeTest {
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeOtherTitleWhenOtherIsSelected() {
         Judge allocatedJudge = buildAllocatedJudge(OTHER);
         String title = allocatedJudge.getJudgeOrMagistrateTitle();
@@ -20,7 +20,7 @@ class JudgeTest {
         assertThat(title).isEqualTo("Other title");
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeTitleWhenOtherIsNotSelected() {
         Judge allocatedJudge = buildAllocatedJudge(DISTRICT_JUDGE);
         String title = allocatedJudge.getJudgeOrMagistrateTitle();
@@ -28,7 +28,7 @@ class JudgeTest {
         assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeFullNameWhenMagistratesSelected() {
         Judge allocatedJudge = buildAllocatedJudge(MAGISTRATES);
         String fullName = allocatedJudge.getJudgeName();
@@ -36,7 +36,7 @@ class JudgeTest {
         assertThat(fullName).isEqualTo("Judge Full Name");
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeLastNameWhenMagistratesIsNotSelected() {
         Judge allocatedJudge = buildAllocatedJudge(DEPUTY_DISTRICT_JUDGE);
         String lastName = allocatedJudge.getJudgeName();
@@ -44,7 +44,7 @@ class JudgeTest {
         assertThat(lastName).isEqualTo("Judge Last Name");
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenJudgesHaveEqualFields() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = MAGISTRATES;
 
@@ -59,7 +59,7 @@ class JudgeTest {
         assertThat(allocatedJudge.hasEqualJudgeFields(judgeAndLegalAdvisor)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenJudgesDoNotHaveEqualFields() {
         JudgeOrMagistrateTitle judgeOrMagistrateTitle = DEPUTY_DISTRICT_JUDGE;
 

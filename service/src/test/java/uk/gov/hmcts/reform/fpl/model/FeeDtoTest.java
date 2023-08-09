@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FeeDtoTest {
 
-    //@Test
+    @Test
     void shouldMapFeeResponseToFeeDto() {
         FeeResponse feeResponse = new FeeResponse();
         feeResponse.setCode("test code");

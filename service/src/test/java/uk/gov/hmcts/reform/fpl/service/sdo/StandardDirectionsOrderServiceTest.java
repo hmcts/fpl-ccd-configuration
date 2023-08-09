@@ -73,7 +73,7 @@ class StandardDirectionsOrderServiceTest {
         judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
     }
 
-    //@Test
+    @Test
     void shouldPullDateFromStandardDirectionOrderWhenPresent() {
         StandardDirectionOrder order = StandardDirectionOrder.builder()
             .dateOfIssue("22 March 2020")
@@ -84,14 +84,14 @@ class StandardDirectionsOrderServiceTest {
         assertThat(dateOfIssue).isEqualTo(LocalDate.of(2020, 3, 22));
     }
 
-    //@Test
+    @Test
     void shouldSetDateOfIssueToCurrentDateWhenStandardDirectionOrderDoesNotHaveDateOfIssue() {
         LocalDate dateOfIssue = service.generateDateOfIssue(null);
 
         assertThat(dateOfIssue).isEqualTo(TIME.now().toLocalDate());
     }
 
-    //@Test
+    @Test
     void shouldUsePreparedSDOForTemporaryStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(WORD_DOC)
@@ -104,7 +104,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(order).isEqualTo(expectedOrder);
     }
 
-    //@Test
+    @Test
     void shouldUseReplacementSDOForTemporaryStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(null)
@@ -120,7 +120,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(order).isEqualTo(expectedOrder);
     }
 
-    //@Test
+    @Test
     void shouldUseCurrentSDODocumentForTemporaryStandardDirectionOrder() {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
             .orderDoc(SEALED_DOC)
@@ -138,7 +138,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(order).isEqualTo(expectedOrder);
     }
 
-    //@Test
+    @Test
     void shouldSetJudgeAndLegalAdvisorOnSDOWhenWhenSendNoticeOfProceedings() {
 
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
@@ -157,7 +157,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
 
-    //@Test
+    @Test
     void shouldNotSetJudgeAndLegalAdvisorOnSDOWhenWhenJudgeAndLegalAdvisorIsNotPopulated() {
 
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder()
@@ -174,7 +174,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(order.getJudgeAndLegalAdvisor()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotSealDocumentWhenSDOIsDraft() {
         mockIdamAndRequestData();
         StandardDirectionOrder order = buildStandardDirectionOrder(WORD_DOC, DRAFT, judgeAndLegalAdvisor);
@@ -191,7 +191,7 @@ class StandardDirectionsOrderServiceTest {
         verifyNoInteractions(conversionService, conversionService);
     }
 
-    //@Test
+    @Test
     void shouldSealDocumentWhenSDOIsToBeSealed() {
         mockSealingService();
         mockIdamAndRequestData();
@@ -208,7 +208,7 @@ class StandardDirectionsOrderServiceTest {
         verify(sealingService).sealDocument(WORD_DOC, court, SealType.ENGLISH);
     }
 
-    //@Test
+    @Test
     void shouldConvertWordDocumentAndSealWhenSDOIsSetToSeal() {
         given(sealingService.sealDocument(WORD_DOC, court, SealType.ENGLISH)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
@@ -221,7 +221,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(standardDirectionOrder.getOrderDoc()).isEqualTo(SEALED_DOC);
     }
 
-    //@Test
+    @Test
     void shouldPersistJudgeAndLegalAdvisorWhenSendingNoticeOfProceedings() {
         given(sealingService.sealDocument(WORD_DOC, court, SealType.ENGLISH)).willReturn(SEALED_DOC);
         mockIdamAndRequestData();
@@ -234,7 +234,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(standardDirectionOrder.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
 
-    //@Test
+    @Test
     void shouldReturnJudgeAndLegalAdvisorFromSDOWhenSDOContainsJudgeAndLegalAdvisor() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JUDGE_TITLE)
@@ -252,7 +252,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(actualJudgeAndLegalAdvisor).isEqualTo(judgeAndLegalAdvisor);
     }
 
-    //@Test
+    @Test
     void shouldPrepareJudgeAndLegalAdvisorLabelFromAllocatedJudgeWhenCMODoesNotExist() {
         CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()
@@ -267,7 +267,7 @@ class StandardDirectionsOrderServiceTest {
             .isEqualTo(String.format("Case assigned to: %s %s", JUDGE_TITLE.getLabel(), JUDGE_NAME));
     }
 
-    //@Test
+    @Test
     void shouldUpdateAllocatedJudgePropertiesOnSDOJudgeWhenAllocatedJudgeExists() {
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder()
@@ -290,7 +290,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldSetIsUsingAllocatedJudgePropertyToYesWhenJudgeOnBothSDOAndAllocatedJudgeMatch() {
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder()
@@ -310,7 +310,7 @@ class StandardDirectionsOrderServiceTest {
         assertThat(judgeAndLegalAdvisor.getUseAllocatedJudge()).isEqualTo(YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyJudgeIfJudgeOnSDOAndAllocatedJudgeDoNotExist() {
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().build())

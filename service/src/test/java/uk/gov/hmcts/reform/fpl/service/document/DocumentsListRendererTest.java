@@ -43,7 +43,7 @@ class DocumentsListRendererTest {
         when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
     }
 
-    //@Test
+    @Test
     void shouldRenderEmptyDocumentBundles() {
         List<DocumentContainerView> documentContainerViews = List.of();
 
@@ -53,7 +53,7 @@ class DocumentsListRendererTest {
         assertThat(underTest.render(documentContainerViews)).isEqualTo(expectedDocumentView);
     }
 
-    //@Test
+    @Test
     void shouldRenderDocumentBundlesMinimalSingleElement() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
@@ -75,7 +75,7 @@ class DocumentsListRendererTest {
         assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
     }
 
-    //@Test
+    @Test
     void shouldRenderDocumentBundlesMinimalSingleElementWithBadBinaryURL() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
@@ -98,7 +98,7 @@ class DocumentsListRendererTest {
         assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
     }
 
-    //@Test
+    @Test
     void shouldRenderDocumentBundles() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 
@@ -154,7 +154,7 @@ class DocumentsListRendererTest {
         assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
     }
 
-    //@Test
+    @Test
     void shouldRenderDocumentBundlesIfDocumentNull() {
         when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
 

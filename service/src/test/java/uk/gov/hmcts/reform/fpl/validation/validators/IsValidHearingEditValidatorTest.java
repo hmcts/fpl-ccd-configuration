@@ -62,7 +62,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
     @Nested
     class EditFutureHearings {
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -72,7 +72,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -83,7 +83,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailableHavingCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -94,7 +94,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingAndCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -106,7 +106,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingButHearingsAreNotAvailableHavingCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -117,7 +117,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingWithPastHearingsAndCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -129,7 +129,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -140,7 +140,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingAvailableHavingCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -152,7 +152,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingFutureHearingButOnlyFutureHearingsAvailableHavingCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -164,7 +164,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingFutureHearingWithPastAndFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -175,7 +175,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingFutureHearingWithCurrentHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_FUTURE_HEARING)
@@ -191,7 +191,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     @Nested
     class EditingPastHearings {
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -201,7 +201,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingPastHearingWithPastHearingAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -212,7 +212,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailableHavingCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -223,7 +223,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingPastHearingButHearingsWithPastHearingAndCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -235,7 +235,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButHearingsAreNotAvailableHavingCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -247,7 +247,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
         }
 
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingPastHearingWithPastHearingsAndCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -259,7 +259,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailable() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -270,7 +270,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailableHavingCancelledFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -282,7 +282,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenEditingPastHearingButOnlyFutureHearingsAvailableHavingCancelledPastHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -294,7 +294,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingPastHearingWithPastAndFutureHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -305,7 +305,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenEditingPastHearingWithCurrentHearing() {
             CaseData caseData = CaseData.builder()
                 .hearingOption(EDIT_PAST_HEARING)
@@ -321,7 +321,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     @Nested
     class AdjournHearings {
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenAdjourningAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(ADJOURN_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
@@ -329,7 +329,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldReturnAnErrorWhenAdjourningAHearingButNoPastHearingsAreAvailable() {
             List<Element<HearingBooking>> hearings = List.of(
                 element(HearingBooking.builder()
@@ -349,7 +349,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenAdjourningAHearingAndPastHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
@@ -369,7 +369,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenAdjourningAHearingAndCurrentHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
@@ -389,7 +389,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
 
     @Nested
     class VacateHearings {
-        //@Test
+        @Test
         void shouldReturnAErrorWhenVacatingAHearingButNoHearingsAreAvailable() {
             CaseData caseData = CaseData.builder().hearingOption(VACATE_HEARING).build();
             List<String> validationErrors = validate(caseData, HearingBookingGroup.class);
@@ -397,7 +397,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).contains(ERROR_MESSAGE);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenVacatingAHearingAndFutureHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()
@@ -417,7 +417,7 @@ class IsValidHearingEditValidatorTest extends AbstractValidationTest {
             assertThat(validationErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAnErrorWhenVacatingAHearingAndCurrentHearingsAreAvailable() {
             List<Element<HearingBooking>> futureHearings = List.of(
                 element(HearingBooking.builder()

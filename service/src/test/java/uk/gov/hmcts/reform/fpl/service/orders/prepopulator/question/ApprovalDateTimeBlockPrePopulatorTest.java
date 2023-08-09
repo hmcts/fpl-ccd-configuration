@@ -36,12 +36,12 @@ class ApprovalDateTimeBlockPrePopulatorTest {
         hearingService, TIME
     );
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.APPROVAL_DATE_TIME);
     }
 
-    //@Test
+    @Test
     void shouldRetainCurrentlyPopulatedValue() {
         CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
             .manageOrdersApprovalDateTime(END_DATE).build()).build();
@@ -49,7 +49,7 @@ class ApprovalDateTimeBlockPrePopulatorTest {
         Assertions.assertThat(underTest.prePopulate(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void doNotPrePopulateWhenNoHearingFound() {
         when(hearingService.findHearing(CASE_DATA,
             MANAGE_ORDERS_APPROVED_AT_HEARING_LIST)).thenReturn(Optional.empty());
@@ -59,7 +59,7 @@ class ApprovalDateTimeBlockPrePopulatorTest {
         assertThat(actual).isEqualTo(Map.of("manageOrdersApprovalDateTime", TIME.now()));
     }
 
-    //@Test
+    @Test
     void prePopulateWhenHearingFound() {
         when(hearingService.findHearing(CASE_DATA, MANAGE_ORDERS_APPROVED_AT_HEARING_LIST))
             .thenReturn(Optional.of(element(

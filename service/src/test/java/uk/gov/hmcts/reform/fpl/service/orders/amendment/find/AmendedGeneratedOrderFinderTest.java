@@ -23,7 +23,7 @@ class AmendedGeneratedOrderFinderTest {
 
     private final AmendedGeneratedOrderFinder underTest = new AmendedGeneratedOrderFinder();
 
-    //@Test
+    @Test
     void findOrderIfPresentAmended() {
         when(caseData.getOrderCollection()).thenReturn(List.of(AMENDED_ELEMENT));
         when(caseDataBefore.getOrderCollection()).thenReturn(List.of(ORIGINAL_ELEMENT));
@@ -31,7 +31,7 @@ class AmendedGeneratedOrderFinderTest {
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_ORDER);
     }
 
-    //@Test
+    @Test
     void findOrderIfPresentNotAmended() {
         when(caseData.getOrderCollection()).thenReturn(List.of(ORIGINAL_ELEMENT));
         when(caseDataBefore.getOrderCollection()).thenReturn(List.of(ORIGINAL_ELEMENT));

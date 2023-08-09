@@ -57,7 +57,7 @@ class ReviewAdditionalApplicationServiceTest {
             .applicationReviewed(NO)
             .build());
 
-    //@Test
+    @Test
     void shouldInitEventFieldWithListOfBundlesToBeReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -75,7 +75,7 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(resultMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldInitEventFieldWithOutBundlesToBeReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE))
@@ -91,7 +91,7 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(resultMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldInitEventFieldWithOneBundleToBeReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1))
@@ -108,7 +108,7 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(resultMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldGetSelectedApplicationsToBeReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -124,7 +124,7 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(result).isEqualTo(NEW_BUNDLE_1);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenSelectedBundleNotFound() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -139,7 +139,7 @@ class ReviewAdditionalApplicationServiceTest {
             .hasMessage("No value present");
     }
 
-    //@Test
+    @Test
     void shouldMarkSelectedApplicationsAsReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))
@@ -160,7 +160,7 @@ class ReviewAdditionalApplicationServiceTest {
         assertThat(resultList).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionSelectedApplicationsCannotBeMarkedAsReviewed() {
         CaseData caseData = CaseData.builder()
             .additionalApplicationsBundle(List.of(REVIEWED_BUNDLE, NEW_BUNDLE_1, NEW_BUNDLE_2))

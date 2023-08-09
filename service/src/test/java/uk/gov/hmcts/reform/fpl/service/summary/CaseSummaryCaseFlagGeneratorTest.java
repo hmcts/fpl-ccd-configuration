@@ -30,7 +30,7 @@ class CaseSummaryCaseFlagGeneratorTest {
     @InjectMocks
     CaseSummaryCaseFlagGenerator underTest;
 
-    //@Test
+    @Test
     public void shouldBuildCaseDataWithCaseFlagDetails() {
         CaseData caseData = CaseData.builder()
             .redDotAssessmentForm(RED_DOT_ASSESSMENT_FORM)
@@ -52,7 +52,7 @@ class CaseSummaryCaseFlagGeneratorTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     public void shouldBuildCaseDataWithoutUpdatingCaseFlagUserDetails() {
         CaseData caseData = CaseData.builder()
             .redDotAssessmentForm(RED_DOT_ASSESSMENT_FORM)

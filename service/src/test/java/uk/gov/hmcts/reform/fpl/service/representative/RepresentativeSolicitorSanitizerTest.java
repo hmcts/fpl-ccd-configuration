@@ -23,7 +23,7 @@ class RepresentativeSolicitorSanitizerTest {
 
     private final RepresentativeSolicitorSanitizer underTest = new RepresentativeSolicitorSanitizer();
 
-    //@Test
+    @Test
     void sanitizeOrganisation() {
         RespondentSolicitor sanitized = underTest.sanitize(RespondentSolicitor.builder()
             .organisation(null)
@@ -40,7 +40,7 @@ class RepresentativeSolicitorSanitizerTest {
         );
     }
 
-    //@Test
+    @Test
     void sanitizeUnregisteredOrganisation() {
         RespondentSolicitor sanitized = underTest.sanitize(RespondentSolicitor.builder()
             .organisation(POPULATED_ORGANISATION)
@@ -57,7 +57,7 @@ class RepresentativeSolicitorSanitizerTest {
         );
     }
 
-    //@Test
+    @Test
     void sanitizeAddress() {
         RespondentSolicitor sanitized = underTest.sanitize(RespondentSolicitor.builder()
             .organisation(POPULATED_ORGANISATION)

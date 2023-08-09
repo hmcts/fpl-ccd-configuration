@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class HasEnteredEPOExcludedValidatorTest extends AbstractValidationTest {
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenWhoIsExcludedIsEntered() {
         Orders orders = Orders.builder()
             .epoType(REMOVE_TO_ACCOMMODATION)
@@ -34,7 +34,7 @@ class HasEnteredEPOExcludedValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenWhoIsExcludedIsNotEntered() {
         Orders orders = Orders.builder()
             .epoType(REMOVE_TO_ACCOMMODATION)
@@ -47,7 +47,7 @@ class HasEnteredEPOExcludedValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains("Enter who you want excluded.");
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenExclusionRequirementIsNotSelected() {
         Orders orders = Orders.builder()
             .epoType(REMOVE_TO_ACCOMMODATION)

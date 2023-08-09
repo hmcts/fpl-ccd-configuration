@@ -53,7 +53,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
         super("manage-legal-representatives");
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationWhenLegalRepresentativeAddedToCase() throws NotificationClientException {
         CaseData caseDataBefore = buildCaseData(emptyList());
         CaseData caseData = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
@@ -68,7 +68,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractCallbackTest
         );
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationWhenLegalRepresentativeDidNotChange() {
         CaseData caseDataBefore = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
         CaseData caseData = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));

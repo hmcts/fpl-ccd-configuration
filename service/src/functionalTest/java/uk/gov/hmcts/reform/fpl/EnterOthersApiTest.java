@@ -4,12 +4,12 @@ import org.junit.Test;
 
 public class EnterOthersApiTest extends AbstractApiTest {
 
-    //@Test
+    @Test
     public void shouldInitialiseFirstOther() {
         verifyScenario("enter-others/initialise-first-other.json");
     }
 
-    //@Test
+    @Test
     public void shouldExtractConfidentialData() {
         verifyScenario("enter-others/extract-confidential-data.json");
     }

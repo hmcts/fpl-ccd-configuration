@@ -28,12 +28,12 @@ class SingleChildSelectionBlockPrePopulatorTest {
 
     private final SingleChildSelectionBlockPrePopulator underTest = new SingleChildSelectionBlockPrePopulator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(SELECT_SINGLE_CHILD);
     }
 
-    //@Test
+    @Test
     void prePopulate() {
         CaseData caseData = CaseData.builder()
             .children1(asList(FIRST_CHILD_DETAILS, SECOND_CHILD_DETAILS))

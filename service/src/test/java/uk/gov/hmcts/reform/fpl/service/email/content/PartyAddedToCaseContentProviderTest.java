@@ -48,7 +48,7 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
         when(helper.getEldestChildLastName(CHILDREN)).thenReturn(CHILD_LAST_NAME);
     }
 
-    //@Test
+    @Test
     void shouldGetPartyAddedToCaseByEmailNotificationParameters() {
         final PartyAddedNotifyData expectedParameters = PartyAddedNotifyData.builder()
             .firstRespondentLastName(RESPONDENT_LAST_NAME)
@@ -63,7 +63,7 @@ class PartyAddedToCaseContentProviderTest extends AbstractEmailContentProviderTe
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldGetPartyAddedToCaseThroughDigitalServiceNotificationParameters() {
         final PartyAddedNotifyData expectedParameters = PartyAddedNotifyData.builder()
             .firstRespondentLastName(RESPONDENT_LAST_NAME)

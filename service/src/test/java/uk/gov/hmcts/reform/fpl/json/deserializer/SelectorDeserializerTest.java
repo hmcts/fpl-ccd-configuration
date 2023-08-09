@@ -35,7 +35,7 @@ class SelectorDeserializerTest extends DeserializerTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldCreateSelectorWithTrueValuesWhenArraysAreOnlyPopulatedWithSelected()
         throws JsonProcessingException {
         String jsonString = "{"

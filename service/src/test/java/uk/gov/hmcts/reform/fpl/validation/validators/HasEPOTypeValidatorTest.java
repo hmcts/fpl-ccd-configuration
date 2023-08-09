@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class HasEPOTypeValidatorTest extends AbstractValidationTest {
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenEpoOrderAndEpoTypeSelected() {
         Orders orders = Orders.builder()
             .epoType(REMOVE_TO_ACCOMMODATION)
@@ -30,7 +30,7 @@ class HasEPOTypeValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenEpoOrderSelectedWithoutEPOType() {
         Orders orders = Orders.builder()
             .orderType(List.of(OrderType.EMERGENCY_PROTECTION_ORDER))
@@ -41,7 +41,7 @@ class HasEPOTypeValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains("Select the type of EPO you need.");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnyErrorsWhenEpoOrderIsNotSelected() {
         Orders orders = Orders.builder()
             .orderType(List.of(OrderType.CARE_ORDER))

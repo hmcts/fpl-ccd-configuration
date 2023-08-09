@@ -25,7 +25,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         super("draft-standard-directions");
     }
 
-    //@Test
+    @Test
     void shouldAddPreparedSDOToConstructedStandardDirectionOrder() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(DOCUMENT)
@@ -40,7 +40,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         assertThat(builtOrder).isEqualTo(expectedOrder);
     }
 
-    //@Test
+    @Test
     void shouldAddAlreadyUploadedDocumentToConstructedStandardDirectionOrder() {
         CaseData caseDataBefore = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().orderDoc(DOCUMENT).build())
@@ -58,7 +58,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         assertThat(builtOrder).isEqualTo(expectedOrder);
     }
 
-    //@Test
+    @Test
     void shouldAppendJudgeAndLegalAdvisorToSDO() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor().toBuilder()
             .allocatedJudgeLabel("some label")
@@ -84,7 +84,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         assertThat(actualJudgeAndLegalAdvisor).isEqualTo(buildJudgeAndLegalAdvisor());
     }
 
-    //@Test
+    @Test
     void shouldPopulateShowNoticeOfProceedingsWhenInGatekeepingState() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(DOCUMENT)
@@ -97,7 +97,7 @@ class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractC
         assertThat(response.getData().get("showNoticeOfProceedings")).isEqualTo("YES");
     }
 
-    //@Test
+    @Test
     void shouldPopulateShowNoticeOfProceedingsWhenNotInGatekeepingState() {
         CaseData caseData = CaseData.builder()
             .preparedSDO(DOCUMENT)

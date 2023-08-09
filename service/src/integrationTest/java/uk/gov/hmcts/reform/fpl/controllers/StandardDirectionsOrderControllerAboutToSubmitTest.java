@@ -115,7 +115,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         given(uploadDocumentService.uploadPDF(c6Binaries, c6FileName)).willReturn(C6_DOCUMENT);
     }
 
-    //@Test
+    @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
         given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
             .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
@@ -127,7 +127,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(SEALED).build())
@@ -146,14 +146,14 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThat(response.getErrors()).containsOnly("You need to enter a hearing date.");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenNoAllocatedJudgeExistsForSealedOrder() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(invalidCaseDetails());
 
         assertThat(response.getErrors()).containsOnly("You need to enter the allocated judge.");
     }
 
-    //@Test
+    @Test
     void shouldPopulateStandardDirectionOrderObjectFromUploadRoute() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
@@ -173,7 +173,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThat(data.getStandardDirectionOrder()).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
             .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
@@ -191,7 +191,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .doesNotContainKey("sdoRouter");
     }
 
-    //@Test
+    @Test
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
@@ -211,7 +211,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThat(responseCaseData.getSdoRouter()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldRemoveTemporaryFields() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 

@@ -19,19 +19,19 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class OthersTest {
 
-    //@Test
+    @Test
     void shouldReturnDefaultOthersWhenListOfOthersIsEmpty() {
         final List<Element<Other>> othersList = emptyList();
         final Others actualOthers = Others.from(othersList);
         assertThat(actualOthers).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
         assertThat(Others.from(null)).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnOthersWithAdditionalOthersWhenFirstOtherIsEmpty() {
         Other firstOther = Other.builder().build();
         final List<Element<Other>> othersList = wrapElements(firstOther, testOther());
@@ -44,7 +44,7 @@ class OthersTest {
         assertThat(actualOthers).isEqualTo(expectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldIgnoreEmptyOthersWhenOtherDetailsAreNotPresent() {
         Other firstOther = testOther();
         final List<Element<Other>> othersList = wrapElements(firstOther, Other.builder().build());
@@ -57,7 +57,7 @@ class OthersTest {
         assertThat(actualOthers).isEqualTo(expectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyWhenFirstOtherAndAdditionalOtherAreEmpty() {
         final List<Element<Other>> othersList = wrapElements(null, Other.builder().build());
         final Others actualOthers = Others.from(othersList);
@@ -65,7 +65,7 @@ class OthersTest {
         assertThat(actualOthers).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnOthersWhenSingleOtherPresent() {
         final Other other = testOther();
         final List<Element<Other>> othersList = wrapElements(other);
@@ -78,7 +78,7 @@ class OthersTest {
         assertThat(actualOthers).isEqualTo(expectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnOthersWhenMultipleOthersPresent() {
         final Other other1 = testOther();
         final Other other2 = testOther();
@@ -93,7 +93,7 @@ class OthersTest {
         assertThat(actualOthers).isEqualTo(expectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenRepresented() {
         Other other = testOther("First other");
         other.addRepresentative(UUID.randomUUID());
@@ -103,7 +103,7 @@ class OthersTest {
         assertTrue(isRepresented);
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenNotRepresented() {
         Other other = testOther("First other");
 
@@ -112,7 +112,7 @@ class OthersTest {
         assertFalse(isRepresented);
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenHasAddressAdded() {
         Other other = testOther("First other");
 
@@ -121,7 +121,7 @@ class OthersTest {
         assertTrue(hasAddressAdded);
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenAddressIsNotPresent() {
         Other other = Other.builder()
             .name("First other")
@@ -133,7 +133,7 @@ class OthersTest {
         assertFalse(hasAddressAdded);
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenFirstOtherExists() {
         Others others = Others.builder()
             .firstOther(Other.builder().name("First other").build())
@@ -142,7 +142,7 @@ class OthersTest {
         assertTrue(others.hasOthers());
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenFirstOtherIsEmptyAndAdditionalOthersExist() {
         Others others = Others.builder().firstOther(Other.builder().build())
             .additionalOthers(wrapElements(Other.builder().name("some name").build())).build();
@@ -150,14 +150,14 @@ class OthersTest {
         assertTrue(others.hasOthers());
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenFirstOtherIsEmpty() {
         Others others = Others.builder().firstOther(Other.builder().build()).build();
 
         assertFalse(others.hasOthers());
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenAdditionalOtherExists() {
         Others others = Others.builder()
             .additionalOthers(wrapElements(Other.builder().name("Additional other").build()))
@@ -173,7 +173,7 @@ class OthersTest {
         assertFalse(others.hasOthers());
     }
 
-    //@Test
+    @Test
     void shouldReturnPartyWithDob() {
         Other testingOther = Other.builder().dateOfBirth("1989-06-04").build();
         assertThat(testingOther.toParty().getDateOfBirth()).isEqualTo(LocalDate.of(1989, Month.JUNE, 4));

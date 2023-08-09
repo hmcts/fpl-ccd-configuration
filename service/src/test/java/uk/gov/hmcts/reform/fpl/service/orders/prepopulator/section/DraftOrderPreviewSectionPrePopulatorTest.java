@@ -28,12 +28,12 @@ class DraftOrderPreviewSectionPrePopulatorTest {
         creationService
     );
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderSection.REVIEW);
     }
 
-    //@Test
+    @Test
     void prePopulate() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(ORDER).build())
@@ -47,7 +47,7 @@ class DraftOrderPreviewSectionPrePopulatorTest {
         assertThat(actual).isEqualTo(Map.of("orderPreview", DOCUMENT_REFERENCE));
     }
 
-    //@Test
+    @Test
     void shouldNotCreateOrderIfOrderIsUploaded() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()

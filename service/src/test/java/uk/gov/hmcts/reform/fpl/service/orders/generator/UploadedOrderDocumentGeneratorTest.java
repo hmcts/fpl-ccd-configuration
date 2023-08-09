@@ -74,7 +74,7 @@ class UploadedOrderDocumentGeneratorTest {
         verifyNoInteractions(documentConversionService, documentSealingService);
     }
 
-    //@Test
+    @Test
     void testTargetPdfAndNoSealing() {
 
         when(documentConversionService.convertToPdf(BYTES, DOC_X_FILENAME)).thenReturn(CONVERTED_BYTES);
@@ -93,7 +93,7 @@ class UploadedOrderDocumentGeneratorTest {
         verifyNoInteractions(documentSealingService);
     }
 
-    //@Test
+    @Test
     void testTargetPdfAndSealingNeeded() {
 
         when(documentConversionService.convertToPdf(BYTES, DOC_X_FILENAME)).thenReturn(CONVERTED_BYTES);
@@ -122,7 +122,7 @@ class UploadedOrderDocumentGeneratorTest {
 
     }
 
-    //@Test
+    @Test
     void testTargetPdfAndSealingNotNeeded() {
 
         when(documentConversionService.convertToPdf(BYTES, DOC_X_FILENAME)).thenReturn(CONVERTED_BYTES);

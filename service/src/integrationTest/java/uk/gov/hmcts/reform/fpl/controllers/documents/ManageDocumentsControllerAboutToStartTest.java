@@ -44,7 +44,7 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
         super("manage-documents");
     }
 
-    //@Test
+    @Test
     void shouldBuildManageDocumentsHearingListAndAdditionalApplicationsSupportingDocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))),

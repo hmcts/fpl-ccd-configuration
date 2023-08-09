@@ -23,7 +23,7 @@ class EPOTimeRangeValidatorTest extends TimeValidatorTest {
     @SpyBean
     private ValidateGroupService validateGroupService;
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenDateTimeExceedsRange() {
         CaseData caseData = CaseData.builder()
             .dateAndTimeOfIssue(time.now())
@@ -33,7 +33,7 @@ class EPOTimeRangeValidatorTest extends TimeValidatorTest {
         assertThat(errorMessages).containsExactly("Date must be within 8 days of the order date");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenDateTimeDoesNotExceedRange() {
         CaseData caseData = CaseData.builder()
             .dateAndTimeOfIssue(time.now())

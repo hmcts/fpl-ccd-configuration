@@ -50,7 +50,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         super("approve-draft-orders");
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectDataWhenMultipleHearingDraftOrdersBundlesExist() {
         UUID hearingOrdersBundle1 = UUID.randomUUID();
         UUID hearingOrdersBundle2 = UUID.randomUUID();
@@ -83,7 +83,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
             }));
     }
 
-    //@Test
+    @Test
     void shouldReturnAgreedCMOWhenOneHearingBundleExistsWithADraftCMOsReadyForApproval() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle =
@@ -111,7 +111,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedReviewDraftOrdersData);
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectDataWhenNoDraftCMOsReadyForApproval() {
         CaseData caseData = CaseData.builder().draftUploadedCMOs(emptyList())
             .hearingOrdersBundlesDrafts(emptyList()).build();
@@ -120,7 +120,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectDataWhenNoCMOsExistForReadyForApprovalInTheSelectedBundle() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle =

@@ -112,7 +112,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedC2DocumentBundle() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
@@ -179,7 +179,7 @@ class UploadAdditionalApplicationsServiceTest {
             .isEqualTo(SUPPLEMENT_DOCUMENT);
     }
 
-    //@Test
+    @Test
     void shouldBuildOtherApplicationsBundleWithOtherApplicantName() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
@@ -230,7 +230,7 @@ class UploadAdditionalApplicationsServiceTest {
             .hasMessage("Applicant should not be empty");
     }
 
-    //@Test
+    @Test
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
@@ -271,7 +271,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
     }
 
-    //@Test
+    @Test
     void shouldSortOldC2DocumentBundlesToDateDescending() {
         C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
             .type(WITHOUT_NOTICE)
@@ -352,7 +352,7 @@ class UploadAdditionalApplicationsServiceTest {
     @Nested
     class SkipPayments {
 
-        //@Test
+        @Test
         void shouldSkipPaymentsWhenAllConditionsValid() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(15))
@@ -369,7 +369,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(result).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentsWhenLessThan14DaysBeforeHearing() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(13))
@@ -386,7 +386,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(result).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentsWhenOtherOrderAppliedFor() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(15))
@@ -403,7 +403,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(result).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentsWhenAnotherC2AdditionalOrderRequested() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(15))
@@ -420,7 +420,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(result).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentsWhenNotRequestingAdjournment() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(15))
@@ -437,7 +437,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(result).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldNotSkipPaymentsWhenApplyingForAnOtherOrder() {
             HearingBooking booking = HearingBooking.builder()
                 .startDate(LocalDateTime.now().plusDays(15))
@@ -458,7 +458,7 @@ class UploadAdditionalApplicationsServiceTest {
     @Nested
     class PostSubmitProcessing {
 
-        //@Test
+        @Test
         void shouldSetSupplementsToEmptyListIfNonePresent() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
@@ -470,7 +470,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getSupplementsBundle()).isNotNull();
         }
 
-        //@Test
+        @Test
         void shouldConvertC2SupplementToPdf() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
@@ -484,7 +484,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
 
-        //@Test
+        @Test
         void shouldConvertOtherSupplementToPdf() {
             OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
                 .document(DOCUMENT)

@@ -10,7 +10,7 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 
 class GatekeepingOrderSealDecisionTest {
 
-    //@Test
+    @Test
     void shouldReturnTrueIfOrderStatusIsSealed() {
         final GatekeepingOrderSealDecision decision = GatekeepingOrderSealDecision.builder()
             .orderStatus(OrderStatus.SEALED)

@@ -279,7 +279,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                     .build());
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndCourt() {
 
             when(dfjAreaLookUpService.getDfjArea(COURT_2.getCode()))
@@ -361,7 +361,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                     .build());
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToNewLocalAuthorityAndCourt2() {
             when(dfjAreaLookUpService.getDfjArea(COURT_1.getCode()))
                 .thenReturn(dfjAreaCourtMapping);
@@ -413,7 +413,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
     @Nested
     class TransferToAnotherCourt {
 
-        //@Test
+        @Test
         void shouldTransferToOrdinaryCourt() {
             when(dfjAreaLookUpService.getDfjArea("384"))
                 .thenReturn(dfjAreaCourtMapping);
@@ -450,7 +450,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldTransferToOrdinaryCourtAgain() {
             when(dfjAreaLookUpService.getDfjArea("384"))
                 .thenReturn(dfjAreaCourtMapping);
@@ -500,7 +500,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldTransferToRcjHighCourt() {
             when(dfjAreaLookUpService.getDfjArea(RCJ_HIGH_COURT_CODE))
                 .thenReturn(dfjAreaCourtMapping);
@@ -538,7 +538,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getCourtField()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldTransferOutOfTheHighCourt() {
             when(dfjAreaLookUpService.getDfjArea("380"))
                 .thenReturn(dfjAreaCourtMapping);

@@ -80,7 +80,7 @@ class CaseAccessServiceTest {
     @Nested
     class LocalAuthorityAccess {
 
-        //@Test
+        @Test
         void shouldGrantAccessToAllUsersWithOrganisationId() {
             final CaseRole caseRole = LASOLICITOR;
 
@@ -106,7 +106,7 @@ class CaseAccessServiceTest {
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
-        //@Test
+        @Test
         void shouldGrantAccessToAllUsersWithinSameOrganisationIncludingCreator() {
             final CaseRole caseRole = LASOLICITOR;
 
@@ -134,7 +134,7 @@ class CaseAccessServiceTest {
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
-        //@Test
+        @Test
         void shouldGrantAccessToAllUsersWithoutOrganisationId() {
             final CaseRole caseRole = LASOLICITOR;
 
@@ -156,7 +156,7 @@ class CaseAccessServiceTest {
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
-        //@Test
+        @Test
         void shouldThrowsExceptionWhenLocalAuthorityUsersCannotBeFetch() {
             Exception fetchUsersException = new RuntimeException(format("Can not fetch users for %s", LOCAL_AUTHORITY));
 
@@ -175,7 +175,7 @@ class CaseAccessServiceTest {
     @Nested
     class UserAccess {
 
-        //@Test
+        @Test
         void shouldGrantAccessToUser() {
             final CaseRole caseRole = EPSMANAGING;
 
@@ -190,7 +190,7 @@ class CaseAccessServiceTest {
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
 
-        //@Test
+        @Test
         void shouldRevokeCaseRoleFromUser() {
             caseRoleService.revokeCaseRoleFromUser(CASE_ID, USER_1_ID, CREATOR);
 
@@ -210,7 +210,7 @@ class CaseAccessServiceTest {
     @Nested
     class UsersAccess {
 
-        //@Test
+        @Test
         void shouldGrantAccessToUsers() {
             final CaseRole caseRole = EPSMANAGING;
 
@@ -231,7 +231,7 @@ class CaseAccessServiceTest {
     @Nested
     class UserCaseRoles {
 
-        //@Test
+        @Test
         void shouldGetUserCaseRoles() {
             when(requestData.userId()).thenReturn(USER_1_ID);
             when(requestData.authorisation()).thenReturn(AUTH_TOKEN);

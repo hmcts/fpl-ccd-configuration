@@ -20,7 +20,7 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
         super("enter-local-authority");
     }
 
-    //@Test
+    @Test
     void shouldValidateEmailAndPbaNumberIfPresent() {
 
         final LocalAuthorityEventData eventData = LocalAuthorityEventData.builder()
@@ -42,7 +42,7 @@ class ApplicantLocalAuthorityControllerOrganisationMidEventTest extends Abstract
         );
     }
 
-    //@Test
+    @Test
     void shouldNormaliseValidPbaNumber() {
 
         final String pbaNumber = "1234567";

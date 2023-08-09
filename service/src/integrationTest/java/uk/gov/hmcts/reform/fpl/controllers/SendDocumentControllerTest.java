@@ -95,7 +95,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
             .willReturn(new SendLetterResponse(LETTER_ID));
     }
 
-    //@Test
+    @Test
     void shouldSendDocumentToRepresentativesWithPostServingPreferences() {
         Representative representative1 = testRepresentative(POST);
         Representative representative2 = testRepresentative(EMAIL);
@@ -129,7 +129,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldNotSendDocumentWhenPrintingIsDisabled() {
         DocumentReference documentToBeSend = testDocumentReference();
         CaseDetails caseDetails = buildCaseData(documentToBeSend);
@@ -139,7 +139,7 @@ class SendDocumentControllerTest extends AbstractCallbackTest {
         verifyNoDocumentSent();
     }
 
-    //@Test
+    @Test
     void shouldNotSendDocumentWhenNoRepresentativesServedByPost() {
         DocumentReference documentToBeSend = testDocumentReference();
         CaseDetails caseDetails = buildCaseData(

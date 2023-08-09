@@ -35,7 +35,7 @@ class RepresentativeCaseRoleServiceTest {
 
     private RepresentativeCaseRoleService representativesChangeService = new RepresentativeCaseRoleService();
 
-    //@Test
+    @Test
     void shouldReturnEmptyCaseRoleUpdatesWhenNoRepresentatives() {
         assertCaseRoleUpdates(
             emptyList(),
@@ -43,7 +43,7 @@ class RepresentativeCaseRoleServiceTest {
             emptyMap());
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseRoleUpdatesForAddedRepresentative() {
         Representative representative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -57,7 +57,7 @@ class RepresentativeCaseRoleServiceTest {
             Map.of(representative.getEmail(), Set.of(SOLICITOR)));
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseRoleUpdatesForDeletedRepresentative() {
         Representative representative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -71,7 +71,7 @@ class RepresentativeCaseRoleServiceTest {
             Map.of(representative.getEmail(), emptySet()));
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseRoleUpdatesWhenRepresentativeEmailChanged() {
         Representative originalRepresentative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -92,7 +92,7 @@ class RepresentativeCaseRoleServiceTest {
             ));
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyCaseRoleUpdatesWhenRepresentativeEmailChangesButRepresentSameEmail() {
         Representative originalRepresentative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -110,7 +110,7 @@ class RepresentativeCaseRoleServiceTest {
             emptyMap());
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseRoleUpdatesWhenRepresentativeRoleAndEmailChanged() {
         Representative originalRepresentative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -132,7 +132,7 @@ class RepresentativeCaseRoleServiceTest {
             ));
     }
 
-    //@Test
+    @Test
     void shouldCombineRolesWhenSameRepresentativeHasMultipleRoles() {
         String email = "representative@test.com";
 
@@ -160,7 +160,7 @@ class RepresentativeCaseRoleServiceTest {
             Map.of(email, Set.of(SOLICITOR, LASOLICITOR)));
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseRoleUpdatesForMultipleRepresentatives() {
 
         Representative originalRepresentativeA = Representative.builder()
@@ -207,7 +207,7 @@ class RepresentativeCaseRoleServiceTest {
     @Nested
     @DisplayName("Role changed")
     class RoleChange {
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenRepresentativeRolesChangedToLocalAuthorityLegalRepresentative() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -225,7 +225,7 @@ class RepresentativeCaseRoleServiceTest {
                 Map.of(originalRepresentative.getEmail(), Set.of(LASOLICITOR)));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenRepresentativeRoleChangedToCafcassGuardian() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -245,7 +245,7 @@ class RepresentativeCaseRoleServiceTest {
                 ));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenRepresentativeRoleChangedToCafcassSolicitor() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -263,7 +263,7 @@ class RepresentativeCaseRoleServiceTest {
                 Map.of(originalRepresentative.getEmail(), Set.of(CAFCASSSOLICITOR)));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenRepresentedPartyChanged() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -286,7 +286,7 @@ class RepresentativeCaseRoleServiceTest {
     @DisplayName("Serving preferences changed")
     class ServingPreferencesChange {
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenServingPreferenceChangedFromDigitalServiceToEmail() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -304,7 +304,7 @@ class RepresentativeCaseRoleServiceTest {
                 Map.of(originalRepresentative.getEmail(), emptySet()));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenServingPreferenceChangedFromDigitalServiceToPost() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -322,7 +322,7 @@ class RepresentativeCaseRoleServiceTest {
                 Map.of(originalRepresentative.getEmail(), emptySet()));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenServingPreferenceChangedFromEmailToDigitalService() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)
@@ -340,7 +340,7 @@ class RepresentativeCaseRoleServiceTest {
                 Map.of(originalRepresentative.getEmail(), Set.of(SOLICITOR)));
         }
 
-        //@Test
+        @Test
         void shouldReturnCaseRoleUpdatesWhenServingPreferenceChangedFromPostToDigitalService() {
             Representative originalRepresentative = Representative.builder()
                 .role(REPRESENTING_RESPONDENT_1)

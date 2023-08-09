@@ -34,7 +34,7 @@ public class ReferenceDataOrganisationalExternalUsersConsumerTest extends Refere
             .toPact();
     }
 
-    //@Test
+    @Test
     @PactTestFor(pactMethod = "generatePactFragmentForGetUserOrganisation")
     public void verifyUserOrganisation() {
         Organisation userOrganisation = organisationApi.findUserOrganisation(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN);

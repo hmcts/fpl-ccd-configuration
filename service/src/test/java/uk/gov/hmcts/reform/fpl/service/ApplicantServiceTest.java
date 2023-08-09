@@ -29,7 +29,7 @@ class ApplicantServiceTest {
     @Autowired
     private ApplicantService service;
 
-    //@Test
+    @Test
     void shouldExpandApplicantCollectionWhenNoApplicants() {
         CaseData caseData = CaseData.builder().build();
 
@@ -37,7 +37,7 @@ class ApplicantServiceTest {
         assertThat(service.expandApplicantCollection(caseData, EMPTY_ORGANISATION)).hasSize(1);
     }
 
-    //@Test
+    @Test
     void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
         String applicantPartyId = UUID.randomUUID().toString();
 
@@ -56,12 +56,12 @@ class ApplicantServiceTest {
             .get(0).getParty().getPartyId()).isEqualTo(applicantPartyId);
     }
 
-    //@Test
+    @Test
     void shouldPassThroughWhenNoApplicants() {
         assertThat(service.addHiddenValues(CaseData.builder().build())).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
         List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
             .party(ApplicantParty.builder().build())
@@ -77,7 +77,7 @@ class ApplicantServiceTest {
         assertThat(applicant.get(0).getValue().getParty().getPartyType()).isEqualTo(PartyType.ORGANISATION);
     }
 
-    //@Test
+    @Test
     void shouldAddPartyIDAndPartyTypeValuesToManyApplicants() {
         List<Element<Applicant>> applicants = wrapElements(Applicant.builder()
                 .party(ApplicantParty.builder()
@@ -106,7 +106,7 @@ class ApplicantServiceTest {
         assertThat(secondApplicant.getParty().getOrganisationName()).isEqualTo("Organisation 2");
     }
 
-    //@Test
+    @Test
     void shouldNotAddNewPartyIdWhenApplicantsAlreadyHasPartyIdValue() {
         String applicantPartyId = UUID.randomUUID().toString();
 
@@ -125,7 +125,7 @@ class ApplicantServiceTest {
         assertThat(applicant.getParty().getPartyId()).isEqualTo(applicantPartyId);
     }
 
-    //@Test
+    @Test
     void shouldReturnApplicantCollectionWithOrganisationDetailsWhenOrganisationExists() {
         CaseData caseData = CaseData.builder().build();
         Organisation organisation = buildOrganisation();
@@ -139,7 +139,7 @@ class ApplicantServiceTest {
             .getContactInformation().get(0).toAddress());
     }
 
-    //@Test
+    @Test
     void shouldReturnApplicantCollectionWithoutOrganisationDetailsWhenNoOrganisationExists() {
         CaseData caseData = CaseData.builder().build();
 

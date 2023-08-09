@@ -60,7 +60,7 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
 
     @Nested
     class AboutToStartTest {
-        //@Test
+        @Test
         void shouldPopulateInitialData() {
             Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
             Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
@@ -121,7 +121,7 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
 
     @Nested
     class MidEventTest {
-        //@Test
+        @Test
         void shouldExtractDraftOrderFields() {
             final UUID selectedRemoveOrderId = UUID.randomUUID();
             DocumentReference documentReference = DocumentReference.builder().build();
@@ -167,7 +167,7 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
 
     @Nested
     class AboutToSubmitTest {
-        //@Test
+        @Test
         void shouldRemoveTemporaryFieldsAndSelectedDraftOrder() {
             Map<String, Object> fields = new HashMap<>();
 
@@ -249,7 +249,7 @@ public class RemoveDraftOrdersControllerTest extends AbstractCallbackTest {
 
     @Nested
     class SubmittedTest {
-        //@Test
+        @Test
         void shouldTriggerEvent() {
             Long caseId = 1L;
             UUID removedOrderId = UUID.randomUUID();

@@ -33,7 +33,7 @@ class TranslatedDocumentGeneratorTest {
         documentDownloadService
     );
 
-    //@Test
+    @Test
     void testProcessor() {
 
         when(documentDownloadService.downloadDocument(BINARY_URL)).thenReturn(UPLOADED_FILE_BYTES);

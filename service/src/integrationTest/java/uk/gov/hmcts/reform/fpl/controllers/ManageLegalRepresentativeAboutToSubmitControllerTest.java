@@ -49,7 +49,7 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractCallb
         super("manage-legal-representatives");
     }
 
-    //@Test
+    @Test
     void shouldAddLegalRepresentativeToCase() {
 
         CaseDetails caseDetailsBefore = buildCaseData(emptyList());

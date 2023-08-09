@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @OverrideAutoConfiguration(enabled = true)
 class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTest {
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenPBANumberIsInvalid() {
 
         final PBAPayment paymentDetails = PBAPayment.builder()
@@ -33,7 +33,7 @@ class PlacementPaymentDetailsMidEventTest extends AbstractPlacementControllerTes
         assertThat(response.getErrors()).containsExactly("Payment by account (PBA) number must include 7 numbers");
     }
 
-    //@Test
+    @Test
     void shouldNormaliseValidPBANumber() {
 
         final PBAPayment paymentDetails = PBAPayment.builder()

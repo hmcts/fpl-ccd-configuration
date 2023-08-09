@@ -103,7 +103,7 @@ class LocalAuthorityRecipientsServiceTest {
         given(localAuthorityIds.getLocalAuthorityCode(LA_2_ID)).willReturn(Optional.of(LA_2_CODE));
     }
 
-    //@Test
+    @Test
     void shouldReturnFallbackWhenNoEmailsFoundForTheLocalAuthority() {
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LA_1_CODE)
@@ -124,7 +124,7 @@ class LocalAuthorityRecipientsServiceTest {
     @Nested
     class DesignatedLocalAuthorityContacts {
 
-        //@Test
+        @Test
         void shouldNotReturnLocalAuthorityEmailsWhenDesignatedLocalAuthorityExcluded() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -146,7 +146,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldReturnFirstLocalAuthorityWhenDesignatedIsNotSet() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -175,7 +175,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnLocalAuthorityEmailsWhenNoGroupEmailOrSharedInboxOrColleagues() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -194,7 +194,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldReturnLocalAuthoritySharedEmailAndGroupEmailWhenAdditionalContactsAreToggledOff() {
             final CaseData caseData = CaseData.builder()
                 .caseLocalAuthority(LA_1_CODE)
@@ -216,7 +216,7 @@ class LocalAuthorityRecipientsServiceTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReturnGroupEmailAndLASharedInboxWhenNoNotificationRecipientsAmongColleagues() {
 
             final CaseData caseData = CaseData.builder()
@@ -241,7 +241,7 @@ class LocalAuthorityRecipientsServiceTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReturnAdditionalContactEmailsOnly() {
 
             final CaseData caseData = CaseData.builder()
@@ -264,7 +264,7 @@ class LocalAuthorityRecipientsServiceTest {
                 designatedLAColleague3.getEmail());
         }
 
-        //@Test
+        @Test
         void shouldReturnGroupEmailAndLASharedInboxAndAdditionalContactsEmails() {
 
             final CaseData caseData = CaseData.builder()
@@ -290,7 +290,7 @@ class LocalAuthorityRecipientsServiceTest {
                 designatedLAColleague3.getEmail());
         }
 
-        //@Test
+        @Test
         void shouldReturnContactFromLegacySolicitor() {
 
             final CaseData caseData = CaseData.builder()
@@ -318,7 +318,7 @@ class LocalAuthorityRecipientsServiceTest {
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnContactsWhenSecondaryLocalAuthorityExcluded() {
 
             final CaseData caseData = CaseData.builder()
@@ -348,7 +348,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnSecondaryLAContactsWhenAdditionalContactsToggledOffAndGroupAndSharedLAEmailNotPresent() {
 
             final CaseData caseData = CaseData.builder()
@@ -380,7 +380,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(LA_1_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnContactsWhenNoSecondaryLocalAuthority() {
 
             final CaseData caseData = CaseData.builder()
@@ -404,7 +404,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldNotReturnAdditionalEmailWhenNoNotificationRecipientsAmongColleagues() {
 
             final CaseData caseData = CaseData.builder()
@@ -439,7 +439,7 @@ class LocalAuthorityRecipientsServiceTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReturnSecondaryLocalAuthorityGroupInboxAndSharedInbox() {
 
             final CaseData caseData = CaseData.builder()
@@ -474,7 +474,7 @@ class LocalAuthorityRecipientsServiceTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReturnAdditionalEmailFromSecondaryLocalAuthority() {
 
             final CaseData caseData = CaseData.builder()
@@ -510,7 +510,7 @@ class LocalAuthorityRecipientsServiceTest {
     @Nested
     class LegalRepresentatives {
 
-        //@Test
+        @Test
         void shouldNotReturnContactsWhenLegalRepresentativesExcluded() {
 
             final CaseData caseData = CaseData.builder()
@@ -528,7 +528,7 @@ class LocalAuthorityRecipientsServiceTest {
             assertThat(underTest.getRecipients(recipientsRequest)).containsExactly(FALLBACK_INBOX);
         }
 
-        //@Test
+        @Test
         void shouldReturnContactsWhenLegalRepresentativesIsNotExcluded() {
 
             final CaseData caseData = CaseData.builder()
@@ -550,7 +550,7 @@ class LocalAuthorityRecipientsServiceTest {
 
     }
 
-    //@Test
+    @Test
     void shouldReturnCombinedListOfRecipients() {
 
         final CaseData caseData = CaseData.builder()

@@ -50,7 +50,7 @@ class AuditEventServiceTest {
             .thenReturn(auditEventsResponse);
     }
 
-    //@Test
+    @Test
     void shouldGetAuditEventByName() {
         AuditEvent expectedAuditEvent = buildAuditEvent("nocRequest", A_LOCAL_DATE_TIME);
 
@@ -67,7 +67,7 @@ class AuditEventServiceTest {
         assertThat(actualAuditEvent).isPresent().contains(expectedAuditEvent);
     }
 
-    //@Test
+    @Test
     void shouldGetLatestInstanceOfAuditEventByName() {
         AuditEvent expectedAuditEvent = buildAuditEvent("nocRequest", A_LOCAL_DATE_TIME);
 
@@ -84,7 +84,7 @@ class AuditEventServiceTest {
         assertThat(actualAuditEvent).isPresent().contains(expectedAuditEvent);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyOptionalIfAuditEventWithNameCannotBeFound() {
         List<AuditEvent> auditEventList = List.of(
             buildAuditEvent("enterChildren", A_LOCAL_DATE_TIME),
@@ -98,7 +98,7 @@ class AuditEventServiceTest {
         assertThat(actualAuditEvent).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyOptionalIfAuditEventsIsEmpty() {
 
         when(auditEventsResponse.getAuditEvents()).thenReturn(List.of());

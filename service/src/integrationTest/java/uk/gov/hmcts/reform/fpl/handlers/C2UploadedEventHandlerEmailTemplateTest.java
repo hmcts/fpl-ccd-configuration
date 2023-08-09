@@ -50,7 +50,7 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @MockBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
-    //@Test
+    @Test
     void notifyAdmin() {
         CaseData caseData = caseData();
 

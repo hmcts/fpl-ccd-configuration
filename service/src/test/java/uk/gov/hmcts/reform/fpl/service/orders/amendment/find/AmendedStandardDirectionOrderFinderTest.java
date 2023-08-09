@@ -17,7 +17,7 @@ class AmendedStandardDirectionOrderFinderTest {
 
     private final AmendedStandardDirectionOrderFinder underTest = new AmendedStandardDirectionOrderFinder();
 
-    //@Test
+    @Test
     void findOrderIfPresentAmended() {
         when(caseData.getStandardDirectionOrder()).thenReturn((AMENDED_SDO));
         when(caseDataBefore.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));
@@ -25,7 +25,7 @@ class AmendedStandardDirectionOrderFinderTest {
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_SDO);
     }
 
-    //@Test
+    @Test
     void findOrderIfPresentNotAmended() {
         when(caseData.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));
         when(caseDataBefore.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));

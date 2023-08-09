@@ -49,7 +49,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         super("approve-draft-orders");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenReviewDecisionIsJudgeAmendOrderAndNewOrderIsMissing() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
@@ -73,7 +73,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         assertThat(callbackResponse.getErrors()).containsOnly("Add the new draft order 1");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenReviewDecisionIsJudgeRequestsChangesAndRequestedChangesTextIsMissing() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
@@ -95,7 +95,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         assertThat(callbackResponse.getErrors()).containsOnly("Add what the LA needs to change on the draft order 2");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsForAllReviewedOrdersWhenJudgeReviewIsInvalidForMoreThanOneDraftOrders() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
@@ -120,7 +120,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
             .containsExactlyInAnyOrder("Add the new CMO", "Add what the LA needs to change on the draft order 2");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenJudgeDoesNotReviewOneOfTheDraftOrdersInTheBundle() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
@@ -146,7 +146,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenReviewDecisionForTheDraftOrdersIsValid() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 

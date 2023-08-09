@@ -10,7 +10,7 @@ class RoboticsEmailConfigurationTest {
 
     private RoboticsEmailConfiguration roboticsEmailConfiguration;
 
-    //@Test
+    @Test
     void shouldReturnNullWhenInstantiatedWithDefaultConstructorForSenderAndRecipient() {
         roboticsEmailConfiguration = new RoboticsEmailConfiguration();
 
@@ -18,7 +18,7 @@ class RoboticsEmailConfigurationTest {
         assertThat(roboticsEmailConfiguration.getSender()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnPassedInSenderAndRecipientWhenInstantiatedWithAllArgsConstructor() {
         roboticsEmailConfiguration = new RoboticsEmailConfiguration(EXPECTED_NOTIFICATIONS_SENDER,
             EXPECTED_NOTIFICATIONS_RECIPIENT);

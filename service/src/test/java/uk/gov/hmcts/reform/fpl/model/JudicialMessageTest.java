@@ -11,7 +11,7 @@ class JudicialMessageTest {
     private static String URGENCY = "High urgency";
     private static String SUBJECT = "Subject";
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabel() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .urgency(URGENCY)
@@ -23,7 +23,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(String.format("C2, %s, %s, %s", SUBJECT, DATE_SENT, URGENCY));
     }
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabelWithoutC2() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .urgency(URGENCY)
@@ -34,7 +34,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s, %s, %s", SUBJECT, DATE_SENT, URGENCY));
     }
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabelWithoutUrgency() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .isRelatedToC2(YES)
@@ -44,7 +44,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(String.format("C2, %s", DATE_SENT));
     }
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabelWithoutUrgencyIfUrgencyIsBlankString() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .urgency(" ")
@@ -54,7 +54,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s", DATE_SENT));
     }
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabelWithMaximumLengthAllowedWhenUrgencyIsTooLong() {
         String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
             + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
@@ -75,7 +75,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(expectedMessageLabel);
     }
 
-    //@Test
+    @Test
     void shouldBuildJudicialMessageLabelWithOnlyDateSent() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .dateSent(DATE_SENT)
@@ -84,7 +84,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.toLabel()).isEqualTo(DATE_SENT);
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenMessageHasNotHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("This is a new message")
@@ -94,7 +94,7 @@ class JudicialMessageTest {
         assertThat(judicialMessage.isFirstMessage()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenMessageHasHadAReply() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .latestMessage("Fix up the order")

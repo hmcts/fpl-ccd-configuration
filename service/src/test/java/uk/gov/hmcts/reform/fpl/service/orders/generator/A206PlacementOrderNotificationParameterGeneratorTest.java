@@ -37,12 +37,12 @@ class A206PlacementOrderNotificationParameterGeneratorTest {
     @InjectMocks
     private A206PlacementOrderNotificationParameterGenerator underTest;
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(A70_PLACEMENT_ORDER);
     }
 
-    //@Test
+    @Test
     void generate() {
         Element<Child> selectedPlacementChild = element(Child.builder()
             .party(ChildParty.builder()
@@ -73,7 +73,7 @@ class A206PlacementOrderNotificationParameterGeneratorTest {
         assertThat(docmosisParameters.getChild().getName()).isEqualTo("Alex White");
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(A206);
     }

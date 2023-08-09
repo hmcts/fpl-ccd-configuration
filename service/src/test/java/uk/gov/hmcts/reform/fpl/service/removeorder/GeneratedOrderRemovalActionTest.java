@@ -47,12 +47,12 @@ class GeneratedOrderRemovalActionTest {
 
     private final GeneratedOrderRemovalAction underTest = new GeneratedOrderRemovalAction();
 
-    //@Test
+    @Test
     void isAcceptedIfGeneratedOrder() {
         assertThat(underTest.isAccepted(mock(GeneratedOrder.class))).isTrue();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedIfAnyOtherClass() {
         assertThat(underTest.isAccepted(mock(RemovableOrder.class))).isFalse();
     }
@@ -60,7 +60,7 @@ class GeneratedOrderRemovalActionTest {
     @Nested
     class GeneratedOrders {
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderWhenNotFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER_NEW,
@@ -137,7 +137,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionIfOrderNotFound() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER_NEW,
@@ -172,7 +172,7 @@ class GeneratedOrderRemovalActionTest {
                 .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderWhenNotFinalAndOtherAlreadyHidden() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER_NEW,
@@ -268,7 +268,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderAndRevertChildrenMarkersWhenFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER_NEW,
@@ -343,7 +343,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderAndRevertOnlyRelatedChildrenMarkersWhenFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER_NEW,
@@ -408,7 +408,7 @@ class GeneratedOrderRemovalActionTest {
             ));
         }
 
-        //@Test
+        @Test
         void shouldPopulateGeneratedOrderCaseFieldsFromRemovedFinalOrder() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER_NEW,
@@ -444,7 +444,7 @@ class GeneratedOrderRemovalActionTest {
                     generatedOrder.getRemovalReason());
         }
 
-        //@Test
+        @Test
         void shouldPopulateGeneratedOrderCaseFieldsFromRemovedUploadedOrder() {
             String orderType = "Appointment of a children's guardian (C47A)";
 
@@ -511,7 +511,7 @@ class GeneratedOrderRemovalActionTest {
     @Nested
     class LegacyGeneratedOrders {
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderWhenNotFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER,
@@ -588,7 +588,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionIfOrderNotFound() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER,
@@ -623,7 +623,7 @@ class GeneratedOrderRemovalActionTest {
                 .hasMessage("Removable order or application with id %s not found", ALREADY_REMOVED_ORDER_ID);
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderWhenNotFinalAndOtherAlreadyHidden() {
             GeneratedOrder generatedOrder = buildOrder(
                 NON_FINAL_ORDER,
@@ -720,7 +720,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderAndRevertChildrenMarkersWhenFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER,
@@ -795,7 +795,7 @@ class GeneratedOrderRemovalActionTest {
 
         }
 
-        //@Test
+        @Test
         void shouldGetRemovedOrderAndRevertOnlyRelatedChildrenMarkersWhenFinal() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER,
@@ -860,7 +860,7 @@ class GeneratedOrderRemovalActionTest {
             ));
         }
 
-        //@Test
+        @Test
         void shouldPopulateGeneratedOrderCaseFieldsFromRemovedFinalOrder() {
             GeneratedOrder generatedOrder = buildOrder(
                 FINAL_ORDER,
@@ -895,7 +895,7 @@ class GeneratedOrderRemovalActionTest {
                     generatedOrder.getRemovalReason());
         }
 
-        //@Test
+        @Test
         void shouldPopulateGeneratedOrderCaseFieldsFromRemovedUploadedOrder() {
             String orderType = "Appointment of a children's guardian (C47A)";
 

@@ -50,7 +50,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
         super("manage-legal-representatives");
     }
 
-    //@Test
+    @Test
     void shouldReturnValidationErrorForNonExistingUser() {
 
         CaseDetails caseDetailsBefore = buildCaseData(emptyList());
@@ -71,7 +71,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
         );
     }
 
-    //@Test
+    @Test
     void shouldValidateAnExistingUser() {
 
         CaseDetails caseDetailsBefore = buildCaseData(emptyList());
@@ -88,7 +88,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
         assertThat(actual.getErrors()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInvalid() {
         final CaseData caseData = CaseData.builder()
             .legalRepresentatives(wrapElements(LegalRepresentative.builder()
@@ -113,7 +113,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractCallbackTe
             "LA Legal Representative 3: Enter an email address in the correct format, for example name@example.com");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenLALegalRepresentativeEmailIsValid() {
         CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
 

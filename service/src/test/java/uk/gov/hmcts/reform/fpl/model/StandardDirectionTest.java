@@ -27,7 +27,7 @@ class StandardDirectionTest {
             .build())
         .build();
 
-    //@Test
+    @Test
     void shouldAddFieldsFromOrderConfiguration() {
         final StandardDirection initialStandardDirection = StandardDirection.builder().build();
 
@@ -46,7 +46,7 @@ class StandardDirectionTest {
         assertThat(actualStandardDirection).isEqualTo(expectedStandardDirection);
     }
 
-    //@Test
+    @Test
     void shouldAddNonExistingFieldsFromOrderConfiguration() {
 
         final LocalDateTime dueDate = LocalDateTime.now();
@@ -73,7 +73,7 @@ class StandardDirectionTest {
         assertThat(actualStandardDirection).isEqualTo(expectedStandardDirection);
     }
 
-    //@Test
+    @Test
     void shouldCreateStandardDirectionWithoutDaysBeforeHearingIfImmediateStandardDirection() {
 
         final DirectionConfiguration immediateStandardDirectionConfig = DirectionConfiguration.builder()
@@ -104,7 +104,7 @@ class StandardDirectionTest {
         assertThat(actualStandardDirection).isEqualTo(expectedStandardDirection);
     }
 
-    //@Test
+    @Test
     void isImmediateStandardDirectionShouldReturnTrueForImmediateStandardDirectionTypes() {
         final StandardDirection arrangeInterpretersImmediate = StandardDirection.builder()
             .type(ARRANGE_INTERPRETERS_IMMEDIATE)
@@ -120,7 +120,7 @@ class StandardDirectionTest {
             .isEqualTo(true);
     }
 
-    //@Test
+    @Test
     void isImmediateStandardDirectionShouldReturnFalseForNonImmediateStandardDirectionTypes() {
         final StandardDirection arrangeInterpreters = StandardDirection.builder()
             .type(ARRANGE_INTERPRETERS)

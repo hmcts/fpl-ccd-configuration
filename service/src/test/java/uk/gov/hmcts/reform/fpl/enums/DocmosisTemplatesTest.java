@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 
 class DocmosisTemplatesTest {
 
-    //@Test
+    @Test
     void shouldFormatDocumentTitleWithDateWhenProvidedDate() {
         LocalDate now = LocalDate.now();
         assertThat(NOTICE_OF_HEARING.getDocumentTitle(now)).isEqualTo(String.format("%s_%s.%s",

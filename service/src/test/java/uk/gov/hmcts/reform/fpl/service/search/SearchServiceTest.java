@@ -47,7 +47,7 @@ class SearchServiceTest {
     @InjectMocks
     private SearchService searchService;
 
-    //@Test
+    @Test
     void shouldSearchCasesByDateProperty() {
         String property = "a.b";
         LocalDate date = LocalDate.now();
@@ -67,7 +67,7 @@ class SearchServiceTest {
         assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
     }
 
-    //@Test
+    @Test
     void shouldSearchCasesWhenGivenESQuery() {
         ESQuery query = BooleanQuery.builder()
             .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
@@ -87,7 +87,7 @@ class SearchServiceTest {
         assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
     }
 
-    //@Test
+    @Test
     void shouldSearchCasesWithSortWhenGivenESQuery() {
         ESQuery query = BooleanQuery.builder()
             .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
@@ -116,7 +116,7 @@ class SearchServiceTest {
         assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
     }
 
-    //@Test
+    @Test
     void shouldReturnTheNumberOfCasesFound() {
         ESQuery query = MatchQuery.of("a", "b");
 

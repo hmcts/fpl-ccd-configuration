@@ -28,12 +28,12 @@ class RiskAndHarmCheckerTest {
     @InjectMocks
     private RiskAndHarmChecker riskAndHarmChecker;
 
-    //@Test
+    @Test
     void testValidate() {
         assertThat(riskAndHarmChecker.validate(ANY_CASE_DATA)).isEmpty();
     }
 
-    //@Test
+    @Test
     void testCompletedState() {
         assertThat(riskAndHarmChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }

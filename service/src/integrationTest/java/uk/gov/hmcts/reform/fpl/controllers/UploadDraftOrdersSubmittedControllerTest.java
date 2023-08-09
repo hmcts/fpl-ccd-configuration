@@ -48,7 +48,7 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    //@Test
+    @Test
     void shouldSendNotificationsIfNewAgreedCMOUploaded() {
         postSubmittedEvent(caseDetails());
 

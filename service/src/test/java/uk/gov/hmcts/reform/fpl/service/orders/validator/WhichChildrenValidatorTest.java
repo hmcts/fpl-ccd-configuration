@@ -15,12 +15,12 @@ class WhichChildrenValidatorTest {
 
     private final WhichChildrenValidator underTest = new WhichChildrenValidator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(WHICH_CHILDREN);
     }
 
-    //@Test
+    @Test
     void validateOrderAppliesToAllChildren() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("Yes")
@@ -29,7 +29,7 @@ class WhichChildrenValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validateSomeChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
@@ -39,7 +39,7 @@ class WhichChildrenValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validateNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")

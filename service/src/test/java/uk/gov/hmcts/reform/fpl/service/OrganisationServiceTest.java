@@ -76,7 +76,7 @@ class OrganisationServiceTest {
     @Nested
     class FindUsersInOrganisation {
 
-        //@Test
+        @Test
         void shouldReturnUsersFromLocalAuthorityMappingWhenTheyDoNotExistInRefData() {
             when(organisationApi.findUsersInCurrentUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
                 .thenThrow(feignException(SC_NOT_FOUND));
@@ -86,7 +86,7 @@ class OrganisationServiceTest {
             assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
         }
 
-        //@Test
+        @Test
         void shouldReturnUsersFromLocalAuthorityMappingWhenRefDataFailsForReasonOtherThanUserNotRegistered() {
             when(organisationApi.findUsersInCurrentUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
                 .thenThrow(feignException(SC_INTERNAL_SERVER_ERROR));
@@ -96,7 +96,7 @@ class OrganisationServiceTest {
             assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
         }
 
-        //@Test
+        @Test
         void shouldReturnUsersFromOrganisationIfExistsInRefData() {
             OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
             when(organisationApi.findUsersInCurrentUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
@@ -108,7 +108,7 @@ class OrganisationServiceTest {
             verify(lookupSpy, never()).getUserIds(any());
         }
 
-        //@Test
+        @Test
         void shouldReturnAllUserDetailsFromOrganisationIfExistsInRefData() {
             OrganisationUsers usersInAnOrganisation = prepareUsersForAnOrganisation();
             when(organisationApi.findUsersInCurrentUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ACTIVE, false))
@@ -121,7 +121,7 @@ class OrganisationServiceTest {
             assertThat(users).isEqualTo(usersInAnOrganisation.getUsers());
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyListWhenTheLAIsNotKnownAndTheApiReturnsNotFound() {
             when(organisationApi.findUsersInCurrentUserOrganisation(any(), any(), any(), any()))
                 .thenThrow(feignException(SC_FORBIDDEN));
@@ -135,7 +135,7 @@ class OrganisationServiceTest {
     @Nested
     class FindUserByEmail {
 
-        //@Test
+        @Test
         void shouldFindUser() {
             OrganisationUser user = OrganisationUser.builder()
                 .userIdentifier(RandomStringUtils.randomAlphanumeric(10))
@@ -148,7 +148,7 @@ class OrganisationServiceTest {
             assertThat(actualUserId).contains(user.getUserIdentifier());
         }
 
-        //@Test
+        @Test
         void shouldNotReturnUserIdIfUserNotPresent() {
 
             when(organisationApi.findUserByEmail(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_EMAIL))
@@ -159,7 +159,7 @@ class OrganisationServiceTest {
             assertThat(actualUserId).isNotPresent();
         }
 
-        //@Test
+        @Test
         void shouldRethrowExceptionOtherThanNotFound() {
             String email = "test@test.com";
 
@@ -178,7 +178,7 @@ class OrganisationServiceTest {
     @Nested
     class FindUserOrganisation {
 
-        //@Test
+        @Test
         void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
             when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN))
                 .thenReturn(POPULATED_ORGANISATION);
@@ -188,7 +188,7 @@ class OrganisationServiceTest {
             assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyOrganisationWhenUserNotRegisteredInOrganisation() {
             when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN))
                 .thenThrow(feignException(SC_FORBIDDEN));
@@ -198,7 +198,7 @@ class OrganisationServiceTest {
             assertThat(organisation).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldRethrowUnexpectedExceptions() {
             Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
@@ -221,7 +221,7 @@ class OrganisationServiceTest {
             when(systemUserService.getSysUserToken()).thenReturn(TOKEN);
         }
 
-        //@Test
+        @Test
         void shouldFindOrganisationWhenExists() {
             when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
                 .thenReturn(POPULATED_ORGANISATION);
@@ -231,7 +231,7 @@ class OrganisationServiceTest {
             assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyOrganisationWhenOrganisationDoesNotExists() {
             when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
                 .thenThrow(feignException(SC_FORBIDDEN));
@@ -241,7 +241,7 @@ class OrganisationServiceTest {
             assertThat(organisation).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldRethrowUnexpectedExceptions() {
             Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 

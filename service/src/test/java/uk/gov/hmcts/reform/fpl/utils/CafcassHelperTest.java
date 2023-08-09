@@ -23,7 +23,7 @@ public class CafcassHelperTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenCaseLocalAuthorityIsEngland() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(Optional.of(
@@ -34,7 +34,7 @@ public class CafcassHelperTest {
             .isEqualTo(true);
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenCaseLocalAuthorityWhenCafcassIsNotEngland() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(Optional.empty());
@@ -44,7 +44,7 @@ public class CafcassHelperTest {
             .isEqualTo(false);
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenCaseLocalAuthorityIsWelsh() {
         when(cafcassLookupConfiguration.getCafcassWelsh(any()))
             .thenReturn(Optional.of(
@@ -55,7 +55,7 @@ public class CafcassHelperTest {
             .isEqualTo(true);
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenCaseLocalAuthorityWhenCafcassIsNotWelsh() {
         when(cafcassLookupConfiguration.getCafcassWelsh(any()))
             .thenReturn(Optional.empty());
@@ -65,7 +65,7 @@ public class CafcassHelperTest {
             .isEqualTo(false);
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenCaseLocalAuthorityIsNull() {
         // existing old standalone case which does not have a null caseLocalAuthority
         assertThat(isNotifyingCafcassEngland(CaseData.builder()

@@ -54,7 +54,7 @@ class AdditionalApplicationsPbaPaymentNotTakenEventHandlerTest {
     @Autowired
     private AdditionalApplicationsPbaPaymentNotTakenEventHandler additionalApplicationsPbaPaymentNotTakenEventHandler;
 
-    //@Test
+    @Test
     void shouldNotifyAdminWhenUploadedAdditionalApplicationsIsNotUsingPbaPayment() {
         CaseData caseData = caseData();
 
@@ -70,7 +70,7 @@ class AdditionalApplicationsPbaPaymentNotTakenEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscAdminWhenUploadedAdditionalApplicationsIsNotUsingPbaPaymentAndCtscIsEnabled() {
         CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())

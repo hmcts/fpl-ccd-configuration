@@ -27,57 +27,57 @@ class DocumentsHelperTest {
         assertThat(hasDocumentStatusOf(document(status), status)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfDocumentDoesNotHaveRequestedStatus() {
         assertThat(hasDocumentStatusOf(document(ATTACHED), INCLUDED_IN_SWET)).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueIfDocumentHasStatusSet() {
         assertThat(hasDocumentStatusSet(document(ATTACHED))).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfDocumentHasNoStatusSet() {
         assertThat(hasDocumentStatusSet(document(null))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueIfDocumentHasBinaries() {
         assertThat(hasDocumentUploaded(document(true))).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfDocumentHasNotBinaries() {
         assertThat(hasDocumentUploaded(document(false))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
         assertThat(hasExtension(documentReference, "pdf")).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenFilenameExtensionIncludesExpectedExtensionWithDifferentCase() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.PDF");
         assertThat(hasExtension(documentReference, "pdf")).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenFilenameExtensionDoesNotIncludeExpectedExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.doc");
         assertThat(hasExtension(documentReference, "pdf")).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldUpdateFilenameWithDocExtensionToPDF() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.doc");
 
         assertThat(updateExtension(documentReference.getFilename(), "pdf")).isEqualTo("test.pdf");
     }
 
-    //@Test
+    @Test
     void shouldPersistCurrentPdfExtension() {
         DocumentReference documentReference = buildDocumentReferenceWithExtension("test.pdf");
 

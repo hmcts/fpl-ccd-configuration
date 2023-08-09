@@ -35,12 +35,12 @@ class LinkApplicationBlockPrePopulatorTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnRightQuestionBlock() {
         AssertionsForClassTypes.assertThat(classUnderTest.accept()).isEqualTo(OrderQuestionBlock.LINK_APPLICATION);
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateFields_WithApplicationsToLink() {
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .id(UUID.randomUUID())
@@ -67,7 +67,7 @@ class LinkApplicationBlockPrePopulatorTest {
             .hasElement(otherApplicationsBundle.getId(), otherApplicationsBundle.toLabel());
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateFields_WithNoApplicationsToLink() {
         Map<String, Object> actual = classUnderTest.prePopulate(caseDataBuilder.build());
 

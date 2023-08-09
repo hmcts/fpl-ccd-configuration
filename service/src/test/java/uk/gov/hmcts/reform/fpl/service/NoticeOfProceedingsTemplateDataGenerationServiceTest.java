@@ -76,7 +76,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
     }
 
-    //@Test
+    @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = getCaseData(
             buildChild("Bran", "Stark"), buildChild("Sansa", "Stark"), buildChild("Jon", "Snow")
@@ -87,7 +87,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
     }
 
-    //@Test
+    @Test
     void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
         CaseData caseData = getCaseData(buildChild("Bran", "Stark"));
 
@@ -96,7 +96,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedTemplateData() {
         CaseData caseData = getCaseData(
             buildChild("Bran", "Stark"), buildChild("Sansa", "Stark"), buildChild("Jon", "Snow")

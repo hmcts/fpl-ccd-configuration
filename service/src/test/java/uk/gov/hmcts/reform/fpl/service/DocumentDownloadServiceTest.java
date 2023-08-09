@@ -92,7 +92,7 @@ class DocumentDownloadServiceTest {
             systemUserService);
     }
 
-    //@Test
+    @Test
     void shouldDownloadDocumentFromDocumentManagement() {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
@@ -119,7 +119,7 @@ class DocumentDownloadServiceTest {
             "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDownloadBinaryReturnsNull() {
         ResponseEntity<Resource> responseEntity = ResponseEntity.notFound().build();
         given(resourceResponseEntity.getStatusCode()).willReturn(responseEntity.getStatusCode());
@@ -132,7 +132,7 @@ class DocumentDownloadServiceTest {
             .contains("/binary unsuccessful.");
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsEmpty() {
         ResponseEntity<Resource> responseEntity = ResponseEntity.ok().body(byteArrayResource);
         given(byteArrayResource.getByteArray()).willReturn(null);
@@ -144,7 +144,7 @@ class DocumentDownloadServiceTest {
         assertThat(exceptionThrown.getMessage()).isEqualTo("File cannot be empty");
     }
 
-    //@Test
+    @Test
     void shouldUseSystemUpdateUserIfNotInRequest() {
         given(requestData.authorisation()).willThrow(new IllegalStateException());
 

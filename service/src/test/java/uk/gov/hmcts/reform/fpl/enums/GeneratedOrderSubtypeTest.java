@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GeneratedOrderSubtypeTest {
 
-    //@Test
+    @Test
     void testSubtypeNotFound() {
         assertThat(GeneratedOrderSubtype.fromType("blah blah")).isEmpty();
     }

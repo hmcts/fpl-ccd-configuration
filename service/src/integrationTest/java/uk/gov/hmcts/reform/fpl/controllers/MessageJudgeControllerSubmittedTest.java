@@ -48,7 +48,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         super("message-judge");
     }
 
-    //@Test
+    @Test
     void shouldNotifyJudicialMessageRecipientWhenNewJudicialMessageAdded() throws NotificationClientException {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .updatedTime(now())

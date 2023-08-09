@@ -27,7 +27,7 @@ class CaseSummaryWelshFlagGeneratorTest {
         );
     }
 
-    //@Test
+    @Test
     void generateWhenLanguageRequirementIsNo() {
         CaseData caseData = CaseData.builder().languageRequirement("No").build();
 
@@ -40,7 +40,7 @@ class CaseSummaryWelshFlagGeneratorTest {
         );
     }
 
-    //@Test
+    @Test
     void generateWhenLanguageRequirementIsYes() {
         CaseData caseData = CaseData.builder().languageRequirement("Yes").build();
 

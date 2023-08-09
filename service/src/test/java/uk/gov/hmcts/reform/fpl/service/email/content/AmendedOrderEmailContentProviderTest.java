@@ -52,7 +52,7 @@ class AmendedOrderEmailContentProviderTest extends AbstractEmailContentProviderT
         when(helper.getEldestChildLastName(CASE_DATA.getChildren1())).thenReturn("McDonnell");
     }
 
-    //@Test
+    @Test
     void shouldBuildAmendedOrderParameters() {
         OrderAmendedNotifyData expectedParameters = getExpectedParameters();
         OrderAmendedNotifyData actualParameters = underTest.getNotifyData(

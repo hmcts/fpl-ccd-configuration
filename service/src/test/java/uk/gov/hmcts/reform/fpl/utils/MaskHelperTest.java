@@ -23,7 +23,7 @@ class MaskHelperTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnMaskedEmail() {
         assertThat(MaskHelper.maskEmail(null)).isEmpty();
         assertThat(MaskHelper.maskEmail("")).isEmpty();
@@ -39,7 +39,7 @@ class MaskHelperTest {
         assertThat(maskEmail(text, email)).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldNotMaskEmailInEmptyString() {
         assertThat(maskEmail(null, "test@test.com")).isNull();
         assertThat(maskEmail("", "test@test.com")).isEmpty();

@@ -34,7 +34,7 @@ public class ReferenceDataOrganisationalInternalUsersConsumerTest extends Refere
             .toPact();
     }
 
-    //@Test
+    @Test
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationById")
     public void verifyGetOrganisationById() {
 

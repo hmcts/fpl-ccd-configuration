@@ -67,7 +67,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         given(caseSubmissionService.getSigneeName(any())).willReturn("Emma Taylor");
     }
 
-    //@Test
+    @Test
     void shouldAddConsentLabelToCaseDetails() {
         given(feeService.getFeesDataForOrders(any())).willReturn(feesData(10));
 
@@ -81,7 +81,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                 "I, Emma Taylor, believe that the facts stated in this application are true.");
     }
 
-    //@Test
+    @Test
     void shouldAddAmountToPayFieldToAnOpenedCase() {
         given(feeService.getFeesDataForOrders(any())).willReturn(feesData(123));
 
@@ -96,7 +96,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(response.getData()).containsEntry("displayAmountToPay", YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldNotDisplayAmountToPayFieldToAnOpenedCaseWhenErrorIsThrown() {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
@@ -108,7 +108,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldNotDisplayAmountToPayFieldWhenCaseIsInReturnedState() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData().toBuilder()
             .state(RETURNED)
@@ -119,7 +119,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(response.getData()).doesNotContainKeys("displayAmountToPay");
     }
 
-    //@Test
+    @Test
     void shouldHaveDraftApplicationDocumentInResponse() {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
@@ -133,7 +133,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
     }
 
-    //@Test
+    @Test
     void shouldHaveSupplementAndDocumentIfC1OrderChosen() {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 

@@ -18,7 +18,7 @@ class RespondentControllerAboutToStartTest extends AbstractCallbackTest {
         super("enter-respondents");
     }
 
-    //@Test
+    @Test
     void aboutToStartShouldPrePopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("data", "some data"))

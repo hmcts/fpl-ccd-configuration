@@ -44,7 +44,7 @@ class TranslatedItemEmailContentProviderTest extends AbstractEmailContentProvide
         when(courtService.getCourtName(any())).thenReturn("Family Court");
     }
 
-    //@Test
+    @Test
     void getNotifyData() {
         TranslatedItemNotifyData actual = underTest.getNotifyData(CaseData.builder()
             .id(12344556565L)

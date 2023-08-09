@@ -38,7 +38,7 @@ class RepresentativeNotificationServiceTest {
     private static final OrderIssuedNotifyData TEMPLATE_DATA = OrderIssuedNotifyData.builder().build();
     private static final String TEMPLATE_NAME = LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesWithDigitalServingPreferenceOnly() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -53,7 +53,7 @@ class RepresentativeNotificationServiceTest {
         verify(notificationService).sendEmail(TEMPLATE_NAME, "sara@test.co.uk", TEMPLATE_DATA, CASE_ID);
     }
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesWithEmailServingPreferenceOnly() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -66,7 +66,7 @@ class RepresentativeNotificationServiceTest {
         verify(notificationService).sendEmail(TEMPLATE_NAME, "sam@test.co.uk", TEMPLATE_DATA, CASE_ID);
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyRepresentativesOfOthers() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -81,7 +81,7 @@ class RepresentativeNotificationServiceTest {
         verify(notificationService, never()).sendEmail(TEMPLATE_NAME, "sam@test.co.uk", TEMPLATE_DATA, CASE_ID);
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyAnyRepresentativesWhenRepresentativesDoNotMatchServingPreference() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -95,7 +95,7 @@ class RepresentativeNotificationServiceTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyAnyRepresentativesWhenRepresentativesDoNotExist() {
         CaseData caseData = CaseData.builder().id(CASE_ID).build();
 

@@ -227,7 +227,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         when(docmosisHelper.extractPdfContent(any())).thenReturn("Some content");
     }
 
-    //@Test
+    @Test
     void shouldSendOrdersByPostWhenOrderIssued() {
         CaseData caseData = caseData();
 
@@ -284,7 +284,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .isEqualTo(CafcassRequestEmailContentProvider.ORDER);
     }
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderIssued() {
         CaseData caseData = caseData();
 
@@ -305,7 +305,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderIssued() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -323,7 +323,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     void shouldNotifyLocalAuthorityWhenOrderIssued() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -342,7 +342,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     void shouldNotifyAdminWhenOrderIssued() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -360,7 +360,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscWhenEnabledWhenOrderIssued() {
         CaseData caseData = caseData().toBuilder().sendToCtsc("Yes").build();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -384,7 +384,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfTranslationIsRequired() {
         CaseData caseData = caseData().toBuilder().orderCollection(
             wrapElements(GeneratedOrder.builder()
@@ -412,7 +412,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     void shouldNotifyTranslationTeamIfTranslationIsNotRequired() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -427,7 +427,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldSendAmendedNotificationToLocalAuthorityWhenAmendedOrder() {
         CaseData caseData = caseData();
@@ -452,7 +452,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldSendOrdersByPostWhenOrderAmended() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -514,7 +514,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .containsExactly(expectedRespondentDocument);
     }
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesServedDigitallyWhenOrderAmended() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
@@ -538,7 +538,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldNotifyRepresentativesServedByEmailWhenOrderAmended() {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()

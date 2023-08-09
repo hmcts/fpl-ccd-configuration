@@ -83,7 +83,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
             .thenReturn(C2_BINARY);
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
@@ -102,7 +102,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
@@ -121,7 +121,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -148,7 +148,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         verifyNoInteractions(paymentService);
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndCtscToggleIsEnabled() throws Exception {
         postSubmittedEvent(buildCaseDetails(YES, NO));
 
@@ -167,7 +167,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPayment() throws Exception {
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
@@ -179,7 +179,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldMakePaymentWhenAmountToPayWasDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -194,7 +194,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         verify(paymentService).makePaymentForC2(CASE_ID, caseConverter.convert(caseDetails));
     }
 
-    //@Test
+    @Test
     void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -207,7 +207,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         verify(paymentService, never()).makePaymentForC2(any(), any());
     }
 
-    //@Test
+    @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -232,7 +232,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
             notificationReference(CASE_ID));
     }
 
-    //@Test
+    @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -255,7 +255,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
             notificationReference(CASE_ID));
     }
 
-    //@Test
+    @Test
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())

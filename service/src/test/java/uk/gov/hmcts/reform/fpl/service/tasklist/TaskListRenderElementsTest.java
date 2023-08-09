@@ -16,7 +16,7 @@ class TaskListRenderElementsTest {
 
     private TaskListRenderElements underTest = new TaskListRenderElements(BASE_URL);
 
-    //@Test
+    @Test
     void shouldRenderLink() {
         String actual = underTest.renderLink(Task.builder()
             .event(Event.ALLOCATION_PROPOSAL)
@@ -27,7 +27,7 @@ class TaskListRenderElementsTest {
             + "Allocation proposal</a>");
     }
 
-    //@Test
+    @Test
     void shouldRenderDisabledLink() {
         String actual = underTest.renderDisabledLink(Task.builder()
             .event(Event.ALLOCATION_PROPOSAL)
@@ -36,35 +36,35 @@ class TaskListRenderElementsTest {
         assertThat(actual).isEqualTo("<a>Allocation proposal</a>");
     }
 
-    //@Test
+    @Test
     void shouldRenderImage() {
         String actual = underTest.renderImage("imageName", "title");
 
         assertThat(actual).isEqualTo("<img align='right' height='25px' src='baseUrl/imageName' title='title'/>");
     }
 
-    //@Test
+    @Test
     void shouldRenderHint() {
         String actual = underTest.renderHint("Test");
 
         assertThat(actual).isEqualTo("<span class='govuk-hint govuk-!-font-size-14'>Test</span>");
     }
 
-    //@Test
+    @Test
     void shouldRenderInfo() {
         String actual = underTest.renderInfo("Test");
 
         assertThat(actual).isEqualTo("<div class='panel panel-border-wide govuk-!-font-size-16'>Test</div>");
     }
 
-    //@Test
+    @Test
     void shouldRenderHeader() {
         String actual = underTest.renderHeader("Test");
 
         assertThat(actual).isEqualTo("## Test");
     }
 
-    //@Test
+    @Test
     void shouldRenderCollapsible() {
         List<String> actual = underTest.renderCollapsible("Test header", List.of("Line 1", "Line 2"));
 
@@ -82,7 +82,7 @@ class TaskListRenderElementsTest {
             "</details>");
     }
 
-    //@Test
+    @Test
     void shouldRenderEmptyCollapsibleWhenNoContent() {
         List<String> actual = underTest.renderCollapsible("Test header", emptyList());
 

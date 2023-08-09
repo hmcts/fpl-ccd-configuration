@@ -73,7 +73,7 @@ class ChildrenUpdatedEventHandlerTest {
         childrenService, cafcassNotificationService, cafcassLookupConfiguration
     );
 
-    //@Test
+    @Test
     void notifyChangeOfAddress() {
         when(caseData.getCaseLaOrRelatingLa()).thenReturn("SW");
         when(caseData.getAllChildren()).thenReturn(children);
@@ -87,7 +87,7 @@ class ChildrenUpdatedEventHandlerTest {
             CHANGE_OF_ADDRESS, ChangeOfAddressData.builder().children(true).build());
     }
 
-    //@Test
+    @Test
     void notifyRegisteredSolicitors() {
         when(caseData.getAllChildren()).thenReturn(children);
         when(caseDataBefore.getAllChildren()).thenReturn(children);
@@ -118,7 +118,7 @@ class ChildrenUpdatedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void notifyUnRegisteredSolicitors() {
         when(caseData.getAllChildren()).thenReturn(children);
         when(caseDataBefore.getAllChildren()).thenReturn(children);
@@ -149,7 +149,7 @@ class ChildrenUpdatedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void noNotifications() {
         when(caseData.getAllChildren()).thenReturn(children);
         when(caseDataBefore.getAllChildren()).thenReturn(children);
@@ -163,7 +163,7 @@ class ChildrenUpdatedEventHandlerTest {
         verifyNoInteractions(notificationService, registeredContentProvider, unregisteredContentProvider);
     }
 
-    //@Test
+    @Test
     void shouldExecuteAsynchronously() {
         assertClass(ChildrenUpdatedEventHandler.class).hasAsyncMethods(
             "notifyChangeOfAddress", "notifyRegisteredSolicitors", "notifyUnRegisteredSolicitors"

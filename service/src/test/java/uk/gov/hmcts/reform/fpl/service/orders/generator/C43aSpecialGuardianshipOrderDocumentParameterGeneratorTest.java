@@ -62,17 +62,17 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         ReflectionTestUtils.setField(underTest, "passportOfficeAddress", PASSPORT_OFFICE_ADDRESS);
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectOrder() {
         assertThat(underTest.accept()).isEqualTo(C43A_SPECIAL_GUARDIANSHIP_ORDER);
     }
 
-    //@Test
+    @Test
     void shouldReturnCorrectTemplate() {
         assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
-    //@Test
+    @Test
     void generateDocumentForSingleChildWithOrderByConsent() {
         CaseData caseData = getCaseData(true, 1);
 
@@ -91,7 +91,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildWithOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 1);
 
@@ -110,7 +110,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildWithoutOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(false, 1);
 
@@ -129,7 +129,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildrenWithOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 1);
 
@@ -148,7 +148,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildrenWithoutOrderByConsentAndSingleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(false, 1);
 
@@ -167,7 +167,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildWithOrderByConsentAndMultipleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 2);
 
@@ -186,7 +186,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildrenWithOrderByConsentAndMultipleSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 2);
 
@@ -205,7 +205,7 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void generateDocumentForChildrenWithOrderByConsentAndLargeNumberOfSpecialGuardianAppointee() {
         CaseData caseData = getCaseData(true, 15);
 

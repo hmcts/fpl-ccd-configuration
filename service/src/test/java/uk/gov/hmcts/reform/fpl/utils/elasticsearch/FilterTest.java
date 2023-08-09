@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService.REQUI
 
 class FilterTest {
 
-    //@Test
+    @Test
     void shouldReturnSortClause() {
         TermsQuery termsQuery = TermsQuery.of("state", REQUIRED_STATES);
         TermQuery termQuery = TermQuery.of(MATCH_FIELD, "344");

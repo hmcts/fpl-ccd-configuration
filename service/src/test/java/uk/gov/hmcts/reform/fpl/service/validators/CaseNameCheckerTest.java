@@ -34,7 +34,7 @@ class CaseNameCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenCaseNameIsPresent() {
         final CaseData caseData = CaseData.builder()
                 .caseName("test")
@@ -47,7 +47,7 @@ class CaseNameCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void testCompletedState() {
         assertThat(caseNameChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }

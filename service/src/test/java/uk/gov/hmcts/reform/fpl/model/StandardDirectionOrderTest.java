@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class StandardDirectionOrderTest {
-    //@Test
+    @Test
     void shouldReturnTrueWhenOrderIsSealed() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(SEALED)
@@ -26,7 +26,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.isSealed()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenOrderIsInDraft() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(DRAFT)
@@ -35,7 +35,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.isSealed()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenOrderIsRemovable() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(SEALED)
@@ -44,7 +44,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.isRemovable()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenOrderIsNotRemovable() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(DRAFT)
@@ -53,7 +53,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.isRemovable()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldSetDirectionsToAnEmptyList() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .directions(List.of(element(Direction.builder()
@@ -66,7 +66,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.getDirections()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnFixedUUID() {
         UUID expectedId = UUID.fromString("11111111-1111-1111-1111-111111111111");
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
@@ -74,7 +74,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.getCollectionId()).isEqualTo(expectedId);
     }
 
-    //@Test
+    @Test
     void shouldFormatStandardDirectionOrderAsLabelWithProvidedDateOfIssue() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .dateOfIssue("1 January 2020")
@@ -83,7 +83,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
     }
 
-    //@Test
+    @Test
     void shouldFormatStandardDirectionOrderAsLabelWithProvidedDateOfUpload() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .dateOfUpload(LocalDate.of(2020, 1, 1))
@@ -92,7 +92,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.asLabel()).isEqualTo("Gatekeeping order - 1 January 2020");
     }
 
-    //@Test
+    @Test
     void shouldFormatStandardDirectionOrderAsLabelWithoutProvidedDateOfIssue() {
         LocalDate now = LocalDate.of(2020, 1, 1);
         try (MockedStatic<LocalDate> date = mockStatic(LocalDate.class)) {
@@ -102,32 +102,32 @@ class StandardDirectionOrderTest {
         }
     }
 
-    //@Test
+    @Test
     void amendableSortDateDateOfUpload() {
         LocalDate date = LocalDate.of(1, 1, 1);
         StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfUpload(date).build();
         assertThat(sdo.amendableSortDate()).isEqualTo(date);
     }
 
-    //@Test
+    @Test
     void amendableSortDateDateOfIssue() {
         StandardDirectionOrder sdo = StandardDirectionOrder.builder().dateOfIssue("1 January 0001").build();
         assertThat(sdo.amendableSortDate()).isEqualTo(LocalDate.of(1, 1, 1));
     }
 
-    //@Test
+    @Test
     void amendableSortDateNull() {
         StandardDirectionOrder sdo = StandardDirectionOrder.builder().build();
         assertThat(sdo.amendableSortDate()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnAmendedOrderType() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder().build();
         assertThat(standardDirectionOrder.getModifiedItemType()).isEqualTo("Standard direction order");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOthers() {
         List<Element<Other>>  selectedOthers = List.of(element(testOther("Other 1")));
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
@@ -137,7 +137,7 @@ class StandardDirectionOrderTest {
         assertThat(standardDirectionOrder.getSelectedOthers()).isEqualTo(selectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoSelectedOthers() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .others(emptyList())

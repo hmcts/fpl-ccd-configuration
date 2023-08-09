@@ -45,7 +45,7 @@ class DocmosisDocumentGeneratorServiceTest {
     @Autowired
     private ObjectMapper mapper;
 
-    //@Test
+    @Test
     void shouldInvokesTornado() {
         Map<String, Object> placeholders = getTemplatePlaceholders();
 

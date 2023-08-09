@@ -17,7 +17,7 @@ class UploadTranslationsControllerAboutToStartTest extends AbstractCallbackTest 
         super("upload-translations");
     }
 
-    //@Test
+    @Test
     void shouldDisplayAllTranslatableOrdersAboutToStart() {
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(CASE_DATA_WITH_ALL_ORDERS));

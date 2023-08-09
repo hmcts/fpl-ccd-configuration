@@ -49,7 +49,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
         objectMapper,
         caseConverter);
 
-    //@Test
+    @Test
     void testIfNoCaseDataBefore() {
         when(objectMapper.convertValue(eq(SyntheticCaseSummary.emptySummary()),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
@@ -63,7 +63,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
-    //@Test
+    @Test
     void testIfCaseDataWithNoSummary() {
         when(objectMapper.convertValue(eq(SyntheticCaseSummary.emptySummary()),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
@@ -78,7 +78,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
-    //@Test
+    @Test
     void testIfCaseDataWithChangedSummary() {
         when(objectMapper.convertValue(eq(ANOTHER_SYNTHETIC_CASE_SUMMARY),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(
@@ -96,7 +96,7 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
     }
 
-    //@Test
+    @Test
     void testIfSummaryDidNotChage() {
         when(objectMapper.convertValue(eq(SYNTHETIC_CASE_SUMMARY),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(

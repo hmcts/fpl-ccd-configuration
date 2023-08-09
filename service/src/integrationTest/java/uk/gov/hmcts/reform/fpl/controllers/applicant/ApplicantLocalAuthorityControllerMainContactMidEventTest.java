@@ -26,7 +26,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
         super("enter-local-authority");
     }
 
-    //@Test
+    @Test
     void shouldMarkSelectedColleagueAsMainContact() {
 
         final int selectedColleagueIndex = 1;
@@ -76,7 +76,7 @@ class ApplicantLocalAuthorityControllerMainContactMidEventTest extends AbstractC
                     .build());
     }
 
-    //@Test
+    @Test
     void shouldChangeMainContactBasedOnUserSelection() {
 
         final int selectedColleagueIndex = 1;

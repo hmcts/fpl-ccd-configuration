@@ -32,7 +32,7 @@ class OtherRecipientsInboxTest {
     private static final UUID REPRESENTATIVE_ID_2 = UUID.randomUUID();
     private final OtherRecipientsInbox underTest = new OtherRecipientsInbox();
 
-    //@Test
+    @Test
     void testShouldReturnAllOtherRecipientsWhoAreRepresentedByEmail() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
@@ -66,7 +66,7 @@ class OtherRecipientsInboxTest {
         assertThat(allRecipients).contains(representingOther1, representingOther2);
     }
 
-    //@Test
+    @Test
     void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresentedByEmail() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
@@ -102,7 +102,7 @@ class OtherRecipientsInboxTest {
         assertThat(nonSelectedRecipients).containsOnly(representingOther2);
     }
 
-    //@Test
+    @Test
     void testShouldReturnEmptySetWhenNoRepresentedOthers() {
         Other firstOther = testOther("First other");
         Other secondOther = testOther("Second other");
@@ -124,7 +124,7 @@ class OtherRecipientsInboxTest {
         assertThat(nonSelectedRecipients).isEmpty();
     }
 
-    //@Test
+    @Test
     void testShouldReturnAllOtherNonSelectedRecipientsWhoAreRepresentedByPost() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
@@ -162,7 +162,7 @@ class OtherRecipientsInboxTest {
         assertThat(nonSelectedRecipients).containsOnly(representingOther2);
     }
 
-    //@Test
+    @Test
     void testNotShouldReturnNonSelectedRepresentativesNotRepresentingOther() {
         Respondent respondent = Respondent.builder()
             .representedBy(List.of(element(REPRESENTATIVE_ID_1)))
@@ -190,7 +190,7 @@ class OtherRecipientsInboxTest {
         assertThat(nonSelectedRecipients).isEmpty();
     }
 
-    //@Test
+    @Test
     void testShouldReturnSelectedRecipientsWithNoRepresentationWhenAddressPresent() {
         Other firstOther = testOther("First other");
         firstOther.addRepresentative(REPRESENTATIVE_ID_1);
@@ -204,7 +204,7 @@ class OtherRecipientsInboxTest {
         assertThat(recipients).containsOnly(secondOther.toParty());
     }
 
-    //@Test
+    @Test
     void testShouldReturnEmptyListWhenSelectedOthersHaveNoAddressPresent() {
         Other firstOther = Other.builder()
             .name("First other")
@@ -217,7 +217,7 @@ class OtherRecipientsInboxTest {
         assertThat(recipients).isEmpty();
     }
 
-    //@Test
+    @Test
     void testShouldReturnEmptyListWhenNoSelectedOthers() {
         List<Element<Other>> othersSelected = emptyList();
 

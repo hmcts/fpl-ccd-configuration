@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class DocumentsValidatorServiceTest {
     private DocumentsValidatorService documentsValidatorService = new DocumentsValidatorService();
 
-    //@Test
+    @Test
     void shouldGenerateErrorsWhenAdditionalDocumentsAreMissingTitleOrFile() {
         List<Element<DocumentSocialWorkOther>> additionalDocuments = wrapElements(
             DocumentSocialWorkOther.builder().typeOfDocument(testDocumentReference()).build(),
@@ -35,7 +35,7 @@ class DocumentsValidatorServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotGenerateErrorsWhenAdditionalDocumentsHaveNameAndFileAttached() {
         List<Element<DocumentSocialWorkOther>> additionalDocuments = wrapElements(
             DocumentSocialWorkOther.builder()

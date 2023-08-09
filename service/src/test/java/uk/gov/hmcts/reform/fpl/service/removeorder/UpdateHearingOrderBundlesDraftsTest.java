@@ -24,7 +24,7 @@ class UpdateHearingOrderBundlesDraftsTest {
 
     UpdateHearingOrderBundlesDrafts underTest = new UpdateHearingOrderBundlesDrafts();
 
-    //@Test
+    @Test
     void shouldRemoveFromHearingOrdersBundlesDraftsWhenOrdersInSelectedHearingBundleAreEmpty() {
         Element<HearingOrdersBundle> selectedBundle = element(
             HearingOrdersBundle.builder().orders(emptyList()).build());
@@ -44,7 +44,7 @@ class UpdateHearingOrderBundlesDraftsTest {
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(otherBundle));
     }
 
-    //@Test
+    @Test
     void shouldRemoveFromHearingOrdersBundleSuppliedWhenOrdersInSelectedHearingBundleAreEmpty() {
         Element<HearingOrdersBundle> selectedBundle = element(
             HearingOrdersBundle.builder().orders(emptyList()).build());
@@ -67,7 +67,7 @@ class UpdateHearingOrderBundlesDraftsTest {
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(otherBundle));
     }
 
-    //@Test
+    @Test
     void shouldReplaceHearingOrdersBundleWhenSelectedHearingBundleContainsOrders() {
         UUID selectedBundleId = UUID.randomUUID();
 
@@ -94,7 +94,7 @@ class UpdateHearingOrderBundlesDraftsTest {
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, updatedBundle));
     }
 
-    //@Test
+    @Test
     void shouldReplaceHearingOrdersBundleSuppliedWhenSelectedHearingBundleContainsOrders() {
         UUID selectedBundleId = UUID.randomUUID();
 

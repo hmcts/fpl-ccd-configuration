@@ -31,7 +31,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractCallbackTest
         super("notice-of-proceedings");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
@@ -43,7 +43,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractCallbackTest
         assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter Familyman case number");
     }
 
-    //@Test
+    @Test
     void shouldSetInitialNoticeOfHearingDataWhenRequiredDataIsPresentOnCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(

@@ -53,7 +53,7 @@ class RemovePlacementApplicationServiceTest {
     @InjectMocks
     private RemovePlacementApplicationService underTest;
 
-    //@Test
+    @Test
     void shouldBuildSortedDynamicList() {
         CaseData caseData = CaseData.builder()
             .placementEventData(PlacementEventData.builder()
@@ -71,7 +71,7 @@ class RemovePlacementApplicationServiceTest {
         assertThat(listOfPlacement).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldPopulatePlacementApplication() {
         CaseData caseData = CaseData.builder()
             .placementEventData(PlacementEventData.builder()
@@ -96,7 +96,7 @@ class RemovePlacementApplicationServiceTest {
         )));
     }
 
-    //@Test
+    @Test
     void shouldRemoveSelectedPlacementApplicationFromCase() {
         CaseData caseData = CaseData.builder()
             .placementEventData(PlacementEventData.builder()
@@ -134,7 +134,7 @@ class RemovePlacementApplicationServiceTest {
             )));
     }
 
-    //@Test
+    @Test
     void shouldRemoveSelectedPlacementApplicationFromCaseIfOnlyOnePlacementExist() {
         CaseData caseData = CaseData.builder()
             .placementEventData(PlacementEventData.builder()

@@ -34,7 +34,7 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
     @MockBean
     private FeesRegisterApi feesRegisterApi;
 
-    //@Test
+    @Test
     void shouldFetchPlacementFeeWhenPaymentIsRequired() {
 
         final DynamicList parentList1 = dynamicLists.from(0,
@@ -69,7 +69,7 @@ class PlacementNoticeSelectionMidEventTest extends AbstractPlacementControllerTe
         assertThat(actualPlacementData.getPlacementFee()).isEqualTo("45550");
     }
 
-    //@Test
+    @Test
     void shouldNoFetchPlacementFeeWhenPaymentHasBeenAlreadyTakenOnSameDay() {
 
         final DynamicList parentList1 = dynamicLists.from(0,

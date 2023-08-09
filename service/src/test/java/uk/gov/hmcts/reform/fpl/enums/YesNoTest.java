@@ -8,7 +8,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 class YesNoTest {
 
-    //@Test
+    @Test
     void shouldConvertBooleanToEnum() {
         assertThat(YesNo.from(true)).isEqualTo(YES);
         assertThat(YesNo.from(false)).isEqualTo(NO);

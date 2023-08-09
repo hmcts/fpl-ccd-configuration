@@ -36,7 +36,7 @@ class OthersServiceTest {
 
     private final OthersService service = new OthersService();
 
-    //@Test
+    @Test
     void shouldBuildExpectedOtherSelectorWhenNoOthers() {
         List<Other> allOthers = emptyList();
         List<Other> selectedOthers = emptyList();
@@ -47,7 +47,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo(expectedSelector);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedOtherSelectorWhenNoSelectedOthers() {
         List<Other> allOthers = List.of(Other.builder().build());
         List<Other> selectedOthers = emptyList();
@@ -58,7 +58,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo(expectedSelector);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedOtherSelectorWhenSingleSelectedOthers() {
         Other other = Other.builder().build();
         List<Other> allOthers = List.of(other);
@@ -70,7 +70,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo(expectedSelector);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedOtherSelectorWhenMultipleSelectedOthers() {
         Other firstOther = Other.builder().name("Huey").build();
         Other secondOther = Other.builder().name("Dewey").build();
@@ -85,7 +85,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo(expectedSelector);
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenSingleElementInList() {
         Others others = Others.builder()
             .firstOther(Other.builder()
@@ -98,7 +98,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo("Person 1 - James Daniels\n");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenSingleElementInListWithEmptyName() {
         Others others = Others.builder().firstOther(Other.builder().birthPlace("birth place").build()).build();
 
@@ -107,7 +107,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo("Person 1 - \n");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenManyElementsInList() {
         Others others = Others.builder()
             .firstOther(Other.builder().name("James Daniels").build())
@@ -119,7 +119,7 @@ class OthersServiceTest {
         assertThat(result).isEqualTo("Person 1 - James Daniels\nOther person 1 - Bob Martyn\n");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenManyElementsInListWithEmptyName() {
         Others others = Others.builder()
             .firstOther(Other.builder().birthPlace("birth place").build())
@@ -131,21 +131,21 @@ class OthersServiceTest {
         assertThat(result).isEqualTo("Person 1 - \nOther person 1 - \n");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenNull() {
         String result = service.buildOthersLabel(null);
 
         assertThat(result).isEqualTo("No others on the case");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenEmptyOthers() {
         String result = service.buildOthersLabel(Others.builder().build());
 
         assertThat(result).isEqualTo("No others on the case");
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyOthersWhenNoOthersInCaseData() {
         CaseData caseData = CaseData.builder().build();
 
@@ -154,7 +154,7 @@ class OthersServiceTest {
         assertThat(others).isEqualTo(Others.builder().additionalOthers(emptyList()).build());
     }
 
-    //@Test
+    @Test
     void shouldNotRemoveRepresentedByWhenPrepareConfidentialOthers() {
         List<Element<Other>> confidentialOthers = new ArrayList<>();
         Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
@@ -180,7 +180,7 @@ class OthersServiceTest {
         assertThat(others.getAdditionalOthers().get(0).getValue().getRepresentedBy()).hasSize(1);
     }
 
-    //@Test
+    @Test
     void shouldPrepareOthersWithConfidentialValuesWhenConfidentialOthersIsNotEmpty() {
         List<Element<Other>> additionalOthersList = othersWithConfidentialFields(randomUUID());
 
@@ -194,7 +194,7 @@ class OthersServiceTest {
         assertThat(others.getFirstOther()).isEqualTo(confidentialOthers.get(0).getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnOtherWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialOther() {
         Other firstOther = othersWithRemovedConfidentialFields().get(0).getValue();
         List<Element<Other>> additionalOther = othersWithRemovedConfidentialFields();
@@ -207,7 +207,7 @@ class OthersServiceTest {
         assertThat(others.getAdditionalOthers()).containsOnly(additionalOther.get(0));
     }
 
-    //@Test
+    @Test
     void shouldAddExpectedOtherWhenHiddenDetailsMarkedAsNo() {
         Other firstOther = otherWithDetailsHiddenValue("No");
         List<Element<Other>> confidentialOther = othersWithConfidentialFields(ID);
@@ -220,7 +220,7 @@ class OthersServiceTest {
         assertThat(others.getAdditionalOthers()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldMaintainOrderingOfOthersWhenPreparingOthersWithConfidential() {
         UUID otherId = randomUUID();
 
@@ -244,7 +244,7 @@ class OthersServiceTest {
         assertThat(updatedOthers.getAdditionalOthers().get(1).getValue()).isEqualTo(others.get(1).getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnAllOthersWhenUseAllOthers() {
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
@@ -260,7 +260,7 @@ class OthersServiceTest {
         assertThat(selectedOthers.get(1).getValue()).isEqualTo(caseData.getAllOthers().get(1).getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenSelectorIsNull() {
         CaseData caseData = CaseData.builder()
             .sendOrderToAllOthers("No")
@@ -272,7 +272,7 @@ class OthersServiceTest {
         assertThat(selectedOthers).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenSelectedIsEmpty() {
         CaseData caseData = CaseData.builder()
             .othersSelector(Selector.builder().selected(emptyList()).build())
@@ -284,13 +284,13 @@ class OthersServiceTest {
         assertThat(selectedOthers).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenEmptyList() {
         String label = service.getOthersLabel(List.of());
         assertThat(label).isEqualTo("");
     }
 
-    //@Test
+    @Test
     void shouldBuildExpectedLabelWhenPopulatedList() {
         List<Element<Other>> others = List.of(element(testOther("First other")),
             element(testOther("Second other")));
@@ -300,7 +300,7 @@ class OthersServiceTest {
             + "Other 2: Second other\n");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOthersOnly() {
         int selectedOther = 1;
         CaseData caseData = CaseData.builder()
@@ -396,7 +396,7 @@ class OthersServiceTest {
         return builder.build();
     }
 
-    //@Test
+    @Test
     void shouldReturnNullWhenThereIsNoOtherPerson() {
         CaseData caseData = CaseData.builder().build();
         Element<Other> selected = service.getSelectedPreparedOther(caseData, buildSingleSelector(0));
@@ -406,7 +406,7 @@ class OthersServiceTest {
         assertThat(selected).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOtherPersonWithoutAdditionalOthers() {
         Others others = Others.builder()
             .firstOther(Other.builder().name("First Other").build())
@@ -424,7 +424,7 @@ class OthersServiceTest {
         assertThat(selected.getValue().getName()).isEqualTo("First Other");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedFirstOtherWithProvidedFirstUUID() {
         Others others = Others.builder()
             .firstOther(Other.builder().name("First Other").build())
@@ -468,7 +468,7 @@ class OthersServiceTest {
         assertThat(selected.getValue().getName()).isEqualTo(expectedName);
     }
 
-    //@Test
+    @Test
     void shouldReturnUnchanged() {
         Other firstOther = Other.builder()
             .name("First Other")
@@ -483,7 +483,7 @@ class OthersServiceTest {
         assertThat(updatedOthers.getFirstOther()).isEqualTo(firstOther);
     }
 
-    //@Test
+    @Test
     void shouldRemoveAddress() {
         Other firstOther = Other.builder()
             .name("First Other")
@@ -499,7 +499,7 @@ class OthersServiceTest {
         assertThat(updatedOthers.getFirstOther().getAddress()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldRemoveAddressNotKnowReason() {
         Other firstOther = Other.builder()
             .name("First Other")

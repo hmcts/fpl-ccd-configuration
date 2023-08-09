@@ -38,7 +38,7 @@ class UpdateCMOHearingTest {
 
     private final UpdateCMOHearing underTest = new UpdateCMOHearing();
 
-    //@Test
+    @Test
     void shouldReturnTheHearingForTheCMOId() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingBooking hearingWithCMOId = hearing(CMO_ID, differentStartDate);
@@ -66,7 +66,7 @@ class UpdateCMOHearingTest {
             .isEqualTo(hearingWithCMOId);
     }
 
-    //@Test
+    @Test
     void shouldReturnLinkedCMOByLabel() {
         Element<HearingBooking> hearingWithCMOId = element(CMO_ID, HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -87,7 +87,7 @@ class UpdateCMOHearingTest {
             .isEqualTo(hearingWithCMOId.getValue());
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenNoHearingFoundForTheCMOId() {
         HearingBooking hearingWithCMOId = hearing(CMO_ID, HEARING_START_DATE);
 
@@ -110,7 +110,7 @@ class UpdateCMOHearingTest {
                 + "(%s links found) to a hearing with the same label", ANOTHER_CMO_ID, 0));
     }
 
-    //@Test
+    @Test
     void shouldReturnTheHearingWhenCancelledForTheCMOId() {
         Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
         Element<HearingBooking> vacatedHearing = element(hearing(ANOTHER_CMO_ID, HEARING_START_DATE,
@@ -130,7 +130,7 @@ class UpdateCMOHearingTest {
             .isEqualTo(vacatedHearing.getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnLinkedCMOByLabelForCancelledHearing() {
         Element<HearingBooking> hearingBooking = element(hearing(CMO_ID, HEARING_START_DATE));
         Element<HearingBooking> vacatedHearing = element(ANOTHER_CMO_ID, HearingBooking.builder()
@@ -154,7 +154,7 @@ class UpdateCMOHearingTest {
             .isEqualTo(vacatedHearing.getValue());
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingLinkedToCMO() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingBooking hearingWithCMOId = hearing(CMO_ID, differentStartDate);
@@ -183,7 +183,7 @@ class UpdateCMOHearingTest {
             .contains(element(ANOTHER_HEARING_ID, anotherHearing));
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingLinkedToCancelledCMO() {
         HearingBooking cancelledHearing = hearing(CMO_ID, HEARING_START_DATE, VACATED);
         HearingBooking hearing = hearing(ANOTHER_CMO_ID, HEARING_START_DATE.plusDays(4));

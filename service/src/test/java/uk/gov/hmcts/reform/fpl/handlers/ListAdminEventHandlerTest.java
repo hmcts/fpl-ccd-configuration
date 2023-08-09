@@ -36,7 +36,7 @@ class ListAdminEventHandlerTest {
     @InjectMocks
     private ListAdminEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldNotifyCourtAdminWhenJudgeRequestListingForSDO() {
         CaseData caseData = CaseData.builder()
             .id(1123L)
@@ -72,7 +72,7 @@ class ListAdminEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyCourtAdminWhenJudgeRequestListingForUDO() {
         CaseData caseData = CaseData.builder()
             .id(1123L)
@@ -108,7 +108,7 @@ class ListAdminEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyCourtAdminWhenJudgeHasCompletedListing() {
         CaseData caseData = CaseData.builder()
             .id(1123L)

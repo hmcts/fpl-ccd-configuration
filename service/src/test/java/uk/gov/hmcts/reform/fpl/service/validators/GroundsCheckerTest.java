@@ -34,7 +34,7 @@ class GroundsCheckerTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenNoGroundsForApplication() {
         final CaseData caseData = CaseData.builder().build();
 
@@ -45,7 +45,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenNoGroundsForApplicationDetails() {
         final Grounds grounds = Grounds.builder().build();
         final CaseData caseData = CaseData.builder()
@@ -62,7 +62,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsForApplicationAreProvided() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
@@ -79,7 +79,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenEpoOrderRequestedButNoGroundsProvided() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
@@ -99,7 +99,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedEpoOrder() {
         final Grounds grounds = Grounds.builder()
                 .thresholdReason(List.of("Beyond parental control"))
@@ -123,7 +123,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRequestedChildAssessmentOrder() {
         final GroundsForChildAssessmentOrder grounds = GroundsForChildAssessmentOrder.builder()
             .thresholdDetails("Custom details")
@@ -142,7 +142,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenChildAssessmentOrderRequestedButNoGroundsProvided() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
@@ -157,7 +157,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForSecureAccommodationOrder() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
@@ -175,7 +175,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenGroundsNotProvidedForSecureAccommodationOrder() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER)).build())
@@ -192,7 +192,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForRefuseContactWithChild() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.REFUSE_CONTACT_WITH_CHILD)).build())
@@ -211,7 +211,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenGroundsNotProvidedForRefuseContactWithChild() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.REFUSE_CONTACT_WITH_CHILD)).build())
@@ -232,7 +232,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForContactWithChildInCare() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.CONTACT_WITH_CHILD_IN_CARE)).build())
@@ -251,7 +251,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenGroundsNotProvidedForContactWithChildInCare() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.CONTACT_WITH_CHILD_IN_CARE)).build())
@@ -272,7 +272,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenGroundsProvidedForEducationSupervisionOrder() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder().orderType(List.of(OrderType.EDUCATION_SUPERVISION_ORDER)).build())
@@ -287,7 +287,7 @@ class GroundsCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenEducationSupervisionOrderRequestedButNoGroundsProvided() {
         final CaseData caseData = CaseData.builder()
             .orders(Orders.builder()

@@ -33,7 +33,7 @@ class CaseProgressReportControllerAboutToSubmitTest extends AbstractCallbackTest
         super("case-progression-report");
     }
 
-    //@Test
+    @Test
     void shouldCleanUpCaseProgressionReport() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")

@@ -43,7 +43,7 @@ class TranslatableListItemProvidersTest {
         translatableRespondentStatementsProvider
     );
 
-    //@Test
+    @Test
     void testGetAll() {
         assertThat(underTest.getAll()).isEqualTo(List.of(
             translatableGeneratedOrderListItemProvider,

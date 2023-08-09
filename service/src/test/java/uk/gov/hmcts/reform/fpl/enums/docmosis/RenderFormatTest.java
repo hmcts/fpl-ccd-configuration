@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.fromFileName;
 
 class RenderFormatTest {
 
-    //@Test
+    @Test
     void testFromNonRecognised() {
         assertThatThrownBy(() -> fromFileName("a.txt"))
             .isInstanceOf(IllegalArgumentException.class)

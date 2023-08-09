@@ -11,14 +11,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LookupConfigParserTest {
 
-    //@Test
+    @Test
     void parseStringValueShouldThrowExceptionWhenMappingIsEmpty() {
         assertThatThrownBy(() -> {
             LookupConfigParser.parseStringValue("");
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("Mapping configuration cannot be empty");
     }
 
-    //@Test
+    @Test
     void parseStringValueShouldReturnCorrectLookupTableWhenOnlyOneMappingExists() {
         Map<String, String> result = LookupConfigParser.parseStringValue("SA=>Swansea");
 
@@ -27,7 +27,7 @@ class LookupConfigParserTest {
             .containsEntry("SA", "Swansea");
     }
 
-    //@Test
+    @Test
     void parseStringValueShouldReturnCorrectLookupTableWhenMoreThenOneMappingExists() {
         Map<String, String> result = LookupConfigParser.parseStringValue("SA=>Swansea;HN=>Hillingdon");
 
@@ -37,14 +37,14 @@ class LookupConfigParserTest {
             .containsEntry("HN", "Hillingdon");
     }
 
-    //@Test
+    @Test
     void parseStringListValue() {
         assertThatThrownBy(() -> {
             LookupConfigParser.parseStringListValue("");
         }).isInstanceOf(IllegalArgumentException.class).hasMessage("Mapping configuration cannot be empty");
     }
 
-    //@Test
+    @Test
     void parseStringListValueShouldReturnCorrectLookupTableWhenOnlyOneMappingExists() {
         Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1,2|3|4");
 
@@ -53,7 +53,7 @@ class LookupConfigParserTest {
             .containsEntry("SA", ImmutableList.of("1,2", "3", "4"));
     }
 
-    //@Test
+    @Test
     void parseStringListValueShouldReturnCorrectLookupTableWhenMoreThenOneMappingExists() {
         Map<String, List<String>> result = LookupConfigParser.parseStringListValue("SA=>1|2|3;HN=>4|5, 6|7");
 

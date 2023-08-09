@@ -54,7 +54,7 @@ class C2PbaPaymentNotTakenEventHandlerTest {
     @Autowired
     private C2PbaPaymentNotTakenEventHandler c2PbaPaymentNotTakenEventHandler;
 
-    //@Test
+    @Test
     void shouldNotifyAdminWhenUploadedC2IsNotUsingPbaPayment() {
         CaseData caseData = caseData();
 
@@ -68,7 +68,7 @@ class C2PbaPaymentNotTakenEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscAdminWhenUploadedC2IsNotUsingPbaPaymentAndCtscIsEnabled() {
         CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())

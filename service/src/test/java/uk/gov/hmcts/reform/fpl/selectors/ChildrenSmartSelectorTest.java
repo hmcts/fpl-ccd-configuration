@@ -43,7 +43,7 @@ class ChildrenSmartSelectorTest {
             mockPlacementService);
     }
 
-    //@Test
+    @Test
     void shouldCallChildrenServiceWhenSingleChildSelectorIsDisabled() {
         CaseData incomingCaseData = CaseData.builder().build();
         List<Element<Child>> expectedSelectedChildren = asList(element(Child.builder().build()));
@@ -55,7 +55,7 @@ class ChildrenSmartSelectorTest {
         verify(mockChildrenService).getSelectedChildren(incomingCaseData);
     }
 
-    //@Test
+    @Test
     void shouldReturnListWithSingleSelectedChildWhenSingleChildSelectionIsOn() {
         Element<Child> firstChild = testChild();
         Element<Child> secondChild = testChild();
@@ -83,7 +83,7 @@ class ChildrenSmartSelectorTest {
         verify(mockChildrenService, never()).getSelectedChildren(incomingCaseData);
     }
 
-    //@Test
+    @Test
     void shouldRetrieveChildFromSelectedPlacement_WhenThisChildPlacementSelectionIsOn() {
         UUID selectedPlacementId = UUID.randomUUID();
         CaseData caseData = CaseData.builder()

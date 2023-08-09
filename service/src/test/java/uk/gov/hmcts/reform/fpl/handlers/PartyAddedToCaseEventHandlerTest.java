@@ -67,7 +67,7 @@ class PartyAddedToCaseEventHandlerTest {
             .willReturn(DIGITAL_REP_NOTIFY_DATA);
     }
 
-    //@Test
+    @Test
     void notifyParties() {
         underTest.notifyParties(new PartyAddedToCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 

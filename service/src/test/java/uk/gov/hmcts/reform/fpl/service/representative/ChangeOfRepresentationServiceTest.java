@@ -85,7 +85,7 @@ class ChangeOfRepresentationServiceTest {
         when(time.now()).thenReturn(TODAY.atStartOfDay());
     }
 
-    //@Test
+    @Test
     void testAddingRepresentativeWhenNotRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
@@ -105,7 +105,7 @@ class ChangeOfRepresentationServiceTest {
 
     }
 
-    //@Test
+    @Test
     void testAddingRepresentativeChangedRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
@@ -126,7 +126,7 @@ class ChangeOfRepresentationServiceTest {
 
     }
 
-    //@Test
+    @Test
     void testAddingRepresentativeRemovedRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
             ChangeOfRepresentationRequest.builder()
@@ -147,7 +147,7 @@ class ChangeOfRepresentationServiceTest {
 
     }
 
-    //@Test
+    @Test
     void testAddingRepresentativeOrderByDateAsc() {
         Element<ChangeOfRepresentation> yesterdayChange = element(ANOTHER_UUID, changeOfRepresentation()
             .date(TODAY.minusDays(1))

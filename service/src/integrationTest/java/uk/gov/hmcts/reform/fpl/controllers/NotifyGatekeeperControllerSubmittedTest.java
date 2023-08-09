@@ -34,7 +34,7 @@ class NotifyGatekeeperControllerSubmittedTest extends AbstractCallbackTest {
         super("notify-gatekeeper");
     }
 
-    //@Test
+    @Test
     void shouldNotifyMultipleGatekeepers() throws Exception {
         postSubmittedEvent(callbackRequest());
 

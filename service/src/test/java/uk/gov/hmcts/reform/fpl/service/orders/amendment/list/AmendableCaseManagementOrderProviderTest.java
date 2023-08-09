@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class AmendableCaseManagementOrderProviderTest {
     private final AmendableCaseManagementOrderProvider underTest = new AmendableCaseManagementOrderProvider();
 
-    //@Test
+    @Test
     void provideListItems() {
         CaseData caseData = mock(CaseData.class);
         List<Element<HearingOrder>> orders = wrapElements(mock(HearingOrder.class), mock(HearingOrder.class));

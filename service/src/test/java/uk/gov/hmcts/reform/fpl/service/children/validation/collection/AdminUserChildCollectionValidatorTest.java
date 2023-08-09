@@ -38,7 +38,7 @@ class AdminUserChildCollectionValidatorTest {
     private final AdminUserChildCollectionValidator underTest = new AdminUserChildCollectionValidator(user);
 
     @DisplayName("Accept users that are admins when section is COLLECTION")
-    //@Test
+    @Test
     void acceptsAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(true);
 
@@ -46,7 +46,7 @@ class AdminUserChildCollectionValidatorTest {
     }
 
     @DisplayName("Reject users that are not admins when section is COLLECTION")
-    //@Test
+    @Test
     void acceptsNonAdmin() {
         when(user.isHmctsAdminUser()).thenReturn(false);
 
@@ -63,7 +63,7 @@ class AdminUserChildCollectionValidatorTest {
     }
 
     @DisplayName("Validate with no errors when nothing changes")
-    //@Test
+    @Test
     void validateNoChange() {
         when(caseData.getAllChildren()).thenReturn(List.of(child1Element));
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element));
@@ -72,7 +72,7 @@ class AdminUserChildCollectionValidatorTest {
     }
 
     @DisplayName("Validate with no errors when a child is added")
-    //@Test
+    @Test
     void validateAdded() {
         when(caseData.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element));
@@ -81,7 +81,7 @@ class AdminUserChildCollectionValidatorTest {
     }
 
     @DisplayName("Validate with errors when a child is removed")
-    //@Test
+    @Test
     void validateRemoved() {
         when(caseData.getAllChildren()).thenReturn(List.of());
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element, child2Element));
@@ -97,7 +97,7 @@ class AdminUserChildCollectionValidatorTest {
     }
 
     @DisplayName("Validate with no errors when a child is updated")
-    //@Test
+    @Test
     void validateUpdated() {
         when(caseData.getAllChildren()).thenReturn(List.of(child1Element, element(child2Id, child1)));
         when(caseDataBefore.getAllChildren()).thenReturn(List.of(child1Element, child2Element));

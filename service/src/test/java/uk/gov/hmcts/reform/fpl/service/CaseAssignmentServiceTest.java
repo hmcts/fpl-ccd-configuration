@@ -59,7 +59,7 @@ class CaseAssignmentServiceTest {
     @InjectMocks
     private CaseAssignmentService underTest;
 
-    //@Test
+    @Test
     void shouldCallCaseAssignmentAsLoggedUser() {
         when(requestData.authorisation()).thenReturn(USER_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
@@ -74,7 +74,7 @@ class CaseAssignmentServiceTest {
         verify(caseAssignmentApi).applyDecision(USER_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
     }
 
-    //@Test
+    @Test
     void shouldCallCaseAssignmentAsSystemUser() {
         when(systemUserService.getSysUserToken()).thenReturn(SYSTEM_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
@@ -89,7 +89,7 @@ class CaseAssignmentServiceTest {
         verify(caseAssignmentApi).applyDecision(SYSTEM_TOKEN, SERVICE_TOKEN, decisionRequest(caseDetails));
     }
 
-    //@Test
+    @Test
     void shouldBuildReplacementRequestsAndCallCaseAssignmentAsSystemUser() {
         when(systemUserService.getSysUserToken()).thenReturn(SYSTEM_TOKEN);
         when(tokenGenerator.generate()).thenReturn(SERVICE_TOKEN);

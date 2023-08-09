@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData.builder;
 
 class UploadDraftOrdersDataTest {
 
-    //@Test
+    @Test
     void shouldReturnTemporaryFields() {
         assertThat(UploadDraftOrdersData.temporaryFields())
             .containsExactlyInAnyOrder(
@@ -67,7 +67,7 @@ class UploadDraftOrdersDataTest {
             );
     }
 
-    //@Test
+    @Test
     void shouldReturnIsCmoAgreedBasedOnCmoUploadType() {
         assertThat(builder().cmoUploadType(AGREED).build().isCmoAgreed()).isTrue();
         assertThat(builder().cmoUploadType(DRAFT).build().isCmoAgreed()).isFalse();
@@ -77,7 +77,7 @@ class UploadDraftOrdersDataTest {
     @Nested
     class GetOrderToSendTranslationRequirements {
 
-        //@Test
+        @Test
         void testEmpty() {
 
             UploadDraftOrdersData underTest = builder().build();
@@ -88,7 +88,7 @@ class UploadDraftOrdersDataTest {
 
         }
 
-        //@Test
+        @Test
         void testNotEmpty() {
 
             UploadDraftOrdersData underTest = builder()
@@ -109,7 +109,7 @@ class UploadDraftOrdersDataTest {
             );
         }
 
-        //@Test
+        @Test
         void testPartialOverBoundary() {
 
             UploadDraftOrdersData underTest = builder()
@@ -139,7 +139,7 @@ class UploadDraftOrdersDataTest {
         final DynamicList futureHearing = dynamicList();
         final DynamicList allHearings = dynamicList();
 
-        //@Test
+        @Test
         void shouldReturnPastHearingsWhenAgreedCmoSelected() {
             final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(pastHearing)
@@ -152,7 +152,7 @@ class UploadDraftOrdersDataTest {
             assertThat(uploadDraftOrdersData.getHearingDynamicList()).isEqualTo(pastHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnFutureHearingsWhenDraftCmoSelected() {
             final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(pastHearing)
@@ -165,7 +165,7 @@ class UploadDraftOrdersDataTest {
             assertThat(uploadDraftOrdersData.getHearingDynamicList()).isEqualTo(futureHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnAllHearingsWhenDraftOrderSelected() {
             final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(pastHearing)
@@ -177,7 +177,7 @@ class UploadDraftOrdersDataTest {
             assertThat(uploadDraftOrdersData.getHearingDynamicList()).isEqualTo(allHearings);
         }
 
-        //@Test
+        @Test
         void shouldReturnPastHearingsWhenAgreedCmoAndDraftOrdersSelected() {
             final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(pastHearing)
@@ -190,7 +190,7 @@ class UploadDraftOrdersDataTest {
             assertThat(uploadDraftOrdersData.getHearingDynamicList()).isEqualTo(pastHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnPastHearingsWhenDraftCmoAndDraftOrdersSelected() {
             final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
                 .pastHearingsForCMO(pastHearing)

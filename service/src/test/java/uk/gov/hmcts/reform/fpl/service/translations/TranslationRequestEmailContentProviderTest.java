@@ -10,7 +10,7 @@ class TranslationRequestEmailContentProviderTest {
 
     private final TranslationRequestEmailContentProvider underTest = new TranslationRequestEmailContentProvider();
 
-    //@Test
+    @Test
     void testEnglishToWelsh() {
         String actual = underTest.generate(LanguageTranslationRequirement.ENGLISH_TO_WELSH);
 
@@ -26,7 +26,7 @@ class TranslationRequestEmailContentProviderTest {
                 + ".gov.uk");
     }
 
-    //@Test
+    @Test
     void testWelshToEnglish() {
         String actual = underTest.generate(LanguageTranslationRequirement.WELSH_TO_ENGLISH);
 
@@ -42,7 +42,7 @@ class TranslationRequestEmailContentProviderTest {
                 + ".gov.uk");
     }
 
-    //@Test
+    @Test
     void tesNoTranslation() {
         assertThrows(IllegalArgumentException.class, () -> underTest.generate(LanguageTranslationRequirement.NO));
     }

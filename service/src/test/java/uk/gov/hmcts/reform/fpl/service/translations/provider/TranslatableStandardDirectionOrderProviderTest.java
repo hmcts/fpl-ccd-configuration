@@ -35,7 +35,7 @@ class TranslatableStandardDirectionOrderProviderTest {
     @Nested
     class ProvideListItems {
 
-        //@Test
+        @Test
         void getSealedOrder() {
             StandardDirectionOrder order = StandardDirectionOrder.builder().orderStatus(OrderStatus.SEALED).build();
 
@@ -47,7 +47,7 @@ class TranslatableStandardDirectionOrderProviderTest {
 
         }
 
-        //@Test
+        @Test
         void getItemsIfNonSealeOrder() {
 
             StandardDirectionOrder order = StandardDirectionOrder.builder().orderStatus(OrderStatus.PLAIN).build();
@@ -59,7 +59,7 @@ class TranslatableStandardDirectionOrderProviderTest {
             assertThat(actual).isEqualTo(List.of());
         }
 
-        //@Test
+        @Test
         void getItemsIfNoOrder() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -73,7 +73,7 @@ class TranslatableStandardDirectionOrderProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -92,7 +92,7 @@ class TranslatableStandardDirectionOrderProviderTest {
     @Nested
     class Accept {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder().build(), StandardDirectionOrder.COLLECTION_ID);
@@ -101,7 +101,7 @@ class TranslatableStandardDirectionOrderProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder().build(), SELECTED_ORDER_ID);
 
@@ -114,7 +114,7 @@ class TranslatableStandardDirectionOrderProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        //@Test
+        @Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);

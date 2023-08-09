@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.isHmctsUser;
 
 class UserRolesTest {
 
-    //@Test
+    @Test
     void shouldProduceAllIdamRoles() {
 
         List<String> standardRoles = List.of("caseworker", "caseworker-publiclaw");
@@ -36,7 +36,7 @@ class UserRolesTest {
             .contains("caseworker-publiclaw-solicitor");
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueIfUserIsOfHmctsRole() {
         assertThat(isHmctsUser("caseworker-publiclaw-courtadmin")).isTrue();
         assertThat(isHmctsUser("caseworker-publiclaw-gatekeeper")).isTrue();
@@ -44,7 +44,7 @@ class UserRolesTest {
         assertThat(isHmctsUser("caseworker-publiclaw-judiciary")).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfUserIsNotOfHmctsRole() {
         assertThat(isHmctsUser("caseworker-publiclaw-cafcass")).isFalse();
         assertThat(isHmctsUser("caseworker-publiclaw-solicitor")).isFalse();

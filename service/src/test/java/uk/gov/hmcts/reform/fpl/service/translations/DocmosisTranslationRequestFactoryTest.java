@@ -36,7 +36,7 @@ class DocmosisTranslationRequestFactoryTest {
     private final DocmosisTranslationRequestFactory underTest = new DocmosisTranslationRequestFactory(time,
         documentWordCounter);
 
-    //@Test
+    @Test
     void testEnglishToWelsh() {
         when(time.now()).thenReturn(NOW);
         when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenReturn(WORD_COUNT);
@@ -55,7 +55,7 @@ class DocmosisTranslationRequestFactoryTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testWelshToEnglish() {
         when(time.now()).thenReturn(NOW);
         when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenReturn(WORD_COUNT);
@@ -74,7 +74,7 @@ class DocmosisTranslationRequestFactoryTest {
             .build());
     }
 
-    //@Test
+    @Test
     void tesIfCounterFails() {
         when(time.now()).thenReturn(NOW);
         when(documentWordCounter.count(DOCUMENT_CONTENT, FILENAME)).thenThrow(new RuntimeException("Boom!"));

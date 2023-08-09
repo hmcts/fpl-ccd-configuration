@@ -36,12 +36,12 @@ class CloseCaseBlockPrePopulatorTest {
     @InjectMocks
     private CloseCaseBlockPrePopulator underTest;
 
-    //@Test
+    @Test
     void shouldAcceptCloseCaseQuestionBlock() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.CLOSE_CASE);
     }
 
-    //@Test
+    @Test
     void shouldAllowCaseClosureWhenOrderIsFinalAndAllChildrenHaveFinalOrders() {
         final CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -60,7 +60,7 @@ class CloseCaseBlockPrePopulatorTest {
         assertThat(actual).containsExactly(entry(ORDER_QUESTION, expectedOrderQuestions));
     }
 
-    //@Test
+    @Test
     void shouldNotAllowCaseClosureWhenOrderIsFinalButNotAllChildrenHaveFinalOrders() {
         final CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -78,7 +78,7 @@ class CloseCaseBlockPrePopulatorTest {
         assertThat(actual).containsExactly(entry(ORDER_QUESTION, expectedOrderQuestions));
     }
 
-    //@Test
+    @Test
     void shouldNotAllowCaseClosureWhenOrderIsNotFinal() {
         final CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -97,7 +97,7 @@ class CloseCaseBlockPrePopulatorTest {
         assertThat(actual).containsExactly(entry(ORDER_QUESTION, expectedOrderQuestions));
     }
 
-    //@Test
+    @Test
     void shouldAllowCaseClosureWhenUserDecidedOrderIsFinalAndAllChildrenHaveFinalOrders() {
 
         final CaseData caseData = CaseData.builder()
@@ -118,7 +118,7 @@ class CloseCaseBlockPrePopulatorTest {
         assertThat(actual).containsExactly(entry(ORDER_QUESTION, expectedOrderQuestions));
     }
 
-    //@Test
+    @Test
     void shouldNotAllowCaseClosureWhenUserDecidedOrderIsNotFinalAndAllChildrenHaveFinalOrders() {
         final CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -138,7 +138,7 @@ class CloseCaseBlockPrePopulatorTest {
         assertThat(actual).containsExactly(entry(ORDER_QUESTION, expectedOrderQuestions));
     }
 
-    //@Test
+    @Test
     void shouldNotAllowCaseClosureWhenUserDecidedOrderIsFinalButNotAllChildrenHaveFinalOrders() {
         final CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()

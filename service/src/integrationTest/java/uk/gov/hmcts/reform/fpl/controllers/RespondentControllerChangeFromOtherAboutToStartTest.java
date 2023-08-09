@@ -34,7 +34,7 @@ class RespondentControllerChangeFromOtherAboutToStartTest extends AbstractCallba
         given(requestData.userRoles()).willReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
     }
 
-    //@Test
+    @Test
     void aboutToStartShouldPrePopulateOthersList() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())
@@ -47,7 +47,7 @@ class RespondentControllerChangeFromOtherAboutToStartTest extends AbstractCallba
         assertThat(callbackResponse.getData()).containsKey("othersList");
     }
 
-    //@Test
+    @Test
     void aboutToStartShouldReturnErrorsWhenNoOthersInCase() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(RandomUtils.nextLong())

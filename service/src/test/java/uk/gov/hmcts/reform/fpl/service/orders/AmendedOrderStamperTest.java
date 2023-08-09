@@ -39,7 +39,7 @@ class AmendedOrderStamperTest {
         downloadService, new FixedTime(LocalDateTime.of(FIXED_DATE, LocalTime.MIDNIGHT))
     );
 
-    //@Test
+    @Test
     void amendedPDF() {
         final byte[] inputBinaries = readBytes("documents/document.pdf");
         final byte[] outputBinaries = readBytes("documents/document-amended.pdf");
@@ -55,7 +55,7 @@ class AmendedOrderStamperTest {
         assertThat(amendedPDF).isEqualTo(outputBinaries);
     }
 
-    //@Test
+    @Test
     void amendedPDFShouldThrowErrorWhenInputFileIsNotPDF() {
         DocumentReference inputPDF = mock(DocumentReference.class);
         when(inputPDF.getFilename()).thenReturn("some_file.xyz");
@@ -65,7 +65,7 @@ class AmendedOrderStamperTest {
             .hasMessage("Can only amend documents that are pdf, requested document was of type: xyz");
     }
 
-    //@Test
+    @Test
     void amendedPDFShouldLogAndThrowErrorWhenInputFileIsCorruptedPDF() {
         DocumentReference inputPDF = mock(DocumentReference.class);
 
@@ -78,7 +78,7 @@ class AmendedOrderStamperTest {
         assertThat(logs.getErrors()).isEqualTo(List.of("Could not add amendment text to " + inputPDF));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsPasswordProtectedPdf() {
         final String fileName = "test.pdf";
 
@@ -92,7 +92,7 @@ class AmendedOrderStamperTest {
             underTest.amendDocument(inputDocumentReference));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsKeyEncryptedPdf() {
         final String fileName = "test.pdf";
 

@@ -44,7 +44,7 @@ class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Autowired
     private DraftOrdersRejectedEventHandler underTest;
 
-    //@Test
+    @Test
     void notifyLA() {
         UUID lastHearingId = UUID.randomUUID();
 

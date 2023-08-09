@@ -25,7 +25,7 @@ class ModifiedItemEmailContentProviderStrategyTest {
         translatedItemEmailContentProvider
     );
 
-    //@Test
+    @Test
     void providerForAmendedOrderEvent() {
         ModifiedItemEmailContentProviderResponse actual =
             underTest.getEmailContentProvider(mock(AmendedOrderEvent.class));
@@ -36,7 +36,7 @@ class ModifiedItemEmailContentProviderStrategyTest {
             .build());
     }
 
-    //@Test
+    @Test
     void providerForTranslationUploadEvent() {
         ModifiedItemEmailContentProviderResponse actual =
             underTest.getEmailContentProvider(mock(TranslationUploadedEvent.class));
@@ -47,7 +47,7 @@ class ModifiedItemEmailContentProviderStrategyTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testNoProviderImplemented() {
         ModifiedDocumentEvent orderEvent = mock(ModifiedDocumentEvent.class);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

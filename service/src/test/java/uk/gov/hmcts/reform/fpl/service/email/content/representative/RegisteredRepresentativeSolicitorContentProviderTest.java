@@ -89,7 +89,7 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
             .isEqualTo(buildRegisteredSolicitorTemplate(expectedSalutation, format("%s %s", FIRST_NAME, LAST_NAME)));
     }
 
-    //@Test
+    @Test
     void shouldReturnMultipleRepresentatives() {
         when(representable.getSolicitor()).thenReturn(solicitor);
         when(representable2.getSolicitor()).thenReturn(solicitor2);
@@ -107,7 +107,7 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
             .isEqualTo(buildRegisteredSolicitorTemplate("Dear John Smith", "Dave Davidson, Daisy Davidson"));
     }
 
-    //@Test
+    @Test
     void shouldReturnExpectedMapWithEmptyRepresentableName() {
         when(representable.toParty()).thenReturn(null);
         when(representable2.toParty()).thenReturn(party2);

@@ -37,14 +37,14 @@ class DocumentUploadHelperTest {
         when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
     }
 
-    //@Test
+    @Test
     void shouldReturnUploadedDocumentUserRoleForUserWithHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
             Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary")));
         assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("HMCTS");
     }
 
-    //@Test
+    @Test
     void shouldReturnUploadedDocumentUserEmailForUserWithNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
             Arrays.asList("caseworker-publiclaw-solicitor", "caseworker-publiclaw-cafcass")
@@ -52,7 +52,7 @@ class DocumentUploadHelperTest {
         assertThat(documentUploadHelper.getUploadedDocumentUserDetails()).isEqualTo("steve.hudson@gov.uk");
     }
 
-    //@Test
+    @Test
     void shouldReturnUploadedDocumentUserRoleForUserWithHmctsAndNonHmctsRole() {
         when(idamClient.getUserDetails(eq(AUTH_TOKEN))).thenReturn(createUserDetails(
             Arrays.asList(

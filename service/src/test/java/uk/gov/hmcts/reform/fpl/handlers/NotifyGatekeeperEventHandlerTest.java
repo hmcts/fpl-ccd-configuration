@@ -41,7 +41,7 @@ class NotifyGatekeeperEventHandlerTest {
     @InjectMocks
     private NotifyGatekeeperEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldSendEmailToMultipleGatekeepers() {
         CaseData caseData = mock(CaseData.class);
 

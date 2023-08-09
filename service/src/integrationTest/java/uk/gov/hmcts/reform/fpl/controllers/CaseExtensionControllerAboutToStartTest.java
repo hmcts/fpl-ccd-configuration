@@ -26,7 +26,7 @@ class CaseExtensionControllerAboutToStartTest extends AbstractCallbackTest {
         super("case-extension");
     }
 
-    //@Test
+    @Test
     void shouldPopulateShouldBeCompletedByDateWith26WeekTimeline() {
         List<Child> children = List.of(
                 getChild(null, "Daisy", "French"),
@@ -57,7 +57,7 @@ class CaseExtensionControllerAboutToStartTest extends AbstractCallbackTest {
             .isEqualTo(label);
     }
 
-    //@Test
+    @Test
     void shouldPopulateShouldBeCompletedByDateWithMaxChildCaseCompletionDate() {
         List<Child> children = List.of(
                 getChild(LocalDate.of(2024, 7, 2), "Daisy", "French"),

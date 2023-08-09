@@ -103,7 +103,7 @@ class ModifiedDocumentCommonEventHandlerTest {
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldNotifyLocalAuthorityWhenOrderAmended() {
         underTest.notifyLocalAuthority(EVENT);
 
@@ -122,7 +122,7 @@ class ModifiedDocumentCommonEventHandlerTest {
         verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
     }
 
-    //@Test
+    @Test
     void shouldNotifyEmailRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), eq(SELECTED_OTHERS), any()))
@@ -138,7 +138,7 @@ class ModifiedDocumentCommonEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyDigitalRepsWhenOrderAmended() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
         given(otherRecipientsInbox.getNonSelectedRecipients(
@@ -155,7 +155,7 @@ class ModifiedDocumentCommonEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
         final Representative representative = mock(Representative.class);
         final Representative representative2 = mock(Representative.class);
@@ -177,7 +177,7 @@ class ModifiedDocumentCommonEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldOnlySendNotificationToLAWhenOrderTypeIsSDO() {
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);

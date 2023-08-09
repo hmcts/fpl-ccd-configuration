@@ -48,7 +48,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
     @InjectMocks
     private A70PlacementOrderDocumentParameterGenerator parameterGenerator;
 
-    //@Test
+    @Test
     void generate() {
         Element<Child> placementChild = element(
             Child.builder()
@@ -117,7 +117,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         assertThat(docmosisParameters.getApplicationDate()).isEqualTo("15/03/2021");
     }
 
-    //@Test
+    @Test
     void shouldGenerateDocmosisParametersWithDefaultValues() {
         Element<Child> placementChild = element(Child.builder()
             .party(ChildParty.builder().build())
@@ -157,7 +157,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         assertThat(docmosisParameters.getChild().getGender()).isEqualTo(UNKNOWN);
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(parameterGenerator.template()).isEqualTo(DocmosisTemplates.A70);
     }

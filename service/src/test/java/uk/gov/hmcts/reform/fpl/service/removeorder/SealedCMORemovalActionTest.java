@@ -53,33 +53,33 @@ class SealedCMORemovalActionTest {
     @InjectMocks
     private SealedCMORemovalAction underTest;
 
-    //@Test
+    @Test
     void isAcceptedOfAgreedCaseManagementOrders() {
         RemovableOrder order = HearingOrder.builder().status(CMOStatus.APPROVED).build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedC21HearingOrder() {
         RemovableOrder order = HearingOrder.builder().type(C21).build();
 
         assertThat(underTest.isAccepted(order)).isFalse();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedDraftCaseManagementOrder() {
         RemovableOrder order = HearingOrder.builder().status(CMOStatus.DRAFT).build();
 
         assertThat(underTest.isAccepted(order)).isFalse();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedIfAnyOtherClass() {
         assertThat(underTest.isAccepted(mock(RemovableOrder.class))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldRemoveOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
         HearingOrder cmoToRemove = cmo(differentStartDate);
@@ -118,7 +118,7 @@ class SealedCMORemovalActionTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldRemoveCaseManagementOrderWhenOtherCMOisPresent() {
         Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo());
 
@@ -160,7 +160,7 @@ class SealedCMORemovalActionTest {
         assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
         Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo());
         CaseData caseData = CaseData.builder()
@@ -196,7 +196,7 @@ class SealedCMORemovalActionTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionIfOrderNotFound() {
         HearingOrder emptyCaseManagementOrder = cmo();
 
@@ -217,7 +217,7 @@ class SealedCMORemovalActionTest {
             .hasMessage("Failed to find order matching id %s", ALREADY_REMOVED_ORDER_ID);
     }
 
-    //@Test
+    @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByCMOId() {
         DocumentReference orderDocument = DocumentReference.builder().build();
         HearingOrder removedOrder = cmo(orderDocument);
@@ -255,7 +255,7 @@ class SealedCMORemovalActionTest {
                 YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByLabel() {
         LocalDateTime startDate = HEARING_START_DATE.plusDays(3);
         DocumentReference orderDocument = DocumentReference.builder().build();

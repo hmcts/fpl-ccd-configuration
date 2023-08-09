@@ -39,7 +39,7 @@ class ManageLocalAuthoritiesControllerAboutToStartTest extends AbstractCallbackT
         super("manage-local-authorities");
     }
 
-    //@Test
+    @Test
     void shouldAddListOfLocalAuthorities() {
 
         final CaseData caseData = CaseData.builder()
@@ -63,7 +63,7 @@ class ManageLocalAuthoritiesControllerAboutToStartTest extends AbstractCallbackT
         assertThat(updatedCaseData.getLocalAuthoritiesEventData()).isEqualTo(expectedEventData);
     }
 
-    //@Test
+    @Test
     void shouldAddListOfLocalAuthoritiesAndNameOfSharedLocalAuthorityIfExists() {
 
         final OrganisationPolicy sharedPolicy = organisationPolicy("ORG1", "Organisation 1", LASHARED);

@@ -32,7 +32,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
     @Autowired
     private TemporaryHearingJudgeContentProvider temporaryHearingJudgeContentProvider;
 
-    //@Test
+    @Test
     void shouldBuildTemporaryHearingJudgeTemplateWithExpectedParameters() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -62,7 +62,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
             .usingRecursiveComparison().isEqualTo(getExpectedNotificationParameters());
     }
 
-    //@Test
+    @Test
     void shouldBuildPartialTemporaryHearingJudgeTemplateWhenMissingOptionalCaseData() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -92,7 +92,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
         assertThat(partiallyCompleteTemplate.getAllocatedJudgeTitle()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldBuildHearingJudgeTemplateWhenMagistrateSelectedAsHearingJudgeAndNoNameProvided() {
         CaseData caseData = CaseData.builder()
             .id(12345L)
@@ -114,7 +114,7 @@ class TemporaryHearingJudgeContentProviderTest extends AbstractEmailContentProvi
         assertThat(template.getJudgeName()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldBuildHearingJudgeTemplateWhenMagistrateSelectedAsHearingJudgeAndNameIsProvided() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

@@ -79,7 +79,7 @@ class RoboticsDataServiceTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //@Test
+    @Test
     void shouldReturnRoboticsDataWithoutRespondentNodeWhenNoRespondents() {
         CaseData caseData = prepareCaseData().toBuilder()
             .respondents1(emptyList())
@@ -90,7 +90,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.getRespondents()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnRoboticsDataWithoutDateOfIssueWhenNotPresent() {
         CaseData caseData = prepareCaseData().toBuilder()
             .dateSubmitted(null)
@@ -125,7 +125,7 @@ class RoboticsDataServiceTest {
                 .build())
             .build();
 
-        //@Test
+        @Test
         void shouldGetApplicantFromLocalAuthorityWhenExists() {
             final Colleague mainContact = Colleague.builder()
                 .role(ColleagueRole.OTHER)
@@ -170,7 +170,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicant()).isEqualTo(expectedApplicant);
         }
 
-        //@Test
+        @Test
         void shouldGetApplicantFromLegacyApplicantsWhenLocalAuthorityDoesNotExists() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .applicants(wrapElements(applicant))
@@ -194,7 +194,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicant()).isEqualTo(expectedApplicant);
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenLocalAuthorityNorApplicantExists() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .localAuthorities(null)
@@ -206,7 +206,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicant()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyApplicantDataFromLegacyApplicant() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .applicants(wrapElements(Applicant.builder()
@@ -220,7 +220,7 @@ class RoboticsDataServiceTest {
                 .isEqualTo(uk.gov.hmcts.reform.fpl.model.robotics.Applicant.builder().build());
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyApplicantDataFromLocalAuthority() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .localAuthorities(wrapElements(LocalAuthority.builder()
@@ -239,7 +239,7 @@ class RoboticsDataServiceTest {
 
     }
 
-    //@Test
+    @Test
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() {
         CaseData caseData = prepareCaseData();
 
@@ -248,7 +248,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData).isEqualTo(expectedRoboticsData("Emergency Protection Order"));
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseForHarmAllegedWhenRisksIsNull() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
@@ -260,7 +260,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseForHarmAllegedWhenNoSelectionForRisks() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
@@ -272,7 +272,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsForRisksIsYes() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
@@ -289,7 +289,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isHarmAlleged()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsNo() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
@@ -306,7 +306,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isHarmAlleged()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenInternationalElementIsNull() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
@@ -318,7 +318,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isInternationalElement()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenNoSelectionForInternationalElement() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
@@ -330,7 +330,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isInternationalElement()).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenOneOfTheOptionsForInternationalElementIsYes() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
@@ -348,7 +348,7 @@ class RoboticsDataServiceTest {
         assertThat(roboticsData.isInternationalElement()).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenAllOfTheOptionsForInternationalElementIsNo() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
@@ -407,7 +407,7 @@ class RoboticsDataServiceTest {
     @Nested
     class RoboticsSolicitor {
 
-        //@Test
+        @Test
         void shouldPopulateSolicitorFromLocalAuthoritySolicitor() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -439,7 +439,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getSolicitor()).isEqualTo(expectedSolicitor);
         }
 
-        //@Test
+        @Test
         void shouldPopulateSolicitorFromFirstLocalAuthoritySolicitor() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -471,7 +471,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getSolicitor()).isEqualTo(expectedSolicitor);
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateSolicitorWhenNoSolicitorInLocalAuthority() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -521,7 +521,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getSolicitor()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateSolicitorWhenLocalAuthoritySolicitorNameCanNotBeSplit() {
             final Colleague colleague = Colleague.builder()
                 .fullName("AlexWilliams")
@@ -571,7 +571,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getSolicitor()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateSolicitorWhenLocalAuthorityNotPresentAndLegacySolicitorNameCanNotBeSplit() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .solicitor(solicitor("Smith"))
@@ -582,7 +582,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getSolicitor()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldPopulateSolicitorFromLegacySolicitorWhenLocalAuthorityNotPresent() {
             final CaseData caseData = prepareCaseData().toBuilder()
                 .solicitor(solicitor("John Smith"))
@@ -609,7 +609,7 @@ class RoboticsDataServiceTest {
     @Nested
     class Children {
 
-        //@Test
+        @Test
         void shouldReturnRoboticsDataWithoutChildrenNodeWhenNoChildren() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .children1(emptyList())
@@ -620,7 +620,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getChildren()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnRoboticsDataWithEmptyChildWhenChildDoesNotHaveData() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .children1(wrapElements(Child.builder().party(
@@ -637,7 +637,7 @@ class RoboticsDataServiceTest {
 
     @Nested
     class AllocationProposal {
-        //@Test
+        @Test
         void shouldReturnRoboticsDataWithExpectedAllocationWhenAllocationProposalHasValue() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .allocationProposal(Allocation.builder()
@@ -650,7 +650,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getAllocation()).isEqualTo(caseData.getAllocationProposal().getProposal());
         }
 
-        //@Test
+        @Test
         void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalHasEmptyProposal() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .allocationProposal(Allocation.builder()
@@ -663,7 +663,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getAllocation()).isNull();
         }
 
-        //@Test
+        @Test
         void shouldReturnRoboticsDataWithoutAllocationWhenAllocationProposalNotPresent() {
             CaseData caseData = prepareCaseData().toBuilder()
                 .allocationProposal(null)
@@ -678,7 +678,7 @@ class RoboticsDataServiceTest {
     @Nested
     class RoboticsApplicationTypeTests {
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenOrderTypeIsMissing() {
             CaseData caseData = prepareCaseDataWithOrderType();
 
@@ -688,7 +688,7 @@ class RoboticsDataServiceTest {
             assertThat(exception.getMessage()).isEqualTo("no order type(s) to derive Application Type from.");
         }
 
-        //@Test
+        @Test
         void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER);
 
@@ -697,7 +697,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnCareOrderLabelAsApplicationTypeWhenCareOrderSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER);
 
@@ -706,7 +706,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo("Care Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenInterimSupervisionOrderSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
@@ -715,7 +715,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenSupervisionOrderSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER);
 
@@ -724,7 +724,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo("Supervision Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder() {
             CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
 
@@ -733,7 +733,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo("Education Supervision Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnChildAssessmentOrderLabelAsApplicationType() {
             CaseData caseData = prepareCaseDataWithOrderType(CHILD_ASSESSMENT_ORDER);
 
@@ -742,7 +742,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo(CHILD_ASSESSMENT_ORDER.getLabel());
         }
 
-        //@Test
+        @Test
         void shouldReturnSecureAccommodationOrderLabelAsApplicationType() {
             CaseData caseData = prepareCaseDataWithOrderType(SECURE_ACCOMMODATION_ORDER);
 
@@ -751,7 +751,7 @@ class RoboticsDataServiceTest {
             assertThat(roboticsData.getApplicationType()).isEqualTo(SECURE_ACCOMMODATION_ORDER.getLabel());
         }
 
-        //@Test
+        @Test
         void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
                 EMERGENCY_PROTECTION_ORDER, OTHER);
@@ -763,7 +763,7 @@ class RoboticsDataServiceTest {
                     + "Discharge of a Care Order");
         }
 
-        //@Test
+        @Test
         void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected() {
             CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
                 INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER,
@@ -789,7 +789,7 @@ class RoboticsDataServiceTest {
                 "Supervision Order"));
         }
 
-        //@Test
+        @Test
         void shouldNotReturnEmptyRoboticsJsonWhenNoError() {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
@@ -799,7 +799,7 @@ class RoboticsDataServiceTest {
             assertNotEquals(new JSONObject().toString(), returnedRoboticsJson, true);
         }
 
-        //@Test
+        @Test
         void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() {
             CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
@@ -809,7 +809,7 @@ class RoboticsDataServiceTest {
             assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, false);
         }
 
-        //@Test
+        @Test
         void shouldReturnRoboticsJsonWithCommaSeparatedApplicationTypeWhenMultipleOrderTypeSelected()
             throws IOException {
             String expectedJsonWithCommaSeparatedApplicationType = objectMapper.writeValueAsString(
@@ -824,7 +824,7 @@ class RoboticsDataServiceTest {
             assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, false);
         }
 
-        //@Test
+        @Test
         void shouldNotHaveCaseIdPropertyWhenRoboticsDataDeserializes() throws IOException {
             RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(prepareCaseData());
             String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
@@ -849,7 +849,7 @@ class RoboticsDataServiceTest {
             caseDataBuilder = prepareCaseData().toBuilder();
         }
 
-        //@Test
+        @Test
         void shouldGetFeePaidFromCaseData() {
             caseDataBuilder.amountToPay("100000");
 
@@ -858,7 +858,7 @@ class RoboticsDataServiceTest {
             MatcherAssert.assertThat(roboticsData.getFeePaid(), Matchers.comparesEqualTo(BigDecimal.valueOf(1000.00)));
         }
 
-        //@Test
+        @Test
         void shouldGetDefaultFeePaidWhenThereIsNoFeePaidInClaimData() {
             caseDataBuilder.amountToPay("");
 

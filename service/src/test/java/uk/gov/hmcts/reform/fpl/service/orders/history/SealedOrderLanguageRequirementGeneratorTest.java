@@ -13,7 +13,7 @@ class SealedOrderLanguageRequirementGeneratorTest {
     private final SealedOrderLanguageRequirementGenerator underTest = new SealedOrderLanguageRequirementGenerator();
 
 
-    //@Test
+    @Test
     void testWhenSpecifiedByUserNO() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
                 .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -24,7 +24,7 @@ class SealedOrderLanguageRequirementGeneratorTest {
         assertThat(actual).isEqualTo(LanguageTranslationRequirement.NO);
     }
 
-    //@Test
+    @Test
     void testWhenSpecifiedByUserWelshToEnglish() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -35,7 +35,7 @@ class SealedOrderLanguageRequirementGeneratorTest {
         assertThat(actual).isEqualTo(LanguageTranslationRequirement.WELSH_TO_ENGLISH);
     }
 
-    //@Test
+    @Test
     void testWhenSpecifiedByUserEnglishToWelsh() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -46,14 +46,14 @@ class SealedOrderLanguageRequirementGeneratorTest {
         assertThat(actual).isEqualTo(LanguageTranslationRequirement.ENGLISH_TO_WELSH);
     }
 
-    //@Test
+    @Test
     void testWhenLanguageRequirementDecisionEmpty() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
             .build());
         assertThat(actual).isEqualTo(LanguageTranslationRequirement.NO);
     }
 
-    //@Test
+    @Test
     void testWhenLanguageRequirementDecisionNo() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
                 .languageRequirement(YesNo.NO.getValue())
@@ -62,7 +62,7 @@ class SealedOrderLanguageRequirementGeneratorTest {
 
     }
 
-    //@Test
+    @Test
     void testWhenLanguageRequirementDecisionYes() {
         LanguageTranslationRequirement actual = underTest.translationRequirements(CaseData.builder()
             .languageRequirement(YesNo.YES.getValue())

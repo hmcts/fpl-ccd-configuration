@@ -22,14 +22,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class GatekeepingOrderEventDataTest {
 
-    //@Test
+    @Test
     void shouldReturnTemporaryFields() {
         assertThat(GatekeepingOrderEventData.temporaryFields()).containsExactly(
             "urgentHearingOrderDocument", "urgentHearingAllocation", "showUrgentHearingAllocation"
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnRequestedStandardDirectionTypes() {
         final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
             .directionsForAllParties(List.of(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE, ASK_FOR_DISCLOSURE))
@@ -67,7 +67,7 @@ class GatekeepingOrderEventDataTest {
         assertThat(underTest.getRequestedDirections()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldResetStandardDirections() {
         final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
             .standardDirections(wrapElements(
@@ -79,7 +79,7 @@ class GatekeepingOrderEventDataTest {
         assertThat(underTest.getStandardDirections()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnLanguageRequirements() {
         final GatekeepingOrderEventData underTest = GatekeepingOrderEventData.builder()
             .gatekeepingTranslationRequirements(ENGLISH_TO_WELSH)

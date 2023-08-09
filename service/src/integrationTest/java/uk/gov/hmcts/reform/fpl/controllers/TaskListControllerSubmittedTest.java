@@ -48,7 +48,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
             .build());
     }
 
-    //@Test
+    @Test
     void shouldUpdateTaskListWithAdditionalContactsToggledOff() {
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -67,7 +67,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
             eq(Map.of("taskList", expectedTaskList)));
     }
 
-    //@Test
+    @Test
     void shouldUpdateTaskListWithAdditionalContactsToggledOn() {
         when(featureToggleService.isApplicantAdditionalContactsEnabled()).thenReturn(true);
         when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(false);
@@ -82,7 +82,7 @@ class TaskListControllerSubmittedTest extends AbstractCallbackTest {
             eq(Map.of("taskList", expectedTaskList)));
     }
 
-    //@Test
+    @Test
     void shouldIncludeLanguageSelectionIfToggledOn() {
         when(featureToggleService.isLanguageRequirementsEnabled()).thenReturn(true);
 

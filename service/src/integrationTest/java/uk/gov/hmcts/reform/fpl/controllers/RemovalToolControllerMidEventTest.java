@@ -67,7 +67,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         selectedOrder = element(buildOrder());
     }
 
-    //@Test
+    @Test
     void shouldExtractSelectedGeneratedOrderFields() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
             asCaseDetails(buildCaseData(selectedOrder))
@@ -87,7 +87,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldExtractSelectedSealedCaseManagementOrderFields() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -135,7 +135,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldExtractSelectedDocumentFields() {
         final String PARTY_NAME_1 = "Peter Pan";
         final String PARTY_NAME_2 = "Mickey Donald";
@@ -207,7 +207,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldExtractDraftSealedCaseManagementOrderFields() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -258,7 +258,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldExtractDraftOrderFields() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -303,7 +303,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldExtractSelectedStandardDirectionOrderFields() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -342,7 +342,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldThrowAnErrorWhenCaseManagementOrderHasNotLinkedHearing() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -378,7 +378,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(response.getErrors()).isEqualTo(List.of(String.format(CMO_ERROR_MESSAGE, REMOVE_ORDER_ID)));
     }
 
-    //@Test
+    @Test
     void shouldRegenerateOrderDynamicList() {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(
             asCaseDetails(buildCaseData(selectedOrder))
@@ -391,7 +391,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(removableOrderList).isEqualTo(buildRemovableOrderList(selectedOrder.getId()));
     }
 
-    //@Test
+    @Test
     void shouldExtractApplicationFields() {
         UUID applicationId = UUID.randomUUID();
         AdditionalApplicationsBundle application = buildCombinedApplication(C1_WITH_SUPPLEMENT, "6 May 2020");
@@ -434,7 +434,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(responseData).containsAllEntriesOf(extractedFields);
     }
 
-    //@Test
+    @Test
     void shouldErrorIfApplicationFormHasAlreadyBeenRemoved() {
         CaseData caseData = CaseData.builder()
             .c110A(C110A.builder()
@@ -450,7 +450,7 @@ class RemovalToolControllerMidEventTest extends AbstractCallbackTest {
         assertThat(response.getErrors()).containsExactly(APPLICATION_FORM_ALREADY_REMOVED_ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotErrorIfThereIsAnApplicationFormToBeRemoved() {
         CaseData caseData = CaseData.builder()
             .c110A(C110A.builder()

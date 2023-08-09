@@ -17,7 +17,7 @@ class CaseDeletionControllerTest extends AbstractCallbackTest {
         super("case-deletion");
     }
 
-    //@Test
+    @Test
     void shouldRemoveAllCaseDetailsWhenCalled() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 

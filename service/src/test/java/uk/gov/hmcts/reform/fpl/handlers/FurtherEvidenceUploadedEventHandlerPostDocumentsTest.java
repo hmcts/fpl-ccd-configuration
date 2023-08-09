@@ -80,7 +80,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
 
-    //@Test
+    @Test
     void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFDocumentsSolicitor(REP_USER, null);
 
@@ -99,7 +99,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     }
 
 
-    //@Test
+    @Test
     void shouldNotSendDocumentByPostWhenPDFUploadedByLA() {
         final CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
 
@@ -114,7 +114,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService, never()).sendDocuments(any(), any(), any());
     }
 
-    //@Test
+    @Test
     void shouldNotSendDocumentByPostWhenPDFUploadedBySolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPdfDocumentsSolicitor(REP_USER);
 
@@ -131,7 +131,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
     }
 
-    //@Test
+    @Test
     void shouldSendDocumentByPostWhenResponseStatementPdfIsUploadedByASolicitor() {
         final CaseData caseData = buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor();
 
@@ -149,7 +149,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService).sendDocuments(caseData, documents, RECIPIENTS_LIST);
     }
 
-    //@Test
+    @Test
     void shouldRemoveNonPdfResponseStatements() {
         final CaseData caseData = buildCaseDataWithNonConfidentialNonPDFRespondentStatementsSolicitor();
 
@@ -166,7 +166,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         verify(sendDocumentService).sendDocuments(caseData, new ArrayList<>(), RECIPIENTS_LIST);
     }
 
-    //@Test
+    @Test
     void shouldEmailCafcassWhenNewBundleAdded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -205,7 +205,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
         assertThat(courtBundleData.getHearingDetails()).isEqualTo(hearing);
     }
 
-    //@Test
+    @Test
     void shouldNotEmailCafcassWhenNoNewBundle() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -238,7 +238,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
             any());
     }
 
-    //@Test
+    @Test
     void shouldEmailCafcassWhenFirstBundleIsAdded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(
@@ -279,7 +279,7 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     }
 
 
-    //@Test
+    @Test
     void shouldEmailCafcassWhenNewBundlesAreAdded() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
                 .thenReturn(

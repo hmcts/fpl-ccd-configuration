@@ -12,13 +12,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
 class HearingOrderTest {
-    //@Test
+    @Test
     void shouldReturnAmendedOrderType() {
         HearingOrder hearingOrder = HearingOrder.builder().build();
         assertThat(hearingOrder.getModifiedItemType()).isEqualTo("Case management order");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedOthers() {
         List<Element<Other>>  selectedOthers = List.of(element(testOther("Other 1")));
         HearingOrder hearingOrder = HearingOrder.builder()
@@ -28,7 +28,7 @@ class HearingOrderTest {
         assertThat(hearingOrder.getSelectedOthers()).isEqualTo(selectedOthers);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoSelectedOthers() {
         HearingOrder hearingOrder = HearingOrder.builder()
             .others(emptyList())

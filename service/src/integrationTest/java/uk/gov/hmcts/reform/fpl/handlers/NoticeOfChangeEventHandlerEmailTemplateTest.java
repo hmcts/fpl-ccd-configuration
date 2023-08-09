@@ -47,7 +47,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private NoticeOfChangeEventHandler underTest;
 
-    //@Test
+    @Test
     void notifySolicitorAccessGranted() {
 
         Respondent respondentWithOldSolicitor = Respondent.builder()
@@ -86,7 +86,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifySolicitorAccessRevoked() {
 
         Respondent respondentWithOldSolicitor = Respondent.builder()

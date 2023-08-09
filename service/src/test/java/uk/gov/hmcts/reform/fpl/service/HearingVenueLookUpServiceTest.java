@@ -35,7 +35,7 @@ class HearingVenueLookUpServiceTest {
                 .build())
             .build();
 
-        //@Test
+        @Test
         void shouldReturnCustomVenueWhenCustomVenueAddressProvided() {
             Address venueAddress = Address.builder()
                 .addressLine1(randomAlphanumeric(10))
@@ -58,7 +58,7 @@ class HearingVenueLookUpServiceTest {
             assertThat(actualHearingVenue).isEqualTo(expectedHearingVenue);
         }
 
-        //@Test
+        @Test
         void shouldReturnHearingVenueByVenueId() {
             HearingBooking hearingBooking = HearingBooking.builder().venue("Venue").build();
 
@@ -67,7 +67,7 @@ class HearingVenueLookUpServiceTest {
             assertThat(actualHearingVenue).isEqualTo(predefinedHearingVenue);
         }
 
-        //@Test
+        @Test
         void shouldReturnHearingVenueByVenueIdWhenCustomHearingVenueIsSelected() {
 
             HearingVenue otherHearingVenue = HearingVenue.builder()
@@ -87,7 +87,7 @@ class HearingVenueLookUpServiceTest {
             assertThat(actualHearingVenue).isEqualTo(otherHearingVenue);
         }
 
-        //@Test
+        @Test
         void shouldReturnHearingVenueByVenueIdWithCaseInsensitiveMatching() {
             HearingBooking hearingBooking = HearingBooking.builder().venue("venue").build();
 
@@ -99,12 +99,12 @@ class HearingVenueLookUpServiceTest {
 
     @Nested
     class HearingVenueFormatter {
-        //@Test
+        @Test
         void shouldReturnEmptyWhenHearingVenueIsNull() {
             assertThat(hearingVenueLookUpService.buildHearingVenue(null)).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyWhenNoVenueAddress() {
             HearingVenue hearingVenue = HearingVenue.builder()
                 .hearingVenueId(randomAlphanumeric(10))
@@ -116,7 +116,7 @@ class HearingVenueLookUpServiceTest {
             assertThat(formattedHearingVenue).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldFormatHearingVenueWithFullAddress() {
             Address venueAddress = Address.builder()
                 .addressLine1(randomAlphanumeric(10))
@@ -143,7 +143,7 @@ class HearingVenueLookUpServiceTest {
             assertThat(actualFormattedHearingVenue).isEqualTo(expectedFormattedHearingVenue);
         }
 
-        //@Test
+        @Test
         void shouldFormatHearingVenueWithPartialAddress() {
             Address venueAddress = Address.builder()
                 .addressLine1(randomAlphanumeric(10))
@@ -163,13 +163,13 @@ class HearingVenueLookUpServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldReturnVenueIdWhenValidVenueProvided() {
         assertThat(hearingVenueLookUpService.getVenueId(
             "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")).isEqualTo("Venue");
     }
 
-    //@Test
+    @Test
     void shouldReturnOtherWhenNoVenueFound() {
         assertThat(hearingVenueLookUpService.getVenueId("Custom House, Custom Street")).isEqualTo("OTHER");
     }

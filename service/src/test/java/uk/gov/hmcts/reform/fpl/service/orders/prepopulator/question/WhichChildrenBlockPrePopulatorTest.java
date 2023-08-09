@@ -25,12 +25,12 @@ class WhichChildrenBlockPrePopulatorTest {
         childrenService
     );
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.WHICH_CHILDREN);
     }
 
-    //@Test
+    @Test
     void prePopulate() {
         List<Element<Child>> children = wrapElements(mock(Child.class), mock(Child.class));
         CaseData caseData = CaseData.builder()

@@ -81,7 +81,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
         when(service.getSecondaryLocalAuthority(any())).thenReturn(Optional.of(secondaryLocalAuthority));
     }
 
-    //@Test
+    @Test
     void notifyDesignatedLocalAuthorityAboutNewSecondaryLocalAuthority() {
 
         final CaseData caseData = CaseData.builder()
@@ -112,7 +112,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifySecondaryLocalAuthorityAboutGettingCaseAccess() {
 
         final CaseData caseData = CaseData.builder()
@@ -147,7 +147,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifySecondaryLocalAuthorityAboutAccessRemoval() {
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -199,7 +199,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
             .localAuthorities(wrapElements(secondaryLocalAuthority.toBuilder().designated("Yes").build()))
             .build();
 
-        //@Test
+        @Test
         void notifyPreviousDesignatedLocalAuthorityAboutCaseTransfer() {
 
             underTest.notifyPreviousDesignatedLocalAuthority(new CaseTransferred(caseData, caseDataBefore));
@@ -226,7 +226,7 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                 );
         }
 
-        //@Test
+        @Test
         void notifyNewDesignatedLocalAuthorityAboutCaseTransfer() {
 
             underTest.notifyNewDesignatedLocalAuthority(new CaseTransferred(caseData, caseDataBefore));
@@ -326,35 +326,35 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
                 );
         }
 
-        //@Test
+        @Test
         void notifyRespondentSolicitorsAboutCaseTransferToOrdinaryCourt() {
             underTest.notifyRespondentSolicitors(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyAdminAboutCaseTransferToOrdinaryCourt() {
             underTest.notifyAdmin(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyChildSolicitorsAboutCaseTransferToOrdinaryCourt() {
             underTest.notifyChildSolicitors(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyDesignatedLocalAuthorityAboutCaseTransferToOrdinaryCourt() {
             underTest.notifyDesignatedLocalAuthority(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifySecondaryLocalAuthorityAboutCaseTransferToOrdinaryCourt() {
             underTest.notifySecondaryLocalAuthority(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToOrdinaryCourt, caseDataBefore));
@@ -363,42 +363,42 @@ class LocalAuthorityChangedHandlerEmailTemplateTest extends EmailTemplateTest {
 
         // Transferred to High Court
 
-        //@Test
+        @Test
         void notifyRespondentSolicitorsAboutCaseTransferToRcjHighCourt() {
             underTest.notifyRespondentSolicitors(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyAdminAboutCaseTransferToRcjHighCourt() {
             underTest.notifyAdmin(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyChildSolicitorsAboutCaseTransferToRcjHighCourt() {
             underTest.notifyChildSolicitors(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyDesignatedLocalAuthorityAboutCaseTransferToRcjHighCourt() {
             underTest.notifyDesignatedLocalAuthority(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifySecondaryLocalAuthorityAboutCaseTransferToRcjHighCourt() {
             underTest.notifySecondaryLocalAuthority(
                 new CaseTransferredToAnotherCourt(caseDataTransferredToRcjHighCourt, caseDataBefore));
             verifyResponse();
         }
 
-        //@Test
+        @Test
         void notifyHighCourtAdminAboutCaseTransferToRcjHighCourt() {
             when(courtService.isHighCourtCase(caseDataTransferredToRcjHighCourt))
                     .thenReturn(true);

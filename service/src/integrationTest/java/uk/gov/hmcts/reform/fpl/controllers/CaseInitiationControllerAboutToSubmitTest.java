@@ -49,7 +49,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_1_USER_EMAIL);
     }
 
-    //@Test
+    @Test
     void shouldAddLocalAuthorityPolicy() {
         final Organisation organisation = testOrganisation();
 
@@ -79,7 +79,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
-    //@Test
+    @Test
     void shouldAddLocalAuthorityAndOutsourcingPoliciesWhenCaseIsOutsourced() {
         String userOrganisationId = PRIVATE_ORG_ID;
 
@@ -116,7 +116,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotAddOrganisationPolicyIfUserNotRegisteredInAnyOrganisation() {
         given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
             .willThrow(feignException(SC_FORBIDDEN));
@@ -143,7 +143,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(caseDetails.get("multiCourt")).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotSetCourtWhenMultipleCourtsAvailable() {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
 
@@ -155,7 +155,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourt()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotSetCourtWhenRespondentSolicitorIsApplicant() {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
 
@@ -171,7 +171,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourt()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotSetCourtWhenChildSolicitorIsApplicant() {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
 
@@ -187,7 +187,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourt()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldRemoveTemporaryFields() {
         final Organisation organisation = testOrganisation();
 
@@ -214,7 +214,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         ), "OrgPolicyCaseAssignedRole", role);
     }
 
-    //@Test
+    @Test
     void shouldAddGlobalSearchTopLevelFields() {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_1_USER_EMAIL);
 
@@ -246,7 +246,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
     }
 
-    //@Test
+    @Test
     void shouldAddGlobalSearchTopLevelFieldsMultiCourtsCase() {
         givenCurrentUserWithEmail(LOCAL_AUTHORITY_3_USER_EMAIL);
 

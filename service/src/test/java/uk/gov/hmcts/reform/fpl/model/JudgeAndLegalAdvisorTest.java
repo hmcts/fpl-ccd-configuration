@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 class JudgeAndLegalAdvisorTest {
-    //@Test
+    @Test
     void shouldReturnExpectedJudgeAndLegalAdvisor() {
         assertThat(JudgeAndLegalAdvisor.from(testJudge()))
             .isEqualTo(JudgeAndLegalAdvisor.builder()
@@ -22,13 +22,13 @@ class JudgeAndLegalAdvisorTest {
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldReturnNullFieldsForJudgeAndLegalAdvisorWhenJudgeNull() {
         assertThat(JudgeAndLegalAdvisor.from(null))
             .isEqualToComparingFieldByField(JudgeAndLegalAdvisor.builder().build());
     }
 
-    //@Test
+    @Test
     void shouldResetJudgePropertiesWhilePersistingLegalAdvisorName() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(MAGISTRATES)
@@ -44,7 +44,7 @@ class JudgeAndLegalAdvisorTest {
         assertThat(judgeAndLegalAdvisor.getJudgeFullName()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeOtherTitleWhenOtherIsSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)
@@ -56,7 +56,7 @@ class JudgeAndLegalAdvisorTest {
         assertThat(title).isEqualTo("Other title");
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeTitleWhenOtherIsNotSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(DISTRICT_JUDGE)
@@ -67,7 +67,7 @@ class JudgeAndLegalAdvisorTest {
         assertThat(title).isEqualTo(DISTRICT_JUDGE.getLabel());
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeFullNameWhenMagistratesSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(MAGISTRATES)
@@ -79,7 +79,7 @@ class JudgeAndLegalAdvisorTest {
         assertThat(fullName).isEqualTo("Judge Full Name");
     }
 
-    //@Test
+    @Test
     void shouldReturnAllocatedJudgeLastNameWhenMagistratesIsNotSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)

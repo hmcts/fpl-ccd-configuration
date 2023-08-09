@@ -44,7 +44,7 @@ class ManagingOrganisationServiceTest {
     @InjectMocks
     private ManagingOrganisationService underTest;
 
-    //@Test
+    @Test
     void shouldReturnManagingOrganisation() {
         CaseData caseData = caseData(organisationPolicy(ORGANISATION_ID, "test", EPSMANAGING));
 
@@ -70,7 +70,7 @@ class ManagingOrganisationServiceTest {
             .hasMessage("Case 10 is not outsourced");
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenGettingManagingOrganisationAndOrganisationDoesNotExist() {
         CaseData caseData = caseData(organisationPolicy(ORGANISATION_ID, "test", EPSMANAGING));
 
@@ -81,7 +81,7 @@ class ManagingOrganisationServiceTest {
             .hasMessage("Organisation ORG1 not found");
     }
 
-    //@Test
+    @Test
     void shouldGetRemovalRequest() {
         OrganisationPolicy outsourcingPolicy = organisationPolicy(ORGANISATION_ID, "test", EPSMANAGING);
 

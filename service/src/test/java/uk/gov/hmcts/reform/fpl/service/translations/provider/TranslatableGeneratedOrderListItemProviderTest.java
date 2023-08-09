@@ -38,7 +38,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
     @Nested
     class ProvideListItems {
 
-        //@Test
+        @Test
         void getItems() {
             List<Element<GeneratedOrder>> orderCollection = List.of(element(mock(GeneratedOrder.class)));
 
@@ -50,7 +50,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void getItemsIfEmpty() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -64,7 +64,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -80,7 +80,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -92,7 +92,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
@@ -106,7 +106,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
     @Nested
     class Accept {
 
-        //@Test
+        @Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder()
@@ -118,7 +118,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder()
                     .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder().build())))
@@ -129,7 +129,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void testIfCollectionEmpty() {
             boolean actual = underTest.accept(CaseData.builder()
                     .orderCollection(null)
@@ -143,7 +143,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        //@Test
+        @Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -166,7 +166,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderMaintainOrder() {
 
             when(time.now()).thenReturn(NOW);
@@ -195,7 +195,7 @@ class TranslatableGeneratedOrderListItemProviderTest {
 
         }
 
-        //@Test
+        @Test
         void applyMatchedOrderNotFound() {
 
             Map<String, Object> actual = underTest.applyTranslatedOrder(CaseData.builder()

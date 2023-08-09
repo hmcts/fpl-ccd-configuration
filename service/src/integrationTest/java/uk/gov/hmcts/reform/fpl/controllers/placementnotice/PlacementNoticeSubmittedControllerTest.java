@@ -102,7 +102,7 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
             .willReturn(StartEventResponse.builder().eventId(CASE_UPDATE_EVENT).token(EVENT_TOKEN).build());
     }
 
-    //@Test
+    @Test
     void shouldNotifyAllParties() {
 
         final Element<Placement> placement = element(Placement.builder()

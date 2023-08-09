@@ -45,7 +45,7 @@ class DraftOrderRemovalActionTest {
     private DraftOrderRemovalAction underTest = new DraftOrderRemovalAction(
         new UpdateHearingOrderBundlesDrafts());
 
-    //@Test
+    @Test
     void isAcceptedOfDraftOrders() {
         RemovableOrder order = HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build();
 
@@ -68,12 +68,12 @@ class DraftOrderRemovalActionTest {
         assertThat(underTest.isAccepted(order)).isFalse();
     }
 
-    //@Test
+    @Test
     void isNotAcceptedIfNotHearingOrderClass() {
         assertThat(underTest.isAccepted(mock(RemovableOrder.class))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldPopulateCaseFieldsFromRemovableDraftOrder() {
         DocumentReference orderDocument = DocumentReference.builder().build();
         Element<HearingOrder> cmo = element(cmo(orderDocument));
@@ -99,7 +99,7 @@ class DraftOrderRemovalActionTest {
                 NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionIfHearingOrderBundleContainingDraftOrderToRemoveCannotBeFound() {
         Element<HearingOrder> draftOrder = element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build());
         Element<HearingOrdersBundle> bundleElement =
@@ -118,7 +118,7 @@ class DraftOrderRemovalActionTest {
                 ORDER_TO_REMOVE_ID)));
     }
 
-    //@Test
+    @Test
     void shouldRemoveDraftOrderWhenSelectedOrderIdFoundInHearingOrdersBundle() {
         DocumentReference order = testDocumentReference();
 

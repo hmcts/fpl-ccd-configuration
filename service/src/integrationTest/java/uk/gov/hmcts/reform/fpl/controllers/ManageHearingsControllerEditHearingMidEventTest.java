@@ -28,7 +28,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         super("manage-hearings");
     }
 
-    //@Test
+    @Test
     void shouldPopulatePreviousVenueFieldsWhenUserSelectsAddNewHearing() {
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(5)));
@@ -47,7 +47,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("Yes");
     }
 
-    //@Test
+    @Test
     void shouldSetHasPreviousHearingVenueAsNoWhenPreviousHearingVenueIsNull() {
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(3), true));
 
@@ -61,7 +61,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("No");
     }
 
-    //@Test
+    @Test
     void shouldBuildFutureHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().plusDays(3)).toBuilder()
@@ -84,7 +84,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertHearingCaseFields(updatedCaseData, hearing2.getValue());
     }
 
-    //@Test
+    @Test
     void shouldBuildPastHearingDateListAndResetFirstHearingFlagWhenNonFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)).toBuilder()
@@ -107,7 +107,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertHearingCaseFields(updatedCaseData, hearing2.getValue());
     }
 
-    //@Test
+    @Test
     void shouldBuildFutureHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().plusDays(3)));
@@ -126,7 +126,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertHearingCaseFields(updatedCaseData, hearing1.getValue());
     }
 
-    //@Test
+    @Test
     void shouldBuildPastHearingDateListAndSetFirstHearingFlagWhenFirstHearingSelected() {
         Element<HearingBooking> hearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> hearing2 = element(testHearing(now().minusDays(3)));
@@ -145,7 +145,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertHearingCaseFields(updatedCaseData, hearing1.getValue());
     }
 
-    //@Test
+    @Test
     void shouldBuildPastHearingDateListWhenHearingIsAdjourned() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
@@ -164,7 +164,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .isEqualTo(dynamicList(pastHearing1.getId(), pastHearing1, pastHearing2));
     }
 
-    //@Test
+    @Test
     void shouldPopulateHearingToBeReListedFromSelectedCancelledHearing() {
         Element<HearingBooking> cancelledHearing = element(
             testHearing(now().plusDays(2), "96", VACATED_TO_BE_RE_LISTED));
@@ -180,7 +180,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertCurrentHearingReListedFrom(currentCaseData, cancelledHearing.getValue());
     }
 
-    //@Test
+    @Test
     void shouldBuildVacateHearingDateListWhenHearingIsVacated() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
@@ -199,7 +199,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, futureHearing2, pastHearing1, pastHearing2));
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenAdjourningAHearingButNoPastOrCurrentHearingsExist() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(2)));
         Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(3)));
@@ -214,7 +214,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void canCreateNewHearingWhenPreviousHearingVenueNull() {
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(NEW_HEARING)
@@ -226,7 +226,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(response.getData().get("hasPreviousHearingVenue")).isEqualTo(NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenNoHearingToRelistExists() {
         Element<HearingBooking> pastHearing1 = element(testHearing(now().minusDays(2)));
         Element<HearingBooking> pastHearing2 = element(testHearing(now().minusDays(3)));

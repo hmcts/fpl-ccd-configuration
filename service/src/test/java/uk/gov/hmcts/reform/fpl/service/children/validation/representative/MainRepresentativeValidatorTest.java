@@ -23,7 +23,7 @@ class MainRepresentativeValidatorTest {
 
     private final MainRepresentativeValidator underTest = new MainRepresentativeValidator(emailValidator);
 
-    //@Test
+    @Test
     void validateMainChildRepresentativeNoMainRepresentative() {
         CaseData caseData = CaseData.builder()
             .childrenEventData(ChildrenEventData.builder()
@@ -34,7 +34,7 @@ class MainRepresentativeValidatorTest {
         assertThat(underTest.validate(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     void validateMainChildRepresentativeWithMainRepresentativeInvalidEmail() {
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.of("bad email"));
@@ -49,7 +49,7 @@ class MainRepresentativeValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of("bad email"));
     }
 
-    //@Test
+    @Test
     void validateMainChildRepresentativeWithMainRepresentativeValidEmail() {
         when(REPRESENTATIVE.getEmail()).thenReturn(EMAIL);
         when(emailValidator.validate(eq(EMAIL), anyString())).thenReturn(Optional.empty());

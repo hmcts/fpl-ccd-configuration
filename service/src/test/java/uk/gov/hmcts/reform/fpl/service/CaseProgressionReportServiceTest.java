@@ -116,7 +116,7 @@ class CaseProgressionReportServiceTest {
         );
 
         String report = service.getHtmlReport(caseDataSelected);
-        assertThat(report).isEqualTo("<table>"
+        assertThat(report).isEqualTo("<table>" 
                 + "<tr><th class='search-result-column-label' colspan=\"9\">"
                 +  courtName
                 + "<br>"
@@ -150,7 +150,7 @@ class CaseProgressionReportServiceTest {
         return String.valueOf(ChronoUnit.WEEKS.between(submittedDate, LocalDate.now()));
     }
 
-    //@Test
+    @Test
     void shouldReturnHtmlReportWithEmptyTableWhenNoResultFound() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -183,7 +183,7 @@ class CaseProgressionReportServiceTest {
                 + "</table>");
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenEmptyResultSet() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -211,7 +211,7 @@ class CaseProgressionReportServiceTest {
                 .isInstanceOf(CaseProgressionReportException.class);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenReportTypeunknown() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -225,7 +225,7 @@ class CaseProgressionReportServiceTest {
                 .isInstanceOf(CaseProgressionReportException.class);
     }
 
-    //@Test
+    @Test
     void shouldReturnHtmlReportWithEmptyTableWhenCasesHearingAreWithinThreshold() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -283,7 +283,7 @@ class CaseProgressionReportServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnFileReport() throws IOException {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime finalHearing = LocalDateTime.of(
@@ -366,7 +366,7 @@ class CaseProgressionReportServiceTest {
                 .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
     }
 
-    //@Test
+    @Test
     void shouldReturnFileReportWithFutureCaseManagement() throws IOException {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
@@ -422,7 +422,7 @@ class CaseProgressionReportServiceTest {
                 .search(isA(ESQuery.class), anyInt(), anyInt(), isA(Sort.class));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenEmptyResultSetForFileGeneration() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -451,7 +451,7 @@ class CaseProgressionReportServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenReportTypeUnknownForFileGeneration() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -465,7 +465,7 @@ class CaseProgressionReportServiceTest {
                 .isInstanceOf(CaseProgressionReportException.class);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyFileWhenNoRecordFound() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -490,7 +490,7 @@ class CaseProgressionReportServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnEmptyFileOptionalWhenCasesHearingAreWithinThresholdForFile() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .swanseaDFJCourts("344")
@@ -562,7 +562,7 @@ class CaseProgressionReportServiceTest {
                 .build();
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithFinalHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime finalHearing = LocalDateTime.of(
@@ -588,7 +588,7 @@ class CaseProgressionReportServiceTest {
         assertThat(hearingInfo.get().getNextHearing()).isEqualTo("03-11-2022");
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithEmptyFinalHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime finalHearing = LocalDateTime.of(
@@ -608,7 +608,7 @@ class CaseProgressionReportServiceTest {
         assertTrue(hearingInfo.isEmpty());
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithIssueResolutionHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime issueHearing = LocalDateTime.of(
@@ -630,7 +630,7 @@ class CaseProgressionReportServiceTest {
         assertThat(hearingInfo.get().getNextHearing()).isEqualTo("22-09-2022");
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithEmptyIssueResolutionHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime issueHearing = LocalDateTime.of(
@@ -650,7 +650,7 @@ class CaseProgressionReportServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnHearingWithCaseManagementHearingDetailLastHearingDate() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
@@ -671,7 +671,7 @@ class CaseProgressionReportServiceTest {
         assertThat(hearingInfo.get().getLastHearing()).isEqualTo("22-08-2022");
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithCaseManagementHearingDetailNextHearingDate() {
         LocalDate submittedDate = LocalDate.now().minusWeeks(24);
 
@@ -688,7 +688,7 @@ class CaseProgressionReportServiceTest {
                 .isEqualTo(formatLocalDateToString(firstCaseManagementHearing.toLocalDate(), "dd-MM-yyyy"));
     }
 
-    //@Test
+    @Test
     void shouldReturnHearingWithEmptyCaseManagementHearingDetail() {
         LocalDate submittedDate = LocalDate.parse("04-05-2022", DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDateTime firstCaseManagementHearing = LocalDateTime.of(
@@ -707,7 +707,7 @@ class CaseProgressionReportServiceTest {
         assertTrue(hearingInfo.isEmpty());
     }
 
-    //@Test
+    @Test
     void shouldThrowIllegalArgumentExceptionWhenCourtIdNotSet() {
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()
                 .build();
@@ -716,7 +716,7 @@ class CaseProgressionReportServiceTest {
             .hasMessage("Court not found");
     }
 
-    //@Test
+    @Test
     void shouldReturnValidCourtIdWhenCourtDFJSet() {
         String courtId = "123";
         CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData.builder()

@@ -53,7 +53,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
         super("add-gatekeeping-order");
     }
 
-    //@Test
+    @Test
     void shouldPrepareSelectedStandardDirectionsWhenHearingNotPresent() {
 
         List<DirectionType> selectedDirectionsForAll = List.of(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE, ATTEND_HEARING);
@@ -102,7 +102,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
     }
 
 
-    //@Test
+    @Test
     void shouldPrepareSelectedImmediateStandardDirection() {
         HearingBooking firstHearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -149,7 +149,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldPrepareSelectedStandardDirectionWhenHearingPresent() {
 
         HearingBooking firstHearing = HearingBooking.builder()
@@ -213,7 +213,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldSetHearingDateIfHearingPresent() {
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderRouter(SERVICE)
@@ -233,7 +233,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
         );
     }
 
-    //@Test
+    @Test
     void shouldNotSetHearingDateIfHearingNotPresent() {
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderRouter(SERVICE)

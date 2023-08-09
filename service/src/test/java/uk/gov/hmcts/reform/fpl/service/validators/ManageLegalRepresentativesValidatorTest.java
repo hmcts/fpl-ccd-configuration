@@ -31,7 +31,7 @@ class ManageLegalRepresentativesValidatorTest {
     @InjectMocks
     private ManageLegalRepresentativesValidator underTest;
 
-    //@Test
+    @Test
     void validateValidElement() {
         when(organisationService.findUserByEmail(REGISTERED_EMAIL)).thenReturn(Optional.of("UserId"));
 
@@ -40,7 +40,7 @@ class ManageLegalRepresentativesValidatorTest {
         assertThat(actualErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void validateMultipleValidElement() {
         when(organisationService.findUserByEmail(REGISTERED_EMAIL)).thenReturn(Optional.of("UserId"));
         when(organisationService.findUserByEmail(ANOTHER_REGISTERED_EMAIL)).thenReturn(Optional.of("AnotherUserId"));
@@ -57,7 +57,7 @@ class ManageLegalRepresentativesValidatorTest {
         assertThat(actualErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void validateValidElementButUnregisteredEmail() {
         when(organisationService.findUserByEmail(NON_REGISTERED_EMAIL)).thenReturn(Optional.empty());
 
@@ -72,7 +72,7 @@ class ManageLegalRepresentativesValidatorTest {
         );
     }
 
-    //@Test
+    @Test
     void validateMultipleValidElementButUnregisteredEmail() {
         when(organisationService.findUserByEmail(NON_REGISTERED_EMAIL)).thenReturn(Optional.empty());
 

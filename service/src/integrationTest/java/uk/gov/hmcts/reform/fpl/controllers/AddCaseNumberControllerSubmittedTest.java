@@ -37,7 +37,7 @@ class AddCaseNumberControllerSubmittedTest extends AbstractCallbackTest {
     @Spy
     private ApplicationEventPublisher applicationEventPublisher;
 
-    //@Test
+    @Test
     void shouldSendNotificationToRoboticsWhenCaseNumberAdded() {
         CaseDetails caseDetailsBefore = buildCaseWithNumber("");
         CaseDetails caseDetails = buildCaseWithNumber("CASE1");
@@ -49,7 +49,7 @@ class AddCaseNumberControllerSubmittedTest extends AbstractCallbackTest {
         assertThat(email.getValue().getRecipient()).isEqualTo("FamilyPublicLaw+robotics-test@gmail.com");
     }
 
-    //@Test
+    @Test
     void shouldNotSendNotificationToRoboticsWhenCaseNumberUpdated() {
         CaseDetails caseDetailsBefore = buildCaseWithNumber("CASE1");
         CaseDetails caseDetails = buildCaseWithNumber("CASE2");

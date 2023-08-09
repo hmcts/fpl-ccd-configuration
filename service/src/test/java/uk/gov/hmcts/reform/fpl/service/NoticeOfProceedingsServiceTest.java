@@ -87,7 +87,7 @@ class NoticeOfProceedingsServiceTest {
         now = time.now();
     }
 
-    //@Test
+    @Test
     void shouldSetHearingAndJudgeLabelWhenBothHearingAndJudgeInformationExistOnCaseData() {
         CaseData caseData = CaseData.builder()
             .allocatedJudge(buildAllocatedJudge())
@@ -101,7 +101,7 @@ class NoticeOfProceedingsServiceTest {
             .containsExactly(buildExpectedHearingLabel(), buildExpectedNoticeOfProceedingData());
     }
 
-    //@Test
+    @Test
     void shouldSetAllocatedJudgeLabelWhenOnlyJudgeDataExistsOnCaseData() {
         CaseData caseData = CaseData.builder()
             .allocatedJudge(buildAllocatedJudge())
@@ -114,7 +114,7 @@ class NoticeOfProceedingsServiceTest {
             .containsExactly(null, buildExpectedNoticeOfProceedingData());
     }
 
-    //@Test
+    @Test
     void shouldSetHearingLabelWhenOnlyHearingDetailsExistOnCaseData() {
         CaseData caseData = CaseData.builder()
             .hearingDetails(createHearingBookings())
@@ -127,7 +127,7 @@ class NoticeOfProceedingsServiceTest {
             .containsExactly(buildExpectedHearingLabel(), null);
     }
 
-    //@Test
+    @Test
     void shouldSetNoticeOfProceedingJudgeToAllocatedJudgeWhenUseAllocatedJudgeHasBeenSelected() {
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(HIS_HONOUR_JUDGE, JUDGE_SURNAME);
 
@@ -146,7 +146,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor()).isEqualTo(expectedJudgeAndLegalAdvisor);
     }
 
-    //@Test
+    @Test
     void shouldSetNoticeOfProceedingJudgeToTemporaryJudgeWhenUseAllocatedJudgeHasNotBeenSelected() {
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = buildJudgeAndLegalAdvisor(HER_HONOUR_JUDGE, "Wilson");
 
@@ -167,7 +167,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(noticeOfProceedings.getJudgeAndLegalAdvisor()).isEqualTo(expectedJudgeAndLegalAdvisor);
     }
 
-    //@Test
+    @Test
     void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {
         List<Element<DocumentBundle>> noticeOfProceedingsBefore = generateNoticeOfProceedingBundle(List.of(C6A));
         List<Element<DocumentBundle>> noticeOfProceedingsCurrent = generateNoticeOfProceedingBundle(List.of(C6));
@@ -180,7 +180,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(documentBundle.get(1).getValue().getDocument().getFilename()).isEqualTo(C6A.getDocumentTitle());
     }
 
-    //@Test
+    @Test
     void shouldNotRetrieveExistingDocumentsAWhenTemplateListIncludeBothC6AndC6A() {
         List<Element<DocumentBundle>> noticeOfProceedingsBefore = generateNoticeOfProceedingBundle(List.of(C6, C6A));
         List<Element<DocumentBundle>> noticeOfProceedingsCurrent = generateNoticeOfProceedingBundle(List.of(C6, C6A));
@@ -193,7 +193,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(documentBundle.get(1).getValue().getDocument().getFilename()).isEqualTo(C6A.getDocumentTitle());
     }
 
-    //@Test
+    @Test
     void shouldGenerateAndUploadNoticeOfProceedingDocmosisDocuments() {
         CaseData caseData = CaseData.builder()
             .allocatedJudge(buildAllocatedJudge())
@@ -243,7 +243,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(noticeOfProceedings.size()).isEqualTo(2);
     }
 
-    //@Test
+    @Test
     void shouldReturnNoticeOfProceedingsWhenExistingOnCaseDataBefore() {
         List<Element<DocumentBundle>> noticeOfProceedingsBundle = List.of(
             element(DocumentBundle.builder()
@@ -262,7 +262,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(previousNoticeOfProceedings).isEqualTo(noticeOfProceedingsBundle);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnEmptyListIfCaseDataBeforeIsNull() {
         List<Element<DocumentBundle>> previousNoticeOfProceedings
             = noticeOfProceedingService.getPreviousNoticeOfProceedings(null);
@@ -270,7 +270,7 @@ class NoticeOfProceedingsServiceTest {
         assertThat(previousNoticeOfProceedings).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnAnEmptyListWhenNoticeOfProceedingsDoNotExistOnCaseDataBefore() {
         CaseData caseData = CaseData.builder().build();
         List<Element<DocumentBundle>> previousNoticeOfProceedings =

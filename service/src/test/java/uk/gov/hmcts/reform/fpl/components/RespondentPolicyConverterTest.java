@@ -33,7 +33,7 @@ class RespondentPolicyConverterTest {
     private static final LocalDate RESPONDENT_DOB = LocalDate.now().minusDays(5);
     private static final Organisation EMPTY_ORG = Organisation.builder().build();
 
-    //@Test
+    @Test
     void shouldConvertRespondentSolicitorWithOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
@@ -66,7 +66,7 @@ class RespondentPolicyConverterTest {
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
-    //@Test
+    @Test
     void shouldConvertRespondentSolicitorWithoutOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
@@ -93,7 +93,7 @@ class RespondentPolicyConverterTest {
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
-    //@Test
+    @Test
     void shouldSetOrgPolicyWhenNoRespondentHasBeenProvided() {
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
             .organisation(EMPTY_ORG)

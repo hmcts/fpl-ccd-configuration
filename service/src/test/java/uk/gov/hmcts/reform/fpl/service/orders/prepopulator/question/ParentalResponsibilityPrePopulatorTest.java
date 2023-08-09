@@ -41,12 +41,12 @@ class ParentalResponsibilityPrePopulatorTest {
         selectedLinkedApplicationList = buildDynamicList(0, Pair.of(linkedApplicationId, "My application"));
     }
 
-    //@Test
+    @Test
     void testAcceptsParentalResponsibilitySection() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.PARENTAL_RESPONSIBILITY);
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateWithFatherRelationshipDetailsAndApplicantName() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             buildAdditionalApplicationsBundle(
@@ -64,7 +64,7 @@ class ParentalResponsibilityPrePopulatorTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateWithMotherRelationshipDetailsAndApplicantName() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             buildAdditionalApplicationsBundle(
@@ -82,7 +82,7 @@ class ParentalResponsibilityPrePopulatorTest {
         );
     }
 
-    //@Test
+    @Test
     public void shouldReturnEmptyMapWhen_RelationshipWithChildIsSet() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             buildAdditionalApplicationsBundle(
@@ -101,7 +101,7 @@ class ParentalResponsibilityPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_ParentResponsibleIsSet() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             buildAdditionalApplicationsBundle(
@@ -120,7 +120,7 @@ class ParentalResponsibilityPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_LinkedApplicationIsNull() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             buildAdditionalApplicationsBundle(
@@ -139,7 +139,7 @@ class ParentalResponsibilityPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_SelectedApplicationIdIsNull() {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
             List.of(element(
@@ -164,7 +164,7 @@ class ParentalResponsibilityPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_SelectedApplicationBundleIsNull() {
         CaseData caseData = buildCaseData(selectedLinkedApplicationList, null).toBuilder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -177,7 +177,7 @@ class ParentalResponsibilityPrePopulatorTest {
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_selectedApplicationIdIsNull() {
         CaseData caseData = buildCaseData(null, null).toBuilder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -191,7 +191,7 @@ class ParentalResponsibilityPrePopulatorTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnEmptyMapWhen_NotC2andOtherApplicationIsNot_C1_Parental_Responsibility() {
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(linkedApplicationId)
@@ -214,7 +214,7 @@ class ParentalResponsibilityPrePopulatorTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldPrePopulateWithMotherRelationshipDetailsAndApplicantName_WithC1Application() {
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(linkedApplicationId)

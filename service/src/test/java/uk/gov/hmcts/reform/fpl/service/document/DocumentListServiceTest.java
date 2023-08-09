@@ -42,7 +42,7 @@ class DocumentListServiceTest {
     @InjectMocks
     private DocumentListService underTest;
 
-    //@Test
+    @Test
     void testGetDocumentViewWhenNothingToRender() {
 
         when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA,
@@ -65,7 +65,7 @@ class DocumentListServiceTest {
         verifyNoInteractions(documentsListRenderer);
     }
 
-    //@Test
+    @Test
     void testGetDocumentViewWhenAllRendered() {
 
         when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.LA))
@@ -89,7 +89,7 @@ class DocumentListServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void testGetDocumentViewWhenSomethingRendered() {
 
         when(documentsListRenderer.render(HMCTS_BUNDLE_VIEWS)).thenReturn(HMCTS_RENDERED_VIEW);

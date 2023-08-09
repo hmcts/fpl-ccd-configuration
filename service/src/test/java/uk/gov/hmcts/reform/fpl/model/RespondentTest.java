@@ -18,7 +18,7 @@ class RespondentTest {
 
         private Respondent underTest;
 
-        //@Test
+        @Test
         void shouldReturnTrueWhenRegisteredOrgIdPresent() {
             underTest = Respondent.builder()
                 .solicitor(RespondentSolicitor.builder()
@@ -45,7 +45,7 @@ class RespondentTest {
             assertThat(underTest.hasRegisteredOrganisation()).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenRegisteredOrganisationNotPresent() {
             underTest = Respondent.builder()
                 .solicitor(RespondentSolicitor.builder()
@@ -63,7 +63,7 @@ class RespondentTest {
 
         private Respondent underTest;
 
-        //@Test
+        @Test
         void shouldReturnTrueWhenUnregisteredOrgNamePresent() {
             underTest = Respondent.builder()
                 .solicitor(RespondentSolicitor.builder()
@@ -86,7 +86,7 @@ class RespondentTest {
             assertThat(underTest.hasUnregisteredOrganisation()).isFalse();
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenUnregisteredOrganisationNotPresent() {
             underTest = Respondent.builder()
                 .solicitor(RespondentSolicitor.builder()
@@ -103,7 +103,7 @@ class RespondentTest {
 
         private Respondent underTest;
 
-        //@Test
+        @Test
         void shouldReturnTrueWhenRespondentPartyHasAddress() {
             underTest = Respondent.builder()
                 .party(RespondentParty.builder().address(testAddress()).build())
@@ -112,14 +112,14 @@ class RespondentTest {
             assertTrue(underTest.hasAddress());
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenRespondentPartyIsNull() {
             underTest = Respondent.builder().build();
 
             assertFalse(underTest.hasAddress());
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenPostcodeIsMissing() {
             underTest = Respondent.builder()
                 .party(RespondentParty.builder().address(Address.builder().addressLine1("address1").build()).build())
@@ -128,7 +128,7 @@ class RespondentTest {
             assertFalse(underTest.hasAddress());
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenAddressIsMissing() {
             underTest = Respondent.builder()
                 .party(RespondentParty.builder().firstName("first").lastName("name").build())

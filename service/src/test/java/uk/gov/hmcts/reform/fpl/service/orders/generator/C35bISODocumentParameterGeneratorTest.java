@@ -35,21 +35,21 @@ class C35bISODocumentParameterGeneratorTest {
     @InjectMocks
     private C35bISODocumentParameterGenerator underTest;
 
-    //@Test
+    @Test
     void shouldReturnAcceptedOrder() {
         Order order = underTest.accept();
 
         assertThat(order).isEqualTo(ORDER);
     }
 
-    //@Test
+    @Test
     public void shouldReturnTemplate() {
         DocmosisTemplates returnedTemplate = underTest.template();
 
         assertThat(TEMPLATE).isEqualTo(returnedTemplate);
     }
 
-    //@Test
+    @Test
     public void shouldReturnDocmosisParameters() {
 
         CaseData caseData = CaseData.builder()

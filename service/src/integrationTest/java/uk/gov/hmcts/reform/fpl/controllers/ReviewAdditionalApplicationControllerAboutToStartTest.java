@@ -50,7 +50,7 @@ public class ReviewAdditionalApplicationControllerAboutToStartTest extends Abstr
         when(reviewAdditionalApplicationService.initEventField(any())).thenReturn(initFieldMap);
     }
 
-    //@Test
+    @Test
     void shouldInitEventField() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseData.builder().build());
         CaseData resultCaseData = extractCaseData(response);

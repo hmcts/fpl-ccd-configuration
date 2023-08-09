@@ -48,7 +48,7 @@ class OrderValidationServiceTest {
     @SpyBean
     private Validator validator;
 
-    //@Test
+    @Test
     void shouldNotValidateCaseWhenDraftingOrder() {
         CaseData caseData = buildCaseData(DRAFT);
 
@@ -58,7 +58,7 @@ class OrderValidationServiceTest {
         verify(validator, never()).validate(any(), any());
     }
 
-    //@Test
+    @Test
     void shouldSuccessfullyValidateCaseWithAllRequiredFieldsWhenSealingOrder() {
         CaseData caseData = buildCaseDataWithMandatoryFields(SEALED);
 
@@ -67,7 +67,7 @@ class OrderValidationServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnValidationErrorsForACaseWithoutRequiredFieldsWhenSealingOrder() {
         CaseData caseData = buildCaseData(SEALED);
 

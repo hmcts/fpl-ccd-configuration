@@ -19,17 +19,17 @@ class DynamicListServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final DynamicListService dynamicListService = new DynamicListService(objectMapper);
 
-    //@Test
+    @Test
     void shouldReturnEmptyValueIfDynamicListIsNull() {
         assertThat(dynamicListService.getSelectedValue(null)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnValueIfDynamicListIsString() {
         assertThat(dynamicListService.getSelectedValue("test")).contains("test");
     }
 
-    //@Test
+    @Test
     void shouldGenerateDynamicList() {
         List<Pair<String, String>> pairs = List.of(Pair.of("1", "one"), Pair.of("2", "two"));
 
@@ -41,7 +41,7 @@ class DynamicListServiceTest {
             DynamicListElement.builder().label("two").code("2").build());
     }
 
-    //@Test
+    @Test
     void shouldGenerateDynamicListSkippingNullElements() {
         List<Pair<String, String>> pairs = newArrayList(Pair.of("1", "one"), null, Pair.of("2", "two"));
 
@@ -53,7 +53,7 @@ class DynamicListServiceTest {
             DynamicListElement.builder().label("two").code("2").build());
     }
 
-    //@Test
+    @Test
     void shouldGenerateEmptyDynamicList() {
         List<Pair<String, String>> pairs = List.of();
 

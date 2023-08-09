@@ -35,7 +35,7 @@ class HasDocumentsIncludedInSwetValidatorTest {
         validateGroupService = new ValidateGroupService(validator);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfDocumentStatusIsIncludedInSwetButSwetDocumentWasNotAttached() {
         CaseData caseData = getCaseData(
             getDocument(null, ATTACHED), getDocument(null, INCLUDED_IN_SWET));
@@ -43,7 +43,7 @@ class HasDocumentsIncludedInSwetValidatorTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfDocumentStatusIsIncludedInSwetButSwetDocumentWasNotAttachedX() {
         CaseData caseData = getCaseData(
             getDocument(testDocumentReference(), TO_FOLLOW), getDocument(null, INCLUDED_IN_SWET));
@@ -51,7 +51,7 @@ class HasDocumentsIncludedInSwetValidatorTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfDocumentStatusIsIncludedInSwetAndSwetDocumentWasAttached() {
         CaseData caseData = getCaseData(
             getDocument(testDocumentReference(), ATTACHED), getDocument(null, INCLUDED_IN_SWET));
@@ -60,7 +60,7 @@ class HasDocumentsIncludedInSwetValidatorTest {
         assertThat(errorMessages).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfDocumentStatusIsNotIncludedInSwet() {
         CaseData caseData = getCaseData(null, getDocument(null, ATTACHED));
         List<String> errorMessages = validateGroupService.validateGroup(caseData, UploadDocumentsGroup.class);

@@ -21,7 +21,7 @@ class FPLRetryerTest {
         500, "", GET, new FeignException.InternalServerError("test", REQUEST, EMPTY_BODY), null, REQUEST
     );
 
-    //@Test
+    @Test
     void shouldPropagateExceptionWhenMaxAttemptsReached() {
         FPLRetryer retryer = new FPLRetryer(2, 50, 2);
 
@@ -31,7 +31,7 @@ class FPLRetryerTest {
             .isEqualTo(EXCEPTION);
     }
 
-    //@Test
+    @Test
     void shouldAllowForMultipleContinuesWhenMaxAttemptsNotReached() {
         FPLRetryer retryer = new FPLRetryer(10, 20, 10);
 

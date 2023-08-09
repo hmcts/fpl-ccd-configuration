@@ -50,7 +50,7 @@ class IdamClientTest {
 
     private final IdamClient idamClient = new IdamClient(idamApi, mock(OAuth2Configuration.class));
 
-    //@Test
+    @Test
     void shouldRetryWhen5XXResponseReturned() throws IOException {
         when(httpClient.execute(any(), any()))
             .thenReturn(response(500), response(504), response(204));
@@ -61,7 +61,7 @@ class IdamClientTest {
         verify(httpClient, times(3)).execute(any(), any());
     }
 
-    //@Test
+    @Test
     void shouldReturnFeignExceptionWhenMaxRetriesReached() throws IOException {
         when(httpClient.execute(any(), any()))
             .thenReturn(response(500), response(500), response(500));
@@ -72,7 +72,7 @@ class IdamClientTest {
         verify(httpClient, times(3)).execute(any(), any());
     }
 
-    //@Test
+    @Test
     void shouldNotRetryGivenSuccessfulResponse() throws IOException {
         when(httpClient.execute(any(), any()))
             .thenReturn(response(204));

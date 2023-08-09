@@ -126,7 +126,7 @@ class FailedPBAPaymentEventHandlerTest {
             .willReturn(Set.of(SECONDARY_LA_EMAIL_1, SECONDARY_LA_EMAIL_2));
     }
 
-    //@Test
+    @Test
     void shouldNotifyLAWhenApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C110A_APPLICATION.getType())
@@ -147,7 +147,7 @@ class FailedPBAPaymentEventHandlerTest {
             caseData.getId().toString());
     }
 
-    //@Test
+    @Test
     void shouldNotifySolicitorWhenApplicationPBAPaymentFails() {
         caseData = CaseData.builder()
             .id(CASE_ID)
@@ -184,7 +184,7 @@ class FailedPBAPaymentEventHandlerTest {
             caseData.getId().toString());
     }
 
-    //@Test
+    @Test
     void shouldNotifyDesignatedLAWhenTheirInterlocutoryApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
@@ -206,7 +206,7 @@ class FailedPBAPaymentEventHandlerTest {
             caseData.getId().toString());
     }
 
-    //@Test
+    @Test
     void shouldNotifySecondaryLAWhenTheirInterlocutoryApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
@@ -232,7 +232,7 @@ class FailedPBAPaymentEventHandlerTest {
             caseData.getId().toString());
     }
 
-    //@Test
+    @Test
     void shouldNotifyRespondentWhenInterlocutoryApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
@@ -273,7 +273,7 @@ class FailedPBAPaymentEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscWhenInterlocutoryApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C2_APPLICATION.getType())
@@ -296,7 +296,7 @@ class FailedPBAPaymentEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscWhenPBAPaymentFailsForOtherApplication() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
@@ -346,7 +346,7 @@ class FailedPBAPaymentEventHandlerTest {
             Arguments.of(OrderApplicant.builder().type(OTHER).name("David Smith").build(), "David Smith"));
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscWhenApplicationPBAPaymentFails() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C110A_APPLICATION.getType())

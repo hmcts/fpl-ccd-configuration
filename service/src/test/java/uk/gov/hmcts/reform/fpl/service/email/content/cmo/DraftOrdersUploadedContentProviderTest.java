@@ -58,7 +58,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("White");
     }
 
-    //@Test
+    @Test
     void shouldCreateCustomizationWithHearing() {
         JudgeAndLegalAdvisor judge = judge(HER_HONOUR_JUDGE, "Black");
         List<HearingOrder> orders = orders("order 1", "order 2");
@@ -84,7 +84,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         assertThat(customization).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldCreateCustomizationWithoutHearing() {
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(HIS_HONOUR_JUDGE, "White");
@@ -104,7 +104,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         assertThat(customization).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldCreateCustomizationWhenMagistrateWithoutName() {
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, null);
@@ -124,7 +124,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         assertThat(customization).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldCreateCustomizationWhenMagistrateWithName() {
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");
@@ -144,7 +144,7 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         assertThat(customization).isEqualTo(expected);
     }
 
-    //@Test
+    @Test
     void shouldCreateWithLinkToHearingDocumentTabWhenDraftCMOUploaded() {
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");

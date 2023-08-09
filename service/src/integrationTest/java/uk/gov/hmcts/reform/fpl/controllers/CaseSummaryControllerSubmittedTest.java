@@ -30,7 +30,7 @@ class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    //@Test
+    @Test
     void shouldUpdateCaseSummaryWhenRelevantFieldChanged() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)

@@ -51,7 +51,7 @@ class RespondentsCheckerIsStartedTest {
         assertThat(respondentsChecker.isStarted(caseData)).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenMoreThanOneRespondentProvided() {
         final CaseData caseData = CaseData.builder()
                 .respondents1(wrapElements(Respondent.builder().build(), Respondent.builder().build()))

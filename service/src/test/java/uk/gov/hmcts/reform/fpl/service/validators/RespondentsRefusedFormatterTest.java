@@ -22,14 +22,14 @@ class RespondentsRefusedFormatterTest {
     @Nested
     class RespondentsLabel {
 
-        //@Test
+        @Test
         void shouldReturnDefaultLabelMessageIfNoRespondentsOrOthers() {
             CaseData caseData = CaseData.builder().respondentsRefusedSelector(Selector.builder().build()).build();
             String formattedLabel = underTest.getRespondentsRefusedLabel(caseData);
             assertThat(formattedLabel).isEqualTo("No respondents or others to be given notice on the case");
         }
 
-        //@Test
+        @Test
         void shouldReturnFormattedLabelForMultipleRespondentsAndOthers() {
             CaseData caseData = getMultiplePeopleCaseData();
             String expected = "Person 1: Respondent - Remy Respondy\n"
@@ -46,14 +46,14 @@ class RespondentsRefusedFormatterTest {
     @Nested
     class RespondentsNamesForDocument {
 
-        //@Test
+        @Test
         void shouldReturnEmptyStringIfNoRespondentsOrOthers() {
             CaseData caseData = CaseData.builder().respondentsRefusedSelector(Selector.builder().build()).build();
             String formattedNames = underTest.getRespondentsNamesForDocument(caseData);
             assertThat(formattedNames).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldGetRespondentsRefusedNamesForDocumentWhenOneRespondent() {
             CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build()))
@@ -64,7 +64,7 @@ class RespondentsRefusedFormatterTest {
             assertThat(formattedNames).isEqualTo("Remy Respondy");
         }
 
-        //@Test
+        @Test
         void shouldGetOnlySelectedNamesForDocumentWhenBothRespondentsAndOthersPresent() {
             CaseData caseData = getMultiplePeopleCaseData();
 
@@ -76,7 +76,7 @@ class RespondentsRefusedFormatterTest {
     @Nested
     class RespondentsNamesForTab {
 
-        //@Test
+        @Test
         void shouldReturnNullForTabWhenNoOneSelected() {
             CaseData caseData = CaseData.builder().build();
 
@@ -84,7 +84,7 @@ class RespondentsRefusedFormatterTest {
             assertThat(formattedNames).isNull();
         }
 
-        //@Test
+        @Test
         void shouldGetRespondentsRefusedNamesForTabWhenOneRespondent() {
             CaseData caseData = CaseData.builder().respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder().firstName("Remy").lastName("Respondy").build()).build()))
@@ -95,7 +95,7 @@ class RespondentsRefusedFormatterTest {
             assertThat(formattedNames).isEqualTo("Remy Respondy");
         }
 
-        //@Test
+        @Test
         void shouldGetOnlySelectedNamesForTabWhenBothRespondentsAndOthersPresent() {
             CaseData caseData = getMultiplePeopleCaseData();
 

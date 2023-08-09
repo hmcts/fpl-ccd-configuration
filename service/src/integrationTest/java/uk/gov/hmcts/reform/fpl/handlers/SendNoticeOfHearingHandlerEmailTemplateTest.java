@@ -91,7 +91,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
         when(venueLookUp.buildHearingVenue(venue)).thenReturn("some building, somewhere");
     }
 
-    //@Test
+    @Test
     void notifyCafcass() {
         underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
@@ -131,7 +131,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifyLocalAuthority() {
         underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
@@ -171,7 +171,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifyRepresentatives() {
         underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING));
 
@@ -211,7 +211,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifyCtsc() {
         underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
         String caseName = "FAM_NUM, 1111-1111-1111-1111, case management, 12 December 2021";

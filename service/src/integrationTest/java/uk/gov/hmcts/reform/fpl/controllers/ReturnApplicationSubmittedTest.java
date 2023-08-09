@@ -32,7 +32,7 @@ class ReturnApplicationSubmittedTest extends AbstractCallbackTest {
         super("return-application");
     }
 
-    //@Test
+    @Test
     void shouldNotifyTheLocalAuthorityWhenCaseReturned() throws Exception {
         CaseData caseData = CaseData.builder()
             .returnApplication(ReturnApplication.builder()

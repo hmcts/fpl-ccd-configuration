@@ -39,14 +39,14 @@ class CaseSummaryPeopleInCaseGeneratorTest {
 
     private final CaseSummaryPeopleInCaseGenerator underTest = new CaseSummaryPeopleInCaseGenerator();
 
-    //@Test
+    @Test
     void testNoFields() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testEmptyChildren() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .children1(emptyList())
@@ -55,7 +55,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testChildren() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .children1(List.of(
@@ -76,7 +76,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .email(SOLICITOR_EMAIL)
             .build();
 
-        //@Test
+        @Test
         void shouldPopulateMainContactFromDesignatedLocalAuthority() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -119,7 +119,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .build());
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateMainContactWhenDesignatedLocalAuthorityDoesNotHaveColleagues() {
             final Colleague colleague = Colleague.builder()
                 .mainContact("Yes")
@@ -148,7 +148,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .build());
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateMainContactWhenDesignatedLocalAuthorityDoesNotHaveOne() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -178,7 +178,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .build());
         }
 
-        //@Test
+        @Test
         void shouldPopulateMainContactEvenWhenDesignatedLocalAuthorityDoesntExist() {
             final Colleague colleague1 = Colleague.builder()
                 .fullName("John Smith")
@@ -226,7 +226,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
                 .build());
         }
 
-        //@Test
+        @Test
         void shouldNotPopulateMainContactWhenNoLocalAuthoritiesNorLegacySolicitor() {
             final CaseData caseData = CaseData.builder()
                 .build();
@@ -238,7 +238,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         }
     }
 
-    //@Test
+    @Test
     void testEmptyFirstRespondentLastName() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .respondents1(emptyList())
@@ -248,7 +248,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testFirstRespondentLastNameNoParty() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .respondents1(List.of(
@@ -260,7 +260,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testFirstRespondentLastName() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .respondents1(List.of(
@@ -277,7 +277,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testNoRespondentLegalRep() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(emptyList())
@@ -286,7 +286,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder().build());
     }
 
-    //@Test
+    @Test
     void testFirstRespondentLegalRep() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
@@ -302,7 +302,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testFirstRespondentLegalRepMissingRespondent1() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
@@ -316,7 +316,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder().build());
     }
 
-    //@Test
+    @Test
     void testRepresentativesWithoutRole() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
@@ -329,7 +329,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testNoCafcassGuardianNoRepresentatives() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
@@ -343,7 +343,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder().build());
     }
 
-    //@Test
+    @Test
     void testSingleCafcassGuardian() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
@@ -359,7 +359,7 @@ class CaseSummaryPeopleInCaseGeneratorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testMultipleCafcassGuardians() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(

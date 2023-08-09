@@ -54,7 +54,7 @@ class ChildrenUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private ChildrenUpdatedEventHandler underTest;
 
-    //@Test
+    @Test
     void notifyRegisteredSolicitor() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -127,7 +127,7 @@ class ChildrenUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void notifyUnregisteredSolicitors() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)

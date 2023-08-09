@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 
 class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenStartDateIsAfterEndDate() {
         hearingBooking = createHearingBooking(FUTURE, LocalDateTime.now());
 
@@ -20,7 +20,7 @@ class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
         assertThat(violations).contains("The start date cannot be after the end date");
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorWhenDatesAndTimesAreTheSame() {
         hearingBooking = createHearingBooking(FUTURE, FUTURE);
 
@@ -29,7 +29,7 @@ class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
         assertThat(violations).contains("The start date cannot be after the end date");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenDatesAreTheSameAndTimesAreDifferent() {
         hearingBooking = createHearingBooking(
             LocalDateTime.of(FUTURE.toLocalDate(), LocalTime.of(2, 2, 2)),
@@ -40,7 +40,7 @@ class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
         assertThat(violations).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorWhenStartDateIsBeforeTheEndDate() {
         hearingBooking = createHearingBooking(LocalDateTime.now().plusDays(1), FUTURE);
 

@@ -12,13 +12,13 @@ class LocalAuthorityUserValidatorTest {
 
     private final LocalAuthorityUserValidator underTest = new LocalAuthorityUserValidator(user) {};
 
-    //@Test
+    @Test
     void acceptsUserLocalAuthority() {
         when(user.isHmctsUser()).thenReturn(false);
         assertThat(underTest.acceptsUser()).isTrue();
     }
 
-    //@Test
+    @Test
     void acceptsUserHMCTS() {
         when(user.isHmctsUser()).thenReturn(true);
         assertThat(underTest.acceptsUser()).isFalse();

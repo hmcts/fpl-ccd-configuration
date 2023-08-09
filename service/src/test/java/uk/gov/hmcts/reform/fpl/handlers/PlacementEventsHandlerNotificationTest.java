@@ -130,7 +130,7 @@ class PlacementEventsHandlerNotificationTest {
             when(courtService.getCourtEmail(caseData)).thenReturn(courtEmail);
         }
 
-        //@Test
+        @Test
         void shouldSendNotificationToCourtWhenNewPlacementApplicationSubmitted() {
 
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
@@ -141,7 +141,7 @@ class PlacementEventsHandlerNotificationTest {
                 .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
         }
 
-        //@Test
+        @Test
         void shouldSendNotificationToCourtWhenPlacementApplicationChanged() {
 
             final PlacementApplicationChanged event = new PlacementApplicationChanged(caseData, placement);
@@ -162,7 +162,7 @@ class PlacementEventsHandlerNotificationTest {
             .placementEventData(placementEventData)
             .build();
 
-        //@Test
+        @Test
         void shouldSendNotificationToLocalAuthority() {
 
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
@@ -194,7 +194,7 @@ class PlacementEventsHandlerNotificationTest {
             .placementEventData(placementEventData)
             .build();
 
-        //@Test
+        @Test
         void shouldNotifyCafcassWalesAboutNoticeViaNotify() {
 
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
@@ -209,7 +209,7 @@ class PlacementEventsHandlerNotificationTest {
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE, cafcass.getEmail(), notifyData, CASE_ID);
         }
 
-        //@Test
+        @Test
         void shouldNotifyCafcassEnglandAboutNoticeViaSendGrid() {
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placement);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
@@ -224,7 +224,7 @@ class PlacementEventsHandlerNotificationTest {
                 .sendEmail(caseData, Set.of(placementNotice), PLACEMENT_NOTICE, cafcassData);
         }
 
-        //@Test
+        @Test
         void shouldNotifyCafcassWalesAboutApplicationViaNotify() {
 
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
@@ -240,7 +240,7 @@ class PlacementEventsHandlerNotificationTest {
         }
 
 
-        //@Test
+        @Test
         void shouldNotifyCafcassEnglandAboutApplicationViaSendGrid() {
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
             final Cafcass cafcass = new Cafcass("Cafcass", "cafcass@test.com");
@@ -269,7 +269,7 @@ class PlacementEventsHandlerNotificationTest {
             .placement(placement)
             .build();
 
-        //@Test
+        @Test
         void shouldSendNotificationToRespondentSolicitor() {
             Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()
@@ -300,7 +300,7 @@ class PlacementEventsHandlerNotificationTest {
                 .sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData, CASE_ID);
         }
 
-        //@Test
+        @Test
         void shouldSendLetterWhenParentNotRepresented() {
             Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()
@@ -330,7 +330,7 @@ class PlacementEventsHandlerNotificationTest {
                     List.of(respondent.getValue().getParty()));
         }
 
-        //@Test
+        @Test
         void shouldNotSendLetterWhenParentMarkedNfaOrDeceased() {
             Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()
@@ -386,7 +386,7 @@ class PlacementEventsHandlerNotificationTest {
                 .build())
             .build();
 
-        //@Test
+        @Test
         void shouldSendNotificationToChildRepresentative() {
             Element<Respondent> respondent = element(Respondent.builder()
                 .party(RespondentParty.builder()

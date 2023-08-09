@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @OverrideAutoConfiguration(enabled = true)
 class PlacementDocumentUploadMidEventTest extends AbstractPlacementControllerTest {
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenRequiredDocumentsNotPresent() {
 
         final PlacementEventData placementData = PlacementEventData.builder()
@@ -37,7 +37,7 @@ class PlacementDocumentUploadMidEventTest extends AbstractPlacementControllerTes
             "Add required Annex B confidential document");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenRequiredDocumentsArePresent() {
 
         final PlacementEventData placementData = PlacementEventData.builder()

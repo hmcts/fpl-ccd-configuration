@@ -122,7 +122,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         when(identityService.generateId()).thenReturn(ELEMENT_ID);
     }
 
-    //@Test
+    @Test
     void shouldBuildNewOrderObject() {
         UUID linkedApplicationId = UUID.randomUUID();
         DynamicList selectedLinkedApplicationList = buildDynamicList(0, Pair.of(linkedApplicationId, "My application"));
@@ -159,7 +159,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldBuildNewEPO() {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersApprovalDateTime(now())
@@ -200,7 +200,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .build()));
     }
 
-    //@Test
+    @Test
     void shouldBuildNewBlankOrderForClosedCase() {
         CaseData caseData = buildCaseData().toBuilder()
             .state(State.CLOSED)

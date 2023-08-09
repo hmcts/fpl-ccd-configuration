@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RangeQueryTest {
 
-    //@Test
+    @Test
     void shouldRequireFieldBePresent() {
         final RangeQuery query = RangeQuery.builder().build();
 
@@ -17,7 +17,7 @@ class RangeQueryTest {
             .isInstanceOf(NullPointerException.class);
     }
 
-    //@Test
+    @Test
     void shouldIgnoreGreaterThanWhenNull() {
         final RangeQuery query = RangeQuery.builder()
             .field("field")
@@ -33,7 +33,7 @@ class RangeQueryTest {
         assertThat(queryMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldIgnoreLessThanWhenNull() {
         final RangeQuery query = RangeQuery.builder()
             .field("field")
@@ -49,7 +49,7 @@ class RangeQueryTest {
         assertThat(queryMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldIgnoreGreaterThanOrEqualWhenNull() {
         final RangeQuery query = RangeQuery.builder()
             .field("field")
@@ -65,7 +65,7 @@ class RangeQueryTest {
         assertThat(queryMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldIgnoreLessThanOrEqualWhenNull() {
         final RangeQuery query = RangeQuery.builder()
             .field("field")

@@ -27,7 +27,7 @@ class CourtSelectionControllerAboutToSubmitTest extends AbstractCallbackTest {
         super("select-court");
     }
 
-    //@Test
+    @Test
     void shouldSetCourtBasedOnUserSelection() {
 
         final DynamicList courtsList = dynamicLists.from(1,
@@ -53,7 +53,7 @@ class CourtSelectionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getCourtField()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotSetCourtWhenUserDidNotSelectCourt() {
 
         final DynamicList courtsList = dynamicLists.from(

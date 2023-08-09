@@ -39,7 +39,7 @@ class DirectionsTest {
     @Nested
     class SortDirectionsByAssignee {
 
-        //@Test
+        @Test
         void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
             List<Element<Direction>> directions = wrapElements(getDirection(LOCAL_AUTHORITY), getDirection(COURT));
 
@@ -53,7 +53,7 @@ class DirectionsTest {
                 .forEach(assignee -> assertThat(mapping).containsEntry(assignee, emptyList()));
         }
 
-        //@Test
+        @Test
         void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
             Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(emptyList());
 
@@ -67,7 +67,7 @@ class DirectionsTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldGetListOfDirectionsWithPopulatedCCDFieldsFromIndividualDirectionFields() {
         Directions directions = Directions.builder()
             .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
@@ -85,7 +85,7 @@ class DirectionsTest {
         assertTrue(directions.containsDirections());
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoDirections() {
         Directions directions = Directions.builder().build();
 
@@ -93,7 +93,7 @@ class DirectionsTest {
         assertFalse(directions.containsDirections());
     }
 
-    //@Test
+    @Test
     void shouldOrderDirectionsByOtherWhenManyOtherAssignees() {
         Direction first = directionFor(OTHER_1);
         Direction third = directionFor(OTHER_3);
@@ -107,7 +107,7 @@ class DirectionsTest {
             .containsExactly(getDirection(OTHER_1), getDirection(OTHER_3), getDirection(OTHER_5));
     }
 
-    //@Test
+    @Test
     void shouldOrderDirectionsByRespondentWhenManyRespondentAssignees() {
         Direction first = directionFor(RESPONDENT_1);
         Direction third = directionFor(RESPONDENT_3);

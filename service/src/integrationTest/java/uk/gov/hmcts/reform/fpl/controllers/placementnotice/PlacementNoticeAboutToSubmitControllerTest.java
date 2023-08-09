@@ -41,7 +41,7 @@ class PlacementNoticeAboutToSubmitControllerTest extends AbstractPlacementNotice
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    //@Test
+    @Test
     void shouldSavePlacementNotice() {
 
         when(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any(), any()))

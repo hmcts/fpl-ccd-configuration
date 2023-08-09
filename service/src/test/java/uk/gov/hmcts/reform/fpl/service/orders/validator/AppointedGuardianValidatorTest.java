@@ -17,12 +17,12 @@ class AppointedGuardianValidatorTest {
 
     private final AppointedGuardianValidator underTest = new AppointedGuardianValidator();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(APPOINTED_GUARDIAN);
     }
 
-    //@Test
+    @Test
     void validateAnyGuardianSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
@@ -32,7 +32,7 @@ class AppointedGuardianValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validatePartiesSpecifiedInTextField() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -44,7 +44,7 @@ class AppointedGuardianValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validateNoGuardianSelected() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()

@@ -44,7 +44,7 @@ class CaseExtensionServiceTest {
     @InjectMocks
     private CaseExtensionService service;
 
-    //@Test
+    @Test
     void shouldReturnPrePopulatedFields() {
         List<Child> children = List.of(
             getChild(of(2024, 2, 2), "Daisy", "French"),
@@ -71,7 +71,7 @@ class CaseExtensionServiceTest {
             .containsEntry("shouldBeCompletedByDate", "8 April 2025");
     }
 
-    //@Test
+    @Test
     void shouldReturnSelectedChildren() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
                 .extensionForAllChildren(NO.getValue())
@@ -106,7 +106,7 @@ class CaseExtensionServiceTest {
                     .build());
     }
 
-    //@Test
+    @Test
     void shouldReturnAllChildren() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
                 .extensionForAllChildren(NO.getValue())
@@ -146,7 +146,7 @@ class CaseExtensionServiceTest {
                     .build());
     }
 
-    //@Test
+    @Test
     void shouldUpdateSelectedChildren() {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -197,7 +197,7 @@ class CaseExtensionServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldUpdateAllChildrenWithOtherExtension() {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -239,7 +239,7 @@ class CaseExtensionServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldUpdateAllSelectedChildrenExtensions() {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -282,7 +282,7 @@ class CaseExtensionServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldUpdateAllChildrenWithEigthWeeksExtension() {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
@@ -323,7 +323,7 @@ class CaseExtensionServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnSelectedAllChildren() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
             .extensionForAllChildren(NO.getValue())
@@ -363,7 +363,7 @@ class CaseExtensionServiceTest {
                 .build());
     }
 
-    //@Test
+    @Test
     void shouldReturnCaseSummaryExtensionDetails() {
         List<Child> children = List.of(
             getChild(of(2024, 2, 2), "Daisy", "French"),
@@ -384,7 +384,7 @@ class CaseExtensionServiceTest {
         assertThat(caseSummaryExtensionDetails).isEqualTo(expectedLabel);
     }
 
-    //@Test
+    @Test
     void shouldReturnMaxExtendedTimeLine() {
         List<Child> children = List.of(
             getChild(of(2024, 2, 2), "Daisy", "French"),
@@ -400,7 +400,7 @@ class CaseExtensionServiceTest {
         assertThat(maxExtendedTimeLine).isEqualTo(of(2025, 4, 8));
     }
 
-    //@Test
+    @Test
     void shouldReturnVaidateChildExtension() {
         UUID id2 = UUID.randomUUID();
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
@@ -432,7 +432,7 @@ class CaseExtensionServiceTest {
         assertThat(errors).contains("Enter an end date in the future for child 4");
     }
 
-    //@Test
+    @Test
     void shouldHaveValidationErrorWhenNoChildSelected() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
                 .extensionForAllChildren(NO.getValue())
@@ -448,7 +448,7 @@ class CaseExtensionServiceTest {
                 .contains("Select the children requiring an extension");
     }
 
-    //@Test
+    @Test
     void shouldHaveNoValidationErrorWhenChildIsSelected() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
                 .extensionForAllChildren(NO.getValue())
@@ -465,7 +465,7 @@ class CaseExtensionServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldHaveNoValidationErrorWhenAllChildrenOptionIsSelected() {
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
                 .extensionForAllChildren(YES.getValue())

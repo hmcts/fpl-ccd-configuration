@@ -36,7 +36,7 @@ class CommonDirectionServiceTest {
 
     private CommonDirectionService service = new CommonDirectionService();
 
-    //@Test
+    @Test
     void combineAllDirections_shouldAddRoleDirectionsIntoOneList() {
         CaseData caseData = populateCaseDataWithFixedDirections()
             .allPartiesCustom(buildCustomDirections())
@@ -52,7 +52,7 @@ class CommonDirectionServiceTest {
         assertThat(directions).size().isEqualTo(12);
     }
 
-    //@Test
+    @Test
     void combineAllDirections_shouldAllowNullCustomDirectionValues() {
         CaseData caseData = populateCaseDataWithFixedDirections().build();
 
@@ -61,7 +61,7 @@ class CommonDirectionServiceTest {
         assertThat(directions).size().isEqualTo(6);
     }
 
-    //@Test
+    @Test
     void combineAllDirections_shouldAddCustomFlagOnlyToCustomDirection() {
         CaseData caseData = populateCaseDataWithFixedDirections()
             .courtDirectionsCustom(buildCustomDirections())
@@ -76,7 +76,7 @@ class CommonDirectionServiceTest {
         assertThat(directionWithCustomFlag).hasSize(1);
     }
 
-    //@Test
+    @Test
     void combineAllDirections_shouldAssignCustomDirectionToCorrectAssignee() {
         CaseData caseData = populateCaseDataWithFixedDirections()
             .courtDirectionsCustom(buildCustomDirections())
@@ -91,7 +91,7 @@ class CommonDirectionServiceTest {
         assertThat(courtDirections).hasSize(2);
     }
 
-    //@Test
+    @Test
     void removeUnnecessaryDirections_shouldRemoveDirectionsWhenDirectionsAreMarkedAsNotNeeded() {
         List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
 
@@ -104,7 +104,7 @@ class CommonDirectionServiceTest {
         assertThat(directions).isEqualTo(expectedDirections);
     }
 
-    //@Test
+    @Test
     void removeUnnecessaryDirections_shouldNotRemoveCustomDirectionsWhenCustomDirectionsPresent() {
         List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(buildCustomDirections()));
 
@@ -116,7 +116,7 @@ class CommonDirectionServiceTest {
     @Nested
     class RemoveCustomDirections {
 
-        //@Test
+        @Test
         void shouldRemoveCustomDirectionFromListWhenCustomFlagIsYes() {
             List<Element<Direction>> filteredDirections = service.removeCustomDirections(buildCustomDirections());
 

@@ -30,7 +30,7 @@ class OthersControllerAboutToStartTest extends AbstractCallbackTest {
 
     private static final UUID ADDITIONAL_OTHER_ID = randomUUID();
 
-    //@Test
+    @Test
     void shouldReturnOthersWhenTheyAreMarkedAsConfidential() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(

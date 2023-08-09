@@ -12,7 +12,7 @@ class DynamicListElementTest {
 
     private final UUID id = UUID.randomUUID();
 
-    //@Test
+    @Test
     void shouldTrimLabelWhenLongerThanMaxAllowedLength() {
 
         final String label = RandomStringUtils.randomAlphanumeric(MAX_DYNAMIC_LIST_LABEL_LENGTH + 50);
@@ -26,7 +26,7 @@ class DynamicListElementTest {
         assertThat(element.getLabel()).isEqualTo(expectedLabel);
     }
 
-    //@Test
+    @Test
     void shouldNotTrimLabelWhenLMaxAllowedLengthLong() {
 
         final String label = RandomStringUtils.randomAlphanumeric(MAX_DYNAMIC_LIST_LABEL_LENGTH);
@@ -39,7 +39,7 @@ class DynamicListElementTest {
         assertThat(element.getLabel()).isEqualTo(label);
     }
 
-    //@Test
+    @Test
     void shouldNotTrimLabelWhenShorterThanMaxAllowedLength() {
 
         final String label = RandomStringUtils.randomAlphanumeric(MAX_DYNAMIC_LIST_LABEL_LENGTH - 5);
@@ -52,7 +52,7 @@ class DynamicListElementTest {
         assertThat(element.getLabel()).isEqualTo(label);
     }
 
-    //@Test
+    @Test
     void shouldReturnNullLabel() {
 
         final DynamicListElement element = DynamicListElement.builder()

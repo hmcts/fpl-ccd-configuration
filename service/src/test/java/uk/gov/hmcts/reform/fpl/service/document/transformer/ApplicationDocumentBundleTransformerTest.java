@@ -69,7 +69,7 @@ class ApplicationDocumentBundleTransformerTest {
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor
         = buildFurtherEvidenceDocumentsSolicitor();
 
-    //@Test
+    @Test
     void shouldReturnNullWhenApplicationDocumentsAndApplicantStatementsAreNull() {
         CaseData caseData = CaseData.builder().build();
         assertThat(underTest.getApplicationStatementAndDocumentBundle(caseData, HMCTS)).isNull();
@@ -77,7 +77,7 @@ class ApplicationDocumentBundleTransformerTest {
         assertThat(underTest.getApplicationStatementAndDocumentBundle(caseData, NONCONFIDENTIAL)).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnNullWhenApplicationDocumentsAndApplicantStatementsAreEmpty() {
         CaseData caseData = CaseData.builder()
             .applicationDocuments(List.of())
@@ -91,7 +91,7 @@ class ApplicationDocumentBundleTransformerTest {
         assertThat(underTest.getApplicationStatementAndDocumentBundle(caseData, NONCONFIDENTIAL)).isNull();
     }
 
-    //@Test
+    @Test
     void shouldGetApplicationDocumentBundleForHmctsView() {
         CaseData caseData = caseData();
 
@@ -112,7 +112,7 @@ class ApplicationDocumentBundleTransformerTest {
             .isEqualTo(expectedBundle);
     }
 
-    //@Test
+    @Test
     void shouldGetApplicationDocumentBundleForLAView() {
         CaseData caseData = caseData();
 
@@ -132,7 +132,7 @@ class ApplicationDocumentBundleTransformerTest {
             .isEqualTo(expectedBundle);
     }
 
-    //@Test
+    @Test
     void shouldGetApplicationDocumentBundleForNonConfidentialView() {
         CaseData caseData = caseData();
 

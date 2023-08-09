@@ -77,7 +77,7 @@ class CoreCaseDataServiceTest {
                 .thenReturn(buildStartEventResponse(eventId, eventToken));
         }
 
-        //@Test
+        @Test
         void shouldStartAndSubmitEventWithoutEventData() {
             service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId);
 
@@ -88,7 +88,7 @@ class CoreCaseDataServiceTest {
                 buildCaseDataContent(eventId, eventToken, emptyMap()));
         }
 
-        //@Test
+        @Test
         void shouldStartAndSubmitEventWithEventData() {
             Map<String, Object> eventData = Map.of("A", "B");
             service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId, eventData);
@@ -100,7 +100,7 @@ class CoreCaseDataServiceTest {
                 buildCaseDataContent(eventId, eventToken, eventData));
         }
 
-        //@Test
+        @Test
         void shouldPerformPostSubmitCallbackWithoutChange() {
             StartEventResponse startEventResponse = buildStartEventResponse(eventId, eventToken);
             when(concurrencyHelper.startEvent(CASE_ID, eventId)).thenReturn(startEventResponse);
@@ -109,7 +109,7 @@ class CoreCaseDataServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldTriggerUpdateCaseEventWhenCaseIsRequestedToBeUpdated() {
         final Map<String, Object> caseUpdate = Map.of("a", "b");
 
@@ -120,7 +120,7 @@ class CoreCaseDataServiceTest {
         verify(service).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change-UPDATE_CASE", caseUpdate);
     }
 
-    //@Test
+    @Test
     void shouldReturnMatchingCaseDetailsIdWhenSearchedByExistingCaseId() {
         CaseDetails expectedCaseDetails = populatedCaseDetails();
 
@@ -135,7 +135,7 @@ class CoreCaseDataServiceTest {
             .isEqualTo(returnedCaseDetails);
     }
 
-    //@Test
+    @Test
     void shouldReturnNullCaseDetailsIdWhenSearchedByNonExistingCaseId() {
         when(requestData.authorisation()).thenReturn(USER_AUTH_TOKEN);
 
@@ -144,7 +144,7 @@ class CoreCaseDataServiceTest {
         assertThat(returnedCaseDetails).isNull();
     }
 
-    //@Test
+    @Test
     void shouldSearchCasesAsSystemUpdateUser() {
         String query = "query";
         String caseType = "caseType";

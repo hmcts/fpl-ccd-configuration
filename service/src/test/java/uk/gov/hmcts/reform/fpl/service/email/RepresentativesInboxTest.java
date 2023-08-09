@@ -123,7 +123,7 @@ class RepresentativesInboxTest {
 
     private final RepresentativesInbox underTest = new RepresentativesInbox();
 
-    //@Test
+    @Test
     void testRepresentativesByPOSTIsNotAccepted() {
         CaseData caseData = CaseData.builder().build();
 
@@ -132,7 +132,7 @@ class RepresentativesInboxTest {
             .hasMessage("Preference should not be POST");
     }
 
-    //@Test
+    @Test
     void testNullRepresentatives() {
         CaseData caseData = CaseData.builder().representatives(null).build();
 
@@ -141,7 +141,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testNoRepresentatives() {
         CaseData caseData = CaseData.builder().representatives(wrapElements()).build();
 
@@ -150,7 +150,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentatives() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(EMAIL_REP, DIGITAL_REP)).build();
 
@@ -159,7 +159,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_3));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalRepresentatives() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(EMAIL_REP, DIGITAL_REP)).build();
 
@@ -168,7 +168,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_4));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRegisteredRespondentSolicitors() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(REGISTERED_RESPONDENT)).build();
 
@@ -177,7 +177,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRegisteredChildSolicitors() {
         CaseData caseData = CaseData.builder().children1(wrapElements(REGISTERED_CHILD)).build();
 
@@ -186,7 +186,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRespondentSolicitorsUnregistered() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(UNREGISTERED_RESPONDENT)).build();
 
@@ -195,7 +195,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_1));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromChildSolicitorsUnregistered() {
         CaseData caseData = CaseData.builder().children1(wrapElements(UNREGISTERED_CHILD)).build();
 
@@ -204,7 +204,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_5));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalRepresentativesFromRegisteredRespondentSolicitors() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(REGISTERED_RESPONDENT)).build();
 
@@ -213,7 +213,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_2));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalRepresentativesFromRegisteredChildSolicitors() {
         CaseData caseData = CaseData.builder().children1(wrapElements(REGISTERED_CHILD)).build();
 
@@ -222,7 +222,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_6));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalRepresentativesFromRespondentSolicitorsUnregistered() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(UNREGISTERED_RESPONDENT)).build();
 
@@ -231,7 +231,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalRepresentativesFromChildSolicitorsUnregistered() {
         CaseData caseData = CaseData.builder().children1(wrapElements(UNREGISTERED_CHILD)).build();
 
@@ -240,7 +240,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRespondentSolicitorsWhenUnregistered() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(UNREGISTERED_RESPONDENT)).build();
 
@@ -249,7 +249,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_1));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromChildrenSolicitorsWhenUnregistered() {
         CaseData caseData = CaseData.builder().children1(wrapElements(UNREGISTERED_CHILD)).build();
 
@@ -258,7 +258,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_5));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRespondentSolicitorsWhenNoOrganisation() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(
             Respondent.builder()
@@ -274,7 +274,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_1));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromChildSolicitorsWhenNoOrganisation() {
         CaseData caseData = CaseData.builder().children1(wrapElements(
             Child.builder()
@@ -290,7 +290,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_5));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromRespondentSolicitorsWhenNoSolicitor() {
         CaseData caseData = CaseData.builder().respondents1(wrapElements(
             Respondent.builder()
@@ -303,7 +303,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesFromChildrenSolicitorsWhenNoSolicitor() {
         CaseData caseData = CaseData.builder().children1(wrapElements(
             Child.builder()
@@ -316,7 +316,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesRemoveDuplicates() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(EMAIL_REP, EMAIL_REP)).build();
 
@@ -327,7 +327,7 @@ class RepresentativesInboxTest {
         ));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesRemoveNulls() {
         CaseData caseData = CaseData.builder()
             .representatives(wrapElements(
@@ -342,7 +342,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailRepresentativesRemoveEmpty() {
         CaseData caseData = CaseData.builder()
             .representatives(wrapElements(
@@ -358,7 +358,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of());
     }
 
-    //@Test
+    @Test
     void testFilterOnlyDigitalMixedRepresentatives() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(UNREGISTERED_RESPONDENT, REGISTERED_RESPONDENT))
@@ -371,7 +371,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_2, EMAIL_4, EMAIL_6));
     }
 
-    //@Test
+    @Test
     void testFilterOnlyEmailMixedRepresentatives() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(UNREGISTERED_RESPONDENT, REGISTERED_RESPONDENT))
@@ -384,7 +384,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(Set.of(EMAIL_1, EMAIL_3, EMAIL_5));
     }
 
-    //@Test
+    @Test
     void testFilterRepresentativesByRole() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, RESPONDENT);
@@ -394,7 +394,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(newHashSet(EMAIL_1, EMAIL_2));
     }
 
-    //@Test
+    @Test
     void testFilterRepresentativesByRoleRemovesRepresentativesWithIncorrectRoles() {
         CaseData caseData = CaseData.builder().representatives(wrapElements(CARCASS_REP, RESPONDENT_REP)).build();
         List<RepresentativeRole.Type> roles = List.of(CAFCASS, LASOLICITOR);
@@ -404,7 +404,7 @@ class RepresentativesInboxTest {
         assertThat(actual).isEqualTo(newHashSet(EMAIL_1));
     }
 
-    //@Test
+    @Test
     void shouldGetRespondentSolicitorColleagueEmailsAsWell() {
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(element(REGISTERED_RESPONDENT_WITH_COLLEAGUES)))
@@ -415,7 +415,7 @@ class RepresentativesInboxTest {
         assertThat(emails).containsExactlyInAnyOrder(EMAIL_2, EMAIL_8);
     }
 
-    //@Test
+    @Test
     void shouldGetChildSolicitorColleagueEmailsAsWell() {
         CaseData caseData = CaseData.builder()
             .children1(List.of(element(REGISTERED_CHILD_WITH_COLLEAGUES)))

@@ -18,7 +18,7 @@ class ChangeStateControllerAboutToStartTest extends AbstractCallbackTest {
         super("change-state");
     }
 
-    //@Test
+    @Test
     void shouldReturnMessageRelatedToCaseManagementWhenStateIsFinalHearing() {
         CaseData caseData = CaseData.builder().state(FINAL_HEARING).build();
 
@@ -29,7 +29,7 @@ class ChangeStateControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(response.getData()).extracting("nextStateLabelContent").isEqualTo(expectedMessage);
     }
 
-    //@Test
+    @Test
     void shouldNotInitialiseMessageWhenStateIsClosed() {
         CaseData caseData = CaseData.builder().state(CLOSED).build();
 

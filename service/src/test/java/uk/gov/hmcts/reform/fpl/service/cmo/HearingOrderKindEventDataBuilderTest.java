@@ -40,7 +40,7 @@ class HearingOrderKindEventDataBuilderTest {
     private final HearingOrderKindEventDataBuilder underTest = new HearingOrderKindEventDataBuilder(identityService,
         new OptionCountBuilder());
 
-    //@Test
+    @Test
     void testEmptyHearingOrderBundleDraft() {
         when(identityService.generateId()).thenReturn(UUID_1);
 
@@ -66,7 +66,7 @@ class HearingOrderKindEventDataBuilderTest {
         );
     }
 
-    //@Test
+    @Test
     void testExistingHearingOrderBundleDraftWithC21() {
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
@@ -101,7 +101,7 @@ class HearingOrderKindEventDataBuilderTest {
         );
     }
 
-    //@Test
+    @Test
     void testExistingHearingOrderBundleDraftWithMultipleC21() {
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
@@ -141,7 +141,7 @@ class HearingOrderKindEventDataBuilderTest {
         );
     }
 
-    //@Test
+    @Test
     void testExistingHearingOrderBundleDraftWithMixedC21AndCMOs() {
 
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
@@ -180,7 +180,7 @@ class HearingOrderKindEventDataBuilderTest {
         );
     }
 
-    //@Test
+    @Test
     void testExistingDraftsSetInEventWithMaxNumberOfDocuments() {
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
 
@@ -218,7 +218,7 @@ class HearingOrderKindEventDataBuilderTest {
         );
     }
 
-    //@Test
+    @Test
     void testExistingDraftsSetInEventWithMaxNumberOfDocumentsMissingDocRef() {
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
 
@@ -257,7 +257,7 @@ class HearingOrderKindEventDataBuilderTest {
 
     }
 
-    //@Test
+    @Test
     void testExistingDraftsSetInEventWithLessThanMaxNumberOfDocuments() {
         UploadDraftOrdersData.UploadDraftOrdersDataBuilder newEventDataBuilder = UploadDraftOrdersData.builder();
 

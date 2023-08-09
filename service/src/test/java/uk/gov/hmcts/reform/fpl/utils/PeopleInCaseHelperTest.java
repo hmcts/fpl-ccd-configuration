@@ -34,7 +34,7 @@ class PeopleInCaseHelperTest {
     @Nested
     class FirstApplicant {
 
-        //@Test
+        @Test
         void shouldReturnNameOfFirstLocalAuthority() {
             final LocalAuthority localAuthority1 = LocalAuthority.builder()
                 .name("Applicant local authority 1")
@@ -77,7 +77,7 @@ class PeopleInCaseHelperTest {
             assertThat(applicantName).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnFirstApplicantNameFromLegacyApplicantWhenLocalAuthoritiesNotPresent() {
             final CaseData caseData = CaseData.builder()
                 .applicants(createPopulatedApplicants())
@@ -88,7 +88,7 @@ class PeopleInCaseHelperTest {
             assertThat(applicantName).isEqualTo("Bran Stark");
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyStringWhenNoLegacyApplicantsNorLocalAuthorities() {
             final CaseData caseData = CaseData.builder()
                 .build();
@@ -98,7 +98,7 @@ class PeopleInCaseHelperTest {
             assertThat(applicantName).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyStringWhenNoPartyPresentInLegacyApplicantAndNoLocalAuthorities() {
             final CaseData caseData = CaseData.builder()
                 .applicants(wrapElements(Applicant.builder().build()))
@@ -109,7 +109,7 @@ class PeopleInCaseHelperTest {
             assertThat(applicantName).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyStringWhenLegacyApplicantWithNoNamePresent() {
             final CaseData caseData = CaseData.builder()
                 .applicants(wrapElements(Applicant.builder()
@@ -124,28 +124,28 @@ class PeopleInCaseHelperTest {
 
     }
 
-    //@Test
+    @Test
     void shouldReturnFirstRespondentSurnameWhenFirstRespondentWithNamePresent() {
 
         String respondentName = getFirstRespondentLastName(createRespondents());
         assertThat(respondentName).isEqualTo("Jones");
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyStringWhenNoRespondents() {
 
         String respondentName = getFirstRespondentLastName(CaseData.builder().build());
         assertThat(respondentName).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyStringWhenRespondentWithNoPartyPresent() {
 
         String respondentName = getFirstRespondentLastName(wrapElements(Respondent.builder().build()));
         assertThat(respondentName).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyStringWhenRespondentWithNoNamePresent() {
         List<Element<Respondent>> respondents = wrapElements(Respondent.builder()
             .party(RespondentParty.builder().build())
@@ -155,13 +155,13 @@ class PeopleInCaseHelperTest {
         assertThat(respondentName).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnFirstRespondentFullNameWhenFirstRespondentWithNamePresent() {
         String respondentName = getFirstRespondentFullName(createRespondents());
         assertThat(respondentName).isEqualTo("Timothy Jones");
     }
 
-    //@Test
+    @Test
     void shouldFormatAllRepresentatives() {
         Representative representative1 = Representative.builder()
             .fullName("John Smith")
@@ -186,7 +186,7 @@ class PeopleInCaseHelperTest {
             .containsExactlyInAnyOrder("John Smith\nA1, CR0 2GE", "Adam Black\nFlat 2, SE16 AB1");
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyStringWhenNoRepresentatives() {
 
         List<String> formattedRepresentatives = formatRepresentativesForPostNotification(Collections.emptyList());
@@ -194,7 +194,7 @@ class PeopleInCaseHelperTest {
         assertThat(formattedRepresentatives).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenRespondentAddressChange() {
         List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
             .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
@@ -206,7 +206,7 @@ class PeopleInCaseHelperTest {
             Collections.unmodifiableList(respondentsBefore))).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenRespondentAddressNoChange() {
         List<Element<Respondent>> respondentsBefore = wrapElements(Respondent.builder()
             .party(RespondentParty.builder().address(Address.builder().addressLine1("33 Testing Court")
@@ -218,7 +218,7 @@ class PeopleInCaseHelperTest {
             Collections.unmodifiableList(respondentsBefore))).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenChildAddressChange() {
         List<Element<Child>> childrenBefore = wrapElements(Child.builder()
             .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")
@@ -230,7 +230,7 @@ class PeopleInCaseHelperTest {
             Collections.unmodifiableList(childrenBefore))).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenChildAddressNoChange() {
         List<Element<Child>> childrenBefore = wrapElements(Child.builder()
             .party(ChildParty.builder().address(Address.builder().addressLine1("33 Testing Court")

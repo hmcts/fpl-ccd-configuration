@@ -33,7 +33,7 @@ class RemoveSentDocumentServiceTest {
 
     private final RemoveSentDocumentService underTest = new RemoveSentDocumentService();
 
-    //@Test
+    @Test
     void shouldBuildSortedDynamicListOfDocumentsSentToParties() {
         List<Element<SentDocuments>> sentDocuments = new ArrayList<>();
         sentDocuments.add(element(buildSentDocuments(PARTY_NAME_1,
@@ -70,7 +70,7 @@ class RemoveSentDocumentServiceTest {
         assertThat(listOfApplications).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldBuildDynamicListOfDocumentsSentToPartiesWithSelected() {
         UUID docId = fromString("21111111-1111-1111-1111-111111111111");
         List<Element<SentDocuments>> sentDocuments = new ArrayList<>();
@@ -109,7 +109,7 @@ class RemoveSentDocumentServiceTest {
         assertThat(listOfApplications).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldPopulateSentDocumentFields() {
         DocumentReference doc = testDocumentReference();
 
@@ -130,7 +130,7 @@ class RemoveSentDocumentServiceTest {
         assertThat(caseDetailsMap).isEqualTo(expectedMap);
     }
 
-    //@Test
+    @Test
     void shouldGetRemovedSentDocumentById() {
         UUID id = UUID.randomUUID();
         List<Element<SentDocument>> sentDocuments = new ArrayList<>();
@@ -150,7 +150,7 @@ class RemoveSentDocumentServiceTest {
         assertThat(application).isEqualTo(sentDocuments.get(1));
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionGetRemovedSentDocumentById() {
         final UUID id = UUID.randomUUID();
         List<Element<SentDocument>> sentDocuments = new ArrayList<>();
@@ -170,7 +170,7 @@ class RemoveSentDocumentServiceTest {
             .hasMessageContaining(String.format("Removable documents sent to parties with id %s not found", id));
     }
 
-    //@Test
+    @Test
     void shouldGetRemovedSentDocumentByIdWithTwoParties() {
         final UUID id = UUID.randomUUID();
 
@@ -238,7 +238,7 @@ class RemoveSentDocumentServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldRemoveSentDocumentFromCase() {
         final UUID idToBeRemoved = fromString("21111111-1111-1111-1111-111111111112");
 
@@ -283,7 +283,7 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldRemoveLastSentDocumentFromParty() {
         final UUID idToBeRemoved = fromString("31111111-1111-1111-1111-111111111112");
@@ -326,7 +326,7 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldRemoveSentDocumentFromCaseIfHiddenSentDocumentsExists() {
         final UUID idToBeRemoved = fromString("21111111-1111-1111-1111-111111111112");
@@ -381,7 +381,7 @@ class RemoveSentDocumentServiceTest {
                 "hiddenDocumentsSentToParties", expectedHiddenDocumentsSentToParties));
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldRemoveLastSentDocumentFromCase() {
         final UUID idToBeRemoved = fromString("31111111-1111-1111-1111-111111111112");

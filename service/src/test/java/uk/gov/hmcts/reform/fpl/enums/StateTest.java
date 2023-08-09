@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StateTest {
 
-    //@Test
+    @Test
     void shouldMapValueToStateEnum() {
         assertThat(State.fromValue("OPEN")).isEqualTo(State.OPEN);
         assertThat(State.fromValue("SUBMITTED")).isEqualTo(State.SUBMITTED);
@@ -20,7 +20,7 @@ class StateTest {
         assertThat(State.fromValue("RETURNED")).isEqualTo(State.RETURNED);
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionWhenAttemptingToMapAnInvalidStateValue() {
         Assertions.assertThatThrownBy(() -> State.fromValue("NOT_A_REAL_STATE"))
             .isInstanceOf(NoSuchElementException.class)

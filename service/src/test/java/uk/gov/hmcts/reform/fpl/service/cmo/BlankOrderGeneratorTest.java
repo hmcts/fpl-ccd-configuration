@@ -47,7 +47,7 @@ class BlankOrderGeneratorTest {
     private final BlankOrderGenerator underTest = new BlankOrderGenerator(TIME);
     public static final UUID HEARING_ID = UUID.randomUUID();
 
-    //@Test
+    @Test
     void testShouldCreateBlankOrderFromC21DraftForABundleWithHearing() {
         DocumentReference amendedDocument = testDocumentReference();
 
@@ -85,7 +85,7 @@ class BlankOrderGeneratorTest {
             draftOrder1.getValue().getDateIssued(), judgeAndLegalAdvisor, selectedOthers, othersNotified));
     }
 
-    //@Test
+    @Test
     void testShouldCreateBlankOrderFromC21DraftForNoHearingBundle() {
         DocumentReference amendedDocument = testDocumentReference();
 

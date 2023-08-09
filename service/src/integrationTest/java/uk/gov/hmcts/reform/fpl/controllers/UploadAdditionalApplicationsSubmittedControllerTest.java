@@ -211,7 +211,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyHmctsAdminAndRepresentativesWhenCtscToggleIsDisabled() {
         List<Element<Respondent>> respondents = List.of(RESPONDENT_WITH_DIGITAL_REP, RESPONDENT_WITH_EMAIL_REP,
             RESPONDENT_WITH_POST_REP, UNREPRESENTED_RESPONDENT);
@@ -271,7 +271,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         verify(sendLetterApi, never()).sendLetter(any(), any(LetterWithPdfsRequest.class));
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWithUpdatedTemplate() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
@@ -283,7 +283,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         ));
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
         postSubmittedEvent(buildCaseDetails(YES, YES));
         checkUntil(() -> verify(notificationClient).sendEmail(
@@ -294,7 +294,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         ));
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsBundleIsUploaded() {
         final Map<String, Object> caseData = ImmutableMap.of(
             "caseLocalAuthority",
@@ -318,7 +318,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             eq(notificationReference(CASE_ID))));
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyAdminWhenWhenAdditionalApplicationsAreNotUsingPbaPayment() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -345,7 +345,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         verifyNoInteractions(paymentService);
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsAreNotUsingPbaPaymentAndCtscToggleIsEnabled()
         throws Exception {
         postSubmittedEvent(buildCaseDetails(YES, NO));
@@ -365,7 +365,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         );
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotNotifyAdminWhenAdditionalApplicationsAreUsingPbaPayment() throws Exception {
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
@@ -377,7 +377,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         );
     }
 
-    //@Test
+    @Test
     void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
         CaseData caseData = CaseData.builder().caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .id(CASE_ID)
@@ -421,7 +421,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         verifyNoInteractions(paymentService);
     }
 
-    //@Test
+    @Test
     void shouldMakePaymentWhenAmountToPayWasDisplayedFor() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -440,7 +440,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             CASE_ID, caseConverter.convert(caseDetails), FEES_DATA);
     }
 
-    //@Test
+    @Test
     void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -453,7 +453,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         verify(paymentService, never()).makePaymentForC2(any(), any());
     }
 
-    //@Test
+    @Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(ApplicationType.C2_APPLICATION, ApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN));
@@ -485,7 +485,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             notificationReference(CASE_ID));
     }
 
-    //@Test
+    @Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(C2_APPLICATION));
@@ -511,7 +511,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             notificationReference(CASE_ID));
     }
 
-    //@Test
+    @Test
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
@@ -533,7 +533,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString());
     }
 
-    //@Test
+    @Test
     void shouldNotSendPaymentNotificationsWhenApplyingForAdjournment() throws NotificationClientException {
 
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
@@ -556,7 +556,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyString());
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationsWhenTriggerEventFails() {
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(ApplicationType.C2_APPLICATION));

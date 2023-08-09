@@ -67,7 +67,7 @@ class C2UploadedEventHandlerTest {
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
     }
 
-    //@Test
+    @Test
     void shouldNotifyHmctsAdminWhenC2UploadedByNonHmctsAdmin() {
         CaseData caseData = caseData().toBuilder().build();
 
@@ -90,7 +90,7 @@ class C2UploadedEventHandlerTest {
             caseData.getId());
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyHmctsAdminWhenC2UploadedByHmctsAdmin() {
         CaseData caseData = caseData();
 

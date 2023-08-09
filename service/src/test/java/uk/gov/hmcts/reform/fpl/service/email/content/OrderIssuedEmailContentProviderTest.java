@@ -111,7 +111,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     @MockBean
     private OrderIssuedEmailContentProviderTypeOfOrderCalculator calculator;
 
-    //@Test
+    @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         when(calculator.getTypeOfOrder(CASE_DATA, GENERATED_ORDER)).thenReturn("blank order (c21)");
 
@@ -123,7 +123,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldBuildGeneratedOrderParametersWithoutCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
         when(calculator.getTypeOfOrder(CASE_DATA, GENERATED_ORDER)).thenReturn("blank order (c21)");
@@ -136,7 +136,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldBuildNoticeOfPlacementOrderParameters() {
         when(calculator.getTypeOfOrder(CASE_DATA, NOTICE_OF_PLACEMENT_ORDER)).thenReturn("notice of placement order");
 
@@ -148,7 +148,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldBuildCaseManagementOrderParameters() {
         UUID hearingId = randomUUID();
         CaseData data = CASE_DATA.toBuilder()
@@ -166,7 +166,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
-    //@Test
+    @Test
     void shouldBuildPlacementOrderNotifyData() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 

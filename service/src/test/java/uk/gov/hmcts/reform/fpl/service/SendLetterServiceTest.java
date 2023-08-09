@@ -117,7 +117,7 @@ class SendLetterServiceTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
-    //@Test
+    @Test
     void shouldMakeCorrectCallsToCreateAndSendDocuments() {
         String familyCaseNumber = "familyCaseNumber";
 
@@ -150,7 +150,7 @@ class SendLetterServiceTest {
                 "recipients", List.of(RECIPIENTS.get(1).getFullName())));
     }
 
-    //@Test
+    @Test
     void shouldReturnSentDocumentsData() {
         List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID,
             FAMILY_CASE_NUMBER, Language.ENGLISH);

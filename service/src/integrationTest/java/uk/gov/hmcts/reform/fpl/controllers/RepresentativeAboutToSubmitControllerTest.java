@@ -48,7 +48,7 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
         super("manage-representatives");
     }
 
-    //@Test
+    @Test
     void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() {
         final UUID representativeId = UUID.randomUUID();
         final String userId = RandomStringUtils.randomAlphanumeric(10);

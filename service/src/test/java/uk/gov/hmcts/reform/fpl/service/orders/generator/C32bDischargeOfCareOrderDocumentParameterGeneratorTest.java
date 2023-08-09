@@ -54,12 +54,12 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
     @InjectMocks
     private C32bDischargeOfCareOrderDocumentParameterGenerator underTest;
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C32B_DISCHARGE_OF_CARE_ORDER);
     }
 
-    //@Test
+    @Test
     void generate() {
         when(hearingVenueLookUpService.getHearingVenue(VENUE_ID)).thenReturn(HEARING_VENUE);
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
@@ -68,7 +68,7 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedCommonParameters());
     }
 
-    //@Test
+    @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }

@@ -40,7 +40,7 @@ class ChildrenCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenNoChildrenDetailsSpecified() {
         final Child child = Child.builder()
                 .party(ChildParty.builder().build())
@@ -60,7 +60,7 @@ class ChildrenCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyErrorsWhenRequiredChildrenDetailsArePresentAndValid() {
         final Child child = Child.builder()
                 .party(ChildParty.builder()
@@ -81,7 +81,7 @@ class ChildrenCheckerTest {
         assertThat(isCompleted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenDetailsOfNonStandardGenderAreMissing() {
         final Child child = Child.builder()
                 .party(ChildParty.builder()
@@ -102,7 +102,7 @@ class ChildrenCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenDateOfBirthIsInFuture() {
         final Child child = Child.builder()
                 .party(ChildParty.builder()

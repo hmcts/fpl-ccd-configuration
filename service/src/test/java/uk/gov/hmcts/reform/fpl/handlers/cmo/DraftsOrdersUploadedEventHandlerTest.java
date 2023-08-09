@@ -93,7 +93,7 @@ class DraftsOrdersUploadedEventHandlerTest {
     @InjectMocks
     private DraftOrdersUploadedEventHandler underTest;
 
-    //@Test
+    @Test
     void shouldSendNotificationToCafcass() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -133,7 +133,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyCafcassWhenHearingOrderIsNotCurrent() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -185,7 +185,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyCafcassWhenLAisNonEnglish() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
@@ -207,7 +207,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
@@ -243,7 +243,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationToHearingJudgeWhenDraftCMOUploadedWithAgreedCMOExist() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
@@ -281,7 +281,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
@@ -317,7 +317,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploadedWithDraftCMOExist() {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
@@ -392,7 +392,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotSendEmailIfNoHearingOrders() {
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -406,7 +406,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotSendEmailIfNoJudgeEmail() {
 
         final Element<HearingBooking> hearing1 = hearingWithJudgeEmail(null);

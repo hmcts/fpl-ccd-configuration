@@ -34,7 +34,7 @@ class OrderDocumentGeneratorTest {
         generatorHolder, documentMerger, documentGenerator
     );
 
-    //@Test
+    @Test
     void generateWithNoGenerator() {
         when(generatorHolder.getTypeToGenerator()).thenReturn(Map.of());
 
@@ -43,7 +43,7 @@ class OrderDocumentGeneratorTest {
             .hasMessage("Not implemented yet for order " + ORDER.name());
     }
 
-    //@Test
+    @Test
     void generateWithGenerator() {
         when(generatorHolder.getTypeToGenerator()).thenReturn(Map.of(ORDER, generator));
         when(documentGenerator.generateDocument(CASE_DATA, generator, FORMAT, STATUS)).thenReturn(DOCMOSIS_DOCUMENT);

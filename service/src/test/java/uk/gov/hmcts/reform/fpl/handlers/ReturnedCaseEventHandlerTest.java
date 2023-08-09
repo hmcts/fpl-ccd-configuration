@@ -39,7 +39,7 @@ class ReturnedCaseEventHandlerTest {
     @InjectMocks
     private ReturnedCaseEventHandler underTest;
 
-    //@Test
+    @Test
     void testNotifyLocalAuthority() {
 
         when(returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA)).thenReturn(PARAMETERS);

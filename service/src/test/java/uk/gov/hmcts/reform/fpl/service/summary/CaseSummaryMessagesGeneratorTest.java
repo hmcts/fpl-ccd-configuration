@@ -16,21 +16,21 @@ class CaseSummaryMessagesGeneratorTest {
 
     private final CaseSummaryMessagesGenerator underTest = new CaseSummaryMessagesGenerator();
 
-    //@Test
+    @Test
     void testNoMessages() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testEmptyMessages() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder().judicialMessages(emptyList()).build());
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
     }
 
-    //@Test
+    @Test
     void testWithChildren() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .judicialMessages(List.of(

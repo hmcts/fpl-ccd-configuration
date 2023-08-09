@@ -17,7 +17,7 @@ class AmendedUrgentHearingOrderFinderTest {
 
     private final AmendedUrgentHearingOrderFinder underTest = new AmendedUrgentHearingOrderFinder();
 
-    //@Test
+    @Test
     void findOrderIfPresentAmended() {
         when(caseData.getUrgentHearingOrder()).thenReturn((AMENDED_UHO));
         when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
@@ -25,7 +25,7 @@ class AmendedUrgentHearingOrderFinderTest {
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_UHO);
     }
 
-    //@Test
+    @Test
     void findOrderIfPresentNotAmended() {
         when(caseData.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
         when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));

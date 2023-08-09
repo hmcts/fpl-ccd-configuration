@@ -27,7 +27,7 @@ class ChildrenCheckerIsStartedTest {
     @InjectMocks
     private ChildrenChecker childrenChecker;
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenNoChildren() {
         final CaseData caseData = CaseData.builder().build();
 
@@ -36,7 +36,7 @@ class ChildrenCheckerIsStartedTest {
         assertThat(isStarted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenNoChildrenDetailsProvided() {
         final Child child = Child.builder()
                 .party(builder().build())
@@ -50,7 +50,7 @@ class ChildrenCheckerIsStartedTest {
         assertThat(isStarted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseWhenEmptyChildrenDetailsProvided() {
         final Child child = Child.builder()
                 .party(builder()
@@ -104,7 +104,7 @@ class ChildrenCheckerIsStartedTest {
         assertThat(isStarted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenMoreThanOneChildrenProvided() {
         final CaseData caseData = CaseData.builder()
                 .children1(wrapElements(Child.builder().build(), Child.builder().build()))

@@ -18,7 +18,7 @@ class EventServiceTest {
     @InjectMocks
     private EventService eventService;
 
-    //@Test
+    @Test
     void shouldPublishEvent() {
         Object event = "Test event";
         eventService.publishEvent(event);

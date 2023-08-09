@@ -31,7 +31,7 @@ class SupportingEvidenceValidatorServiceTest {
     @Autowired
     private SupportingEvidenceValidatorService supportingEvidenceValidatorService;
 
-    //@Test
+    @Test
     void shouldNotReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInThePast() {
         LocalDateTime yesterday = time.now().minusDays(1);
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(yesterday);
@@ -40,7 +40,7 @@ class SupportingEvidenceValidatorServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInThePresent() {
         LocalDateTime today = time.now();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(today);
@@ -49,7 +49,7 @@ class SupportingEvidenceValidatorServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnValidationErrorIfSupportingEvidenceBundleDateAndTimeReceivedIsInTheFuture() {
         LocalDateTime futureDate = time.now().plusDays(2);
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);

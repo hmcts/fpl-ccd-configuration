@@ -63,7 +63,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         super("add-colleagues-to-notify");
     }
 
-    //@Test
+    @Test
     void shouldSetRespondentNameIfTheyAreRepresented() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
         given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))
@@ -80,7 +80,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         assertThat(callbackResponse.getData()).extracting("respondentName").isEqualTo("David Jones");
     }
 
-    //@Test
+    @Test
     void shouldSetColleagesIfTheyHaveBeenAddedPreviously() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORA);
         given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))
@@ -98,7 +98,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         assertThat(after.getColleaguesToNotify()).isEqualTo(COLLEAGUES);
     }
 
-    //@Test
+    @Test
     void shouldThrowErrorIfNotRepresentingAnyone() {
         givenCaseRoles(CASE_ID, USER_ID, CaseRole.SOLICITORB);
         given(caseRoleLookupService.getCaseSolicitorRolesForCurrentUser(CASE_ID))

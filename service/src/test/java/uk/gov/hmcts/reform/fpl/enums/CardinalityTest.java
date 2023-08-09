@@ -15,13 +15,13 @@ import static uk.gov.hmcts.reform.fpl.enums.Cardinality.ZERO;
 @ExtendWith(MockitoExtension.class)
 class CardinalityTest {
 
-    //@Test
+    @Test
     void shouldReturnCardinalityZero() {
 
         assertThat(Cardinality.from(0)).isEqualTo(ZERO);
     }
 
-    //@Test
+    @Test
     void shouldReturnCardinalityOne() {
 
         assertThat(Cardinality.from(1)).isEqualTo(ONE);

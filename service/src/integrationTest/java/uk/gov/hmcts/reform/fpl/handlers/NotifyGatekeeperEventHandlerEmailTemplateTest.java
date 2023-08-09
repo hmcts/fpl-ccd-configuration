@@ -54,7 +54,7 @@ public class NotifyGatekeeperEventHandlerEmailTemplateTest extends EmailTemplate
     @Autowired
     private NotifyGatekeeperEventHandler underTest;
 
-    //@Test
+    @Test
     void notifyGatekeeper() {
         underTest.notifyGatekeeper(new NotifyGatekeepersEvent(CASE_DATA));
 

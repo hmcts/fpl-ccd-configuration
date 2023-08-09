@@ -18,12 +18,12 @@ class C23EPOAdditionalDocumentsCollectorTest {
 
     private C23EPOAdditionalDocumentsCollector underTest = new C23EPOAdditionalDocumentsCollector();
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(ORDER_TYPE);
     }
 
-    //@Test
+    @Test
     void testAdditionalDocuments() {
         final DocumentReference documentReference = testDocumentReference();
         CaseData caseData = CaseData.builder().manageOrdersEventData(
@@ -32,7 +32,7 @@ class C23EPOAdditionalDocumentsCollectorTest {
         assertThat(underTest.additionalDocuments(caseData)).isEqualTo(List.of(documentReference));
     }
 
-    //@Test
+    @Test
     void testAdditionalDocumentsReturnsEmptyList() {
         CaseData caseData = CaseData.builder().manageOrdersEventData(
             ManageOrdersEventData.builder().build()).build();

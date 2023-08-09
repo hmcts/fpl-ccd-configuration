@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert.assertT
 @OverrideAutoConfiguration(enabled = true)
 class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTest {
 
-    //@Test
+    @Test
     void shouldPreparePlacementWhenMultipleChildren() {
 
         final CaseData caseData = CaseData.builder()
@@ -50,7 +50,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
             .hasElement(child2.getId(), "George White");
     }
 
-    //@Test
+    @Test
     void shouldPrepareNewPlacementWhenSingleChild() {
 
         final CaseData caseData = CaseData.builder()
@@ -78,7 +78,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         assertThat(actualPlacementData.getPlacementChildrenList()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldPrepareExistingPlacementForSingleChild() {
 
         final PlacementNoticeDocument localAuthorityNotice = PlacementNoticeDocument.builder()
@@ -140,7 +140,7 @@ class PlacementAboutToStartControllerTest extends AbstractPlacementControllerTes
         assertThat(actualPlacementData.getPlacementChildrenList()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenNoChildren() {
 
         final CaseData caseData = CaseData.builder()

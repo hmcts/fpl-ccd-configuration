@@ -67,7 +67,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn(CHILD_LAST_NAME);
     }
 
-    //@Test
+    @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllData() {
         ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
 
@@ -76,14 +76,14 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithAllDataWhenToggleEnabled() {
         ReturnedCaseTemplate expectedData = returnedCaseTemplateWithCaseUrl().build();
         ReturnedCaseTemplate actualData = returnedCaseContentProvider.parametersWithCaseUrl(CASE_DATA);
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldBuildReturnedCaseTemplateWithCaseUrlWithoutOptionalData() {
         CaseData caseData = CASE_DATA.toBuilder().familyManCaseNumber(null).build();
 
@@ -96,7 +96,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldBuildReturnedCaseTemplateWithApplicationUrl() {
         ReturnedCaseTemplate expectedData = returnedCaseTemplateWithApplicationUrl().build();
 
@@ -107,7 +107,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         assertThat(actualData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentCannotBeDownload() {
         when(documentDownloadService.downloadDocument(any())).thenReturn(null);
 
@@ -116,7 +116,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenApplicationDocumentIsEmpty() {
         when(documentDownloadService.downloadDocument(any())).thenReturn(new byte[0]);
 
@@ -125,7 +125,7 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionWhenDocumentIsNotSpecified() {
         CaseData caseData = CASE_DATA.toBuilder()
             .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()

@@ -70,7 +70,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         super("manage-hearings");
     }
 
-    //@Test
+    @Test
     void shouldAddNewHearingToHearingDetailsListWhenAddHearingSelected() {
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
@@ -92,7 +92,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .isIn(findElementsId(newHearing, updatedCaseData.getHearingDetails()));
     }
 
-    //@Test
+    @Test
     void shouldIncludeNoticeOfHearingWhenSendNoticeOfHearingSelected() {
         Document document = document();
 
@@ -126,7 +126,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldUpdateExistingFutureHearingInHearingDetailsListWhenEditHearingSelected() {
         HearingBooking existingHearing = testHearing(now().plusDays(2)).toBuilder()
             .type(ISSUE_RESOLUTION)
@@ -156,7 +156,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getSelectedHearingId()).isEqualTo(hearingElement.getId());
     }
 
-    //@Test
+    @Test
     void shouldUpdateExistingPastHearingInHearingDetailsListWhenEditHearingSelected() {
         HearingBooking existingHearing = testHearing(now().minusDays(2)).toBuilder()
             .type(ISSUE_RESOLUTION)
@@ -186,7 +186,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getSelectedHearingId()).isEqualTo(hearingElement.getId());
     }
 
-    //@Test
+    @Test
     void shouldAdjournAndReListHearing() {
         Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
         Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
@@ -241,7 +241,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
     }
 
-    //@Test
+    @Test
     void shouldVacateAndReListHearing() {
         UUID draftCMOId = UUID.randomUUID();
 
@@ -314,7 +314,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
     }
 
-    //@Test
+    @Test
     void shouldReListCancelledHearing() {
         Element<HearingBooking> adjournedHearing = element(testHearing(ADJOURNED_TO_BE_RE_LISTED));
         Element<HearingBooking> vacatedHearing = element(testHearing(VACATED_TO_BE_RE_LISTED));

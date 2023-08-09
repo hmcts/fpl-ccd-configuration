@@ -17,7 +17,7 @@ class StatementOfServiceServiceTest {
 
     private final StatementOfServiceService service = new StatementOfServiceService();
 
-    //@Test
+    @Test
     void shouldReturnAnEmptyRecipientIfRecipientIsNull() {
         CaseData caseData = CaseData.builder().build();
 
@@ -26,7 +26,7 @@ class StatementOfServiceServiceTest {
         assertThat(alteredHearingList.size()).isEqualTo(1);
     }
 
-    //@Test
+    @Test
     void shouldReturnRecipientsIfRecipientsIsPrePopulated() {
         CaseData caseData = CaseData.builder()
             .statementOfService(

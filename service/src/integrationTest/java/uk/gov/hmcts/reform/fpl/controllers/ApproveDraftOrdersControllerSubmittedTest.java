@@ -23,7 +23,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         super("approve-draft-orders");
     }
 
-    //@Test
+    @Test
     public void shouldTriggerPostHandlingEvent() {
         postSubmittedEvent(CaseData.builder().id(1L).build());
         verify(coreCaseDataService)

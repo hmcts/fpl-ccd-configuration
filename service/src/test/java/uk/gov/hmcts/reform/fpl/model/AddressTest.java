@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AddressTest {
-    //@Test
+    @Test
     void shouldFormatAddressAsStringWhenProvidePartiallyPopulatedAddress() {
         Address address = Address.builder()
             .addressLine1("1 Main Street")
@@ -16,7 +16,7 @@ class AddressTest {
         assertThat(address.getAddressAsString(", ")).isEqualTo("1 Main Street, Some town, BT66 RPJ");
     }
 
-    //@Test
+    @Test
     void shouldFormatAddressAsStringWhenProvidedPopulatedAddress() {
         Address address = buildPopulatedAddress();
 
@@ -24,7 +24,7 @@ class AddressTest {
             + " BT66 7RR, UK");
     }
 
-    //@Test
+    @Test
     void shouldFormatAddressAsNewLineSeparatedStringWhenProvidedPopulatedAddress() {
         Address address = buildPopulatedAddress();
         assertThat(address.getAddressAsString("\n")).isEqualTo(

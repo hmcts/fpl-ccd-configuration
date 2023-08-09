@@ -45,7 +45,7 @@ class ChildrenEventDataFixerTest {
 
     @DisplayName("Will add to data map when there is only 1 child, there is a main representative, and the case is in"
                  + " a post submitted state")
-    //@Test
+    @Test
     void fixRepresentationDetails() {
         List<Element<Child>> children = wrapElements(child);
 
@@ -66,7 +66,7 @@ class ChildrenEventDataFixerTest {
 
     @DisplayName("Will not add to data map when there is only 1 child, there is no main representative, and the case "
                  + "is in a post submitted state")
-    //@Test
+    @Test
     void fixRepresentationDetailsIgnoreDueToNoMainRepresentative() {
         List<Element<Child>> children = wrapElements(child);
 
@@ -87,7 +87,7 @@ class ChildrenEventDataFixerTest {
 
     @DisplayName("Will not add to data map when there is more than 1 child, there is a main representative, and the "
                  + "case is in a post submitted state")
-    //@Test
+    @Test
     void fixRepresentationDetailsIgnoreDueToChildSize() {
         List<Element<Child>> children = wrapElements(child, child);
 

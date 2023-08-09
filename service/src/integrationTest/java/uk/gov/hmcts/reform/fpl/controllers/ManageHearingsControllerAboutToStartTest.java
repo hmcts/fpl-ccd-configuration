@@ -24,7 +24,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
         super("manage-hearings");
     }
 
-    //@Test
+    @Test
     void shouldSetFirstHearingFlagAndDefaultPreAttendanceWhenHearingsEmpty() {
 
         CaseData initialCaseData = CaseData.builder().build();
@@ -35,7 +35,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
         assertThat(updatedCaseData.getPreHearingAttendanceDetails()).isEqualTo("1 hour before the hearing");
     }
 
-    //@Test
+    @Test
     void shouldNotSetFirstHearingFlagAndDefaultPreAttendanceWhenHearingsPresent() {
 
         CaseData initialCaseData = CaseData.builder()
@@ -48,7 +48,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
         assertThat(updatedCaseData.getPreHearingAttendanceDetails()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldSetJudgeWhenAllocatedJudgePresent() {
 
         CaseData initialCaseData = CaseData.builder()
@@ -66,7 +66,7 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
             .allocatedJudgeLabel("Case assigned to: His Honour Judge Richards").build());
     }
 
-    //@Test
+    @Test
     void shouldSetHearingsDetails() {
         Element<HearingBooking> futureHearing1 = element(testHearing(now().plusDays(3)));
         Element<HearingBooking> futureHearing2 = element(testHearing(now().plusDays(2)));

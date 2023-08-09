@@ -22,7 +22,7 @@ class ChangeStateControllerMidEventTest extends AbstractCallbackTest {
         super("change-state");
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenFinalOrdersOnChildrenHaveNotBeenRemovedOnAClosedCase() {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)
@@ -40,7 +40,7 @@ class ChangeStateControllerMidEventTest extends AbstractCallbackTest {
             + " the relevant orders before changing the case state."));
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenFinalOrdersOnChildrenHaveNotBeenRemovedOnAFinalHearingCase() {
         CaseData caseData = CaseData.builder()
             .state(FINAL_HEARING)
@@ -57,7 +57,7 @@ class ChangeStateControllerMidEventTest extends AbstractCallbackTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorsWhenFinalOrdersOnChildrenHaveBeenRemoved() {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)

@@ -41,7 +41,7 @@ class PlacementTest {
             .type(PlacementNoticeDocument.RecipientType.CAFCASS)
             .build();
 
-        //@Test
+        @Test
         void shouldReturnNonConfidentialCopyWithoutNoticeResponses() {
 
             final Placement underTest = Placement.builder()
@@ -66,7 +66,7 @@ class PlacementTest {
             assertThat(actualNonConfidentialPlacement).isEqualTo(expectedNonConfidentialPlacement);
         }
 
-        //@Test
+        @Test
         void shouldReturnNonConfidentialCopyWithNoticeResponses() {
 
             final Placement underTest = Placement.builder()
@@ -106,7 +106,7 @@ class PlacementTest {
     @Nested
     class IsSubmitted {
 
-        //@Test
+        @Test
         void shouldReturnYesWhenPlacementApplicationHasBeenSubmitted() {
 
             final Placement underTest = Placement.builder()
@@ -117,7 +117,7 @@ class PlacementTest {
 
         }
 
-        //@Test
+        @Test
         void shouldReturnNoWhenPlacementApplicationHasNotBeenSubmitted() {
 
             final Placement underTest = Placement.builder()
@@ -132,7 +132,7 @@ class PlacementTest {
     @Nested
     class Label {
 
-        //@Test
+        @Test
         void shouldReturnLabelWithSubmissionDate() {
 
             final Placement underTest = Placement.builder()
@@ -143,7 +143,7 @@ class PlacementTest {
             assertThat(underTest.toLabel()).isEqualTo("A50, Alex Green, 15 May 2019, 1:10pm");
         }
 
-        //@Test
+        @Test
         void shouldReturnLabelWithoutSubmissionDate() {
 
             final Placement underTest = Placement.builder()
@@ -158,7 +158,7 @@ class PlacementTest {
     @Nested
     class UploadTime {
 
-        //@Test
+        @Test
         void shouldReturnLabelWithSubmissionDate() {
 
             final Placement underTest = Placement.builder()
@@ -168,7 +168,7 @@ class PlacementTest {
             assertThat(underTest.getUploadedDateTime()).isEqualTo("15 May 2019, 1:10pm");
         }
 
-        //@Test
+        @Test
         void shouldReturnLabelWithoutSubmissionDate() {
 
             final Placement underTest = Placement.builder()
@@ -179,7 +179,7 @@ class PlacementTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldReturnDefaultSortOrder() {
 
         final Placement underTest = Placement.builder().build();

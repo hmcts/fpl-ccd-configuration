@@ -11,28 +11,28 @@ class OptionCountBuilderTest {
 
     private final OptionCountBuilder underTest = new OptionCountBuilder();
 
-    //@Test
+    @Test
     void testNullValue() {
         String actual = underTest.generateCode(null);
 
         assertThat(actual).isEqualTo("");
     }
 
-    //@Test
+    @Test
     void testEmptyInstance() {
         String actual = underTest.generateCode(List.of());
 
         assertThat(actual).isEqualTo("");
     }
 
-    //@Test
+    @Test
     void testSingleInstance() {
         String actual = underTest.generateCode(List.of(new Object()));
 
         assertThat(actual).isEqualTo("0");
     }
 
-    //@Test
+    @Test
     void testMultipleInstance() {
         String actual = underTest.generateCode(List.of(new Object(), new Object(), new Object()));
 

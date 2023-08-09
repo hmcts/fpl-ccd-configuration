@@ -48,7 +48,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractCallbackTest 
         givenCurrentUser(createUserDetailsWithHmctsRole());
     }
 
-    //@Test
+    @Test
     void shouldCreateC2DocumentBundle() {
         Map<String, Object> data = createTemporaryC2Document();
 
@@ -67,7 +67,7 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractCallbackTest 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
     }
 
-    //@Test
+    @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 

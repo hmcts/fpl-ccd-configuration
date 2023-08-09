@@ -34,7 +34,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         super("list-gatekeeping-hearing");
     }
 
-    //@Test
+    @Test
     void shouldNotThrowErrorsWhenPastHearingDatesEnteredOnAddHearing() {
 
         final CaseData caseData = CaseData.builder()
@@ -50,7 +50,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotThrowErrorsWhenDaysAddedOnAddHearing() {
 
         final LocalDateTime startDate = LocalDateTime.now().minusDays(30);
@@ -72,7 +72,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldThrowErrorsWhenDaysSetToZero() {
 
         final LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.NOON);
@@ -91,7 +91,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
     }
 
 
-    //@Test
+    @Test
     void shouldNotThrowErrorsWhenHoursAndMinsAddedOnAddHearing() {
 
         final LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.NOON);
@@ -118,7 +118,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldThrowErrorsWhenHoursAndMinsAreSetToZero() {
 
         final LocalDateTime startDate = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.NOON);
@@ -138,7 +138,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
     }
 
 
-    //@Test
+    @Test
     void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearing() {
 
         final CaseData caseData = CaseData.builder()
@@ -153,7 +153,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldThrowOnlyInvalidTimeErrorsWhenPastHearingDatesEnteredOnAddHearing() {
 
         final LocalDateTime dateWithInvalidTime = LocalDateTime.of(1990, 10, 2, 0, 0);
@@ -172,7 +172,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
             "Enter a valid end time");
     }
 
-    //@Test
+    @Test
     void shouldThrowInvalidHearingEndDateTimeErrorWhenAddingAHearingWithPastDate() {
 
         final CaseData caseData = CaseData.builder()
@@ -189,7 +189,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
             "The end date and time must be after the start date and time");
     }
 
-    //@Test
+    @Test
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndDateIsBeforeStartDate() {
 
         final CaseData caseData = CaseData.builder()
@@ -206,7 +206,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
             "The end date and time must be after the start date and time");
     }
 
-    //@Test
+    @Test
     void shouldThrowInvalidHearingEndTimeErrorWhenHearingEndTimeIsSameAsStartTime() {
 
         final CaseData caseData = CaseData.builder()
@@ -223,7 +223,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
             "The end date and time must be after the start date and time");
     }
 
-    //@Test
+    @Test
     void shouldPopulateConfirmationHearingFieldsWhenHearingDateInPast() {
 
         final CaseData caseData = CaseData.builder()
@@ -242,7 +242,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(responseData.get("endDateFlag")).isEqualTo(YES.getValue());
     }
 
-    //@Test
+    @Test
     void shouldNotPopulateConfirmationHearingFieldsWhenHearingDateInFuture() {
 
         final CaseData caseData = CaseData.builder()
@@ -261,7 +261,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(responseData).containsEntry("showConfirmPastHearingDatesPage", NO.getValue());
     }
 
-    //@Test
+    @Test
     void shouldNotThrowErrorsWhenValidHearingDatesEntered() {
 
         final CaseData caseData = CaseData.builder()
@@ -276,7 +276,7 @@ class ListGatekeepingHearingControllerValidateHearingDatesMidEventTest extends A
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldThrowErrorsWhenInvalidHearingDurationEntered() {
 
         final CaseDetails caseDetails = CaseDetails.builder()

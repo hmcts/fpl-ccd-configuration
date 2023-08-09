@@ -33,7 +33,7 @@ class ManageOrderInitialTypePreSelectorTest {
         showHideQuestionsCalculator
     );
 
-    //@Test
+    @Test
     void testWhenNotClosedState() {
         final CaseDetails caseDetails = emptyCaseDetails();
         when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().build());
@@ -43,7 +43,7 @@ class ManageOrderInitialTypePreSelectorTest {
         assertThat(actual).isEqualTo(Map.of());
     }
 
-    //@Test
+    @Test
     void testWhenClosedState() {
         final CaseDetails caseDetails = emptyCaseDetails();
         when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().state(CLOSED).build());

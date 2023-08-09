@@ -56,7 +56,7 @@ class LegalCounsellorEmailContentProviderTest {
         when(helper.getEldestChildLastName(anyList())).thenCallRealMethod();
     }
 
-    //@Test
+    @Test
     void buildLegalCounsellorAddedNotificationTemplate() {
         when(caseUrlService.getCaseUrl(TEST_CASE_ID)).thenReturn("myUrl");
 
@@ -70,7 +70,7 @@ class LegalCounsellorEmailContentProviderTest {
             .build());
     }
 
-    //@Test
+    @Test
     void buildLegalCounsellorRemovedNotificationTemplate() {
         LegalCounsellorRemoved event = new LegalCounsellorRemoved(
             caseData, "Peter Taylor Solicitors Ltd", TEST_LEGAL_COUNCILLOR

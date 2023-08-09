@@ -118,7 +118,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class LocalAuthoritiesAction {
 
-        //@Test
+        @Test
         void shouldReturnLocalAuthorityActionForCourtAdminRole() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -132,7 +132,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(underTest.getLocalAuthorityAction(caseData)).isEqualTo(ADD);
         }
 
-        //@Test
+        @Test
         void shouldReturnLocalAuthorityActionForSolicitorRole() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -150,7 +150,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class ValidateAction {
 
-        //@Test
+        @Test
         void shouldReturnErrorWhenUserTriesToAddAnotherSecondaryLocalAuthority() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -168,7 +168,7 @@ class ManageLocalAuthoritiesServiceTest {
                 "Case access has already been given to local authority. Remove their access to continue.");
         }
 
-        //@Test
+        @Test
         void shouldReturnErrorWhenUserTriesToRemoveNonExistingSecondaryLocalAuthority() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -185,7 +185,7 @@ class ManageLocalAuthoritiesServiceTest {
         }
 
 
-        //@Test
+        @Test
         void shouldReturnNoErrorWhenUserTriesToAddFirstSecondaryLocalAuthority() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -201,7 +201,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnNoErrorWhenUserTriesToRemoveSecondaryLocalAuthority() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -218,7 +218,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyErrorsWhenUserTriesToTransferCase() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -238,7 +238,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class LocalAuthoritiesToShare {
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedLocalAuthoritiesExcludingDesignatedOne() {
 
             final Map<String, String> allLocalAuthorities = Map.of(
@@ -266,7 +266,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(dynamicListService).asDynamicList(expectedLocalAuthorities);
         }
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedLocalAuthorities() {
 
             final Map<String, String> allLocalAuthorities = Map.of(
@@ -294,7 +294,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class LocalAuthoritiesToTransfer {
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedLocalAuthoritiesExcludingDesignatedAndSecondaryOnes() {
 
             final Map<String, String> allLocalAuthorities = Map.of(
@@ -325,7 +325,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(dynamicListService).asDynamicList(expectedLocalAuthorities);
         }
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedLocalAuthoritiesExcludingDesignatedOne() {
 
             final Map<String, String> allLocalAuthorities = Map.of(
@@ -365,7 +365,7 @@ class ManageLocalAuthoritiesServiceTest {
         private final String localAuthorityCode = "LA2";
         private final String localAuthorityEmail = "la2@test.com";
 
-        //@Test
+        @Test
         void shouldPopulateLocalAuthority() {
 
             final uk.gov.hmcts.reform.rd.model.Organisation localAuthorityOrganisation =
@@ -424,7 +424,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualLocalAuthority).isEqualTo(expectedLocalAuthority);
         }
 
-        //@Test
+        @Test
         void shouldGetExistingLocalAuthorityWithSolicitor() {
 
             final Colleague expectedDefaultSolicitor = Colleague.builder()
@@ -467,7 +467,7 @@ class ManageLocalAuthoritiesServiceTest {
             verifyNoInteractions(organisationService, localAuthorityEmails);
         }
 
-        //@Test
+        @Test
         void shouldGetExistingLocalAuthorityAndAddMissingSolicitor() {
 
             final Colleague expectedDefaultSolicitor = Colleague.builder()
@@ -580,7 +580,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .thenReturn(Optional.of(newDesignatedLocalAuthorityCode));
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToSecondaryLocalAuthorityWithCourtChange() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -639,7 +639,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(caseData.getCourt()).isEqualTo(newCourt);
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToSecondaryLocalAuthorityWithoutCourtChange() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -698,7 +698,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(caseData.getCourt()).isEqualTo(oldCourt);
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndAddRequiredSolicitorWhenNotPresent() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -758,7 +758,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(caseData.getCourt()).isEqualTo(oldCourt);
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndAddMainContactSolicitorWhenNoOtherColleagues() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -810,7 +810,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(caseData.getCourt()).isEqualTo(oldCourt);
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToNewLocalAuthorityWithCourtChange() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -860,7 +860,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(caseData.getCourt()).isEqualTo(newCourt);
         }
 
-        //@Test
+        @Test
         void shouldTransferCaseToNonSecondaryLocalAuthorityWithCourtChange() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -939,7 +939,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .build());
         }
 
-        //@Test
+        @Test
         void shouldBuildPastCourtsList() {
             final CaseData caseData = CaseData.builder().build();
             when(courtService.getCourt(isA(CaseData.class))).thenReturn(
@@ -951,7 +951,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(unwrapElements(pastCourtList).iterator().next().getCode()).isEqualTo("344");
         }
 
-        //@Test
+        @Test
         void shouldTransferCourtWithoutTransferLA() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .courtsToTransferWithoutTransferLA(dynamicList(Map.of(
@@ -981,7 +981,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class SelectedLocalAuthorityEmail {
 
-        //@Test
+        @Test
         void shouldReturnSelectedLocalAuthoritySharedInbox() {
 
             final DynamicList dynamicList = dynamicList(Map.of(
@@ -1000,7 +1000,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualEmail).isEqualTo("test@test.com");
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenSelectedLocalAuthorityDoesNotHaveSharedInbox() {
 
             final DynamicList dynamicList = dynamicList(Map.of(
@@ -1019,7 +1019,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualEmail).isNull();
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenSelectedLocalAuthorityDoesNotHaveSharedInboxn() {
 
             final DynamicList dynamicList = dynamicList(Map.of(
@@ -1042,7 +1042,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class ValidateLocalAuthorityEmail {
 
-        //@Test
+        @Test
         void shouldReturnValidationErrorIfEmailIsNotValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1056,7 +1056,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).containsExactly("Validation error");
         }
 
-        //@Test
+        @Test
         void shouldReturnNoValidationErrorIfEmailIsValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1082,7 +1082,7 @@ class ManageLocalAuthoritiesServiceTest {
         private final String solicitorExpectedError =
             "Enter local authority solicitor's email address in the correct format, for example name@example.com";
 
-        //@Test
+        @Test
         void shouldReturnValidationErrorIfLocalAuthorityEmailIsNotValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1098,7 +1098,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(emailService).validate(localAuthorityEmail, localAuthorityExpectedError);
         }
 
-        //@Test
+        @Test
         void shouldReturnValidationErrorIfLocalAuthoritySolicitorEmailIsNotValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1114,7 +1114,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(emailService).validate(solicitorEmail, solicitorExpectedError);
         }
 
-        //@Test
+        @Test
         void shouldReturnValidateErrorIfTransferCourtWithoutTransferLAIsNotValid() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .courtsToTransferWithoutTransferLA(DynamicList.builder()
@@ -1125,7 +1125,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).containsExactly("Invalid court selected.");
         }
 
-        //@Test
+        @Test
         void shouldReturnValidateErrorIfTransferCourtWithoutTransferLAIsNotSet() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .build();
@@ -1133,7 +1133,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).containsExactly("Invalid court selected.");
         }
 
-        //@Test
+        @Test
         void shouldNotReturnValidateErrorIfTransferCourtWithoutTransferLAIsValid() {
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .courtsToTransferWithoutTransferLA(DynamicList.builder()
@@ -1144,7 +1144,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualErrors).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnValidationErrorIfLocalAuthoritySolicitorEmailIsNotValidX() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1166,7 +1166,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(emailService).validate(solicitorEmail, solicitorExpectedError);
         }
 
-        //@Test
+        @Test
         void shouldReturnNoValidationErrorIfEmailsAreValid() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1189,7 +1189,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class OrganisationRemovalRequest {
 
-        //@Test
+        @Test
         void shouldReturnChangeOrganisationRequest() {
 
             final OrganisationPolicy secondaryOrganisationPolicy = organisationPolicy("ORG1", "ORG name", LASHARED);
@@ -1210,7 +1210,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeRequest).isEqualTo(expectedChangeOrganisationRequest);
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenNoSharedOrganisationPolicy() {
 
             final CaseData caseData = CaseData.builder()
@@ -1229,7 +1229,7 @@ class ManageLocalAuthoritiesServiceTest {
         final OrganisationPolicy designatedOrganisationPolicy2 = organisationPolicy("ORG2", "ORG2 name", LASOLICITOR);
         final OrganisationPolicy secondaryOrganisationPolicy = organisationPolicy("ORG3", "ORG3 name", LASHARED);
 
-        //@Test
+        @Test
         void shouldReturnCaseTransferredEventWhenDesignatedOrgChanged() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1248,7 +1248,7 @@ class ManageLocalAuthoritiesServiceTest {
             );
         }
 
-        //@Test
+        @Test
         void shouldReturnSecondaryLocalAuthorityAddedEvent() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1266,7 +1266,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeEvents).containsExactly(expectedChangeEvent);
         }
 
-        //@Test
+        @Test
         void shouldReturnSecondaryLocalAuthorityRemovedEvent() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1285,7 +1285,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeEvent).containsExactly(expectedChangeEvent);
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyObjectWhenSecondaryLocalAuthorityNotRemoved() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1301,7 +1301,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeEvents).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyObjectWhenDesignatedLocalAuthorityHasNotChangedAndNorSecondaryLocalAuthority() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1316,7 +1316,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualChangeEvents).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyObjectWhenDesignatedLocalAuthorityNorSecondaryLocalAuthorityChanged() {
 
             final CaseData caseDataBefore = CaseData.builder()
@@ -1337,7 +1337,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class SharedLocalAuthorityPolicy {
 
-        //@Test
+        @Test
         void shouldReturnOrganisationPolicy() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1361,7 +1361,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .isEqualTo(organisationPolicy("ORG2", "Local authority 2", LASHARED));
         }
 
-        //@Test
+        @Test
         void shouldThrowsExceptionWhenLocalAuthorityNotSelected() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1385,7 +1385,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class RemoveSharedLocalAuthority {
 
-        //@Test
+        @Test
         void shouldRemoveSecondaryLocalAuthority() {
 
             final OrganisationPolicy sharedPolicy = organisationPolicy("ORG2", "Local authority 2", LASHARED);
@@ -1414,7 +1414,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(designatedLocalAuthority);
         }
 
-        //@Test
+        @Test
         void shouldDoNothingWhenNoSecondaryLocalAuthority() {
 
             final LocalAuthority designatedLocalAuthority = LocalAuthority.builder()
@@ -1434,7 +1434,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(designatedLocalAuthority);
         }
 
-        //@Test
+        @Test
         void shouldDoNothingWhenSecondaryOrgPolicyDoesNotHaveOrgId() {
 
             final OrganisationPolicy sharedPolicy = OrganisationPolicy.builder()
@@ -1469,7 +1469,7 @@ class ManageLocalAuthoritiesServiceTest {
             .designated("Yes")
             .build();
 
-        //@Test
+        @Test
         void shouldAddSecondaryLocalAuthority() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1509,7 +1509,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(designatedLocalAuthority, expectedSharedLocalAuthority);
         }
 
-        //@Test
+        @Test
         void shouldThrowsExceptionWhenOrganisationNotFound() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1536,7 +1536,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(organisationService).getOrganisation("ORG2");
         }
 
-        //@Test
+        @Test
         void shouldThrowsExceptionWhenLocalAuthorityToOrganisationMappingNotPresent() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1561,7 +1561,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(localAuthorityIds).getLocalAuthorityId("LA2");
         }
 
-        //@Test
+        @Test
         void shouldThrowsExceptionWhenLocalAuthorityNotSelected() {
 
             final DynamicList localAuthoritiesList = dynamicList(Map.of(
@@ -1587,7 +1587,7 @@ class ManageLocalAuthoritiesServiceTest {
     @Nested
     class SharedLocalAuthorityName {
 
-        //@Test
+        @Test
         void shouldGetSecondaryLocalAuthorityName() {
 
             final OrganisationPolicy sharedPolicy = organisationPolicy("ORG1", "Organisation 1", LASHARED);
@@ -1601,7 +1601,7 @@ class ManageLocalAuthoritiesServiceTest {
             assertThat(actualLocalAuthorityName).isEqualTo("Organisation 1");
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenSecondaryLocalAuthorityNotPresent() {
 
             final CaseData caseData = CaseData.builder().build();
@@ -1645,7 +1645,7 @@ class ManageLocalAuthoritiesServiceTest {
             "LA4", "Local authority 4"),
             otherLACode);
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedCourtsFromDesignatedAndSharedLocalAuthorities() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1674,7 +1674,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(dynamicListService).asDynamicList(expectedCourts);
         }
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedCourtsFromDesignatedAndSelectedLocalAuthoritiesWhenCaseIsShared() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1702,7 +1702,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(dynamicListService).asDynamicList(expectedCourts);
         }
 
-        //@Test
+        @Test
         void shouldReturnListOfSortedCourtsFromDesignatedAndSelectedLocalAuthoritiesWhenCaseIsNotShared() {
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
@@ -1728,7 +1728,7 @@ class ManageLocalAuthoritiesServiceTest {
             verify(dynamicListService).asDynamicList(expectedCourts);
         }
 
-        //@Test
+        @Test
         void shouldReturnFullListOfSortedCourtsWithCourtRegionGrouped() {
             final CaseData caseData = CaseData.builder().build();
 

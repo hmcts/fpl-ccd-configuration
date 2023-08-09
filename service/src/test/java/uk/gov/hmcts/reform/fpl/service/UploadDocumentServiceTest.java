@@ -55,7 +55,7 @@ class UploadDocumentServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldReturnFirstUploadedDocument() {
         UploadResponse request = DocumentManagementStoreLoader.successfulDocumentUploadResponse();
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
@@ -80,7 +80,7 @@ class UploadDocumentServiceTest {
         Assertions.assertThat(document.metadata).isEqualTo(received.metadata);
     }
 
-    //@Test
+    @Test
     void shouldThrowExceptionIfServerResponseContainsNoDocuments() {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(DocumentManagementStoreLoader.unsuccessfulDocumentUploadResponse());
@@ -90,7 +90,7 @@ class UploadDocumentServiceTest {
             .hasMessage("Document upload failed due to empty result");
     }
 
-    //@Test
+    @Test
     void shouldRethrowExceptionIfServerCallThrownException() {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willThrow(new RuntimeException("Something bad happened"));

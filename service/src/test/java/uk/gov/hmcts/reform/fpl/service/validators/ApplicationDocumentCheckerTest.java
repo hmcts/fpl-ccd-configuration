@@ -23,7 +23,7 @@ class ApplicationDocumentCheckerTest {
     @Autowired
     private ApplicationDocumentChecker applicationDocumentChecker;
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsAndUncompleteStateWhenApplicationDocumentsIsStarted() {
         final CaseData caseData = CaseData.builder()
                 .applicationDocuments(documents())
@@ -36,7 +36,7 @@ class ApplicationDocumentCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    //@Test
+    @Test
     void shouldSetIsStartedToTrueWhenDocumentsToFollowFieldAdded() {
         final CaseData caseData = CaseData.builder()
             .applicationDocuments(documents())
@@ -48,7 +48,7 @@ class ApplicationDocumentCheckerTest {
         assertThat(isStarted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldSetIsStartedToTrueWhenApplicationDocumentsAdded() {
         final CaseData caseData = CaseData.builder()
             .applicationDocuments(documents())
@@ -59,7 +59,7 @@ class ApplicationDocumentCheckerTest {
         assertThat(isStarted).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnFalseIfNothingHasBeenEnteredIntoApplicationDocumentEvent() {
         final CaseData caseData = CaseData.builder().build();
 

@@ -29,7 +29,7 @@ class DraftOrdersReviewDataBuilderTest {
     private static final String HEARING_NAME = "Hearing name";
     private final DraftOrdersReviewDataBuilder underTest = new DraftOrdersReviewDataBuilder();
 
-    //@Test
+    @Test
     void testIfNoOrders() {
         Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder().build());
 
@@ -39,7 +39,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyOneOrderNotToBeApproved() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, NON_TO_APPROVE_STATUS, CMO_TITLE, DOCUMENT_REFERENCE));
@@ -54,7 +54,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyOneCMOToBeApproved() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, CMOStatus.SEND_TO_JUDGE, CMO_TITLE, DOCUMENT_REFERENCE));
@@ -71,7 +71,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyOneCMOToBeApprovedWithHearing() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, CMOStatus.SEND_TO_JUDGE, CMO_TITLE, DOCUMENT_REFERENCE));
@@ -90,7 +90,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyOneBlankOrderToBeApproved() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE));
@@ -108,7 +108,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyOneBlankOrderToBeApprovedWithHearing() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE));
@@ -128,7 +128,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyMoreThanOneBlankOrderToBeApproved() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE));
@@ -149,7 +149,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyMoreThanOneBlankOrderToBeApprovedAndCMO() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, CMOStatus.SEND_TO_JUDGE, CMO_TITLE, DOCUMENT_REFERENCE));
@@ -173,7 +173,7 @@ class DraftOrdersReviewDataBuilderTest {
         ));
     }
 
-    //@Test
+    @Test
     void testIfOnlyMoreThanOneBlankOrderToBeApprovedAndCMOWithHearing() {
         List<Element<HearingOrder>> orders = new ArrayList<>();
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, CMOStatus.SEND_TO_JUDGE, CMO_TITLE, DOCUMENT_REFERENCE));

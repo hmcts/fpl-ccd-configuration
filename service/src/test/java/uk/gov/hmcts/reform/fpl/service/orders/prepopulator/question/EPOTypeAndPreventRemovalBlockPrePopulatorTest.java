@@ -17,12 +17,12 @@ class EPOTypeAndPreventRemovalBlockPrePopulatorTest {
 
     private final EPOTypeAndPreventRemovalBlockPrePopulator underTest = new EPOTypeAndPreventRemovalBlockPrePopulator();
 
-    //@Test
+    @Test
     void testAcceptsEPORemovalAddressSection() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL);
     }
 
-    //@Test
+    @Test
     void testEPOTypeAndPreventRemovalFieldsArePrePopulatedFromOrdersData() {
         final Address address = Address.builder().addressLine1("1 Street").postcode("SW1").build();
         CaseData caseData = CaseData.builder()
@@ -39,7 +39,7 @@ class EPOTypeAndPreventRemovalBlockPrePopulatorTest {
                 "manageOrdersExclusionRequirement", "Yes"));
     }
 
-    //@Test
+    @Test
     void testOnlyEPOAddressAndEPOTypeFieldsArePrePopulatedWhenEPOTypeInOrdersIsRemoveToAccommodation() {
         final Address address = Address.builder().addressLine1("1 Street").postcode("SW1").build();
         CaseData caseData = CaseData.builder()
@@ -53,7 +53,7 @@ class EPOTypeAndPreventRemovalBlockPrePopulatorTest {
                 "manageOrdersEpoType", EPOType.REMOVE_TO_ACCOMMODATION));
     }
 
-    //@Test
+    @Test
     void testPrepopulateAddressWhenCaseDataDoesNotHaveOrders() {
         CaseData caseData = CaseData.builder().build();
         assertThat(underTest.prePopulate(caseData)).isEmpty();

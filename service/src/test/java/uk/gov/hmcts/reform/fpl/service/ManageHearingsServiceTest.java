@@ -149,7 +149,7 @@ class ManageHearingsServiceTest {
 
         DynamicList emptyDynamicList = dynamicList();
 
-        //@Test
+        @Test
         void shouldPopulateHearingDataWhenPastAndFutureHearingsExist() {
             Element<HearingBooking> futureHearing1 = hearingFromToday(3);
             Element<HearingBooking> futureHearing2 = hearingFromToday(2);
@@ -182,7 +182,7 @@ class ManageHearingsServiceTest {
                 .doesNotContainKeys(TO_RE_LIST_HEARING_LABEL);
         }
 
-        //@Test
+        @Test
         void shouldPopulateHearingDataWhenOnlyCancelledHearingsPresent() {
             Element<HearingBooking> cancelledHearing1 = hearing(LocalDate.of(2020, 10, 1), ADJOURNED_TO_BE_RE_LISTED);
             Element<HearingBooking> cancelledHearing2 = hearing(LocalDate.of(2020, 9, 12), VACATED_TO_BE_RE_LISTED);
@@ -219,7 +219,7 @@ class ManageHearingsServiceTest {
                 .doesNotContainKeys(HAS_PAST_HEARINGS);
         }
 
-        //@Test
+        @Test
         void shouldOnlyPopulatePastHearingDateListAndHearingDateListWhenOnlyHearingsInThePastExist() {
             Element<HearingBooking> pastHearing1 = hearingFromToday(-2);
             Element<HearingBooking> pastHearing2 = hearingFromToday(-3);
@@ -239,7 +239,7 @@ class ManageHearingsServiceTest {
                 .containsEntry(PAST_AND_TODAY_HEARING_DATE_LIST, expectedPastHearingList);
         }
 
-        //@Test
+        @Test
         void shouldOnlyPopulateFutureHearingDateListWhenOnlyHearingsInTheFutureExist() {
             Element<HearingBooking> futureHearing1 = hearingFromToday(3);
             Element<HearingBooking> futureHearing2 = hearingFromToday(2);
@@ -279,7 +279,7 @@ class ManageHearingsServiceTest {
     @Nested
     class GetHearingVenue {
 
-        //@Test
+        @Test
         void shouldPullVenueFromPreviousHearingWhenExistingHearingIsInThePast() {
             HearingBooking hearing = hearing(time.now().minusDays(1), time.now());
             given(hearingVenueLookUpService.getHearingVenue(hearing)).willReturn(HEARING_VENUE);
@@ -293,7 +293,7 @@ class ManageHearingsServiceTest {
             assertThat(venue).isEqualTo(HEARING_VENUE);
         }
 
-        //@Test
+        @Test
         void shouldPullVenueFromFirstHearingWhenNoneAreInThePast() {
             HearingBooking hearing = hearing(time.now().plusHours(1), time.now().plusHours(4));
             given(hearingVenueLookUpService.getHearingVenue(hearing)).willReturn(HEARING_VENUE);
@@ -311,7 +311,7 @@ class ManageHearingsServiceTest {
     @Nested
     class FindHearingBooking {
 
-        //@Test
+        @Test
         void shouldReturnExistingHearingBooking() {
             Element<HearingBooking> hearing1 = element(randomHearing());
             Element<HearingBooking> hearing2 = element(randomHearing());
@@ -321,7 +321,7 @@ class ManageHearingsServiceTest {
             assertThat(service.findHearingBooking(hearing2.getId(), hearings)).contains(hearing2.getValue());
         }
 
-        //@Test
+        @Test
         void shouldReturnEmptyWhenHearingBookingDoesNotExists() {
             List<Element<HearingBooking>> hearings = wrapElements(randomHearing(), randomHearing());
 
@@ -332,7 +332,7 @@ class ManageHearingsServiceTest {
     @Nested
     class GetHearingBooking {
 
-        //@Test
+        @Test
         void shouldReturnExistingHearingBooking() {
             Element<HearingBooking> hearing1 = element(randomHearing());
             Element<HearingBooking> hearing2 = element(randomHearing());
@@ -342,7 +342,7 @@ class ManageHearingsServiceTest {
             assertThat(service.getHearingBooking(hearing2.getId(), hearings)).isEqualTo(hearing2.getValue());
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenHearingBookingDoesNotExists() {
             UUID nonExistingHearingId = randomUUID();
             List<Element<HearingBooking>> hearings = wrapElements(randomHearing(), randomHearing());
@@ -357,14 +357,14 @@ class ManageHearingsServiceTest {
     @Nested
     class NewHearingInitiation {
 
-        //@Test
+        @Test
         void shouldReturnEmptyMapWhenNoHearingsAvailable() {
             CaseData caseData = CaseData.builder().build();
 
             assertThat(service.initiateNewHearing(caseData)).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldPullCustomAddressFromHearingWhenHearingVenueIsOther() {
             given(hearingVenueLookUpService.getHearingVenue(any(HearingBooking.class))).willCallRealMethod();
             given(hearingVenueLookUpService.buildHearingVenue(any())).willCallRealMethod();
@@ -386,7 +386,7 @@ class ManageHearingsServiceTest {
                 entry("preHearingAttendanceDetails", "1 hour before the hearing"));
         }
 
-        //@Test
+        @Test
         void shouldPullVenueAddressFromHearing() {
             HearingBooking hearing = hearing(time.now().minusDays(1), time.now());
             String venueAddress = "some address that is definitely real";
@@ -410,7 +410,7 @@ class ManageHearingsServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldUnwrapHearingIntoSeparateFields() {
         LocalDateTime startDate = time.now().plusDays(1);
         LocalDateTime endDate = time.now().plusHours(25);
@@ -452,7 +452,7 @@ class ManageHearingsServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldUnwrapHearingWhenNoPreviousVenueAndCustomHearingTypeUsedAndAllocatedJudgeUsed() {
         LocalDateTime startDate = time.now().plusDays(1);
         LocalDateTime endDate = time.now().plusHours(25);
@@ -496,7 +496,7 @@ class ManageHearingsServiceTest {
 
     }
 
-    //@Test
+    @Test
     void shouldSetHearingDayAndHearingDurationWhenHearingDaysIsSet() {
         int days = 9;
         LocalDateTime startDate = LocalDateTime.of(2022, 12, 5, 0, 0, 0);
@@ -542,7 +542,7 @@ class ManageHearingsServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldSetHearingHoursAndMinutesWhenHearingHoursAndMinutesIsSet() {
         int hours = 9;
         int minutes = 30;
@@ -592,7 +592,7 @@ class ManageHearingsServiceTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldBuildHearingBookingWhenNoPreviousVenueExists() {
         LocalDateTime startDate = time.now();
         LocalDateTime endDate = time.now().plusHours(1);
@@ -628,7 +628,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
     }
 
-    //@Test
+    @Test
     void shouldNotUsePreviousVenueToBuildHearingBookingWhenFlagIsNo() {
         LocalDateTime startDate = time.now();
         LocalDateTime endDate = time.now().plusHours(1);
@@ -669,7 +669,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
     }
 
-    //@Test
+    @Test
     void shouldUsePreviousVenueToBuildHearingBookingWhenFlagIsSetToYes() {
         LocalDateTime startDate = time.now();
         LocalDateTime endDate = time.now().plusHours(1);
@@ -710,7 +710,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
     }
 
-    //@Test
+    @Test
     void shouldSetHearingDurationInDaysWhenHearingInDaysIsSet() {
         LocalDateTime startDate = time.now();
         int hearingDays = 9;
@@ -752,7 +752,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
     }
 
-    //@Test
+    @Test
     void shouldSetHearingDurationInHoursAndMinutesWhenHearingInHoursAndMinutesIsSet() {
         LocalDateTime startDate = time.now();
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
@@ -795,7 +795,7 @@ class ManageHearingsServiceTest {
         assertThat(hearingBooking).isEqualTo(expectedHearingBooking);
     }
 
-    //@Test
+    @Test
     void shouldFindAndSetPreviousVenueIdWhenFlagSet() {
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
             .previousVenue("Custom House, Custom Street")
@@ -812,7 +812,7 @@ class ManageHearingsServiceTest {
         verify(hearingVenueLookUpService).getVenueId(previousHearingVenue.getPreviousVenue());
     }
 
-    //@Test
+    @Test
     void shouldFindAndSetPreviousVenueIdWhenFlagNotSet() {
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
             .previousVenue("Custom House, Custom Street")
@@ -829,7 +829,7 @@ class ManageHearingsServiceTest {
         assertThat(caseData.getPreviousVenueId()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldFindAndSetPreviousVenueIdWhenFlagNotPresent() {
         PreviousHearingVenue previousHearingVenue = PreviousHearingVenue.builder()
             .previousVenue("Custom House, Custom Street")
@@ -845,7 +845,7 @@ class ManageHearingsServiceTest {
         assertThat(caseData.getPreviousVenueId()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldNotFindAndSetPreviousVenueIdWhenNoHearings() {
         CaseData caseData = CaseData.builder().build();
 
@@ -854,7 +854,7 @@ class ManageHearingsServiceTest {
         assertThat(caseData.getPreviousVenueId()).isNull();
     }
 
-    //@Test
+    @Test
     void shouldSendNoticeOfHearingIfRequested() {
         final DocmosisNoticeOfHearing docmosisData = DocmosisNoticeOfHearing.builder().build();
         final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
@@ -881,7 +881,7 @@ class ManageHearingsServiceTest {
             NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
     }
 
-    //@Test
+    @Test
     void shouldSendNoticeOfHearingIfRequestedWithTranslation() {
         final DocmosisNoticeOfHearing docmosisData = DocmosisNoticeOfHearing.builder().build();
         final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
@@ -914,7 +914,7 @@ class ManageHearingsServiceTest {
     @Nested
     class PastHearings {
 
-        //@Test
+        @Test
         void shouldSetStartDateHearingFieldsWhenHearingStartDateIsInThePast() {
             LocalDateTime hearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.now().plusDays(3);
@@ -936,7 +936,7 @@ class ManageHearingsServiceTest {
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
-        //@Test
+        @Test
         void shouldSetEndDateHearingFieldsWhenHearingEndDateIsInThePast() {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(3);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
@@ -957,7 +957,7 @@ class ManageHearingsServiceTest {
             assertThat(startDateFields).isEqualTo(extractedFields);
         }
 
-        //@Test
+        @Test
         void shouldSetBothStartAndEndHearingFieldsWhenBothHearingDatesAreInThePast() {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
             LocalDateTime hearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
@@ -981,7 +981,7 @@ class ManageHearingsServiceTest {
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
 
-        //@Test
+        @Test
         void shouldSetBothStartAndEndHearingDaysWhenBothHearingDatesAreInThePast() {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
 
@@ -1005,7 +1005,7 @@ class ManageHearingsServiceTest {
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
 
-        //@Test
+        @Test
         void shouldSetBothStartAndEndHearingHoursAndMinutesWhenBothHearingDatesAreInThePast() {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
 
@@ -1029,7 +1029,7 @@ class ManageHearingsServiceTest {
             assertThat(hearingDateFields).isEqualTo(extractedFields);
         }
 
-        //@Test
+        @Test
         void shouldThrowExceptionWhenHearingDurationNotSet() {
             LocalDateTime hearingStartDate = LocalDateTime.of(2011, 4, 16, 20, 20);
 
@@ -1043,7 +1043,7 @@ class ManageHearingsServiceTest {
                 .hasMessage("Invalid hearing duration INVALID");
         }
 
-        //@Test
+        @Test
         void shouldHidePastHearingsDatesPageWhenDatesAreInFuture() {
             LocalDateTime hearingStartDate = LocalDateTime.now().plusDays(1);
             LocalDateTime hearingEndDate = hearingStartDate.plusHours(1);
@@ -1066,7 +1066,7 @@ class ManageHearingsServiceTest {
 
     @Nested
     class HearingDates {
-        //@Test
+        @Test
         void shouldSetHearingStartDateToCorrectDateWhenIncorrectDateAdded() {
             LocalDateTime expectedHearingStartDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             CaseData caseData = CaseData.builder()
@@ -1079,7 +1079,7 @@ class ManageHearingsServiceTest {
             assertThat(hearingDateFields).containsEntry("hearingStartDate", expectedHearingStartDate);
         }
 
-        //@Test
+        @Test
         void shouldSetHearingEndDateToCorrectDateWhenIncorrectDateAdded() {
             LocalDateTime expectedHearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             CaseData caseData = CaseData.builder()
@@ -1092,7 +1092,7 @@ class ManageHearingsServiceTest {
             assertThat(hearingDateFields).containsEntry("hearingEndDate", expectedHearingEndDate);
         }
 
-        //@Test
+        @Test
         void shouldSetHearingStartAndEndDateToCorrectDateWhenIncorrectDatesAdded() {
             LocalDateTime expectedHearingEndDate = LocalDateTime.of(2010, 3, 15, 20, 20);
             LocalDateTime expectedHearingStartDate = LocalDateTime.of(2001, 4, 15, 20, 20);
@@ -1116,7 +1116,7 @@ class ManageHearingsServiceTest {
     @Nested
     class AddOrUpdate {
 
-        //@Test
+        @Test
         void shouldUpdateExistingHearing() {
             Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
             Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
@@ -1132,7 +1132,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(updatedHearing, hearing2);
         }
 
-        //@Test
+        @Test
         void shouldAddNewHearing() {
             Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
             Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
@@ -1153,17 +1153,17 @@ class ManageHearingsServiceTest {
     @Nested
     class Adjournment {
 
-        //@Test
+        @Test
         void shouldAdjournHearingToBeReleasedLater() {
             shouldAdjournHearing(RE_LIST_LATER, ADJOURNED_TO_BE_RE_LISTED);
         }
 
-        //@Test
+        @Test
         void shouldAdjournHearingWithoutReListing() {
             shouldAdjournHearing(NONE, ADJOURNED);
         }
 
-        //@Test
+        @Test
         void shouldAdjournAndReListHearingWithoutDocumentReassignment() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1192,7 +1192,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldAdjournAndReListHearingWithDocumentReassignment() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1262,7 +1262,7 @@ class ManageHearingsServiceTest {
             assertThat(adjournedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
         }
 
-        //@Test
+        @Test
         void shouldAdjournAndReListHearingAndUpdateDraftCaseManagementOrder() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1300,7 +1300,7 @@ class ManageHearingsServiceTest {
                     .build()));
         }
 
-        //@Test
+        @Test
         void shouldAdjournAndReListHearingAndUpdateHearingOrdersBundle() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1348,17 +1348,17 @@ class ManageHearingsServiceTest {
     class Vacating {
         private final LocalDate vacatedDate = time.now().minusDays(1).toLocalDate();
 
-        //@Test
+        @Test
         void shouldVacateHearingToBeReListedLater() {
             shouldVacateHearing(RE_LIST_LATER, VACATED_TO_BE_RE_LISTED);
         }
 
-        //@Test
+        @Test
         void shouldVacateHearingWithoutReListing() {
             shouldVacateHearing(NONE, VACATED);
         }
 
-        //@Test
+        @Test
         void shouldVacateHearingWithVacatedReason() {
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
@@ -1386,7 +1386,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
         }
 
-        //@Test
+        @Test
         void shouldVacateHearingWithoutVacatedReason() {
             Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
             Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
@@ -1408,7 +1408,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
         }
 
-        //@Test
+        @Test
         void shouldVacateAndReListHearingWithoutDocumentReassignment() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1439,7 +1439,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
         }
 
-        //@Test
+        @Test
         void shouldVacateAndReListHearingWithDocumentReassignment() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1478,7 +1478,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
         }
 
-        //@Test
+        @Test
         void shouldVacateAndUpdateDraftCaseManagementOrder() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1526,7 +1526,7 @@ class ManageHearingsServiceTest {
                     .build()));
         }
 
-        //@Test
+        @Test
         void shouldVacateHearingWhenTheHearingDoesNotHaveACaseManagementOrderId() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1571,7 +1571,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(linkedDraftCMO);
         }
 
-        //@Test
+        @Test
         void shouldVacateAndUpdateHearingOrdersBundleDrafts() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1668,7 +1668,7 @@ class ManageHearingsServiceTest {
     @Nested
     class ReListHearing {
 
-        //@Test
+        @Test
         void shouldReListAdjournedHearing() {
             Element<HearingBooking> adjournedHearing = element(randomHearing(ADJOURNED_TO_BE_RE_LISTED));
             Element<HearingBooking> vacatedHearing = element(randomHearing(VACATED_TO_BE_RE_LISTED));
@@ -1689,7 +1689,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedAdjournedHearing, vacatedHearing);
         }
 
-        //@Test
+        @Test
         void shouldReListVacatedHearing() {
             Element<HearingBooking> adjournedHearing = element(randomHearing(ADJOURNED_TO_BE_RE_LISTED));
             Element<HearingBooking> vacatedHearing = element(randomHearing(VACATED_TO_BE_RE_LISTED));
@@ -1709,7 +1709,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing, expectedVacatedHearing);
         }
 
-        //@Test
+        @Test
         void shouldReassignDocumentFromCancelledToReListedHearing() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
@@ -1737,7 +1737,7 @@ class ManageHearingsServiceTest {
     @Nested
     class HearingsDynamicList {
 
-        //@Test
+        @Test
         void shouldReturnVacateDateListWhenHearingOptionIsVacateHearing() {
             CaseData caseData = caseData(VACATE_HEARING);
 
@@ -1745,7 +1745,7 @@ class ManageHearingsServiceTest {
             assertThat(dynamicList).isEqualTo(caseData.getVacateHearingDateList());
         }
 
-        //@Test
+        @Test
         void shouldReturnPastAndTodayHearingDateListWhenHearingOptionIsAdjournHearing() {
             CaseData caseData = caseData(ADJOURN_HEARING);
 
@@ -1753,7 +1753,7 @@ class ManageHearingsServiceTest {
             assertThat(dynamicList).isEqualTo(caseData.getPastAndTodayHearingDateList());
         }
 
-        //@Test
+        @Test
         void shouldReturnFutureHearingsWhenHearingOptionIsEdit() {
             CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
@@ -1761,7 +1761,7 @@ class ManageHearingsServiceTest {
             assertThat(dynamicList).isEqualTo(caseData.getFutureHearingDateList());
         }
 
-        //@Test
+        @Test
         void shouldReturnPastHearingsWhenHearingOptionIsEdit() {
             CaseData caseData = caseData(EDIT_PAST_HEARING);
 
@@ -1769,7 +1769,7 @@ class ManageHearingsServiceTest {
             assertThat(dynamicList).isEqualTo(caseData.getPastHearingDateList());
         }
 
-        //@Test
+        @Test
         void shouldReturnHearingsToBeReListedWhenHearingOptionIsReList() {
             CaseData caseData = caseData(RE_LIST_HEARING);
 
@@ -1777,7 +1777,7 @@ class ManageHearingsServiceTest {
             assertThat(dynamicList).isEqualTo(caseData.getToReListHearingDateList());
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenHearingOptionIsAddNew() {
             CaseData caseData = caseData(NEW_HEARING);
 
@@ -1817,7 +1817,7 @@ class ManageHearingsServiceTest {
         final UUID selectedToReListHearing = randomUUID();
         final UUID selectedHearing = randomUUID();
 
-        //@Test
+        @Test
         void shouldReturnSelectedHearingIdWhenHearingOptionIsVacateHearing() {
             CaseData caseData = caseData(VACATE_HEARING);
 
@@ -1825,7 +1825,7 @@ class ManageHearingsServiceTest {
             assertThat(selectedHearingId).isEqualTo(selectedHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnSelectedHearingIdWhenHearingOptionIsAdjournHearing() {
             CaseData caseData = caseData(ADJOURN_HEARING);
 
@@ -1833,7 +1833,7 @@ class ManageHearingsServiceTest {
             assertThat(selectedHearingId).isEqualTo(selectedPastAndTodayHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnSelectedPastHearingIdWhenHearingOptionIsEdit() {
             CaseData caseData = caseData(EDIT_PAST_HEARING);
 
@@ -1841,7 +1841,7 @@ class ManageHearingsServiceTest {
             assertThat(selectedHearingId).isEqualTo(selectedHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnSelectedFutureHearingIdWhenHearingOptionIsEdit() {
             CaseData caseData = caseData(EDIT_FUTURE_HEARING);
 
@@ -1849,7 +1849,7 @@ class ManageHearingsServiceTest {
             assertThat(selectedHearingId).isEqualTo(selectedFutureHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnSelectedHearingIdWhenHearingOptionIsReList() {
             CaseData caseData = caseData(RE_LIST_HEARING);
 
@@ -1857,7 +1857,7 @@ class ManageHearingsServiceTest {
             assertThat(selectedHearingId).isEqualTo(selectedToReListHearing);
         }
 
-        //@Test
+        @Test
         void shouldReturnNullWhenHearingOptionIsAddNew() {
             CaseData caseData = caseData(NEW_HEARING);
 
@@ -1895,7 +1895,7 @@ class ManageHearingsServiceTest {
         }
     }
 
-    //@Test
+    @Test
     void shouldReturnFieldsToBeDeleted() {
 
         assertThat(service.caseFieldsToBeRemoved()).containsExactlyInAnyOrder(

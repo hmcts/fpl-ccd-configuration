@@ -149,7 +149,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
     }
 
-    //@Test
+    @Test
     void shouldNotifyDigitalRepresentativesOnAdditionalApplicationsUpload() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
@@ -171,7 +171,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyEmailRepresentativesOnAdditionalApplicationsUpload() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
@@ -193,7 +193,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyAllLAsNoMatterWhoIsTheApplicant() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
@@ -227,7 +227,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyAllLAsAndRespondentWhenApplicantIsRespondent() {
         final String respondent1FirstName = "John";
         final String respondent1LastName = "Smith";
@@ -268,7 +268,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyAllLAsAndChildWhenApplicantIsChild() {
         final String child1FirstName = "Jack";
         final String child1LastName = "Smith";
@@ -309,7 +309,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyApplicantWhenApplicantsEmailAddressIsEmpty() {
         final String applicantName = "someone";
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
@@ -328,7 +328,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyRespondentWhenEmailAddressIsEmpty() {
         final String applicantName = "John Smith";
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
@@ -354,7 +354,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotifyRespondentWhenApplicantIsRespondent() {
         List<Element<Respondent>> respondents = wrapElements(
             Respondent.builder()
@@ -386,7 +386,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsAreEmpty() {
         given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(
             AdditionalApplicationsBundle.builder()
@@ -425,7 +425,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    //@Test
+    @Test
     void shouldNotifyNonHmctsAdminOnAdditionalApplicationsUpload() {
         CaseData caseData = caseData();
 
@@ -443,7 +443,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotifyCtscAdminOnAdditionalApplicationsUploadWhenCtscIsEnabled() {
         CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
@@ -466,7 +466,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldNotNotifyHmctsAdminOnAdditionalApplicationsUpload() {
         given(requestData.userRoles()).willReturn(
             new HashSet<>(Set.of("caseworker", "caseworker-publiclaw", "caseworker-publiclaw-courtadmin"))

@@ -93,7 +93,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         super("enter-children");
     }
 
-    //@Test
+    @Test
     void shouldRetainEmptyPolicyDataWhenChildrenDoNotHaveMainRepresentative() {
         Child child = Child.builder()
             .solicitor(null)
@@ -134,7 +134,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldDoNothingIfOpenState() {
         CaseData caseData = CaseData.builder()
             .state(State.OPEN)
@@ -164,7 +164,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIsSelectedForTheFirstTime() {
         CaseData caseDataBefore = CaseData.builder()
             .localAuthorities(LOCAL_AUTHORITIES)
@@ -230,7 +230,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     }
 
-    //@Test
+    @Test
     void shouldAddMainRepresentativeInfoWhenAllUseMainRepresentativeIfBeforeNotSelected() {
         CaseData caseDataBefore = CaseData.builder()
             .localAuthorities(LOCAL_AUTHORITIES)
@@ -328,7 +328,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldChangeMainRepresentativeInfoWhenPreviousOneWasPresent() {
         when(identityService.generateId()).thenReturn(UUID_1, UUID_2);
 
@@ -438,7 +438,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         ));
     }
 
-    //@Test
+    @Test
     void shouldAddSelectedRepresentative() {
         ChildrenEventData eventData = ChildrenEventData.builder()
             .childrenHaveRepresentation("Yes")
@@ -471,7 +471,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() {
         ChildParty confidentialParty = ChildParty.builder()
             .firstName("Phil")
@@ -515,7 +515,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldTransferLegalCounselWhenSolicitorChanged() {
         List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
             LegalCounsellor.builder().firstName("original").build()

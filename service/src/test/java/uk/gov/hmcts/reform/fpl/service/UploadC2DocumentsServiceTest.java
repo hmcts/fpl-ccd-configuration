@@ -55,7 +55,7 @@ class UploadC2DocumentsServiceTest {
     @MockBean
     private RequestData requestData;
 
-    //@Test
+    @Test
     void shouldBuildExpectedC2DocumentBundle() {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
@@ -68,12 +68,12 @@ class UploadC2DocumentsServiceTest {
         assertThat(firstC2DocumentBundle).isEqualToComparingFieldByField(expectedC2Bundle);
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorsWhenTheDateOfIssueIsInFuture() {
         assertThat(service.validate(createC2DocumentBundle()).toArray()).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnEmptyListWhenNoSupportingDocuments() {
         assertThat(service.validate(createC2DocumentBundleWithNoSupportingDocuments())).isEmpty();
     }

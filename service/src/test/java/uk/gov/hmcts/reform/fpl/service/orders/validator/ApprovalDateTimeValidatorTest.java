@@ -19,12 +19,12 @@ class ApprovalDateTimeValidatorTest {
 
     private final ApprovalDateTimeValidator underTest = new ApprovalDateTimeValidator(time);
 
-    //@Test
+    @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(APPROVAL_DATE_TIME);
     }
 
-    //@Test
+    @Test
     void validateCurrentTime() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -35,7 +35,7 @@ class ApprovalDateTimeValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validatePast() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -46,7 +46,7 @@ class ApprovalDateTimeValidatorTest {
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
-    //@Test
+    @Test
     void validateFuture() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()

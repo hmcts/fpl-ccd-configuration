@@ -35,7 +35,7 @@ class UserServiceTest {
     private final CaseAccessService accessService = mock(CaseAccessService.class);
     private final UserService underTest = new UserService(client, requestData, accessService);
 
-    //@Test
+    @Test
     void shouldReturnUserEmail() {
         when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
         when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(UserDetails.builder()
@@ -47,7 +47,7 @@ class UserServiceTest {
         assertThat(email).isEqualTo(USER_EMAIL);
     }
 
-    //@Test
+    @Test
     void shouldReturnUserName() {
         when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
         when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(UserDetails.builder()
@@ -60,7 +60,7 @@ class UserServiceTest {
         assertThat(name).isEqualTo("John Smith");
     }
 
-    //@Test
+    @Test
     void shouldCheckIfCurrentUserHasRole() {
         when(requestData.userRoles()).thenReturn(Set.of(GATEKEEPER.getRoleName(), CAFCASS.getRoleName()));
 
@@ -73,7 +73,7 @@ class UserServiceTest {
         assertThat(underTest.hasUserRole(CAFCASS)).isTrue();
     }
 
-    //@Test
+    @Test
     void shouldReturnUserDetails() {
         final String userId = "1111-1111";
         final UserDetails expectedUserDetails = UserDetails.builder()
@@ -92,14 +92,14 @@ class UserServiceTest {
     @Nested
     class IsHmctsAdminUser {
 
-        //@Test
+        @Test
         void shouldReturnTrueIfUserHasOnlyAdminRole() {
             when(requestData.userRoles()).thenReturn(Set.of(HMCTS_ADMIN.getRoleName()));
 
             assertThat(underTest.isHmctsAdminUser()).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldReturnTrueIfUserHasAdminRole() {
             when(requestData.userRoles()).thenReturn(Set.of(HMCTS_ADMIN.getRoleName(), JUDICIARY.getRoleName()));
 
@@ -132,13 +132,13 @@ class UserServiceTest {
 
     @Nested
     class HasAnyCaseRoleFromTests {
-        //@Test
+        @Test
         void shouldReturnTrueWhenCaseRolePresent() {
             when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
             assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORA), CASE_ID)).isTrue();
         }
 
-        //@Test
+        @Test
         void shouldReturnFalseWhenCaseRoleNotPresent() {
             when(accessService.getUserCaseRoles(CASE_ID)).thenReturn(Set.of(SOLICITORA));
             assertThat(underTest.hasAnyCaseRoleFrom(List.of(SOLICITORB), CASE_ID)).isFalse();
@@ -147,7 +147,7 @@ class UserServiceTest {
 
     @Nested
     class GetUserDetails {
-        //@Test
+        @Test
         void shouldReturnUserDetails() {
             UserDetails userDetailsMock = mock(UserDetails.class);
             when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);

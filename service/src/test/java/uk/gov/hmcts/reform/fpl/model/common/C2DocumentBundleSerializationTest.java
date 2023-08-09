@@ -31,7 +31,7 @@ class C2DocumentBundleSerializationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //@Test
+    @Test
     void testRoundTrip() {
         C2DocumentBundle initial = C2DocumentBundle.builder()
             .author("Author")
@@ -153,7 +153,7 @@ class C2DocumentBundleSerializationTest {
     }
 
 
-    //@Test
+    @Test
     void testSerialisationAndDeserialisationIfEmptyBundle() {
         C2DocumentBundle initial = C2DocumentBundle.builder()
             .author("Author")

@@ -56,14 +56,14 @@ class LegalRepresentativeAddedContentProviderTest extends AbstractEmailContentPr
         when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_NAME);
     }
 
-    //@Test
+    @Test
     void testGetParameters() {
         LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA);
 
         assertThat(actual).isEqualTo(expectedNotificationData(FAMILY_MAN_CASE_NUMBER));
     }
 
-    //@Test
+    @Test
     void testGetParametersIfNullFamilyManCaseNumber() {
         LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(
             LEGAL_REPRESENTATIVE,

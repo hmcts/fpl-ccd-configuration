@@ -35,7 +35,7 @@ class RecordFinalDecisionsControllerAboutToSubmitTest extends AbstractCallbackTe
         super("record-final-decisions");
     }
 
-    //@Test
+    @Test
     void shouldCleanCaseDataOfTransientFields() {
         ChildFinalDecisionDetails childFinalDecisionDetails = ChildFinalDecisionDetails.builder().build();
 
@@ -76,7 +76,7 @@ class RecordFinalDecisionsControllerAboutToSubmitTest extends AbstractCallbackTe
             ORDER_APPLIES_TO_ALL_CHILDREN_KEY);
     }
 
-    //@Test
+    @Test
     void shouldCloseCaseWhenAllChildrenHaveFinalOrderOrDecision() {
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(
@@ -93,7 +93,7 @@ class RecordFinalDecisionsControllerAboutToSubmitTest extends AbstractCallbackTe
             .isEqualTo(CloseCase.builder().date(FINAL_DECISION_DATE).build());
     }
 
-    //@Test
+    @Test
     void shouldNotCloseCaseWhenNotAllChildrenHaveFinalOrderOrDecision() {
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(

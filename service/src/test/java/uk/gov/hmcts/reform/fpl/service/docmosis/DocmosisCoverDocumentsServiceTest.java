@@ -41,7 +41,7 @@ class DocmosisCoverDocumentsServiceTest {
     private DocmosisCoverDocumentsService underTest;
 
 
-    //@Test
+    @Test
     void shouldGenerateExpectedDocumentWhenAllDataProvided() {
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), eq(COVER_DOCS),
             eq(RenderFormat.PDF), eq(LANGUAGE))).willReturn(docmosisDocument);
@@ -56,7 +56,7 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(pdfDocument).isEqualTo(docmosisDocument);
     }
 
-    //@Test
+    @Test
     void shouldGenerateExpectedDataWhenAllDataProvided() {
         DocmosisCoverDocument coverDocumentData = underTest.buildCoverDocumentsData(FAMILY_MAN_NUMBER,
             CCD_CASE_NUMBER, testRepresentative);
@@ -69,7 +69,7 @@ class DocmosisCoverDocumentsServiceTest {
         assertThat(coverDocumentData.getHmctsLogoSmall()).isEqualTo("[userImage:hmcts-logo-small.png]");
     }
 
-    //@Test
+    @Test
     void shouldDefaultNullFamilyManCaseNumberToEmptyString() {
         DocmosisCoverDocument coverDocumentData = underTest.buildCoverDocumentsData(
             NULL_FAMILY_MAN_NUMBER, CCD_CASE_NUMBER, buildRepresentative());

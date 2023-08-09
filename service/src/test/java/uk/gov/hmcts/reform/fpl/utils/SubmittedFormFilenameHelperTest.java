@@ -20,21 +20,21 @@ class SubmittedFormFilenameHelperTest {
         caseData = populatedCaseData();
     }
 
-    //@Test
+    @Test
     void filenameShouldContainCaseReferenceWhenNoCaseNameIsProvidedAndNotDraftApplication() {
         String fileName = SubmittedFormFilenameHelper.buildFileName(emptyCaseData(), false, C110A);
 
         assertThat(fileName).isEqualTo("123.pdf");
     }
 
-    //@Test
+    @Test
     void filenameShouldContainCaseTitleWhenProvidedAndNotDraftApplication() {
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseData, false, C110A);
 
         assertThat(fileName).isEqualTo("test.pdf");
     }
 
-    //@Test
+    @Test
     void filenameShouldContainDraftApplicationAndCurrentDayWithMonthSuffixedWhenApplicationIsDraft() {
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseData, true, C110A);
 

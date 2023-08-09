@@ -45,7 +45,7 @@ class DocumentConversionServiceTest {
         restTemplate, configuration, downloadService, uploadService
     );
 
-    //@Test
+    @Test
     void shouldReturnSameDocumentReferenceIfItIsPdf() {
         final DocumentReference inputDocumentReference = DocumentReference.builder()
             .filename(PDF_FILE_NAME)
@@ -57,7 +57,7 @@ class DocumentConversionServiceTest {
         verifyNoMoreInteractions(restTemplate, downloadService, uploadService, configuration);
     }
 
-    //@Test
+    @Test
     void shouldReturnSameDocumentReferenceIfItIsPdfBytes() {
         final DocumentReference inputDocumentReference = DocumentReference.builder()
             .filename(PDF_FILE_NAME)
@@ -74,7 +74,7 @@ class DocumentConversionServiceTest {
         verifyNoMoreInteractions(restTemplate, downloadService, uploadService, configuration);
     }
 
-    //@Test
+    @Test
     void shouldConvertNonPdfDocumentReferenceToPdf() {
         final byte[] inputDocumentBinaries = testDocumentBinaries();
         final byte[] convertedDocumentBinaries = testDocumentBinaries();
@@ -100,7 +100,7 @@ class DocumentConversionServiceTest {
         assertThat(converted).isEqualTo(uploadedReference);
     }
 
-    //@Test
+    @Test
     void shouldConvertNonPdfDocumentReferenceToPdfBytes() {
         final byte[] inputDocumentBinaries = testDocumentBinaries();
         final byte[] convertedDocumentBinaries = testDocumentBinaries();
@@ -125,7 +125,7 @@ class DocumentConversionServiceTest {
     }
 
 
-    //@Test
+    @Test
     void shouldReturnSameDocumentBinariesIfItIsPdf() {
         final byte[] inputDocumentBinaries = testDocumentBinaries();
         final byte[] converted = underTest.convertToPdf(inputDocumentBinaries, PDF_FILE_NAME);
@@ -134,7 +134,7 @@ class DocumentConversionServiceTest {
         verifyNoMoreInteractions(restTemplate, configuration);
     }
 
-    //@Test
+    @Test
     void shouldConvertNonPdfDocumentBinariesToPdf() {
         final byte[] inputDocumentBinaries = testDocumentBinaries();
         final byte[] convertedDocumentBinaries = testDocumentBinaries();

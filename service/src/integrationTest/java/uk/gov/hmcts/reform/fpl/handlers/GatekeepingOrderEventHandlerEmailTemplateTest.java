@@ -67,7 +67,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private GatekeepingOrderEventHandler underTest;
 
-    //@Test
+    @Test
     void cafcassSDOAndNoPEmailTemplate() {
         underTest.notifyCafcass(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)
@@ -93,7 +93,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void ctcsSDOAndNoPEmailTemplate() {
         underTest.notifyCTSC(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)
@@ -111,7 +111,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void laSDOAndNoPEmailTemplate() {
         underTest.notifyLocalAuthority(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)
@@ -143,7 +143,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void cafcassUDOAndNoPEmailTemplate() {
         underTest.notifyCafcass(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)
@@ -169,7 +169,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void ctcsUDOAndNoPEmailTemplate() {
         underTest.notifyCTSC(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)
@@ -187,7 +187,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    //@Test
+    @Test
     void laUDOAndNoPEmailTemplate() {
         underTest.notifyLocalAuthority(EVENT_BUILDER
             .notificationGroup(SDO_OR_UDO_AND_NOP)

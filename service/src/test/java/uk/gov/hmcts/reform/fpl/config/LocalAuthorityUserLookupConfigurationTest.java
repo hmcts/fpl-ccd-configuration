@@ -18,14 +18,14 @@ class LocalAuthorityUserLookupConfigurationTest {
 
     private LocalAuthorityUserLookupConfiguration configuration = new LocalAuthorityUserLookupConfiguration(CONFIG);
 
-    //@Test
+    @Test
     void shouldThrowNullPointerExceptionUponInitialisationWhenMappingValueIsEmpty() {
         Assertions.assertThatThrownBy(() -> new LocalAuthorityUserLookupConfiguration(CONFIG + ";fake=>"))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Mapping value cannot be empty");
     }
 
-    //@Test
+    @Test
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeIsNull() throws IllegalArgumentException {
         assertThatThrownBy(() ->
             configuration.getUserIds(null))
@@ -33,7 +33,7 @@ class LocalAuthorityUserLookupConfigurationTest {
             .hasMessage("Local authority code cannot be null");
     }
 
-    //@Test
+    @Test
     void shouldThrowCustomExceptionWhenLocalAuthorityCodeDoesNotExist() throws IllegalArgumentException {
         assertThatThrownBy(() ->
             configuration.getUserIds("FAKE"))
@@ -41,7 +41,7 @@ class LocalAuthorityUserLookupConfigurationTest {
             .hasMessage("Local authority 'FAKE' was not found");
     }
 
-    //@Test
+    @Test
     void shouldReturnLocalAuthorityUserIdsWhenLocalAuthorityCodeExists() {
         List<String> localAuthorityUserIds = configuration.getUserIds(LOCAL_AUTHORITY_CODE);
 

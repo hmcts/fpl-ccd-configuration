@@ -80,7 +80,7 @@ class ReplyToMessageJudgeServiceTest {
         when(time.now()).thenReturn(LocalDateTime.now());
     }
 
-    //@Test
+    @Test
     void shouldInitialiseCaseFieldsWhenJudicialMessagesExist() {
 
         final String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
@@ -124,7 +124,7 @@ class ReplyToMessageJudgeServiceTest {
         assertThat(expectedEventData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldInitialiseCaseFieldsWhenNoJudicialMessage() {
         final CaseData caseData = CaseData.builder().build();
 
@@ -139,7 +139,7 @@ class ReplyToMessageJudgeServiceTest {
         assertThat(expectedEventData).isEqualTo(expectedData);
     }
 
-    //@Test
+    @Test
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
@@ -194,7 +194,7 @@ class ReplyToMessageJudgeServiceTest {
             );
     }
 
-    //@Test
+    @Test
     void shouldPopulateReplyFromWithJudgeEmailAddressWhenJudgeIsReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
@@ -248,7 +248,7 @@ class ReplyToMessageJudgeServiceTest {
             .isEqualTo(expectedJudicialMessage);
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionWhenJudicialMessagesFailsToBeFound() {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
@@ -273,7 +273,7 @@ class ReplyToMessageJudgeServiceTest {
             .hasMessage(format("Judicial message with id %s not found", SELECTED_DYNAMIC_LIST_ITEM_ID));
     }
 
-    //@Test
+    @Test
     void shouldReturnValidationErrorWhenFromAndToEmailAddressesAreSame() {
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
@@ -296,7 +296,7 @@ class ReplyToMessageJudgeServiceTest {
             .containsExactly("The sender's and recipient's email address cannot be the same");
     }
 
-    //@Test
+    @Test
     void shouldNotReturnValidationErrorWhenJudgeReplyHaveDifferentSenderAndRecipientEmailAddresses() {
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
@@ -362,7 +362,7 @@ class ReplyToMessageJudgeServiceTest {
         assertThat(replyToMessageJudgeService.validateJudgeReplyMessage(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldUpdateExistingJudicialMessageWhenReplying() {
         String messageReply = "Reply to message";
@@ -406,7 +406,7 @@ class ReplyToMessageJudgeServiceTest {
         assertThat(updatedData.get("latestRoleSent")).isEqualTo(JudicialMessageRoleType.LOCAL_COURT_ADMIN);
     }
 
-    //@Test
+    @Test
     void shouldSortThreadOfJudicialMessagesByDate() {
         Element<JudicialMessage> latestJudicialMessage = buildJudicialMessageElement(time.now().plusDays(1), OPEN);
         Element<JudicialMessage> pastJudicialMessage = buildJudicialMessageElement(time.now().plusMinutes(1), OPEN);
@@ -424,7 +424,7 @@ class ReplyToMessageJudgeServiceTest {
             oldestJudicialMessage));
     }
 
-    //@Test
+    @Test
     void shouldPopulateFirstHearingLabelWhenHearingExists() {
         HearingType hearingType = CASE_MANAGEMENT;
         LocalDateTime hearingStartDate = LocalDateTime.now();
@@ -441,14 +441,14 @@ class ReplyToMessageJudgeServiceTest {
                 formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE)));
     }
 
-    //@Test
+    @Test
     void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
         CaseData caseData = CaseData.builder().build();
 
         assertThat(replyToMessageJudgeService.getNextHearingLabel(caseData)).isEmpty();
     }
 
-    //@Test
+    @Test
     @SuppressWarnings("unchecked")
     void shouldCloseJudicialMessageWhenIsReplyingToJudicialMessageIsSelectedAsNo() {
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
@@ -485,7 +485,7 @@ class ReplyToMessageJudgeServiceTest {
                 tuple(closedJudicialMessage.getId(), CLOSED));
     }
 
-    //@Test
+    @Test
     void shouldThrowAnExceptionWhenSelectedJudicialMessageToCloseIsNotFound() {
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "")))

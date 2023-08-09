@@ -436,7 +436,7 @@ class TaskListServiceTest {
 
     @Nested
     class TaskHints {
-        //@Test
+        @Test
         void shouldNotReturnTaskHIntsIfNotC1() {
             when(caseData.isC1Application())
                 .thenReturn(false);

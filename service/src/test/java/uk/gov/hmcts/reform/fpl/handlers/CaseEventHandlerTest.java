@@ -56,7 +56,7 @@ class CaseEventHandlerTest {
     @InjectMocks
     private CaseEventHandler caseEventHandler;
 
-    //@Test
+    @Test
     void shouldTriggerCaseDataChange() {
         final CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -96,7 +96,7 @@ class CaseEventHandlerTest {
 
     }
 
-    //@Test
+    @Test
     void shouldUpdateTaskListForCasesInOpenState() {
         final CaseData caseData = CaseData.builder()
             .id(nextLong())
@@ -120,7 +120,7 @@ class CaseEventHandlerTest {
             eq("internal-update-task-list"), any());
     }
 
-    //@Test
+    @Test
     void shouldNotUpdateTaskListForCasesInStateDifferentThanOpen() {
         final CaseData caseData = CaseData.builder()
             .id(nextLong())

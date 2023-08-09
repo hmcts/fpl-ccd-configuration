@@ -8,7 +8,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
 
     private final ManageOrderDocumentScopedFieldsCalculator underTest = new ManageOrderDocumentScopedFieldsCalculator();
 
-    //@Test
+    @Test
     void calculate() {
         assertThat(underTest.calculate()).containsExactlyInAnyOrder(
             "manageOrdersPartyToBeBefriended1",

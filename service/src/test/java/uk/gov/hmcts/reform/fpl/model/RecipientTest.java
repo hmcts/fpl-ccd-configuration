@@ -24,7 +24,7 @@ class RecipientTest {
     @Spy
     private Recipient recipient;
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenRecipientNameIsNotBlankAndAddressHasAtLeastLine1AndPostcode() {
         when(recipient.getFullName()).thenReturn("Name");
         when(recipient.getAddress()).thenReturn(Address.builder()

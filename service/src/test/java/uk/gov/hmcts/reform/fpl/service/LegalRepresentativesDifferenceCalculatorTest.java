@@ -35,7 +35,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
 
     private final LegalRepresentativesDifferenceCalculator underTest = new LegalRepresentativesDifferenceCalculator();
 
-    //@Test
+    @Test
     void testEmpty() {
         LegalRepresentativesChange actual = underTest.calculate(
             emptyList(),
@@ -48,7 +48,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testAdded() {
         LegalRepresentativesChange actual = underTest.calculate(
             emptyList(),
@@ -61,7 +61,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testAddedUserMaintainPreExisting() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE),
@@ -74,7 +74,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testRemoved() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE),
@@ -87,7 +87,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testRemoveUserMaintainPreExisting() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE, ANOTHER_LEGAL_REPRESENTATIVE),
@@ -100,7 +100,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testChangedEmail() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE),
@@ -114,7 +114,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testChangedNonRelevantFields() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE),
@@ -132,7 +132,7 @@ class LegalRepresentativesDifferenceCalculatorTest {
             .build());
     }
 
-    //@Test
+    @Test
     void testAddedRoleForSameUser() {
         LegalRepresentativesChange actual = underTest.calculate(
             List.of(LEGAL_REPRESENTATIVE),

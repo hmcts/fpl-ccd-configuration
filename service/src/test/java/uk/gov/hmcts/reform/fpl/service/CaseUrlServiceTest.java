@@ -24,7 +24,7 @@ class CaseUrlServiceTest {
     @Autowired
     private CaseUrlService caseUrlService;
 
-    //@Test
+    @Test
     void shouldGetCaseUrlsForXui() {
         assertThat(caseUrlService.getBaseUrl())
             .isEqualTo(XUI_URL);

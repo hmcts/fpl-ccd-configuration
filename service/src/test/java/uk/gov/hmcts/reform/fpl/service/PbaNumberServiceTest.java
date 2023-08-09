@@ -24,7 +24,7 @@ class PbaNumberServiceTest {
 
     private PbaNumberService pbaNumberService = new PbaNumberService();
 
-    //@Test
+    @Test
     void shouldUpdateForApplicants() {
         List<Element<Applicant>> applicantElementsList = List.of(
             buildApplicantElementWithPbaNumber(""),
@@ -45,7 +45,7 @@ class PbaNumberServiceTest {
         assertThat(updatedApplicants.get(3).getId()).isEqualTo(applicantElementsList.get(3).getId());
     }
 
-    //@Test
+    @Test
     void shouldUpdateForC2DocumentBundle() {
         C2DocumentBundle testDocumentBundle = C2DocumentBundle.builder().pbaNumber(FIRST_NUMBER).build();
         C2DocumentBundle expectedUpdatedDocumentBundle = testDocumentBundle.toBuilder()
@@ -57,7 +57,7 @@ class PbaNumberServiceTest {
         assertThat(updatedC2DocumentBundle).isEqualTo(expectedUpdatedDocumentBundle);
     }
 
-    //@Test
+    @Test
     void shouldUpdatePbaNumberToIncludePrefix() {
         String pbaNumber = "1234567";
 
@@ -72,7 +72,7 @@ class PbaNumberServiceTest {
         assertThat(pbaNumberService.update(pbaNumber)).isNull();
     }
 
-    //@Test
+    @Test
     void shouldUpdatePbaPaymentPbaNumberToIncludePrefix() {
         String pbaNumber = "1234567";
         PBAPayment pbaPayment = PBAPayment.builder().pbaNumber(pbaNumber).build();
@@ -92,7 +92,7 @@ class PbaNumberServiceTest {
         assertThat(updatedPbaNumber).isNull();
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenPBAPaymentHasValidPbaNumber() {
         PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").build();
         List<String> errors = pbaNumberService.validate(pbaPayment);
@@ -100,7 +100,7 @@ class PbaNumberServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenPBAPaymentHasInvalidPbaNumber() {
         PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("1").build();
         List<String> errors = pbaNumberService.validate(pbaPayment);
@@ -114,7 +114,7 @@ class PbaNumberServiceTest {
         assertThat(pbaNumberService.validate(PBAPayment.builder().pbaNumber(pbaNumber).build())).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnNoErrorsWhenValidPbaNumber() {
         String pbaNumber = "PBA1234567";
 
@@ -123,7 +123,7 @@ class PbaNumberServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorWhenInvalidPbaNumber() {
         String pbaNumber = "1";
 
@@ -138,7 +138,7 @@ class PbaNumberServiceTest {
         assertThat(pbaNumberService.validate(pbaNumber)).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotUpdateForC2DocumentBundleWithEmptyPbaNumber() {
         C2DocumentBundle testDocumentBundle = C2DocumentBundle.builder().pbaNumber("").build();
 
@@ -147,7 +147,7 @@ class PbaNumberServiceTest {
         assertThat(updatedC2DocumentBundle).isEqualTo(testDocumentBundle);
     }
 
-    //@Test
+    @Test
     void shouldReturnErrorMessageForApplicantsWithInvalidPbaNumber() {
         List<Element<Applicant>> applicantElementsList = List.of(
             buildApplicantElementWithPbaNumber(FIRST_NUMBER),
@@ -159,7 +159,7 @@ class PbaNumberServiceTest {
         assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorMessageForApplicantsWithValidPbaNumbers() {
         List<Element<Applicant>> applicantElementsList = List.of(
             buildApplicantElementWithPbaNumber(PBA_PREFIX + FIRST_NUMBER),
@@ -171,7 +171,7 @@ class PbaNumberServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    //@Test
+    @Test
     void shouldNotReturnErrorMessageForApplicantsWithEmptyPbaNumbers() {
         List<Element<Applicant>> applicantElementsList = List.of(
             buildApplicantElementWithPbaNumber(EMPTY),

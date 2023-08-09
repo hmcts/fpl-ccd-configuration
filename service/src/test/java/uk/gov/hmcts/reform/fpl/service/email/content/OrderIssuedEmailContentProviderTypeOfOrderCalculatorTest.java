@@ -34,7 +34,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         when(newGeneratedOrder1.getType()).thenReturn("newOrderTitle1");
     }
 
-    //@Test
+    @Test
     void typeOfOrderForLegacyGeneratedOrder() {
 
         CaseData caseData = CaseData.builder()
@@ -47,7 +47,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         assertThat(actual).isEqualTo("legacyorder2");
     }
 
-    //@Test
+    @Test
     void typeOfOrderForNewGeneratedOrder() {
 
         CaseData caseData = CaseData.builder()
@@ -60,7 +60,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         assertThat(actual).isEqualTo("newordertitle1");
     }
 
-    //@Test
+    @Test
     void typeOfOrderForOtherGeneratedOrder() {
 
         CaseData caseData = CaseData.builder()
@@ -74,7 +74,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         assertThat(actual).isEqualTo("order");
     }
 
-    //@Test
+    @Test
     void typeOfOrderForOtherIssueTypeNoticeOfPlacement() {
 
         String actual = underTest.getTypeOfOrder(null, NOTICE_OF_PLACEMENT_ORDER);
@@ -82,7 +82,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         assertThat(actual).isEqualTo("notice of placement order");
     }
 
-    //@Test
+    @Test
     void typeOfOrderForOtherIssueTypeCMO() {
 
         String actual = underTest.getTypeOfOrder(null, CMO);

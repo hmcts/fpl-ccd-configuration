@@ -13,7 +13,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
 
     private static final String ERROR_MESSAGE = "Enter at least one telephone number for the contact";
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfTelephoneExists() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
@@ -26,7 +26,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfMobileNumberExists() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .mobileNumber(Telephone.builder()
@@ -39,7 +39,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfBothTelephoneAndMobileNumberExist() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
@@ -55,7 +55,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldNotReturnAnErrorIfTelephoneNumberIsNotEmptyAndMobileNumberIsEmpty() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
@@ -71,7 +71,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfBothTelephoneAndMobileNumberAreNotPopulated() {
         ApplicantParty applicantParty = ApplicantParty.builder().build();
 
@@ -80,7 +80,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfApplicantTelephoneIsEmptyString() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .mobileNumber(Telephone.builder()
@@ -93,7 +93,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    //@Test
+    @Test
     void shouldReturnAnErrorIfTelephoneAndMobileNumberAreEmptyStrings() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()

@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
 class OrderTest {
 
-    //@Test
+    @Test
     void fileExtension() {
         assertThat(A70_PLACEMENT_ORDER.fileName(RenderFormat.PDF)).isEqualTo("a70_placement_order.pdf");
         assertThat(A70_PLACEMENT_ORDER.fileName(RenderFormat.WORD)).isEqualTo("a70_placement_order.doc");
@@ -115,7 +115,7 @@ class OrderTest {
         assertThat(order.fileName(RenderFormat.WORD, manageOrdersEventData)).isEqualTo(expectedWordString);
     }
 
-    //@Test
+    @Test
     void firstSection() {
         assertThat(A70_PLACEMENT_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -146,7 +146,7 @@ class OrderTest {
         assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
     }
 
-    //@Test
+    @Test
     void checkCoverage() {
         Set<Order> allOrders = Arrays.stream(Order.values())
             .filter(order -> OrderSourceType.DIGITAL == order.getSourceType())

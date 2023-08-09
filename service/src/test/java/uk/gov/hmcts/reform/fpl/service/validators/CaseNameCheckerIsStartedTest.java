@@ -16,7 +16,7 @@ class CaseNameCheckerIsStartedTest {
     @InjectMocks
     private CaseNameChecker caseNameChecker;
 
-    //@Test
+    @Test
     void shouldReturnTrueWhenCaseNameNotEmpty() {
         final CaseData caseData = CaseData.builder()
                 .caseName("Test")

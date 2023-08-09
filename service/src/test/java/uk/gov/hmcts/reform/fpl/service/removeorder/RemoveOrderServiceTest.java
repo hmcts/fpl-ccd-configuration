@@ -303,7 +303,7 @@ class RemoveOrderServiceTest {
         assertThat(listOfOrders).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldNotBuildDynamicListOfSDOrdersInFinalHearingState() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
             .orderStatus(SEALED)
@@ -324,7 +324,7 @@ class RemoveOrderServiceTest {
         assertThat(listOfOrders).isEqualTo(expectedList);
     }
 
-    //@Test
+    @Test
     void shouldUseExpectedRemovalActionWhenRemovingAnOrder() {
         when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
 
@@ -333,7 +333,7 @@ class RemoveOrderServiceTest {
         verify(orderRemovalAction).remove(caseData, data, REMOVED_UUID, removableOrder);
     }
 
-    //@Test
+    @Test
     void shouldUseExpectedRemovalActionWhenPreparingCaseFields() {
         when(orderRemovalActions.getAction(removableOrder)).thenReturn(orderRemovalAction);
 

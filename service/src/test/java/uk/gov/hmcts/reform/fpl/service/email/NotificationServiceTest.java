@@ -46,7 +46,7 @@ class NotificationServiceTest {
         "respondentLastName", "Smith",
         "caseUrl", "http://fake-url");
 
-    //@Test
+    @Test
     void shouldSendEmailToSingleRecipient() throws NotificationClientException {
         notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL_1, EMAIL_PERSONALISATION, REFERENCE);
 
@@ -58,7 +58,7 @@ class NotificationServiceTest {
         );
     }
 
-    //@Test
+    @Test
     void shouldSendEmailsToMultipleRecipients() throws NotificationClientException {
         notificationService.sendEmail(TEMPLATE_ID, Set.of(TEST_RECIPIENT_EMAIL_1, TEST_RECIPIENT_EMAIL_2),
             EMAIL_PERSONALISATION, REFERENCE);

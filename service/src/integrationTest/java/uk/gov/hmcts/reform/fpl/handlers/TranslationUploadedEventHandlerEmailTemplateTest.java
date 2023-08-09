@@ -89,7 +89,7 @@ class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Autowired
     private TranslationUploadedEventHandler underTest;
 
-    //@Test
+    @Test
     void notifyLocalAuthority() {
         List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
 
@@ -106,7 +106,7 @@ class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     }
 
-    //@Test
+    @Test
     void notifyDigitalRepresentatives() {
         List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
 
@@ -123,7 +123,7 @@ class TranslationUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     }
 
-    //@Test
+    @Test
     void notifyEmailRepresentatives() {
         List<Element<Other>> selectedOthers = wrapElements(testOther("Other 1"));
 
