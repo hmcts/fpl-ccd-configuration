@@ -67,13 +67,17 @@ public class RoleAssignmentService {
      */
     @Retryable(value = {FeignException.class}, label = "Create bulk case role assignment")
     public void createRoleAssignments(List<RoleAssignment> roleAssignments) {
+        if (roleAssignments.isEmpty()) {
+            log.info("No role assignments to create");
+            return;
+        }
         String systemUserToken = systemUserService.getSysUserToken();
         amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
             .requestedRoles(roleAssignments)
             .roleRequest(RoleRequest.builder()
                 .assignerId(systemUserService.getUserId(systemUserToken))
                 .reference("fpl-case-role-assignment")
-                .replaceExisting(true)
+                .replaceExisting(false)
                 .build())
             .build());
 
