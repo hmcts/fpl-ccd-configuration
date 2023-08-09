@@ -48,5 +48,16 @@
     "EventElementLabel": "Email Address",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocatedJudge",
+    "CaseEventID": "manageHearings",
+    "CaseFieldID": "hearingJudge",
+    "ListElementCode": "judgeJudicialUser",
+    "EventElementLabel": "Judicial User",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "hearingJudge.judgeEmailAddress=\"DO NOT SHOW\""
   }
 ]

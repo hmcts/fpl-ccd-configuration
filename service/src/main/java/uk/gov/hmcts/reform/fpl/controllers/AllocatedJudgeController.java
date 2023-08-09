@@ -74,8 +74,6 @@ public class AllocatedJudgeController extends CallbackController {
             Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
             if (jup.isPresent()) {
                 caseDetails.getData().put("allocatedJudge", Judge.fromJudicialUserProfile(jup.get()));
-                // todo - move this to submitted callback
-                // judicialService.assignAllocatedJudge(caseDetails.getId(), jup.get().getSidamId());
             } else {
                 return respond(caseDetails,
                     List.of("Could not fetch Judge details from JRD, please try again in a few minutes."));
