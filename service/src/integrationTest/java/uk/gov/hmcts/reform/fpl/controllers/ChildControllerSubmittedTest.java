@@ -200,25 +200,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        /*Map<String, Object> changeRequest = Map.of(
-            "changeOrganisationRequestField", ChangeOrganisationRequest.builder()
-                .approvalStatus(APPROVED)
-                .organisationToAdd(MAIN_ORG)
-                .organisationToRemove(null)
-                .caseRoleId(DynamicList.builder()
-                    .value(DynamicListElement.builder()
-                        .label(CHILDSOLICITORA.getCaseRoleLabel())
-                        .code(CHILDSOLICITORA.getCaseRoleLabel())
-                        .build())
-                    .listItems(List.of(DynamicListElement.builder()
-                        .label(CHILDSOLICITORA.getCaseRoleLabel())
-                        .code(CHILDSOLICITORA.getCaseRoleLabel())
-                        .build()))
-                    .build())
-                .requestTimestamp(now())
-                .build()
-        );*/
-
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("updateRepresentation"));
 
@@ -227,17 +208,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
-
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(3))
-            .submitEvent(any(), eq(CASE_ID), any());
-
-        /*verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(internalChangeStartEventResponse), eq(CASE_ID), eq(changeRequest));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(internalUpdateStartEventResponse), eq(CASE_ID), any());
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .submitEvent(eq(updateRepresentationStartEventResponse), eq(CASE_ID), any());*/
-
     }
 
     @Test
