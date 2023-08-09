@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.placement;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -258,7 +259,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             notificationReference(CASE_ID));
     }
 
-    @Test
+    @RepeatedTest(10)
     void shouldNotMakePaymentForPlacementIfNotRequired() {
 
         final Placement placement = Placement.builder()
