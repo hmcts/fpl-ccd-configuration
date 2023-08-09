@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -136,7 +137,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         verifyNoInteractions(nocService, eventService);
     }
 
-    @Test
+    @RepeatedTest(10)
     void shouldUpdateRepresentativeAccess() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
