@@ -79,14 +79,19 @@ public class JudicialService {
      * @param endTime the time which we don't want any existing hearing-users to have roles at
      */
     public void setExistingHearingJudgesAndLegalAdvisersToExpire(Long caseId, ZonedDateTime endTime) {
+        List<String> hearingRoles = List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
         List<RoleAssignment> judgesAndLegalAdvisers = roleAssignmentService.getCaseRolesAtTime(caseId,
-            List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()), endTime);
+            hearingRoles, endTime);
 
         // delete these role assignments in AM
-        judgesAndLegalAdvisers.forEach(roleAssignmentService::deleteRoleAssignment);
+        judgesAndLegalAdvisers
+            .stream()
+            .filter(role -> hearingRoles.contains(role.getRoleName()))
+            .forEach(roleAssignmentService::deleteRoleAssignment);
 
         // loop through all role assignments, and recreate them in AM with the new endTime
         List<RoleAssignment> newRoleAssignments = judgesAndLegalAdvisers.stream()
+            .filter(role -> hearingRoles.contains(role.getRoleName()))
             .map(ra -> buildRoleAssignment(
                 caseId,
                 ra.getActorId(),
