@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -690,6 +691,24 @@ public class MigrateCaseService {
         } else {
             return Map.of("courtBundleListV2", listOfHearingCourtBundles);
         }
+    }
+
+    public Map<String, Object> removeCorrespondenceDocument(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedDocumentId) {
+
+        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments =
+            caseData.getCorrespondenceDocuments().stream()
+                .filter(el -> !expectedDocumentId.equals(el.getId()))
+                .collect(toList());
+
+        if (newCorrespondenceDocuments.size() != caseData.getCorrespondenceDocuments().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, correspondence document not found",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("correspondentDocument", newCorrespondenceDocuments);
     }
 
     public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
