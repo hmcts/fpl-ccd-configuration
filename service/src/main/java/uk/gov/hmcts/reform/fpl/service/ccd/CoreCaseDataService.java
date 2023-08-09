@@ -37,6 +37,10 @@ public class CoreCaseDataService {
     private final SystemUserService systemUserService;
     private final CCDConcurrencyHelper concurrencyHelper;
 
+    public CaseDetails performPostSubmitCallbackWithoutChange(Long caseId, String eventName) {
+        return performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
+    }
+
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction) {

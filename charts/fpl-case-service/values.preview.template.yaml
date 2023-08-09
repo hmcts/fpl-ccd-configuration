@@ -90,7 +90,7 @@ xui-webapp:
     devcpuRequests: 500m
     devmemoryRequests: 512Mi
     devcpuLimits: 1
-    devmemoryLimits: 1Gi
+    devmemoryLimits: 4Gi
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10

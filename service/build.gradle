@@ -1,4 +1,4 @@
- buildscript {
+buildscript {
   repositories {
     mavenCentral()
   }
@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.559'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.778'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -54,51 +54,59 @@ sourceSets {
     }
   }
 
-    smokeTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/smokeTest/java')
-        }
+  smokeTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/smokeTest/java')
     }
+  }
 
-    contractTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/contractTest/java')
-        }
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
     }
+  }
 }
 
 idea {
- module {
-   testSourceDirs += file('src/integrationTest/java')
-   testSourceDirs += file('src/functionalTest/java')
- }
+  module {
+    testSourceDirs += file('src/integrationTest/java')
+    testSourceDirs += file('src/functionalTest/java')
+  }
 }
 
 configurations {
- functionalTestImplementation.extendsFrom testImplementation
- functionalTestRuntime.extendsFrom testRuntime
- integrationTestImplementation.extendsFrom testImplementation
- integrationTestRuntime.extendsFrom testRuntime
- cftlibTestImplementation.extendsFrom testImplementation
- cftlibTestRuntime.extendsFrom testRuntime
+  functionalTestImplementation.extendsFrom testImplementation
+  functionalTestRuntime.extendsFrom testRuntime
+  integrationTestImplementation.extendsFrom testImplementation
+  integrationTestRuntime.extendsFrom testRuntime
+  cftlibTestImplementation.extendsFrom testImplementation
+  cftlibTestRuntime.extendsFrom testRuntime
 }
 
 configurations.integrationTestImplementation {
- exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+  exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
 }
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
+//Comment this section in to allow for additional logging of unit tests for any tests with type 'Test'
+/*tasks.withType(Test) {
+  useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
+}*/
+
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-
   // set your environment variables here
   // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -123,25 +131,25 @@ task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verificatio
 }
 
 project.ext {
-    pacticipant = 'fpl_ccdConfiguration'
-    pacticipantVersion = getCheckedOutGitCommitHash()
+  pacticipant = 'fpl_ccdConfiguration'
+  pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
-    onlyIf {
-        return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
-    }
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-    systemProperty 'pact.rootDir', "pacts"
-    testLogging.showStandardStreams = true
+  onlyIf {
+    return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
+  }
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  systemProperty 'pact.rootDir', "pacts"
+  testLogging.showStandardStreams = true
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
-    logger.lifecycle("Runs pact consumer Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
+  logger.lifecycle("Runs pact consumer Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
 }
 
 runAndPublishConsumerPactTests.dependsOn runContractTests
@@ -149,18 +157,18 @@ runAndPublishConsumerPactTests.dependsOn runContractTests
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 def getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
 pact {
-    broker {
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-    }
-    publish {
-        pactDirectory = 'service/pacts'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
-        version = project.pacticipantVersion
-    }
+  broker {
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+  }
+  publish {
+    pactDirectory = 'service/pacts'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = project.pacticipantVersion
+  }
 }
 
 
@@ -188,7 +196,7 @@ task functional(description: 'Runs the functional tests.') {
 }
 
 task contract(description: 'Runs the contract tests.') {
-    dependsOn(inStrictOrder(runContractTests))
+  dependsOn(inStrictOrder(runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
@@ -202,7 +210,7 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
   dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 }
 
-task fortifyScan(type: JavaExec)  {
+task fortifyScan(type: JavaExec) {
   mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
@@ -277,12 +285,12 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2',
   log4j           : '2.16.0',
-  pdfbox          : '2.0.24',
+  pdfbox          : '2.0.29',
   mockito         : '3.7.7',
   serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
-  lombok          : '1.18.22'
+  lombok          : '1.18.28'
 ]
 
 dependencies {
@@ -302,7 +310,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
@@ -336,14 +344,14 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.4'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.15.2'
 
-  implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
+  implementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
@@ -380,7 +388,6 @@ dependencies {
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
 
-
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
@@ -400,14 +407,14 @@ dependencies {
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.4'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.9.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.10.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
-  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
 
-  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.32.0'
-  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.9'
+  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.35.0'
+  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.10'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
@@ -443,7 +450,7 @@ pitest {
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
   ]
-  jvmArgs = ['-Xms1G','-Xmx3G']
+  jvmArgs = ['-Xms1G', '-Xmx3G']
   threads = 10
   enableDefaultIncrementalAnalysis = true
   outputFormats = ['XML', 'HTML']
@@ -457,7 +464,7 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.6'
   }
 }
 
@@ -494,13 +501,14 @@ bootWithCCD {
 
   doFirst() {
     project.file('../build/cftlib/.aat-env').readLines().each() {
-      if (it.contains("=")){
+      if (it.contains("=")) {
         def index = it.indexOf("=")
         def key = it.substring(0, index)
         def value = it.substring(index + 1)
         environment key, value
       }
     }
+
     environment "spring.profiles.active", "feature-toggle,local,user-mappings"
     environment 'rse.lib.stub.s2s', 'true'
     environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
