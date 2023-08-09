@@ -236,7 +236,9 @@ public class JudicialService {
 
         if (judge.isPresent()) {
             return judge;
-        } else return legalAdviser;
+        } else {
+            return legalAdviser;
+        }
     }
 
     /**
