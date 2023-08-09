@@ -31,6 +31,8 @@ public class RoleAssignmentUtils {
             .grantType(GrantType.SPECIFIC)
             .roleCategory(roleCategory)
             .roleType(RoleType.CASE)
+            // todo may need to change this after COT change
+            .classification(roleCategory.equals(RoleCategory.LEGAL_OPERATIONS) ? "RESTRICTED" : "PUBLIC")
             .beginTime(beginTime)
             .endTime(endTime)
             .roleName(role)
