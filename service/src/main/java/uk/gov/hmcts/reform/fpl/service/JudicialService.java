@@ -92,7 +92,7 @@ public class JudicialService {
                 ra.getActorId(),
                 ra.getRoleName(),
                 ra.getRoleCategory(),
-                ZonedDateTime.now(),
+                ra.getBeginTime(),
                 endTime)
             ).collect(Collectors.toList());
 
@@ -136,10 +136,10 @@ public class JudicialService {
         // add new allocated judge
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-                ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
+                ZonedDateTime.now(), null);
         } else {
             roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
-                ZonedDateTime.now().plusYears(10));
+                null);
         }
     }
 
@@ -155,10 +155,10 @@ public class JudicialService {
 
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
-                ZonedDateTime.now().plusYears(10));
+                null);
+            // todo write a test about nulls
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting,
-                ZonedDateTime.now().plusYears(10));
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, null);
         }
     }
 
