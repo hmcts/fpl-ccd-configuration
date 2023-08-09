@@ -8,7 +8,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.client.AmApi;
 import uk.gov.hmcts.reform.am.model.AssignmentRequest;
-import uk.gov.hmcts.reform.am.model.DeleteRequest;
 import uk.gov.hmcts.reform.am.model.GrantType;
 import uk.gov.hmcts.reform.am.model.QueryRequest;
 import uk.gov.hmcts.reform.am.model.QueryResponse;
@@ -158,17 +157,6 @@ public class RoleAssignmentService {
                 .build()
         );
         return resp.getRoleAssignmentResponse();
-    }
-
-    @Retryable(value = {FeignException.class}, label = "Delete role assignments by query")
-    public void deleteRoleAssignmentsByQuery(Long caseId, List<String> caseRoles) {
-        String systemUserToken = systemUserService.getSysUserToken();
-        amApi.deleteRoleAssignmentsByQuery(systemUserToken, authTokenGenerator.generate(), DeleteRequest.builder()
-            .queryRequests(List.of(QueryRequest.builder()
-                    .roleName(caseRoles)
-                    .attributes(Map.of("caseId", List.of(caseId.toString())))
-                .build()))
-            .build());
     }
 
     @Retryable(value = {FeignException.class}, label = "Delete a single role assignment")
