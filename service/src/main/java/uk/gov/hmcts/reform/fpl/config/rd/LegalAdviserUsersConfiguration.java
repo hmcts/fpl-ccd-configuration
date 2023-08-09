@@ -50,7 +50,7 @@ public class LegalAdviserUsersConfiguration {
     }
 
     public Optional<String> getLegalAdviserUUID(String email) {
-        return Optional.ofNullable(mapping.getOrDefault(email, null));
+        return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 
     @Retryable(value = FeignException.class, recover = "recoverFailedLegalAdviserCall")
@@ -61,7 +61,7 @@ public class LegalAdviserUsersConfiguration {
             STAFF_PAGE_SIZE, SERVICE_CODE, LEGAL_ADVISER_JOB_CODE);
 
         return staff.stream()
-            .collect(Collectors.toMap(StaffProfile::getEmailId, StaffProfile::getCaseWorkerId));
+            .collect(Collectors.toMap(profile -> profile.getEmailId().toLowerCase(), StaffProfile::getCaseWorkerId));
     }
 
     @Recover

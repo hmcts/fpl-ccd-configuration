@@ -51,7 +51,7 @@ public class JudicialUsersConfiguration {
     }
 
     public Optional<String> getJudgeUUID(String email) {
-        return Optional.ofNullable(mapping.getOrDefault(email, null));
+        return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 
     @Retryable(value = FeignException.class, recover = "recoverFailedJudgeCall")
@@ -66,7 +66,7 @@ public class JudicialUsersConfiguration {
 
         return users.stream()
             .filter(jup -> !isEmpty(jup.getSidamId()))
-            .collect(Collectors.toMap(JudicialUserProfile::getEmailId, JudicialUserProfile::getSidamId));
+            .collect(Collectors.toMap(profile -> profile.getEmailId().toLowerCase(), JudicialUserProfile::getSidamId));
     }
 
     @Recover
