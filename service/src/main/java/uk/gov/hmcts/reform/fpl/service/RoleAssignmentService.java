@@ -56,7 +56,7 @@ public class RoleAssignmentService {
             .roleRequest(RoleRequest.builder()
                 .assignerId(systemUserService.getUserId(systemUserToken))
                 .reference("fpl-case-role-assignment")
-                .replaceExisting(true)
+                .replaceExisting(false)
                 .build())
             .build());
     }

@@ -67,7 +67,7 @@ class RoleAssignmentServiceTest {
 
             assertThat(req.getRoleRequest()).extracting("assignerId", "reference", "replaceExisting",
                     "process")
-                .containsExactly("systemUserId", "public-law-case-allocator-system-user", true,
+                .containsExactly("systemUserId", "public-law-case-allocator-system-user", false,
                     "public-law-system-users");
         }
     }
