@@ -22,7 +22,7 @@ public interface StaffApi {
         @RequestHeader("ServiceAuthorization") String serviceAuthorization,
         @RequestHeader("page_size") int pageSize,
         @RequestParam("serviceCode") String serviceCode,
-        @RequestParam("jobTitle") String jobTitle
+        @RequestParam("userType") String jobTitle
     );
 
 
