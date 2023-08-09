@@ -37,9 +37,6 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_NAME;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_REGION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
