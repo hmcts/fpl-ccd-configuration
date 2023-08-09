@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -26,8 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
@@ -48,13 +45,11 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -161,19 +156,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CaseData.builder()
-            .id(CASE_ID)
-            .state(NON_RESTRICTED_STATE)
-            .children1(wrapElements(Child.builder()
-                .solicitor(null)
-                .party(ChildParty.builder()
-                    .firstName(CHILD_NAME_1)
-                    .lastName(CHILD_SURNAME_1)
-                    .dateOfBirth(dateNow())
-                    .build())
-                .build()))
-            .build();
-
         var internalChangeStartEventResponse = StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(UPDATE_CASE_EVENT)
@@ -197,6 +179,19 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         when(concurrencyHelper.startEvent(eq(CASE_ID), eq("updateRepresentation")))
             .thenAnswer(i -> updateRepresentationStartEventResponse);
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .state(NON_RESTRICTED_STATE)
+            .children1(wrapElements(Child.builder()
+                .solicitor(null)
+                .party(ChildParty.builder()
+                    .firstName(CHILD_NAME_1)
+                    .lastName(CHILD_SURNAME_1)
+                    .dateOfBirth(dateNow())
+                    .build())
+                .build()))
+            .build();
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
