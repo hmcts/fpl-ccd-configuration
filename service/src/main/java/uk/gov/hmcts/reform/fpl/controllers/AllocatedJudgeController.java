@@ -83,8 +83,8 @@ public class AllocatedJudgeController extends CallbackController {
         } else {
             // entering manually, check against our lookup tables, they may be a legal adviser
             Optional<String> possibleId = judicialService
-                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
-
+                .getJudgeUserIdFromEmail(caseData.getAllocatedJudge().getJudgeEmailAddress());
+            // todo write a test for this too ^^
             // if they are in our maps - add their UUID extra info to the case
             possibleId.ifPresent(s -> caseDetails.getData().put("allocatedJudge",
                 caseData.getAllocatedJudge().toBuilder()
