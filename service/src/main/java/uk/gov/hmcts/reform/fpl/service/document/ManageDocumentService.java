@@ -53,7 +53,6 @@ import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1153,7 +1152,7 @@ public class ManageDocumentService {
     }
 
     // TODO unit test
-    @SuppressWarnings("`unchecked`")
+    @SuppressWarnings("unchecked")
     public ManageDocumentsUploadedEvent buildManageDocumentsUploadedEvent(CaseData caseData, CaseData caseDataBefore)
         throws Exception{
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocuments = new HashMap<>();
@@ -1199,14 +1198,5 @@ public class ManageDocumentService {
             .newDocumentsLA(newDocumentsLA)
             .newDocumentsCTSC(newDocumentsCTSC)
             .build();
-    }
-
-    public static void main(String[] args) throws Exception {
-        long start = System.currentTimeMillis();
-        String result = ObjectHelper.getFieldValue(
-            CaseData.builder()
-                .manageDocumentEventData(ManageDocumentEventData.builder().allowMarkDocumentConfidential("yes").build())
-                .build(), "manageDocumentEventData.allowMarkDocumentConfidential", String.class);
-        System.out.println((System.currentTimeMillis() - start) + "ms " + result);
     }
 }
