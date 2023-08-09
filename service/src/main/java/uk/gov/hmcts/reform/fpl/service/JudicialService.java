@@ -63,12 +63,17 @@ public class JudicialService {
      * @param caseId the case to delete allocated-[users] on
      */
     public void removeExistingAllocatedJudgesAndLegalAdvisers(Long caseId) {
+        List<String> allocatedRoles = List.of(ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName());
+
         List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
             .getCaseRolesAtTime(caseId,
-                List.of(ALLOCATED_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()),
+                allocatedRoles,
                 ZonedDateTime.now());
 
-        currentAllocatedJudges.forEach(roleAssignmentService::deleteRoleAssignment);
+        currentAllocatedJudges
+            .stream()
+            .filter(role -> allocatedRoles.contains(role.getRoleName()))
+            .forEach(roleAssignmentService::deleteRoleAssignment);
     }
 
     /**

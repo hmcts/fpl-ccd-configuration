@@ -18,14 +18,20 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 
@@ -58,6 +64,9 @@ class JudicialServiceTest {
 
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
+
+    @Captor
+    private ArgumentCaptor<RoleAssignment> roleAssignmentCaptor;
 
     @InjectMocks
     private JudicialService underTest;
@@ -119,36 +128,106 @@ class JudicialServiceTest {
 
     }
 
-    @Test
-    void shouldReturnLegalAdviserEmailIfInMapping() {
-        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
-        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.of("UUID"));
+    @Nested
+    class Mapping {
 
-        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+        @Test
+        void shouldReturnLegalAdviserEmailIfInMapping() {
+            when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.of("UUID"));
 
-        assertThat(uuid.isPresent()).isTrue();
-        assertThat(uuid.get()).isEqualTo("UUID");
+            Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+            assertThat(uuid.isPresent()).isTrue();
+            assertThat(uuid.get()).isEqualTo("UUID");
+        }
+
+        @Test
+        void shouldReturnJudgeEmailIfInMapping() {
+            when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.of("UUID"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+
+            Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+            assertThat(uuid.isPresent()).isTrue();
+            assertThat(uuid.get()).isEqualTo("UUID");
+        }
+
+        @Test
+        void shouldReturnEmptyIfInNeitherMapping() {
+            when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+
+            Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
+
+            assertThat(uuid.isPresent()).isFalse();
+        }
+    }
+
+    @Nested
+    class ExistingRoles {
+
+        @Test
+        void shouldRemoveExistingAllocatedJudges() {
+            List<RoleAssignment> existing = List.of("12345", "67890").stream()
+                .map(id -> RoleAssignment.builder().id(id).build()).toList();
+
+            when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+                .thenReturn(existing);
+
+            underTest.removeExistingAllocatedJudgesAndLegalAdvisers(12345L);
+
+            verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+            verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
+
+            assertThat(roleAssignmentCaptor.getAllValues())
+                .extracting("id")
+                .containsExactlyInAnyOrder("12345", "67890");
+
+            verifyNoMoreInteractions(roleAssignmentService);
+        }
+
+        @Test
+        void shouldRemoveAndRecreateExistingHearingJudges() {
+            List<RoleAssignment> existing = List.of("12345", "67890").stream()
+                .map(id -> RoleAssignment.builder().actorId(id).id(id).roleName("hearing-judge").build()).toList();
+
+            when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
+                .thenReturn(existing);
+
+            underTest.setExistingHearingJudgesAndLegalAdvisersToExpire(12345L, ZonedDateTime.now());
+
+            verify(roleAssignmentService).getCaseRolesAtTime(any(), any(), any());
+            verify(roleAssignmentService, times(2)).deleteRoleAssignment(roleAssignmentCaptor.capture());
+            verify(roleAssignmentService).createRoleAssignments(rolesCaptor.capture());
+
+            assertThat(roleAssignmentCaptor.getAllValues())
+                .extracting("id")
+                .containsExactlyInAnyOrder("12345", "67890");
+
+            assertThat(rolesCaptor.getValue()).hasSize(2);
+            assertThat(rolesCaptor.getValue()).extracting("actorId")
+                .containsExactlyInAnyOrder("12345", "67890");
+
+            verifyNoMoreInteractions(roleAssignmentService);
+        }
     }
 
     @Test
-    void shouldReturnJudgeEmailIfInMapping() {
-        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.of("UUID"));
-        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+    void shouldCheckJudgeExistsWhenPresentInJrd() {
+        when(judicialApi.findUsers(any(), any(), anyInt(), any()))
+            .thenReturn(List.of(JudicialUserProfile.builder().build()));
+        boolean exists = underTest.checkJudgeExists("1234");
 
-        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
-
-        assertThat(uuid.isPresent()).isTrue();
-        assertThat(uuid.get()).isEqualTo("UUID");
+        assertThat(exists).isTrue();
     }
 
     @Test
-    void shouldReturnEmptyIfInNeitherMapping() {
-        when(judicialUsersConfiguration.getJudgeUUID(EMAIL)).thenReturn(Optional.empty());
-        when(legalAdviserUsersConfiguration.getLegalAdviserUUID(EMAIL)).thenReturn(Optional.empty());
+    void shouldCheckJudgeDoesntExistWhenNotPresentInJrd() {
+        when(judicialApi.findUsers(any(), any(), anyInt(), any()))
+            .thenReturn(List.of());
+        boolean exists = underTest.checkJudgeExists("1234");
 
-        Optional<String> uuid = underTest.getJudgeUserIdFromEmail(EMAIL);
-
-        assertThat(uuid.isPresent()).isFalse();
+        assertThat(exists).isFalse();
     }
-
 }
