@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
@@ -170,7 +171,13 @@ class JudicialServiceTest {
         @Test
         void shouldRemoveExistingAllocatedJudges() {
             List<RoleAssignment> existing = List.of("12345", "67890").stream()
-                .map(id -> RoleAssignment.builder().id(id).build()).toList();
+                .map(id -> RoleAssignment.builder()
+                    .actorId(id)
+                    .id(id)
+                    .roleName("allocated-judge")
+                    .roleCategory(RoleCategory.JUDICIAL)
+                    .build())
+                .toList();
 
             when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
                 .thenReturn(existing);
@@ -190,7 +197,13 @@ class JudicialServiceTest {
         @Test
         void shouldRemoveAndRecreateExistingHearingJudges() {
             List<RoleAssignment> existing = List.of("12345", "67890").stream()
-                .map(id -> RoleAssignment.builder().actorId(id).id(id).roleName("hearing-judge").build()).toList();
+                .map(id -> RoleAssignment.builder()
+                    .actorId(id)
+                    .id(id)
+                    .roleName("hearing-judge")
+                    .roleCategory(RoleCategory.JUDICIAL)
+                    .build())
+                .toList();
 
             when(roleAssignmentService.getCaseRolesAtTime(any(), any(), any()))
                 .thenReturn(existing);
