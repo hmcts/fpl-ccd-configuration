@@ -414,7 +414,7 @@ dependencies {
 
 
   cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.32.0'
-  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.9'
+  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.10'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
