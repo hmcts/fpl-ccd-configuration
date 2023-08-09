@@ -413,7 +413,7 @@ dependencies {
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
 
-  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.32.0'
+  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.35.0'
   cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.10'
 }
 
