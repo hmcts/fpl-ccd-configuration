@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 1243L;
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     CaseSummaryControllerSubmittedTest() {
         super("case-summary");
@@ -47,7 +49,7 @@ class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(eq(CASE_ID),
             eq("internal-update-case-summary"), any());
         verifyNoMoreInteractions(coreCaseDataService);
     }
