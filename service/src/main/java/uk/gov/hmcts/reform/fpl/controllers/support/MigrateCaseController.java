@@ -35,7 +35,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @Slf4j
@@ -59,7 +58,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
@@ -188,26 +186,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
         caseDetails.getData().remove("urgentDirectionsOrder");
-    }
-
-    private void run1352(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1352";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
-                migrationId, caseData.getId()
-            ));
-        }
-        if (caseData.getSendToCtsc().equals("Yes")) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
-                migrationId, caseData.getId()
-            ));
-        }
-        caseDetails.getData().put("sendToCtsc", "Yes");
     }
 
     private void run1486(CaseDetails caseDetails) {
