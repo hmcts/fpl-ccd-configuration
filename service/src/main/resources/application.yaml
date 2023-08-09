@@ -344,8 +344,8 @@ create-system-user-role:
 
 rd_staff:
   api:
-    enabled: true
+    enabled: ${RD_STAFF_API_ENABLED:false}
 
 rd_judicial:
   api:
-    enabled: true
+    enabled: ${RD_JUDICIAL_API_ENABLED:true}
