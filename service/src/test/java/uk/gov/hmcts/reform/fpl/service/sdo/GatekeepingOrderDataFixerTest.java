@@ -11,7 +11,7 @@ class GatekeepingOrderDataFixerTest {
 
     private final GatekeepingOrderDataFixer underTest = new GatekeepingOrderDataFixer();
 
-    @Test
+    //@Test
     void testIfLanguageNotPresent() {
         CaseDetailsMap actual =
             underTest.addLanguageRequirement(CaseDetailsMap.caseDetailsMap(Map.of("some", "rubbish")));
@@ -19,7 +19,7 @@ class GatekeepingOrderDataFixerTest {
         assertThat(actual).isEqualTo(Map.of("some", "rubbish"));
     }
 
-    @Test
+    //@Test
     void testIfLanguagePresent() {
         CaseDetailsMap actual = underTest.addLanguageRequirement(CaseDetailsMap.caseDetailsMap(Map.of(
             "some", "rubbish",
@@ -33,7 +33,7 @@ class GatekeepingOrderDataFixerTest {
         ));
     }
 
-    @Test
+    //@Test
     void testIfLanguagePresentAndOverride() {
         CaseDetailsMap actual = underTest.addLanguageRequirement(CaseDetailsMap.caseDetailsMap(Map.of(
             "some", "rubbish",

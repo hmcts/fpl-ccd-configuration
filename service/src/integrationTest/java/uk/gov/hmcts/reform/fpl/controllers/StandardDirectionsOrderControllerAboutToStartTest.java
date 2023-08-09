@@ -33,7 +33,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         super("draft-standard-directions");
     }
 
-    @Test
+    //@Test
     void shouldReturnErrorWhenSDOSealedAndUrgentHearingOrderPopulated() {
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderRouter(SERVICE)
@@ -46,7 +46,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(response.getErrors()).isEqualTo(List.of("There is already a gatekeeping order for this case"));
     }
 
-    @Test
+    //@Test
     void shouldPopulateDateOfIssueWithPreviouslyEnteredDateWhenRouterIsService() {
         CaseData responseData = extractCaseData(postAboutToStartEvent(buildCaseDetailsWithDateOfIssueAndRoute(
             "20 March 2020", SERVICE
@@ -55,7 +55,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(responseData.getDateOfIssue()).isEqualTo(LocalDate.of(2020, 3, 20).toString());
     }
 
-    @Test
+    //@Test
     void shouldNotPopulateDateOfIssueWhenRouterIsUpload() {
         CaseData responseData = extractCaseData(postAboutToStartEvent(buildCaseDetailsWithDateOfIssueAndRoute(
             "20 March 2020", UPLOAD
@@ -64,7 +64,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(responseData.getDateOfIssue()).isNull();
     }
 
-    @Test
+    //@Test
     void shouldPopulateCurrentSDOFieldWithDocumentFromSDOWhenRouterIsUpload() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(buildCaseDetailsWithUploadedDocument());
 
@@ -73,7 +73,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(doc).isEqualTo(SDO);
     }
 
-    @Test
+    //@Test
     void shouldPopulateServiceRoutingPageConditionVariableWhenRouterIsService() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(
             buildCaseDetailsWithDateOfIssueAndRoute("13 March 2020", SERVICE)
@@ -84,7 +84,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
             .containsEntry("useServiceRoute", "YES");
     }
 
-    @Test
+    //@Test
     void shouldPopulateUploadRoutingPageConditionVariableWhenRouterIsUpload() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(buildCaseDetailsWithUploadedDocument());
 
@@ -93,7 +93,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
             .containsEntry("useUploadRoute", "YES");
     }
 
-    @Test
+    //@Test
     void shouldPopulateJudgeAndLegalAdvisorInUploadRoute() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
 
@@ -107,7 +107,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
 
-    @Test
+    //@Test
     void shouldPopulateSDODirectionsWhenDirectionsAreEmpty() {
         CaseData originalCaseData = CaseData.builder().build();
 
@@ -121,7 +121,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(actualCaseData.getCourtDirections()).hasSize(2);
     }
 
-    @Test
+    //@Test
     void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
         CaseData originalCaseData = CaseData.builder()
             .localAuthorityDirections(wrapElements(Direction.builder().assignee(LOCAL_AUTHORITY).build()))

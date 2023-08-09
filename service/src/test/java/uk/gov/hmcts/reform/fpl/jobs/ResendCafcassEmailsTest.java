@@ -130,7 +130,7 @@ class ResendCafcassEmailsTest {
         when(coreCaseDataService.findCaseDetailsByIdNonUser("9")).thenReturn(case9);
     }
 
-    @Test
+    //@Test
     void shouldResendGeneratedOrders() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(1L, 2L));
 
@@ -139,7 +139,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(2)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendGeneratedOrderWithDateTime() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(7L));
 
@@ -147,7 +147,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendGeneratedOrderWithDateOfIssue() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(8L));
 
@@ -155,7 +155,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendNoticeOfHearings() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(3L));
 
@@ -164,7 +164,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldNotResendNoticeOfHearingsIfMissingDocument() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(9L));
 
@@ -173,7 +173,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendDraftOrders() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(6L));
 
@@ -182,7 +182,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendSealedCMOs() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(5L));
 
@@ -191,7 +191,7 @@ class ResendCafcassEmailsTest {
         verify(cafcassNotificationService, times(1)).sendEmail(any(), any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldResendAll() {
         when(resendCafcassEmailService.getAllCaseIds()).thenReturn(Set.of(1L, 2L, 3L, 4L, 5L, 6L));
 

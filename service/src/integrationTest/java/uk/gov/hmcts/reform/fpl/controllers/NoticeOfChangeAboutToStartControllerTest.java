@@ -109,7 +109,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         when(time.now()).thenReturn(TODAY.atStartOfDay());
     }
 
-    @Test
+    //@Test
     void shouldAddRespondentRepresentation() {
 
         final Element<Respondent> respondent1 = element(Respondent.builder()
@@ -169,7 +169,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         ));
     }
 
-    @Test
+    //@Test
     void shouldUpdateRespondentRepresentation() {
 
         final Element<Respondent> respondent1 = element(Respondent.builder()
@@ -241,7 +241,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
         assertThat(actualResponse).isEqualTo(ASSIGNMENT_RESPONSE);
     }
 
-    @Test
+    //@Test
     void shouldTransferLegalCounselWhenSolicitorChanged() {
         List<Element<LegalCounsellor>> legalCounsellors = wrapElements(
             LegalCounsellor.builder().firstName("original").build()

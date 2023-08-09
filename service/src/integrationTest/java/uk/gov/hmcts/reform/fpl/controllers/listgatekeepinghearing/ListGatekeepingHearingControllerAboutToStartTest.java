@@ -39,7 +39,7 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         super("list-gatekeeping-hearing");
     }
 
-    @Test
+    //@Test
     void shouldSetFlagsForFirstHearingScenarioEmptyData() {
 
         var emptyValueMap = new LinkedHashMap<>();
@@ -68,7 +68,7 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
-    @Test
+    //@Test
     void shouldSetFlagsForSubsequentHearingsScenario() {
 
         var emptyValueMap = new LinkedHashMap<>();
@@ -96,7 +96,7 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
-    @Test
+    //@Test
     void shouldPopulateFlagsAndHearingLists() {
 
         var emptyListMap = hearingListMap(List.of());

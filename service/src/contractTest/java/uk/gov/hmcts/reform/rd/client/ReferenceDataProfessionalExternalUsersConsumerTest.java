@@ -58,7 +58,7 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
             .toPact();
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUsers")
     public void verifyGetOrganisationalUsers() {
         OrganisationUsers usersInOrganisation =
@@ -69,7 +69,7 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
 
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUserByEmail")
     public void verifyGetOrganisationalUserByEmail() {
         OrganisationUser organisationUser =

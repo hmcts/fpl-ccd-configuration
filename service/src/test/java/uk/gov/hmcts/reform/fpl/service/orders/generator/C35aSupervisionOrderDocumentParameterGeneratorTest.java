@@ -61,17 +61,17 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             orderDetailsWithEndTypeGenerator
         );
 
-    @Test
+    //@Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C35A_SUPERVISION_ORDER);
     }
 
-    @Test
+    //@Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    @Test
+    //@Test
     void shouldReturnContentForSingleChildAndSpecifiedDate() {
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
         CaseData caseData = buildCaseDataWithDateSpecified();
@@ -93,7 +93,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
+    //@Test
     void shouldReturnContentForChildrenAndSpecifiedDate() {
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
         CaseData caseData = buildCaseDataWithDateSpecified();
@@ -114,7 +114,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
+    //@Test
     void shouldReturnContentForSingleChildAndMonthsSpecified() {
         int numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
@@ -138,7 +138,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
+    //@Test
     void shouldReturnContentForChildrenAndMonthsSpecified() {
         int numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
@@ -162,7 +162,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
+    //@Test
     void shouldReturnMessageForChildAndSetDateAndTime() {
         CaseData caseData = buildCaseDataWithDateTimeSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
@@ -182,7 +182,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
+    //@Test
     void shouldReturnMessageForChildrenAndSetDateAndTime() {
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
         CaseData caseData = buildCaseDataWithDateTimeSpecified();

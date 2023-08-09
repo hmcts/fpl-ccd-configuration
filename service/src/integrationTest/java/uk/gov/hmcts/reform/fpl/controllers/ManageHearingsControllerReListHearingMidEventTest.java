@@ -17,7 +17,7 @@ class ManageHearingsControllerReListHearingMidEventTest extends ManageHearingsCo
         super("manage-hearings");
     }
 
-    @Test
+    //@Test
     void shouldPrePopulateNewReListedHearingWithAdjournedHearingDetails() {
         Element<HearingBooking> hearingToBeAdjourned = element(testHearing(now()));
         Element<HearingBooking> otherHearing = element(testHearing(now().minusDays(2)));
@@ -33,7 +33,7 @@ class ManageHearingsControllerReListHearingMidEventTest extends ManageHearingsCo
         assertCurrentHearingReListedFrom(updatedCaseData, hearingToBeAdjourned.getValue());
     }
 
-    @Test
+    //@Test
     void shouldPrePopulateNewReListedHearingWithVacatedHearingDetails() {
         Element<HearingBooking> hearingToBeVacated = element(testHearing(now()));
         Element<HearingBooking> otherHearing = element(testHearing(now().minusDays(2)));

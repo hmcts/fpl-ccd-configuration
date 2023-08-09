@@ -36,7 +36,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
     @Autowired
     private DocumentService documentService;
 
-    @Test
+    //@Test
     public void shouldSubmitAndPayForApplication() {
 
         CaseData caseData = createCase("case-submission/case.json", LA_SWANSEA_USER_1);

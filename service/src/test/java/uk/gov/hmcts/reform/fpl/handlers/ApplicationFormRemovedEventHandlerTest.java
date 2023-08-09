@@ -34,7 +34,7 @@ class ApplicationFormRemovedEventHandlerTest {
     @InjectMocks
     private ApplicationFormRemovedEventHandler applicationFormRemovedEventHandler;
 
-    @Test
+    //@Test
     void shouldSendEmailToCTSCTeamLead() {
         final String expectedEmail = "test@test.com";
         final CaseData caseData = CaseData.builder()

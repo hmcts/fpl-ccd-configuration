@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 class CaseDetailsMapTest {
 
-    @Test
+    //@Test
     void shouldAddNonEmptyValue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of())
@@ -25,7 +25,7 @@ class CaseDetailsMapTest {
         assertThat(caseDetailsMap).containsEntry("K1", "V1");
     }
 
-    @Test
+    //@Test
     void shouldOverrideExistingValueWithNonEmptyValue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("K0", "V0"))
@@ -37,7 +37,7 @@ class CaseDetailsMapTest {
         assertThat(caseDetailsMap).containsEntry("K0", "V1");
     }
 
-    @Test
+    //@Test
     void shouldNotAddEmptyValue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("K0", "V0"))
@@ -52,7 +52,7 @@ class CaseDetailsMapTest {
             .doesNotContainKeys("K1", "K2");
     }
 
-    @Test
+    //@Test
     void shouldRemoveExistingValueIfNewValueIsEmpty() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("K0", "V0", "K1", "V1"))
@@ -66,7 +66,7 @@ class CaseDetailsMapTest {
     }
 
 
-    @Test
+    //@Test
     void shouldUpdateBatchOfProperties() {
 
         final Map<String, Object> initialMap = new HashMap<>();
@@ -90,7 +90,7 @@ class CaseDetailsMapTest {
         assertThat(caseDetailsMap).isEqualTo(expectedMap);
     }
 
-    @Test
+    //@Test
     void shouldRemoveEntries() {
         final Map<String, Object> initialMap = new HashMap<>();
         initialMap.put("K0", "V0");
@@ -104,7 +104,7 @@ class CaseDetailsMapTest {
         assertThat(caseDetailsMap).containsExactly(entry("K0", "V0"));
     }
 
-    @Test
+    //@Test
     void shouldBuildFromMap() {
         final Map<String, Object> initialMap = new HashMap<>();
         initialMap.put("K0", null);

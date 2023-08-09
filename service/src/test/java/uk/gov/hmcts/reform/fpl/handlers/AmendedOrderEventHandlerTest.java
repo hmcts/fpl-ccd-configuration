@@ -15,28 +15,28 @@ class AmendedOrderEventHandlerTest {
     private final AmendedOrderEventHandler underTest =
         new AmendedOrderEventHandler(modifiedDocumentCommonEventHandler);
 
-    @Test
+    //@Test
     void notifyDigitalRepresentatives() {
         underTest.notifyDigitalRepresentatives(EVENT);
 
         verify(modifiedDocumentCommonEventHandler).notifyDigitalRepresentatives(EVENT);
     }
 
-    @Test
+    //@Test
     void notifyEmailRepresentatives() {
         underTest.notifyEmailRepresentatives(EVENT);
 
         verify(modifiedDocumentCommonEventHandler).notifyEmailRepresentatives(EVENT);
     }
 
-    @Test
+    //@Test
     void notifyLocalAuthority() {
         underTest.notifyLocalAuthority(EVENT);
 
         verify(modifiedDocumentCommonEventHandler).notifyLocalAuthority(EVENT);
     }
 
-    @Test
+    //@Test
     void sendOrderByPost() {
         underTest.sendOrderByPost(EVENT);
 

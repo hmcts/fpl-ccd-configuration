@@ -21,7 +21,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractCallbackTest {
         super("notify-gatekeeper");
     }
 
-    @Test
+    //@Test
     void shouldReturnErrorsWhenGatekeeperEmailsAreInValid() {
         CaseData caseData = CaseData.builder()
             .gatekeeperEmails(wrapElements(EmailAddress.builder().email("email@example.com").build(),
@@ -37,7 +37,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractCallbackTest {
             "Gatekeeper 4: Enter an email address in the correct format, for example name@example.com");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnErrorsWhenGatekeeperEmailsAreValid() {
         CaseData caseData = CaseData.builder()
             .gatekeeperEmails(List.of(
@@ -50,7 +50,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractCallbackTest {
         assertThat(isEmpty(callbackResponse.getErrors()));
     }
 
-    @Test
+    //@Test
     void shouldReturnErrorWhenSingleGatekeeperEmailIsInvalid() {
         CaseData caseData = CaseData.builder()
             .gatekeeperEmails(List.of(

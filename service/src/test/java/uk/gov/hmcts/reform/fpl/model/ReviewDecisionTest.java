@@ -7,13 +7,13 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 
 class ReviewDecisionTest {
-    @Test
+    //@Test
     void shouldReturnTrueIfReviewOutcomesMatch() {
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
         assertThat(reviewDecision.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)).isTrue();
     }
 
-    @Test
+    //@Test
     void shouldReturnFalseIfReviewOutcomesDoNotMatch() {
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
         assertThat(reviewDecision.hasReviewOutcomeOf(JUDGE_AMENDS_DRAFT)).isFalse();

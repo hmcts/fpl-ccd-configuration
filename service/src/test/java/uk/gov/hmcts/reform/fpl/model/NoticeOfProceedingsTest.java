@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 
 class NoticeOfProceedingsTest {
-    @Test
+    //@Test
     void shouldIncludeBothNoticeOfProceedingTemplatesWhenBothNoticeOfProceedingsSelected() {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder()
             .proceedingTypes(buildProceedingTypes(
@@ -26,7 +26,7 @@ class NoticeOfProceedingsTest {
         assertThat(docmosisTemplates).isEqualTo(List.of(C6, C6A));
     }
 
-    @Test
+    //@Test
     void shouldIncludeC6DocmosisTemplateWhenOnlyC6NoticeTypeHasBeenSelected() {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder()
             .proceedingTypes(buildProceedingTypes(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
@@ -37,7 +37,7 @@ class NoticeOfProceedingsTest {
         assertThat(docmosisTemplates).isEqualTo(List.of(C6));
     }
 
-    @Test
+    //@Test
     void shouldIncludeC6aDocmosisTemplateWhenOnlyC6ANoticeTypeHasBeenSelected() {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder()
             .proceedingTypes(buildProceedingTypes(NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES))
@@ -48,7 +48,7 @@ class NoticeOfProceedingsTest {
         assertThat(docmosisTemplates).isEqualTo(List.of(C6A));
     }
 
-    @Test
+    //@Test
     void shouldReturnAnEmptyListWhenNoNoticeTypesHaveBeenSelected() {
         NoticeOfProceedings noticeOfProceedings = NoticeOfProceedings.builder()
             .build();

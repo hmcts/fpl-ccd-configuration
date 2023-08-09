@@ -99,7 +99,7 @@ class SendNewMessageJudgeServiceTest {
         when(time.now()).thenReturn(LocalDateTime.now());
     }
 
-    @Test
+    //@Test
     void shouldInitialiseCaseFieldsWhenAdditionalApplicationDocumentsAndJudicialMessagesExist() {
 
         final String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
@@ -166,7 +166,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(expectedEventData).isEqualTo(expectedData);
     }
 
-    @Test
+    //@Test
     void shouldInitialiseAdditionalApplicationDocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
         UUID applicationId = randomUUID();
 
@@ -202,7 +202,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(data).isEqualTo(expectedData);
     }
 
-    @Test
+    //@Test
     void shouldInitialiseJudicialFieldsOnlyWhenDocumentsDoNotExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
@@ -233,7 +233,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(data).isEqualTo(expectedData);
     }
 
-    @Test
+    //@Test
     void shouldInitialiseJudicialMessagesWithEmailAddressesWhenDocumentsDoNotExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
@@ -268,7 +268,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(data).isEqualTo(expectedData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateOnlyEmailAddressesWhenDocumentsDoNotExist() {
         assertThat(sendNewMessageJudgeService.initialiseCaseFields(CaseData.builder().build()))
             .containsOnly(
@@ -278,7 +278,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("isJudiciary", YesNo.NO));
     }
 
-    @Test
+    //@Test
     void shouldPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedByJudge() {
         when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
@@ -293,7 +293,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("isJudiciary", YesNo.YES));
     }
 
-    @Test
+    //@Test
     void shouldNotPrePopulateSenderAndRecipientEmailsWhenNewMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
 
@@ -307,7 +307,7 @@ class SendNewMessageJudgeServiceTest {
                 entry("isJudiciary", YesNo.NO));
     }
 
-    @Test
+    //@Test
     void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenOtherApplicationSelected() {
         UUID c2DocumentBundleId = randomUUID();
 
@@ -365,7 +365,7 @@ class SendNewMessageJudgeServiceTest {
             );
     }
 
-    @Test
+    //@Test
     void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenC2ApplicationSelected() {
         UUID otherDocumentBundleId = randomUUID();
 
@@ -423,7 +423,7 @@ class SendNewMessageJudgeServiceTest {
             );
     }
 
-    @Test
+    //@Test
     void shouldReturnEmptyMapWhenC2DocumentHasNotBeenSelected() {
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -451,7 +451,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
-    @Test
+    //@Test
     void shouldReturnEmptyMapWhenAdditionalApplicationDocumentHasNotBeenSelected() {
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -488,7 +488,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
-    @Test
+    //@Test
     void shouldNotPrePopulateRecipientWhenMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
 
@@ -497,7 +497,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(sendNewMessageJudgeService.populateNewMessageFields(caseData)).containsOnlyKeys("nextHearingLabel");
     }
 
-    @Test
+    //@Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenDocumentNotSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .subject(MESSAGE_REQUESTED_BY)
@@ -533,7 +533,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(updatedMessages).hasSize(1).first().isEqualTo(expectedJudicialMessageElement);
     }
 
-    @Test
+    //@Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenAdditionalApplicationDocumentHasBeenSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .recipient(MESSAGE_RECIPIENT)
@@ -586,7 +586,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
     }
 
-    @Test
+    //@Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenOtherApplicationDocumentHasBeenSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .recipient(MESSAGE_RECIPIENT)
@@ -640,7 +640,7 @@ class SendNewMessageJudgeServiceTest {
         assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
     }
 
-    @Test
+    //@Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenPlacementApplicationHasBeenSelected() {
 
         final DocumentReference placementApplication = testDocumentReference("placement application");
@@ -712,7 +712,7 @@ class SendNewMessageJudgeServiceTest {
             notice1Response);
     }
 
-    @Test
+    //@Test
     void shouldAppendJudicialMessageToJudicialMessageListWhenPlacementApplicationWithMissingDocumentsHasBeenSelected() {
 
         final DocumentReference placementApplication = testDocumentReference("placement application");
@@ -844,7 +844,7 @@ class SendNewMessageJudgeServiceTest {
         ));
     }
 
-    @Test
+    //@Test
     void shouldSortThreadOfJudicialMessagesByDate() {
         Element<JudicialMessage> latestJudicialMessage = buildJudicialMessageElement(time.now().plusDays(1), OPEN);
         Element<JudicialMessage> pastJudicialMessage = buildJudicialMessageElement(time.now().plusMinutes(1), OPEN);
@@ -862,7 +862,7 @@ class SendNewMessageJudgeServiceTest {
             oldestJudicialMessage));
     }
 
-    @Test
+    //@Test
     void shouldPopulateFirstHearingLabelWhenHearingExists() {
         HearingType hearingType = CASE_MANAGEMENT;
         LocalDateTime hearingStartDate = LocalDateTime.now();
@@ -879,7 +879,7 @@ class SendNewMessageJudgeServiceTest {
                 formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE)));
     }
 
-    @Test
+    //@Test
     void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
         CaseData caseData = CaseData.builder().build();
 

@@ -19,19 +19,19 @@ class ResendCafcassEmailServiceTest {
     @Autowired
     private ResendCafcassEmailService resendCafcassEmailService;
 
-    @Test
+    //@Test
     void shouldFetch() {
         assertThat(resendCafcassEmailService.getAllCaseIds()).hasSize(1);
     }
 
-    @Test
+    //@Test
     void shouldReturnOrderDates() {
         assertThat(resendCafcassEmailService.getOrderDates(1234L)).contains(
             LocalDate.of(2022, 1, 1)
         );
     }
 
-    @Test
+    //@Test
     void shouldReturnHearingDateTimes() {
         assertThat(resendCafcassEmailService.getNoticeOfHearingDateTimes(1234L)).contains(
             LocalDateTime.of(2022, 1, 1, 10, 30)

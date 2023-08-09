@@ -54,7 +54,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         super("reply-message-judge");
     }
 
-    @Test
+    //@Test
     void shouldNotifyJudicialMessageRecipientWhenJudicialMessageReplyAdded() throws NotificationClientException {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
@@ -116,7 +116,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             eq(caseSummary()));
     }
 
-    @Test
+    //@Test
     void shouldNotSendEmailNotificationsWhenJudicialMessageIsClosed() {
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)

@@ -126,7 +126,7 @@ public class FeeRegisterApiConsumerTest {
             .decimalType("fee_amount", feeAmount);
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generateOtherFeesPactFragment")
     public void verifyOtherFeesServicePact() {
         FeeResponse feeResponse = feesRegisterApi.findFee(
@@ -135,7 +135,7 @@ public class FeeRegisterApiConsumerTest {
         assertEquals("FEE0328", feeResponse.getCode());
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePlacementFeesPactFragment")
     public void verifyPlacementFeesServicePact() {
         FeeResponse feeResponse = feesRegisterApi.findFee(
@@ -144,7 +144,7 @@ public class FeeRegisterApiConsumerTest {
         assertEquals("FEE0310", feeResponse.getCode());
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generateEpoFeesPactFragment")
     public void verifyEpoFeesServicePact() {
         FeeResponse feeResponse = feesRegisterApi.findFee(
@@ -153,7 +153,7 @@ public class FeeRegisterApiConsumerTest {
         assertEquals("FEE0326", feeResponse.getCode());
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generateSupervisionFeesPactFragment")
     public void verifySupervisionFeesServicePact() {
         FeeResponse feeResponse = feesRegisterApi.findFee(

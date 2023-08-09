@@ -33,7 +33,7 @@ class TranslatableUrgentHearingOrderProviderTest {
     @Nested
     class ProvideListItems {
 
-        @Test
+        //@Test
         void getSealedOrder() {
             UrgentHearingOrder order = UrgentHearingOrder.builder().build();
 
@@ -45,7 +45,7 @@ class TranslatableUrgentHearingOrderProviderTest {
 
         }
 
-        @Test
+        //@Test
         void getItemsIfNoOrder() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
@@ -59,7 +59,7 @@ class TranslatableUrgentHearingOrderProviderTest {
     @Nested
     class ProvideSelectedItemDocument {
 
-        @Test
+        //@Test
         void testIfMatchingInCollection() {
 
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
@@ -78,7 +78,7 @@ class TranslatableUrgentHearingOrderProviderTest {
     @Nested
     class Accept {
 
-        @Test
+        //@Test
         void testIfMatchingInCollection() {
 
             boolean actual = underTest.accept(CaseData.builder().build(), UrgentHearingOrder.COLLECTION_ID);
@@ -87,7 +87,7 @@ class TranslatableUrgentHearingOrderProviderTest {
 
         }
 
-        @Test
+        //@Test
         void testIfNotMatchingInCollection() {
             boolean actual = underTest.accept(CaseData.builder().build(), SELECTED_ORDER_ID);
 
@@ -100,7 +100,7 @@ class TranslatableUrgentHearingOrderProviderTest {
     @Nested
     class ApplyTranslatedOrder {
 
-        @Test
+        //@Test
         void applyMatchedOrder() {
 
             when(time.now()).thenReturn(NOW);

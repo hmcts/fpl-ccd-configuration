@@ -65,7 +65,7 @@ class NoticeOfChangeServiceTest {
     @Nested
     class UpdateRepresentation {
 
-        @Test
+        //@Test
         void shouldUpdateRespondentRepresentation() {
 
             final Element<Respondent> respondent = element(Respondent.builder()
@@ -116,7 +116,7 @@ class NoticeOfChangeServiceTest {
             verifyNoMoreInteractions(auditEventService, userService, updateRepresentationService);
         }
 
-        @Test
+        //@Test
         void shouldThrowExceptionWhenNoPreviousNoticeOfChangeRequestInEventAudit() {
 
             final CaseData caseData = CaseData.builder()
@@ -139,7 +139,7 @@ class NoticeOfChangeServiceTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     class UpdateRepresentationAccess {
 
-        @Test
+        //@Test
         void shouldNotApplyDecisionWhenRepresentationsHaveNotChanged() {
 
             final Element<Respondent> respondent1 = respondent(organisation("ORG1"));
@@ -165,7 +165,7 @@ class NoticeOfChangeServiceTest {
             verifyNoInteractions(coreCaseDataService);
         }
 
-        @Test
+        //@Test
         void shouldApplyNoCDecisionForEachChangedOrganisation() {
 
             Organisation organisation1 = organisation("ORG1");

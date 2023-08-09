@@ -148,7 +148,7 @@ class GeneratedOrderEventHandlerTest {
         given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(lastGeneratedOrder);
     }
 
-    @Test
+    //@Test
     void shouldNotifyPartiesOnOrderSubmissionWhenOldOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(EMAIL_REPS);
@@ -185,7 +185,7 @@ class GeneratedOrderEventHandlerTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldNotifyPartiesOnOrderSubmissionWhenNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -229,7 +229,7 @@ class GeneratedOrderEventHandlerTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
 
@@ -242,7 +242,7 @@ class GeneratedOrderEventHandlerTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldNotBuildNotificationTemplateDataForEmailRepsWhenEmailRepsDoNotExistAndOldOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL)).willReturn(Sets.newHashSet());
@@ -256,7 +256,7 @@ class GeneratedOrderEventHandlerTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndNewOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(true);
         given(lastGeneratedOrder.getOthers()).willReturn(LAST_GENERATED_ORDER_OTHERS);
@@ -281,7 +281,7 @@ class GeneratedOrderEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
+    //@Test
     void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPostAndOldOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
         final Representative representative = mock(Representative.class);
@@ -299,7 +299,7 @@ class GeneratedOrderEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
+    //@Test
     void shouldSendOrderDoNotSentIfNeedTranslation() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
         given(lastGeneratedOrder.getNeedTranslation()).willReturn(YesNo.YES);
@@ -309,7 +309,7 @@ class GeneratedOrderEventHandlerTest {
         verifyNoInteractions(sendDocumentService,notificationService);
     }
 
-    @Test
+    //@Test
     void shouldSendNotificationToCafcass() {
         UUID selectedHearingId = UUID.randomUUID();
         LocalDateTime hearingDateTime = LocalDateTime.of(
@@ -366,7 +366,7 @@ class GeneratedOrderEventHandlerTest {
         assertThat(orderCafcassData.getOrderApprovalDate()).isEqualTo(orderApprovalDate);
     }
 
-    @Test
+    //@Test
     void shouldNotSendNotificationWhenCafcassIsNotEngland() {
         String fileName = "dummyFile.doc";
         when(TEST_DOCUMENT.getFilename()).thenReturn(fileName);

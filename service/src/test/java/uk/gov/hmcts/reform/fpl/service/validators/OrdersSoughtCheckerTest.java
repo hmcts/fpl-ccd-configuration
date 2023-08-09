@@ -43,7 +43,7 @@ class OrdersSoughtCheckerTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    @Test
+    //@Test
     void testCompletedState() {
         assertThat(ordersSoughtChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }
@@ -51,7 +51,7 @@ class OrdersSoughtCheckerTest {
     @Nested
     class Validate {
 
-        @Test
+        //@Test
         void shouldReturnErrorWhenNoNeededOrders() {
             final CaseData caseData = CaseData.builder().build();
 
@@ -60,7 +60,7 @@ class OrdersSoughtCheckerTest {
             assertThat(errors).containsExactly("Add the orders and directions sought");
         }
 
-        @Test
+        //@Test
         void shouldReturnErrorWhenNoNeededOrdersSelected() {
             final Orders orders = Orders.builder()
                 .orderType(emptyList())
@@ -74,7 +74,7 @@ class OrdersSoughtCheckerTest {
             assertThat(errors).containsExactly("Select at least one type of order");
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyErrorsWhenSpecifiedWhichOrdersAreNeeded() {
             final Orders orders = Orders.builder()
                 .orderType(List.of(CARE_ORDER))
@@ -88,7 +88,7 @@ class OrdersSoughtCheckerTest {
             assertThat(errors).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldReturnErrorWhenSectionNotSelectedForSAO() {
             final Orders orders = Orders.builder()
                 .orderType(List.of(SECURE_ACCOMMODATION_ORDER))

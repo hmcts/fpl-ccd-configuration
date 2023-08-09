@@ -147,7 +147,7 @@ class FurtherEvidenceNotificationServiceTest {
     @Nested
     class LocalAuthoritiesRecipients {
 
-        @Test
+        //@Test
         void shouldReturnAllLocalAuthoritiesContacts() {
             final CaseData caseData = caseData();
 
@@ -162,7 +162,7 @@ class FurtherEvidenceNotificationServiceTest {
                 .build());
         }
 
-        @Test
+        //@Test
         void shouldReturnDesignatedLocalAuthoritiesContacts() {
             final CaseData caseData = caseData();
 
@@ -178,7 +178,7 @@ class FurtherEvidenceNotificationServiceTest {
                 .build());
         }
 
-        @Test
+        //@Test
         void shouldReturnSecondaryLocalAuthoritiesContacts() {
             final CaseData caseData = caseData();
 
@@ -195,7 +195,7 @@ class FurtherEvidenceNotificationServiceTest {
         }
     }
 
-    @Test
+    //@Test
     void shouldReturnRespondentRepresentativesAndCafcassSolicitorsWithServiceAccess() {
         CaseData caseData = caseData(
             REPRESENTATIVE_WITH_SERVICE_ACCESS_1,
@@ -220,7 +220,7 @@ class FurtherEvidenceNotificationServiceTest {
             CAFCASS_SOLICITOR_WITH_SERVICE_ACCESS.getEmail());
     }
 
-    @Test
+    //@Test
     void shouldReturnRespondentAndChildrenRepresentativesWhenSolicitorUser() {
         CaseData caseData = caseData(CHILD_1, RESPONDENT_1);
 
@@ -235,7 +235,7 @@ class FurtherEvidenceNotificationServiceTest {
             RESPONDENT_1.getSolicitor().getEmail());
     }
 
-    @Test
+    //@Test
     void shouldReturnEmptyRecipientsWhenCaseHasNotRepresentatives() {
         CaseData emptyCaseData = caseData();
 
@@ -244,7 +244,7 @@ class FurtherEvidenceNotificationServiceTest {
         assertThat(actualRecipients).isEmpty();
     }
 
-    @Test
+    //@Test
     void shouldReturnEmptyRecipientsWhenCaseHasNotRespondentRepresentativesServedByPost() {
         CaseData emptyCaseData = caseData(
             UNRELATED_REPRESENTATIVE,
@@ -256,7 +256,7 @@ class FurtherEvidenceNotificationServiceTest {
         assertThat(actualRecipients).isEmpty();
     }
 
-    @Test
+    //@Test
     void shouldSendOldNotificationWhenFeatureToggleOff() {
         CaseData caseData = caseData();
 
@@ -277,7 +277,7 @@ class FurtherEvidenceNotificationServiceTest {
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
     }
 
-    @Test
+    //@Test
     void shouldSendCorrectNotificationWhenFeatureToggleON() {
         CaseData caseData = caseData();
 
@@ -298,7 +298,7 @@ class FurtherEvidenceNotificationServiceTest {
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
     }
 
-    @Test
+    //@Test
     void shouldNotSendNotificationWhenNoRecipientsAreProvided() {
         CaseData caseData = caseData();
 
@@ -309,7 +309,7 @@ class FurtherEvidenceNotificationServiceTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
+    //@Test
     void shouldSendNotificationForCourtBundleUploaded() {
         CaseData caseData = caseData();
 

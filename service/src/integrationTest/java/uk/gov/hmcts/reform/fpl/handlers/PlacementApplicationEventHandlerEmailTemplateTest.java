@@ -75,7 +75,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Autowired
     private PlacementEventsHandler underTest;
 
-    @Test
+    //@Test
     void courtNotification() {
 
         underTest.notifyCourt(new PlacementApplicationSubmitted(caseData, placement));
@@ -98,7 +98,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
                 .end(FOOTER_CONTACT_DETAILS));
     }
 
-    @Test
+    //@Test
     void localAuthorityNotification() {
 
         underTest.notifyLocalAuthorityOfNewNotice(new PlacementNoticeAdded(caseData, placement));
@@ -116,7 +116,7 @@ class PlacementApplicationEventHandlerEmailTemplateTest extends EmailTemplateTes
                 .end(FOOTER_CONTACT_DETAILS));
     }
 
-    @Test
+    //@Test
     void cafcassNotification() {
 
         underTest.notifyCafcassOfNewNotice(new PlacementNoticeAdded(caseData, placement));

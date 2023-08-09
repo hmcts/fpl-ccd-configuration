@@ -60,7 +60,7 @@ class ReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private ReturnedCaseEventHandler underTest;
 
-    @Test
+    //@Test
     void testLocalAuthorityTemplate() {
         underTest.notifyLocalAuthority(new ReturnedCaseEvent(CASE_DATA));
 

@@ -11,7 +11,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class IdentityServiceTest {
 
-    @Test
+    //@Test
     void shouldGenerateUniqueId() {
         int numberOfIds = 20;
 

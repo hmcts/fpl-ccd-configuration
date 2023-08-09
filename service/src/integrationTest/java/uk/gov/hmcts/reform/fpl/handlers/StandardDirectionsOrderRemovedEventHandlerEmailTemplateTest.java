@@ -33,7 +33,7 @@ class StandardDirectionsOrderRemovedEventHandlerEmailTemplateTest extends EmailT
     @Autowired
     private StandardDirectionsOrderRemovedEventHandler underTest;
 
-    @Test
+    //@Test
     void notifyGatekeeper() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)

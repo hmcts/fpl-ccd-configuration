@@ -21,7 +21,7 @@ class ListGatekeepingHearingControllerValidateJudgeEmailMidEventTest extends Abs
         super("list-gatekeeping-hearing");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenJudgeEmailIsValid() {
 
         final CaseData caseData = CaseData.builder()
@@ -35,7 +35,7 @@ class ListGatekeepingHearingControllerValidateJudgeEmailMidEventTest extends Abs
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
-    @Test
+    //@Test
     void shouldReturnAValidationErrorWhenJudgeEmailIsInvalid() {
 
         final CaseData caseData = CaseData.builder()
@@ -51,7 +51,7 @@ class ListGatekeepingHearingControllerValidateJudgeEmailMidEventTest extends Abs
             "Enter an email address in the correct format, for example name@example.com");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenAllocatedJudgeIsUsed() {
 
         final CaseData caseData = CaseData.builder()

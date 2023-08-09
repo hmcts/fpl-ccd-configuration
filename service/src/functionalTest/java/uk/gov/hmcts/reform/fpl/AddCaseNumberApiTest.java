@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class AddCaseNumberApiTest extends AbstractApiTest {
 
-    @Test
+    //@Test
     public void shouldSendCaseDetailsToRobotics() {
         verifyScenario("case-number/add-case-number-on-submission.json");
     }

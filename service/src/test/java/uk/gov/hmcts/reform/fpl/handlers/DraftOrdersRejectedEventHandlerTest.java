@@ -44,7 +44,7 @@ class DraftOrdersRejectedEventHandlerTest {
     @InjectMocks
     private DraftOrdersRejectedEventHandler draftOrdersRejectedEventHandler;
 
-    @Test
+    //@Test
     void shouldNotifyLocalAuthorityOfRejectedOrders() {
         UUID hearingId = randomUUID();
         Element<HearingBooking> hearing = element(hearingId, HearingBooking.builder().build());

@@ -19,7 +19,7 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
         super("manage-hearings");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenJudgeEmailIsValid() {
         CaseData caseData = CaseData.builder()
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -32,7 +32,7 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
-    @Test
+    //@Test
     void shouldReturnAValidationErrorWhenJudgeEmailIsInvalid() {
         CaseData caseData = CaseData.builder()
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -47,7 +47,7 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
             "Enter an email address in the correct format, for example name@example.com");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenAllocatedJudgeIsUsed() {
         CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()

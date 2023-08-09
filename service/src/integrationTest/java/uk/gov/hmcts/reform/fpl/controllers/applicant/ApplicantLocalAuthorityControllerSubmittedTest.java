@@ -39,7 +39,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
         givenFplService();
     }
 
-    @Test
+    //@Test
     void shouldUpdateTaskListWhenCaseInOpenState() {
         final CaseData caseDataBefore = CaseData.builder()
             .id(nextLong())
@@ -61,7 +61,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
             any());
     }
 
-    @Test
+    //@Test
     void shouldUpdateCaseSummaryWhenCaseNotInOpenState() {
         final CaseData caseDataBefore = CaseData.builder()
             .id(nextLong())

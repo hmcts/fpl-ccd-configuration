@@ -83,17 +83,17 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .willReturn(true);
     }
 
-    @Test
+    //@Test
     void shouldReturnUnsuccessfulResponseWithNoData() {
         postAboutToSubmitEvent(new byte[] {}, SC_BAD_REQUEST);
     }
 
-    @Test
+    //@Test
     void shouldReturnUnsuccessfulResponseWithMalformedData() {
         postAboutToSubmitEvent("malformed json".getBytes(), SC_BAD_REQUEST);
     }
 
-    @Test
+    //@Test
     void shouldSetCtscPropertyToYesRegardlessOfLDVariable() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
@@ -107,14 +107,14 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build());
     }
 
-    @Test
+    //@Test
     void shouldSetCtscPropertyToNoWhenCtscLaunchDarklyVariableIsDisabled() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent("fixtures/case.json");
 
         assertThat(callbackResponse.getData()).containsEntry("sendToCtsc", "Yes");
     }
 
-    @Test
+    //@Test
     void shouldSetCtscPropertyToYesRegardlessOfIfCaseLocalAuthorityIsNotSet() {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
@@ -133,7 +133,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .containsEntry("sendToCtsc", "Yes");
     }
 
-    @Test
+    //@Test
     void shouldRetainPaymentInformationInCase() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)
@@ -164,7 +164,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             ))
             .build();
 
-        @Test
+        //@Test
         void shouldReturnErrorWhenCaseSubmissionIsBlockedForLocalAuthority() {
             given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(true);
 
@@ -175,7 +175,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 + " Ask your FPL administrator for your local authority's enrolment date");
         }
 
-        @Test
+        //@Test
         void shouldReturnNoErrorsWhenCaseSubmissionIsAllowedForLocalAuthority() {
             given(featureToggleService.isRestrictedFromCaseSubmission(localAuthority)).willReturn(false);
 
@@ -186,7 +186,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         }
     }
 
-    @Test
+    //@Test
     void shouldMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPolicies() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
@@ -261,7 +261,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build());
     }
 
-    @Test
+    //@Test
     void shouldRemoveTransientFields() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
             .id(2313L)

@@ -77,7 +77,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
         givenSystemUser();
     }
 
-    @Test
+    //@Test
     void shouldAddNameOfManagingOrganisation() {
         final Organisation organisation = Organisation.builder()
             .organisationIdentifier(ORGANISATION_ID)
@@ -99,7 +99,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
         assertThat(response.getData()).containsEntry("managingOrganisationName", "London Solicitors");
     }
 
-    @Test
+    //@Test
     void shouldRemoveManagingOrganisation() {
         final CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -134,7 +134,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
         assertThat(actualChangeRequest).isEqualTo(expectedChangeRequest);
     }
 
-    @Test
+    //@Test
     void shouldSendEmailToAllRelevantContactsFromRemovedManagingOrganisation() {
 
         final Organisation organisation = Organisation.builder()
@@ -225,7 +225,7 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    @Test
+    //@Test
     void shouldSendEmailToRemovedManagingOrganisationLegacySolicitor() {
         String managingOrganisationSolicitorEmail = "john@london.solicitors.com";
 

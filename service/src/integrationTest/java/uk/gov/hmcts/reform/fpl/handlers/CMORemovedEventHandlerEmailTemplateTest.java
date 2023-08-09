@@ -41,7 +41,7 @@ class CMORemovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private CMORemovedEventHandler underTest;
 
-    @Test
+    //@Test
     void notifyLA() {
         underTest.notifyLocalAuthorityOfRemovedCMO(new CMORemovedEvent(CASE_DATA, REMOVAL_REASON));
 

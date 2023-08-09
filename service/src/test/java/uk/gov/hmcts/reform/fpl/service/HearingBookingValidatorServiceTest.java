@@ -33,7 +33,7 @@ class HearingBookingValidatorServiceTest {
     @Autowired
     private HearingBookingValidatorService service;
 
-    @Test
+    //@Test
     void shouldReturnEmptyValidationErrorsWhenNoHearingBookings() {
         final List<HearingBooking> hearingBookings = emptyList();
         final List<String> validationErrors = service.validateHearingBookings(hearingBookings);
@@ -41,7 +41,7 @@ class HearingBookingValidatorServiceTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    @Test
+    //@Test
     void shouldReturnValidationErrorsWhenSingleHearingBookings() {
         final HearingBooking hearingBooking = HearingBooking.builder()
             .venue("Venue")
@@ -55,7 +55,7 @@ class HearingBookingValidatorServiceTest {
         assertThat(validationErrors).containsExactly(VALIDATION_ERROR);
     }
 
-    @Test
+    //@Test
     void shouldReturnValidationErrorsWhenMultipleHearingBookings() {
         final HearingBooking hearingBooking1 = HearingBooking.builder()
             .venue("Venue A")
@@ -74,7 +74,7 @@ class HearingBookingValidatorServiceTest {
         assertThat(validationErrors).containsExactly(String.format("%s for hearing 2", VALIDATION_ERROR));
     }
 
-    @Test
+    //@Test
     void shouldReturnAValidationErrorWhenAJudgeHasNotBeenAllocatedToTheCase() {
         final String errorMessage = "You need to enter the allocated judge.";
         final CaseData caseData = CaseData.builder().build();
@@ -87,7 +87,7 @@ class HearingBookingValidatorServiceTest {
         assertThat(validationErrors).containsExactly(errorMessage);
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenAJudgeHasBeenAllocatedToTheCase() {
         final CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder()

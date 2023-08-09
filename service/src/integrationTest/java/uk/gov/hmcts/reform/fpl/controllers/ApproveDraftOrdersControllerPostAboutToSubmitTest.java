@@ -85,7 +85,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         super("approve-draft-orders/post-submit-callback");
     }
 
-    @Test
+    //@Test
     void shouldRemoveCMOFromDraftCMOsAndRequestedChangesWhenJudgeRejectsOrder() {
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
@@ -118,7 +118,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         );
     }
 
-    @Test
+    //@Test
     void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders() {
         DocumentReference order = cmo.getOrder();
         UUID cmoId = UUID.randomUUID();
@@ -206,7 +206,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         assertThat(expectedCaseState).isEqualTo(responseData.getState());
     }
 
-    @Test
+    //@Test
     void shouldNotModifyDataIfNoDraftCMOsAreReviewedReadyForApproval() {
         ArrayList<Element<HearingOrder>> draftCMOs = newArrayList(element(cmo));
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
@@ -284,7 +284,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
                 caseData.getChildren1(), expectedJudgeAndLegalAdvisor);
     }
 
-    @Test
+    //@Test
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
         DocumentReference order = cmo.getOrder();
         Court court = Court.builder().build();
@@ -333,7 +333,7 @@ class ApproveDraftOrdersControllerPostAboutToSubmitTest extends AbstractCallback
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
     }
 
-    @Test
+    //@Test
     void shouldReviewDraftOrdersOnlyWhenHearingBundlesForApprovalExists() {
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)

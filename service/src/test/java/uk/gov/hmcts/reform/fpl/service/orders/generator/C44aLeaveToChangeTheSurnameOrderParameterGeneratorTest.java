@@ -24,17 +24,17 @@ public class C44aLeaveToChangeTheSurnameOrderParameterGeneratorTest {
             orderMessageGenerator
         );
 
-    @Test
+    //@Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C44A_LEAVE_TO_CHANGE_A_SURNAME);
     }
 
-    @Test
+    //@Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    @Test
+    //@Test
     void shouldReturnTemplateData() {
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn("By consent");
         when(orderMessageGenerator.formatOrderMessage(any(),

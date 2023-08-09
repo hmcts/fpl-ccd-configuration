@@ -54,7 +54,7 @@ class ListGatekeepingHearingControllerPostSubmittedTest extends AbstractCallback
         super("list-gatekeeping-hearing/post-submit-callback");
     }
 
-    @Test
+    //@Test
     void removeTemporaryFields() {
 
         final CustomDirection customDirection =

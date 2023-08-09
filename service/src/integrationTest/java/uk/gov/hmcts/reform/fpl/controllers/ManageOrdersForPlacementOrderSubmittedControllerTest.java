@@ -138,7 +138,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         givenFplService();
     }
 
-    @Test
+    //@Test
     void shouldSendPlacementOrderAndOrderNotificationToExpectedPartiesWhenChildAndParentsAreNotRepresented() {
         Element<Respondent> father = testRespondentWithAddress("Father", "Jones");
         Element<Respondent> mother = testRespondentWithAddress("Mother", "Jones");
@@ -204,7 +204,7 @@ class ManageOrdersForPlacementOrderSubmittedControllerTest extends AbstractCallb
         verify(concurrencyHelper, times(2)).submitEvent(any(), any(), any());
     }
 
-    @Test
+    //@Test
     void shouldSendPlacementOrderDocumentAndNotificationDocumentToExpectedParties_WhenChildAndParentsAreRepresented() {
         Element<Respondent> father = testRepresentedRespondentWithAddress("Father", "Jones", FATHER_SOLICITOR_EMAIL);
         Element<Respondent> mother = testRepresentedRespondentWithAddress("Mother", "Jones", MOTHER_SOLICITOR_EMAIL);

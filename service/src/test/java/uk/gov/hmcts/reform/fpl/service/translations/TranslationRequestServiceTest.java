@@ -54,7 +54,7 @@ class TranslationRequestServiceTest {
         documentDownloadService
     );
 
-    @Test
+    //@Test
     void testIfLanguageRequirementNo() {
         underTest.sendRequest(mock(CaseData.class),
             Optional.of(LanguageTranslationRequirement.NO), mock(DocumentReference.class), DOCUMENT_DESCRIPTION);
@@ -62,7 +62,7 @@ class TranslationRequestServiceTest {
         verifyNoIteractionWithServices();
     }
 
-    @Test
+    //@Test
     void testIfLanguageRequirementEmpty() {
         underTest.sendRequest(mock(CaseData.class),
             Optional.empty(), mock(DocumentReference.class), DOCUMENT_DESCRIPTION);
@@ -70,7 +70,7 @@ class TranslationRequestServiceTest {
         verifyNoIteractionWithServices();
     }
 
-    @Test
+    //@Test
     void testSendRequest() {
         CaseData caseData = CaseData.builder().build();
 

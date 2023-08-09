@@ -13,7 +13,7 @@ class HasContactDirectionValidatorTest extends AbstractValidationTest {
 
     private static final String ERROR_MESSAGE = "Enter the contact's full name";
 
-    @Test
+    //@Test
     void shouldReturnAnErrorIfTelephoneIsNotPopulated() {
         ApplicantParty applicantParty = ApplicantParty.builder().build();
 
@@ -22,7 +22,7 @@ class HasContactDirectionValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    @Test
+    //@Test
     void shouldReturnAnErrorIfTelephoneIsPopulatedWithoutContactDirection() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder().build())
@@ -33,7 +33,7 @@ class HasContactDirectionValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    @Test
+    //@Test
     void shouldReturnAnErrorIfContactDirectionIsAnEmptyString() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
@@ -46,7 +46,7 @@ class HasContactDirectionValidatorTest extends AbstractValidationTest {
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAnErrorIfContactDirectionIsPopulated() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()

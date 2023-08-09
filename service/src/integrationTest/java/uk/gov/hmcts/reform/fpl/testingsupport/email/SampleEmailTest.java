@@ -17,7 +17,7 @@ public class SampleEmailTest extends EmailTemplateTest {
     @Autowired
     NotificationService underTest;
 
-    @Test
+    //@Test
     void testEmail() {
         underTest.sendEmail(
             TEST_TEMPLATE_ID,

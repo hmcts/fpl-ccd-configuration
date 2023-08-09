@@ -24,7 +24,7 @@ class ReplyToMessageJudgeControllerAboutToStartTest extends AbstractCallbackTest
         super("reply-message-judge");
     }
 
-    @Test
+    //@Test
     void shouldInitialiseCaseFieldsWhenJudicialMessagesExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()

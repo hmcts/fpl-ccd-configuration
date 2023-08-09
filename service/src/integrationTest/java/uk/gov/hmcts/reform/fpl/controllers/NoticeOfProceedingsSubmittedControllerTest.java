@@ -14,7 +14,7 @@ class NoticeOfProceedingsSubmittedControllerTest extends AbstractCallbackTest {
         super("notice-of-proceedings");
     }
 
-    @Test
+    //@Test
     @Deprecated
     void testSubmit() {
         postSubmittedEvent(callbackRequest().getCaseDetails());

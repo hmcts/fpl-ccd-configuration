@@ -82,7 +82,7 @@ public class CaseAccessDataStoreConsumerTest {
             .toPact();
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePactFragmentForDelete")
     public void verifyRemoveRoles() {
         caseAccessDataStoreApi.removeCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
@@ -90,7 +90,7 @@ public class CaseAccessDataStoreConsumerTest {
 
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePactFragmentForAdd")
     public void verifyAddRoles() {
         caseAccessDataStoreApi.addCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,

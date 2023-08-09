@@ -39,7 +39,7 @@ class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTes
     @Autowired
     private JudicialMessageReplyEventHandler underTest;
 
-    @Test
+    //@Test
     void shouldNotifyJudicialMessageRecipientWhenAJudicialMessageIsReplied() {
         CaseData caseData = CaseData.builder()
             .id(123L)

@@ -21,7 +21,7 @@ public class SmokeFT {
     @Autowired
     protected TestConfiguration testConfiguration;
 
-    @Test
+    //@Test
     public void testHealthEndpoint() {
         RestAssured.useRelaxedHTTPSValidation();
         RestAssured

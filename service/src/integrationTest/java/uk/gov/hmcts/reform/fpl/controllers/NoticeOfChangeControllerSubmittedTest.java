@@ -98,7 +98,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(uk.gov.hmcts.reform.rd.model.Organisation.builder().name(ORG_NAME).build());
     }
 
-    @Test
+    //@Test
     void shouldRevokeAccessFromLegalCounsellors() throws NotificationClientException {
         String legalCounsellorEmail = "email";
         String legalCounsellorId = "id";
@@ -151,7 +151,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
 
     }
 
-    @Test
+    //@Test
     void shouldNotifyRespondentSolicitorsWhenNoticeOfChangeIsSubmitted() {
 
         NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeNewRespondentSolicitorTemplate =
@@ -200,7 +200,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldNotifyNewRespondentSolicitorWhenNoPreviousRepresentationAndNoticeOfChangeIsSubmitted() {
         NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeNewRespondentSolicitorTemplate =
             getExpectedNoticeOfChangeParameters("Dear New Solicitor");

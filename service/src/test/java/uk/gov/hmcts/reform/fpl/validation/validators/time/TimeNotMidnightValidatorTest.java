@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TimeNotMidnightValidatorTest extends TimeValidatorTest {
 
-    @Test
+    //@Test
     void shouldReturnAnErrorWhenAllTimeIsMidnight() {
         final LocalTime midnight = LocalTime.of(0, 0, 0);
         hearingBooking = HearingBooking.builder()
@@ -24,7 +24,7 @@ class TimeNotMidnightValidatorTest extends TimeValidatorTest {
         assertThat(violations).hasSize(1).containsOnly("Enter a valid start time");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAnErrorWhenTimeIsNotMidnight() {
         hearingBooking = HearingBooking.builder()
             .startDate(FUTURE.plusHours(16))

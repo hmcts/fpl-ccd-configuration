@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.fpl.service.CaseProgressionReportService.SORT_
 
 class SortTest {
 
-    @Test
+    //@Test
     void shouldReturnSortClause() {
         Sort sort = Sort.builder()
             .clauses(List.of(

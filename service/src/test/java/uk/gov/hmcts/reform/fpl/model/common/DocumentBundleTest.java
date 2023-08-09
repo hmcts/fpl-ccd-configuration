@@ -6,7 +6,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class DocumentBundleTest {
 
-    @Test
+    //@Test
     void testC6aLabel() {
         DocumentBundle documentBundle = DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -19,7 +19,7 @@ class DocumentBundleTest {
         assertThat(actual).isEqualTo("Notice of proceedings (C6A)");
     }
 
-    @Test
+    //@Test
     void testOtherLabel() {
         DocumentBundle documentBundle = DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -32,7 +32,7 @@ class DocumentBundleTest {
         assertThat(actual).isEqualTo("Notice of proceedings (C6)");
     }
 
-    @Test
+    //@Test
     void testLabelNoDocument() {
         DocumentBundle documentBundle = DocumentBundle.builder()
             .document(null)

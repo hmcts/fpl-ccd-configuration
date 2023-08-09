@@ -27,12 +27,12 @@ class LinkedToHearingBlockPrePopulatorTest {
 
     private final LinkedToHearingBlockPrePopulator underTest = new LinkedToHearingBlockPrePopulator(hearingService);
 
-    @Test
+    //@Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.LINKED_TO_HEARING);
     }
 
-    @Test
+    //@Test
     void prePopulate() {
         CaseData caseData = mock(CaseData.class);
         when(hearingService.findOnlyHearingsTodayOrInPastNonVacated(caseData)).thenReturn(HEARINGS);

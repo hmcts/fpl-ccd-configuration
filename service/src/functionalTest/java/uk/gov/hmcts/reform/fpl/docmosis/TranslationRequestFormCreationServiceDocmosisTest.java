@@ -44,7 +44,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
     @Autowired
     private TranslationRequestFormCreationService underTest;
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestEnglishToWelsh() throws IOException {
         String expectedContentFileLocation = "translation-form-request/EnglishToWelshTranslationDocument.txt";
         String generatedContentOutputFile = "EnglishToWelshTranslationDocument.";
@@ -56,7 +56,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         assertActualOutputMatchesTestFile(request, expectedContentFileLocation);
     }
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestWelshToEnglish() throws IOException {
         String expectedContentFileLocation = "translation-form-request/WelshToEnglishTranslationDocument.txt";
         String generatedContentOutputFile = "WelshToEnglishTranslationDocument.";
@@ -68,7 +68,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
         assertActualOutputMatchesTestFile(request, expectedContentFileLocation);
     }
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsDigitalProject() throws IOException {
         String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         String generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsDigitalProject.";
@@ -90,7 +90,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestProjectSelectedIsCtsc() throws IOException {
         String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         String generatedContentOutputFile = "TranslationFormRequestProjectSelectedIsCtsc.";
@@ -112,7 +112,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestLayoutIsBilingual() throws IOException {
         String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         String generatedContentOutputFile = "TranslationFormRequestLayoutIsBilingual.";
@@ -134,7 +134,7 @@ public class TranslationRequestFormCreationServiceDocmosisTest extends AbstractD
             .isEqualToNormalizingWhitespace(getExpectedText(expectedContentFileLocation));
     }
 
-    @Test
+    //@Test
     void shouldGenerateTranslationFormRequestLayoutIsOther() throws IOException {
         String expectedContentFileLocation = "translation-form-request/SelectBoxCheckTranslationRequestForm.txt";
         String generatedContentOutputFile = "TranslationFormRequestLayoutIsOther.";

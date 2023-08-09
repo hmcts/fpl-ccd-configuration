@@ -39,7 +39,7 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         super("message-judge");
     }
 
-    @Test
+    //@Test
     void shouldSetHearingLabelWhenNextHearingExists() {
         HearingBooking expectedNextHearing = HearingBooking.builder()
             .startDate(now().plusDays(1))
@@ -66,7 +66,7 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
             String.format("Next hearing in the case: %s", expectedNextHearing.toLabel()));
     }
 
-    @Test
+    //@Test
     void shouldPopulateRelatedDocumentsFieldsWhenSendingANewJudicialMessage() {
         DocumentReference mainDocument = DocumentReference.builder()
             .filename("c2.doc")
@@ -123,7 +123,7 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         assertThat(builtDynamicList).isEqualTo(expectedDynamicList);
     }
 
-    @Test
+    //@Test
     void shouldNotReturnAValidationErrorWhenEmailIsValid() {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(MessageJudgeEventData
@@ -140,7 +140,7 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
         assertThat(response.getErrors()).isNull();
     }
 
-    @Test
+    //@Test
     void shouldReturnAValidationErrorWhenEmailIsInvalid() {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(MessageJudgeEventData

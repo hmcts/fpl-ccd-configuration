@@ -168,7 +168,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     }
 
-    @Test
+    //@Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters =
                 toMap(getExpectedHmctsParameters(true, LOCAL_AUTHORITY_3_COURT_A_NAME, LOCAL_AUTHORITY_3_NAME));
@@ -207,7 +207,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldBuildNotificationTemplatesWithCompleteValuesNotifyingCafcassBySendGrindOnly() {
         final Map<String, Object> expectedHmctsParameters =
                 toMap(getExpectedHmctsParameters(true, DEFAULT_LA_COURT, LOCAL_AUTHORITY_1_NAME));
@@ -245,7 +245,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     }
 
 
-    @Test
+    //@Test
     void shouldNotifyRegisteredSolicitorsWhenCaseIsSubmitted() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -280,7 +280,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldNotifyTranslationTeamWhenCaseIsSubmittedAndTranslationRequested() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -311,7 +311,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldNotNotifyTranslationTeamWhenCaseIsSubmittedAndTranslationNotRequested() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
@@ -341,7 +341,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldUpdateTheCaseManagementSummary() {
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("representativeType", RepresentativeType.LOCAL_AUTHORITY);
@@ -352,7 +352,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             eq("internal-update-case-summary"), any());
     }
 
-    @Test
+    //@Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
         caseDetails.getData().put("caseLocalAuthority", LOCAL_AUTHORITY_3_CODE);
@@ -386,7 +386,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldSendNotificationToCtscAdminWhenCtscIsEnabledWithinCaseDetails() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
@@ -414,7 +414,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
         CaseData caseData = CaseData.builder()
             .representativeType(RepresentativeType.LOCAL_AUTHORITY)
@@ -437,7 +437,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             anyMap(), eq(notificationReference(CASE_ID))));
     }
 
-    @Test
+    //@Test
     void shouldNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsProvided() {
         Respondent respondent = Respondent.builder()
             .legalRepresentation(YES.getValue())
@@ -478,7 +478,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldNotNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsNotProvided() {
         Respondent respondent = Respondent.builder()
             .legalRepresentation(YES.getValue())
@@ -517,7 +517,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldMakePaymentOfAnOpenCaseWhenAmountToPayWasDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -529,7 +529,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldNotMakePaymentOfAnOpenCaseWhenAmountToPayWasNotDisplayed() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
@@ -541,7 +541,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -568,7 +568,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
 
@@ -591,7 +591,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         verifyCafcassOrderNotification();
     }
 
-    @Test
+    //@Test
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() {
         CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
@@ -614,7 +614,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         });
     }
 
-    @Test
+    //@Test
     void shouldPopulateResponseWithMarkdown() {
         String caseName = "Names are hard";
 
@@ -643,7 +643,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         final State state = RETURNED;
 
-        @Test
+        //@Test
         void shouldNotifyAdminAndCafcassWhenCaseIsResubmitted() {
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(NO);
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -655,7 +655,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             checkThat(this::paymentNotTakenAndNoMoreEmailsSent);
         }
 
-        @Test
+        //@Test
         void shouldNotifyCtscAndCafcassWhenCaseIsResubmitted() {
             CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());

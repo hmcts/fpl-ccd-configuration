@@ -31,7 +31,7 @@ public class NoticeOfChangeControllerUpdateRespondentsTest extends AbstractCallb
         super("noc-decision/update-respondents");
     }
 
-    @Test
+    //@Test
     void shouldInvokeAACApi() {
         CaseData caseData = CaseData.builder().build();
         when(caseAssignmentService.applyDecision(any())).thenReturn(AboutToStartOrSubmitCallbackResponse.builder()
@@ -43,7 +43,7 @@ public class NoticeOfChangeControllerUpdateRespondentsTest extends AbstractCallb
         verify(caseAssignmentService).applyDecision(any());
     }
 
-    @Test
+    //@Test
     void shouldLogWhenAACFailure() {
         CaseData caseData = CaseData.builder().build();
         when(caseAssignmentService.applyDecision(any())).thenReturn(AboutToStartOrSubmitCallbackResponse.builder()

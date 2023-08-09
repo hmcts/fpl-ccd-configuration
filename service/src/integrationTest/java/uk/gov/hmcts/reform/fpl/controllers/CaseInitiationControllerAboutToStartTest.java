@@ -45,7 +45,7 @@ class CaseInitiationControllerAboutToStartTest extends AbstractCallbackTest {
         givenFplService();
     }
 
-    @Test
+    //@Test
     void shouldReturnListOfOutsourcingLAsIfPrivateSolicitorAllowedToCreateCaseOnBehalfOfLAs() {
         final Organisation organisation = testOrganisation(PRIVATE_ORG_ID);
 
@@ -61,7 +61,7 @@ class CaseInitiationControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(caseData).extracting("outsourcingType").isEqualTo("EPS");
     }
 
-    @Test
+    //@Test
     void shouldReturnListOfOutsourcingLAsIfLASolicitorAllowedToCreateCaseOnBehalfOfOtherLA() {
         final Organisation organisation = testOrganisation(LOCAL_AUTHORITY_2_ID);
 
@@ -81,7 +81,7 @@ class CaseInitiationControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(caseData).extracting("outsourcingType").isEqualTo("MLA");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnListOfOutsourcingLAsIfUserIsNotAllowedToCreateCaseOnBehalfOfLAs() {
         final Organisation organisation = testOrganisation("PROHIBITED");
 

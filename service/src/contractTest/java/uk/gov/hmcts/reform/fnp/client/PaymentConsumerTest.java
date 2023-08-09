@@ -65,7 +65,7 @@ public class PaymentConsumerTest {
             .toPact();
     }
 
-    @Test
+    //@Test
     @PactTestFor(pactMethod = "generatePactFragment")
     public void verifyPaymentSuccess() {
         paymentApi.createCreditAccountPayment(

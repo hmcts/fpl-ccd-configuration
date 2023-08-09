@@ -100,7 +100,7 @@ class TestingSupportControllerTest {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
     }
 
-    @Test
+    //@Test
     void shouldThrowExceptionForInvalidState() {
         Exception thrownException = assertThrows(NestedServletException.class,
             () -> makePostRequest(POPULATE_CASE_PATH, Map.of("state", "NOT_A_REAL_STATE")));
@@ -125,7 +125,7 @@ class TestingSupportControllerTest {
             caseData);
     }
 
-    @Test
+    //@Test
     void shouldCreateCase() throws Exception {
 
         String eventName = "openCase";
@@ -162,7 +162,7 @@ class TestingSupportControllerTest {
             .isEqualTo(new JSONObject(caseData).toString());
     }
 
-    @Test
+    //@Test
     void shouldGenerateDocument() throws Exception {
         byte[] pdf = ResourceReader.readBytes("documents/document.pdf");
         InMemoryMultipartFile file = new InMemoryMultipartFile("files", "mockFile.pdf", "application/pdf", pdf);

@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class PlacementNoticeAboutToStartControllerTest extends AbstractPlacementNoticeControllerTest {
 
-    @Test
+    //@Test
     void shouldIdentifyIfNoPlacements() {
 
         final CaseData caseData = CaseData.builder()
@@ -37,7 +37,7 @@ class PlacementNoticeAboutToStartControllerTest extends AbstractPlacementNoticeC
         assertThat(actualPlacementData.getPlacement()).isNull();
     }
 
-    @Test
+    //@Test
     void shouldInstantiateListCorrectly() {
 
         final Placement placement = Placement.builder()

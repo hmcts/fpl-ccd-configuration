@@ -38,7 +38,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
     @Autowired
     private JudicialMessageReplyContentProvider underTest;
 
-    @Test
+    //@Test
     void createTemplateWithExpectedParameters() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

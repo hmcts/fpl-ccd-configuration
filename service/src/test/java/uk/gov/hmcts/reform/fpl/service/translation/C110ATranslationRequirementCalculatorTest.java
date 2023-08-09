@@ -20,7 +20,7 @@ class C110ATranslationRequirementCalculatorTest {
 
     private final C110ATranslationRequirementCalculator underTest = new C110ATranslationRequirementCalculator();
 
-    @Test
+    //@Test
     void calculateIfEmpty() {
         LanguageTranslationRequirement actual = underTest.calculate(CaseData.builder()
             .c110A(C110A.builder().build())

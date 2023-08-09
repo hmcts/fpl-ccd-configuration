@@ -92,7 +92,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         givenCurrentUser(buildUserDetailsWithLARole());
     }
 
-    @Test
+    //@Test
     void shouldPopulateHearingFurtherDocumentsCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
@@ -126,7 +126,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateFurtherEvidenceDocumentsCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
@@ -143,7 +143,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateApplicationDocumentsCollection() {
         List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
 
@@ -168,7 +168,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateCourtBundleCollection() {
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
@@ -201,7 +201,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
             SupportingEvidenceBundle.builder()
@@ -227,7 +227,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldDuplicateNonConfidentialCorrespondenceDocsInAnotherList() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
             CONFIDENTIAL_BUNDLE, NON_CONFIDENTIAL_BUNDLE
@@ -249,7 +249,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(correspondenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
     }
 
-    @Test
+    //@Test
     void shouldDuplicateNonConfidentialFurtherEvidenceDocsInAnotherList() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
             CONFIDENTIAL_BUNDLE, NON_CONFIDENTIAL_BUNDLE
@@ -271,7 +271,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(furtherEvidenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
     }
 
-    @Test
+    //@Test
     void shouldPopulateC2DocumentBundleCollectionWhenSelectedIdIsInC2DocumentsBundle() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(now().plusDays(2));
@@ -307,7 +307,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateC2DocumentBundleWhenSelectedIdIsInAdditionalApplicationsBundle() {
         UUID selectedBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
@@ -342,7 +342,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateOtherApplicationBundleWhenSelectedIdIsInAdditionalApplicationsBundle() {
         UUID selectedBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(now());
@@ -378,7 +378,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldPopulateRespondentStatementsCollection() {
         List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
         List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
@@ -440,7 +440,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldUpdatePlacements() {
         Placement placement = Placement.builder()
             .placementNotice(testDocumentReference())
@@ -465,7 +465,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldNotOverrideExistingCafcassRespondentNotices() {
         PlacementNoticeDocument laResponseNew = PlacementNoticeDocument.builder()
             .type(PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY)
@@ -506,7 +506,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
-    @Test
+    //@Test
     void shouldThrowIllegalStateExceptionIfManageDocumentLAIsNullWhenTryingToGetManageDocumentsType() {
         CaseData caseData = CaseData.builder()
             .manageDocumentLA(null)

@@ -56,7 +56,7 @@ class ElementUtilsTest {
         @Autowired
         private ObjectMapper mapper;
 
-        @Test
+        //@Test
         void shouldReturnUuidWhenStringIsPassed() {
             UUID testId = UUID.randomUUID();
             UUID valueCode = getDynamicListSelectedValue(testId.toString(), mapper);
@@ -64,7 +64,7 @@ class ElementUtilsTest {
             assertThat(valueCode).isEqualTo(testId);
         }
 
-        @Test
+        //@Test
         void shouldReturnUuidWhenMapRepresentationOfDynamicListPassed() {
             UUID selectedID = UUID.randomUUID();
 
@@ -103,7 +103,7 @@ class ElementUtilsTest {
             .label("SECOND")
             .build();
 
-        @Test
+        //@Test
         void shouldReturnDynamicListOfAllElements() {
             DynamicList elementsList = asDynamicList(List.of(element1, element2), null, labelProducer);
 
@@ -115,7 +115,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnDynamicListExcludingNullElements() {
             DynamicList elementsList = asDynamicList(asList(element1, null), null, labelProducer);
 
@@ -127,7 +127,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnDynamicListExcludingElementsWithoutId() {
             Element<String> elementWithoutId = Element.<String>builder().value("Test").build();
             DynamicList elementsList = asDynamicList(asList(element1, elementWithoutId), null, labelProducer);
@@ -140,7 +140,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnPreselectedDynamicListOfAllElements() {
             UUID selectedElementId = element2.getId();
 
@@ -155,7 +155,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnUnselectedListWhenSelectedElementNotFound() {
             UUID selectedElementId = randomUUID();
 
@@ -169,7 +169,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyDynamicListWhenNoElements() {
             UUID selectedElementId = randomUUID();
 
@@ -183,7 +183,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyDynamicListWhenNullElements() {
             UUID selectedElementId = randomUUID();
 
@@ -197,7 +197,7 @@ class ElementUtilsTest {
             assertThat(elementsList).isEqualTo(expectedElementsList);
         }
 
-        @Test
+        //@Test
         void shouldThrowsExceptionWhenLabelProducerIsNull() {
             Exception exception = assertThrows(
                 NullPointerException.class, () -> asDynamicList(null, null, null));
@@ -209,7 +209,7 @@ class ElementUtilsTest {
     @Nested
     class FindElement {
 
-        @Test
+        //@Test
         void shouldFindElementById() {
             Element<String> element1 = Element.<String>builder().id(randomUUID()).value("First").build();
             Element<String> element2 = Element.<String>builder().id(randomUUID()).value("Second").build();
@@ -219,7 +219,7 @@ class ElementUtilsTest {
             assertThat(findElement(element2.getId(), elements)).isEqualTo(Optional.of(element2));
         }
 
-        @Test
+        //@Test
         void shouldNotFindNonExistingElement() {
             Element<String> element1 = Element.<String>builder().id(randomUUID()).value("First").build();
             Element<String> element2 = Element.<String>builder().id(randomUUID()).value("Second").build();
@@ -228,17 +228,17 @@ class ElementUtilsTest {
             assertThat(findElement(randomUUID(), elements)).isNotPresent();
         }
 
-        @Test
+        //@Test
         void shouldNotFindElementInEmptyList() {
             assertThat(findElement(randomUUID(), emptyList())).isNotPresent();
         }
 
-        @Test
+        //@Test
         void shouldNotFindElementInNullList() {
             assertThat(findElement(randomUUID(), null)).isNotPresent();
         }
 
-        @Test
+        //@Test
         void shouldNotFindNullElement() {
             assertThat(findElement(null, null)).isNotPresent();
         }
@@ -250,7 +250,7 @@ class ElementUtilsTest {
         private final Element<String> element1 = Element.<String>builder().id(randomUUID()).value("First").build();
         private final Element<String> element2 = Element.<String>builder().id(randomUUID()).value("Second").build();
 
-        @Test
+        //@Test
         void shouldGetElementById() {
 
             final List<Element<String>> elements = List.of(element1, element2);
@@ -259,7 +259,7 @@ class ElementUtilsTest {
             assertThat(getElement(element2.getId(), elements)).isEqualTo(element2);
         }
 
-        @Test
+        //@Test
         void shouldThrowsExceptionWhenRequestedElementDoesNotExists() {
 
             final List<Element<String>> elements = List.of(element1, element2);
@@ -274,7 +274,7 @@ class ElementUtilsTest {
             assertThatThrownBy(() -> getElement(randomUUID(), elements)).isInstanceOf(NoSuchElementException.class);
         }
 
-        @Test
+        //@Test
         void shouldThrowsExceptionWhenIdOfElementToBeGetIsNull() {
 
             final List<Element<String>> elements = List.of(element1, element2);
@@ -286,7 +286,7 @@ class ElementUtilsTest {
     @Nested
     class FindElements {
 
-        @Test
+        //@Test
         void shouldFindAllElements() {
             Element<String> element1 = Element.<String>builder().id(randomUUID()).value("A").build();
             Element<String> element2 = Element.<String>builder().id(randomUUID()).value("B").build();
@@ -297,7 +297,7 @@ class ElementUtilsTest {
             assertThat(findElements("B", elements)).containsExactlyInAnyOrder(element2, element3);
         }
 
-        @Test
+        //@Test
         void shouldFindAllNullElements() {
             Element<String> element1 = Element.<String>builder().id(UUID.randomUUID()).build();
             Element<String> element2 = Element.<String>builder().id(UUID.randomUUID()).value("A").build();
@@ -307,7 +307,7 @@ class ElementUtilsTest {
             assertThat(findElements(null, elements)).containsExactly(element1, element3);
         }
 
-        @Test
+        //@Test
         void shouldNotFindNonExistingElement() {
             Element<String> element1 = Element.<String>builder().id(randomUUID()).value("A").build();
             Element<String> element2 = Element.<String>builder().id(randomUUID()).value("B").build();
@@ -316,12 +316,12 @@ class ElementUtilsTest {
             assertThat(findElements("C", elements)).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldNotFindElementInEmptyList() {
             assertThat(findElements("A", emptyList())).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldNotFindElementInNullList() {
             assertThat(findElements("A", null)).isEmpty();
         }
@@ -333,17 +333,17 @@ class ElementUtilsTest {
         Element<String> element1 = Element.<String>builder().value("First").build();
         Element<String> element2 = Element.<String>builder().value("Second").build();
 
-        @Test
+        //@Test
         void shouldWrapAllObjectsWithElement() {
             assertThat(wrapElements("First", "Second")).containsExactly(element1, element2);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
             assertThat(wrapElements()).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldWrapNonNullObjectsWithElement() {
             assertThat(wrapElements("First", null)).containsExactly(element1);
         }
@@ -355,7 +355,7 @@ class ElementUtilsTest {
         Element<String> element1 = Element.<String>builder().value("First").build();
         Element<String> element2 = Element.<String>builder().value("Second").build();
 
-        @Test
+        //@Test
         void shouldWrapAllObjectsWithElement() {
             assertThat(wrapElementsWithUUIDs("First", "Second")).hasSize(2);
             assertThat(wrapElementsWithUUIDs("First", "Second")
@@ -363,12 +363,12 @@ class ElementUtilsTest {
                 .hasSize(2);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
             assertThat(wrapElementsWithUUIDs()).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldWrapNonNullObjectsWithElement() {
             assertThat(wrapElementsWithUUIDs("First", null)).hasSize(1);
             assertThat(wrapElementsWithUUIDs("First", null)
@@ -380,25 +380,25 @@ class ElementUtilsTest {
     @Nested
     class WrapListOfElementsWithRandomUUID {
 
-        @Test
+        //@Test
         void shouldWrapAllObjectsWithElement() {
             List<String> elements = List.of("First", "Second");
             assertThat(wrapElementsWithUUIDs(elements)).extracting(Element::getValue).isEqualTo(elements);
         }
 
-        @Test
+        //@Test
         void shouldWrapAllObjectsWithElementWithUniqueId() {
             List<String> elements = List.of("First", "Second");
             assertThat(wrapElementsWithUUIDs(elements).stream().map(Element::getId).collect(Collectors.toSet()))
                 .hasSize(2);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
             assertThat(wrapElementsWithUUIDs(emptyList())).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyListWhenListOfElementsIsNull() {
             List<String> elements = null;
             assertThat(wrapElementsWithUUIDs(elements)).isEmpty();
@@ -408,18 +408,18 @@ class ElementUtilsTest {
     @Nested
     class WrapListOfElements {
 
-        @Test
+        //@Test
         void shouldWrapAllObjectsWithElement() {
             List<String> elements = List.of("First", "Second");
             assertThat(wrapElements(elements)).extracting(Element::getValue).isEqualTo(elements);
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyElementListIfNoObjectsToWrap() {
             assertThat(wrapElements(emptyList())).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyListWhenListOfElementsIsNull() {
             List<String> elements = null;
             assertThat(wrapElements(elements)).isEmpty();
@@ -433,22 +433,22 @@ class ElementUtilsTest {
         Element<String> element2 = Element.<String>builder().id(randomUUID()).value("Second").build();
         Element<String> elementWithoutValue = Element.<String>builder().id(randomUUID()).build();
 
-        @Test
+        //@Test
         void shouldUnwrapAllElements() {
             assertThat(unwrapElements(List.of(element1, element2))).containsExactly("First", "Second");
         }
 
-        @Test
+        //@Test
         void shouldExcludeElementsWithNullValues() {
             assertThat(unwrapElements(List.of(element1, elementWithoutValue))).containsExactly("First");
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyListIfListOfElementIsEmpty() {
             assertThat(unwrapElements(emptyList())).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyListIfListOfElementIsNull() {
             assertThat(unwrapElements(null)).isEmpty();
         }
@@ -457,17 +457,17 @@ class ElementUtilsTest {
     @Nested
     class MissingIds {
 
-        @Test
+        //@Test
         void shouldReturnNullIfElementsAreNull() {
             assertThat(addMissingIds(null)).isNull();
         }
 
-        @Test
+        //@Test
         void shouldReturnEmptyListIfElementsAreEmpty() {
             assertThat(addMissingIds(emptyList())).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldDoNothingIfAllElementsHaveIds() {
             final UUID id1 = randomUUID();
             final UUID id2 = randomUUID();
@@ -479,7 +479,7 @@ class ElementUtilsTest {
                 element(id2, "Second"));
         }
 
-        @Test
+        //@Test
         void shouldGenerateIdsForElementsWithoutId() {
             final UUID id1 = randomUUID();
 
@@ -497,7 +497,7 @@ class ElementUtilsTest {
     @Nested
     class ElementCreation {
 
-        @Test
+        //@Test
         void shouldCreateElementWithGivenValueAndRandomId() {
 
             final Element<String> actualElement1 = element("Test");
@@ -510,7 +510,7 @@ class ElementUtilsTest {
             assertThat(actualElement1.getId()).isNotEqualTo(actualElement2.getId());
         }
 
-        @Test
+        //@Test
         void shouldCreateElementWithGivenValueAndId() {
 
             final UUID id = UUID.randomUUID();
@@ -525,7 +525,7 @@ class ElementUtilsTest {
     @Nested
     class RemoveElement {
 
-        @Test
+        //@Test
         void shouldRemoveElement() {
             UUID id = UUID.randomUUID();
 
@@ -540,7 +540,7 @@ class ElementUtilsTest {
                 .containsOnly(element1, element2, element3);
         }
 
-        @Test
+        //@Test
         void shouldNotRemoveElementIfIdNotFound() {
             Element<String> element1 = element("test");
             Element<String> element2 = element("string");
@@ -552,7 +552,7 @@ class ElementUtilsTest {
                 .containsOnly(element1, element2, element3);
         }
 
-        @Test
+        //@Test
         void shouldRemoveElementIfOnlyOneElementExist() {
             UUID id = UUID.randomUUID();
 

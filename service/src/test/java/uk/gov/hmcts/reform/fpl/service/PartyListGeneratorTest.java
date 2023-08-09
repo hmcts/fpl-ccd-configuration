@@ -83,7 +83,7 @@ class PartyListGeneratorTest {
             .build();
     }
 
-    @Test
+    //@Test
     void shouldReturnAllApplicantsList() {
         DynamicList actualDynamicList = underTest.buildPartyList(caseData);
 

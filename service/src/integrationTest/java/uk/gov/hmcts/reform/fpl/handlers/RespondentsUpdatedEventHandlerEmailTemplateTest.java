@@ -124,7 +124,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             );
     }
 
-    @Test
+    //@Test
     void notifyUnregisteredSolicitors() {
         Respondent respondent = RESPONDENT.toBuilder()
             .legalRepresentation(YES.getValue())

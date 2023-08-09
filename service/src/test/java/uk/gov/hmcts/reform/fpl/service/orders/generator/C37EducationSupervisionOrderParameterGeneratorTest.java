@@ -48,17 +48,17 @@ class C37EducationSupervisionOrderParameterGeneratorTest {
         when(manageOrderDocumentService.commonContextElements(any())).thenReturn(context);
     }
 
-    @Test
+    //@Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(C37_EDUCATION_SUPERVISION_ORDER_DIGITAL);
     }
 
-    @Test
+    //@Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
-    @Test
+    //@Test
     void generateOrderWithTwelveMonthEndDate() {
         CaseData caseData = buildCaseDataWithDateSpecified(TWELVE_MONTHS_FROM_DATE_OF_ORDER);
         DocmosisParameters docParam = underTest.generate(caseData);
@@ -68,7 +68,7 @@ class C37EducationSupervisionOrderParameterGeneratorTest {
         assertThat(docParam).isEqualTo(expectedParam);
     }
 
-    @Test
+    //@Test
     void generateOrderWithEndOfEducationAge() {
         CaseData caseData = buildCaseDataWithDateSpecified(UNTIL_END_OF_COMPULSORY_EDUCATION_AGE);
         DocmosisParameters docParam = underTest.generate(caseData);

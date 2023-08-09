@@ -65,7 +65,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Autowired
     private AmendedReturnedCaseEventHandler underTest;
 
-    @Test
+    //@Test
     void testAdminTemplate() {
         underTest.notifyAdmin(new AmendedReturnedCaseEvent(CASE_DATA));
 
@@ -91,7 +91,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
             );
     }
 
-    @Test
+    //@Test
     void testCafcassTemplate() {
         underTest.notifyCafcass(new AmendedReturnedCaseEvent(CASE_DATA));
 

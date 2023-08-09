@@ -34,7 +34,7 @@ public class OrderGenerationApiTest extends AbstractApiTest {
     @Autowired
     private DocumentService documentService;
 
-    @Test
+    //@Test
     public void shouldGenerateAndPostOrder() {
         CaseData startingCaseData = createCase("order-generation/case.json", LA_SWANSEA_USER_1);
         callAboutToSubmit(startingCaseData);

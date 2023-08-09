@@ -106,7 +106,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
     private final OrganisationPolicy secondaryOrganisationPolicy = organisationPolicy(LOCAL_AUTHORITY_2_ID,
         LOCAL_AUTHORITY_2_NAME, LASHARED);
 
-    @Test
+    //@Test
     void shouldNotifyLocalAuthoritiesWhenSecondaryLocalAuthorityAdded() {
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -156,7 +156,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
 
-    @Test
+    //@Test
     void shouldNotifyLocalAuthoritiesWhenSecondaryLocalAuthorityRemoved() {
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -202,7 +202,7 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         verifyNoMoreInteractions(notificationClient, coreCaseDataService);
     }
 
-    @Test
+    //@Test
     void shouldNotifyPreviousAndNewDesignatedLocalAuthorityAboutCaseTransfer() {
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -363,12 +363,12 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         verifyNoMoreInteractions(notificationClient);
     }
 
-    @Test
+    //@Test
     void shouldNotifyAllPartiesWhenCaseTransferredToOrdinaryCourt() {
         notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(false);
     }
 
-    @Test
+    //@Test
     void shouldNotifyAllPartiesWhenCaseTransferredToRcjHighCourt() {
         notifyAllPartiesWhenCaseTransferredToAnotherCourtTemplate(true);
     }

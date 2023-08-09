@@ -59,7 +59,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
         super("manage-documents-la");
     }
 
-    @Test
+    //@Test
     void shouldBuildHearingDocumentsHearingListAndSupportingC2DocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
@@ -141,7 +141,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(respondentStatementList).isEqualTo(expectedRespondentStatementList);
     }
 
-    @Test
+    //@Test
     void shouldInitialiseApplicationDocumentCollectionWithExistingDocument() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(

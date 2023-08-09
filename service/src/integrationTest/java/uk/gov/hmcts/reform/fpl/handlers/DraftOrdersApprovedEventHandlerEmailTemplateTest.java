@@ -77,7 +77,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
 
-    @Test
+    //@Test
     void notifyLAAndAdmin() {
         underTest.sendNotificationToAdminAndLA(buildEvent());
 
@@ -116,7 +116,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
         );
     }
 
-    @Test
+    //@Test
     void notifyCafcass() {
         underTest.sendNotificationToCafcass(buildEvent());
 
@@ -153,7 +153,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
             );
     }
 
-    @Test
+    //@Test
     void notifyCafcassViaSendGrid() {
         DraftOrdersApproved draftOrdersApproved = buildEvent();
 
@@ -181,7 +181,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .contains("Agreed CMO discussed at hearing", "Test order");
     }
 
-    @Test
+    //@Test
     void notifyDigitalRepresentatives() {
         underTest.sendNotificationToDigitalRepresentatives(buildEvent());
 

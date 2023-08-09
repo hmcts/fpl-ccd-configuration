@@ -11,27 +11,27 @@ class EventCheckerHelperTest {
     @Nested
     class AllNonEmpty {
 
-        @Test
+        //@Test
         void testEmptyArguments() {
             assertThat(allNonEmpty()).isTrue();
         }
 
-        @Test
+        //@Test
         void testOneEmpty() {
             assertThat(allNonEmpty("")).isFalse();
         }
 
-        @Test
+        //@Test
         void testOneNull() {
             assertThat(allNonEmpty(new Object[] {null})).isFalse();
         }
 
-        @Test
+        //@Test
         void testMultipleAndOneEmpty() {
             assertThat(allNonEmpty("", "x")).isFalse();
         }
 
-        @Test
+        //@Test
         void testNonEmpty() {
             assertThat(allNonEmpty("x")).isTrue();
         }

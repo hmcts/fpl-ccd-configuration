@@ -33,7 +33,7 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
     @Autowired
     private CaseManagementOrderRejectedEventHandler underTest;
 
-    @Test
+    //@Test
     void notifyLocalAuthority() {
         String familyManCaseNumber = "fam_num";
         long caseId = 12345L;

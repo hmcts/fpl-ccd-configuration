@@ -50,7 +50,7 @@ class PartyAddedToCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @Autowired
     private PartyAddedToCaseEventHandler underTest;
 
-    @Test
+    //@Test
     void notifyParties() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

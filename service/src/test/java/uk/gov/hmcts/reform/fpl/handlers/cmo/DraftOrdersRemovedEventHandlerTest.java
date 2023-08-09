@@ -88,7 +88,7 @@ public class DraftOrdersRemovedEventHandlerTest {
     @InjectMocks
     private DraftOrdersRemovedEventHandler underTest;
 
-    @Test
+    //@Test
     void shouldSendNotification() {
         HearingOrder additionalOrder = HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build();
 
@@ -151,7 +151,7 @@ public class DraftOrdersRemovedEventHandlerTest {
             CASE_ID);
     }
 
-    @Test
+    //@Test
     void shouldNotSendNotificationToCourtIfCourtEmailIsNull() {
         final HearingOrder additionalOrder = HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build();
 

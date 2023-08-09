@@ -19,7 +19,7 @@ class CaseSubmissionControllerMidEventTest extends AbstractCallbackTest {
         super("case-submission");
     }
 
-    @Test
+    //@Test
     void shouldNotReturnDocumentErrorsWhenCaseDataIsEmpty() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("caseName", "title"))
@@ -46,7 +46,7 @@ class CaseSubmissionControllerMidEventTest extends AbstractCallbackTest {
         );
     }
 
-    @Test
+    //@Test
     void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest());
 

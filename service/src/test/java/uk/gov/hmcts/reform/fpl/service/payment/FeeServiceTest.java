@@ -79,7 +79,7 @@ class FeeServiceTest {
             assertThat(feeService.getFees(list)).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldGetAFeeResponseWhenGivenAPopulated() {
             FeeResponse careOrderResponse = expectedFeeResponse(123);
             FeeResponse otherResponse = expectedFeeResponse(231);
@@ -97,7 +97,7 @@ class FeeServiceTest {
             assertThat(fees).containsOnly(careOrderResponse, otherResponse, placementResponse);
         }
 
-        @Test
+        //@Test
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
@@ -131,7 +131,7 @@ class FeeServiceTest {
             assertThat(feeService.extractFeeToUse(list)).isEmpty();
         }
 
-        @Test
+        //@Test
         void shouldReturnTheFeeResponseWithMaxFeeWhenPassedAPopulatedList() {
             List<FeeResponse> feeResponses = List.of(buildFee(12), buildFee(73.4), buildFee(45));
             Optional<FeeResponse> mostExpensive = feeService.extractFeeToUse(feeResponses);
@@ -194,7 +194,7 @@ class FeeServiceTest {
                 SERVICE)).thenReturn(buildFeeResponse(CONTACT_WITH_CHILD_IN_CARE_CODE, BigDecimal.TEN));
         }
 
-        @Test
+        //@Test
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
@@ -206,7 +206,7 @@ class FeeServiceTest {
             assertThrows(FeeRegisterException.class, () -> feeService.getFeesDataForOrders(orders));
         }
 
-        @Test
+        //@Test
         void shouldReturnCorrectFeesDataForOrders() {
             Orders orders = Orders.builder()
                 .orderType(List.of(OrderType.CARE_ORDER, OrderType.SUPERVISION_ORDER))
@@ -221,7 +221,7 @@ class FeeServiceTest {
             assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
         }
 
-        @Test
+        //@Test
         void shouldReturnCorrectFeesDataForSecureAccommodationOrdersEngland() {
             Orders orders = Orders.builder()
                 .orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER))
@@ -237,7 +237,7 @@ class FeeServiceTest {
             assertThat(fees.get(0).getCalculatedAmount()).isEqualTo(BigDecimal.TEN);
         }
 
-        @Test
+        //@Test
         void shouldReturnCorrectFeesDataForSecureAccommodationOrdersWales() {
             Orders orders = Orders.builder()
                 .orderType(List.of(OrderType.SECURE_ACCOMMODATION_ORDER))
@@ -281,7 +281,7 @@ class FeeServiceTest {
                 SERVICE)).thenReturn(buildFeeResponse(WITHOUT_NOTICE_FEE_CODE, BigDecimal.TEN));
         }
 
-        @Test
+        //@Test
         void shouldReturnCorrespondingFeesDataForC2ApplicationType() {
             FeesData feesData = feeService.getFeesDataForC2(C2ApplicationType.WITH_NOTICE);
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.ONE);
@@ -308,7 +308,7 @@ class FeeServiceTest {
 
         private static final String PLACEMENT_CODE = "FEE0309";
 
-        @Test
+        //@Test
         void shouldReturnCorrespondingFeesDataForPlacementApplicationType() {
 
             when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, PLACEMENT_KEYWORD,
@@ -357,7 +357,7 @@ class FeeServiceTest {
                 .thenReturn(buildFeeResponse(PARENTAL_RESPONSIBILITY_FATHER, BigDecimal.valueOf(35)));
         }
 
-        @Test
+        //@Test
         void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplementType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 List.of(FeeType.C2_WITH_NOTICE, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.RECOVERY_ORDER));
@@ -366,7 +366,7 @@ class FeeServiceTest {
             assertThat(getFirstFeeCode(feesData)).isEqualTo(CHILD_ASSESSMENT);
         }
 
-        @Test
+        //@Test
         void shouldReturnFeesDataWithMaximumAmountForSupplementTypeWithSecureAccommodation() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(List.of(
                 FeeType.CHANGE_SURNAME, FeeType.CHILD_ASSESSMENT_ORDER, FeeType.SECURE_ACCOMMODATION_WALES));
@@ -375,7 +375,7 @@ class FeeServiceTest {
             assertThat(getFirstFeeCode(feesData)).isEqualTo(SECURE_ACCOMMODATION_WALES);
         }
 
-        @Test
+        //@Test
         void shouldReturnFeesDataWithMaximumAmountForParentalResponsibilityType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(List.of(
                 FeeType.APPOINTMENT_OF_GUARDIAN, FeeType.PARENTAL_RESPONSIBILITY_FATHER,

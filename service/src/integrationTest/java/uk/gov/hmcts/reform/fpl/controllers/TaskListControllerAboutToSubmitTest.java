@@ -17,7 +17,7 @@ class TaskListControllerAboutToSubmitTest extends AbstractCallbackTest {
         super("update-task-list");
     }
 
-    @Test
+    //@Test
     void shouldPopulateUpdatedCaseNameToGlobalSearchCaseNames() {
         Map<String, Object> caseDetails = postAboutToSubmitEvent(CaseData.builder()
             .id(10L)

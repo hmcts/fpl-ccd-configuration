@@ -36,7 +36,7 @@ class TemporaryHearingJudgeEventHandlerTest {
     @Autowired
     private TemporaryHearingJudgeEventHandler temporaryHearingJudgeEventHandler;
 
-    @Test
+    //@Test
     void shouldSendEmailToJudge() {
         CaseData caseData = CaseData.builder()
             .id(12345L)

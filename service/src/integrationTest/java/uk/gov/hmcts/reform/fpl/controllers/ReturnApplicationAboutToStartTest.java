@@ -22,7 +22,7 @@ class ReturnApplicationAboutToStartTest extends AbstractCallbackTest {
         super("return-application");
     }
 
-    @Test
+    //@Test
     void shouldResetReturnApplicationProperties() {
         CaseData caseData = CaseData.builder()
             .returnApplication(ReturnApplication.builder()

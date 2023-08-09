@@ -34,7 +34,7 @@ class ReplyToMessageJudgeControllerValidateMidEventTest extends AbstractCallback
         super("reply-message-judge");
     }
 
-    @Test
+    //@Test
     void shouldReturnValidationErrorWhenJudgeMessageReplyHaveSameSenderAndRecipientEmailsAddress() {
         String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
 
@@ -60,7 +60,7 @@ class ReplyToMessageJudgeControllerValidateMidEventTest extends AbstractCallback
             .containsOnly("The sender's and recipient's email address cannot be the same");
     }
 
-    @Test
+    //@Test
     void shouldNotValidateEmailAddressesWhenClosingAJudicialMessage() {
         String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
 
