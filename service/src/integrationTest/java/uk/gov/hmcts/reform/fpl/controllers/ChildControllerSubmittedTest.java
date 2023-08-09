@@ -204,7 +204,6 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(any(), eq(CASE_ID), eq(changeRequest));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), eq(Map.of()));
-        // trigger pipeline test again
     }
 
     @Test
