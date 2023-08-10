@@ -496,7 +496,7 @@ public class ManageHearingsController extends CallbackController {
 
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData.getId()));
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData));
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));

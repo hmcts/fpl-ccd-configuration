@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -44,6 +45,7 @@ class NewHearingJudgeEventHandlerTest {
     @Test
     void shouldNotDoAnythingIfNoHearingJudge() {
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
+            .caseData(CaseData.builder().id(12345L).build())
             .hearing(HearingBooking.builder()
                 .build())
             .build();
@@ -56,6 +58,7 @@ class NewHearingJudgeEventHandlerTest {
     @Test
     void shouldNotDoAnythingIfNoHearingJudgeJudicialUser() {
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
+            .caseData(CaseData.builder().id(12345L).build())
             .hearing(HearingBooking.builder()
                 .startDate(LocalDateTime.now())
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -73,6 +76,7 @@ class NewHearingJudgeEventHandlerTest {
     @Test
     void shouldAttemptAssignIfHearingJudgeJudicialUserWithIdamId() {
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
+            .caseData(CaseData.builder().id(12345L).build())
             .hearing(HearingBooking.builder()
                 .startDate(LocalDateTime.now())
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -87,7 +91,7 @@ class NewHearingJudgeEventHandlerTest {
 
         underTest.handleNewHearingJudge(event);
 
-        verify(judicialService).assignHearingJudge(any(), eq("1234"), any(), anyBoolean());
+        verify(judicialService).assignHearingJudge(any(), eq("1234"), any(), any(), anyBoolean());
     }
 
     @Test
@@ -97,6 +101,7 @@ class NewHearingJudgeEventHandlerTest {
                     .sidamId("sidam")
                 .build()));
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
+            .caseData(CaseData.builder().id(12345L).build())
             .hearing(HearingBooking.builder()
                 .startDate(LocalDateTime.now())
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -112,7 +117,7 @@ class NewHearingJudgeEventHandlerTest {
         underTest.handleNewHearingJudge(event);
 
         verify(judicialService).getJudge("personal");
-        verify(judicialService).assignHearingJudge(any(), eq("sidam"), any(), anyBoolean());
+        verify(judicialService).assignHearingJudge(any(), eq("sidam"), any(), any(), anyBoolean());
     }
 
 }

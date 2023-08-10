@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.events.judicial;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Data
@@ -11,6 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 public class NewHearingJudgeEvent {
 
     private final HearingBooking hearing;
-    private final Long caseId;
+    private final CaseData caseData;
 
 }

@@ -160,15 +160,16 @@ public class JudicialService {
      * @param userId   the user to assign hearing-judge to
      * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
      */
-    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting, boolean isLegalAdviser) {
+    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting, ZonedDateTime ending,
+                                   boolean isLegalAdviser) {
         setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
 
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
-                null);
+                ending);
             // todo write a test about nulls
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, null);
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, ending);
         }
     }
 

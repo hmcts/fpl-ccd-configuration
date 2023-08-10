@@ -8,11 +8,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -35,13 +39,25 @@ public class NewHearingJudgeEventHandler {
 
         JudgeAndLegalAdvisor hearingJudge = event.getHearing().getJudgeAndLegalAdvisor();
 
+        Optional<HearingBooking> nextHearing = event.getCaseData().getAllNonCancelledHearings()
+            .stream()
+            .map(Element::getValue)
+            .filter(hearing -> hearing.getStartDate().isAfter(event.getHearing().getStartDate()))
+            .min(Comparator.comparing(HearingBooking::getStartDate));
+
+        ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(ZoneId.systemDefault()))
+            .orElse(null);
+
+
         if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getIdamId())) {
 
             // have an IDAM ID - use that to grant the role
-            judicialService.assignHearingJudge(event.getCaseId(),
+            judicialService.assignHearingJudge(event.getCaseData().getId(),
                 hearingJudge.getJudgeJudicialUser().getIdamId(),
                 event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                // if there's a hearing after the one added, we're going out of order, so set an end date
+                possibleEnd,
                 hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR));
         } else if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getPersonalCode())) {
@@ -51,13 +67,14 @@ public class NewHearingJudgeEventHandler {
                 .getJudge(hearingJudge.getJudgeJudicialUser().getPersonalCode());
 
             judge.ifPresentOrElse(judicialUserProfile ->
-                    judicialService.assignHearingJudge(event.getCaseId(), judicialUserProfile.getSidamId(),
+                    judicialService.assignHearingJudge(event.getCaseData().getId(), judicialUserProfile.getSidamId(),
                         event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                        possibleEnd,
                         hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)),
                 () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
-                    event.getCaseId()));
+                    event.getCaseData().getId()));
         } else {
-            log.info("No auto allocation of hearing judge on case {}", event.getCaseId());
+            log.info("No auto allocation of hearing judge on case {}", event.getCaseData().getId());
         }
     }
 
