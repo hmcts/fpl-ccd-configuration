@@ -1078,7 +1078,7 @@
     "Name": "Manage documents (new)",
     "Description": "Manage documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
