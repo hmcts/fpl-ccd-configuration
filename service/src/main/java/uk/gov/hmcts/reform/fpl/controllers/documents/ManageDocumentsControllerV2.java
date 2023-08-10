@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -73,8 +72,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
 
         if (UPLOAD_DOCUMENTS.equals(eventData.getManageDocumentAction())
             && unwrapElements(eventData.getUploadableDocumentBundle()).stream().anyMatch(
-                bundle -> bundle.getDocumentTypeSelected() != PLACEMENT_RESPONSES
-                    && !bundle.getDocumentTypeSelected().isUploadable())) {
+                bundle -> !bundle.getDocumentTypeSelected().isUploadable())) {
             return respond(caseDetails,
                 List.of("You are trying to upload a document to a parent folder, "
                     + "you need to choose one of the available sub folders."));

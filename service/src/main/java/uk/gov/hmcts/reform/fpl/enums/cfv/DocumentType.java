@@ -175,7 +175,7 @@ public enum DocumentType {
     private final int displayOrder;
 
     public boolean isUploadable() {
-        return nonNull(baseFieldNameResolver);
+        return nonNull(baseFieldNameResolver) || PLACEMENT_RESPONSES == this;
     }
 
     public String getFieldName(DocumentUploaderType uploaderType, boolean confidential) {
