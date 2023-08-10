@@ -54,7 +54,7 @@ public class JudicialUsersConfiguration {
         return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 
-    @Retryable(value = FeignException.class, recover = "recoverFailedJudgeCall")
+    @Retryable(value = FeignException.class, recover = "recoverFailedJudgeCall", maxAttempts = 5)
     public Map<String, String> getAllJudges() {
         String systemUserToken = systemUserService.getSysUserToken();
 

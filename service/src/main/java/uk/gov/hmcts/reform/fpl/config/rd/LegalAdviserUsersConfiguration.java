@@ -55,7 +55,7 @@ public class LegalAdviserUsersConfiguration {
         return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 
-    @Retryable(value = FeignException.class, recover = "recoverFailedLegalAdviserCall")
+    @Retryable(value = FeignException.class, recover = "recoverFailedLegalAdviserCall", maxAttempts = 5)
     public Map<String, String> getAllLegalAdvisers() {
         String systemUserToken = systemUserService.getSysUserToken();
 
