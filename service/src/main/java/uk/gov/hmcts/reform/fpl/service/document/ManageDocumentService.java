@@ -288,17 +288,17 @@ public class ManageDocumentService {
         return ret;
     }
 
-    private boolean isUploadable(DocumentType documentType, DocumentUploaderType uploaderType) {
+    private boolean isHiddenFromUpload(DocumentType documentType, DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case SOLICITOR:
-                return !documentType.isHiddenFromSolicitorUpload();
+                return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
-                return !documentType.isHiddenFromLAUpload();
+                return documentType.isHiddenFromLAUpload() || documentType.isHiddenFromUpload();
             case HMCTS:
-                return !documentType.isHiddenFromCTSCUpload();
+                return documentType.isHiddenFromCTSCUpload() || documentType.isHiddenFromUpload();
             case BARRISTER:
-                return false;
+                return true;
             default:
                 throw new IllegalStateException("unrecognised uploaderType: " + uploaderType);
         }
@@ -308,8 +308,7 @@ public class ManageDocumentService {
         boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
             .anyMatch(el -> el.getValue().getPlacementNotice() != null);
         final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
-            .filter(documentType -> isUploadable(documentType, getUploaderType(caseData)))
-            .filter(documentType -> !documentType.isHiddenFromUpload())
+            .filter(documentType -> !isHiddenFromUpload(documentType, getUploaderType(caseData)))
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
