@@ -191,9 +191,22 @@ public class ListGatekeepingHearingController extends CallbackController {
                     List.of("No Judge could be found, please retry your search or enter their details manually."));
             }
         } else {
-            // put the temporary manual entry into the proper field
+            // lookup the manual entry to see if we can do a mapping anyway
             allocatedJudge = caseData.getTempAllocatedJudge();
-            caseDetails.getData().put("allocatedJudge", caseData.getTempAllocatedJudge());
+            Optional<String> possibleId = judicialService
+                .getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
+            if (possibleId.isPresent()) {
+                // if they are in our maps - add their UUID extra info to the case
+                caseDetails.getData().put("allocatedJudge",
+                    allocatedJudge.toBuilder()
+                        .judgeJudicialUser(JudicialUser.builder()
+                            .idamId(possibleId.get())
+                            .build())
+                        .build());
+            } else {
+                // put the temporary manual entry into the proper field
+                caseDetails.getData().put("allocatedJudge", caseData.getTempAllocatedJudge());
+            }
         }
 
         // todo - test removal of this, as we use the manual label field now on the hearing judge page
