@@ -26,6 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -57,6 +58,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CHILD_LAST_NAME = "something";
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     @MockBean
     private NotificationClient notificationClient;
     @MockBean
@@ -78,7 +80,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             expectedTemplateParametersEmail(), NOTIFICATION_REFERENCE
         );
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .performPostSubmitCallback(eq(CASE_ID), any(), any());
     }
 
 
@@ -93,7 +96,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
             expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE
         );
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .performPostSubmitCallback(eq(CASE_ID), any(), any());
     }
 
     @Test
@@ -105,7 +109,8 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
         verifyNoInteractions(notificationClient);
-        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID), any(), any());
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .performPostSubmitCallback(eq(CASE_ID), any(), any());
     }
 
     private Representative buildRepresentative(RepresentativeServingPreferences servingPreference) {

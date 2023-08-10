@@ -1298,4 +1298,13 @@ public class CaseData extends CaseDataParent {
     public String getCaseLaOrRelatingLa() {
         return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
     }
+
+    @JsonIgnore
+    public Optional<String> getApplicantName() {
+        if (!isEmpty(getLocalAuthorities())) {
+            return Optional.of(getLocalAuthorities().get(0).getValue().getName());
+        } else {
+            return Optional.empty();
+        }
+    }
 }
