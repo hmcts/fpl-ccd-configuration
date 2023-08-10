@@ -171,6 +171,7 @@ public enum DocumentType {
     private boolean hiddenFromSolicitorUpload;
     @Getter
     private BiFunction<DocumentReference, DocumentUploaderType, Object> withDocumentBuilder;
+    @Getter
     private DocumentType parentFolder;
     @Getter
     private final int displayOrder;
