@@ -202,7 +202,8 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId);
-        migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId, expectedHearingId, expectedCourtBundleId);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
+            expectedHearingId, expectedCourtBundleId));
     }
 }
