@@ -18,11 +18,13 @@ import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(ListGatekeepingHearingController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -102,4 +104,25 @@ class ListGatekeepingHearingControllerAllocatedJudgeMidEventTest extends Abstrac
         assertThat(callbackResponse.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");
     }
+
+    @Test
+    void shouldAddExtraInfoIfInMapping() {
+        when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com"))
+            .thenReturn(Optional.of("1234"));
+
+        CaseData caseData = CaseData.builder()
+            .enterManually(YesNo.YES)
+            .tempAllocatedJudge(Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        CaseData after = extractCaseData(callbackResponse);
+
+        assertThat((callbackResponse.getErrors())).isNull();
+        assertThat(after.getAllocatedJudge().getJudgeJudicialUser().getIdamId()).isEqualTo("1234");
+    }
+
 }
