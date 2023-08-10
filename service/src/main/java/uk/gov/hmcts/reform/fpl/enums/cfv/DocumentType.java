@@ -71,7 +71,7 @@ public enum DocumentType {
         false, false, false, false,
         null,
         null, 90),
-    DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueListLA"),
+    DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICANTS_DOCUMENTS, 100),
