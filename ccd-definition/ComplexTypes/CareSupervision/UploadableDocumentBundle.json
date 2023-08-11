@@ -40,7 +40,7 @@
     "ListElementCode": "confidential",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this document confidential?",
-    "HintText": "A document is confidential if it has a person's name, address, or any other information which could identify them or their whereabouts",
+    "HintText": "A document is confidential if it has names, addresses or any other information that could identify a person or their whereabouts that should not be disclosed to all parties",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

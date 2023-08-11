@@ -59,7 +59,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentRequirementLabel",
     "FieldType": "Label",
-    "Label": "Documents must be:<br /><ul><li>Named using the document type, name of the party and their role - for example, Position-statement-jane-smith-respondent</li></ul>and then the rest below that remains<br /><br />AND<br /><br />A document is confidential if it has names, addresses or any other information that could identify a person or their whereabouts that should not be disclosed to all parties",
+    "Label": "Documents must be:<br /><ul><li>Named using the document type, name of the party and their role - for example, Position-statement-jane-smith-respondent</li><li>No more than 100MB (split and clearly name larger files)</li><li>uploaded separately, not in one large file</li></ul>",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -76,7 +76,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadableDocumentBundle",
-    "Label": "Add and categorised a document",
+    "Label": "Add a document",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadableDocumentBundle",
     "SecurityClassification": "Public",
