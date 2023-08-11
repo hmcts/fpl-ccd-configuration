@@ -35,7 +35,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @Slf4j
@@ -59,11 +58,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
-        "DFPL-1486", this::run1486,
-        "DFPL-1670", this::run1670
+        "DFPL-1649", this::run1649,
+        "DFPL-1486", this::run1486
     );
 
     @PostMapping("/about-to-submit")
@@ -190,37 +188,22 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
-    private void run1352(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1352";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
-                migrationId, caseData.getId()
-            ));
-        }
-        if (caseData.getSendToCtsc().equals("Yes")) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
-                migrationId, caseData.getId()
-            ));
-        }
-        caseDetails.getData().put("sendToCtsc", "Yes");
-    }
-
     private void run1486(CaseDetails caseDetails) {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1670(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1670";
-        var possibleCaseIds = List.of(1677837793762548L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1649(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1649";
+        long expectedCaseId = 1686829053861234L;
+        UUID expectedHearingId = UUID.fromString("55ecd69a-d4f3-4a1b-81ff-7144aa5f46f8");
+        UUID expectedCourtBundleId = UUID.fromString("7f14382f-c16e-497e-ab8c-f3f76e212a6c");
+        String messageId = "dd7e4072-41dd-46fa-a3dc-de32ee9bde93";
+        CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, UUID.fromString("633d03f0-6868-4872-8388-0d78ee2572cb")));
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
+            expectedHearingId, expectedCourtBundleId));
     }
 }
