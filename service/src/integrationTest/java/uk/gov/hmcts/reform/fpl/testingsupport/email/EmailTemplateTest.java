@@ -17,7 +17,11 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
@@ -82,12 +86,25 @@ public class EmailTemplateTest {
     @MockBean
     private RepresentativesInbox inbox;
 
+    @MockBean
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    protected FeatureToggleService featureToggleService;
+
+    @SpyBean
+    private DocumentService documentService;
+
     private final ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
     @BeforeEach
     void notificationMocks() throws NotificationClientException {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
+        when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
     }
 
