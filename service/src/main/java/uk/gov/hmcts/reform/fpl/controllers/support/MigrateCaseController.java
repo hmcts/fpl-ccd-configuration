@@ -35,7 +35,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @Slf4j
@@ -57,12 +56,11 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
-        "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
+        "DFPL-1649", this::run1649,
         "DFPL-1486", this::run1486
     );
 
@@ -170,15 +168,6 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedHearingOrderBundleId));
     }
 
-    private void run1466(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1466";
-        var possibleCaseIds = List.of(1665396049325141L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
-    }
-
     private void run1612(CaseDetails caseDetails) {
         var migrationId = "DFPL-1612";
         var possibleCaseIds = List.of(1687780363265112L);
@@ -199,28 +188,22 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
-    private void run1352(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1352";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
-                migrationId, caseData.getId()
-            ));
-        }
-        if (caseData.getSendToCtsc().equals("Yes")) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
-                migrationId, caseData.getId()
-            ));
-        }
-        caseDetails.getData().put("sendToCtsc", "Yes");
-    }
-
     private void run1486(CaseDetails caseDetails) {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    }
+
+    private void run1649(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1649";
+        long expectedCaseId = 1686829053861234L;
+        UUID expectedHearingId = UUID.fromString("55ecd69a-d4f3-4a1b-81ff-7144aa5f46f8");
+        UUID expectedCourtBundleId = UUID.fromString("7f14382f-c16e-497e-ab8c-f3f76e212a6c");
+        String messageId = "dd7e4072-41dd-46fa-a3dc-de32ee9bde93";
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
+            expectedHearingId, expectedCourtBundleId));
     }
 }
