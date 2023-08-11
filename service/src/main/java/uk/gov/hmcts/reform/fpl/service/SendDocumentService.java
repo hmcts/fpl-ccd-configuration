@@ -96,7 +96,7 @@ public class SendDocumentService {
         return recipients;
     }
 
-    private List<Recipient> getRepresentativesServedByPost(CaseData caseData) {
+    public List<Recipient> getRepresentativesServedByPost(CaseData caseData) {
         return new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
     }
 

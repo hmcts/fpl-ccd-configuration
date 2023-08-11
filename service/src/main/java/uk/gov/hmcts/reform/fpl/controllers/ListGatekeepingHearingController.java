@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -46,6 +48,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -82,6 +85,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
+    private final SendDocumentService sendDocumentService;
 
     private final CaseConverter converter;
 
@@ -360,11 +364,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         listGatekeepingHearingDecider.buildEventToPublish(caseData)
             .ifPresent(eventToPublish -> {
-                coreCaseDataService.performPostSubmitCallback(
-                    caseData.getId(),
-                    "internal-change-SEND_DOCUMENT",
-                    caseDetails1 -> Map.of("documentToBeSent", eventToPublish.getOrder())
-                );
+                sendDocumentService.sendDocuments(caseData, List.of(eventToPublish.getOrder()),
+                    sendDocumentService.getRepresentativesServedByPost(caseData));
                 publishEvent(eventToPublish);
             });
     }
