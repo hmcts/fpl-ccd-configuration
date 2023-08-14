@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,13 +62,13 @@ class CaseFlagControllerSubmittedTest extends AbstractCallbackTest {
             .caseFlagAdded("Yes")
             .build();
 
-        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder()
-                .id(USER_ID)
-                .surname(SURNAME)
-                .forename(FORENAME)
-                .email(USER_EMAIL)
-                .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
-                .build());
+        doReturn(UserDetails.builder()
+            .id(USER_ID)
+            .surname(SURNAME)
+            .forename(FORENAME)
+            .email(USER_EMAIL)
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .build()).when(idamClient).getUserDetails(any());
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
