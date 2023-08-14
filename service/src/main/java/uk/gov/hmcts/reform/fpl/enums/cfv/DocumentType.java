@@ -181,7 +181,11 @@ public enum DocumentType {
     }
 
     public String getFieldName(DocumentUploaderType uploaderType, boolean confidential) {
-        return getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType,confidential));
+        return getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType, confidential));
+    }
+
+    public String getFieldNameOfRemovedList() {
+        return getBaseFieldNameResolver().apply(null);
     }
 
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
@@ -200,6 +204,9 @@ public enum DocumentType {
 
     private static final Function<ConfidentialLevel, String> courtBundleResolver() {
         return confidentialLevel -> {
+            if (confidentialLevel == null) {
+                return "hearingDocuments.courtBundleListRemoved";
+            }
             switch (confidentialLevel) {
                 case NON_CONFIDENTIAL:
                     return "hearingDocuments.courtBundleListV2";
@@ -213,6 +220,9 @@ public enum DocumentType {
     }
 
     private static final String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
+        if (confidentialLevel == null) {
+            return baseFieldName + "Removed";
+        }
         switch (confidentialLevel) {
             case NON_CONFIDENTIAL:
                 return baseFieldName;
