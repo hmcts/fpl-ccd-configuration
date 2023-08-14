@@ -175,20 +175,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1649(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1649";
-        long expectedCaseId = 1686829053861234L;
-        UUID expectedHearingId = UUID.fromString("55ecd69a-d4f3-4a1b-81ff-7144aa5f46f8");
-        UUID expectedCourtBundleId = UUID.fromString("7f14382f-c16e-497e-ab8c-f3f76e212a6c");
-        String messageId = "dd7e4072-41dd-46fa-a3dc-de32ee9bde93";
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
-        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
-            expectedHearingId, expectedCourtBundleId));
-    }
-
     private void runAM(CaseDetails caseDetails) {
         var migrationId = "DFPL-AM";
 
