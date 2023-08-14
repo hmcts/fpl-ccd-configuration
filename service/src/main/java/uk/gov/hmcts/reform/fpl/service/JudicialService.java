@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -11,12 +12,16 @@ import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
+import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -24,17 +29,16 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
@@ -326,49 +330,52 @@ public class JudicialService {
         return error;
     }
 
-    public void migrateHearingJudges(List<HearingBooking> hearings, Long caseId) {
-        List<HearingBooking> sorted = hearings.stream()
+    public List<RoleAssignment> getHearingJudgeRolesForMigration(CaseData caseData) {
+        List<HearingBooking> bookings = caseData.getAllNonCancelledHearings()
+            .stream()
+            .map(Element::getValue)
             .sorted(Comparator.comparing(HearingBooking::getStartDate))
-            .collect(Collectors.toList());
+            .toList();
 
-        log.info("{}", sorted.size());
+        List<HearingJudgeTime> judgeTimes = new ArrayList<>();
+        for (int i = 0; i < bookings.size(); i++) {
+            HearingBooking booking = bookings.get(i);
+            HearingBooking after = (i < bookings.size() - 1) ? bookings.get(i + 1) : null;
 
-        List<RoleAssignment> roles = IntStream.range(0, sorted.size())
-            .mapToObj(i -> {
+            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
+                continue; // no judge UUID to grant roles on
+            }
 
-                HearingBooking hearing = sorted.get(i);
-                log.info("{}", hearing.getStartDate());
+            HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
+                .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
+                .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
+                .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
+                .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
-                Optional<String> user = this.getJudgeUserIdFromEmail(hearing.getJudgeAndLegalAdvisor()
-                    .getJudgeEmailAddress());
+            if (!ObjectUtils.isEmpty(after)) {
+                judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
+            }
 
-                // We have no user to assign the role to...
-                if (user.isEmpty()) {
-                    log.info("No user found");
-                    return null;
-                }
+            judgeTimes.add(judgeTime.build());
+        }
 
-                String caseRole = hearing.getJudgeAndLegalAdvisor().getJudgeTitle().equals(LEGAL_ADVISOR)
+        return judgeTimes.stream()
+            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
+            .map(time -> RoleAssignmentUtils.buildRoleAssignment(
+                caseData.getId(),
+                time.getJudgeId(),
+                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(time.getJudgeType())
                     ? HEARING_LEGAL_ADVISER.getRoleName()
-                    : HEARING_JUDGE.getRoleName();
-
-                RoleCategory roleCategory = hearing.getJudgeAndLegalAdvisor().getJudgeTitle().equals(LEGAL_ADVISOR)
+                    : HEARING_JUDGE.getRoleName(),
+                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(time.getJudgeType())
                     ? RoleCategory.LEGAL_OPERATIONS
-                    : RoleCategory.JUDICIAL;
+                    : RoleCategory.JUDICIAL,
+                time.getStartTime(),
+                time.getEndTime() // no end date
+            )).toList();
+    }
 
-                ZonedDateTime endDate = (i == (sorted.size() - 1))
-                    ? ZonedDateTime.now().plusYears(10) // lasts 10 years if we're the newest hearing
-                    : sorted.get(i + 1).getStartDate().minusMinutes(HEARING_EXPIRY_OFFSET_MINS) // else next hearing
-                    .atZone(ZoneId.systemDefault());
-
-                RoleAssignment role = buildRoleAssignment(caseId, user.get(), caseRole,
-                    roleCategory, ZonedDateTime.now(), endDate);
-                log.info("{}", role);
-                return role;
-            })
-            .filter(el -> !isEmpty(el)) // if any hearings we couldn't get a userId to assign to, filter out the nulls
-            .collect(Collectors.toList());
-
+    public void migrateJudgeRoles(List<RoleAssignment> roles) {
         roleAssignmentService.createRoleAssignments(roles);
     }
 }

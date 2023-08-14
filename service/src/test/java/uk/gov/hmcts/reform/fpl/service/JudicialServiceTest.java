@@ -16,12 +16,15 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = LENIENT)
@@ -80,11 +84,17 @@ class JudicialServiceTest {
         private static final JudgeAndLegalAdvisor JUDGE_1 = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge1@test.com")
             .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(JUDGE_1_ID)
+                .build())
             .build();
 
         private static final JudgeAndLegalAdvisor JUDGE_2 = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge2@test.com")
             .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(JUDGE_2_ID)
+                .build())
             .build();
 
         private static final HearingBooking HEARING_1 = HearingBooking.builder()
@@ -116,15 +126,26 @@ class JudicialServiceTest {
 
         @Test
         void shouldGenerateRoleAssignmentsBasedOnHearingDates() {
-            List<HearingBooking> hearings = List.of(HEARING_1, HEARING_2);
-            underTest.migrateHearingJudges(hearings, CASE_ID);
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .hearingDetails(wrapElements(HEARING_1, HEARING_2))
+                .build();
 
-            verify(roleAssignmentService).createRoleAssignments(rolesCaptor.capture());
+            List<RoleAssignment> roles = underTest.getHearingJudgeRolesForMigration(caseData);
 
-            assertThat(rolesCaptor.getValue().stream()
-                .map(RoleAssignment::getActorId)
-                .collect(Collectors.toList()))
-                .containsExactly(JUDGE_1_ID, JUDGE_2_ID);
+            verifyHearingRoleAssignments(roles);
+        }
+
+        void verifyHearingRoleAssignments(List<RoleAssignment> roles) {
+            assertThat(roles).hasSize(2);
+            assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
+                .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
+                    HEARING_1.getStartDate().atZone(ZoneId.systemDefault()),
+                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()));
+            assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
+                .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
+                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()),
+                    null);
         }
 
     }

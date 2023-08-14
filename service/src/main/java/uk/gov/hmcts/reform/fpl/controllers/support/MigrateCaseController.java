@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.am.model.RoleAssignment;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -20,28 +22,27 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
+import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
-import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
@@ -98,45 +99,34 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        // Allocated judge
+        List<RoleAssignment> rolesToAssign = new ArrayList<>();
+
+        // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
         Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        if (allocatedJudge.isPresent() && !isEmpty(allocatedJudge.get().getJudgeEmailAddress())) {
-            Optional<String> id = judicialService.getJudgeUserIdFromEmail(allocatedJudge.get().getJudgeEmailAddress());
-            if (id.isPresent()) {
-                if (allocatedJudge.get().getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)) {
-                    // attempt to assign legal adviser
-                    judicialService.assignLegalAdviserCaseRole(caseData.getId(), id.get(),
-                        ALLOCATED_LEGAL_ADVISER.getRoleName());
-                } else {
-                    // attempt to assign judge
-                    judicialService.assignJudgeCaseRole(caseData.getId(), id.get(), ALLOCATED_JUDGE.getRoleName());
-                }
-            } else {
-                log.error("Could not assign allocated-judge on case {}, could not fetch userId from IDAM",
-                    caseData.getId());
-            }
+        if (allocatedJudge.isPresent()
+            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
+            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
+
+            boolean isLegalAdviser = JudgeOrMagistrateTitle.LEGAL_ADVISOR
+                .equals(allocatedJudge.get().getJudgeTitle());
+
+            // attempt to assign allocated-[role]
+            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
+                caseData.getId(),
+                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
+                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
+                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
+                ZonedDateTime.now(),
+                null // no end date
+            ));
         } else {
             log.error("Could not assign allocated-judge on case {}, no email found on the case", caseData.getId());
         }
 
-        Set<JudgeAndLegalAdvisor> hearingJudges = judicialService.getHearingJudges(caseData);
-        hearingJudges.forEach(judge -> {
-            Optional<String> id = judicialService.getJudgeUserIdFromEmail(judge.getJudgeEmailAddress());
-            if (id.isPresent()) {
-                if (judge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)) {
-                    // attempt to assign legal adviser
-                    judicialService.assignLegalAdviserCaseRole(caseData.getId(), id.get(),
-                        HEARING_LEGAL_ADVISER.getRoleName());
-                } else {
-                    // attempt to assign judge
-                    judicialService.assignJudgeCaseRole(caseData.getId(), id.get(), HEARING_JUDGE.getRoleName());
-                }
+        // get hearing judge roles to add (if any)
+        rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
 
-            } else {
-                log.error("Could not assign hearing-judge on case {}, could not fetch userId from IDAM",
-                    caseData.getId());
-            }
-        });
+        judicialService.migrateJudgeRoles(rolesToAssign);
     }
 
     private void run1359(CaseDetails caseDetails) {
