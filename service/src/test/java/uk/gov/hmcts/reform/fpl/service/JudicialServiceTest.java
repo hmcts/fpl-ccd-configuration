@@ -29,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -191,7 +192,7 @@ class JudicialServiceTest {
 
         @Test
         void shouldRemoveExistingAllocatedJudges() {
-            List<RoleAssignment> existing = List.of("12345", "67890").stream()
+            List<RoleAssignment> existing = Stream.of("12345", "67890")
                 .map(id -> RoleAssignment.builder()
                     .actorId(id)
                     .id(id)
@@ -217,7 +218,7 @@ class JudicialServiceTest {
 
         @Test
         void shouldRemoveAndRecreateExistingHearingJudges() {
-            List<RoleAssignment> existing = List.of("12345", "67890").stream()
+            List<RoleAssignment> existing = Stream.of("12345", "67890")
                 .map(id -> RoleAssignment.builder()
                     .actorId(id)
                     .id(id)
