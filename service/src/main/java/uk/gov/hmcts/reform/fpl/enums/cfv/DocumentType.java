@@ -11,12 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -269,7 +267,7 @@ public enum DocumentType {
         return Arrays.stream(ConfidentialLevel.values())
             .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static String removeNested(String fieldName) {
