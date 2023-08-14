@@ -41,8 +41,6 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToDesignatedLA(ConfidentialLevel.LA)
             .sendToSecondaryLA(ConfidentialLevel.LA)
             .sendToLegalRepresentative(ConfidentialLevel.LA)
-            .sendToJudge(ConfidentialLevel.CTSC)
-            .sendToCTSC(ConfidentialLevel.CTSC)
             .sendToCafcassRepresentative(ConfidentialLevel.LA)
             .sendToTranslationTeam(ConfidentialLevel.CTSC)
             .build();

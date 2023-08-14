@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentService {
@@ -1165,26 +1167,37 @@ public class ManageDocumentService {
 
         for(DocumentType documentType : DocumentType.values()) {
             for(ConfidentialLevel confidentialLevel : resultMapByConfidentialLevel.keySet()) {
-                String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
+                if (documentType.getBaseFieldNameResolver() != null) {
+                    String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
 
-                List documentList = ObjectHelper.getFieldValue(caseData, fieldName, List.class);
-                List documentListBefore = ObjectHelper.getFieldValue(caseDataBefore, fieldName, List.class);
+                    try {
+                        List documentList = Optional.ofNullable(ObjectHelper
+                                .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
+                        List documentListBefore = Optional.ofNullable(ObjectHelper
+                            .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
 
-                if (DocumentType.COURT_BUNDLE.equals(documentType) || DocumentType.CASE_SUMMARY.equals(documentType)
-                    || DocumentType.POSITION_STATEMENTS.equals(documentType)
-                    || DocumentType.SKELETON_ARGUMENTS.equals(documentType)) {
-                    // TODO
-                } else {
-                    // Handle ManagedDocument list
-                    for (Object document : documentList) {
-                        if (documentListBefore.contains(document)) {
-                            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> resultMap =
-                                resultMapByConfidentialLevel.get(confidentialLevel);
+                        if (DocumentType.COURT_BUNDLE.equals(documentType) || DocumentType.CASE_SUMMARY.equals(documentType)
+                            || DocumentType.POSITION_STATEMENTS.equals(documentType)
+                            || DocumentType.SKELETON_ARGUMENTS.equals(documentType)) {
+                            // TODO
+                        } else {
+                            // Handle ManagedDocument list
+                            for (Object document : documentList) {
+                                if (!documentListBefore.contains(document)) {
+                                    Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
+                                        resultMapByConfidentialLevel.get(confidentialLevel);
 
-                            if (resultMap.containsKey(documentType)) {
-                                resultMap.get(documentType).add((Element<NotifyDocumentUploaded>) document);
+                                    List<Element<NotifyDocumentUploaded>> docList =
+                                        Optional.ofNullable(newDocMap.get(documentType)).orElse(new ArrayList<>());
+
+                                    docList.add((Element<NotifyDocumentUploaded>) document);
+                                    newDocMap.putIfAbsent(documentType, docList);
+                                }
                             }
                         }
+                    } catch (NoSuchMethodException e) {
+                        log.error("Case File View: No getter for {}. Check configuration of document type: {}",
+                            fieldName, documentType);
                     }
                 }
             }
