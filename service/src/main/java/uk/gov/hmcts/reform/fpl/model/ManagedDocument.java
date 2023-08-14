@@ -14,4 +14,5 @@ public class ManagedDocument implements WithDocument {
     private DocumentReference document;
     private DocumentUploaderType uploaderType;
     private String removalReason;
+    private String markAsConfidential;
 }

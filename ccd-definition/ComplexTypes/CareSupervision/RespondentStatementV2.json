@@ -241,5 +241,13 @@
     "FieldTypeParameter": "DocumentUploaderType",
     "ElementLabel": "Document Uploader Type",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
   }
 ]

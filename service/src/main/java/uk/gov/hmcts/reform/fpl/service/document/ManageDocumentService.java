@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -281,7 +282,11 @@ public class ManageDocumentService {
                         docs = new ArrayList<>();
                     }
                 }
-                docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(document, uploaderType)));
+                UploadBundle bundle = UploadBundle.builder().document(document)
+                    .uploaderType(uploaderType)
+                    .confidential(confidential)
+                    .build();
+                docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));
                 ret.put(actualFieldName, docs);
             }
         });

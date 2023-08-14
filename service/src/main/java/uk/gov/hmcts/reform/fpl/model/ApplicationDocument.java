@@ -30,6 +30,7 @@ public class ApplicationDocument implements FurtherDocument, WithDocument {
     private List<String> documentAcknowledge;
     private List<String> confidential;
     private String removalReason;
+    private String markAsConfidential;
 
     @JsonIgnore
     public boolean hasDocument() {

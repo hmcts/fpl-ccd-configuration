@@ -7,4 +7,5 @@ public interface WithDocument extends RemovableDocument {
     DocumentReference getDocument();
 
     DocumentUploaderType getUploaderType();
+    String getMarkAsConfidential();
 }

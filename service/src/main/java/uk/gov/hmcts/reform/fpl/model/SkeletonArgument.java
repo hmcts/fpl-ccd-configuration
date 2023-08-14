@@ -25,7 +25,8 @@ public class SkeletonArgument extends HearingDocument {
                             String partyName,
                             UUID partyId,
                             String hasConfidentialAddress,
-                            DocumentUploaderType uploaderType) {
+                            DocumentUploaderType uploaderType,
+                            String markAsConfidential) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
@@ -35,5 +36,6 @@ public class SkeletonArgument extends HearingDocument {
         this.partyId = partyId;
         this.hearingId = hearingId;
         super.uploaderType = uploaderType;
+        super.markAsConfidential = markAsConfidential;
     }
 }

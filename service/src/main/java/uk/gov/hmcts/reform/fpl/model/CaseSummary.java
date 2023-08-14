@@ -18,12 +18,14 @@ public class CaseSummary extends HearingDocument {
                        String uploadedBy,
                        String hearing,
                        String hasConfidentialAddress,
-                       DocumentUploaderType uploaderType) {
+                       DocumentUploaderType uploaderType,
+                       String markAsConfidential) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
         super.document = document;
         super.hasConfidentialAddress = hasConfidentialAddress;
         super.uploaderType = uploaderType;
+        super.markAsConfidential = markAsConfidential;
     }
 }

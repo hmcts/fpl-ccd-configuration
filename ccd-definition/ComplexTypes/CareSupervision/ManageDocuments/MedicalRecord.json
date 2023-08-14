@@ -24,5 +24,13 @@
     "FieldTypeParameter": "DocumentUploaderType",
     "ElementLabel": "Document Uploader Type",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "MedicalRecord",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
   }
 ]

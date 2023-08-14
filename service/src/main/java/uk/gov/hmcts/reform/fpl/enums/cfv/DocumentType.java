@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.enums.cfv;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Arrays;
@@ -28,18 +30,23 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public enum DocumentType {
     COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
-        (document, documentUploaderType) -> HearingCourtBundle.builder()
+        (bundle) -> HearingCourtBundle.builder()
             .courtBundle(List.of(
-                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
+                element(CourtBundle.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
+                    .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+                    .build())
             ))
             .courtBundleNC(List.of(
-                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
+                element(CourtBundle.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
+                    .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+                    .build())
             ))
             .build(),
         null, 10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
-        (document, documentUploaderType) -> CaseSummary.builder().document(document).uploaderType(documentUploaderType)
+        (bundle) -> CaseSummary.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
         null,20),
     POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"),
@@ -52,8 +59,10 @@ public enum DocumentType {
         null, 40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
-        (document, documentUploaderType) -> SkeletonArgument.builder().document(document)
-            .uploaderType(documentUploaderType).build(),
+        (bundle) -> SkeletonArgument.builder().document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .build(),
         null, 50),
     AA_PARENT_ORDERS("Orders", null,
         false, false, false, false,
@@ -109,8 +118,9 @@ public enum DocumentType {
         null, 180),
     RESPONDENTS_STATEMENTS("└─ Respondent statements", standardResolver("respStmtList"),
         false, false, false, false,
-        (document, documentUploaderType) -> RespondentStatementV2.builder().document(document)
-            .uploaderType(documentUploaderType).build(),
+        (bundle) -> RespondentStatementV2.builder().document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType()).markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .build(),
         AA_PARENT_RESPONDENTS_STATEMENTS, 190),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false, false,
@@ -170,7 +180,7 @@ public enum DocumentType {
     @Getter
     private boolean hiddenFromSolicitorUpload;
     @Getter
-    private BiFunction<DocumentReference, DocumentUploaderType, Object> withDocumentBuilder;
+    private Function<UploadBundle, Object> withDocumentBuilder;
     @Getter
     private DocumentType parentFolder;
     @Getter
@@ -239,10 +249,11 @@ public enum DocumentType {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
 
-    private static BiFunction<DocumentReference, DocumentUploaderType, Object> defaultWithDocumentBuilder() {
-        return (document, uploaderType) -> ManagedDocument.builder()
-            .document(document)
-            .uploaderType(uploaderType)
+    private static Function<UploadBundle, Object> defaultWithDocumentBuilder() {
+        return (bundle) -> ManagedDocument.builder()
+            .document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build();
     }
 
