@@ -254,7 +254,14 @@ public enum DocumentType {
             .collect(Collectors.toList());
     }
 
-    private String removeNested(String fieldName) {
+    public List<String> getFieldNames() {
+        return Arrays.stream(ConfidentialLevel.values())
+            .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    }
+
+    private static String removeNested(String fieldName) {
         String[] splitFieldNames = fieldName.split("\\.");
         if (splitFieldNames.length == 1) {
             return fieldName;
@@ -263,10 +270,20 @@ public enum DocumentType {
         }
     }
 
-    public static DocumentType fromJsonFieldName(String fieldName) {
+    public static DocumentType fromJsonFieldName(String jsonFieldName) {
         return Arrays.stream(DocumentType.values())
-            .filter(dt -> dt.getJsonFieldNames().contains(fieldName))
+            .filter(dt -> dt.getJsonFieldNames().contains(jsonFieldName))
             .findFirst().orElse(null);
+    }
+
+    public static DocumentType fromFieldName(String fieldName) {
+        return Arrays.stream(DocumentType.values())
+            .filter(dt -> dt.getFieldNames().contains(fieldName))
+            .findFirst().orElse(null);
+    }
+
+    public static String toJsonFieldName(String fieldName) {
+        return removeNested(fieldName);
     }
 
 }
