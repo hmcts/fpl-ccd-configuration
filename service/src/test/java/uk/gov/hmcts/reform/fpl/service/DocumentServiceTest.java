@@ -28,6 +28,9 @@ class DocumentServiceTest {
     @Mock
     private UploadDocumentService uploadDocumentService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @Captor
     private ArgumentCaptor<String> captor;
 
@@ -62,5 +65,7 @@ class DocumentServiceTest {
             .thenReturn(DocmosisDocument.builder().bytes(bytes).documentTitle("order.pdf").build());
 
         when(uploadDocumentService.uploadPDF(eq(bytes), captor.capture())).thenReturn(DOCUMENT);
+
+        when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
     }
 }
