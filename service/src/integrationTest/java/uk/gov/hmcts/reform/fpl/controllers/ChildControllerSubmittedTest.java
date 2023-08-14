@@ -39,6 +39,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -166,17 +167,15 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
                 .build()))
             .build();
 
-        when(concurrencyHelper.startEvent(any(), eq(UPDATE_CASE_EVENT)))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(asCaseDetails(caseData))
-                .eventId(UPDATE_CASE_EVENT)
-                .build());
+        doReturn(StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(UPDATE_CASE_EVENT)
+            .build()).when(concurrencyHelper).startEvent(any(), eq(UPDATE_CASE_EVENT));
 
-        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
-            .thenReturn(StartEventResponse.builder()
+        doReturn(StartEventResponse.builder()
                 .caseDetails(asCaseDetails(caseData))
                 .eventId("internal-update-case-summary")
-                .build());
+                .build()).when(concurrencyHelper).startEvent(any(), eq("internal-update-case-summary"));
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 

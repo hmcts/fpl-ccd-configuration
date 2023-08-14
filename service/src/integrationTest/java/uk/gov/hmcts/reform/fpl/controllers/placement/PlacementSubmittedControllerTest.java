@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -278,11 +279,11 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .placements(wrapElements(placement))
                 .build())
             .build();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+        doAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(i.getArgument(1))
             .token("token")
-            .build());
+            .build()).when(concurrencyHelper).startEvent(any(), any(String.class));
 
         postSubmittedEvent(caseData);
 
