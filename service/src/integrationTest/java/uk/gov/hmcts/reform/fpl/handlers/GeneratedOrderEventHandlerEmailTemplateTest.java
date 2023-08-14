@@ -133,7 +133,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("You can review the order by:")
                 .line()
                 .list("signing into http://fake-url/cases/case-details/12345#Orders",
-                    "using this link http://fake-url/documents/some-random-string/binary")
+                    "using this link http://fake-url/documentsv2/some-random-string/binary")
                 .line()
                 .line("HM Courts & Tribunal Service")
                 .line()

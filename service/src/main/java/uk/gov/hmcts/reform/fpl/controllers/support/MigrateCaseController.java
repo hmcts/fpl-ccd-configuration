@@ -53,6 +53,7 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
@@ -60,9 +61,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1506", this::run1506,
-        "DFPL-1486", this::run1486,
-        "DFPL-1671a", this::run1671a,
-        "DFPL-1671b", this::run1671b
+        "DFPL-1649", this::run1649,
+        "DFPL-1486", this::run1486
     );
 
     @PostMapping("/about-to-submit")
@@ -145,6 +145,11 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
+    private void run1359(CaseDetails caseDetails) {
+        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
+    }
+
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -184,36 +189,27 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
-    private void run1671a(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1671a";
-        var possibleCaseIds = List.of(1688467790769085L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(getCaseData(caseDetails),
-            migrationId, UUID.fromString("01a9566a-e3e9-4e28-b23e-e3ae94c0716a"),
-            UUID.fromString("3b91eab8-92e5-447d-9154-ea5d4a2dfeb0")));
-
-        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
-            migrationId, UUID.fromString("8741757f-7a3c-49f6-b4be-8863842cf254")));
+    private void run1486(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1486";
+        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1671b(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1671b";
-        var possibleCaseIds = List.of(1688467790769085L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1649(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1649";
+        long expectedCaseId = 1686829053861234L;
+        UUID expectedHearingId = UUID.fromString("55ecd69a-d4f3-4a1b-81ff-7144aa5f46f8");
+        UUID expectedCourtBundleId = UUID.fromString("7f14382f-c16e-497e-ab8c-f3f76e212a6c");
+        String messageId = "dd7e4072-41dd-46fa-a3dc-de32ee9bde93";
+        CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
-            migrationId, UUID.fromString("01a9566a-e3e9-4e28-b23e-e3ae94c0716a")));
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
+        caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
+            expectedHearingId, expectedCourtBundleId));
     }
 
     private void run1506(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(getCaseData(caseDetails)));
         caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(getCaseData(caseDetails)));
     }
-
-    private void run1486(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1486";
-        caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
-    }
-
 }
