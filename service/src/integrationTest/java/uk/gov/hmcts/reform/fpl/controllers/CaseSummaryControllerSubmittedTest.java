@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@WebMvcTest(AddCaseNumberController.class)
+@WebMvcTest(CaseSummaryController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
