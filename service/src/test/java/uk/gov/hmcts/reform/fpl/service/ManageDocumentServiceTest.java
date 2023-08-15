@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -2874,6 +2875,7 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
             suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build())));
     }
 
@@ -2884,6 +2886,7 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.CASE_SUMMARY,
             suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build())));
     }
 
@@ -2894,6 +2897,7 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.SKELETON_ARGUMENTS,
             suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build())));
     }
 
@@ -2904,6 +2908,7 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.RESPONDENTS_STATEMENTS,
             suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build())));
     }
 
@@ -2990,8 +2995,10 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.PARENT_ASSESSMENTS,
             suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3003,8 +3010,10 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.CASE_SUMMARY,
             suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3016,8 +3025,10 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.SKELETON_ARGUMENTS,
             suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, SkeletonArgument.builder().document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3029,8 +3040,10 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.RESPONDENTS_STATEMENTS,
             suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
                 && list.contains(element(elementIdTwo, RespondentStatementV2.builder().document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(uploaderType).build()))
         );
     }
@@ -3131,9 +3144,13 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.PARENT_ASSESSMENTS,
             suffix -> "parentAssessmentList" + suffix, loginType, uploaderType,
             list -> list.contains(element(elementIdOne,
-                ManagedDocument.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+                ManagedDocument.builder().document(expectedDocumentOne)
+                    .markAsConfidential(YES.getValue())
+                    .uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
-                ManagedDocument.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+                ManagedDocument.builder().document(expectedDocumentTwo)
+                    .markAsConfidential(NO.getValue())
+                    .uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
@@ -3144,9 +3161,13 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.CASE_SUMMARY,
             suffix -> "caseSummaryList" + suffix, loginType, uploaderType,
             list -> list.contains(element(elementIdOne,
-                CaseSummary.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+                CaseSummary.builder().document(expectedDocumentOne)
+                    .markAsConfidential(YES.getValue())
+                    .uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
-                CaseSummary.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+                CaseSummary.builder().document(expectedDocumentTwo)
+                    .markAsConfidential(NO.getValue())
+                    .uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
@@ -3157,9 +3178,13 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.SKELETON_ARGUMENTS,
             suffix -> "skeletonArgumentList" + suffix, loginType, uploaderType,
             list -> list.contains(element(elementIdOne,
-                SkeletonArgument.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+                SkeletonArgument.builder().document(expectedDocumentOne)
+                    .markAsConfidential(YES.getValue())
+                    .uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
-                SkeletonArgument.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+                SkeletonArgument.builder().document(expectedDocumentTwo)
+                    .markAsConfidential(NO.getValue())
+                    .uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
@@ -3170,9 +3195,13 @@ class ManageDocumentServiceTest {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.RESPONDENTS_STATEMENTS,
             suffix -> "respStmtList" + suffix, loginType, uploaderType,
             list -> list.contains(element(elementIdOne,
-                RespondentStatementV2.builder().document(expectedDocumentOne).uploaderType(uploaderType).build())),
+                RespondentStatementV2.builder().document(expectedDocumentOne)
+                    .markAsConfidential(YES.getValue())
+                    .uploaderType(uploaderType).build())),
             list -> list.contains(element(elementIdTwo,
-                RespondentStatementV2.builder().document(expectedDocumentTwo).uploaderType(uploaderType).build())));
+                RespondentStatementV2.builder().document(expectedDocumentTwo)
+                    .markAsConfidential(NO.getValue())
+                    .uploaderType(uploaderType).build())));
     }
 
     @ParameterizedTest
