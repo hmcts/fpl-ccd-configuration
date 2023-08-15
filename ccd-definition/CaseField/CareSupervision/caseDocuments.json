@@ -92,6 +92,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "correspondenceDocListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CorrespondenceDocument",
+    "Label": "Correspondence (Removed)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundleListV2",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingCourtBundle",

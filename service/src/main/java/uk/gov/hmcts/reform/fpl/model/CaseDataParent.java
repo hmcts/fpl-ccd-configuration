@@ -109,6 +109,7 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> correspondenceDocList;
     protected final List<Element<ManagedDocument>> correspondenceDocListLA;
     protected final List<Element<ManagedDocument>> correspondenceDocListCTSC;
+    protected final List<Element<ManagedDocument>> correspondenceDocListRemoved;
 
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
