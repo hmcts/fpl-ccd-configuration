@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -316,8 +319,21 @@ class PlacementEventsHandlerNotificationTest {
                 .placementEventData(placementEventData)
                 .build();
 
+            var supportingDocumentReference = testDocumentReference();
+
+            final PlacementSupportingDocument birthCertificate = PlacementSupportingDocument.builder()
+                    .type(BIRTH_ADOPTION_CERTIFICATE)
+                    .document(supportingDocumentReference)
+                    .build();
+
+            List<Element<PlacementSupportingDocument>> supportingDocuments = new ArrayList<>();
+
+            supportingDocuments.add(Element.newElement(birthCertificate));
+
             Placement placementNotifyParent = placement.toBuilder()
                 .placementRespondentsToNotify(List.of(respondent))
+                .supportingDocuments(supportingDocuments)
+                .application(placementApplication)
                 .build();
 
             final PlacementNoticeAdded event = new PlacementNoticeAdded(caseData, placementNotifyParent);
@@ -326,7 +342,8 @@ class PlacementEventsHandlerNotificationTest {
 
             verifyNoInteractions(notificationService, contentProvider);
             verify(sendDocumentService)
-                .sendDocuments(caseData, List.of(placementNotifyParent.getPlacementNotice()),
+                .sendDocuments(caseData, List.of(placementNotifyParent.getPlacementNotice(), placementApplication,
+                                supportingDocumentReference),
                     List.of(respondent.getValue().getParty()));
         }
 

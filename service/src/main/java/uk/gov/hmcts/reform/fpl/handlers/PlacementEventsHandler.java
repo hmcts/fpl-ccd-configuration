@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
@@ -279,8 +282,16 @@ public class PlacementEventsHandler {
             log.info("Send letter to respondent ({}) about {} child placement notice",
                 respondent.getParty().getFullName(), placement.getChildName());
 
+            List<DocumentReference> placementNoticeAndSupportingDocuments = new ArrayList<>();
+
+            placementNoticeAndSupportingDocuments.addAll(
+                    List.of(placement.getPlacementNotice(), placement.getApplication()));
+
+            placementNoticeAndSupportingDocuments.addAll(unwrapElements(placement.getSupportingDocuments()).stream()
+                    .map(PlacementSupportingDocument::getDocument).toList());
+
             sendDocumentService.sendDocuments(
-                caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
+                    caseData, placementNoticeAndSupportingDocuments, List.of(respondent.getParty()));
         }
 
     }
