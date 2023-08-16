@@ -271,7 +271,7 @@ public class ManageDocumentService {
                     Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
                         hearingDocuments.getCourtBundleListLA().stream()))
                 .filter(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream().filter(
-                cb -> documentElementId.equals(cb.getId())
+                    cb -> documentElementId.equals(cb.getId())
             ).findAny().isPresent()).findFirst()
                 .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
 
@@ -293,7 +293,7 @@ public class ManageDocumentService {
             hcbElement.getValue().getCourtBundle().remove(target);
             hcbElement.getValue().getCourtBundleNC().remove(targetNC);
 
-            boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
+            final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
                 .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
             Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
                 .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
@@ -457,7 +457,7 @@ public class ManageDocumentService {
             } catch (Exception ex) {
                 throw new RuntimeException("Fail to grep the documents' from hearingDocuments", ex);
             }
-            if (listOfElement != null) {                ;
+            if (listOfElement != null) {
                 if (DocumentType.fromJsonFieldName(actualFieldName) == DocumentType.COURT_BUNDLE) {
                     return listOfElement.stream()
                         .flatMap(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream())
