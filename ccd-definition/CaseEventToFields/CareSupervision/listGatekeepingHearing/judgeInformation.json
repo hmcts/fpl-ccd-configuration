@@ -21,7 +21,8 @@
     "PageID": "ListGatekeepingHearingJudgeInformation",
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "allocatedJudgeLabel!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +34,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "OPTIONAL",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\""
+    "FieldShowCondition": "allocatedJudgeLabel=\"\" OR useAllocatedJudge =\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,7 +46,7 @@
     "PageDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\""
+    "FieldShowCondition": "allocatedJudgeLabel=\"\" OR useAllocatedJudge =\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
