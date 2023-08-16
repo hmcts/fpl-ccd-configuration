@@ -317,7 +317,7 @@ dependencies {
 
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
@@ -365,7 +365,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.0'
 
