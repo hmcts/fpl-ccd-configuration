@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,18 +29,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public enum DocumentType {
     COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
-        (bundle) -> HearingCourtBundle.builder()
-            .courtBundle(List.of(
-                element(CourtBundle.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
-                    .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
-                    .build())
-            ))
-            .courtBundleNC(List.of(
-                element(CourtBundle.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
-                    .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
-                    .build())
-            ))
-            .build(),
+        (bundle) -> {
+            Element<CourtBundle> courtBundleElement = element(CourtBundle.builder()
+                .document(bundle.getDocument())
+                .uploaderType(bundle.getUploaderType())
+                .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+                .build());
+            return HearingCourtBundle.builder()
+                .courtBundle(List.of(courtBundleElement))
+                .courtBundleNC(List.of(courtBundleElement))
+                .build();
+        },
         null, 10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
