@@ -283,13 +283,13 @@ public class PlacementEventsHandler {
                             + "respondent ({}) about {} child placement notice",
                     respondent.getParty().getFullName(), placement.getChildName());
 
-            List<DocumentReference> placementNoticeAndSupportingDocuments = new ArrayList<>();
+            List<DocumentReference> placementNoticeAndSupportingDocuments = unwrapElements(placement.getSupportingDocuments())
+                    .stream()
+                    .map(PlacementSupportingDocument::getDocument)
+                    .toList();
 
             placementNoticeAndSupportingDocuments.addAll(
                     List.of(placement.getPlacementNotice(), placement.getApplication()));
-
-            placementNoticeAndSupportingDocuments.addAll(unwrapElements(placement.getSupportingDocuments()).stream()
-                    .map(PlacementSupportingDocument::getDocument).toList());
 
             sendDocumentService.sendDocuments(
                     caseData, placementNoticeAndSupportingDocuments, List.of(respondent.getParty()));
