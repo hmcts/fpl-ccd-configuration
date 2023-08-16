@@ -11,3 +11,6 @@ infrastructure/state.tf
 .github/workflows/*.yaml
 package.json
 yarn.lock
+.nvmrc
+gradlew
+gradlew.bat
