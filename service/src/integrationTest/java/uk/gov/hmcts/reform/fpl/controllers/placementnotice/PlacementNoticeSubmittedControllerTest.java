@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers.placementnotice;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,11 +16,16 @@ import uk.gov.hmcts.reform.fpl.controllers.PlacementNoticeController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementContentProvider;
@@ -31,8 +38,10 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -44,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_COURT_EMAIL;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_NOTICE_UPLOADED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument.Type.BIRTH_ADOPTION_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -63,6 +73,9 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
     private static final byte[] NOTICE_BINARIES = testDocumentBinaries();
     private static final PlacementNotifyData PLACEMENT_NOTIFY_DATA = PlacementNotifyData.builder().build();
 
+    @Captor
+    private ArgumentCaptor<List<DocumentReference>> documents;
+
     @MockBean
     private CoreCaseDataApi coreCaseDataApi;
 
@@ -77,6 +90,9 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
 
     @MockBean
     private DocmosisCoverDocumentsService docmosisCoverDocumentsService;
+
+    @MockBean
+    private SendDocumentService sendDocumentService;
 
     @MockBean
     private PlacementContentProvider placementContentProvider;
@@ -168,6 +184,64 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
                 notificationReference(CASE_ID));
 
             verifyNoMoreInteractions(notificationClient);
+        });
+    }
+
+    @Test
+    void shouldSendDocumentsToRespondentParty() {
+        var application = testDocumentReference();
+        var placementNotice = testDocumentReference();
+        var birthCertificate = PlacementSupportingDocument.builder()
+                .type(BIRTH_ADOPTION_CERTIFICATE)
+                .document(testDocumentReference())
+                .build();
+        var father = element(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .relationshipToChild("father")
+                .build())
+            .build());
+
+        final Element<Placement> placement = element(Placement.builder()
+                .childId(child1.getId())
+                .placementRespondentsToNotify(newArrayList(father))
+                .placementNotice(placementNotice)
+                .application(application)
+                .supportingDocuments(
+                        List.of(Element.newElement(
+                                birthCertificate)))
+                .build());
+
+        final PlacementEventData placementEventData = PlacementEventData.builder()
+                .placement(placement.getValue())
+                .placements(newArrayList(placement))
+                .placementNoticeVenue("96")
+                .placementNoticeDateTime(LocalDateTime.now())
+                .placementNoticeDuration("1")
+                .build();
+
+        final CaseData caseData = CaseData.builder()
+                .children1(List.of(child1, child2))
+                .id(CASE_ID)
+                .caseLocalAuthority("SA")
+                .court(Court.builder().name("Test Court").build())
+                .respondents1(List.of(father))
+                .placementEventData(placementEventData)
+                .build();
+
+        postSubmittedEvent(caseData);
+
+        checkUntil(() -> {
+            verify(sendDocumentService).sendDocuments(isA(CaseData.class),
+                    documents.capture(), eq(List.of(father.getValue().getParty())));
+
+            assertThat(documents.getValue().size()).isEqualTo(3);
+            assertThat(documents.getValue().contains(application)).isTrue();
+            assertThat(documents.getValue().contains(birthCertificate.getDocument())).isTrue();
+            assertThat(documents.getValue().contains(placementNotice)).isTrue();
+
+            verifyNoMoreInteractions(sendDocumentService);
         });
     }
 }

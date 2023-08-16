@@ -279,7 +279,7 @@ public class PlacementEventsHandler {
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
         } else if (!respondent.isDeceasedOrNFA()) {
-            log.info("Send letter to respondent ({}) about {} child placement notice",
+            log.info("Send letter, application and supporting documents to respondent ({}) about {} child placement notice",
                 respondent.getParty().getFullName(), placement.getChildName());
 
             List<DocumentReference> placementNoticeAndSupportingDocuments = new ArrayList<>();
