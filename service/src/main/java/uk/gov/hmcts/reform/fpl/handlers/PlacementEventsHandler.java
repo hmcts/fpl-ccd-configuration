@@ -39,12 +39,12 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.Set.of;
@@ -283,10 +283,11 @@ public class PlacementEventsHandler {
                             + "respondent ({}) about {} child placement notice",
                     respondent.getParty().getFullName(), placement.getChildName());
 
-            List<DocumentReference> placementNoticeAndSupportingDocuments = unwrapElements(placement.getSupportingDocuments())
+            List<DocumentReference> placementNoticeAndSupportingDocuments =
+                    unwrapElements(placement.getSupportingDocuments())
                     .stream()
                     .map(PlacementSupportingDocument::getDocument)
-                    .toList();
+                    .collect(Collectors.toList());
 
             placementNoticeAndSupportingDocuments.addAll(
                     List.of(placement.getPlacementNotice(), placement.getApplication()));

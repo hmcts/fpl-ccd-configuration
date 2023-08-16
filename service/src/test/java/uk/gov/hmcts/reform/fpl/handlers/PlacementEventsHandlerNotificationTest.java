@@ -342,9 +342,9 @@ class PlacementEventsHandlerNotificationTest {
 
             verifyNoInteractions(notificationService, contentProvider);
             verify(sendDocumentService)
-                .sendDocuments(caseData, List.of(placementNotifyParent.getPlacementNotice(), placementApplication,
-                                supportingDocumentReference),
-                    List.of(respondent.getValue().getParty()));
+                .sendDocuments(caseData, List.of(supportingDocumentReference,
+                        placementNotifyParent.getPlacementNotice(),
+                        placementApplication), List.of(respondent.getValue().getParty()));
         }
 
         @Test
