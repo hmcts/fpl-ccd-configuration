@@ -324,7 +324,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.24'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.4.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -355,7 +355,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.1'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.14.4'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
@@ -367,7 +367,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.0'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
