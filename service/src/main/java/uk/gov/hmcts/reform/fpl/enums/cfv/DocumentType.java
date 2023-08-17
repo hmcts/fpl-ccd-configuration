@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.enums.cfv;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -11,11 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration;
+import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,9 +41,22 @@ public enum DocumentType {
             ))
             .build(),
         null, 10, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        (bundle) -> {
+            Element<CourtBundle> courtBundleElement = element(CourtBundle.builder()
+                .document(bundle.getDocument())
+                .uploaderType(bundle.getUploaderType())
+                .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+                .build());
+            return HearingCourtBundle.builder()
+                .courtBundle(List.of(courtBundleElement))
+                .courtBundleNC(List.of(courtBundleElement))
+                .build();
+        },
+        null, 10, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
-        (document, documentUploaderType) -> CaseSummary.builder().document(document).uploaderType(documentUploaderType)
+        (bundle) -> CaseSummary.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
         null,20, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"),
@@ -56,6 +71,11 @@ public enum DocumentType {
         false, false, false, false,
         (document, documentUploaderType) -> SkeletonArgument.builder().document(document)
             .uploaderType(documentUploaderType).build(),
+        null, 50, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        (bundle) -> SkeletonArgument.builder().document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .build(),
         null, 50, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     AA_PARENT_ORDERS("Orders", null,
         false, false, false, false,
@@ -113,6 +133,10 @@ public enum DocumentType {
         false, false, false, false,
         (document, documentUploaderType) -> RespondentStatementV2.builder().document(document)
             .uploaderType(documentUploaderType).build(),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 190, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        (bundle) -> RespondentStatementV2.builder().document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType()).markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .build(),
         AA_PARENT_RESPONDENTS_STATEMENTS, 190, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false, false,
@@ -172,7 +196,7 @@ public enum DocumentType {
     @Getter
     private boolean hiddenFromSolicitorUpload;
     @Getter
-    private BiFunction<DocumentReference, DocumentUploaderType, Object> withDocumentBuilder;
+    private Function<UploadBundle, Object> withDocumentBuilder;
     @Getter
     private DocumentType parentFolder;
     @Getter
@@ -243,10 +267,11 @@ public enum DocumentType {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
 
-    private static BiFunction<DocumentReference, DocumentUploaderType, Object> defaultWithDocumentBuilder() {
-        return (document, uploaderType) -> ManagedDocument.builder()
-            .document(document)
-            .uploaderType(uploaderType)
+    private static Function<UploadBundle, Object> defaultWithDocumentBuilder() {
+        return (bundle) -> ManagedDocument.builder()
+            .document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build();
     }
 
@@ -258,7 +283,14 @@ public enum DocumentType {
             .collect(Collectors.toList());
     }
 
-    private String removeNested(String fieldName) {
+    public List<String> getFieldNames() {
+        return Arrays.stream(ConfidentialLevel.values())
+            .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
+            .filter(Objects::nonNull)
+            .toList();
+    }
+
+    private static String removeNested(String fieldName) {
         String[] splitFieldNames = fieldName.split("\\.");
         if (splitFieldNames.length == 1) {
             return fieldName;
@@ -267,10 +299,20 @@ public enum DocumentType {
         }
     }
 
-    public static DocumentType fromJsonFieldName(String fieldName) {
+    public static DocumentType fromJsonFieldName(String jsonFieldName) {
         return Arrays.stream(DocumentType.values())
-            .filter(dt -> dt.getJsonFieldNames().contains(fieldName))
+            .filter(dt -> dt.getJsonFieldNames().contains(jsonFieldName))
             .findFirst().orElse(null);
+    }
+
+    public static DocumentType fromFieldName(String fieldName) {
+        return Arrays.stream(DocumentType.values())
+            .filter(dt -> dt.getFieldNames().contains(fieldName))
+            .findFirst().orElse(null);
+    }
+
+    public static String toJsonFieldName(String fieldName) {
+        return removeNested(fieldName);
     }
 
 }

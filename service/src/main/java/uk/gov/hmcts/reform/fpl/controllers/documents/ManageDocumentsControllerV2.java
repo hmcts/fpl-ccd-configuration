@@ -96,6 +96,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         }
         caseDetailsMap.putAll(updatedData);
         removeTemporaryFields(caseDetailsMap, temporaryFields());
+        removeTemporaryFields(caseDetailsMap, ManageDocumentsLAController.TEMPORARY_FIELDS);
+        removeTemporaryFields(caseDetailsMap, ManageDocumentsController.TEMPORARY_FIELDS);
 
         return respond(caseDetailsMap);
     }

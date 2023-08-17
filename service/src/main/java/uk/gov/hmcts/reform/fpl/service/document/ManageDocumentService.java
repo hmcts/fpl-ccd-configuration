@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -259,10 +260,12 @@ public class ManageDocumentService {
                     : updatePlacementNoticesAdmin(caseData);
 
                 ret.put("placements", eventData.getPlacements());
-                ret.put("placementsNonConfidential", eventData
-                    .getPlacementsNonConfidential(false));
-                ret.put("placementsNonConfidentialNotices", eventData
-                    .getPlacementsNonConfidential(true));
+                if (!isLocalAuthority) {
+                    ret.put("placementsNonConfidential", eventData
+                        .getPlacementsNonConfidential(false));
+                    ret.put("placementsNonConfidentialNotices", eventData
+                        .getPlacementsNonConfidential(true));
+                }
             } else {
                 boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
                 String fieldName = dt.getFieldName(uploaderType, confidential);
@@ -288,7 +291,11 @@ public class ManageDocumentService {
                         docs = new ArrayList<>();
                     }
                 }
-                docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(document, uploaderType)));
+                UploadBundle bundle = UploadBundle.builder().document(document)
+                    .uploaderType(uploaderType)
+                    .confidential(confidential)
+                    .build();
+                docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));
                 ret.put(actualFieldName, docs);
             }
         });

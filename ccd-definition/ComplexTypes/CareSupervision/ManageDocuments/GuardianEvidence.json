@@ -11,6 +11,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GuardianEvidence",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GuardianEvidence",
     "ListElementCode": "uploaderType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "DocumentUploaderType",
@@ -20,9 +28,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GuardianEvidence",
-    "ListElementCode": "removalReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Reason for removal",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
     "SecurityClassification": "Public"
   }
 ]

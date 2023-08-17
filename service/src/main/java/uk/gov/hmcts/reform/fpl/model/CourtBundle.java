@@ -25,7 +25,8 @@ public class CourtBundle extends HearingDocument {
                        String hearing,
                        List<String> confidential,
                        String hasConfidentialAddress,
-                       DocumentUploaderType uploaderType) {
+                       DocumentUploaderType uploaderType,
+                       String markAsConfidential) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
         super.hearing = hearing;
@@ -33,6 +34,7 @@ public class CourtBundle extends HearingDocument {
         this.confidential = confidential;
         super.hasConfidentialAddress = hasConfidentialAddress;
         super.uploaderType = uploaderType;
+        super.markAsConfidential = markAsConfidential;
     }
 
     @JsonIgnore

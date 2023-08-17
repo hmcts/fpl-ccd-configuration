@@ -317,8 +317,8 @@ dependencies {
 
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
-  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.9.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
 
@@ -351,12 +351,12 @@ dependencies {
 
   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.15.2'
 
-  implementation group: 'net.minidev', name: 'json-smart', version: '2.4.7'
+  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.7.1'
-  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.5.2'
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
@@ -365,7 +365,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.1.0'
 
