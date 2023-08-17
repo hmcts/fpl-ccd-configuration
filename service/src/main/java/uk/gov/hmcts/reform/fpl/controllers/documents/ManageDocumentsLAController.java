@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.PLACEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_CHILD_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.POSITION_STATEMENT_RESPONDENT_KEY;
@@ -299,19 +300,23 @@ public class ManageDocumentsLAController extends CallbackController {
                 break;
         }
 
-        removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_KEY, MANAGE_DOCUMENT_LA_KEY,
-            C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
-            SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, HEARING_DOCUMENT_HEARING_LIST_KEY,
-            HEARING_DOCUMENT_TYPE, COURT_BUNDLE_HEARING_LABEL_KEY, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY,
-            POSITION_STATEMENT_CHILD_KEY, POSITION_STATEMENT_RESPONDENT_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING,
-            RESPONDENTS_LIST_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY, PLACEMENT_LIST_KEY,
-            SKELETON_ARGUMENT_KEY, "hearingDocumentsPartyList", "placementNoticeResponses", "placement");
+        removeTemporaryFields(caseDetailsMap, TEMPORARY_FIELDS);
 
         CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
         caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
 
         return respond(caseDetailsMap);
     }
+
+    public static final String[] TEMPORARY_FIELDS = new String[] {
+        TEMP_EVIDENCE_DOCUMENTS_KEY, MANAGE_DOCUMENT_LA_KEY,
+        C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
+        SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, HEARING_DOCUMENT_HEARING_LIST_KEY,
+        HEARING_DOCUMENT_TYPE, COURT_BUNDLE_HEARING_LABEL_KEY, COURT_BUNDLE_KEY, CASE_SUMMARY_KEY,
+        POSITION_STATEMENT_CHILD_KEY, POSITION_STATEMENT_RESPONDENT_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING,
+        RESPONDENTS_LIST_KEY, CHILDREN_LIST_KEY, HEARING_DOCUMENT_RESPONDENT_LIST_KEY, PLACEMENT_LIST_KEY,
+        SKELETON_ARGUMENT_KEY, "hearingDocumentsPartyList", "placementNoticeResponses", "placement"
+    };
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
