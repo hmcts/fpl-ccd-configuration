@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.rd.client.StaffApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -51,8 +50,6 @@ public class JudicialService {
 
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
-    public static final ZoneId LONDON_TIMEZONE = ZoneId.of("Europe/London");
-
     public static final int JUDICIAL_PAGE_SIZE = 1000;
 
     private final SystemUserService systemUserService;
@@ -75,7 +72,7 @@ public class JudicialService {
         List<RoleAssignment> currentAllocatedJudges = roleAssignmentService
             .getCaseRolesAtTime(caseId,
                 allocatedRoles,
-                LocalDateTime.now().atZone(LONDON_TIMEZONE));
+                ZonedDateTime.now());
 
         currentAllocatedJudges
             .stream()
@@ -125,7 +122,7 @@ public class JudicialService {
      */
     public void assignJudgeCaseRole(Long caseId, String userId, String caseRole) {
         roleAssignmentService.assignCaseRole(caseId, List.of(userId), caseRole, RoleCategory.JUDICIAL,
-            LocalDateTime.now().atZone(LONDON_TIMEZONE), LocalDateTime.now().atZone(LONDON_TIMEZONE).plusYears(10));
+            ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
     }
 
     /**
@@ -137,7 +134,7 @@ public class JudicialService {
      */
     public void assignLegalAdviserCaseRole(Long caseId, String userId, String caseRole) {
         roleAssignmentService.assignCaseRole(caseId, List.of(userId), caseRole, RoleCategory.LEGAL_OPERATIONS,
-            LocalDateTime.now().atZone(LONDON_TIMEZONE), LocalDateTime.now().atZone(LONDON_TIMEZONE).plusYears(10));
+            ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
     }
 
     /**
@@ -153,10 +150,10 @@ public class JudicialService {
         // add new allocated judge
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
-                LocalDateTime.now().atZone(LONDON_TIMEZONE), null);
+                ZonedDateTime.now(), null);
         } else {
-            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE,
-                LocalDateTime.now().atZone(LONDON_TIMEZONE), null);
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+                null);
         }
     }
 
@@ -352,19 +349,18 @@ public class JudicialService {
             HearingJudgeTime.HearingJudgeTimeBuilder judgeTime = HearingJudgeTime.builder()
                 .emailAddress(booking.getJudgeAndLegalAdvisor().getJudgeEmailAddress())
                 .judgeId(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())
-                .startTime(booking.getStartDate().atZone(LONDON_TIMEZONE))
+                .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
                 .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
             if (!ObjectUtils.isEmpty(after)) {
-                judgeTime.endTime(after.getStartDate().atZone(LONDON_TIMEZONE));
+                judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
             }
 
             judgeTimes.add(judgeTime.build());
         }
 
         return judgeTimes.stream()
-            .filter(time -> ObjectUtils.isEmpty(time.getEndTime())
-                || time.getEndTime().isAfter(LocalDateTime.now().atZone(LONDON_TIMEZONE)))
+            .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
             .map(time -> RoleAssignmentUtils.buildRoleAssignment(
                 caseData.getId(),
                 time.getJudgeId(),

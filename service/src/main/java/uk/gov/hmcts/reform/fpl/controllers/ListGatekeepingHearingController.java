@@ -257,7 +257,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         // todo - refactor me, triple nested if!!!
         JudgeAndLegalAdvisor hearingJudge;
-        // todo write unit test for the second condition
         if (NO.equals(caseData.getUseAllocatedJudge()) || isEmpty(caseData.getUseAllocatedJudge())) {
             final Optional<String> error = judicialService.validateHearingJudge(caseData);
 
