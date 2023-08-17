@@ -253,10 +253,12 @@ public class ManageDocumentService {
                     : updatePlacementNoticesAdmin(caseData);
 
                 ret.put("placements", eventData.getPlacements());
-                ret.put("placementsNonConfidential", eventData
-                    .getPlacementsNonConfidential(false));
-                ret.put("placementsNonConfidentialNotices", eventData
-                    .getPlacementsNonConfidential(true));
+                if (!isLocalAuthority) {
+                    ret.put("placementsNonConfidential", eventData
+                        .getPlacementsNonConfidential(false));
+                    ret.put("placementsNonConfidentialNotices", eventData
+                        .getPlacementsNonConfidential(true));
+                }
             } else {
                 boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
                 String fieldName = dt.getFieldName(uploaderType, confidential);
