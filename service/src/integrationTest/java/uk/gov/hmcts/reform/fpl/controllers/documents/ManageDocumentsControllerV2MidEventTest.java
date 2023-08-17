@@ -74,6 +74,10 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .build();
 
         when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(allow);
+        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any()))
+            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any()))
+            .thenReturn(DynamicList.builder().listItems(List.of()).build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "manage-document-action-selection");
