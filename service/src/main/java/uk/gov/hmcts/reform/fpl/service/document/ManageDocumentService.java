@@ -457,7 +457,7 @@ public class ManageDocumentService {
             } catch (Exception ex) {
                 throw new RuntimeException("Fail to grep the documents' from hearingDocuments", ex);
             }
-            if (listOfElement != null) {                ;
+            if (listOfElement != null) {
                 if (DocumentType.fromJsonFieldName(actualFieldName) == DocumentType.COURT_BUNDLE) {
                     return listOfElement.stream()
                         .flatMap(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream())
