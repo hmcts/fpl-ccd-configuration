@@ -38,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
+import static uk.gov.hmcts.reform.fpl.service.JudicialService.LONDON_TIMEZONE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,11 +141,11 @@ class JudicialServiceTest {
             assertThat(roles).hasSize(2);
             assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
-                    HEARING_1.getStartDate().atZone(ZoneId.systemDefault()),
-                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()));
+                    HEARING_1.getStartDate().atZone(LONDON_TIMEZONE),
+                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE));
             assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
-                    HEARING_2.getStartDate().atZone(ZoneId.systemDefault()),
+                    HEARING_2.getStartDate().atZone(LONDON_TIMEZONE),
                     null);
         }
 

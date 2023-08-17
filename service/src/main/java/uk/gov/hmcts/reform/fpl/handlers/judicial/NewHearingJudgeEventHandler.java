@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.service.JudicialService.LONDON_TIMEZONE;
 
 @Slf4j
 @Component
@@ -45,7 +46,7 @@ public class NewHearingJudgeEventHandler {
             .filter(hearing -> hearing.getStartDate().isAfter(event.getHearing().getStartDate()))
             .min(Comparator.comparing(HearingBooking::getStartDate));
 
-        ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(ZoneId.systemDefault()))
+        ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(LONDON_TIMEZONE))
             .orElse(null);
 
 
@@ -55,7 +56,7 @@ public class NewHearingJudgeEventHandler {
             // have an IDAM ID - use that to grant the role
             judicialService.assignHearingJudge(event.getCaseData().getId(),
                 hearingJudge.getJudgeJudicialUser().getIdamId(),
-                event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                event.getHearing().getStartDate().atZone(LONDON_TIMEZONE),
                 // if there's a hearing after the one added, we're going out of order, so set an end date
                 possibleEnd,
                 hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR));
@@ -68,7 +69,7 @@ public class NewHearingJudgeEventHandler {
 
             judge.ifPresentOrElse(judicialUserProfile ->
                     judicialService.assignHearingJudge(event.getCaseData().getId(), judicialUserProfile.getSidamId(),
-                        event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                        event.getHearing().getStartDate().atZone(LONDON_TIMEZONE),
                         possibleEnd,
                         hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)),
                 () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
