@@ -10,20 +10,31 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration;
 import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,6 +43,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -40,7 +52,9 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NEW_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 
 @Slf4j
 @Component
@@ -50,57 +64,21 @@ public class ManageDocumentsUploadedEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final CafcassNotificationService cafcassNotificationService;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private final SendDocumentService sendDocumentService;
 
     private static final String LIST = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
     public static final String ADDITIONAL_APPLICATIONS = "additional applications"; //TODO TBC obsolete in new flow?
+    public static final Map<DocumentType, CafcassRequestEmailContentProvider> CAFCASS_EMAIL_CONTENT_MAP = Map.of(
+        COURT_BUNDLE, CafcassRequestEmailContentProvider.COURT_BUNDLE,
+        CASE_SUMMARY, CafcassRequestEmailContentProvider.CASE_SUMMARY,
+        POSITION_STATEMENTS, CafcassRequestEmailContentProvider.POSITION_STATEMENT_RESPONDENT,
+        SKELETON_ARGUMENTS, CafcassRequestEmailContentProvider.SKELETON_ARGUMENT
+    );
+
 
     // TODO unit test
-    @Async
-    @EventListener
-    public void sendDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
-        final CaseData caseData = event.getCaseData();
-
-        // send to designated LA
-        sendNotification(event,
-            furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipientsOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToDesignatedLA);
-
-        // send to secondary LA
-        sendNotification(event,
-            furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToSecondaryLA);
-
-
-        // send to legal representative
-        sendNotification(event,
-            furtherEvidenceNotificationService.getLegalRepresentativeOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative);
-
-        // send to cafcass representative
-        sendNotification(event,
-            furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative);
-
-        // send to respondent solicitor
-        sendNotification(event,
-            furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor);
-
-        // send to child solicitor
-        sendNotification(event,
-            furtherEvidenceNotificationService.getChildSolicitorEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
-    }
-
-    // TODO unit test
-    @Async
-    @EventListener
-    public void sendHearingDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
-        // TODO
-    }
-
     /**
      * Base on the confidential level configuration, send notification to the given recipient.
      * e.g.
@@ -110,32 +88,91 @@ public class ManageDocumentsUploadedEventHandler {
      * Case 2: No doc is allowed to be sent to a non-confidential level user
      *
      * @param event the ManageDocumentsUploadedEvent
-     * @param recipients the recipients to be sent
-     * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
-     *                                     returns the confidential level of the targeted user type on that document type.
-     *                                     e.g. To get the confidential level of respondent solicitor
-     *                                          DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
      */
-    private void sendNotification(final ManageDocumentsUploadedEvent event, Set<String> recipients,
-            Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
+    @Async
+    @EventListener
+    public void sendDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
+        buildConfigurationMapGroupedByRecipient(event)
+            .forEach((recipients, getConfidentialLevelFunction) -> {
+                List<Element<NotifyDocumentUploaded>> documentsToBeSent =
+                    consolidateMapByConfiguration(event, getConfidentialLevelFunction)
+                        .entrySet().stream()
+                        .filter(entry -> !isHearingDocument(entry.getKey()))
+                        .map(Map.Entry::getValue)
+                        .flatMap(List::stream)
+                        .collect(toList());
 
-        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> documentsToBeSent =
-            consolidateMapByConfiguration(event, getConfidentialLevelFunction)
-                .entrySet().stream()
-                .filter(entry -> !isHearingDocument(entry.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                if (!documentsToBeSent.isEmpty()) {
+                    if (isNotEmpty(recipients)) {
+                        List<String> newDocumentNames = documentsToBeSent.stream()
+                            .map(Element::getValue)
+                            .map(NotifyDocumentUploaded::getNameForNotification)
+                            .collect(toList());
 
-        if (!documentsToBeSent.isEmpty()) {
-            if (isNotEmpty(recipients)) {
-                List<String> newDocumentNames = documentsToBeSent.values().stream().flatMap(List::stream)
+                        if (!newDocumentNames.isEmpty()) {
+                            furtherEvidenceNotificationService.sendNotification(event.getCaseData(), recipients,
+                                event.getInitiatedBy().getFullName(), newDocumentNames);
+                        }
+                    }
+                }
+            });
+    }
+
+    // TODO unit test
+    @Async
+    @EventListener
+    public void sendHearingDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
+        buildConfigurationMapGroupedByRecipient(event)
+            .forEach((recipients, getConfidentialLevelFunction) -> {
+                List<HearingDocument> documentsToBeSent =
+                    consolidateMapByConfiguration(event, getConfidentialLevelFunction)
+                        .entrySet().stream()
+                        .filter(entry -> isHearingDocument(entry.getKey()))
+                        .map(Map.Entry::getValue)
+                        .flatMap(List::stream)
+                        .map(Element::getValue)
+                        .map(hearingDoc -> (HearingDocument) hearingDoc)
+                        .collect(toList());
+
+                if (!documentsToBeSent.isEmpty()) {
+                    if (isNotEmpty(recipients)) {
+
+                        Optional<HearingBooking> hearingBookings = event.getCaseData().getHearingDetails().stream()
+                            .filter(element ->
+                                element.getValue().toLabel().equals(documentsToBeSent.get(0).getHearing()))
+                            .findFirst()
+                            .map(Element::getValue);
+
+                        List<String> newDocumentNames = documentsToBeSent.stream()
+                            .map(doc -> doc.getDocument().getFilename()).collect(toList());
+                        furtherEvidenceNotificationService.sendNotificationWithHearing(event.getCaseData(), recipients,
+                            event.getInitiatedBy().getFullName(), newDocumentNames, hearingBookings);
+                    }
+                }
+            });
+    }
+
+    // TODO unit test
+    @Async
+    @EventListener
+    public void sendDocumentsByPost(final ManageDocumentsUploadedEvent event) {
+        final CaseData caseData = event.getCaseData();
+        DocumentUploaderType userType = event.getUploadedUserType();
+
+        if (userType == SOLICITOR) {
+            List<DocumentReference> nonConfidentialPdfDocumentsToBeSent =
+                consolidateMapByConfiguration(event, (docType) -> ConfidentialLevel.NON_CONFIDENTIAL)
+                    .values().stream()
+                    .flatMap(List::stream)
                     .map(Element::getValue)
-                    .map(NotifyDocumentUploaded::getNameForNotification)
+                    .map(NotifyDocumentUploaded::getDocument)
+                    .filter(documentReference -> hasExtension(documentReference.getFilename(), PDF))
                     .collect(toList());
 
-                if (!newDocumentNames.isEmpty()) {
-                    furtherEvidenceNotificationService.sendNotification(event.getCaseData(), recipients,
-                        event.getInitiatedBy().getFullName(), newDocumentNames);
-                }
+            if (!nonConfidentialPdfDocumentsToBeSent.isEmpty()) {
+                Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
+                sendDocumentService.sendDocuments(caseData, nonConfidentialPdfDocumentsToBeSent,
+                    new ArrayList<>(allRecipients));
             }
         }
     }
@@ -154,24 +191,26 @@ public class ManageDocumentsUploadedEventHandler {
                     .filter(entry -> !isHearingDocument(entry.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            String documentTypes = documentsToBeSent.keySet().stream()
-                .map(docType -> String.join(" ", LIST, docType.getDescription()))
-                .collect(joining("\n"));
+            if (!documentsToBeSent.isEmpty()) {
+                String documentTypes = documentsToBeSent.keySet().stream()
+                    .map(docType -> String.join(" ", LIST, docType.getDescription()))
+                    .collect(joining("\n"));
 
-            String subjectInfo = documentsToBeSent.keySet().stream()
-                .map(documentType -> (COURT_CORRESPONDENCE.equals(documentType)) ?
-                    CORRESPONDENCE : FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                .findFirst().orElse("UNKNOWN");
+                String subjectInfo = documentsToBeSent.keySet().stream()
+                    .map(documentType -> (COURT_CORRESPONDENCE.equals(documentType)) ?
+                        CORRESPONDENCE : FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                    .findFirst().orElse("UNKNOWN");
 
-            cafcassNotificationService.sendEmail(
-                caseData,
-                getDocumentReferences(documentsToBeSent),
-                NEW_DOCUMENT,
-                NewDocumentData.builder()
-                    .documentTypes(documentTypes)
-                    .emailSubjectInfo(subjectInfo)
-                    .build()
-            );
+                cafcassNotificationService.sendEmail(
+                    caseData,
+                    getDocumentReferences(documentsToBeSent),
+                    CafcassRequestEmailContentProvider.NEW_DOCUMENT,
+                    NewDocumentData.builder()
+                        .documentTypes(documentTypes)
+                        .emailSubjectInfo(subjectInfo)
+                        .build()
+                );
+            }
         }
     }
 
@@ -183,8 +222,70 @@ public class ManageDocumentsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            // TODO
+            // 1. get available new hearing documents
+            consolidateMapByConfiguration(event, DocumentUploadedNotificationConfiguration::getSendToCafcassEngland)
+                .entrySet().stream()
+                .filter(entry -> isHearingDocument(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .forEach((docType, hearingDocuments) ->
+                    // 2. for each hearing document type, group by hearing
+                    hearingDocuments.stream()
+                        .map(Element::getValue)
+                        .map(hearingDocument -> (HearingDocument) hearingDocument)
+                        .collect(groupingBy(HearingDocument::getHearing,
+                            mapping(HearingDocument::getDocument, toSet())))
+                        .forEach((hearing, doc) ->
+                            // 3. for each hearing document type and hearing, send to Cafcass
+                            cafcassNotificationService.sendEmail(
+                                caseData,
+                                doc,
+                                CAFCASS_EMAIL_CONTENT_MAP.get(docType),
+                                CourtBundleData.builder()
+                                    .hearingDetails(hearing)
+                                    .build())));
         }
+    }
+
+    // TODO unit test
+    @Async
+    @EventListener
+    public void notifyTranslationTeam(final ManageDocumentsUploadedEvent event) {
+        // TODO no translation in new Manage doc flow?
+
+    }
+
+    private Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>> buildConfigurationMapGroupedByRecipient(final ManageDocumentsUploadedEvent event) {
+
+        final CaseData caseData = event.getCaseData();
+
+        Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>> resultMap =
+            new HashMap<>();
+
+        // designated LA
+        resultMap.put(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipientsOnly(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToDesignatedLA);
+
+        // secondary LA
+        resultMap.put(furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToSecondaryLA);
+
+        // legal representative
+        resultMap.put(furtherEvidenceNotificationService.getLegalRepresentativeOnly(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative);
+
+        // cafcass representative
+        resultMap.put(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative);
+
+        // respondent solicitor
+        resultMap.put(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor);
+
+        // child solicitor
+        resultMap.put(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData),
+            DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
+
+        return resultMap;
     }
 
     private boolean isHearingDocument(DocumentType documentType) {
@@ -205,9 +306,8 @@ public class ManageDocumentsUploadedEventHandler {
      *                                         DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
      * @return Lists of documents grouped by document type
      */
-    private Map<DocumentType, List<Element<NotifyDocumentUploaded>>> consolidateMapByConfiguration(
-            ManageDocumentsUploadedEvent event,
-            Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
+    private Map<DocumentType, List<Element<NotifyDocumentUploaded>>> consolidateMapByConfiguration(ManageDocumentsUploadedEvent event,
+                                                                                                   Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
 
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> nonConfidentialDocuments =
             event.getNewDocuments().entrySet().stream()

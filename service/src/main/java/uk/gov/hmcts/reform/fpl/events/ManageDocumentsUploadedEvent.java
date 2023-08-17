@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class ManageDocumentsUploadedEvent {
     private final CaseData caseData;
     private final UserDetails initiatedBy;
+    private final DocumentUploaderType uploadedUserType;
 
     private final Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocuments;
     private final Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsLA;

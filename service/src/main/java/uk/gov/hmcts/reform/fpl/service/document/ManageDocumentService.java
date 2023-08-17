@@ -79,6 +79,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
@@ -1178,28 +1179,34 @@ public class ManageDocumentService {
                     String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
 
                     try {
+                        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
+                            resultMapByConfidentialLevel.get(confidentialLevel);
+                        List<Element<NotifyDocumentUploaded>> docList =
+                            Optional.ofNullable(newDocMap.get(documentType)).orElse(new ArrayList<>());
+                        newDocMap.putIfAbsent(documentType, docList);
+
                         List documentList = Optional.ofNullable(ObjectHelper
-                                .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
+                            .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
                         List documentListBefore = Optional.ofNullable(ObjectHelper
                             .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
 
-                        if (DocumentType.COURT_BUNDLE.equals(documentType) || DocumentType.CASE_SUMMARY.equals(documentType)
-                            || DocumentType.POSITION_STATEMENTS.equals(documentType)
-                            || DocumentType.SKELETON_ARGUMENTS.equals(documentType)) {
-                            // TODO
-                        } else {
-                            // Handle ManagedDocument list
-                            for (Object document : documentList) {
-                                if (!documentListBefore.contains(document)) {
-                                    Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
-                                        resultMapByConfidentialLevel.get(confidentialLevel);
+                        if (DocumentType.COURT_BUNDLE.equals(documentType)) {
+                            documentList = ((List<Element<HearingCourtBundle>>) documentList).stream()
+                                    .map(Element::getValue)
+                                    .map(HearingCourtBundle::getCourtBundle)
+                                    .flatMap(List::stream)
+                                    .collect(toList());
 
-                                    List<Element<NotifyDocumentUploaded>> docList =
-                                        Optional.ofNullable(newDocMap.get(documentType)).orElse(new ArrayList<>());
+                            documentListBefore = ((List<Element<HearingCourtBundle>>) documentListBefore).stream()
+                                    .map(Element::getValue)
+                                    .map(HearingCourtBundle::getCourtBundle)
+                                    .flatMap(List::stream)
+                                    .collect(toList());
+                        }
 
-                                    docList.add((Element<NotifyDocumentUploaded>) document);
-                                    newDocMap.putIfAbsent(documentType, docList);
-                                }
+                        for (Object document : documentList) {
+                            if (!documentListBefore.contains(document)) {
+                                docList.add((Element<NotifyDocumentUploaded>) document);
                             }
                         }
                     } catch (NoSuchMethodException e) {
@@ -1210,9 +1217,12 @@ public class ManageDocumentService {
             }
         }
 
+
+
         return ManageDocumentsUploadedEvent.builder()
             .caseData(caseData)
             .initiatedBy(userService.getUserDetails())
+            .uploadedUserType(getUploaderType(caseData))
             .newDocuments(newDocuments)
             .newDocumentsLA(newDocumentsLA)
             .newDocumentsCTSC(newDocumentsCTSC)
