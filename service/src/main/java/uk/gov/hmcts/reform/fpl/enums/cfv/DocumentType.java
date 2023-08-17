@@ -32,15 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public enum DocumentType {
     COURT_BUNDLE("Court Bundle", courtBundleResolver(),
         false, false, false, false,
-        (document, documentUploaderType) -> HearingCourtBundle.builder()
-            .courtBundle(List.of(
-                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
-            ))
-            .courtBundleNC(List.of(
-                element(CourtBundle.builder().document(document).uploaderType(documentUploaderType).build())
-            ))
-            .build(),
-        null, 10, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
         (bundle) -> {
             Element<CourtBundle> courtBundleElement = element(CourtBundle.builder()
                 .document(bundle.getDocument())
@@ -69,9 +60,6 @@ public enum DocumentType {
         null, 40, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
-        (document, documentUploaderType) -> SkeletonArgument.builder().document(document)
-            .uploaderType(documentUploaderType).build(),
-        null, 50, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
         (bundle) -> SkeletonArgument.builder().document(bundle.getDocument())
             .uploaderType(bundle.getUploaderType())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
@@ -131,9 +119,6 @@ public enum DocumentType {
         null, 180, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
     RESPONDENTS_STATEMENTS("└─ Respondent statements", standardResolver("respStmtList"),
         false, false, false, false,
-        (document, documentUploaderType) -> RespondentStatementV2.builder().document(document)
-            .uploaderType(documentUploaderType).build(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 190, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
         (bundle) -> RespondentStatementV2.builder().document(bundle.getDocument())
             .uploaderType(bundle.getUploaderType()).markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
