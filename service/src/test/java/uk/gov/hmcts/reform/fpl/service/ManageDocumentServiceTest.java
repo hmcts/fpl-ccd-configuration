@@ -3613,4 +3613,50 @@ class ManageDocumentServiceTest {
             }
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4})
+    void shouldBuildAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+
+        initialiseUserService(loginType);
+        CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+        builder.hearingDocuments(HearingDocuments.builder()
+            .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                .courtBundle(List.of(
+                    element(elementId1, CourtBundle.builder()
+                        .document(testDocumentReference(filename1))
+                        .uploaderType(DocumentUploaderType.SOLICITOR)
+                        .build()),
+                    element(elementId2, CourtBundle.builder()
+                        .document(testDocumentReference(filename2))
+                        .uploaderType(DocumentUploaderType.SOLICITOR)
+                        .build())
+                ))
+                .build())))
+            .build());
+
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(DynamicList.builder().listItems(List.of(
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .label(filename1)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .label(filename2)
+                .build()
+        )).build());
+        when(dynamicListService.asDynamicList(List.of()))
+            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+
+        DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+        assertThat(dynamicList.getListItems()).hasSize(2);
+    }
 }
