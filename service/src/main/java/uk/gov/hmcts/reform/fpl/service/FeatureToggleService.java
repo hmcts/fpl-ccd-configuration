@@ -80,6 +80,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
     }
 
+    public boolean isAMMigrationRollbackEnabled() {
+        return ldClient.boolVariation("am-rollback-enabled", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

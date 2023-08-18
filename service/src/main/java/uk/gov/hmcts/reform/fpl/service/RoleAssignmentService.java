@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignments;
 
 @Slf4j
@@ -175,6 +179,25 @@ public class RoleAssignmentService {
                 .attributes(Map.of("caseId", List.of(caseId.toString())))
                 .actorId(List.of(userId))
                 .validAt(time)
+                .build()
+        );
+
+        resp.getRoleAssignmentResponse().forEach(role ->
+            amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
+
+        log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
+
+    @Retryable(value = {FeignException.class}, label = "Delete all judicial/legal adviser roles on a case")
+    public void deleteAllRolesOnCase(Long caseId) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        String authToken = authTokenGenerator.generate();
+
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .roleName(List.of(HEARING_JUDGE.getRoleName(), ALLOCATED_JUDGE.getRoleName(),
+                    HEARING_LEGAL_ADVISER.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName()))
                 .build()
         );
 
