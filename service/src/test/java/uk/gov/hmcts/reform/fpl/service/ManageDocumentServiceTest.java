@@ -3624,6 +3624,37 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
+        @ValueSource(ints = {3}) // testing for solicitor login type only
+        void shouldBuildAnEmptyAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedByOthers(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(null)
+                            .build()),
+                        element(elementId3, CourtBundle.builder()
+                            .document(testDocumentReference(filename3))
+                            .uploaderType(DocumentUploaderType.HMCTS)
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
         void shouldBuildAvailableDocumentsToBeRemovedWhenConfidentialCTSCAndNonConfidentialCourtBundleExist(
             int loginType) {
