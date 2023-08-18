@@ -274,8 +274,7 @@ public class ManageDocumentService {
                     cb -> documentElementId.equals(cb.getId())
             ).findAny().isPresent()).findFirst()
                 .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
-
-
+            
             Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
                 .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
                     throw new IllegalStateException("Fail to locate the target document");
