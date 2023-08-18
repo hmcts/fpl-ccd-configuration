@@ -83,6 +83,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -2719,28 +2720,30 @@ class ManageDocumentServiceTest {
         return args.stream();
     }
 
-    private void initialiseUserService(int loginType) {
+    private DocumentUploaderType initialiseUserService(int loginType) {
         switch (loginType) {
             case 1:
                 // local authority
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASOLICITOR));
                 when(userService.isHmctsUser()).thenReturn(false);
-                break;
+                return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
             case 2:
                 // local authority
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASHARED));
                 when(userService.isHmctsUser()).thenReturn(false);
-                break;
+                return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
             case 3:
                 // solicitor
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.SOLICITORA));
                 when(userService.isHmctsUser()).thenReturn(false);
-                break;
+                return DocumentUploaderType.SOLICITOR;
             case 4:
                 // HMCTS admin
                 when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
                 when(userService.isHmctsUser()).thenReturn(true);
-                break;
+                return DocumentUploaderType.HMCTS;
+            default:
+                throw new IllegalStateException("unregonised login type: " + loginType);
         }
     }
 
@@ -3455,5 +3458,55 @@ class ManageDocumentServiceTest {
                 .extracting("placements").asList()
                 .matches(matcher);
         }
+    }
+
+    private CaseData.CaseDataBuilder createCaseDataBuilderForRemovalDocumentJourney() {
+        return CaseData.builder().id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4})
+    void shouldBuildAvailableDocumentsToBeRemovedIfUploadedByThemselves(int loginType) {
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+
+        DocumentUploaderType uploaderType = initialiseUserService(loginType);
+        CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+        builder.hearingDocuments(HearingDocuments.builder()
+            .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                .courtBundle(List.of(
+                    element(elementId1, CourtBundle.builder()
+                        .document(testDocumentReference(filename1))
+                        .uploaderType(uploaderType)
+                        .build()),
+                    element(elementId2, CourtBundle.builder()
+                        .document(testDocumentReference(filename2))
+                        .uploaderType(uploaderType)
+                        .build())
+                ))
+                .build())))
+            .build());
+
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(DynamicList.builder().listItems(List.of(
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .label(filename1)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .label(filename2)
+                .build()
+        )).build());
+
+        DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+        assertThat(dynamicList.getListItems()).hasSize(2);
     }
 }
