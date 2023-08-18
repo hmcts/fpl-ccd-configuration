@@ -3468,15 +3468,16 @@ class ManageDocumentServiceTest {
         }
     }
 
-    private CaseData.CaseDataBuilder createCaseDataBuilderForRemovalDocumentJourney() {
-        return CaseData.builder().id(CASE_ID)
-            .manageDocumentEventData(ManageDocumentEventData.builder()
-                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
-                .build());
-    }
-
     @Nested
     class BuildAvailableDocumentsToBeRemovedTest {
+
+        private CaseData.CaseDataBuilder createCaseDataBuilderForRemovalDocumentJourney() {
+            return CaseData.builder().id(CASE_ID)
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                    .build());
+        }
+
         UUID elementId1 = UUID.randomUUID();
         UUID elementId2 = UUID.randomUUID();
         UUID elementId3 = UUID.randomUUID();
