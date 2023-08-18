@@ -3490,10 +3490,12 @@ class ManageDocumentServiceTest {
 
         DynamicList expectedDynamicList1 = DynamicList.builder().build();
         DynamicList expectedDynamicList2 = DynamicList.builder().build();
+        DynamicList expectedDynamicList3 = DynamicList.builder().build();
+        DynamicList expectedDynamicList4 = DynamicList.builder().build();
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
-        void shouldBuildAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
+        void testForNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
             DocumentUploaderType uploaderType = initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
             builder.hearingDocuments(HearingDocuments.builder()
@@ -3522,7 +3524,7 @@ class ManageDocumentServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
-        void shouldBuildAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedByHMCTS(int loginType) {
+        void testForNonConfidentialCourtBundleUploadedByHMCTS(int loginType) {
             DocumentUploaderType uploaderType = initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
             builder.hearingDocuments(HearingDocuments.builder()
@@ -3556,8 +3558,8 @@ class ManageDocumentServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
-        void shouldBuildAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedByLA(int loginType) {
-            for (int i = 0; i < 2; i++) {
+        void testForNonConfidentialCourtBundleUploadedByLA(int loginType) {
+            for (int i = 0; i < 2; i++) { // DESIGNATED_LOCAL_AUTHORITY and SECONDARY_LOCAL_AUTHORITY
                 DocumentUploaderType uploaderType = initialiseUserService(loginType);
                 CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
                 builder.hearingDocuments(HearingDocuments.builder()
@@ -3596,7 +3598,7 @@ class ManageDocumentServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
-        void shouldBuildAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
+        void testForNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
             builder.hearingDocuments(HearingDocuments.builder()
@@ -3625,7 +3627,7 @@ class ManageDocumentServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {3}) // testing for solicitor login type only
-        void shouldBuildAnEmptyAvailableDocumentsToBeRemovedIfNonConfidentialCourtBundleUploadedByOthers(
+        void shouldReturnEmptyDynamicListWhenNonConfidentialCourtBundleAreUploadedByOthers(
             int loginType) {
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
@@ -3656,7 +3658,7 @@ class ManageDocumentServiceTest {
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
-        void shouldBuildAvailableDocumentsToBeRemovedWhenConfidentialCTSCAndNonConfidentialCourtBundleExist(
+        void testForConfidentialCTSCUploadedAndNonConfidentialCourtBundleExist(
             int loginType) {
             DocumentUploaderType uploaderType = initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
