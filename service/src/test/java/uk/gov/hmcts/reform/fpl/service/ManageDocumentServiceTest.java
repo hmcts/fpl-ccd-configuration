@@ -3674,7 +3674,7 @@ class ManageDocumentServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {/*1, 2, 3,*/ 4})
+    @ValueSource(ints = {1, 2, 3, 4})
     void shouldBuildAvailableDocumentsToBeRemovedWhenConfidentialCTSCAndNonConfidentialCourtBundleExist(int loginType) {
         UUID elementId1 = UUID.randomUUID();
         UUID elementId2 = UUID.randomUUID();
