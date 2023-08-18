@@ -7,7 +7,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.judicial.HandleCancelledHearingRolesEvent;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
