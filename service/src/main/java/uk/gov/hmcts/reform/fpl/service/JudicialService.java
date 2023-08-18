@@ -388,4 +388,9 @@ public class JudicialService {
                 hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId());
         }
     }
+
+    public void deleteAllRolesOnCase(Long caseId) {
+        roleAssignmentService.deleteAllRolesOnCase(caseId);
+    }
+
 }

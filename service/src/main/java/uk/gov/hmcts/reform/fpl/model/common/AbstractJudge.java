@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,11 @@ public abstract class AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final YesNo judgeEnterManually;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final JudicialUser judgeJudicialUser;
 
 

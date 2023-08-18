@@ -27,7 +27,10 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     private String useAllocatedJudge;
     private String judgeEmailAddress;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private YesNo judgeEnterManually;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private JudicialUser judgeJudicialUser;
 
     @Builder(toBuilder = true)
