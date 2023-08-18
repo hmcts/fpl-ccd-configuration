@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import javax.servlet.Registration;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
