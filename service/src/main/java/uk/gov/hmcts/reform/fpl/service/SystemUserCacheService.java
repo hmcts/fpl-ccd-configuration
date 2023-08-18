@@ -11,6 +11,15 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Service
 public class SystemUserCacheService {
 
+    public SystemUserCacheService() {
+
+    }
+
+    public SystemUserCacheService(String token, LocalDateTime time) {
+        this.cachedToken = token;
+        this.timeLastCached = time;
+    }
+
     private String cachedToken;
     private LocalDateTime timeLastCached;
     private static final ChronoUnit CACHE_TIME_LIMIT_UNIT = ChronoUnit.HOURS;
