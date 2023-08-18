@@ -127,6 +127,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PositionStatementRespondent",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PositionStatementRespondent",
     "ListElementCode": "markAsConfidential",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is confidential?",

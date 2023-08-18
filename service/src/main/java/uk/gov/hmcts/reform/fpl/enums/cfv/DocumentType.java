@@ -33,6 +33,7 @@ public enum DocumentType {
             Element<CourtBundle> courtBundleElement = element(CourtBundle.builder()
                 .document(bundle.getDocument())
                 .uploaderType(bundle.getUploaderType())
+                .uploaderCaseRoles(bundle.getUploaderCaseRoles())
                 .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
                 .build());
             return HearingCourtBundle.builder()
@@ -43,7 +44,9 @@ public enum DocumentType {
         null, 10),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
-        (bundle) -> CaseSummary.builder().document(bundle.getDocument()).uploaderType(bundle.getUploaderType())
+        (bundle) -> CaseSummary.builder().document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
         null,20),
@@ -57,8 +60,10 @@ public enum DocumentType {
         null, 40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
-        (bundle) -> SkeletonArgument.builder().document(bundle.getDocument())
+        (bundle) -> SkeletonArgument.builder()
+            .document(bundle.getDocument())
             .uploaderType(bundle.getUploaderType())
+            .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
         null, 50),
@@ -116,8 +121,11 @@ public enum DocumentType {
         null, 180),
     RESPONDENTS_STATEMENTS("└─ Respondent statements", standardResolver("respStmtList"),
         false, false, false, false,
-        (bundle) -> RespondentStatementV2.builder().document(bundle.getDocument())
-            .uploaderType(bundle.getUploaderType()).markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+        (bundle) -> RespondentStatementV2.builder()
+            .document(bundle.getDocument())
+            .uploaderType(bundle.getUploaderType())
+            .uploaderCaseRoles(bundle.getUploaderCaseRoles())
+            .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
         AA_PARENT_RESPONDENTS_STATEMENTS, 190),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
@@ -251,6 +259,7 @@ public enum DocumentType {
         return (bundle) -> ManagedDocument.builder()
             .document(bundle.getDocument())
             .uploaderType(bundle.getUploaderType())
+            .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build();
     }
