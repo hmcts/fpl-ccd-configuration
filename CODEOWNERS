@@ -3,6 +3,7 @@
 * @hmcts/fpl-developers
 
 # Renovate files
+gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper.properties
 Dockerfile
 build.gradle
@@ -11,3 +12,6 @@ infrastructure/state.tf
 .github/workflows/*.yaml
 package.json
 yarn.lock
+.nvmrc
+gradlew
+gradlew.bat
