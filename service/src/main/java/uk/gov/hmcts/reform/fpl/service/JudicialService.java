@@ -352,7 +352,7 @@ public class JudicialService {
                 .startTime(booking.getStartDate().atZone(ZoneId.systemDefault()))
                 .judgeType(booking.getJudgeAndLegalAdvisor().getJudgeTitle());
 
-            if (!ObjectUtils.isEmpty(after)) {
+            if (!isEmpty(after) && !isEmpty(after.getStartDate())) {
                 judgeTime.endTime(after.getStartDate().atZone(ZoneId.systemDefault()));
             }
 
