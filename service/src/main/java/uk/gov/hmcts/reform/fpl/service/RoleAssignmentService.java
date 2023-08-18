@@ -164,4 +164,23 @@ public class RoleAssignmentService {
         String systemUserToken = systemUserService.getSysUserToken();
         amApi.deleteRoleAssignment(systemUserToken, authTokenGenerator.generate(), roleToDelete.getId());
     }
+
+    @Retryable(value = {FeignException.class}, label = "Delete a single user's assignment on a case at time")
+    public void deleteRoleAssignmentOnCaseAtTime(Long caseId, ZonedDateTime time, String userId) {
+        String systemUserToken = systemUserService.getSysUserToken();
+        String authToken = authTokenGenerator.generate();
+
+        QueryResponse resp = amApi.queryRoleAssignments(systemUserToken, authTokenGenerator.generate(),
+            QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of(caseId.toString())))
+                .actorId(List.of(userId))
+                .validAt(time)
+                .build()
+        );
+
+        resp.getRoleAssignmentResponse().forEach(role ->
+            amApi.deleteRoleAssignment(systemUserToken, authToken, role.getId()));
+
+        log.info("Deleted {} roles on {} case", resp.getRoleAssignmentResponse().size(), caseId);
+    }
 }

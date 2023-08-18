@@ -378,4 +378,14 @@ public class JudicialService {
     public void migrateJudgeRoles(List<RoleAssignment> roles) {
         roleAssignmentService.createRoleAssignments(roles);
     }
+
+    public void deleteSpecificHearingRole(Long caseId, HearingBooking hearing) {
+        if (!isEmpty(hearing.getJudgeAndLegalAdvisor())
+            && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
+            && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
+            roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
+                hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId());
+        }
+    }
 }
