@@ -3504,17 +3504,17 @@ class ManageDocumentServiceTest {
 
         DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                 .label(filename1)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                 .label(filename2)
                 .build()
         )).build();
         when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
         ))).thenReturn(expectedDynamicList1);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
@@ -3548,18 +3548,18 @@ class ManageDocumentServiceTest {
 
         DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                 .label(filename1)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                 .label(filename2)
                 .build()
         )).build();
         DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of()).build();
         when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
         ))).thenReturn(expectedDynamicList1);
         when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
@@ -3601,18 +3601,18 @@ class ManageDocumentServiceTest {
 
             DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
                 DynamicListElement.builder()
-                    .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                    .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                     .label(filename1)
                     .build(),
                 DynamicListElement.builder()
-                    .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                    .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                     .label(filename2)
                     .build()
             )).build();
             DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of()).build();
             when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
             ))).thenReturn(expectedDynamicList1);
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
@@ -3656,17 +3656,17 @@ class ManageDocumentServiceTest {
         DynamicList expectedDynamicList = DynamicList.builder()
             .listItems(List.of(
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                 .label(filename1)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                 .label(filename2)
                 .build()
         )).build();
         when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
         ))).thenReturn(expectedDynamicList);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
@@ -3717,41 +3717,41 @@ class ManageDocumentServiceTest {
 
         DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                 .label(filename1)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                 .label(filename2)
                 .build()
         )).build();
         when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
         ))).thenReturn(expectedDynamicList1);
         DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId3.toString()))
+                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId3))
                 .label(filename3)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId4.toString()))
+                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId4))
                 .label(filename4)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1))
                 .label(filename1)
                 .build(),
             DynamicListElement.builder()
-                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2))
                 .label(filename2)
                 .build()
         )).build();
         when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId3.toString()), filename3),
-            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId4.toString()), filename4),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId3), filename3),
+            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId4), filename4),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
         ))).thenReturn(expectedDynamicList2);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
