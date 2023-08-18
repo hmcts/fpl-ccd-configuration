@@ -58,8 +58,10 @@ import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -473,7 +475,7 @@ public class ManageDocumentService {
 
     private Map<String, List<Element>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                      ConfidentialLevel level) {
-        Map<String, List<Element>> ret = new HashMap<String, List<Element>>();
+        Map<String, List<Element>> ret = new LinkedHashMap<String, List<Element>>();
         if (documentType.getBaseFieldNameResolver() != null) {
             String fieldName = documentType.getBaseFieldNameResolver().apply(level);
             List<Element> listOfElement = readFromFieldName(caseData, fieldName);
@@ -525,9 +527,11 @@ public class ManageDocumentService {
     public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData, DocumentType documentType) {
         DocumentUploaderType currentUserType = getUploaderType(caseData);
 
-        Map<String, List<Element>> fieldNameToListOfElementMap = new HashMap<>();
+        Map<String, List<Element>> fieldNameToListOfElementMap = new LinkedHashMap<>();
         for (DocumentType dt : documentType != null ? List.of(documentType) : Arrays.stream(DocumentType.values())
-            .filter(DocumentType::isUploadable).toList()) {
+            .filter(DocumentType::isUploadable)
+            .sorted(Comparator.comparing(DocumentType::getDisplayOrder))
+            .toList()) {
             for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
                 switch (level) {
                     case LA:
