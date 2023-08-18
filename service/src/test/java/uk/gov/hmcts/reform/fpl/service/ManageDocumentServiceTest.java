@@ -3446,17 +3446,17 @@ class ManageDocumentServiceTest {
         };
 
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
-        if (!(uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-            || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY)) {
+        if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+            || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
             assertThat(actual)
                 .containsKey("placements")
-                .containsKey("placementsNonConfidential")
-                .containsKey("placementsNonConfidentialNotices")
                 .extracting("placements").asList()
                 .matches(matcher);
         } else {
             assertThat(actual)
                 .containsKey("placements")
+                .containsKey("placementsNonConfidential")
+                .containsKey("placementsNonConfidentialNotices")
                 .extracting("placements").asList()
                 .matches(matcher);
         }
