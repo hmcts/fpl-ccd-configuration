@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import javax.servlet.Registration;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -3500,10 +3502,7 @@ class ManageDocumentServiceTest {
                 .build())))
             .build());
 
-        when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
-        ))).thenReturn(DynamicList.builder().listItems(List.of(
+        DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
                 .label(filename1)
@@ -3512,10 +3511,14 @@ class ManageDocumentServiceTest {
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
                 .label(filename2)
                 .build()
-        )).build());
+        )).build();
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(expectedDynamicList1);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-        assertThat(dynamicList.getListItems()).hasSize(2);
+        assertThat(dynamicList).isEqualTo(expectedDynamicList1);
     }
 
     @ParameterizedTest
@@ -3543,10 +3546,7 @@ class ManageDocumentServiceTest {
                 .build())))
             .build());
 
-        when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
-        ))).thenReturn(DynamicList.builder().listItems(List.of(
+        DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
             DynamicListElement.builder()
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
                 .label(filename1)
@@ -3555,15 +3555,19 @@ class ManageDocumentServiceTest {
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
                 .label(filename2)
                 .build()
-        )).build());
-        when(dynamicListService.asDynamicList(List.of()))
-            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+        )).build();
+        DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of()).build();
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(expectedDynamicList1);
+        when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
         if (uploaderType == DocumentUploaderType.HMCTS) {
-            assertThat(dynamicList.getListItems()).hasSize(2);
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         } else {
-            assertThat(dynamicList.getListItems()).hasSize(0);
+            assertThat(dynamicList).isEqualTo(expectedDynamicList2);
         }
     }
 
@@ -3595,10 +3599,7 @@ class ManageDocumentServiceTest {
                     .build())))
                 .build());
 
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
-            ))).thenReturn(DynamicList.builder().listItems(List.of(
+            DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
                 DynamicListElement.builder()
                     .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
                     .label(filename1)
@@ -3607,17 +3608,21 @@ class ManageDocumentServiceTest {
                     .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
                     .label(filename2)
                     .build()
-            )).build());
-            when(dynamicListService.asDynamicList(List.of()))
-                .thenReturn(DynamicList.builder().listItems(List.of()).build());
+            )).build();
+            DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of()).build();
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS
                 || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
                 || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
-                assertThat(dynamicList.getListItems()).hasSize(2);
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             } else {
-                assertThat(dynamicList.getListItems()).hasSize(0);
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             }
         }
     }
@@ -3648,10 +3653,8 @@ class ManageDocumentServiceTest {
                 .build())))
             .build());
 
-        when(dynamicListService.asDynamicList(List.of(
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
-            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
-        ))).thenReturn(DynamicList.builder().listItems(List.of(
+        DynamicList expectedDynamicList = DynamicList.builder()
+            .listItems(List.of(
             DynamicListElement.builder()
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
                 .label(filename1)
@@ -3660,11 +3663,102 @@ class ManageDocumentServiceTest {
                 .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
                 .label(filename2)
                 .build()
-        )).build());
-        when(dynamicListService.asDynamicList(List.of()))
-            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+        )).build();
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(expectedDynamicList);
 
         DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-        assertThat(dynamicList.getListItems()).hasSize(2);
+        assertThat(dynamicList).isEqualTo(expectedDynamicList);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {/*1, 2, 3,*/ 4})
+    void shouldBuildAvailableDocumentsToBeRemovedWhenConfidentialCTSCAndNonConfidentialCourtBundleExist(int loginType) {
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        UUID elementId3 = UUID.randomUUID();
+        UUID elementId4 = UUID.randomUUID();
+
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+        String filename3 = "COURT BUNDLE3.docx";
+        String filename4 = "COURT BUNDLE4.docx";
+
+        DocumentUploaderType uploaderType = initialiseUserService(loginType);
+        CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+        builder.hearingDocuments(HearingDocuments.builder()
+            .courtBundleListCTSC(List.of(element(HearingCourtBundle.builder()
+                .courtBundle(List.of(
+                    element(elementId3, CourtBundle.builder()
+                        .document(testDocumentReference(filename3))
+                        .uploaderType(DocumentUploaderType.HMCTS)
+                        .build()),
+                    element(elementId4, CourtBundle.builder()
+                        .document(testDocumentReference(filename4))
+                        // no uploaderType means the case is migrated from existing data
+                        .build())
+                ))
+                .build())))
+            .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                .courtBundle(List.of(
+                    element(elementId1, CourtBundle.builder()
+                        .document(testDocumentReference(filename1))
+                        .uploaderType(DocumentUploaderType.SOLICITOR)
+                        .build()),
+                    element(elementId2, CourtBundle.builder()
+                        .document(testDocumentReference(filename2))
+                        .uploaderType(DocumentUploaderType.SOLICITOR)
+                        .build())
+                ))
+                .build())))
+            .build());
+
+        DynamicList expectedDynamicList1 = DynamicList.builder().listItems(List.of(
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .label(filename1)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .label(filename2)
+                .build()
+        )).build();
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(expectedDynamicList1);
+        DynamicList expectedDynamicList2 = DynamicList.builder().listItems(List.of(
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId3.toString()))
+                .label(filename3)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListCTSC###%s", elementId4.toString()))
+                .label(filename4)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()))
+                .label(filename1)
+                .build(),
+            DynamicListElement.builder()
+                .code(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()))
+                .label(filename2)
+                .build()
+        )).build();
+        when(dynamicListService.asDynamicList(List.of(
+            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId3.toString()), filename3),
+            Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId4.toString()), filename4),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1.toString()), filename1),
+            Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2.toString()), filename2)
+        ))).thenReturn(expectedDynamicList2);
+
+        DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+        if (uploaderType == DocumentUploaderType.HMCTS) {
+            assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+        } else {
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
     }
 }
