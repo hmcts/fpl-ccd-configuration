@@ -15,39 +15,129 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CoreCaseDataService {
+
+    public static final String UPDATE_CASE_EVENT = "internal-change-UPDATE_CASE";
+    private static final int RETRIES = 3;
+
     private final AuthTokenGenerator authTokenGenerator;
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
     private final SystemUserService systemUserService;
+    private final CCDConcurrencyHelper concurrencyHelper;
 
+    public CaseDetails performPostSubmitCallbackWithoutChange(Long caseId, String eventName) {
+        return performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
+    }
+
+    public CaseDetails performPostSubmitCallback(Long caseId,
+                                                 String eventName,
+                                                 Function<CaseDetails, Map<String, Object>> changeFunction) {
+        return performPostSubmitCallback(caseId, eventName, changeFunction, false);
+    }
+
+    public CaseDetails performPostSubmitCallback(Long caseId,
+                                                 String eventName,
+                                                 Function<CaseDetails, Map<String, Object>> changeFunction,
+                                                 boolean submitIfEmpty) {
+        int retries = 0;
+        while (retries < RETRIES) {
+            try {
+                StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
+                CaseDetails caseDetails = startEventResponse.getCaseDetails();
+                // Work around immutable maps
+                HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
+                caseDetails.setData(caseDetailsMap);
+
+                Map<String, Object> updates = changeFunction.apply(caseDetails);
+
+                if (!updates.isEmpty() || submitIfEmpty) {
+                    log.info("Submitting event {} on case {}", eventName, caseId);
+                    concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+                } else {
+                    log.info("No updates, skipping submit event");
+                }
+                caseDetails.getData().putAll(updates);
+                return caseDetails;
+            } catch (Exception e) {
+                log.error("Failed to create event on ccd", e);
+                retries++;
+            }
+        }
+        log.error("All 3 retries failed");
+        return null;
+    }
+
+    /**
+     * Runs the UPDATE_CASE event on a given case.
+     *
+     * @param caseId  Case to update.
+     * @param updates Map of fields to update.
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     *      data then submitEvent to submit it to avoid concurrency issues.
+     */
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void updateCase(Long caseId, Map<String, Object> updates) {
         triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
     }
 
+    /**
+     * Triggers a CCD event on the case.
+     *
+     * @param caseId  Case to update.
+     * @param event   CCD event name to create and submit.
+     * @param updates Map of fields to update.
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     *      data then submitEvent to submit it to avoid concurrency issues.
+     */
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
         triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
     }
 
+    /**
+     * Triggers a CCD event on the case in a given jurisdiction, casetype.
+     *
+     * @param jurisdiction Jurisdiction of the case in CCD
+     * @param caseType     Type of the case in CCD
+     * @param caseId       Case to update.
+     * @param event        CCD event name to create and submit.
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     *      data then submitEvent to submit it to avoid concurrency issues.
+     */
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }
 
+    /**
+     * Triggers a CCD event on a case, given various params.
+     *
+     * @param jurisdiction Jurisdiction of the case in CCD
+     * @param caseType     Type of the case in CCD
+     * @param caseId       Case to update.
+     * @param eventName    CCD event name to create and submit.
+     * @param eventData    Map of fields to update.
+     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
+     *      data then submitEvent to submit it to avoid concurrency issues.
+     */
+    @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction,
                              String caseType,
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-
         String userToken = systemUserService.getSysUserToken();
         String systemUpdateUserId = systemUserService.getUserId(userToken);
 

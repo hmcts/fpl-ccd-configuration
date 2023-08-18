@@ -54,10 +54,15 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]",
-          "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
       }
     ]
   },
@@ -227,10 +232,15 @@
           "[LAMANAGING]",
           "[LASHARED]",
           "[SOLICITORA]",
-          "[CHILDSOLICITORA]",
-          "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORA]"
         ],
         "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
       }
     ]
   },
@@ -750,8 +760,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LASHARED]",
-          "caseworker-publiclaw-solicitor"
+          "[LASHARED]"
         ],
         "CRUD": "CR"
       }
@@ -1196,6 +1205,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewAdditionalApplication",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "amendRespondents",
     "AccessControl": [
       {
@@ -1399,14 +1421,14 @@
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]", "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-solicitor"
         ],
         "CRUD": "R"
       }
@@ -1641,6 +1663,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LASHARED]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
@@ -1673,6 +1696,7 @@
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
+          "[LABARRISTER]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
@@ -1695,7 +1719,7 @@
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]", "caseworker-publiclaw-solicitor"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
         ],
         "CRUD": "CR"
       }

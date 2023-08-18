@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
@@ -90,9 +89,6 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     private ArgumentCaptor<DecisionRequest> requestCaptor;
 
     @MockBean
-    private CoreCaseDataApiV2 caseDataApi;
-
-    @MockBean
     private CaseAssignmentApi caseAssignmentApi;
 
     NoticeOfChangeAboutToStartControllerTest() {
@@ -103,7 +99,7 @@ class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
     void init() {
         givenFplService();
         givenSystemUser();
-        when(caseDataApi.getAuditEvents(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, false, CASE_ID.toString()))
+        when(coreCaseDataApi.getAuditEvents(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, false, CASE_ID.toString()))
             .thenReturn(AUDIT_EVENTS);
         when(idamClient.getUserByUserId(USER_AUTH_TOKEN, SOLICITOR_ID))
             .thenReturn(SOLICITOR_USER);

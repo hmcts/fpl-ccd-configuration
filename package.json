@@ -8,7 +8,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
-    "codeceptjs": "3.4.1",
+    "codeceptjs": "3.5.3",
     "dateformat": "^4.6.3",
     "debug": "4.3.4",
     "eslint": "7.32.0",
@@ -21,16 +21,17 @@
     "mocha-junit-reporter": "^2.2.0",
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1",
-    "moment": "2.29.1",
+    "moment": "2.29.4",
     "node-fetch": "^2.6.9",
-    "puppeteer": "19.7.2",
-    "webdriverio": "8.3.10"
+    "puppeteer": "19.11.1",
+    "webdriverio": "8.15.4"
   },
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky))' --reporter mocha-multi --verbose",
+    "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky|@nightlyOnly))' --reporter mocha-multi --verbose",
+    "test:functional-nightly": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests))' --reporter mocha-multi --verbose",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:crossbrowser-e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep '@cross-browser' ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi --verbose",
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
@@ -45,6 +46,6 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
-  "packageManager": "yarn@3.3.0",
+  "packageManager": "yarn@3.6.2",
   "license": "MIT"
 }

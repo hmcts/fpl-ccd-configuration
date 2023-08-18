@@ -83,14 +83,9 @@ public class SubmittedCaseEventHandler {
     public void notifyCafcass(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
-            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
-            return;
-        }
-
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             Optional<String> recipientIsWelsh = cafcassLookupConfiguration.getCafcassWelsh(caseData
-                .getCaseLocalAuthority()).map(CafcassLookupConfiguration.Cafcass::getEmail);
+                .getCaseLaOrRelatingLa()).map(CafcassLookupConfiguration.Cafcass::getEmail);
             if (recipientIsWelsh.isPresent()) {
                 NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
                 notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipientIsWelsh.get(),
@@ -103,11 +98,6 @@ public class SubmittedCaseEventHandler {
     @EventListener
     public void notifyCafcassSendGrid(final SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
-
-        if (!caseData.getRepresentativeType().equals(RepresentativeType.LOCAL_AUTHORITY)) {
-            log.info("Application has been made as a non-LA, skipping Cafcass notification.");
-            return;
-        }
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
             Set<DocumentReference> documentReferences = Optional.ofNullable(caseData.getC110A().getSubmittedForm())

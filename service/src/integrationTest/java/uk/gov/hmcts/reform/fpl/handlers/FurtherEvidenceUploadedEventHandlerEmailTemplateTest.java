@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -50,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailCon
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ContextConfiguration(classes = {
     FurtherEvidenceUploadedEventHandler.class, FurtherEvidenceNotificationService.class,
@@ -88,9 +88,6 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     @MockBean
     private CafcassNotificationService cafcassNotificationService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @Test
     void sendNotificationWhenNewDocumentUploadNotificationToggledOffForLA() {
@@ -177,14 +174,14 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
     }
 
     private static List<Element<RespondentStatement>> buildRespondentStatementsList() {
-        return wrapElements(RespondentStatement.builder()
+        return wrapElementsWithUUIDs(RespondentStatement.builder()
             .respondentName("NAME")
             .respondentId(UUID.randomUUID())
             .supportingEvidenceBundle(buildSupportingEvidenceBundleForRespondentStmt("REP")).build());
     }
 
     private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
+        return wrapElementsWithUUIDs(SupportingEvidenceBundle.builder()
             .name("Non-Confidential Evidence Document 1")
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
@@ -194,7 +191,7 @@ class FurtherEvidenceUploadedEventHandlerEmailTemplateTest extends EmailTemplate
 
     private static List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundleForRespondentStmt(
         String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
+        return wrapElementsWithUUIDs(SupportingEvidenceBundle.builder()
             .name("Non-Confidential Respondent Statement")
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())

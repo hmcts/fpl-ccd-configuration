@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.util.Collections;
-
 import static org.mockito.Mockito.verify;
 
 @WebMvcTest(ApproveDraftOrdersController.class)
@@ -29,6 +27,6 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     public void shouldTriggerPostHandlingEvent() {
         postSubmittedEvent(CaseData.builder().id(1L).build());
         verify(coreCaseDataService)
-            .triggerEvent(1L, "internal-change-approve-order", Collections.emptyMap());
+            .performPostSubmitCallbackWithoutChange(1L, "internal-change-approve-order");
     }
 }

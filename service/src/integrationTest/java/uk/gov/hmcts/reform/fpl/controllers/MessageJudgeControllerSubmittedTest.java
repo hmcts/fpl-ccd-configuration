@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -11,16 +12,18 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
@@ -39,7 +42,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     MessageJudgeControllerSubmittedTest() {
         super("message-judge");
@@ -84,6 +87,12 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .build())))
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(asCaseDetails(caseData));
 
         Map<String, Object> expectedData = Map.of(
@@ -100,11 +109,9 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary());
+        verify(concurrencyHelper, timeout(10000)).submitEvent(any(),
+            eq(CASE_ID),
+            eq(caseSummary()));
     }
 
     private Map<String, Object> caseSummary() {

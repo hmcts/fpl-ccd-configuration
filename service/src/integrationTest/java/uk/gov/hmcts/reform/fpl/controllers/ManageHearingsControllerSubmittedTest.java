@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +13,7 @@ import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
@@ -32,7 +36,7 @@ import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
@@ -61,9 +65,11 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
@@ -101,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final long CASE_ID = 12345L;
@@ -178,11 +185,17 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @Captor
     private ArgumentCaptor<NoticeOfHearingCafcassData> noticeOfHearingCafcassDataCaptor;
 
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
+
     @MockBean
     private BankHolidaysApi bankHolidaysApi;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
+    private CCDConcurrencyHelper concurrencyHelper;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -226,28 +239,37 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .build();
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
-            eq(CASE_ID),
-            eq("populateSDO"),
-            anyMap());
+        // check each post-submit is started
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(CASE_ID, "populateSDO");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(CASE_ID, "internal-update-case-summary");
+
+        // check two post-submits are submitted
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        // make sure that both finished (one of each)
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactlyInAnyOrder("populateSDO", "internal-update-case-summary");
+
+        // and one of them was submitted with the case summary payload
+        assertThat(eventDataCaptor.getAllValues())
+            .contains(caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
 
         verifyNoInteractions(notificationClient);
-
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
-
-        verifyNoMoreInteractions(coreCaseDataService);
-
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
+    @Order(3)
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
@@ -258,32 +280,50 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .build();
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
         verifyNoInteractions(notificationClient);
-
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
-
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
+    @Order(1)
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
             .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(CASE_ID, "internal-update-case-summary");
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID),
+                eq(caseSummary("Yes", "Case management",
+                    LocalDate.of(2050, 5, 20))));
+
         verifyNoInteractions(notificationClient);
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-update-case-summary",
-            caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -329,6 +369,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         given(documentConversionService.convertToPdf(noticeOfHearing))
             .willReturn(noticeOfHearing);
+        given(documentConversionService.convertToPdfBytes(noticeOfHearing))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -341,7 +383,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
 
-        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename() + ".pdf"))
             .willReturn(NOTICE_OF_HEARING_DOCUMENT);
         given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
             .willReturn(COVERSHEET_REPRESENTATIVE);
@@ -355,6 +397,23 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             Language.ENGLISH))
             .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
 
+        final StartEventResponse sendToPartiesResp = StartEventResponse.builder()
+            .caseDetails(asCaseDetails(cd))
+            .eventId("internal-change-UPDATE_CASE")
+            .token("token")
+            .build();
+
+        final StartEventResponse updateCaseResp = StartEventResponse.builder()
+            .caseDetails(asCaseDetails(cd))
+            .eventId("internal-update-case-summary")
+            .token("token")
+            .build();
+
+        when(concurrencyHelper.startEvent(any(), eq("internal-change-UPDATE_CASE")))
+            .thenReturn(sendToPartiesResp);
+
+        when(concurrencyHelper.startEvent(any(), eq("internal-update-case-summary")))
+            .thenReturn(updateCaseResp);
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
@@ -379,14 +438,14 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq(SERVICE_AUTH_TOKEN),
             printRequestCaptor.capture());
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).updateCase(
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(eq(sendToPartiesResp),
             eq(CASE_ID), caseCaptor.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
+            REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
 
         LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
-            COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
+            RESPONDENT_NOT_REPRESENTED.getParty(), COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
             COVERSHEET_REPRESENTATIVE, NOTICE_OF_HEARING_DOCUMENT, LETTER_1_ID, now());
@@ -409,57 +468,73 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .extracting(Element::getValue)
             .containsExactly(expectedDocumentSentToRespondent);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(concurrencyHelper, times(2)).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), anyMap());
 
-        verify(cafcassNotificationService,never()).sendEmail(any(), any(), any(), any());
+        verify(cafcassNotificationService, never()).sendEmail(any(), any(), any(), any());
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresentEnglandLa()
-            throws NotificationClientException {
+        throws NotificationClientException {
         final DocumentReference noticeOfHearing = testDocumentReference();
 
         LocalDateTime startDate = LocalDateTime.of(2050, 5, 20, 13, 0);
 
         final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(startDate)
-                .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
-                .noticeOfHearing(noticeOfHearing)
-                .venue("96")
-                .build());
+            .type(CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
+            .noticeOfHearing(noticeOfHearing)
+            .venue("96")
+            .build());
 
         final Element<HearingBooking> existingHearing = element(HearingBooking.builder()
-                .type(ISSUE_RESOLUTION)
-                .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
-                .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
-                .noticeOfHearing(testDocumentReference())
-                .venue("162")
-                .others(emptyList())
-                .build());
+            .type(ISSUE_RESOLUTION)
+            .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
+            .noticeOfHearing(testDocumentReference())
+            .venue("162")
+            .others(emptyList())
+            .build());
 
         final CaseData cdb = CaseData.builder()
-                .id(CASE_ID)
-                .familyManCaseNumber(FAMILY_MAN_NUMBER)
-                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-                .hearingDetails(List.of(existingHearing))
-                .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
-                .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
-                .children1(wrapElements(CHILDREN))
-                .build();
+            .id(CASE_ID)
+            .familyManCaseNumber(FAMILY_MAN_NUMBER)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .hearingDetails(List.of(existingHearing))
+            .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
+            .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
+            .children1(wrapElements(CHILDREN))
+            .build();
 
         final CaseData cd = cdb.toBuilder()
-                .hearingDetails(List.of(hearingWithNotice, existingHearing))
-                .selectedHearingId(hearingWithNotice.getId())
-                .build();
+            .hearingDetails(List.of(hearingWithNotice, existingHearing))
+            .selectedHearingId(hearingWithNotice.getId())
+            .build();
 
         givenFplService();
 
+        given(uploadDocumentService.uploadPDF(eq(NOTICE_OF_HEARING_BINARY), any()))
+            .willReturn(NOTICE_OF_HEARING_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, COVERSHEET_PDF))
+            .willReturn(COVERSHEET_RESPONDENT);
+
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty(),
+            Language.ENGLISH))
+            .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+
+        given(documentConversionService.convertToPdfBytes(any())).willReturn(NOTICE_OF_HEARING_BINARY);
+
         given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
-                .willReturn(NOTICE_OF_HEARING_BINARY);
+            .willReturn(NOTICE_OF_HEARING_BINARY);
 
         given(otherRecipientsInbox.getNonSelectedRecipients(
             EMAIL,
@@ -468,39 +543,50 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             element -> element.getValue().getEmail())
         ).willReturn(emptySet());
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(cd))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
 
         postSubmittedEvent(toCallBackRequest(cd, cdb));
 
-
         verify(notificationClient, never()).sendEmail(
-                eq(NOTICE_OF_NEW_HEARING),
-                eq(CAFCASS_EMAIL),
-                anyMap(),
-                eq(NOTIFICATION_REFERENCE));
+            eq(NOTICE_OF_NEW_HEARING),
+            eq(CAFCASS_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE));
 
         verify(cafcassNotificationService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-                isA(CaseData.class),
-                eq(Set.of(noticeOfHearing)),
-                same(NOTICE_OF_HEARING),
-                noticeOfHearingCafcassDataCaptor.capture()
+            isA(CaseData.class),
+            eq(Set.of(noticeOfHearing)),
+            same(NOTICE_OF_HEARING),
+            noticeOfHearingCafcassDataCaptor.capture()
         );
+
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .submitEvent(any(), eq(CASE_ID), anyMap());
 
         NoticeOfHearingCafcassData noticeOfHearingCafcassData = noticeOfHearingCafcassDataCaptor.getValue();
 
         assertThat(noticeOfHearingCafcassData.getFirstRespondentName())
-                .isEqualTo("Jones");
+            .isEqualTo("Jones");
         assertThat(noticeOfHearingCafcassData.getEldestChildLastName())
-                .isEqualTo("Connor");
+            .isEqualTo("Connor");
         assertThat(noticeOfHearingCafcassData.getHearingType())
-                .isEqualTo("case management");
+            .isEqualTo("case management");
         assertThat(noticeOfHearingCafcassData.getHearingDate())
-                .isEqualTo(startDate);
+            .isEqualTo(startDate);
         assertThat(noticeOfHearingCafcassData.getHearingVenue())
-                .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
+            .isEqualTo("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH");
         assertThat(noticeOfHearingCafcassData.getPreHearingTime())
-                .isEqualTo("1 hour before the hearing");
+            .isEqualTo("1 hour before the hearing");
         assertThat(noticeOfHearingCafcassData.getHearingTime())
-                .isEqualTo("1:00pm - 2:00pm");
+            .isEqualTo("1:00pm - 2:00pm");
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -531,6 +617,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .state("Submitted")
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
@@ -539,10 +631,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(any(), eq(CASE_ID), anyMap());
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @ParameterizedTest
@@ -575,6 +669,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .state("Submitted")
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
@@ -583,10 +683,10 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @Test
@@ -618,18 +718,29 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .state("Submitted")
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
         verifyNoInteractions(notificationClient);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     @ParameterizedTest
     @EnumSource(value = HearingOptions.class, names = {"EDIT_FUTURE_HEARING", "ADJOURN_HEARING", "VACATE_HEARING"})
+    @Order(2)
     void shouldNotTriggerTemporaryHearingJudgeEventWhenAdjourningOrVacatingAHearingWithoutReListing(
         HearingOptions hearingOption) {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
@@ -656,14 +767,23 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .state("Submitted")
             .build();
 
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(caseDetails.toBuilder().build())
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
         postSubmittedEvent(caseDetails);
 
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).startEvent(eq(CASE_ID), any());
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
+
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsExactly("internal-update-case-summary");
+
         verifyNoInteractions(notificationClient);
-
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
-
-        verifyNoMoreInteractions(coreCaseDataService);
+        verifyNoMoreInteractions(concurrencyHelper);
     }
 
     private Map<String, Object> buildData(List<Element<HearingBooking>> hearings, UUID selectedHearing) {

@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -67,7 +69,8 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
             .build();
 
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, hearing, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest
+            .buildContent(caseData, hearing, judge, orders, AGREED_CMO);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("Black")
@@ -86,7 +89,8 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(HIS_HONOUR_JUDGE, "White");
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest
+            .buildContent(caseData, null, judge, orders, AGREED_CMO);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("White")
@@ -105,7 +109,8 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, null);
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest
+            .buildContent(caseData, null, judge, orders, AGREED_CMO);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("")
@@ -124,13 +129,34 @@ class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProvide
         List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");
 
-        DraftOrdersUploadedTemplate customization = underTest.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest
+            .buildContent(caseData, null, judge, orders, AGREED_CMO);
 
         DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
             .judgeName("Smith (JP)")
             .judgeTitle("")
             .lastName("White")
             .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS))
+            .draftOrders("order 1")
+            .subjectLineWithHearingDate("White, FMN")
+            .build();
+
+        assertThat(customization).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldCreateWithLinkToHearingDocumentTabWhenDraftCMOUploaded() {
+        List<HearingOrder> orders = orders("order 1");
+        JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");
+
+        DraftOrdersUploadedTemplate customization = underTest
+            .buildContent(caseData, null, judge, orders, DRAFT_CMO);
+
+        DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
+            .judgeName("Smith (JP)")
+            .judgeTitle("")
+            .lastName("White")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.HEARING_DOCUMENTS))
             .draftOrders("order 1")
             .subjectLineWithHearingDate("White, FMN")
             .build();

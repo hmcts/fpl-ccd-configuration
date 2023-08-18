@@ -2,50 +2,409 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "dfjArea",
+    "Label": "DFJ Area",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "highCourtDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"HIGH_COURT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "centralLondonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"CENTRAL_LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "eastLondonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"EAST_LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "westLondonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"WEST_LONDON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "birminghamDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"BIRMINGHAM\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "coventryDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"COVENTRY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "derbyDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"DERBY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "leicesterDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"LEICESTER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "lincolnDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"LINCOLN\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "northamptonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NORTHAMPTON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nottinghamDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NOTTINGHAM\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "stoke-on-TrentDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"STOKE_ON_TRENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "wolverhamptonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"WOLVERHAMPTON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "worcesterDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"WORCESTER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "clevelandAndSouthDurhamDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"CLEVELAND_AND_SOUTH_DURHAM\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "humbersideDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"HUMBERSIDE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "northYorkshireDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NORTH_YORKSHIRE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "northumbriaAndNorthDurhamDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NORTHUMBRIA_AND_NORTH_DURHAM\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "southYorkshireDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"SOUTH_YORKSHIRE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "westYorkshireDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"WEST_YORKSHIRE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "blackburnLancasterDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"BLACKBURN_LANCASTER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "carlisleDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"CARLISLE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "liverpoolDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"LIVERPOOL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manchesterDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"MANCHESTER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "brightonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"BRIGHTON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "essexAndSuffolkDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"ESSEX_AND_SUFFOLK\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guildfordDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"GUILDFORD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "lutonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"LUTON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "medwayDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"MEDWAY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "miltonKeynesDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"MILTON_KEYNES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "norwichDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NORWICH\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "peterboroughDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"PETERBOROUGH\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "readingDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"READING\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "watfordDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"WATFORD\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "bournemouthAndDorsetDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"BOURNEMOUTH_AND_DORSET\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "bristolDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"BRISTOL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "devonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"DEVON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "portsmouthDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"PORTSMOUTH\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "swindonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"SWINDON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "tauntonDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"TAUNTON\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "truroDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"TRURO\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "northWalesDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"NORTH_WALES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "southEastWalesDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"SOUTH_EAST_WALES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "swanseaDFJCourt",
+    "Label": "Court",
+    "DisplayOrder": 2,
+    "FieldShowCondition" : "dfjArea = \"SWANSEA\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
     "Label": "Case name",
-    "DisplayOrder": 2
+    "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
-    "DisplayOrder": 3
+    "DisplayOrder": 5
   },
   {
     "LiveFrom": "20/03/2020",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "[CASE_REFERENCE]",
     "Label": "CCD Case Number",
-    "DisplayOrder": 4
+    "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "dateSubmitted",
     "Label": "Date submitted",
-    "DisplayOrder": 5
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "evidenceHandled",
     "Label": "Supplementary evidence handled",
-    "DisplayOrder": 6
+    "DisplayOrder": 8
   }
 ]

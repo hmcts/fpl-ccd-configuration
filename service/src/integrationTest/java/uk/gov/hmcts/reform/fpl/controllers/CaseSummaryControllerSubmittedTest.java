@@ -10,16 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@WebMvcTest(AddCaseNumberController.class)
+@WebMvcTest(CaseSummaryController.class)
 @OverrideAutoConfiguration(enabled = true)
 class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
@@ -49,8 +47,8 @@ class CaseSummaryControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
+        verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_ID),
+            eq("internal-update-case-summary"), any());
         verifyNoMoreInteractions(coreCaseDataService);
     }
 }

@@ -23,7 +23,7 @@
     "Name": "Add urgent directions",
     "Description": "Add urgent directions",
     "DisplayOrder": 1,
-    "PreConditionState(s)": "Gatekeeping;PREPARE_FOR_HEARING",
+    "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "GATEKEEPING_LISTING",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-start",

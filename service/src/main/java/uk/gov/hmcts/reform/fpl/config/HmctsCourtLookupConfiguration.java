@@ -41,6 +41,8 @@ public class HmctsCourtLookupConfiguration {
             checkNotNull(emptyToNull(entrySplit[1]), "Court email cannot be empty"),
             checkNotNull(emptyToNull(entrySplit[2]), "Court code cannot be empty"),
             null,
+            null,
+            null,
             null
         );
     }

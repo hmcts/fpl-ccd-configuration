@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,16 +24,23 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
@@ -38,9 +48,12 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -60,6 +74,12 @@ class MigrateCaseServiceTest {
     private CaseNoteService caseNoteService;
     @Mock
     private DocumentListService documentListService;
+
+    @Mock
+    private CourtService courtService;
+
+    @Mock
+    private MigrateRelatingLAService migrateRelatingLAService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -479,6 +499,7 @@ class MigrateCaseServiceTest {
     class RemoveGatekeepingOrderUrgentHearingOrder {
 
         private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowAssertionIfOrderNotFound() {
@@ -488,7 +509,40 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
+        }
+
+        @Test
+        void shouldThrowExceptionIfUrgentDirectionIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .urgentDirectionsOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyUrgentDirectionsOrderExists(caseData, MIGRATION_ID, document1Id));
         }
 
         @Test
@@ -502,7 +556,7 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
-                    "test.pdf"));
+                    fileName));
         }
 
         @Test
@@ -977,7 +1031,7 @@ class MigrateCaseServiceTest {
                 "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
                 MIGRATION_ID, 1L));
     }
-    
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemovePlacementApplication {
@@ -1214,5 +1268,463 @@ class MigrateCaseServiceTest {
 
             assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
         }
+    }
+
+    static Stream<Arguments> createPossibleOrderType() {
+        String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
+        String validOrderType = "EDUCATION_SUPERVISION_ORDER";
+        return Stream.of(
+            Arguments.of(List.of(invalidOrderType), List.of(validOrderType)),
+            Arguments.of(List.of(invalidOrderType, "DEF"), List.of(validOrderType, "DEF")),
+            Arguments.of(List.of("ABC", invalidOrderType), List.of("ABC", validOrderType)),
+            Arguments.of(List.of("ABC", invalidOrderType, "DEF"), List.of("ABC", validOrderType, "DEF"))
+        );
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class FixOrderTypeTypo {
+
+        @ParameterizedTest
+        @SuppressWarnings("unchecked")
+        @MethodSource("uk.gov.hmcts.reform.fpl.service.MigrateCaseServiceTest#createPossibleOrderType")
+        void shouldChangeInvalidOrderType(List<String> orderType, List<String> expectedOrderType) {
+            CaseDetails caseDetails = CaseDetails.builder().data(
+                Map.of("orders", Map.of("orderType", orderType))
+            ).build();
+
+            assertThat(underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails)).containsEntry("orders",
+                Map.of("orderType", expectedOrderType));
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfOrdersMissing() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders]");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfOrderTypeMissing() {
+            Map<String, Object> orders = new HashMap<>();
+            orders.put("orders", Map.of());
+            CaseDetails caseDetails = CaseDetails.builder().data(orders).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders.orderType] "
+                    + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
+        }
+
+        @Test
+        void shouldThrowAssertionErrorIfCaseDoesNotContainInvalidOrderType() {
+            Map<String, Object> orders = new HashMap<>();
+            orders.put("orders", Map.of("orderType", List.of("ABC")));
+            CaseDetails caseDetails = CaseDetails.builder().data(orders).build();
+
+            assertThatThrownBy(() -> underTest.fixOrderTypeTypo(MIGRATION_ID, caseDetails))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration}, case does not have [orders.orderType] "
+                    + "or missing target invalid order type [EDUCATION_SUPERVISION__ORDER]");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveJudicialMessage {
+        final Element<JudicialMessage> message1 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> message2 = element(JudicialMessage.builder().build());
+        final Element<JudicialMessage> mesageToBeRemoved = element(JudicialMessage.builder().build());
+
+        @Test
+        void shouldRemoveJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .judicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("judicialMessages").asList().containsExactly(message1, message2);
+        }
+
+        @Test
+        void shouldRemoveJudicialMessageIfOnlyOneMessageExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .judicialMessages(List.of(mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("judicialMessages").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNull() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() ->
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
+                .isInstanceOf(AssertionError.class);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenMessageNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() ->
+                underTest.removeJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
+                            + mesageToBeRemoved.getId() + " not found");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveSkeletonArgument {
+        private final Element<SkeletonArgument> skeletonArgument1 = element(SkeletonArgument.builder().build());
+        private final Element<SkeletonArgument> skeletonArgument2 = element(SkeletonArgument.builder().build());
+        private final Element<SkeletonArgument> skeletonArgumentToBeRemoved =
+            element(SkeletonArgument.builder().build());
+
+        @Test
+        void shouldRemoveSkeletonArgument() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgument1, skeletonArgument2, skeletonArgumentToBeRemoved))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSkeletonArgument(caseData,
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList()
+                .containsExactly(skeletonArgument1, skeletonArgument2);
+        }
+
+        @Test
+        void shouldRemoveSkeletonArgumentIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgumentToBeRemoved))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSkeletonArgument(caseData,
+                skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("skeletonArgumentList").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfSkeletonArgumentNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .skeletonArgumentList(List.of(skeletonArgument1, skeletonArgument2))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSkeletonArgument(caseData,
+                    skeletonArgumentToBeRemoved.getId().toString(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
+                    MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+    @Nested
+    class AddCourt {
+
+        @Test
+        void shouldGetCourtFieldToUpdate() {
+            Court court = Court.builder().code("165").name("Carlisle").build();
+            when(courtService.getCourt("165")).thenReturn(Optional.of(court));
+
+            Map<String, Object> updatedFields = underTest.addCourt("165");
+
+            assertThat(updatedFields).extracting("court").isEqualTo(court);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCourtNotFound() {
+            when(courtService.getCourt("NOTCOURT")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> underTest.addCourt("NOTCOURT"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Court not found with ID NOTCOURT");
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveHearingFurtherEvidenceDocuments {
+        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveTargetSupportingEvidenceBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").asList()
+                .containsExactly(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2))
+                        .build()
+                ));
+        }
+
+        @Test
+        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2))
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                    hearingFurtherEvidenceBundleId, sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
+                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfHearingIdNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(
+                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
+                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
+                UUID.randomUUID(), sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, hearing not found", MIGRATION_ID, 1));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveFurtherEvidenceSolicitorDocuments {
+        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
+            .build());
+        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldRemoveTargetSupportingEvidenceBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2, sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").asList()
+                .containsExactly(seb1, seb2);
+        }
+
+        @Test
+        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(sebToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
+                MIGRATION_ID, sebToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
+                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveCourtBundleByBundleId {
+
+        private UUID hearingId = UUID.randomUUID();
+
+        private UUID targetBundleId = UUID.randomUUID();
+
+        private final Element<CourtBundle> cb1 = element(CourtBundle.builder()
+            .document(DocumentReference.builder().build()).build());
+        private final Element<CourtBundle> cb2 = element(CourtBundle.builder()
+            .document(DocumentReference.builder().build()).build());
+
+        private final Element<HearingCourtBundle> singleCbHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(
+                element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+            ))
+            .build());
+
+        private final Element<HearingCourtBundle> mixedCourtBundlesHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2,
+                    element(targetBundleId, CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build());
+
+        private final Element<HearingCourtBundle> expectedHearingCourtBundle = element(hearingId,
+            HearingCourtBundle.builder().courtBundle(List.of(cb1, cb2)).build());
+
+        @Test
+        void shouldRemoveTargetedCourtBundleWithOtherCourtBundleInTheSameHearing() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, targetBundleId);
+
+            assertThat(updatedFields).extracting("courtBundleListV2").asList()
+                .containsExactly(expectedHearingCourtBundle);
+        }
+
+        @Test
+        void shouldRemoveTargetedCourtBundleIfItIsTheOnlyCourtBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(singleCbHearingCourtBundle))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, targetBundleId);
+
+            assertThat(updatedFields).extracting("courtBundleListV2")
+                .isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetHearingNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                UUID.randomUUID(), targetBundleId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing not found",
+                    MIGRATION_ID, 1, hearingId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfTargetCourtBundleNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(mixedCourtBundlesHearingCourtBundle))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCourtBundleByBundleId(caseData, MIGRATION_ID,
+                hearingId, UUID.randomUUID()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, hearing court bundle not found",
+                    MIGRATION_ID, 1, targetBundleId));
+        }
+    }
+
+    @Nested
+    class MigrateRelatingLA {
+
+        CaseData caseData = CaseData.builder()
+            .id(1234L)
+            .build();
+
+        @Test
+        void shouldThrowExceptionIfCaseNotInConfig() {
+            when(migrateRelatingLAService.getRelatingLAString("1234")).thenReturn(Optional.empty());
+            assertThatThrownBy(() -> underTest.addRelatingLA(MIGRATION_ID, caseData.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, case not found in migration list",
+                    MIGRATION_ID, "1234"));
+        }
+
+        @Test
+        void shouldPopulateRelatingLAIfCaseNotInConfig() {
+            when(migrateRelatingLAService.getRelatingLAString("1234")).thenReturn(Optional.of("ABC"));
+
+            Map<String, Object> updatedFields = underTest.addRelatingLA(MIGRATION_ID, caseData.getId());
+
+            assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
+        }
+
     }
 }

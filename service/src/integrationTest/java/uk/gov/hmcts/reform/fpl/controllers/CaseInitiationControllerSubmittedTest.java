@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,15 +34,12 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
@@ -149,9 +148,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
                 organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
+        // Exception is only thrown now at the very end if the creator also couldn't be assigned the role
         assertThatThrownBy(() -> postSubmittedEvent(caseData))
             .getRootCause()
-            .isEqualTo(new GrantCaseAccessException(caseData.getId(), of(LOGGED_USER_ID, OTHER_USER_ID), LASOLICITOR));
+            .isEqualTo(new GrantCaseAccessException(caseData.getId(), of(LOGGED_USER_ID), LASOLICITOR));
     }
 
     private void givenUserInOrganisation(Organisation organisation) {
@@ -164,12 +164,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private void verifyTaskListUpdated(CaseData caseData) {
-        verify(coreCaseDataService).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-task-list"),
-            anyMap());
+            any());
     }
 
     private AddCaseAssignedUserRolesRequest assignment(CaseData caseData, Organisation organisation,
@@ -206,5 +204,27 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
             .collect(toList());
 
         return OrganisationUsers.builder().users(users).build();
+    }
+
+    @Test
+    void shouldInvokeSubmitSupplementaryData() {
+        final Organisation organisation = testOrganisation();
+
+        final CaseData caseData = CaseData.builder()
+            .id(nextLong())
+            .state(OPEN)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .outsourcingPolicy(organisationPolicy(
+                organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
+        supplementaryData.put("supplementary_data_updates",
+            Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
+
+        verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+            caseData.getId().toString(), supplementaryData);
     }
 }
