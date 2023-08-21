@@ -68,7 +68,7 @@
     "ID": "Documents",
     "ListElementCode": "confidential",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ConfidentialDocument",
+    "FieldTypeParameter": "CaseRole",
     "ElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
     "SecurityClassification": "Public",
     "Searchable": "N",
