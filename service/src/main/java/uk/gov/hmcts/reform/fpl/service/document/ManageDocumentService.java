@@ -528,22 +528,29 @@ public class ManageDocumentService {
             .filter(DocumentType::isUploadable)
             .sorted(Comparator.comparing(DocumentType::getDisplayOrder))
             .toList()) {
-            for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
-                switch (level) {
-                    case LA:
-                        return currentUserType != DocumentUploaderType.SOLICITOR;
-                    case CTSC:
-                        return currentUserType == DocumentUploaderType.HMCTS;
-                    case NON_CONFIDENTIAL:
-                        return true;
-                    default:
-                        return false;
+            if (dt == PLACEMENT_RESPONSES) {
+                List<Element<Placement>> placements = caseData.getPlacementEventData().getPlacements();
+
+                fieldNameToListOfElementMap.put(PLACEMENT_RESPONSES.name(), placements.stream()
+                    .flatMap(pe -> pe.getValue().getNoticeDocuments().stream())
+                    .collect(toList()));
+            } else {
+                for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
+                    switch (level) {
+                        case LA:
+                            return currentUserType != DocumentUploaderType.SOLICITOR;
+                        case CTSC:
+                            return currentUserType == DocumentUploaderType.HMCTS;
+                        case NON_CONFIDENTIAL:
+                            return true;
+                        default:
+                            return false;
+                    }
+                }).collect(toList())) {
+                    fieldNameToListOfElementMap.putAll(toFieldNameToListOfElementMap(caseData, dt, level));
                 }
-            }).collect(toList())) {
-                fieldNameToListOfElementMap.putAll(toFieldNameToListOfElementMap(caseData, dt, level));
             }
         }
-        // TODO handling PlacementResponse;
         return dynamicListService.asDynamicList(toListOfPair(caseData, fieldNameToListOfElementMap));
     }
 
