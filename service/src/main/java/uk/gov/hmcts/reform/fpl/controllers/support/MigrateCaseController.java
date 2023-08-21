@@ -202,6 +202,7 @@ public class MigrateCaseController extends CallbackController {
             }).toList();
 
         caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
+        caseDetails.getData().remove("hasBeenAMMigrated");
     }
 
     private void runAM(CaseDetails caseDetails) {
@@ -243,6 +244,7 @@ public class MigrateCaseController extends CallbackController {
             }).toList();
 
         caseDetails.getData().put("hearingDetails", modified);
+        caseDetails.getData().put("hasBeenAMMigrated", "Yes");
     }
 
     private void run1649(CaseDetails caseDetails) {

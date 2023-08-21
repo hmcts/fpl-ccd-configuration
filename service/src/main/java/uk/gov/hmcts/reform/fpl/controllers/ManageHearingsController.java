@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
-import uk.gov.hmcts.reform.fpl.events.judicial.HandleCancelledHearingRolesEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -490,7 +490,7 @@ public class ManageHearingsController extends CallbackController {
         publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest)));
 
-        publishEvent(new HandleCancelledHearingRolesEvent(caseData, getCaseDataBefore(callbackRequest)));
+        publishEvent(new HandleHearingModificationRolesEvent(caseData, getCaseDataBefore(callbackRequest)));
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())

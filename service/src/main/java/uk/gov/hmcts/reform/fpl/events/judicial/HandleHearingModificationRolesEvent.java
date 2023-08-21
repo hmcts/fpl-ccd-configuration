@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 @Data
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class HandleCancelledHearingRolesEvent {
+public class HandleHearingModificationRolesEvent {
 
     private final CaseData caseData;
     private final CaseData caseDataBefore;
