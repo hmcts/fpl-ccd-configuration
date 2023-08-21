@@ -9,6 +9,8 @@ Dockerfile
 build.gradle
 charts/**/Chart.yaml
 infrastructure/state.tf
+infrastructure/main.tf
+infrastructure/.terraform-version
 .github/workflows/*.yaml
 package.json
 yarn.lock
