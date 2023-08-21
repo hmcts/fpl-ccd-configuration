@@ -23,10 +23,13 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
+import uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -60,6 +63,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
@@ -68,9 +72,11 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +93,7 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -2872,7 +2879,7 @@ class ManageDocumentServiceTest {
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality,
                                                                      DocumentUploaderType uploaderType) {
-        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS,
             suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
             list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
@@ -3452,5 +3459,69 @@ class ManageDocumentServiceTest {
                 .extracting("placements").asList()
                 .matches(matcher);
         }
+    }
+
+
+    @Nested
+    class BuildManageDocumentsUploadedEventTest {
+        @ParameterizedTest
+        @MethodSource("allDocumentsTypeParameters")
+        void shouldBuildManageDocumentsUploadedEvent(DocumentType documentType, ConfidentialLevel confidentialLevel)
+            throws Exception {
+
+            List<Element<ManagedDocument>> documentList = List.of(element(ManagedDocument.builder()
+                .document(ManageDocumentsUploadedEventTestData.getPDFDocument()).build()));
+
+            CaseData caseDataBefore = ManageDocumentsUploadedEventTestData.commonCaseBuilder().build();
+
+            CaseData.CaseDataBuilder<?,?> caseDataBuilder = ManageDocumentsUploadedEventTestData.commonCaseBuilder();
+            caseDataBuilder = ManageDocumentsUploadedEventTestData.addManagedDocument(caseDataBuilder, documentType,
+                    confidentialLevel, documentList);
+            CaseData caseData = caseDataBuilder.build();
+
+            ManageDocumentsUploadedEvent eventData =
+                underTest.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+
+
+            assertEquals(caseData, eventData.getCaseData());
+
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = new HashMap<>();
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocumentsLA = new HashMap<>();
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocumentsCTSC = new HashMap<>();
+
+            List<Element<NotifyDocumentUploaded>> expectedDocuments = documentList.stream()
+                .map(elm -> element(elm.getId(), (NotifyDocumentUploaded) elm.getValue()))
+                .collect(Collectors.toList());
+
+            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                expectedNewDocuments.put(documentType, expectedDocuments);
+            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                expectedNewDocumentsLA.put(documentType, expectedDocuments);
+            } else if (ConfidentialLevel.CTSC.equals(confidentialLevel)) {
+                expectedNewDocumentsCTSC.put(documentType, expectedDocuments);
+            }
+
+            assertEquals(expectedNewDocuments, eventData.getNewDocuments());
+            assertEquals(expectedNewDocumentsLA, eventData.getNewDocumentsLA());
+            assertEquals(expectedNewDocumentsCTSC, eventData.getNewDocumentsCTSC());
+        }
+
+
+        private static Stream<Arguments> allDocumentsTypeParameters() {
+            List<Arguments> streamList = new ArrayList<>();
+
+            for (DocumentType docType : DocumentType.values()) {
+                if (!docType.equals(DocumentType.COURT_BUNDLE) && !docType.equals(DocumentType.CASE_SUMMARY)
+                    && !docType.equals(DocumentType.POSITION_STATEMENTS)
+                    && !docType.equals(DocumentType.SKELETON_ARGUMENTS)) {
+                    for(ConfidentialLevel level : ConfidentialLevel.values()) {
+                        streamList.add(Arguments.of(docType, level));
+                    }
+                }
+            }
+
+            return streamList.stream();
+        }
+
     }
 }

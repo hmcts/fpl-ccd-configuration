@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
@@ -79,7 +78,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.barristers;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
@@ -1160,7 +1158,6 @@ public class ManageDocumentService {
         return placementService.savePlacementNoticeResponsesAdmin(caseData);
     }
 
-    // TODO unit test
     @SuppressWarnings("unchecked")
     public ManageDocumentsUploadedEvent buildManageDocumentsUploadedEvent(CaseData caseData, CaseData caseDataBefore)
         throws Exception{
@@ -1181,9 +1178,6 @@ public class ManageDocumentService {
                     try {
                         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
                             resultMapByConfidentialLevel.get(confidentialLevel);
-                        List<Element<NotifyDocumentUploaded>> docList =
-                            Optional.ofNullable(newDocMap.get(documentType)).orElse(new ArrayList<>());
-                        newDocMap.putIfAbsent(documentType, docList);
 
                         List documentList = Optional.ofNullable(ObjectHelper
                             .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
@@ -1206,6 +1200,11 @@ public class ManageDocumentService {
 
                         for (Object document : documentList) {
                             if (!documentListBefore.contains(document)) {
+                                List<Element<NotifyDocumentUploaded>> docList =
+                                    Optional.ofNullable(newDocMap.get(documentType))
+                                        .orElse(new ArrayList<>());
+                                newDocMap.putIfAbsent(documentType, docList);
+
                                 docList.add((Element<NotifyDocumentUploaded>) document);
                             }
                         }

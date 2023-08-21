@@ -77,8 +77,6 @@ public class ManageDocumentsUploadedEventHandler {
         SKELETON_ARGUMENTS, CafcassRequestEmailContentProvider.SKELETON_ARGUMENT
     );
 
-
-    // TODO unit test
     /**
      * Base on the confidential level configuration, send notification to the given recipient.
      * e.g.
@@ -94,16 +92,16 @@ public class ManageDocumentsUploadedEventHandler {
     public void sendDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
         buildConfigurationMapGroupedByRecipient(event)
             .forEach((recipients, getConfidentialLevelFunction) -> {
-                List<Element<NotifyDocumentUploaded>> documentsToBeSent =
-                    consolidateMapByConfiguration(event, getConfidentialLevelFunction)
-                        .entrySet().stream()
-                        .filter(entry -> !isHearingDocument(entry.getKey()))
-                        .map(Map.Entry::getValue)
-                        .flatMap(List::stream)
-                        .collect(toList());
+                if (isNotEmpty(recipients)) {
+                    List<Element<NotifyDocumentUploaded>> documentsToBeSent =
+                        consolidateMapByConfiguration(event, getConfidentialLevelFunction)
+                            .entrySet().stream()
+                            .filter(entry -> !isHearingDocument(entry.getKey()))
+                            .map(Map.Entry::getValue)
+                            .flatMap(List::stream)
+                            .collect(toList());
 
-                if (!documentsToBeSent.isEmpty()) {
-                    if (isNotEmpty(recipients)) {
+                    if (!documentsToBeSent.isEmpty()) {
                         List<String> newDocumentNames = documentsToBeSent.stream()
                             .map(Element::getValue)
                             .map(NotifyDocumentUploaded::getNameForNotification)
@@ -152,7 +150,6 @@ public class ManageDocumentsUploadedEventHandler {
             });
     }
 
-    // TODO unit test
     @Async
     @EventListener
     public void sendDocumentsByPost(final ManageDocumentsUploadedEvent event) {
