@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
 @Component
