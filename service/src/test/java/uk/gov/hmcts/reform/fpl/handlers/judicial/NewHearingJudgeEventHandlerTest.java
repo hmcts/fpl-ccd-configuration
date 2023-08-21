@@ -15,14 +15,18 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
 class NewHearingJudgeEventHandlerTest {
@@ -66,6 +70,7 @@ class NewHearingJudgeEventHandlerTest {
                     .judgeLastName("Test")
                     .build())
                 .build())
+            .oldHearing(Optional.empty())
             .build();
 
         underTest.handleNewHearingJudge(event);
@@ -87,6 +92,7 @@ class NewHearingJudgeEventHandlerTest {
                         .build())
                     .build())
                 .build())
+            .oldHearing(Optional.empty())
             .build();
 
         underTest.handleNewHearingJudge(event);
@@ -112,12 +118,75 @@ class NewHearingJudgeEventHandlerTest {
                         .build())
                     .build())
                 .build())
+            .oldHearing(Optional.empty())
             .build();
 
         underTest.handleNewHearingJudge(event);
 
         verify(judicialService).getJudge("personal");
         verify(judicialService).assignHearingJudge(any(), eq("sidam"), any(), any(), anyBoolean());
+    }
+
+    @Test
+    void shouldHandleEditedHearingRolesWhenTimeChanges() {
+        LocalDateTime now = LocalDateTime.now();
+        UUID hearingId = UUID.randomUUID();
+
+        HearingBooking oldHearing = HearingBooking.builder()
+            .startDate(now)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idamId")
+                    .build())
+                .build())
+            .build();
+
+        HearingBooking newHearing = oldHearing.toBuilder()
+            .startDate(now.plusDays(2))
+            .build();
+
+        underTest.handleNewHearingJudge(new NewHearingJudgeEvent(
+            newHearing,
+            CaseData.builder().id(12345L).hearingDetails(List.of(element(hearingId, newHearing))).build(),
+            Optional.of(oldHearing)
+        ));
+
+        verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
+        verify(judicialService).assignHearingJudge(any(), eq("idamId"), any(), any(), anyBoolean());
+        verifyNoMoreInteractions(judicialService);
+    }
+
+    @Test
+    void shouldHandleEditedHearingRolesWhenJudgeChanges() {
+        LocalDateTime now = LocalDateTime.now();
+        UUID hearingId = UUID.randomUUID();
+
+        HearingBooking oldHearing = HearingBooking.builder()
+            .startDate(now)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idamId")
+                    .build())
+                .build())
+            .build();
+
+        HearingBooking newHearing = oldHearing.toBuilder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idamId2")
+                    .build())
+                .build())
+            .build();
+
+        underTest.handleNewHearingJudge(new NewHearingJudgeEvent(
+            newHearing,
+            CaseData.builder().id(12345L).hearingDetails(List.of(element(hearingId, newHearing))).build(),
+            Optional.of(oldHearing)
+        ));
+
+        verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
+        verify(judicialService).assignHearingJudge(any(), eq("idamId2"), any(), any(), anyBoolean());
+        verifyNoMoreInteractions(judicialService);
     }
 
 }

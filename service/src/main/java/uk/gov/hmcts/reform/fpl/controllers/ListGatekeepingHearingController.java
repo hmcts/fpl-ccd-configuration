@@ -409,7 +409,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData));
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, Optional.empty()));
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
