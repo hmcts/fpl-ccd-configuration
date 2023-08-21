@@ -21,6 +21,15 @@ class AllocatedJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         super("allocated-judge");
     }
 
+    @MockBean
+    private JudicialApi jrdApi;
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
+
     @Test
     void shouldSetEnterManuallyDefaultToNo() {
         CaseData caseData = CaseData.builder()
