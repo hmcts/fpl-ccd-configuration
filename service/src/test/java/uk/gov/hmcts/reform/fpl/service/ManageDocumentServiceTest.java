@@ -3550,10 +3550,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                             .build())
                     ))
                     .build())))
@@ -3580,10 +3582,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
                             .build())
                     ))
                     .build())))
@@ -3606,7 +3610,7 @@ class ManageDocumentServiceTest {
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
         void testForNonConfidentialCourtBundleUploadedByLA(int loginType) {
-            for (int i = 0; i < 2; i++) { // DESIGNATED_LOCAL_AUTHORITY and SECONDARY_LOCAL_AUTHORITY
+            for (int i = 1; i < 3; i++) { // DESIGNATED_LOCAL_AUTHORITY and SECONDARY_LOCAL_AUTHORITY
                 initialiseUserService(loginType);
                 DocumentUploaderType uploaderType = getUploaderType(loginType);
                 CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
@@ -3615,13 +3619,13 @@ class ManageDocumentServiceTest {
                         .courtBundle(List.of(
                             element(elementId1, CourtBundle.builder()
                                 .document(testDocumentReference(filename1))
-                                .uploaderType(i == 0 ? DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-                                    : DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY)
+                                .uploaderType(getUploaderType(i))
+                                .uploaderCaseRoles(getUploaderCaseRoles(i))
                                 .build()),
                             element(elementId2, CourtBundle.builder()
                                 .document(testDocumentReference(filename2))
-                                .uploaderType(i == 0 ? DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-                                    : DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY)
+                                .uploaderType(getUploaderType(i))
+                                .uploaderCaseRoles(getUploaderCaseRoles(i))
                                 .build())
                         ))
                         .build())))
@@ -3655,10 +3659,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
                             .build())
                     ))
                     .build())))
@@ -3668,9 +3674,14 @@ class ManageDocumentServiceTest {
                 Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
                 Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
             ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            if (loginType == 1 || loginType == 2) { // LAs should get an empty dynamic list
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            }
         }
 
         @ParameterizedTest
@@ -3685,6 +3696,7 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                            .uploaderCaseRoles(getUploaderCaseRoles(1))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
@@ -3693,6 +3705,12 @@ class ManageDocumentServiceTest {
                         element(elementId3, CourtBundle.builder()
                             .document(testDocumentReference(filename3))
                             .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(elementId4, CourtBundle.builder()
+                            .document(testDocumentReference(filename4))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(List.of(CaseRole.SOLICITORJ))
                             .build())
                     ))
                     .build())))
@@ -3717,10 +3735,11 @@ class ManageDocumentServiceTest {
                         element(elementId3, CourtBundle.builder()
                             .document(testDocumentReference(filename3))
                             .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
                             .build()),
                         element(elementId4, CourtBundle.builder()
                             .document(testDocumentReference(filename4))
-                            // no uploaderType means the case is migrated from existing data
+                            // no uploaderType and uploaderCaseRoles means the case is migrated from existing data
                             .build())
                     ))
                     .build())))
@@ -3729,10 +3748,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
                             .build())
                     ))
                     .build())))
@@ -3747,10 +3768,14 @@ class ManageDocumentServiceTest {
                 Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId3), filename3),
                 Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId4), filename4)
             ))).thenReturn(expectedDynamicList2);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList3);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            } else if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList3);
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             }
