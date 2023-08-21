@@ -359,6 +359,7 @@ public class ManageDocumentService {
                             : null)
                     .response(e.getValue().getDocument())
                     .uploaderType(uploaderType)
+                    .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
                     .build()));
                 caseData.setPlacementNoticeResponses(placementNoticeResponses);
                 if (ret.containsKey("placements")) {
