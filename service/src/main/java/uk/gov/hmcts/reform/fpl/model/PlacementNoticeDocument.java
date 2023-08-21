@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -27,7 +28,7 @@ public class PlacementNoticeDocument {
     private UUID respondentId;
     private List<String> documentAcknowledge;
     private DocumentUploaderType uploaderType;
-    private List<String> uploaderCaseRoles;
+    private List<CaseRole> uploaderCaseRoles;
 
     @Getter
     @RequiredArgsConstructor

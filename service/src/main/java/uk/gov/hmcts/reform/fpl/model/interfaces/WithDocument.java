@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.interfaces;
 
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -11,7 +12,7 @@ public interface WithDocument extends RemovableDocument {
 
     DocumentUploaderType getUploaderType();
 
-    List<String> getUploaderCaseRoles();
+    List<CaseRole> getUploaderCaseRoles();
 
     String getMarkAsConfidential();
 

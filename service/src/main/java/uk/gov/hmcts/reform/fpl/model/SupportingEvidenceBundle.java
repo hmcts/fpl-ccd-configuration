@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
@@ -48,7 +49,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
     private DocumentUploaderType uploaderType;
-    private List<String> uploaderCaseRoles;
+    private List<CaseRole> uploaderCaseRoles;
     private String uploadedBy;
     private List<String> confidential;
     private FurtherEvidenceType type;
