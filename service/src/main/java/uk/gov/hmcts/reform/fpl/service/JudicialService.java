@@ -50,7 +50,7 @@ public class JudicialService {
 
     private static final int HEARING_EXPIRY_OFFSET_MINS = 5;
 
-    public static final int JUDICIAL_PAGE_SIZE = 1000;
+    public static final int JUDICIAL_PAGE_SIZE = 3000;
 
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
