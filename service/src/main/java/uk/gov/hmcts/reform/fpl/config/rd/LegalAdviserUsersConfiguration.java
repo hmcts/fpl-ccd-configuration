@@ -25,7 +25,7 @@ public class LegalAdviserUsersConfiguration {
 
     public static final String SERVICE_CODE = "ABA3";
     private static final String LEGAL_ADVISER_JOB_CODE = "3";
-    private static final int STAFF_PAGE_SIZE = 500;
+    private static final int STAFF_PAGE_SIZE = 1000;
 
     private Map<String, String> mapping;
 
