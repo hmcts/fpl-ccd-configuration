@@ -499,7 +499,7 @@ public class ManageHearingsController extends CallbackController {
             }
 
             Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
-                getCaseDataBefore(callbackRequest).getHearingDetails());
+                getCaseDataBefore(callbackRequest).getAllNonCancelledHearings());
 
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
