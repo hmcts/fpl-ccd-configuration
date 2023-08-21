@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Slf4j
 @Component
@@ -31,6 +32,9 @@ public class NewHearingJudgeEventHandler {
     @Async
     @EventListener
     public void handleNewHearingJudge(final NewHearingJudgeEvent event) {
+
+        handleEditedHearing(event);
+
         if (isEmpty(event.getHearing()) || isEmpty(event.getHearing().getJudgeAndLegalAdvisor())) {
             // no hearing/hearing judge, return
             log.error("No hearing judge to attempt role assignment on");
@@ -58,7 +62,7 @@ public class NewHearingJudgeEventHandler {
                 event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
                 // if there's a hearing after the one added, we're going out of order, so set an end date
                 possibleEnd,
-                hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR));
+                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle()));
         } else if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getPersonalCode())) {
 
@@ -70,11 +74,20 @@ public class NewHearingJudgeEventHandler {
                     judicialService.assignHearingJudge(event.getCaseData().getId(), judicialUserProfile.getSidamId(),
                         event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
                         possibleEnd,
-                        hearingJudge.getJudgeTitle().equals(JudgeOrMagistrateTitle.LEGAL_ADVISOR)),
+                        JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle())),
                 () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
                     event.getCaseData().getId()));
         } else {
             log.info("No auto allocation of hearing judge on case {}", event.getCaseData().getId());
+        }
+    }
+
+    private void handleEditedHearing(final NewHearingJudgeEvent event) {
+        if (!isEmpty(event.getOldHearing())
+                && event.getOldHearing().isPresent()
+                && !event.getOldHearing().get().equals(event.getHearing())) {
+            // the hearing being modified was already on the case - cleanup its roles for us to reassign
+            judicialService.deleteSpecificHearingRole(event.getCaseData().getId(), event.getOldHearing().get());
         }
     }
 

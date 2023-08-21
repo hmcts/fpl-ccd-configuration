@@ -498,9 +498,12 @@ public class ManageHearingsController extends CallbackController {
                 publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
             }
 
+            Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
+                getCaseDataBefore(callbackRequest).getHearingDetails());
+
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData));
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
