@@ -246,8 +246,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentStatementV2",
     "ListElementCode": "uploaderCaseRoles",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Text",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
     "ElementLabel": "Document Uploader Case Roles",
     "SecurityClassification": "Public"
   },

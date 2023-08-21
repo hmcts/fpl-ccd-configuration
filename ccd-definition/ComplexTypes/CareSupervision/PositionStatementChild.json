@@ -128,8 +128,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "PositionStatementChild",
     "ListElementCode": "uploaderCaseRoles",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Text",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
     "ElementLabel": "Document Uploader Case Roles",
     "SecurityClassification": "Public"
   },
