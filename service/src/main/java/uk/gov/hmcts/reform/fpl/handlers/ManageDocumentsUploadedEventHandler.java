@@ -174,7 +174,6 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
-    // TODO unit test
     @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
@@ -243,7 +242,6 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
-    // TODO unit test
     @Async
     @EventListener
     public void notifyTranslationTeam(final ManageDocumentsUploadedEvent event) {
