@@ -488,32 +488,26 @@ public class ManageDocumentService {
         return ret;
     }
 
-    private List<Pair<String, String>> toListOfPair(DocumentUploaderType currentUploaderType,
+    private List<Pair<String, String>> toListOfPair(CaseData caseData,
                                                     Map<String, List<Element>> fieldNameToListOfElement) {
+        final DocumentUploaderType uploaderType = getUploaderType(caseData);
         final List<Pair<String, String>> ret = new ArrayList<>();
         for (Map.Entry<String, List<Element>> entrySet : fieldNameToListOfElement.entrySet()) {
             String fieldName = entrySet.getKey();
             for (Element e : entrySet.getValue()) {
                 WithDocument wd = ((WithDocument) e.getValue());
                 DocumentReference document = wd.getDocument();
-                DocumentUploaderType currentUserUploaderType = currentUploaderType;
-                DocumentUploaderType documentUploaderType = wd.getUploaderType();
 
-                if (currentUserUploaderType != DocumentUploaderType.HMCTS) {
-                    switch (currentUserUploaderType) {
-                        case DESIGNATED_LOCAL_AUTHORITY:
-                        case SECONDARY_LOCAL_AUTHORITY:
-                            if (documentUploaderType == DocumentUploaderType.HMCTS) {
-                                continue;
-                            }
-                            break;
-                        case SOLICITOR:
-                            if (documentUploaderType != DocumentUploaderType.SOLICITOR) {
-                                continue;
-                            }
-                            break;
-                        default:
-                            break;
+                if (uploaderType != DocumentUploaderType.HMCTS) {
+                    List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
+                        ? new ArrayList<>() : wd.getUploaderCaseRoles();
+                    final Set<CaseRole> currentUploaderCaseRoles = Optional
+                        .ofNullable(userService.getCaseRoles(caseData.getId()))
+                        .orElse(Set.of());
+
+                    if (!docCaseRoles.stream().filter(cr -> currentUploaderCaseRoles.contains(cr)).findAny()
+                        .isPresent()) {
+                        continue;
                     }
                 }
                 ret.add(Pair.of(fieldName + DOCUMENT_TO_BE_REMOVED_SEPARATOR + e.getId(), document.getFilename()));
@@ -550,7 +544,7 @@ public class ManageDocumentService {
             }
         }
         // TODO handling PlacementResponse;
-        return dynamicListService.asDynamicList(toListOfPair(currentUserType, fieldNameToListOfElementMap));
+        return dynamicListService.asDynamicList(toListOfPair(caseData, fieldNameToListOfElementMap));
     }
 
     public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
