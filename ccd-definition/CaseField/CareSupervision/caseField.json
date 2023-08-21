@@ -2,6 +2,15 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hasBeenAMMigrated",
+    "Label": "Has been migrated in the AM migration",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialUser",
     "Label": "Search for Judge",
     "FieldType": "JudicialUser",
