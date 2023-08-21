@@ -88,6 +88,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -247,83 +248,113 @@ public class ManageDocumentService {
         DocumentType documentType = DocumentType.fromFieldName(fieldName);
         UUID documentElementId = UUID.fromString(split[1]);
 
-        // getting list of removed element
-        List<Element> listOfRemovedElement = this.readFromFieldName(caseData, documentType.getFieldNameOfRemovedList());
-        if (listOfRemovedElement == null) {
-            listOfRemovedElement = new ArrayList<>();
-        }
+        final Map<String, Object> ret = new HashMap<>();
+        if (documentType == PLACEMENT_RESPONSES) {
+            Element<Placement> placement = caseData.getPlacementEventData().getPlacements().stream()
+                .filter(placementElement -> placementElement.getValue().getNoticeDocuments().stream()
+                    .filter(nd -> documentElementId.equals(nd.getId()))
+                    .findAny().isPresent())
+                .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate placement"));
 
-        List<Element> listOfElement = this.readFromFieldName(caseData, fieldName);
-        if (documentType == DocumentType.COURT_BUNDLE) {
-            HearingDocuments hearingDocuments = caseData.getHearingDocuments();
-            switch (fieldName) {
-                case "hearingDocuments.courtBundleListV2":
-                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListV2());
-                    break;
-                case "hearingDocuments.courtBundleListLA":
-                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListLA());
-                    break;
-                case "hearingDocuments.courtBundleListCTSC":
-                    listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListCTSC());
-                    break;
-                default:
-                    throw new IllegalStateException("unrecognised field name: " + fieldName);
-            }
+            Element<PlacementNoticeDocument> target = placement.getValue().getNoticeDocuments().stream()
+                .filter(nd -> documentElementId.equals(nd.getId()))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate notice documents"));
+            target.getValue().setRemovalReason(removalReason);
 
-            Element<HearingCourtBundle> hcbElement = Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
-                    Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
-                        hearingDocuments.getCourtBundleListLA().stream()))
-                .filter(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream().filter(
-                    cb -> documentElementId.equals(cb.getId())
-            ).findAny().isPresent()).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
-            
-            Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
-                .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
-                    throw new IllegalStateException("Fail to locate the target document");
-                });
-            Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
-                .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
-                    throw new IllegalStateException("Fail to locate the target document (nc)");
-                });
+            placement.getValue().getNoticeDocuments().remove(target);
 
-            if (hcbElement.getValue().getCourtBundle().size() == 1
-                && hcbElement.getValue().getCourtBundleNC().size() == 1) {
-                // multiple court bundles(nc) keep hcbElement, otherwise remove it
-                listOfElement.remove(hcbElement);
-            }
-            hcbElement.getValue().getCourtBundle().remove(target);
-            hcbElement.getValue().getCourtBundleNC().remove(targetNC);
+            List<Element<PlacementNoticeDocument>> noticeDocumentsRemoved = placement.getValue()
+                .getNoticeDocumentsRemoved() == null ? new ArrayList<>() : placement.getValue()
+                .getNoticeDocumentsRemoved();
+            noticeDocumentsRemoved.add(target);
+            placement.getValue().setNoticeDocumentsRemoved(noticeDocumentsRemoved);
 
-            final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
-                .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
-            Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
-                .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
-                .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
-                    .courtBundle(new ArrayList<>())
-                    .courtBundleNC(new ArrayList<>())
-                    .build()));
-            target.getValue().setRemovalReason(removalReason); // Setting the removal reason
-            targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
-            hcbFromRemovedList.getValue().getCourtBundle().add(target);
-            hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
-            if (isNewHearingCourtBundleInRemovedList) {
-                listOfRemovedElement.add(hcbFromRemovedList);
-            }
+            ret.put("placements", caseData.getPlacementEventData().getPlacements());
+            ret.put("placementsNonConfidential", caseData.getPlacementEventData()
+                .getPlacementsNonConfidential(false));
+            ret.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
+                .getPlacementsNonConfidential(true));
         } else {
-            Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
-                .orElseThrow(() -> {
-                    throw new IllegalStateException("Fail to locate the target document");
-                });
+            // getting list of removed element
+            List<Element> listOfRemovedElement =
+                this.readFromFieldName(caseData, documentType.getFieldNameOfRemovedList());
+            if (listOfRemovedElement == null) {
+                listOfRemovedElement = new ArrayList<>();
+            }
 
-            listOfElement.remove(target);
-            ((WithDocument) target.getValue()).setRemovalReason(removalReason); // Setting the removal reason
-            listOfRemovedElement.add(target); // Putting it to removed list for backing up
+            List<Element> listOfElement = this.readFromFieldName(caseData, fieldName);
+
+            if (documentType == COURT_BUNDLE) {
+                HearingDocuments hearingDocuments = caseData.getHearingDocuments();
+                switch (fieldName) {
+                    case "hearingDocuments.courtBundleListV2":
+                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListV2());
+                        break;
+                    case "hearingDocuments.courtBundleListLA":
+                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListLA());
+                        break;
+                    case "hearingDocuments.courtBundleListCTSC":
+                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListCTSC());
+                        break;
+                    default:
+                        throw new IllegalStateException("unrecognised field name: " + fieldName);
+                }
+
+                Element<HearingCourtBundle> hcbElement =
+                    Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
+                            Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
+                                hearingDocuments.getCourtBundleListLA().stream()))
+                        .filter(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream().filter(
+                            cb -> documentElementId.equals(cb.getId())
+                        ).findAny().isPresent()).findFirst()
+                        .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
+
+                Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
+                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
+                        throw new IllegalStateException("Fail to locate the target document");
+                    });
+                Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
+                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
+                        throw new IllegalStateException("Fail to locate the target document (nc)");
+                    });
+
+                if (hcbElement.getValue().getCourtBundle().size() == 1
+                    && hcbElement.getValue().getCourtBundleNC().size() == 1) {
+                    // multiple court bundles(nc) keep hcbElement, otherwise remove it
+                    listOfElement.remove(hcbElement);
+                }
+                hcbElement.getValue().getCourtBundle().remove(target);
+                hcbElement.getValue().getCourtBundleNC().remove(targetNC);
+
+                final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
+                    .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
+                Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
+                    .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
+                    .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
+                        .courtBundle(new ArrayList<>())
+                        .courtBundleNC(new ArrayList<>())
+                        .build()));
+                target.getValue().setRemovalReason(removalReason); // Setting the removal reason
+                targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
+                hcbFromRemovedList.getValue().getCourtBundle().add(target);
+                hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
+                if (isNewHearingCourtBundleInRemovedList) {
+                    listOfRemovedElement.add(hcbFromRemovedList);
+                }
+            } else {
+                Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
+                    .orElseThrow(() -> {
+                        throw new IllegalStateException("Fail to locate the target document");
+                    });
+
+                listOfElement.remove(target);
+                ((WithDocument) target.getValue()).setRemovalReason(removalReason); // Setting the removal reason
+                listOfRemovedElement.add(target); // Putting it to removed list for backing up
+            }
+
+            ret.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
+            ret.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()), listOfRemovedElement);
         }
-
-        Map<String, Object> ret = new HashMap<>();
-        ret.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
-        ret.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()), listOfRemovedElement);
         return ret;
     }
 

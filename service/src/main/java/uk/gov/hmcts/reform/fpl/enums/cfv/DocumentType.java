@@ -296,9 +296,13 @@ public enum DocumentType {
     }
 
     public static DocumentType fromFieldName(String fieldName) {
-        return Arrays.stream(DocumentType.values())
-            .filter(dt -> dt.getFieldNames().contains(fieldName))
-            .findFirst().orElse(null);
+        try {
+            return DocumentType.valueOf(fieldName);
+        } catch (IllegalArgumentException ex) {
+            return Arrays.stream(DocumentType.values())
+                .filter(dt -> dt.getFieldNames().contains(fieldName))
+                .findFirst().orElse(null);
+        }
     }
 
     public static String toJsonFieldName(String fieldName) {
