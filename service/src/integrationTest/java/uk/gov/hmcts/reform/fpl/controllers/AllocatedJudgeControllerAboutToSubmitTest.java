@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(AllocatedJudgeController.class)
@@ -53,6 +56,32 @@ class AllocatedJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat((callbackResponse.getErrors())).isNull();
         assertThat(after.getAllocatedJudge().getJudgeJudicialUser().getIdamId()).isEqualTo("1234");
+    }
+
+    @Test
+    void shouldErrorIfNoJudgeAndNotEnteringManually() {
+        CaseData caseData = CaseData.builder()
+            .enterManually(YesNo.NO)
+            .allocatedJudge(Judge.builder().build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+
+        assertThat(callbackResponse.getErrors())
+            .containsExactly("You must search for a judge or enter their details manually");
+    }
+
+    @Test
+    void shouldErrorIfNoJudgeFoundInJrd() {
+        CaseData caseData = CaseData.builder()
+            .enterManually(YesNo.NO)
+            .judicialUser(JudicialUser.builder().personalCode("1234").build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
+
+        assertThat(callbackResponse.getErrors())
+            .containsExactly("Could not fetch Judge details from JRD, please try again in a few minutes.");
     }
 
 }
