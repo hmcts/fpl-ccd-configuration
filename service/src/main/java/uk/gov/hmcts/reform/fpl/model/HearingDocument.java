@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentMetaData;
@@ -28,7 +27,7 @@ public class HearingDocument extends DocumentMetaData implements WithDocument {
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;
     protected DocumentUploaderType uploaderType;
-    protected List<CaseRole> uploaderCaseRoles;
+    protected List<String> uploaderCaseRoles;
     protected String markAsConfidential;
 
     public String getHasConfidentialAddress() {

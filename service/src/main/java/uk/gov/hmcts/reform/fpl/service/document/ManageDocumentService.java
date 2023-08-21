@@ -287,7 +287,8 @@ public class ManageDocumentService {
                 }
                 UploadBundle bundle = UploadBundle.builder().document(document)
                     .uploaderType(uploaderType)
-                    .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                    .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId()).stream()
+                        .map(CaseRole::name).toList()))
                     .confidential(confidential)
                     .build();
                 docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));

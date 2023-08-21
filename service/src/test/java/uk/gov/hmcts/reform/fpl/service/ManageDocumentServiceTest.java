@@ -2834,6 +2834,21 @@ class ManageDocumentServiceTest {
         }
     }
 
+    private static List<String> getUploaderCaseRolesInString(int loginType) {
+        switch (loginType) {
+            case 1:
+                return List.of(CaseRole.LASOLICITOR).stream().map(CaseRole::name).toList();
+            case 2:
+                return List.of(CaseRole.LASHARED).stream().map(CaseRole::name).toList();
+            case 3:
+                return List.of(CaseRole.SOLICITORA).stream().map(CaseRole::name).toList();
+            case 4:
+                return List.of();
+            default:
+                throw new IllegalStateException("unrecognised loginType: " + loginType);
+        }
+    }
+
     private void tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType documentType,
                                                                     Function<String, String> fieldNameProvider,
                                                                     int loginType, Confidentiality confidentiality,
@@ -2870,7 +2885,7 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build())));
     }
 
@@ -2883,7 +2898,7 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build())));
     }
 
@@ -2896,7 +2911,7 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build())));
     }
 
@@ -2910,7 +2925,7 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build())));
     }
 
@@ -2997,13 +3012,13 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
                 && list.contains(element(elementIdTwo, ManagedDocument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
         );
     }
@@ -3017,13 +3032,13 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
                 && list.contains(element(elementIdTwo, CaseSummary.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
         );
     }
@@ -3037,13 +3052,13 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
                 && list.contains(element(elementIdTwo, SkeletonArgument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
         );
     }
@@ -3058,13 +3073,13 @@ class ManageDocumentServiceTest {
                 .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
                 && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .build()))
         );
     }
@@ -3167,14 +3182,14 @@ class ManageDocumentServiceTest {
                     .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())),
             list -> list.contains(element(elementIdTwo,
                 ManagedDocument.builder()
                     .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())));
     }
 
@@ -3189,13 +3204,13 @@ class ManageDocumentServiceTest {
                 CaseSummary.builder().document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())),
             list -> list.contains(element(elementIdTwo,
                 CaseSummary.builder().document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())));
     }
 
@@ -3211,14 +3226,14 @@ class ManageDocumentServiceTest {
                     .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())),
             list -> list.contains(element(elementIdTwo,
                 SkeletonArgument.builder()
                     .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())));
     }
 
@@ -3234,14 +3249,14 @@ class ManageDocumentServiceTest {
                     .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())),
             list -> list.contains(element(elementIdTwo,
                 RespondentStatementV2.builder()
                     .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
                     .uploaderType(getUploaderType(loginType))
-                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                     .build())));
     }
 
@@ -3332,7 +3347,7 @@ class ManageDocumentServiceTest {
         Placement placementLA = Placement.builder().noticeDocuments(List.of(
             element(elementIdOne, PlacementNoticeDocument.builder()
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .response(expectedDocumentOne)
                 .build())
         )).build();
@@ -3436,12 +3451,12 @@ class ManageDocumentServiceTest {
         Placement placementLA = Placement.builder().noticeDocuments(List.of(
             element(elementIdOne, PlacementNoticeDocument.builder()
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .response(expectedDocumentOne)
                 .build()),
             element(elementIdTwo, PlacementNoticeDocument.builder()
                 .uploaderType(getUploaderType(loginType))
-                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .uploaderCaseRoles(getUploaderCaseRolesInString(loginType))
                 .response(expectedDocumentTwo)
                 .build())
         )).build();
