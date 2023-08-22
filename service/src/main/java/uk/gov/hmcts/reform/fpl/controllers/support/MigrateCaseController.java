@@ -199,7 +199,7 @@ public class MigrateCaseController extends CallbackController {
         UUID expectedDocument = UUID.fromString("438c74f9-9519-4d8f-80fb-d65780a55a8e");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeCorrespondenceDocumentNC(caseDetails,
+        caseDetails.getData().putAll(migrateCaseService.removeCorrespondenceDocument(getCaseData(caseDetails),
             migrationId, expectedDocument));
     }
 }

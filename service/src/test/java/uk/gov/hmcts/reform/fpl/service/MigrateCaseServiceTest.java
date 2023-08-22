@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -1709,6 +1710,8 @@ class MigrateCaseServiceTest {
             element(SupportingEvidenceBundle.builder().build());
         private final Element<SupportingEvidenceBundle> correspondenceDocumentToBeRemoved =
             element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocumentConfidential =
+            element(SupportingEvidenceBundle.builder().hasConfidentialAddress("Yes").build());
 
         @Test
         void shouldRemoveCorrespondenceDocument() {
@@ -1723,6 +1726,8 @@ class MigrateCaseServiceTest {
 
             assertThat(updatedFields).extracting("correspondenceDocuments").asList()
                 .containsExactly(correspondenceDocument1, correspondenceDocument2);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
         }
 
         @Test
@@ -1736,6 +1741,7 @@ class MigrateCaseServiceTest {
                 MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
 
             assertThat(updatedFields).extracting("correspondenceDocuments").asList().isEmpty();
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList().isEmpty();
         }
 
         @Test
@@ -1750,6 +1756,23 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, correspondence document not found",
                     MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldNotPutConfidentialDocsInNc() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2,
+                    correspondenceDocumentToBeRemoved, correspondenceDocumentConfidential))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentConfidential);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
         }
     }
 
