@@ -194,6 +194,34 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldReturnNoDocumentErrorMessageWhenThereIsNoAvailableDocumentToBeRemoved() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build())
+            .build();
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(true);
+        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any())).thenReturn(DynamicList.builder()
+            .listItems(List.of())
+            .build());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-action-selection");
+        extractCaseData(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("There is no document to be removed.");
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(false);
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any())).thenReturn(DynamicList.builder()
+            .listItems(List.of())
+            .build());
+
+        callbackResponse = postMidEvent(caseData,"manage-document-action-selection");
+        extractCaseData(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("There is no document to be removed.");
+    }
+
+    @Test
     void shouldContainErrorIfSelectedDocumentTypeIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
@@ -431,7 +459,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "manage-document-type-selection");
 
-        CaseData responseCaseData = extractCaseData(callbackResponse);
+        extractCaseData(callbackResponse);
 
         assertThat(callbackResponse.getErrors()).contains("You are trying to remove a document from a parent folder, "
             + "you need to choose one of the available sub folders.");
