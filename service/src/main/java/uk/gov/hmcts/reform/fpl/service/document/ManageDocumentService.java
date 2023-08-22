@@ -480,8 +480,11 @@ public class ManageDocumentService {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 1) {
             try {
-                return (List<Element>) BeanUtils.getPropertyDescriptor(CaseData.class, fieldName)
-                    .getReadMethod().invoke(caseData);
+                PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(CaseData.class, fieldName);
+                if (pd == null) {
+                    throw new IllegalStateException("Fail to find the property descriptor of " + fieldName);
+                }
+                return (List<Element>) pd.getReadMethod().invoke(caseData);
             } catch (Exception ex) {
                 throw new RuntimeException(format("Fail to grep the documents' filename - %s", fieldName), ex);
             }
@@ -489,8 +492,11 @@ public class ManageDocumentService {
             String actualFieldName = splitFieldName[1];
             List<Element> listOfElement = null;
             try {
-                listOfElement = (List<Element>) BeanUtils.getPropertyDescriptor(HearingDocuments.class, actualFieldName)
-                    .getReadMethod().invoke(caseData.getHearingDocuments());
+                PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(HearingDocuments.class, actualFieldName);
+                if (pd == null) {
+                    throw new IllegalStateException("Fail to find the property descriptor of " + actualFieldName);
+                }
+                listOfElement = (List<Element>) pd.getReadMethod().invoke(caseData.getHearingDocuments());
             } catch (Exception ex) {
                 throw new RuntimeException("Fail to grep the documents' from hearingDocuments", ex);
             }
