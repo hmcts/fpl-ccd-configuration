@@ -164,6 +164,9 @@ class ManageDocumentServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private CaseConverter caseConverter;
+
     @InjectMocks
     private ManageDocumentService underTest;
 
@@ -3511,6 +3514,54 @@ class ManageDocumentServiceTest {
                 .extracting("placements").asList()
                 .matches(matcher);
         }
+    }
+
+    @Nested
+    class BuildDocumentTypeDynamicListForRemovalTest {
+
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        UUID elementId3 = UUID.randomUUID();
+        UUID elementId4 = UUID.randomUUID();
+
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+        String filename3 = "COURT BUNDLE3.docx";
+        String filename4 = "COURT BUNDLE4.docx";
+
+        DynamicList expectedDynamicList1 = DynamicList.builder().build();
+        DynamicList expectedDynamicList2 = DynamicList.builder().build();
+        DynamicList expectedDynamicList3 = DynamicList.builder().build();
+        DynamicList expectedDynamicList4 = DynamicList.builder().build();
+
+        @Test
+        void testForShowingASingleDocumentType() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of("courtBundleListV2", List.of(
+                element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build())
+                    ))
+                    .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
     }
 
     @Nested
