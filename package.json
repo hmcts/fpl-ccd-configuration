@@ -23,8 +23,8 @@
     "mochawesome": "^6.3.1",
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
-    "puppeteer": "19.7.2",
-    "webdriverio": "8.3.10"
+    "puppeteer": "19.11.1",
+    "webdriverio": "8.15.4"
   },
   "scripts": {
     "lint": "eslint e2e",
@@ -46,6 +46,6 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.2",
   "license": "MIT"
 }
