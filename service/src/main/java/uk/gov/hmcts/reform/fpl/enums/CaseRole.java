@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum CaseRole {
@@ -58,7 +57,7 @@ public enum CaseRole {
     public static List<CaseRole> representativeSolicitors() {
         return Stream.concat(List.of(CAFCASSSOLICITOR).stream(),
             Stream.concat(respondentSolicitors().stream(), childSolicitors().stream())
-        ).collect(Collectors.toList());
+        ).toList();
     }
 
     public static List<CaseRole> barristers() {

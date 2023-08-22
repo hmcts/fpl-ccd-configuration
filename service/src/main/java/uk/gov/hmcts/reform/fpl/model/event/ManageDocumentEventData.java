@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
@@ -52,7 +51,7 @@ public class ManageDocumentEventData {
     public static List<String> temporaryFields() {
         List<String> tempFields = getFieldsListWithAnnotation(ManageDocumentEventData.class, Temp.class).stream()
             .map(Field::getName)
-            .collect(toList());
+            .toList();
         return tempFields;
     }
 

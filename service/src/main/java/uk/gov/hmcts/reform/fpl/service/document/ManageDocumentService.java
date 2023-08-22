@@ -564,7 +564,7 @@ public class ManageDocumentService {
 
                 fieldNameToListOfElementMap.put(PLACEMENT_RESPONSES.name(), placements.stream()
                     .flatMap(pe -> pe.getValue().getNoticeDocuments().stream())
-                    .collect(toList()));
+                    .toList();
             } else {
                 for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
                     switch (level) {
@@ -577,7 +577,7 @@ public class ManageDocumentService {
                         default:
                             return false;
                     }
-                }).collect(toList())) {
+                }).toList()) {
                     fieldNameToListOfElementMap.putAll(toFieldNameToListOfElementMap(caseData, dt, level));
                 }
             }
