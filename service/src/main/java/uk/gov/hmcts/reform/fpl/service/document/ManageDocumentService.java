@@ -197,15 +197,16 @@ public class ManageDocumentService {
         if (caseRoles.contains(BARRISTER)) {
             return DocumentUploaderType.BARRISTER;
         }
-        if (caseRoles.contains(LASHARED)) {
-            return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
-        }
         if (userService.isHmctsUser()) {
             return DocumentUploaderType.HMCTS;
         }
         if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
             return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
         }
+        if (caseRoles.contains(LASHARED)) {
+            return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+        }
+
         throw new IllegalStateException("Unable to determine document uploader type");
     }
 
@@ -246,6 +247,7 @@ public class ManageDocumentService {
                             : null)
                     .response(e.getValue().getDocument())
                     .uploaderType(uploaderType)
+                    .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
                     .build()));
                 caseData.setPlacementNoticeResponses(placementNoticeResponses);
                 if (ret.containsKey("placements")) {
@@ -292,6 +294,7 @@ public class ManageDocumentService {
                 }
                 UploadBundle bundle = UploadBundle.builder().document(document)
                     .uploaderType(uploaderType)
+                    .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
                     .confidential(confidential)
                     .build();
                 docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));

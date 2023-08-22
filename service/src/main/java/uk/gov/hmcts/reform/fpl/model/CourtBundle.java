@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -26,6 +27,7 @@ public class CourtBundle extends HearingDocument {
                        List<String> confidential,
                        String hasConfidentialAddress,
                        DocumentUploaderType uploaderType,
+                       List<CaseRole> uploaderCaseRoles,
                        String markAsConfidential) {
         super.dateTimeUploaded = dateTimeUploaded;
         super.uploadedBy = uploadedBy;
@@ -34,6 +36,7 @@ public class CourtBundle extends HearingDocument {
         this.confidential = confidential;
         super.hasConfidentialAddress = hasConfidentialAddress;
         super.uploaderType = uploaderType;
+        super.uploaderCaseRoles = uploaderCaseRoles;
         super.markAsConfidential = markAsConfidential;
     }
 

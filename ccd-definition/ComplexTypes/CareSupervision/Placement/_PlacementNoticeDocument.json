@@ -80,5 +80,14 @@
     "FieldTypeParameter": "DocumentUploaderType",
     "ElementLabel": "Document Uploader Type",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
   }
 ]

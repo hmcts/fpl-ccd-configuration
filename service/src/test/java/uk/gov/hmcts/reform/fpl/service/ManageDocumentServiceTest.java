@@ -77,6 +77,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -2723,31 +2724,6 @@ class ManageDocumentServiceTest {
         return args.stream();
     }
 
-    private void initialiseUserService(int loginType) {
-        switch (loginType) {
-            case 1:
-                // local authority
-                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASOLICITOR));
-                when(userService.isHmctsUser()).thenReturn(false);
-                break;
-            case 2:
-                // local authority
-                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.LASHARED));
-                when(userService.isHmctsUser()).thenReturn(false);
-                break;
-            case 3:
-                // solicitor
-                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(CaseRole.SOLICITORA));
-                when(userService.isHmctsUser()).thenReturn(false);
-                break;
-            case 4:
-                // HMCTS admin
-                when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
-                when(userService.isHmctsUser()).thenReturn(true);
-                break;
-        }
-    }
-
     @ParameterizedTest
     @MethodSource("buildDocumentTypeDynamicListArgs")
     void shouldBuildDocumentTypeDynamicList(int loginType,
@@ -2792,25 +2768,8 @@ class ManageDocumentServiceTest {
     private static Stream<Arguments> buildUploadingDocumentArgs() {
         List<Arguments> args = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
-            DocumentUploaderType uploaderType = null;
-            switch (i) {
-                case 1:
-                    uploaderType = DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
-                    break;
-                case 2:
-                    uploaderType = DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
-                    break;
-                case 3:
-                    uploaderType = DocumentUploaderType.SOLICITOR;
-                    break;
-                case 4:
-                    uploaderType = DocumentUploaderType.HMCTS;
-                    break;
-                default:
-                    break;
-            }
             for (Confidentiality c : Confidentiality.values()) {
-                args.add(Arguments.of(i, c, uploaderType));
+                args.add(Arguments.of(i, c));
             }
         }
         return args.stream();
@@ -2847,10 +2806,44 @@ class ManageDocumentServiceTest {
             .build();
     }
 
+    private void initialiseUserService(int loginType) {
+        when(userService.getCaseRoles(CASE_ID)).thenReturn(new HashSet<>(getUploaderCaseRoles(loginType)));
+        when(userService.isHmctsUser()).thenReturn(4 == loginType); // HMCTS for loginType = 4
+    }
+
+    private static DocumentUploaderType getUploaderType(int loginType) {
+        switch (loginType) {
+            case 1:
+                return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+            case 2:
+                return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+            case 3:
+                return DocumentUploaderType.SOLICITOR;
+            case 4:
+                return DocumentUploaderType.HMCTS;
+            default:
+                throw new IllegalStateException("unrecognised loginType: " + loginType);
+        }
+    }
+
+    private static List<CaseRole> getUploaderCaseRoles(int loginType) {
+        switch (loginType) {
+            case 1:
+                return List.of(CaseRole.LASOLICITOR);
+            case 2:
+                return List.of(CaseRole.LASHARED);
+            case 3:
+                return List.of(CaseRole.SOLICITORA);
+            case 4:
+                return List.of();
+            default:
+                throw new IllegalStateException("unrecognised loginType: " + loginType);
+        }
+    }
+
     private void tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType documentType,
                                                                     Function<String, String> fieldNameProvider,
                                                                     int loginType, Confidentiality confidentiality,
-                                                                    DocumentUploaderType uploaderType,
                                                                     Predicate<List> matcher) {
         initialiseUserService(loginType);
 
@@ -2868,7 +2861,7 @@ class ManageDocumentServiceTest {
             )
         );
 
-        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
+        String suffix = getFieldNameSuffix(getUploaderType(loginType), confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
             .containsKey(fieldNameProvider.apply(suffix))
             .extracting(fieldNameProvider.apply(suffix)).asList()
@@ -2877,55 +2870,63 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality,
-                                                                     DocumentUploaderType uploaderType) {
-        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS,
-            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+    void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
+            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, ManagedDocument.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build())));
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, Confidentiality confidentiality,
-                                                                DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadASingleCaseSummary(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.CASE_SUMMARY,
-            suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+            suffix -> "caseSummaryList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, CaseSummary.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build())));
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleSkeletonArgument(int loginType, Confidentiality confidentiality,
-                                                                     DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadASingleSkeletonArgument(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.SKELETON_ARGUMENTS,
-            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, SkeletonArgument.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build())));
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleRespondentStatement(int loginType, Confidentiality confidentiality,
-                                                                        DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadASingleRespondentStatement(int loginType,
+                                                                        Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.RESPONDENTS_STATEMENTS,
-            suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+            suffix -> "respStmtList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build())));
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadASingleCourtBundle(int loginType, Confidentiality confidentiality,
-                                                                DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadASingleCourtBundle(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.COURT_BUNDLE,
             suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix),
-            loginType, confidentiality, uploaderType,
+            loginType, confidentiality,
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId()))
@@ -2943,13 +2944,13 @@ class ManageDocumentServiceTest {
                             test = test && hcb.getCourtBundle().size() == 1;
                             test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue()
                                 .getDocument());
-                            test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue()
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
                                 .getUploaderType());
                             test = test && hcb.getCourtBundleNC() != null;
                             test = test && hcb.getCourtBundleNC().size() == 1;
                             test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getDocument());
-                            test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue()
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getUploaderType());
                             return test;
                         }
@@ -2962,7 +2963,6 @@ class ManageDocumentServiceTest {
     void tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType documentType,
                                                            Function<String, String> fieldNameProvider,
                                                            int loginType, Confidentiality confidentiality,
-                                                           DocumentUploaderType uploaderType,
                                                            Predicate<List> matcher) {
         initialiseUserService(loginType);
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
@@ -2988,7 +2988,7 @@ class ManageDocumentServiceTest {
             )
         );
 
-        String suffix = getFieldNameSuffix(uploaderType, confidentiality);
+        String suffix = getFieldNameSuffix(getUploaderType(loginType), confidentiality);
         assertThat(underTest.uploadDocuments(caseData))
             .containsKey(fieldNameProvider.apply(suffix))
             .extracting(fieldNameProvider.apply(suffix)).asList()
@@ -2997,72 +2997,92 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleParentAssessment(int loginType, Confidentiality confidentiality,
-                                                                      DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessment(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.PARENT_ASSESSMENTS,
-            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, ManagedDocument.builder().document(expectedDocumentOne)
+            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, ManagedDocument.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
-                && list.contains(element(elementIdTwo, ManagedDocument.builder().document(expectedDocumentTwo)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
+                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
         );
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, Confidentiality confidentiality,
-                                                                 DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummary(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.CASE_SUMMARY,
-            suffix -> "caseSummaryList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, CaseSummary.builder().document(expectedDocumentOne)
+            suffix -> "caseSummaryList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, CaseSummary.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
-                && list.contains(element(elementIdTwo, CaseSummary.builder().document(expectedDocumentTwo)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
+                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
         );
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgument(int loginType, Confidentiality confidentiality,
-                                                                      DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgument(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.SKELETON_ARGUMENTS,
-            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, SkeletonArgument.builder().document(expectedDocumentOne)
+            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, SkeletonArgument.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
-                && list.contains(element(elementIdTwo, SkeletonArgument.builder().document(expectedDocumentTwo)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
+                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
         );
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulateDocumentListWhenUploadMultipleRespondentStatement(int loginType, Confidentiality confidentiality,
-                                                                         DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadMultipleRespondentStatement(int loginType,
+                                                                         Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.RESPONDENTS_STATEMENTS,
-            suffix -> "respStmtList" + suffix, loginType, confidentiality, uploaderType,
-            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder().document(expectedDocumentOne)
+            suffix -> "respStmtList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder()
+                .document(expectedDocumentOne)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
-                && list.contains(element(elementIdTwo, RespondentStatementV2.builder().document(expectedDocumentTwo)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
+                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
-                .uploaderType(uploaderType).build()))
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
         );
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     @SuppressWarnings("unchecked")
-    void shouldPopulateDocumentListWhenUploadMultipleCourtBundle(int loginType, Confidentiality confidentiality,
-                                                                 DocumentUploaderType uploaderType) {
+    void shouldPopulateDocumentListWhenUploadMultipleCourtBundle(int loginType, Confidentiality confidentiality) {
         tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType.COURT_BUNDLE,
             suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType,
-            confidentiality, uploaderType,
+            confidentiality,
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
@@ -3082,13 +3102,13 @@ class ManageDocumentServiceTest {
                             test = test && hcb.getCourtBundle().size() == 1;
                             test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue()
                                 .getDocument());
-                            test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue()
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
                                 .getUploaderType());
                             test = test && hcb.getCourtBundleNC() != null;
                             test = test && hcb.getCourtBundleNC().size() == 1;
                             test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getDocument());
-                            test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue()
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getUploaderType());
                             return test;
                         }
@@ -3103,7 +3123,6 @@ class ManageDocumentServiceTest {
         DocumentType documentType,
         Function<String, String> fieldNameProvider,
         int loginType,
-        DocumentUploaderType uploaderType,
         Predicate<List> matcher1,
         Predicate<List> matcher2) {
         initialiseUserService(loginType);
@@ -3131,7 +3150,7 @@ class ManageDocumentServiceTest {
             )
         );
 
-        String suffix = getFieldNameSuffix(uploaderType, Confidentiality.YES);
+        String suffix = getFieldNameSuffix(getUploaderType(loginType), Confidentiality.YES);
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
         assertThat(actual)
             .containsKey(fieldNameProvider.apply(suffix))
@@ -3147,77 +3166,99 @@ class ManageDocumentServiceTest {
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultipleParentAssessmentWithDiffConfidentiality(
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        Confidentiality ignoreMe) {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.PARENT_ASSESSMENTS,
-            suffix -> "parentAssessmentList" + suffix, loginType, uploaderType,
+            suffix -> "parentAssessmentList" + suffix, loginType,
             list -> list.contains(element(elementIdOne,
-                ManagedDocument.builder().document(expectedDocumentOne)
+                ManagedDocument.builder()
+                    .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
-                    .uploaderType(uploaderType).build())),
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())),
             list -> list.contains(element(elementIdTwo,
-                ManagedDocument.builder().document(expectedDocumentTwo)
+                ManagedDocument.builder()
+                    .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
-                    .uploaderType(uploaderType).build())));
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultipleCaseSummaryWithDiffConfidentiality(
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        Confidentiality ignoreMe) {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.CASE_SUMMARY,
-            suffix -> "caseSummaryList" + suffix, loginType, uploaderType,
+            suffix -> "caseSummaryList" + suffix, loginType,
             list -> list.contains(element(elementIdOne,
                 CaseSummary.builder().document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
-                    .uploaderType(uploaderType).build())),
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())),
             list -> list.contains(element(elementIdTwo,
                 CaseSummary.builder().document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
-                    .uploaderType(uploaderType).build())));
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgumentWithDiffConfidentiality(
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        Confidentiality ignoreMe) {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.SKELETON_ARGUMENTS,
-            suffix -> "skeletonArgumentList" + suffix, loginType, uploaderType,
+            suffix -> "skeletonArgumentList" + suffix, loginType,
             list -> list.contains(element(elementIdOne,
-                SkeletonArgument.builder().document(expectedDocumentOne)
+                SkeletonArgument.builder()
+                    .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
-                    .uploaderType(uploaderType).build())),
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())),
             list -> list.contains(element(elementIdTwo,
-                SkeletonArgument.builder().document(expectedDocumentTwo)
+                SkeletonArgument.builder()
+                    .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
-                    .uploaderType(uploaderType).build())));
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultipleRespondentStatementWithDiffConfidentiality(
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        Confidentiality ignoreMe) {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.RESPONDENTS_STATEMENTS,
-            suffix -> "respStmtList" + suffix, loginType, uploaderType,
+            suffix -> "respStmtList" + suffix, loginType,
             list -> list.contains(element(elementIdOne,
-                RespondentStatementV2.builder().document(expectedDocumentOne)
+                RespondentStatementV2.builder()
+                    .document(expectedDocumentOne)
                     .markAsConfidential(YES.getValue())
-                    .uploaderType(uploaderType).build())),
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())),
             list -> list.contains(element(elementIdTwo,
-                RespondentStatementV2.builder().document(expectedDocumentTwo)
+                RespondentStatementV2.builder()
+                    .document(expectedDocumentTwo)
                     .markAsConfidential(NO.getValue())
-                    .uploaderType(uploaderType).build())));
+                    .uploaderType(getUploaderType(loginType))
+                    .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                    .build())));
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultipleCourtBundleWithDiffConfidentiality(
         int loginType,
-        Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        Confidentiality ignoreMe) {
         tplPopulateDocumentListWhenUploadDocumentWithDiffConfidentiality(DocumentType.COURT_BUNDLE,
-            suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType, uploaderType,
+            suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType,
             list -> {
                 Optional<Element> op = list.stream().filter(p -> elementIdOne.equals(((Element) p).getId()))
                     .findAny();
@@ -3230,12 +3271,14 @@ class ManageDocumentServiceTest {
                         boolean test = hcb.getCourtBundle() != null;
                         test = test && hcb.getCourtBundle().size() == 1;
                         test = test && expectedDocumentOne.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
-                        test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue().getUploaderType());
+                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
+                            .getUploaderType());
                         test = test && hcb.getCourtBundleNC() != null;
                         test = test && hcb.getCourtBundleNC().size() == 1;
                         test = test && expectedDocumentOne.equals(hcb.getCourtBundleNC().get(0).getValue()
                             .getDocument());
-                        test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue().getUploaderType());
+                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
+                            .getUploaderType());
                         return test;
                     } else {
                         return false;
@@ -3254,12 +3297,14 @@ class ManageDocumentServiceTest {
                         boolean test = hcb.getCourtBundle() != null;
                         test = test && hcb.getCourtBundle().size() == 1;
                         test = test && expectedDocumentTwo.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
-                        test = test && uploaderType.equals(hcb.getCourtBundle().get(0).getValue().getUploaderType());
+                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
+                            .getUploaderType());
                         test = test && hcb.getCourtBundleNC() != null;
                         test = test && hcb.getCourtBundleNC().size() == 1;
                         test = test && expectedDocumentTwo.equals(hcb.getCourtBundleNC().get(0).getValue()
                             .getDocument());
-                        test = test && uploaderType.equals(hcb.getCourtBundleNC().get(0).getValue().getUploaderType());
+                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
+                            .getUploaderType());
                         return test;
                     } else {
                         return false;
@@ -3270,8 +3315,7 @@ class ManageDocumentServiceTest {
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
-    void shouldPopulatePlacementsWhenUploadingSinglePlacementResponse(int loginType, Confidentiality ignoreMe,
-                                                                      DocumentUploaderType uploaderType) {
+    void shouldPopulatePlacementsWhenUploadingSinglePlacementResponse(int loginType, Confidentiality ignoreMe) {
         initialiseUserService(loginType);
 
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
@@ -3294,7 +3338,8 @@ class ManageDocumentServiceTest {
         Placement placement = Placement.builder().noticeDocuments(List.of()).build();
         Placement placementLA = Placement.builder().noticeDocuments(List.of(
             element(elementIdOne, PlacementNoticeDocument.builder()
-                .uploaderType(uploaderType)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .response(expectedDocumentOne)
                 .build())
         )).build();
@@ -3328,7 +3373,7 @@ class ManageDocumentServiceTest {
 
         Predicate<List> matcher = (list) -> {
             boolean test = true;
-            switch (uploaderType) {
+            switch (getUploaderType(loginType)) {
                 case DESIGNATED_LOCAL_AUTHORITY:
                 case SECONDARY_LOCAL_AUTHORITY:
                     test = test && list.contains(element(placementLAId, placementLA));
@@ -3346,18 +3391,26 @@ class ManageDocumentServiceTest {
         };
 
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
-        assertThat(actual)
-            .containsKey("placements")
-            .containsKey("placementsNonConfidential")
-            .containsKey("placementsNonConfidentialNotices")
-            .extracting("placements").asList()
-            .matches(matcher);
+        if (getUploaderType(loginType) == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+            || getUploaderType(loginType) == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+            assertThat(actual)
+                .containsKey("placements")
+                .extracting("placements").asList()
+                .matches(matcher);
+        } else {
+            assertThat(actual)
+                .containsKey("placements")
+                .containsKey("placementsNonConfidential")
+                .containsKey("placementsNonConfidentialNotices")
+                .extracting("placements").asList()
+                .matches(matcher);
+        }
     }
 
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadMultiplePlacementResponses(
-        int loginType, Confidentiality ignoreMe, DocumentUploaderType uploaderType) {
+        int loginType, Confidentiality ignoreMe) {
         initialiseUserService(loginType);
 
         CaseData caseData = prepareCaseDataForUploadDocumentJourney(
@@ -3389,11 +3442,13 @@ class ManageDocumentServiceTest {
         Placement placement = Placement.builder().noticeDocuments(List.of()).build();
         Placement placementLA = Placement.builder().noticeDocuments(List.of(
             element(elementIdOne, PlacementNoticeDocument.builder()
-                .uploaderType(uploaderType)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .response(expectedDocumentOne)
                 .build()),
             element(elementIdTwo, PlacementNoticeDocument.builder()
-                .uploaderType(uploaderType)
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .response(expectedDocumentTwo)
                 .build())
         )).build();
@@ -3427,7 +3482,7 @@ class ManageDocumentServiceTest {
 
         Predicate<List> matcher = (list) -> {
             boolean test = true;
-            switch (uploaderType) {
+            switch (getUploaderType(loginType)) {
                 case DESIGNATED_LOCAL_AUTHORITY:
                 case SECONDARY_LOCAL_AUTHORITY:
                     test = test && list.contains(element(placementLAId, placementLA));
@@ -3445,17 +3500,17 @@ class ManageDocumentServiceTest {
         };
 
         Map<String, Object> actual = underTest.uploadDocuments(caseData);
-        if (!(uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-            || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY)) {
+        if (getUploaderType(loginType) == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+            || getUploaderType(loginType) == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
             assertThat(actual)
                 .containsKey("placements")
-                .containsKey("placementsNonConfidential")
-                .containsKey("placementsNonConfidentialNotices")
                 .extracting("placements").asList()
                 .matches(matcher);
         } else {
             assertThat(actual)
                 .containsKey("placements")
+                .containsKey("placementsNonConfidential")
+                .containsKey("placementsNonConfidentialNotices")
                 .extracting("placements").asList()
                 .matches(matcher);
         }
