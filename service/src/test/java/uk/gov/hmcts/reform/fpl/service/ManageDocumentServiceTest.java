@@ -3519,36 +3519,32 @@ class ManageDocumentServiceTest {
     @Nested
     class BuildDocumentTypeDynamicListForRemovalTest {
 
-        UUID elementId1 = UUID.randomUUID();
-        UUID elementId2 = UUID.randomUUID();
-        UUID elementId3 = UUID.randomUUID();
-        UUID elementId4 = UUID.randomUUID();
-
-        String filename1 = "COURT BUNDLE1.docx";
-        String filename2 = "COURT BUNDLE2.docx";
-        String filename3 = "COURT BUNDLE3.docx";
-        String filename4 = "COURT BUNDLE4.docx";
-
         DynamicList expectedDynamicList1 = DynamicList.builder().build();
-        DynamicList expectedDynamicList2 = DynamicList.builder().build();
-        DynamicList expectedDynamicList3 = DynamicList.builder().build();
-        DynamicList expectedDynamicList4 = DynamicList.builder().build();
 
         @Test
-        void testForShowingASingleDocumentType() {
+        void shouldShowAnEmptyDynamicList() {
+            when(caseConverter.toMap(any())).thenReturn(Map.of());
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowASingleDocumentType() {
             initialiseUserService(4);
             DocumentUploaderType uploaderType = getUploaderType(4);
 
             when(caseConverter.toMap(any())).thenReturn(Map.of("courtBundleListV2", List.of(
                 element(HearingCourtBundle.builder()
                     .courtBundle(List.of(
-                        element(elementId1, CourtBundle.builder()
-                            .document(testDocumentReference(filename1))
+                        element(CourtBundle.builder()
+                            .document(testDocumentReference())
                             .uploaderType(uploaderType)
                             .uploaderCaseRoles(getUploaderCaseRoles(4))
                             .build()),
-                        element(elementId2, CourtBundle.builder()
-                            .document(testDocumentReference(filename2))
+                        element(CourtBundle.builder()
+                            .document(testDocumentReference())
                             .uploaderType(uploaderType)
                             .uploaderCaseRoles(getUploaderCaseRoles(4))
                             .build())
@@ -3559,6 +3555,77 @@ class ManageDocumentServiceTest {
             ))).thenReturn(expectedDynamicList1);
 
             DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowMultipleDocumentTypes() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of(
+                "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
+                "courtBundleListV2", List.of(
+                    element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build()),
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build())
+                        ))
+                        .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription()),
+                Pair.of(DocumentType.AA_PARENT_ORDERS.name(), DocumentType.AA_PARENT_ORDERS.getDescription()),
+                Pair.of(DocumentType.TRANSCRIPTS.name(), DocumentType.TRANSCRIPTS.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowPlacementResponseInDocumentTypes() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of(
+                "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
+                "courtBundleListV2", List.of(
+                    element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build()),
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build())
+                        ))
+                        .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription()),
+                Pair.of(DocumentType.AA_PARENT_ORDERS.name(), DocumentType.AA_PARENT_ORDERS.getDescription()),
+                Pair.of(DocumentType.TRANSCRIPTS.name(), DocumentType.TRANSCRIPTS.getDescription()),
+                Pair.of(DocumentType.PLACEMENT_RESPONSES.name(), DocumentType.PLACEMENT_RESPONSES.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(Placement.builder()
+                        .noticeDocuments(List.of(element(PlacementNoticeDocument.builder().build())))
+                        .build())))
+                    .build())
+                .build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
