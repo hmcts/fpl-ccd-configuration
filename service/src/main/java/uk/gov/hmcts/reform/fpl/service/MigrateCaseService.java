@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseService {
+
+    @Autowired
+    protected ObjectMapper mapper;
 
     private static final String PLACEMENT = "placements";
     private static final String PLACEMENT_NON_CONFIDENTIAL = "placementsNonConfidential";
@@ -710,19 +715,24 @@ public class MigrateCaseService {
         return Map.of("correspondenceDocuments", newCorrespondenceDocuments);
     }
 
-    public Map<String, Object> removeCorrespondenceDocumentNC(CaseData caseData,
+    public Map<String, Object> removeCorrespondenceDocumentNC(CaseDetails caseDetails,
                                                             String migrationId,
                                                             UUID expectedDocumentId) {
 
+        List<Element<SupportingEvidenceBundle>> correspondenceDocumentsNC =
+            mapper.convertValue(caseDetails.getData().get("correspondenceDocumentsNC"), new TypeReference<>() {
+            });
+
         List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments =
-            caseData.getCorrespondenceDocuments().stream()
+            correspondenceDocumentsNC.stream()
                 .filter(el -> !expectedDocumentId.equals(el.getId()))
                 .collect(toList());
 
-        if (newCorrespondenceDocuments.size() != caseData.getCorrespondenceDocuments().size() - 1) {
+
+        if (newCorrespondenceDocuments.size() != correspondenceDocumentsNC.size() - 1) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, correspondence document not found",
-                migrationId, caseData.getId()));
+                migrationId, caseDetails.getId()));
         }
 
         return Map.of("correspondenceDocumentsNC", newCorrespondenceDocuments);
