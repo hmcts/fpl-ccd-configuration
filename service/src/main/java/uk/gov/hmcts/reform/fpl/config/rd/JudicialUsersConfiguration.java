@@ -41,7 +41,7 @@ public class JudicialUsersConfiguration {
         this.judicialApi = judicialApi;
         this.systemUserService = systemUserService;
         this.authTokenGenerator = authTokenGenerator;
-        log.info("Attempting to gather all judges");
+        log.info("Attempting to gather all judges.");
         if (jrdEnabled) {
             mapping = this.getAllJudges();
         } else {
