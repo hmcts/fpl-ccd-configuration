@@ -889,6 +889,37 @@ public class MigrateCaseService {
         }
     }
 
+    public Map<String, Object> removeCorrespondenceDocument(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedDocumentId) {
+
+        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments =
+            caseData.getCorrespondenceDocuments().stream()
+                .filter(el -> !expectedDocumentId.equals(el.getId()))
+                .collect(toList());
+
+        if (newCorrespondenceDocuments.size() != caseData.getCorrespondenceDocuments().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, correspondence document not found",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("correspondenceDocuments", newCorrespondenceDocuments);
+    }
+
+    public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
+        // lookup in map
+        Optional<String> relatingLA = migrateRelatingLAService.getRelatingLAString(caseId.toString());
+
+        if (relatingLA.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, case not found in migration list",
+                migrationId, caseId));
+        }
+
+        return Map.of("relatingLA", relatingLA.get());
+    }
+
     private Element<RespondentStatementV2> toRespondentStatementV2(UUID respondentId, String respondentName,
                                                                    Element<SupportingEvidenceBundle> sebElement) {
         SupportingEvidenceBundle seb = sebElement.getValue();
@@ -1183,18 +1214,5 @@ public class MigrateCaseService {
         caseDetails.getData().remove("correspondenceDocList");
         caseDetails.getData().remove("correspondenceDocListLA");
         caseDetails.getData().remove("correspondenceDocListCTSC");
-    }
-
-    public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
-        // lookup in map
-        Optional<String> relatingLA = migrateRelatingLAService.getRelatingLAString(caseId.toString());
-
-        if (relatingLA.isEmpty()) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, case not found in migration list",
-                migrationId, caseId));
-        }
-
-        return Map.of("relatingLA", relatingLA.get());
     }
 }
