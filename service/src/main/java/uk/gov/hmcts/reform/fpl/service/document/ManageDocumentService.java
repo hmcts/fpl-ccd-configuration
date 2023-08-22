@@ -602,10 +602,12 @@ public class ManageDocumentService {
             .filter(Objects::nonNull)
             .collect(toList()));
 
-        // TODO handling PlacementResponse;
+        List<Element<Placement>> placements = caseData.getPlacementEventData().getPlacements();
+        if (placements.stream().flatMap(pe -> pe.getValue().getNoticeDocuments().stream()).findAny().isPresent()) {
+            finalDocumentTypes.add(PLACEMENT_RESPONSES);
+        }
 
-        final List<Pair<String, String>> documentTypes =
-            finalDocumentTypes.stream()
+        final List<Pair<String, String>> documentTypes = finalDocumentTypes.stream()
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
             .collect(toList());
