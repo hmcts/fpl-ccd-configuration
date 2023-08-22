@@ -1702,7 +1702,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class removeCorrespondenceDocument {
+    class RemoveCorrespondenceDocument {
         private final Element<SupportingEvidenceBundle> correspondenceDocument1 =
             element(SupportingEvidenceBundle.builder().build());
         private final Element<SupportingEvidenceBundle> correspondenceDocument2 =
