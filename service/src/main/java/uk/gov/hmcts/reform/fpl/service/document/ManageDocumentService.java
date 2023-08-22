@@ -464,7 +464,7 @@ public class ManageDocumentService {
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
-            .collect(toList());
+            .toList();
         return dynamicListService.asDynamicList(documentTypes);
     }
 
@@ -564,7 +564,7 @@ public class ManageDocumentService {
 
                 fieldNameToListOfElementMap.put(PLACEMENT_RESPONSES.name(), placements.stream()
                     .flatMap(pe -> pe.getValue().getNoticeDocuments().stream())
-                    .toList();
+                    .collect(toList()));
             } else {
                 for (ConfidentialLevel level : Arrays.stream(ConfidentialLevel.values()).filter(level -> {
                     switch (level) {
@@ -599,7 +599,7 @@ public class ManageDocumentService {
         Set<DocumentType> finalDocumentTypes = new HashSet<>(availableDocumentTypes);
         finalDocumentTypes.addAll(availableDocumentTypes.stream().map(d -> d.getParentFolder())
             .filter(Objects::nonNull)
-            .collect(toList()));
+            .toList());
 
         List<Element<Placement>> placements = caseData.getPlacementEventData().getPlacements();
         if (placements.stream().flatMap(pe -> pe.getValue().getNoticeDocuments().stream()).findAny().isPresent()) {
@@ -609,7 +609,7 @@ public class ManageDocumentService {
         final List<Pair<String, String>> documentTypes = finalDocumentTypes.stream()
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
-            .collect(toList());
+            .toList();
         return dynamicListService.asDynamicList(documentTypes);
     }
 
