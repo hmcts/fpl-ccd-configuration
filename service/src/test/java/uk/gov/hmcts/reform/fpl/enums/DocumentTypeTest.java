@@ -42,4 +42,13 @@ class DocumentTypeTest {
         assertThat(DocumentType.JUDGEMENTS.getFieldNames()).hasSize(3)
             .containsExactly("judgementList", "judgementListLA","judgementListCTSC");
     }
+
+    @Test
+    void testGetFieldNameOfRemovedList() {
+        assertThat(DocumentType.COURT_BUNDLE.getFieldNameOfRemovedList())
+            .isEqualTo("hearingDocuments.courtBundleListRemoved");
+        assertThat(DocumentType.CASE_SUMMARY.getFieldNameOfRemovedList())
+            .isEqualTo("hearingDocuments.caseSummaryListRemoved");
+        assertThat(DocumentType.JUDGEMENTS.getFieldNameOfRemovedList()).isEqualTo("judgementListRemoved");
+    }
 }
