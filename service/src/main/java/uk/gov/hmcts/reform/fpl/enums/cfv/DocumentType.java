@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
@@ -270,7 +269,7 @@ public enum DocumentType {
             .map(c -> this.baseFieldNameResolver == null ? null : this.baseFieldNameResolver.apply(c))
             .filter(Objects::nonNull)
             .map(f -> removeNested(f))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<String> getFieldNames() {
