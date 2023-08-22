@@ -151,7 +151,7 @@ public class ManageDocumentService {
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
     @Autowired
-    private CaseConverter caseConverter;
+    private final CaseConverter caseConverter;
 
     private String getDocumentListActualFieldName(String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
