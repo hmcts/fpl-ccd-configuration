@@ -153,15 +153,6 @@ public class ManageDocumentService {
     @Autowired
     private final CaseConverter caseConverter;
 
-    private String getDocumentListActualFieldName(String fieldName) {
-        String[] splitFieldName = fieldName.split("\\.");
-        if (splitFieldName.length == 2) {
-            return splitFieldName[1];
-        } else {
-            return fieldName;
-        }
-    }
-
     private Object getDocumentListHolder(String fieldName, CaseData caseData) throws Exception {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 2) {
@@ -413,13 +404,17 @@ public class ManageDocumentService {
             } else {
                 boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
                 String fieldName = dt.getFieldName(uploaderType, confidential);
-                final String actualFieldName = getDocumentListActualFieldName(fieldName);
+                final String actualFieldName = getDocumentListHolderFieldName(fieldName);
                 final DocumentReference document = e.getValue().getDocument();
 
                 Class documentListHolderClass = getDocumentListHolderClass(fieldName);
                 String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
                 PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
                     documentListHolderFieldName);
+                if (pd == null) {
+                    throw new IllegalStateException("Fail to locate " + documentListHolderFieldName + " on class: "
+                        + documentListHolderClass);
+                }
                 List<Element<?>> docs = null;
                 if (ret.containsKey(actualFieldName)) {
                     docs = (List<Element<?>>) ret.get(actualFieldName);
