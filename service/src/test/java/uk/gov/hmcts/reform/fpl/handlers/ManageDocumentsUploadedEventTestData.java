@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,7 +33,10 @@ public class ManageDocumentsUploadedEventTestData {
             .id(CASE_ID)
             .familyManCaseNumber(CASE_ID.toString())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .hearingDetails(wrapElementsWithUUIDs(HearingBooking.builder().startDate((HEARING_DATE)).build()));
+            .hearingDetails(wrapElementsWithUUIDs(HearingBooking.builder()
+                .startDate(HEARING_DATE)
+                .type(HearingType.CASE_MANAGEMENT)
+                .build()));
     }
 
     public static CaseData.CaseDataBuilder<?,?> addManagedDocument(CaseData.CaseDataBuilder<?,?> builder,
@@ -46,18 +50,6 @@ public class ManageDocumentsUploadedEventTestData {
 
         return (CaseData.CaseDataBuilder<?,?>) builderMethod.invoke(builder, documents);
     }
-
-
-    public static List<Element<ManagedDocument>> buildManagedDocumentList(int documentCnt) {
-        List<Element<ManagedDocument>> resultList = new ArrayList<>();
-
-        for (int i = 0; i < documentCnt; i++) {
-            resultList.add(element(ManagedDocument.builder().document(getPDFDocument()).build()));
-        }
-
-        return resultList;
-    }
-
 
     public static CaseData buildSubmittedCaseDataWithNewDocumentUploaded(List<DocumentType> docTypes,
                                                                          List<ConfidentialLevel> confidentialLevels)
@@ -83,7 +75,7 @@ public class ManageDocumentsUploadedEventTestData {
 
                         hearingDocumentsBuilder = (HearingDocuments.HearingDocumentsBuilder) builderMethod
                             .invoke(hearingDocumentsBuilder,
-                                List.of(docType.getWithDocumentBuilder().apply(UploadBundle.builder()
+                                wrapElementsWithUUIDs(docType.getWithDocumentBuilder().apply(UploadBundle.builder()
                                 .document(getPDFDocument()).build())));
 
                         hasHearingDocument = true;
@@ -91,7 +83,7 @@ public class ManageDocumentsUploadedEventTestData {
                 } else {
                     for (ConfidentialLevel confidentialLevel : confidentialLevels) {
                         caseDataBuilder = addManagedDocument(caseDataBuilder, docType, confidentialLevel,
-                            List.of(element(ManagedDocument.builder().document(getPDFDocument()).build())));
+                            wrapElementsWithUUIDs(ManagedDocument.builder().document(getPDFDocument()).build()));
                     }
                 }
             } else {

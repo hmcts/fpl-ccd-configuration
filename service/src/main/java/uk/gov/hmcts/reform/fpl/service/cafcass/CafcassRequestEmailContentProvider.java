@@ -46,8 +46,10 @@ public enum CafcassRequestEmailContentProvider {
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
-            String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
-                cafcassData.getHearingDetails()),
+            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty()) ?
+                "A new court bundle for this case was uploaded to the Public Law Portal"
+                : String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
+                    cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
             true),
 
@@ -56,8 +58,10 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new case summary"),
         (caseData, cafcassData) ->
-            String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
-                cafcassData.getHearingDetails()),
+            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty()) ?
+                "A new case summary for this case was uploaded to the Public Law Portal"
+                : String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
+                    cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
@@ -80,6 +84,15 @@ public enum CafcassRequestEmailContentProvider {
             String.format("A new position statement (respondent) for this case was uploaded to the "
                           + "Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
+
+    POSITION_STATEMENT("Position statement",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new position statement"),
+        (caseData, cafcassData) ->
+            "A new position statement for this case was uploaded to the Public Law Portal",
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 

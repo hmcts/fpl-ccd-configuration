@@ -317,6 +317,7 @@ cafcass:
       caseSummary: BUNDLE
       positionStatementChild: BUNDLE
       positionStatementRespondent: BUNDLE
+      positionStatement: BUNDLE
       other: CORRESPONDENCE
       correspondence: CORRESPONDENCE
       additionalDocument: APPLICATION

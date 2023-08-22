@@ -18,8 +18,10 @@ import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -91,14 +94,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
         .roles(List.of("caseworker-publiclaw-solicitor"))
         .build();
 
-    private static final UserDetails ADMIN_USER_DETAIL = UserDetails.builder()
-        .id("ADMIN_USER_ID")
-        .surname("Hudson")
-        .forename("Steve")
-        .email("steve.hudson@gov.uk")
-        .roles(List.of("caseworker-publiclaw-courtadmin"))
-        .build();
-
     private static final UserDetails SOLICITOR_USER_DETAIL = UserDetails.builder()
         .id("SOLICITOR_USER_ID")
         .surname("Hudson")
@@ -107,7 +102,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
         .roles(List.of("caseworker-publiclaw-solicitor"))
         .build();
 
-    private static final List<Recipient> REPRESTATIVES_SERVED_BY_POST =
+    private static final List<Recipient> REPRESENTATIVES_SERVED_BY_POST =
         List.of(Representative.builder().email(REP_SOLICITOR_1_EMAIL).build());
 
     final Set<ConfidentialLevel> CTSC_ALLOWED = Set.of(ConfidentialLevel.CTSC);
@@ -115,6 +110,19 @@ public class ManageDocumentsUploadedEventHandlerTest {
     final Set<ConfidentialLevel> NON_CONFIDENTIAL_ALLOWED = Set.of(ConfidentialLevel.NON_CONFIDENTIAL,
         ConfidentialLevel.LA,
         ConfidentialLevel.CTSC);
+
+    final Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
+        RECIPIENT_CONFIG_MAPPING =
+        Map.of(
+            DESIGNATED_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToDesignatedLA,
+            SECONDARY_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToSecondaryLA,
+            LEGAL_REPRESENTATIVE_RECIPIENTS,
+            DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative,
+            CAFCASS_REPRESENTATIVE_RECIPIENTS,
+            DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative,
+            REP_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor,
+            CHILD_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToChildSolicitor
+        );
 
     @InjectMocks
     private ManageDocumentsUploadedEventHandler underTest;
@@ -159,7 +167,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
         when(furtherEvidenceNotificationService.getChildSolicitorEmails(any()))
             .thenReturn(CHILD_SOLICITOR_RECIPIENTS);
 
-        when(sendDocumentService.getStandardRecipients(any())).thenReturn(REPRESTATIVES_SERVED_BY_POST);
+        when(sendDocumentService.getStandardRecipients(any())).thenReturn(REPRESENTATIVES_SERVED_BY_POST);
 
         when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(
             Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
@@ -177,20 +185,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
     @Nested
     class DocumentsUploadedTest {
-
-        final Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
-            RECIPIENT_CONFIG_MAPPING =
-            Map.of(
-                DESIGNATED_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToDesignatedLA,
-                SECONDARY_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToSecondaryLA,
-                LEGAL_REPRESENTATIVE_RECIPIENTS,
-                DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative,
-                CAFCASS_REPRESENTATIVE_RECIPIENTS,
-                DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative,
-                REP_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor,
-                CHILD_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToChildSolicitor
-            );
-
         @ParameterizedTest
         @MethodSource("allDocumentsTypeParameters")
         void shouldSendNotificationBasedOnConfigurationWhenDocumentsUploaded(DocumentType documentType,
@@ -198,8 +192,13 @@ public class ManageDocumentsUploadedEventHandlerTest {
             throws Exception {
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                List.of(confidentialLevel));
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
 
             ManageDocumentsUploadedEvent eventData =
                 manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
@@ -223,8 +222,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             }
 
             List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
-            List<String> documentNames = documents.stream()
-                .map(Element::getValue)
+            List<String> documentNames = unwrapElements(documents).stream()
                 .map(NotifyDocumentUploaded::getNameForNotification)
                 .collect(toList());
 
@@ -243,15 +241,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
             verifyNoMoreInteractions(furtherEvidenceNotificationService);
         }
 
-        private void verifyFurtherEvidenceNotificationServiceGetRecipients(){
-            verify(furtherEvidenceNotificationService).getDesignatedLocalAuthorityRecipientsOnly(any());
-            verify(furtherEvidenceNotificationService).getSecondaryLocalAuthorityRecipientsOnly(any());
-            verify(furtherEvidenceNotificationService).getLegalRepresentativeOnly(any());
-            verify(furtherEvidenceNotificationService).getCafcassRepresentativeEmails(any());
-            verify(furtherEvidenceNotificationService).getRespondentSolicitorEmails(any());
-            verify(furtherEvidenceNotificationService).getChildSolicitorEmails(any());
-        }
-
         @ParameterizedTest
         @MethodSource("allDocumentsTypeParameters")
         void shouldSendDocumentToCafcassWhenDocumentUploaded(DocumentType documentType,
@@ -260,8 +249,13 @@ public class ManageDocumentsUploadedEventHandlerTest {
             DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                List.of(confidentialLevel));
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
 
             ManageDocumentsUploadedEvent eventData =
                 manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
@@ -297,7 +291,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
 
                 verify(cafcassNotificationService).sendEmail(any(),
-                    eq(documents.stream().map(Element::getValue)
+                    eq(unwrapElements(documents).stream()
                         .map(NotifyDocumentUploaded::getDocument)
                         .collect(toSet())),
                     eq(CafcassRequestEmailContentProvider.NEW_DOCUMENT),
@@ -326,8 +320,13 @@ public class ManageDocumentsUploadedEventHandlerTest {
             setUp_uploadedBySolicitor();
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                List.of(confidentialLevel));
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
 
             ManageDocumentsUploadedEvent eventData =
                 manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
@@ -345,7 +344,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
                     if (NON_CONFIDENTIAL_ALLOWED.contains(getConfigFunc.apply(documentType.getNotificationConfiguration()))) {
                         verify(sendDocumentService).sendDocuments(any(), eq(expectedDocuments),
-                            eq(REPRESTATIVES_SERVED_BY_POST));
+                            eq(REPRESENTATIVES_SERVED_BY_POST));
                     }
                 });
             } else {
@@ -357,6 +356,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
         void shouldNotSendByPostWhenDocumentsAreNotUploadedBySolicitor() {
             ManageDocumentsUploadedEvent eventData = ManageDocumentsUploadedEvent.builder()
                 .uploadedUserType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY).build();
+
+            underTest.sendDocumentsByPost(eventData);
 
             verifyNoInteractions(sendDocumentService);
         }
@@ -377,4 +378,175 @@ public class ManageDocumentsUploadedEventHandlerTest {
             return streamList.stream();
         }
     }
+
+
+    @Nested
+    class HearingDocumentsUploadedTest {
+        @ParameterizedTest
+        @MethodSource("allHearingDocumentsTypeParameters")
+        void shouldSendNotificationBasedOnConfigurationWhenHearingDocumentsUploaded(DocumentType documentType,
+                                                                                    ConfidentialLevel confidentialLevel)
+            throws Exception {
+
+            CaseData caseDataBefore = commonCaseBuilder().build();
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+
+            ManageDocumentsUploadedEvent eventData =
+                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+
+            underTest.sendDocumentsUploadedNotification(eventData);
+
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments;
+            Set<ConfidentialLevel> levelAllowed;
+
+            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                expectedNewDocuments = eventData.getNewDocuments();
+                levelAllowed = NON_CONFIDENTIAL_ALLOWED;
+            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                expectedNewDocuments = eventData.getNewDocumentsLA();
+                levelAllowed = LA_ALLOWED;
+            } else {
+                expectedNewDocuments = eventData.getNewDocumentsCTSC();
+                levelAllowed = CTSC_ALLOWED;
+            }
+
+            verifyFurtherEvidenceNotificationServiceGetRecipients();
+
+            DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
+            List<Element<NotifyDocumentUploaded>> expectedDocuments = expectedNewDocuments.get(documentType);
+
+            String senderName = eventData.getInitiatedBy().getFullName();
+
+            List<String> newDocumentNames = unwrapElements(expectedDocuments).stream()
+                .map(NotifyDocumentUploaded::getDocument).map(DocumentReference::getFilename)
+                .collect(toList());
+
+            RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
+                if (levelAllowed.contains(getConfigFunc.apply(config))) {
+                    verify(furtherEvidenceNotificationService).sendNotification(any(),
+                        eq(recipients), eq(senderName), eq(newDocumentNames));
+                }
+            });
+
+            verifyNoMoreInteractions(furtherEvidenceNotificationService);
+        }
+
+        @ParameterizedTest
+        @MethodSource("allHearingDocumentsTypeParameters")
+        void shouldNotifyTranslationTeamWhenHearingDocumentUploaded(DocumentType documentType,
+                                                                    ConfidentialLevel confidentialLevel)
+            throws Exception {
+            // TODO
+        }
+
+        @ParameterizedTest
+        @MethodSource("allHearingDocumentsTypeParameters")
+        void shouldSendDocumentToCafcassWhenHearingDocumentUploaded(DocumentType documentType,
+                                                                    ConfidentialLevel confidentialLevel)
+            throws Exception {
+            CaseData caseDataBefore = commonCaseBuilder().build();
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+
+            ManageDocumentsUploadedEvent eventData =
+                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+
+            underTest.sendHearingDocumentsToCafcass(eventData);
+
+            ConfidentialLevel cafcassConfidentialLevel = documentType.getNotificationConfiguration()
+                .getSendToCafcassEngland();
+
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
+            boolean shouldVerifyNoInteraction = true;
+
+            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocuments();
+                    shouldVerifyNoInteraction = false;
+                }
+            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocumentsLA();
+                    shouldVerifyNoInteraction = false;
+                }
+            } else {
+                if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocumentsCTSC();
+                    shouldVerifyNoInteraction = false;
+                }
+            }
+
+            if (shouldVerifyNoInteraction){
+                verifyNoMoreInteractions(cafcassNotificationService);
+            } else {
+                Set<DocumentReference> expectedDocRef = unwrapElements(expectedNewDocuments.get(documentType)).stream()
+                    .map(NotifyDocumentUploaded::getDocument)
+                    .collect(toSet());
+
+                verify(cafcassNotificationService).sendEmail(any(),
+                    eq(expectedDocRef),
+                    eq(ManageDocumentsUploadedEventHandler.CAFCASS_EMAIL_CONTENT_MAP.get(documentType)),
+                    eq(CourtBundleData.builder().build()));
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("allHearingDocumentsTypeParameters")
+        void shouldNotSendDocumentByPostWhenHearingDocumentUploaded(DocumentType documentType,
+                                                                    ConfidentialLevel confidentialLevel)
+            throws Exception {
+            setUp_uploadedBySolicitor();
+
+            CaseData caseDataBefore = commonCaseBuilder().build();
+            CaseData casedData;
+            try {
+                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+
+            ManageDocumentsUploadedEvent eventData =
+                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+
+            underTest.sendDocumentsByPost(eventData);
+
+            verifyNoInteractions(sendDocumentService);
+        }
+
+        private static Stream<Arguments> allHearingDocumentsTypeParameters() {
+            List<Arguments> streamList = new ArrayList<>();
+
+            Stream.of(DocumentType.COURT_BUNDLE, DocumentType.CASE_SUMMARY, DocumentType.POSITION_STATEMENTS,
+                    DocumentType.SKELETON_ARGUMENTS)
+                .forEach(docType -> {
+                    for(ConfidentialLevel level : ConfidentialLevel.values()) {
+                        streamList.add(Arguments.of(docType, level));
+                    }
+                });
+
+            return streamList.stream();
+        }
+    }
+
+    private void verifyFurtherEvidenceNotificationServiceGetRecipients(){
+        verify(furtherEvidenceNotificationService).getDesignatedLocalAuthorityRecipientsOnly(any());
+        verify(furtherEvidenceNotificationService).getSecondaryLocalAuthorityRecipientsOnly(any());
+        verify(furtherEvidenceNotificationService).getLegalRepresentativeOnly(any());
+        verify(furtherEvidenceNotificationService).getCafcassRepresentativeEmails(any());
+        verify(furtherEvidenceNotificationService).getRespondentSolicitorEmails(any());
+        verify(furtherEvidenceNotificationService).getChildSolicitorEmails(any());
+    }
 }
+

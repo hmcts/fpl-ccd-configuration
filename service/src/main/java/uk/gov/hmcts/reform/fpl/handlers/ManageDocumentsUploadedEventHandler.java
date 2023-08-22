@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Component
@@ -73,7 +74,7 @@ public class ManageDocumentsUploadedEventHandler {
     public static final Map<DocumentType, CafcassRequestEmailContentProvider> CAFCASS_EMAIL_CONTENT_MAP = Map.of(
         COURT_BUNDLE, CafcassRequestEmailContentProvider.COURT_BUNDLE,
         CASE_SUMMARY, CafcassRequestEmailContentProvider.CASE_SUMMARY,
-        POSITION_STATEMENTS, CafcassRequestEmailContentProvider.POSITION_STATEMENT_RESPONDENT,
+        POSITION_STATEMENTS, CafcassRequestEmailContentProvider.POSITION_STATEMENT,
         SKELETON_ARGUMENTS, CafcassRequestEmailContentProvider.SKELETON_ARGUMENT
     );
 
@@ -96,14 +97,12 @@ public class ManageDocumentsUploadedEventHandler {
                     List<Element<NotifyDocumentUploaded>> documentsToBeSent =
                         consolidateMapByConfiguration(event, getConfidentialLevelFunction)
                             .entrySet().stream()
-                            .filter(entry -> !isHearingDocument(entry.getKey()))
                             .map(Map.Entry::getValue)
                             .flatMap(List::stream)
                             .collect(toList());
 
                     if (!documentsToBeSent.isEmpty()) {
-                        List<String> newDocumentNames = documentsToBeSent.stream()
-                            .map(Element::getValue)
+                        List<String> newDocumentNames = unwrapElements(documentsToBeSent).stream()
                             .map(NotifyDocumentUploaded::getNameForNotification)
                             .collect(toList());
 
@@ -111,40 +110,6 @@ public class ManageDocumentsUploadedEventHandler {
                             furtherEvidenceNotificationService.sendNotification(event.getCaseData(), recipients,
                                 event.getInitiatedBy().getFullName(), newDocumentNames);
                         }
-                    }
-                }
-            });
-    }
-
-    // TODO unit test
-    @Async
-    @EventListener
-    public void sendHearingDocumentsUploadedNotification(final ManageDocumentsUploadedEvent event) {
-        buildConfigurationMapGroupedByRecipient(event)
-            .forEach((recipients, getConfidentialLevelFunction) -> {
-                List<HearingDocument> documentsToBeSent =
-                    consolidateMapByConfiguration(event, getConfidentialLevelFunction)
-                        .entrySet().stream()
-                        .filter(entry -> isHearingDocument(entry.getKey()))
-                        .map(Map.Entry::getValue)
-                        .flatMap(List::stream)
-                        .map(Element::getValue)
-                        .map(hearingDoc -> (HearingDocument) hearingDoc)
-                        .collect(toList());
-
-                if (!documentsToBeSent.isEmpty()) {
-                    if (isNotEmpty(recipients)) {
-
-                        Optional<HearingBooking> hearingBookings = event.getCaseData().getHearingDetails().stream()
-                            .filter(element ->
-                                element.getValue().toLabel().equals(documentsToBeSent.get(0).getHearing()))
-                            .findFirst()
-                            .map(Element::getValue);
-
-                        List<String> newDocumentNames = documentsToBeSent.stream()
-                            .map(doc -> doc.getDocument().getFilename()).collect(toList());
-                        furtherEvidenceNotificationService.sendNotificationWithHearing(event.getCaseData(), recipients,
-                            event.getInitiatedBy().getFullName(), newDocumentNames, hearingBookings);
                     }
                 }
             });
@@ -219,27 +184,18 @@ public class ManageDocumentsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            // 1. get available new hearing documents
             consolidateMapByConfiguration(event, DocumentUploadedNotificationConfiguration::getSendToCafcassEngland)
                 .entrySet().stream()
                 .filter(entry -> isHearingDocument(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 .forEach((docType, hearingDocuments) ->
-                    // 2. for each hearing document type, group by hearing
-                    hearingDocuments.stream()
-                        .map(Element::getValue)
-                        .map(hearingDocument -> (HearingDocument) hearingDocument)
-                        .collect(groupingBy(HearingDocument::getHearing,
-                            mapping(HearingDocument::getDocument, toSet())))
-                        .forEach((hearing, doc) ->
-                            // 3. for each hearing document type and hearing, send to Cafcass
-                            cafcassNotificationService.sendEmail(
-                                caseData,
-                                doc,
-                                CAFCASS_EMAIL_CONTENT_MAP.get(docType),
-                                CourtBundleData.builder()
-                                    .hearingDetails(hearing)
-                                    .build())));
+                    cafcassNotificationService.sendEmail(
+                        caseData,
+                        unwrapElements(hearingDocuments).stream()
+                            .map(NotifyDocumentUploaded::getDocument)
+                            .collect(toSet()),
+                        CAFCASS_EMAIL_CONTENT_MAP.get(docType),
+                        CourtBundleData.builder().build()));
         }
     }
 
@@ -336,7 +292,7 @@ public class ManageDocumentsUploadedEventHandler {
     private Set<DocumentReference> getDocumentReferences(
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> documentsMap) {
 
-        return documentsMap.values().stream().flatMap(List::stream).collect(toList()).stream()
+        return documentsMap.values().stream().flatMap(List::stream)
             .map(Element::getValue).map(NotifyDocumentUploaded::getDocument)
             .collect(toSet());
     }

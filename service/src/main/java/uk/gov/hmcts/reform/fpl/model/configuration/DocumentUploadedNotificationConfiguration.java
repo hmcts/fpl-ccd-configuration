@@ -3,6 +3,11 @@ package uk.gov.hmcts.reform.fpl.model.configuration;
 import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
+
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Confidential level configuration for document uploaded notification
