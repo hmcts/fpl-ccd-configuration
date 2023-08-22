@@ -159,7 +159,9 @@ public class ManageDocumentsUploadedEventHandler {
         if (userType == SOLICITOR) {
             List<DocumentReference> nonConfidentialPdfDocumentsToBeSent =
                 consolidateMapByConfiguration(event, (docType) -> ConfidentialLevel.NON_CONFIDENTIAL)
-                    .values().stream()
+                    .entrySet().stream()
+                    .filter(entry -> !isHearingDocument(entry.getKey()))
+                    .map(Map.Entry::getValue)
                     .flatMap(List::stream)
                     .map(Element::getValue)
                     .map(NotifyDocumentUploaded::getDocument)
@@ -210,7 +212,6 @@ public class ManageDocumentsUploadedEventHandler {
         }
     }
 
-    // TODO unit test
     @Retryable(value = EmailFailedSendException.class)
     @Async
     @EventListener
