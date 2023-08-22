@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
@@ -34,7 +32,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,7 +40,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -160,8 +156,8 @@ public class ManageDocumentsUploadedEventHandler {
                     .collect(joining("\n"));
 
                 String subjectInfo = documentsToBeSent.keySet().stream()
-                    .map(documentType -> (COURT_CORRESPONDENCE.equals(documentType)) ?
-                        CORRESPONDENCE : FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                    .map(documentType -> (COURT_CORRESPONDENCE.equals(documentType))
+                        ? CORRESPONDENCE : FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                     .findFirst().orElse("UNKNOWN");
 
                 cafcassNotificationService.sendEmail(
@@ -206,7 +202,8 @@ public class ManageDocumentsUploadedEventHandler {
 
     }
 
-    private Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>> buildConfigurationMapGroupedByRecipient(final ManageDocumentsUploadedEvent event) {
+    private Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
+            buildConfigurationMapGroupedByRecipient(final ManageDocumentsUploadedEvent event) {
 
         final CaseData caseData = event.getCaseData();
 
@@ -246,20 +243,25 @@ public class ManageDocumentsUploadedEventHandler {
     }
 
     /**
-     * Base on the notification configuration of each file type, returns all files uploaded in the event which satisfy the confidential level configured.
+     * Base on the notification configuration of each file type, returns all files uploaded in the event which satisfy
+     * the confidential level configured.
      * e.g.
      * Given: A user has CTSC level over DocumentType A and non-confidential level over DocumentType B.
-     * If any, this method will return all newly uploaded documents of DocumentType A and only non-confidential documents of DocumentType B.
+     * If any, this method will return all newly uploaded documents of DocumentType A and only non-confidential
+     * documents of DocumentType B.
      *
      * @param event the ManageDocumentsUploadedEvent
      * @param getConfidentialLevelFunction A function accepts the notification configuration of a document type and
-     *                                     returns the confidential level of the targeted user type on that document type.
+     *                                     returns the confidential level of the targeted user type of that document
+     *                                     type.
      *                                     e.g. To get the confidential level of respondent solicitor
      *                                         DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor
      * @return Lists of documents grouped by document type
      */
-    private Map<DocumentType, List<Element<NotifyDocumentUploaded>>> consolidateMapByConfiguration(ManageDocumentsUploadedEvent event,
-                                                                                                   Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel> getConfidentialLevelFunction) {
+    private Map<DocumentType, List<Element<NotifyDocumentUploaded>>>
+            consolidateMapByConfiguration(ManageDocumentsUploadedEvent event,
+                                          Function<DocumentUploadedNotificationConfiguration,
+                                              ConfidentialLevel> getConfidentialLevelFunction) {
 
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> nonConfidentialDocuments =
             event.getNewDocuments().entrySet().stream()

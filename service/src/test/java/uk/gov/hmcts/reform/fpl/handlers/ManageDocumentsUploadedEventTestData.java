@@ -15,18 +15,26 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 public class ManageDocumentsUploadedEventTestData {
 
     public static final Long CASE_ID = 12345L;
     public static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+
+    public static final Set<ConfidentialLevel> CTSC_ALLOWED = Set.of(ConfidentialLevel.CTSC);
+    public static final Set<ConfidentialLevel> LA_ALLOWED = Set.of(ConfidentialLevel.LA, ConfidentialLevel.CTSC);
+    public static final Set<ConfidentialLevel> NON_CONFIDENTIAL_ALLOWED = Set.of(ConfidentialLevel.NON_CONFIDENTIAL,
+        ConfidentialLevel.LA, ConfidentialLevel.CTSC);
+
+
+    private ManageDocumentsUploadedEventTestData() {
+    }
 
     public static CaseData.CaseDataBuilder<?,?> commonCaseBuilder() {
         return CaseData.builder()

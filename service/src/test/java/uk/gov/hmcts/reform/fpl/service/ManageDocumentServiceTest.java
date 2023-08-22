@@ -70,9 +70,9 @@ import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADDITIONAL_APPLICATIONS_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CASE_SUMMARY_KEY;
@@ -2871,7 +2872,7 @@ class ManageDocumentServiceTest {
     @ParameterizedTest
     @MethodSource("buildUploadingDocumentArgs")
     void shouldPopulateDocumentListWhenUploadASingleParentAssessment(int loginType, Confidentiality confidentiality) {
-        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS, 
+        tplPopulateDocumentListWhenUploadingSingleDocument(DocumentType.PARENT_ASSESSMENTS,
             suffix -> "parentAssessmentList" + suffix, loginType, confidentiality,
             list -> list.contains(element(elementIdOne, ManagedDocument.builder()
                 .document(expectedDocumentOne)
@@ -3524,19 +3525,21 @@ class ManageDocumentServiceTest {
         void shouldBuildManageDocumentsUploadedEvent(DocumentType documentType, ConfidentialLevel confidentialLevel)
             throws Exception {
 
-            List<Element<ManagedDocument>> documentList = List.of(element(ManagedDocument.builder()
-                .document(ManageDocumentsUploadedEventTestData.getPDFDocument()).build()));
-
             CaseData caseDataBefore = ManageDocumentsUploadedEventTestData.commonCaseBuilder().build();
 
-            CaseData.CaseDataBuilder<?,?> caseDataBuilder = ManageDocumentsUploadedEventTestData.commonCaseBuilder();
-            caseDataBuilder = ManageDocumentsUploadedEventTestData.addManagedDocument(caseDataBuilder, documentType,
-                    confidentialLevel, documentList);
-            CaseData caseData = caseDataBuilder.build();
+            CaseData caseData;
+            try {
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+
+            List<Element<Object>> documentList = ObjectHelper.getFieldValue(caseData,
+                documentType.getBaseFieldNameResolver().apply(confidentialLevel), List.class);
 
             ManageDocumentsUploadedEvent eventData =
                 underTest.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
-
 
             assertEquals(caseData, eventData.getCaseData());
 
@@ -3544,9 +3547,19 @@ class ManageDocumentServiceTest {
             Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocumentsLA = new HashMap<>();
             Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocumentsCTSC = new HashMap<>();
 
-            List<Element<NotifyDocumentUploaded>> expectedDocuments = documentList.stream()
-                .map(elm -> element(elm.getId(), (NotifyDocumentUploaded) elm.getValue()))
-                .collect(Collectors.toList());
+            List<Element<NotifyDocumentUploaded>> expectedDocuments;
+            if (DocumentType.COURT_BUNDLE.equals(documentType)) {
+                expectedDocuments = documentList.stream()
+                    .map(Element::getValue).map(doc -> (HearingCourtBundle) doc)
+                    .map(HearingCourtBundle::getCourtBundle)
+                    .flatMap(List::stream)
+                    .map(elm -> element(elm.getId(), (NotifyDocumentUploaded) elm.getValue()))
+                    .collect(Collectors.toList());
+            } else {
+                expectedDocuments = documentList.stream()
+                    .map(elm -> element(elm.getId(), (NotifyDocumentUploaded) elm.getValue()))
+                    .collect(Collectors.toList());
+            }
 
             if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
                 expectedNewDocuments.put(documentType, expectedDocuments);
@@ -3566,12 +3579,8 @@ class ManageDocumentServiceTest {
             List<Arguments> streamList = new ArrayList<>();
 
             for (DocumentType docType : DocumentType.values()) {
-                if (!docType.equals(DocumentType.COURT_BUNDLE) && !docType.equals(DocumentType.CASE_SUMMARY)
-                    && !docType.equals(DocumentType.POSITION_STATEMENTS)
-                    && !docType.equals(DocumentType.SKELETON_ARGUMENTS)) {
-                    for(ConfidentialLevel level : ConfidentialLevel.values()) {
-                        streamList.add(Arguments.of(docType, level));
-                    }
+                for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                    streamList.add(Arguments.of(docType, level));
                 }
             }
 

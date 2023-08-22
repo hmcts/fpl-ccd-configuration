@@ -10,10 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration;
 import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration;
 
 import java.util.Arrays;
 import java.util.List;

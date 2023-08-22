@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
@@ -55,6 +54,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.CTSC_ALLOWED;
+import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.LA_ALLOWED;
+import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.NON_CONFIDENTIAL_ALLOWED;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
@@ -105,13 +107,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     private static final List<Recipient> REPRESENTATIVES_SERVED_BY_POST =
         List.of(Representative.builder().email(REP_SOLICITOR_1_EMAIL).build());
 
-    final Set<ConfidentialLevel> CTSC_ALLOWED = Set.of(ConfidentialLevel.CTSC);
-    final Set<ConfidentialLevel> LA_ALLOWED = Set.of(ConfidentialLevel.LA, ConfidentialLevel.CTSC);
-    final Set<ConfidentialLevel> NON_CONFIDENTIAL_ALLOWED = Set.of(ConfidentialLevel.NON_CONFIDENTIAL,
-        ConfidentialLevel.LA,
-        ConfidentialLevel.CTSC);
-
-    final Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
+    private static final Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
         RECIPIENT_CONFIG_MAPPING =
         Map.of(
             DESIGNATED_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToDesignatedLA,
@@ -192,16 +188,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
             throws Exception {
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendDocumentsUploadedNotification(eventData);
 
@@ -249,16 +245,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
             DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendDocumentsToCafcass(eventData);
 
@@ -285,7 +281,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 }
             }
 
-            if (shouldVerifyNoInteraction){
+            if (shouldVerifyNoInteraction) {
                 verifyNoMoreInteractions(cafcassNotificationService);
             } else {
                 List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
@@ -297,8 +293,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
                     eq(CafcassRequestEmailContentProvider.NEW_DOCUMENT),
                     eq(NewDocumentData.builder()
                         .documentTypes("• " + documentType.getDescription())
-                        .emailSubjectInfo((COURT_CORRESPONDENCE.equals(documentType)) ?
-                            ManageDocumentsUploadedEventHandler.CORRESPONDENCE
+                        .emailSubjectInfo((COURT_CORRESPONDENCE.equals(documentType))
+                            ? ManageDocumentsUploadedEventHandler.CORRESPONDENCE
                             : ManageDocumentsUploadedEventHandler.FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                         .build()));
             }
@@ -320,16 +316,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
             setUp_uploadedBySolicitor();
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendDocumentsByPost(eventData);
 
@@ -342,7 +338,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
                     .collect(toList());
 
                 RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
-                    if (NON_CONFIDENTIAL_ALLOWED.contains(getConfigFunc.apply(documentType.getNotificationConfiguration()))) {
+                    if (NON_CONFIDENTIAL_ALLOWED.contains(
+                            getConfigFunc.apply(documentType.getNotificationConfiguration()))) {
                         verify(sendDocumentService).sendDocuments(any(), eq(expectedDocuments),
                             eq(REPRESENTATIVES_SERVED_BY_POST));
                     }
@@ -369,7 +366,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 if (!docType.equals(DocumentType.COURT_BUNDLE) && !docType.equals(DocumentType.CASE_SUMMARY)
                     && !docType.equals(DocumentType.POSITION_STATEMENTS)
                     && !docType.equals(DocumentType.SKELETON_ARGUMENTS)) {
-                    for(ConfidentialLevel level : ConfidentialLevel.values()) {
+                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
                         streamList.add(Arguments.of(docType, level));
                     }
                 }
@@ -389,16 +386,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
             throws Exception {
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendDocumentsUploadedNotification(eventData);
 
@@ -451,16 +448,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
                                                                     ConfidentialLevel confidentialLevel)
             throws Exception {
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendHearingDocumentsToCafcass(eventData);
 
@@ -487,7 +484,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 }
             }
 
-            if (shouldVerifyNoInteraction){
+            if (shouldVerifyNoInteraction) {
                 verifyNoMoreInteractions(cafcassNotificationService);
             } else {
                 Set<DocumentReference> expectedDocRef = unwrapElements(expectedNewDocuments.get(documentType)).stream()
@@ -509,16 +506,16 @@ public class ManageDocumentsUploadedEventHandlerTest {
             setUp_uploadedBySolicitor();
 
             CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData casedData;
+            CaseData caseData;
             try {
-                casedData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
             } catch (Exception e) {
                 return;
             }
 
             ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(casedData, caseDataBefore);
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
             underTest.sendDocumentsByPost(eventData);
 
@@ -531,7 +528,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             Stream.of(DocumentType.COURT_BUNDLE, DocumentType.CASE_SUMMARY, DocumentType.POSITION_STATEMENTS,
                     DocumentType.SKELETON_ARGUMENTS)
                 .forEach(docType -> {
-                    for(ConfidentialLevel level : ConfidentialLevel.values()) {
+                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
                         streamList.add(Arguments.of(docType, level));
                     }
                 });
@@ -540,7 +537,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
         }
     }
 
-    private void verifyFurtherEvidenceNotificationServiceGetRecipients(){
+    private void verifyFurtherEvidenceNotificationServiceGetRecipients() {
         verify(furtherEvidenceNotificationService).getDesignatedLocalAuthorityRecipientsOnly(any());
         verify(furtherEvidenceNotificationService).getSecondaryLocalAuthorityRecipientsOnly(any());
         verify(furtherEvidenceNotificationService).getLegalRepresentativeOnly(any());

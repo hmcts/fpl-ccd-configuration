@@ -1163,7 +1163,7 @@ public class ManageDocumentService {
 
     @SuppressWarnings("unchecked")
     public ManageDocumentsUploadedEvent buildManageDocumentsUploadedEvent(CaseData caseData, CaseData caseDataBefore)
-        throws Exception{
+        throws Exception {
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocuments = new HashMap<>();
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsLA = new HashMap<>();
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsCTSC = new HashMap<>();
@@ -1173,8 +1173,8 @@ public class ManageDocumentService {
                 ConfidentialLevel.LA, newDocumentsLA,
                 ConfidentialLevel.CTSC, newDocumentsCTSC);
 
-        for(DocumentType documentType : DocumentType.values()) {
-            for(ConfidentialLevel confidentialLevel : resultMapByConfidentialLevel.keySet()) {
+        for (DocumentType documentType : DocumentType.values()) {
+            for (ConfidentialLevel confidentialLevel : resultMapByConfidentialLevel.keySet()) {
                 if (documentType.getBaseFieldNameResolver() != null) {
                     String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
 

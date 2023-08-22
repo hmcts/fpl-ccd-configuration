@@ -3,17 +3,12 @@ package uk.gov.hmcts.reform.fpl.model.configuration;
 import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
-
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Confidential level configuration for document uploaded notification
  * e.g. sendToCafcassEngland
- * If set to LA, only send notification to cafcass england when a LA level or non-confidential level document is uploaded
- * If null, no notification will be sent to cafcass england.
+ * If set to LA, only send notification to cafcass england when a LA level or non-confidential level document is
+ * uploaded. If null, no notification will be sent to cafcass england.
  */
 @Getter
 @Builder

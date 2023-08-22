@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 
 public class ObjectHelper {
 
+    private ObjectHelper() {
+    }
+
     public static <T> T getFieldValue(Object object, String fieldName, Class<T> targetType)
         throws Exception {
 
