@@ -187,7 +187,10 @@ public class MigrateCaseController extends CallbackController {
 
         Judge allocatedJudge = caseData.getAllocatedJudge();
         if (!isEmpty(allocatedJudge)) {
-            caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder().judgeJudicialUser(null).build());
+            caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
+                .judgeEnterManually(null)
+                .judgeJudicialUser(null)
+                .build());
         }
 
         List<Element<HearingBooking>> hearingsWithIdamIdsStripped = caseData.getAllNonCancelledHearings()
@@ -195,6 +198,7 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking booking = hearing.getValue();
 
                 booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
+                        .judgeEnterManually(null)
                         .judgeJudicialUser(null)
                     .build());
                 hearing.setValue(booking);
