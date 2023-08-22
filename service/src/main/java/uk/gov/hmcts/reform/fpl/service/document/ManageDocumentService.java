@@ -456,10 +456,8 @@ public class ManageDocumentService {
                 return documentType.isHiddenFromLAUpload() || documentType.isHiddenFromUpload();
             case HMCTS:
                 return documentType.isHiddenFromCTSCUpload() || documentType.isHiddenFromUpload();
-            case BARRISTER:
-                return true;
             default:
-                throw new IllegalStateException("unrecognised uploaderType: " + uploaderType);
+                throw new IllegalStateException("unsupported uploaderType: " + uploaderType);
         }
     }
 

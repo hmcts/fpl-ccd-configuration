@@ -2741,9 +2741,7 @@ class ManageDocumentServiceTest {
             .build()
             : CaseData.builder().id(CASE_ID).build();
 
-        DynamicList expectedDynamicList = DynamicList.builder()
-            .value(DynamicListElement.builder().label("SUCCESS").code("SUCCESS").build())
-            .build();
+        DynamicList expectedDynamicList = DynamicList.builder().build();
         when(dynamicListService.asDynamicList(expectedPairList)).thenReturn(expectedDynamicList);
 
         assertThat(underTest.buildDocumentTypeDynamicList(caseData)).isEqualTo(expectedDynamicList);
