@@ -248,8 +248,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
         void shouldSendDocumentToCafcassWhenDocumentUploaded(DocumentType documentType,
                                                              ConfidentialLevel confidentialLevel)
             throws Exception {
-            DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
-
             CaseData caseDataBefore = commonCaseBuilder().build();
             CaseData caseData;
             try {
@@ -360,14 +358,13 @@ public class ManageDocumentsUploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase(DocumentType documentType,
-                                                             ConfidentialLevel confidentialLevel)
+        void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase()
             throws Exception {
             CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
             CaseData caseData;
             try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
+                    List.of(ConfidentialLevel.NON_CONFIDENTIAL));
             } catch (Exception e) {
                 return;
             }

@@ -298,7 +298,7 @@ public class ManageDocumentsUploadedEventHandler {
                 .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
 
         Map<DocumentType, List<Element<NotifyDocumentUploaded>>> ctscLevelDocuments =
-            event.getNewDocumentsLA().entrySet().stream()
+            event.getNewDocumentsCTSC().entrySet().stream()
                 .filter(entry -> ConfidentialLevel.CTSC
                     .equals(getConfidentialLevelFunction.apply(entry.getKey().getNotificationConfiguration())))
                 .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
