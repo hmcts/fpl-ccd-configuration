@@ -227,6 +227,96 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .build());
         }
 
+        @Test
+        void shouldLeaveHearingsUnchangedIfNotInMapping() {
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isEqualTo(caseData.getHearingDetails());
+        }
+
+        @Test
+        void shouldHaveNoChangeToHearingsIfNone() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isNull();
+        }
+
+        @Test
+        void shouldDoRollback() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId("12345")
+                        .build())
+                    .build())
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .judgeJudicialUser(JudicialUser.builder()
+                                .idamId("12345")
+                                .build())
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId + "-Rollback"));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isNull();
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser").isNull();
+        }
+
+        @Test
+        void shouldHaveNoChangeToHearingsInRollbackIfNone() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId + "-Rollback"));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isNull();
+        }
 
     }
 }
