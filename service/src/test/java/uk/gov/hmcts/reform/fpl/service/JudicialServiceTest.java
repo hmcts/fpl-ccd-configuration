@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
@@ -28,11 +30,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -264,4 +268,62 @@ class JudicialServiceTest {
 
         assertThat(exists).isFalse();
     }
+
+    @Test
+    void shouldGetAllocatedJudgeDetailsOffCase() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        Optional<Judge> judge = underTest.getAllocatedJudge(caseData);
+
+        assertThat(judge.isPresent()).isTrue();
+    }
+
+    @Test
+    void shouldNotGetAllocatedJudgeDetailsOffCaseIfMissingEmail() {
+        CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .build())
+            .build();
+
+        Optional<Judge> judge = underTest.getAllocatedJudge(caseData);
+
+        assertThat(judge.isPresent()).isFalse();
+    }
+
+    @Test
+    void shouldGetHearingJudgesOnCase() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build()))
+            .build();
+
+        Set<JudgeAndLegalAdvisor> judges = underTest.getHearingJudges(caseData);
+
+        assertThat(judges).hasSize(1);
+    }
+
+    @Test
+    void shouldDeleteSpecificRole() {
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(LocalDateTime.now())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEnterManually(YesNo.NO)
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idam")
+                    .build())
+                .build())
+            .build();
+
+        underTest.deleteSpecificHearingRole(12345L, hearing);
+
+        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(eq(12345L), any(), eq("idam"));
+    }
+
 }
