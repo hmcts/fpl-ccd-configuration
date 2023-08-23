@@ -83,10 +83,11 @@ public class NewHearingJudgeEventHandler {
 
     private void handleEditedHearing(final NewHearingJudgeEvent event) {
         if (!isEmpty(event.getOldHearing())) {
-            HearingBooking oldHearing = event.getOldHearing().orElseGet(() -> HearingBooking.builder().build());
-            if (!oldHearing.equals(event.getHearing())) {
+            // temp var to get around weird sonar scan behaviour
+            Optional<HearingBooking> oldHearing = event.getOldHearing();
+            if (oldHearing.isPresent() && !oldHearing.get().equals(event.getHearing())) {
                 // the hearing being modified was already on the case - cleanup its roles for us to reassign
-                judicialService.deleteSpecificHearingRole(event.getCaseData().getId(), event.getOldHearing().get());
+                judicialService.deleteSpecificHearingRole(event.getCaseData().getId(), oldHearing.get());
             }
         }
     }
