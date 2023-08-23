@@ -46,12 +46,10 @@ public class LegalAdviserUsersConfiguration {
         } else {
             mapping = Map.of();
         }
-        log.info("Loaded {} legal advisers: [{}]", mapping.size(), mapping.entrySet().stream()
-            .map(entry -> entry.getKey() + ":" + entry.getValue()).collect(Collectors.joining(",")));
+        log.info("Loaded {} legal advisers", mapping.size());
     }
 
     public Optional<String> getLegalAdviserUUID(String email) {
-        log.info("Looking up '{}'", email); // todo - remove me
         return Optional.ofNullable(mapping.getOrDefault(email.toLowerCase(), null));
     }
 

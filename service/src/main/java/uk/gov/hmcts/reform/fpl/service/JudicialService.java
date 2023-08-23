@@ -147,7 +147,6 @@ public class JudicialService {
         if (isLegalAdviser) {
             roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
                 ending);
-            // todo write a test about nulls
         } else {
             roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, ending);
         }
