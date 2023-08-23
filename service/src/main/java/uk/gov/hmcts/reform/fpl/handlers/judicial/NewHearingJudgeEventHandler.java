@@ -84,7 +84,7 @@ public class NewHearingJudgeEventHandler {
     private void handleEditedHearing(final NewHearingJudgeEvent event) {
         if (!isEmpty(event.getOldHearing()) && event.getOldHearing().isPresent()) {
             HearingBooking oldHearing = event.getOldHearing().get();
-            if (oldHearing.equals(event.getHearing())) {
+            if (!oldHearing.equals(event.getHearing())) {
                 // the hearing being modified was already on the case - cleanup its roles for us to reassign
                 judicialService.deleteSpecificHearingRole(event.getCaseData().getId(), event.getOldHearing().get());
             }
