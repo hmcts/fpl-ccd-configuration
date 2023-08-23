@@ -100,7 +100,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         return respond(caseDetailsMap);
     }
 
-    // TODO unit test
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) throws Exception {
         publishEvent(manageDocumentService.buildManageDocumentsUploadedEvent(getCaseData(request),
