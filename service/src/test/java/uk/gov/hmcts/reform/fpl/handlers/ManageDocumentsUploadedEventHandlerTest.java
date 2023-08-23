@@ -304,7 +304,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                         eq(expectedDocRef),
                         eq(documentType.getNotificationConfiguration().getCafcassRequestEmailContentProvider()),
                         eq(NewDocumentData.builder()
-                            .documentTypes("• " + documentType.getDescription())
+                            .documentTypes("• " + documentType.getDescription().replaceAll("└─ ", ""))
                             .emailSubjectInfo((COURT_CORRESPONDENCE.equals(documentType))
                                 ? ManageDocumentsUploadedEventHandler.CORRESPONDENCE
                                 : ManageDocumentsUploadedEventHandler.FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)

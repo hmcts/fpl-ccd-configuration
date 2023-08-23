@@ -159,7 +159,8 @@ public class ManageDocumentsUploadedEventHandler {
 
                 emailTemplateMap.forEach((cafcassEmailContentProvider, documentTypeList) -> {
                     String documentTypes = documentTypeList.stream()
-                        .map(docType -> String.join(" ", LIST, docType.getDescription()))
+                        .map(docType ->
+                            String.join(" ", LIST, docType.getDescription().replaceAll("└─ ", "")))
                         .collect(joining("\n"));
 
                     String subjectInfo = documentTypeList.stream()
