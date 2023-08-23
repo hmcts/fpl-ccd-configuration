@@ -8,6 +8,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -25,13 +27,16 @@ import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,6 +55,8 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -62,6 +69,7 @@ public class ManageDocumentsUploadedEventHandler {
     private final CafcassNotificationService cafcassNotificationService;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final SendDocumentService sendDocumentService;
+    private final TranslationRequestService translationRequestService;
 
     private static final String LIST = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
@@ -198,8 +206,19 @@ public class ManageDocumentsUploadedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(final ManageDocumentsUploadedEvent event) {
-        // TODO no translation in new Manage doc flow?
-
+        CaseData caseData = event.getCaseData();
+        if (YesNo.YES.equals(YesNo.fromString(caseData.getLanguageRequirement()))) {
+            consolidateMapByConfiguration(event, DocumentUploadedNotificationConfiguration::getSendToTranslationTeam)
+                .forEach((documentType, documents) ->
+                    unwrapElements(documents).forEach(document ->
+                        translationRequestService.sendRequest(caseData,
+                            // TODO only send document that require translation
+                            Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH),
+                            document.getDocument(),
+                            String.format("%s - %s - %s", Optional.ofNullable(documentType.getDescription()),
+                                document.getNameForNotification(),
+                                formatLocalDateBaseUsingFormat(LocalDate.now(), DATE)))));
+        }
     }
 
     private Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>

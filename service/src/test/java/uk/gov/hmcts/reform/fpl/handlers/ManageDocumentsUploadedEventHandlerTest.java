@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
+import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentsHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -140,6 +143,9 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private TranslationRequestService translationRequestService;
 
     @BeforeEach
     void setUp() {
@@ -262,28 +268,26 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 .getSendToCafcassEngland();
 
             Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
-            boolean shouldVerifyNoInteraction = true;
+            boolean shouldVerifyNoInteractionOnly = true;
 
             if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
                 if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocuments();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
                 if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocumentsLA();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             } else {
                 if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             }
 
-            if (shouldVerifyNoInteraction) {
-                verifyNoMoreInteractions(cafcassNotificationService);
-            } else {
+            if (!shouldVerifyNoInteractionOnly) {
                 List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
 
                 verify(cafcassNotificationService).sendEmail(any(),
@@ -298,6 +302,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                             : ManageDocumentsUploadedEventHandler.FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
                         .build()));
             }
+            verifyNoMoreInteractions(translationRequestService);
         }
 
         @ParameterizedTest
@@ -305,7 +310,75 @@ public class ManageDocumentsUploadedEventHandlerTest {
         void shouldNotifyTranslationTeamWhenDocumentUploaded(DocumentType documentType,
                                                              ConfidentialLevel confidentialLevel)
             throws Exception {
-            // TODO
+            CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.YES.getValue()).build();
+            CaseData caseData;
+            try {
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+            caseData = caseData.toBuilder().languageRequirement(YesNo.YES.getValue()).build();
+
+            ManageDocumentsUploadedEvent eventData =
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+
+            underTest.notifyTranslationTeam(eventData);
+
+
+            ConfidentialLevel translationConfidentialLevel = documentType.getNotificationConfiguration()
+                .getSendToTranslationTeam();
+
+            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
+            boolean shouldVerifyNoInteractionOnly = true;
+
+            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                if (NON_CONFIDENTIAL_ALLOWED.contains(translationConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocuments();
+                    shouldVerifyNoInteractionOnly = false;
+                }
+            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                if (LA_ALLOWED.contains(translationConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocumentsLA();
+                    shouldVerifyNoInteractionOnly = false;
+                }
+            } else {
+                if (CTSC_ALLOWED.contains(translationConfidentialLevel)) {
+                    expectedNewDocuments = eventData.getNewDocumentsCTSC();
+                    shouldVerifyNoInteractionOnly = false;
+                }
+            }
+
+            if (!shouldVerifyNoInteractionOnly) {
+                unwrapElements(expectedNewDocuments.get(documentType)).forEach(doc ->
+                    verify(translationRequestService).sendRequest(any(),
+                        eq(Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)),
+                        eq(doc.getDocument()),
+                        any()));
+            }
+            verifyNoMoreInteractions(translationRequestService);
+        }
+
+        @Test
+        void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase(DocumentType documentType,
+                                                             ConfidentialLevel confidentialLevel)
+            throws Exception {
+            CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
+            CaseData caseData;
+            try {
+                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                    List.of(confidentialLevel));
+            } catch (Exception e) {
+                return;
+            }
+            caseData = caseData.toBuilder().languageRequirement(YesNo.NO.getValue()).build();
+
+            ManageDocumentsUploadedEvent eventData =
+                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+
+            underTest.notifyTranslationTeam(eventData);
+
+            verifyNoMoreInteractions(translationRequestService);
         }
 
         @ParameterizedTest
@@ -465,28 +538,26 @@ public class ManageDocumentsUploadedEventHandlerTest {
                 .getSendToCafcassEngland();
 
             Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
-            boolean shouldVerifyNoInteraction = true;
+            boolean shouldVerifyNoInteractionOnly = true;
 
             if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
                 if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocuments();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
                 if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocumentsLA();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             } else {
                 if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
                     expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                    shouldVerifyNoInteraction = false;
+                    shouldVerifyNoInteractionOnly = false;
                 }
             }
 
-            if (shouldVerifyNoInteraction) {
-                verifyNoMoreInteractions(cafcassNotificationService);
-            } else {
+            if (!shouldVerifyNoInteractionOnly) {
                 Set<DocumentReference> expectedDocRef = unwrapElements(expectedNewDocuments.get(documentType)).stream()
                     .map(NotifyDocumentUploaded::getDocument)
                     .collect(toSet());
@@ -496,6 +567,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
                     eq(ManageDocumentsUploadedEventHandler.CAFCASS_EMAIL_CONTENT_MAP.get(documentType)),
                     eq(CourtBundleData.builder().build()));
             }
+            verifyNoMoreInteractions(translationRequestService);
         }
 
         @ParameterizedTest
