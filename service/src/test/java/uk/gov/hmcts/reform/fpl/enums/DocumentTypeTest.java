@@ -51,4 +51,10 @@ class DocumentTypeTest {
             .isEqualTo("hearingDocuments.caseSummaryListRemoved");
         assertThat(DocumentType.JUDGEMENTS.getFieldNameOfRemovedList()).isEqualTo("judgementListRemoved");
     }
+
+    @Test
+    void testToJsonFieldName() {
+        assertThat(DocumentType.toJsonFieldName("hearingDocuments.courtBundleListV2"))
+            .isEqualTo("courtBundleListV2");
+    }
 }
