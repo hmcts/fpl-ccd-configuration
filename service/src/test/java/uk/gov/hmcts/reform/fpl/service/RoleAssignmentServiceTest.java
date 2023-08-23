@@ -270,7 +270,8 @@ class RoleAssignmentServiceTest {
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
                 .attributes(Map.of("caseId", List.of("12345")))
-                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser", "allocated-legal-adviser"))
+                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser",
+                    "allocated-legal-adviser"))
                 .build()));
 
             verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
