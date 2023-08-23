@@ -205,7 +205,9 @@ public class MigrateCaseController extends CallbackController {
                 return hearing;
             }).toList();
 
-        caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
+        if (caseData.getAllNonCancelledHearings().size() > 0) {
+            caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
+        }
         caseDetails.getData().remove("hasBeenAMMigrated");
     }
 
@@ -247,7 +249,10 @@ public class MigrateCaseController extends CallbackController {
                 return el;
             }).toList();
 
-        caseDetails.getData().put("hearingDetails", modified);
+        if (hearings.size() > 0) {
+            // don't add an empty array if there weren't any hearings beforehand
+            caseDetails.getData().put("hearingDetails", modified);
+        }
         caseDetails.getData().put("hasBeenAMMigrated", "Yes");
     }
 
