@@ -46,10 +46,7 @@ public enum CafcassRequestEmailContentProvider {
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
-            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty())
-                ? "A new court bundle for this case was uploaded to the Public Law Portal"
-                : String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
-                    cafcassData.getHearingDetails()),
+            "A new court bundle for this case was uploaded to the Public Law Portal",
         CafcassEmailConfiguration::getRecipientForCourtBundle,
             true),
 
@@ -58,13 +55,11 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new case summary"),
         (caseData, cafcassData) ->
-            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty())
-                ? "A new case summary for this case was uploaded to the Public Law Portal"
-                : String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
-                    cafcassData.getHearingDetails()),
+             "A new case summary for this case was uploaded to the Public Law Portal",
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    @Deprecated
     POSITION_STATEMENT_CHILD("Position statement child",
         (caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
@@ -76,6 +71,7 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    @Deprecated
     POSITION_STATEMENT_RESPONDENT("Position statement respondent",
         (caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
@@ -101,9 +97,7 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new skeleton argument"),
         (caseData, cafcassData) ->
-            String.format("A skeleton argument for this case was uploaded to the "
-                    + "Public Law Portal entitled %s",
-                cafcassData.getHearingDetails()),
+            "A skeleton argument for this case was uploaded to the Public Law Portal",
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 

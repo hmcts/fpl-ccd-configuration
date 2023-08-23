@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewDocumentData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -32,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentsHelper;
@@ -62,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.NON_CONFIDENTIAL_ALLOWED;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.commonCaseBuilder;
+import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.isHearingDocument;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService.PDF;
@@ -185,425 +183,325 @@ public class ManageDocumentsUploadedEventHandlerTest {
         when(userService.getCaseRoles(ManageDocumentsUploadedEventTestData.CASE_ID)).thenReturn(Set.of(SOLICITOR));
     }
 
-    @Nested
-    class DocumentsUploadedTest {
-        @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
-        void shouldSendNotificationBasedOnConfigurationWhenDocumentsUploaded(DocumentType documentType,
-                                                                             ConfidentialLevel confidentialLevel)
-            throws Exception {
+    @ParameterizedTest
+    @MethodSource("allDocumentsTypeParameters")
+    void shouldSendNotificationBasedOnConfigurationWhenDocumentsUploaded(DocumentType documentType,
+                                                                         ConfidentialLevel confidentialLevel)
+        throws Exception {
 
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
+        CaseData caseDataBefore = commonCaseBuilder().build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                List.of(confidentialLevel));
+        } catch (Exception e) {
+            return;
+        }
 
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
-            underTest.sendDocumentsUploadedNotification(eventData);
-
-            DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
-
-            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments;
-            Set<ConfidentialLevel> levelAllowed;
-
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                expectedNewDocuments = eventData.getNewDocuments();
-                levelAllowed = NON_CONFIDENTIAL_ALLOWED;
-            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
-                expectedNewDocuments = eventData.getNewDocumentsLA();
-                levelAllowed = LA_ALLOWED;
-            } else {
-                expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                levelAllowed = CTSC_ALLOWED;
-            }
-
-            List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
-            List<String> documentNames = unwrapElements(documents).stream()
-                .map(NotifyDocumentUploaded::getNameForNotification)
-                .collect(toList());
-
-            String senderName = eventData.getInitiatedBy().getFullName();
+        underTest.sendDocumentsUploadedNotification(eventData);
 
 
-            verifyFurtherEvidenceNotificationServiceGetRecipients();
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments;
+        Set<ConfidentialLevel> levelAllowed;
 
+        if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+            expectedNewDocuments = eventData.getNewDocuments();
+            levelAllowed = NON_CONFIDENTIAL_ALLOWED;
+        } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+            expectedNewDocuments = eventData.getNewDocumentsLA();
+            levelAllowed = LA_ALLOWED;
+        } else {
+            expectedNewDocuments = eventData.getNewDocumentsCTSC();
+            levelAllowed = CTSC_ALLOWED;
+        }
+
+        List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
+        List<String> documentNames = unwrapElements(documents).stream()
+            .map(NotifyDocumentUploaded::getNameForNotification)
+            .collect(toList());
+
+        String senderName = eventData.getInitiatedBy().getFullName();
+
+
+        verifyFurtherEvidenceNotificationServiceGetRecipients();
+
+        DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
+
+        if (config != null) {
             RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
-                if (levelAllowed.contains(getConfigFunc.apply(config))) {
+                ConfidentialLevel levelConfig = getConfigFunc.apply(config);
+                if (levelConfig != null && levelAllowed.contains(levelConfig)) {
                     verify(furtherEvidenceNotificationService).sendNotification(any(),
                         eq(recipients), eq(senderName), eq(documentNames));
                 }
             });
-
-            verifyNoMoreInteractions(furtherEvidenceNotificationService);
         }
 
-        @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
-        void shouldSendDocumentToCafcassWhenDocumentUploaded(DocumentType documentType,
-                                                             ConfidentialLevel confidentialLevel)
-            throws Exception {
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
+        verifyNoMoreInteractions(furtherEvidenceNotificationService);
+    }
 
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+    @ParameterizedTest
+    @MethodSource("allDocumentsTypeParameters")
+    void shouldSendDocumentToCafcassWhenDocumentUploaded(DocumentType documentType,
+                                                         ConfidentialLevel confidentialLevel)
+        throws Exception {
+        CaseData caseDataBefore = commonCaseBuilder().build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                List.of(confidentialLevel));
+        } catch (Exception e) {
+            return;
+        }
 
-            underTest.sendDocumentsToCafcass(eventData);
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
+        underTest.sendDocumentsToCafcass(eventData);
+
+        if (documentType.getNotificationConfiguration() != null) {
             ConfidentialLevel cafcassConfidentialLevel = documentType.getNotificationConfiguration()
                 .getSendToCafcassEngland();
 
-            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
-            boolean shouldVerifyNoInteractionOnly = true;
+            if (cafcassConfidentialLevel != null) {
+                Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
+                boolean shouldVerifyNoInteractionOnly = true;
 
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocuments();
-                    shouldVerifyNoInteractionOnly = false;
+                if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                    if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocuments();
+                        shouldVerifyNoInteractionOnly = false;
+                    }
+                } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                    if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocumentsLA();
+                        shouldVerifyNoInteractionOnly = false;
+                    }
+                } else {
+                    if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocumentsCTSC();
+                        shouldVerifyNoInteractionOnly = false;
+                    }
                 }
-            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
-                if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsLA();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            } else {
-                if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                    shouldVerifyNoInteractionOnly = false;
+
+                if (!shouldVerifyNoInteractionOnly) {
+                    String expectedCafcassDocType = documentType.toString().replaceAll("_", " ");
+
+                    Set<DocumentReference> expectedDocRef =
+                        unwrapElements(expectedNewDocuments.get(documentType)).stream()
+                            .map(NotifyDocumentUploaded::getDocument)
+                            .map(documentReference ->
+                                documentReference.toBuilder()
+                                    .type(expectedCafcassDocType)
+                                    .build())
+                            .collect(toSet());
+
+
+                    verify(cafcassNotificationService).sendEmail(any(),
+                        eq(expectedDocRef),
+                        eq(documentType.getNotificationConfiguration().getCafcassRequestEmailContentProvider()),
+                        eq(NewDocumentData.builder()
+                            .documentTypes("• " + documentType.getDescription())
+                            .emailSubjectInfo((COURT_CORRESPONDENCE.equals(documentType))
+                                ? ManageDocumentsUploadedEventHandler.CORRESPONDENCE
+                                : ManageDocumentsUploadedEventHandler.FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
+                            .build()));
                 }
             }
-
-            if (!shouldVerifyNoInteractionOnly) {
-                List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
-
-                verify(cafcassNotificationService).sendEmail(any(),
-                    eq(unwrapElements(documents).stream()
-                        .map(NotifyDocumentUploaded::getDocument)
-                        .collect(toSet())),
-                    eq(CafcassRequestEmailContentProvider.NEW_DOCUMENT),
-                    eq(NewDocumentData.builder()
-                        .documentTypes("• " + documentType.getDescription())
-                        .emailSubjectInfo((COURT_CORRESPONDENCE.equals(documentType))
-                            ? ManageDocumentsUploadedEventHandler.CORRESPONDENCE
-                            : ManageDocumentsUploadedEventHandler.FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION)
-                        .build()));
-            }
-            verifyNoMoreInteractions(translationRequestService);
         }
+        verifyNoMoreInteractions(translationRequestService);
+    }
 
-        @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
-        void shouldNotifyTranslationTeamWhenDocumentUploaded(DocumentType documentType,
-                                                             ConfidentialLevel confidentialLevel)
-            throws Exception {
-            CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.YES.getValue()).build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
-            caseData = caseData.toBuilder().languageRequirement(YesNo.YES.getValue()).build();
+    @ParameterizedTest
+    @MethodSource("allDocumentsTypeParameters")
+    void shouldNotifyTranslationTeamWhenDocumentUploaded(DocumentType documentType,
+                                                         ConfidentialLevel confidentialLevel)
+        throws Exception {
+        CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.YES.getValue()).build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                List.of(confidentialLevel));
+        } catch (Exception e) {
+            return;
+        }
+        caseData = caseData.toBuilder().languageRequirement(YesNo.YES.getValue()).build();
 
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
-            underTest.notifyTranslationTeam(eventData);
+        underTest.notifyTranslationTeam(eventData);
 
-
+        if (documentType.getNotificationConfiguration() != null) {
             ConfidentialLevel translationConfidentialLevel = documentType.getNotificationConfiguration()
                 .getSendToTranslationTeam();
 
-            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
-            boolean shouldVerifyNoInteractionOnly = true;
+            if (translationConfidentialLevel != null) {
+                Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
+                boolean shouldVerifyNoInteractionOnly = true;
 
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                if (NON_CONFIDENTIAL_ALLOWED.contains(translationConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocuments();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
-                if (LA_ALLOWED.contains(translationConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsLA();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            } else {
-                if (CTSC_ALLOWED.contains(translationConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            }
-
-            if (!shouldVerifyNoInteractionOnly) {
-                unwrapElements(expectedNewDocuments.get(documentType)).forEach(doc ->
-                    verify(translationRequestService).sendRequest(any(),
-                        eq(Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)),
-                        eq(doc.getDocument()),
-                        any()));
-            }
-            verifyNoMoreInteractions(translationRequestService);
-        }
-
-        @Test
-        void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase()
-            throws Exception {
-            CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
-                    List.of(ConfidentialLevel.NON_CONFIDENTIAL));
-            } catch (Exception e) {
-                return;
-            }
-            caseData = caseData.toBuilder().languageRequirement(YesNo.NO.getValue()).build();
-
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
-
-            underTest.notifyTranslationTeam(eventData);
-
-            verifyNoMoreInteractions(translationRequestService);
-        }
-
-        @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
-        void shouldSendByPostWhenSolicitorUploadedPdfDocument(DocumentType documentType,
-                                                              ConfidentialLevel confidentialLevel)
-            throws Exception {
-            setUp_uploadedBySolicitor();
-
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
-
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
-
-            underTest.sendDocumentsByPost(eventData);
-
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                List<DocumentReference> expectedDocuments = eventData.getNewDocuments().values().stream()
-                    .flatMap(List::stream)
-                    .map(Element::getValue)
-                    .map(NotifyDocumentUploaded::getDocument)
-                    .filter(docRef -> DocumentsHelper.hasExtension(docRef.getFilename(), PDF))
-                    .collect(toList());
-
-                RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
-                    if (NON_CONFIDENTIAL_ALLOWED.contains(
-                            getConfigFunc.apply(documentType.getNotificationConfiguration()))) {
-                        verify(sendDocumentService).sendDocuments(any(), eq(expectedDocuments),
-                            eq(REPRESENTATIVES_SERVED_BY_POST));
+                if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+                    if (NON_CONFIDENTIAL_ALLOWED.contains(translationConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocuments();
+                        shouldVerifyNoInteractionOnly = false;
                     }
-                });
-            } else {
-                verifyNoInteractions(sendDocumentService);
-            }
-        }
-
-        @Test
-        void shouldNotSendByPostWhenDocumentsAreNotUploadedBySolicitor() {
-            ManageDocumentsUploadedEvent eventData = ManageDocumentsUploadedEvent.builder()
-                .uploadedUserType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY).build();
-
-            underTest.sendDocumentsByPost(eventData);
-
-            verifyNoInteractions(sendDocumentService);
-        }
-
-        private static Stream<Arguments> allDocumentsTypeParameters() {
-            List<Arguments> streamList = new ArrayList<>();
-
-            for (DocumentType docType : DocumentType.values()) {
-                if (!docType.equals(DocumentType.COURT_BUNDLE) && !docType.equals(DocumentType.CASE_SUMMARY)
-                    && !docType.equals(DocumentType.POSITION_STATEMENTS)
-                    && !docType.equals(DocumentType.SKELETON_ARGUMENTS)) {
-                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                        streamList.add(Arguments.of(docType, level));
+                } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+                    if (LA_ALLOWED.contains(translationConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocumentsLA();
+                        shouldVerifyNoInteractionOnly = false;
+                    }
+                } else {
+                    if (CTSC_ALLOWED.contains(translationConfidentialLevel)) {
+                        expectedNewDocuments = eventData.getNewDocumentsCTSC();
+                        shouldVerifyNoInteractionOnly = false;
                     }
                 }
-            }
 
-            return streamList.stream();
+                if (!shouldVerifyNoInteractionOnly) {
+                    unwrapElements(expectedNewDocuments.get(documentType)).forEach(doc ->
+                        verify(translationRequestService).sendRequest(any(),
+                            eq(Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH)),
+                            eq(doc.getDocument()),
+                            any()));
+                }
+            }
         }
+        verifyNoMoreInteractions(translationRequestService);
     }
 
+    @Test
+    void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase()
+        throws Exception {
+        CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
+                List.of(ConfidentialLevel.NON_CONFIDENTIAL));
+        } catch (Exception e) {
+            return;
+        }
+        caseData = caseData.toBuilder().languageRequirement(YesNo.NO.getValue()).build();
 
-    @Nested
-    class HearingDocumentsUploadedTest {
-        @ParameterizedTest
-        @MethodSource("allHearingDocumentsTypeParameters")
-        void shouldSendNotificationBasedOnConfigurationWhenHearingDocumentsUploaded(DocumentType documentType,
-                                                                                    ConfidentialLevel confidentialLevel)
-            throws Exception {
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
+        underTest.notifyTranslationTeam(eventData);
 
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+        verifyNoMoreInteractions(translationRequestService);
+    }
 
-            underTest.sendDocumentsUploadedNotification(eventData);
+    @ParameterizedTest
+    @MethodSource("allDocumentsTypeParameters")
+    void shouldSendByPostWhenSolicitorUploadedPdfDocument(DocumentType documentType,
+                                                          ConfidentialLevel confidentialLevel)
+        throws Exception {
+        setUp_uploadedBySolicitor();
 
-            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments;
-            Set<ConfidentialLevel> levelAllowed;
+        CaseData caseDataBefore = commonCaseBuilder().build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                List.of(confidentialLevel));
+        } catch (Exception e) {
+            return;
+        }
 
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                expectedNewDocuments = eventData.getNewDocuments();
-                levelAllowed = NON_CONFIDENTIAL_ALLOWED;
-            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
-                expectedNewDocuments = eventData.getNewDocumentsLA();
-                levelAllowed = LA_ALLOWED;
-            } else {
-                expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                levelAllowed = CTSC_ALLOWED;
-            }
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
 
-            verifyFurtherEvidenceNotificationServiceGetRecipients();
+        underTest.sendDocumentsByPost(eventData);
 
-            DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
-            List<Element<NotifyDocumentUploaded>> expectedDocuments = expectedNewDocuments.get(documentType);
+        if (!isHearingDocument(documentType) && ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)
+            && documentType.getNotificationConfiguration() != null) {
 
-            String senderName = eventData.getInitiatedBy().getFullName();
-
-            List<String> newDocumentNames = unwrapElements(expectedDocuments).stream()
-                .map(NotifyDocumentUploaded::getDocument).map(DocumentReference::getFilename)
+            List<DocumentReference> expectedDocuments = eventData.getNewDocuments().values().stream()
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .map(NotifyDocumentUploaded::getDocument)
+                .filter(docRef -> DocumentsHelper.hasExtension(docRef.getFilename(), PDF))
                 .collect(toList());
 
             RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
-                if (levelAllowed.contains(getConfigFunc.apply(config))) {
-                    verify(furtherEvidenceNotificationService).sendNotification(any(),
-                        eq(recipients), eq(senderName), eq(newDocumentNames));
+                ConfidentialLevel levelConfig = getConfigFunc.apply(documentType.getNotificationConfiguration());
+                if (levelConfig != null && NON_CONFIDENTIAL_ALLOWED.contains(levelConfig)) {
+                    verify(sendDocumentService).sendDocuments(any(), eq(expectedDocuments),
+                        eq(REPRESENTATIVES_SERVED_BY_POST));
+                }
+            });
+        } else {
+            verifyNoInteractions(sendDocumentService);
+        }
+    }
+
+    @Test
+    void shouldNotSendByPostWhenDocumentsAreNotUploadedBySolicitor() {
+        ManageDocumentsUploadedEvent eventData = ManageDocumentsUploadedEvent.builder()
+            .uploadedUserType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY).build();
+
+        underTest.sendDocumentsByPost(eventData);
+
+        verifyNoInteractions(sendDocumentService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("allHearingDocumentsTypeParameters")
+    void shouldNotNotifyTranslationTeamWhenHearingDocumentUploaded(DocumentType documentType,
+                                                                   ConfidentialLevel confidentialLevel)
+        throws Exception {
+        // TODO
+    }
+
+    @ParameterizedTest
+    @MethodSource("allHearingDocumentsTypeParameters")
+    void shouldNotSendDocumentByPostWhenHearingDocumentUploaded(DocumentType documentType,
+                                                                ConfidentialLevel confidentialLevel)
+        throws Exception {
+        setUp_uploadedBySolicitor();
+
+        CaseData caseDataBefore = commonCaseBuilder().build();
+        CaseData caseData;
+        try {
+            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+                List.of(confidentialLevel));
+        } catch (Exception e) {
+            return;
+        }
+
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+
+        underTest.sendDocumentsByPost(eventData);
+
+        verifyNoInteractions(sendDocumentService);
+    }
+
+    private static Stream<Arguments> allDocumentsTypeParameters() {
+        List<Arguments> streamList = new ArrayList<>();
+
+        for (DocumentType docType : DocumentType.values()) {
+            for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                streamList.add(Arguments.of(docType, level));
+            }
+        }
+
+        return streamList.stream();
+    }
+
+    private static Stream<Arguments> allHearingDocumentsTypeParameters() {
+        List<Arguments> streamList = new ArrayList<>();
+
+        Stream.of(DocumentType.COURT_BUNDLE, DocumentType.CASE_SUMMARY, DocumentType.POSITION_STATEMENTS,
+                DocumentType.SKELETON_ARGUMENTS)
+            .forEach(docType -> {
+                for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                    streamList.add(Arguments.of(docType, level));
                 }
             });
 
-            verifyNoMoreInteractions(furtherEvidenceNotificationService);
-        }
-
-        @ParameterizedTest
-        @MethodSource("allHearingDocumentsTypeParameters")
-        void shouldNotifyTranslationTeamWhenHearingDocumentUploaded(DocumentType documentType,
-                                                                    ConfidentialLevel confidentialLevel)
-            throws Exception {
-            // TODO
-        }
-
-        @ParameterizedTest
-        @MethodSource("allHearingDocumentsTypeParameters")
-        void shouldSendDocumentToCafcassWhenHearingDocumentUploaded(DocumentType documentType,
-                                                                    ConfidentialLevel confidentialLevel)
-            throws Exception {
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
-
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
-
-            underTest.sendHearingDocumentsToCafcass(eventData);
-
-            ConfidentialLevel cafcassConfidentialLevel = documentType.getNotificationConfiguration()
-                .getSendToCafcassEngland();
-
-            Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments = null;
-            boolean shouldVerifyNoInteractionOnly = true;
-
-            if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
-                if (NON_CONFIDENTIAL_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocuments();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
-                if (LA_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsLA();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            } else {
-                if (CTSC_ALLOWED.contains(cafcassConfidentialLevel)) {
-                    expectedNewDocuments = eventData.getNewDocumentsCTSC();
-                    shouldVerifyNoInteractionOnly = false;
-                }
-            }
-
-            if (!shouldVerifyNoInteractionOnly) {
-                Set<DocumentReference> expectedDocRef = unwrapElements(expectedNewDocuments.get(documentType)).stream()
-                    .map(NotifyDocumentUploaded::getDocument)
-                    .collect(toSet());
-
-                verify(cafcassNotificationService).sendEmail(any(),
-                    eq(expectedDocRef),
-                    eq(ManageDocumentsUploadedEventHandler.CAFCASS_EMAIL_CONTENT_MAP.get(documentType)),
-                    eq(CourtBundleData.builder().build()));
-            }
-            verifyNoMoreInteractions(translationRequestService);
-        }
-
-        @ParameterizedTest
-        @MethodSource("allHearingDocumentsTypeParameters")
-        void shouldNotSendDocumentByPostWhenHearingDocumentUploaded(DocumentType documentType,
-                                                                    ConfidentialLevel confidentialLevel)
-            throws Exception {
-            setUp_uploadedBySolicitor();
-
-            CaseData caseDataBefore = commonCaseBuilder().build();
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
-
-            ManageDocumentsUploadedEvent eventData =
-                manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
-
-            underTest.sendDocumentsByPost(eventData);
-
-            verifyNoInteractions(sendDocumentService);
-        }
-
-        private static Stream<Arguments> allHearingDocumentsTypeParameters() {
-            List<Arguments> streamList = new ArrayList<>();
-
-            Stream.of(DocumentType.COURT_BUNDLE, DocumentType.CASE_SUMMARY, DocumentType.POSITION_STATEMENTS,
-                    DocumentType.SKELETON_ARGUMENTS)
-                .forEach(docType -> {
-                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                        streamList.add(Arguments.of(docType, level));
-                    }
-                });
-
-            return streamList.stream();
-        }
+        return streamList.stream();
     }
 
     private void verifyFurtherEvidenceNotificationServiceGetRecipients() {

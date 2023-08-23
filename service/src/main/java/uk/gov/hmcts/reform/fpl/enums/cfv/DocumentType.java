@@ -24,7 +24,16 @@ import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CASE_SUMMARY_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_ORDER_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_CAFCASS_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.POSITION_STATEMENT_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.SKELETON_ARGUMENT_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.THRESHOLD_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
@@ -43,7 +52,7 @@ public enum DocumentType {
                 .courtBundleNC(List.of(courtBundleElement))
                 .build();
         },
-        null, 10, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 10, COURT_BUNDLE_NOTIFICATION_CONFIG),
     CASE_SUMMARY("Case Summary", standardResolver("hearingDocuments.caseSummaryList"),
         false, false, false, false,
         (bundle) -> CaseSummary.builder().document(bundle.getDocument())
@@ -51,15 +60,15 @@ public enum DocumentType {
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
-        null,20, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null,20, CASE_SUMMARY_NOTIFICATION_CONFIG),
     POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 30, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 30, POSITION_STATEMENT_NOTIFICATION_CONFIG),
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 40, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 40, THRESHOLD_NOTIFICATION_CONFIG),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
         (bundle) -> SkeletonArgument.builder()
@@ -68,59 +77,59 @@ public enum DocumentType {
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
-        null, 50, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 50, SKELETON_ARGUMENT_NOTIFICATION_CONFIG),
     AA_PARENT_ORDERS("Orders", null,
         false, false, false, false,
         null,
-        null, 60, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 60, null),
     JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 70, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 70, DEFAULT_ORDER_NOTIFICATION_CONFIG),
     TRANSCRIPTS("└─ Transcripts", standardResolver("transcriptList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 80, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 80, DEFAULT_ORDER_NOTIFICATION_CONFIG),
     AA_PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
         false, false, false, false,
         null,
-        null, 90, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 90, null),
     DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 100, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 100, DEFAULT_NOTIFICATION_CONFIG),
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 110, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 110, DEFAULT_NOTIFICATION_CONFIG),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 120, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 120, DEFAULT_NOTIFICATION_CONFIG),
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 130, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 130, DEFAULT_NOTIFICATION_CONFIG),
     FAMILY_AND_VIABILITY_ASSESSMENTS("└─ Family and viability assessments", standardResolver("famAndViabilityList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 140, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 140, DEFAULT_NOTIFICATION_CONFIG),
     APPLICANTS_OTHER_DOCUMENTS("└─ Applicant's other documents", standardResolver("applicantOtherDocList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 150, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 150, DEFAULT_NOTIFICATION_CONFIG),
     MEETING_NOTES("└─ Meeting notes", standardResolver("meetingNoteList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 160, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 160, DEFAULT_NOTIFICATION_CONFIG),
     CONTACT_NOTES("└─ Contact notes", standardResolver("contactNoteList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 170, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 170, DEFAULT_NOTIFICATION_CONFIG),
     AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
         false, false, false, false,
         null,
-        null, 180, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 180, null),
     RESPONDENTS_STATEMENTS("└─ Respondent statements", standardResolver("respStmtList"),
         false, false, false, false,
         (bundle) -> RespondentStatementV2.builder()
@@ -129,51 +138,51 @@ public enum DocumentType {
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .build(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 190, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 190, DEFAULT_NOTIFICATION_CONFIG),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 200, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 200, RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG),
     GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 210, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 210, NO_CAFCASS_NOTIFICATION_CONFIG),
     AA_PARENT_EXPERT_REPORTS("Expert Reports", null,
         false, false, false, false,
         null,
-        null, 220, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 220, null),
     EXPERT_REPORTS("└─ Expert Reports", standardResolver("expertReportList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_EXPERT_REPORTS, 230, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_EXPERT_REPORTS, 230, DEFAULT_NOTIFICATION_CONFIG),
     DRUG_AND_ALCOHOL_REPORTS("└─ Drug and alcohol reports", standardResolver("drugAndAlcoholReportList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_EXPERT_REPORTS, 240, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_EXPERT_REPORTS, 240, DEFAULT_NOTIFICATION_CONFIG),
     LETTER_OF_INSTRUCTION("└─ Letters of instruction / referrals", standardResolver("lettersOfInstructionList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_EXPERT_REPORTS, 250, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_EXPERT_REPORTS, 250, DEFAULT_NOTIFICATION_CONFIG),
     POLICE_DISCLOSURE("Police disclosure", standardResolver("policeDisclosureList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 260, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 260, DEFAULT_NOTIFICATION_CONFIG),
     MEDICAL_RECORDS("Medical records", standardResolver("medicalRecordList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 270, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 270, DEFAULT_NOTIFICATION_CONFIG),
     COURT_CORRESPONDENCE("Court correspondence", standardResolver("correspondenceDocList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 280, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 280, COURT_CORRESPONDENCE_NOTIFICATION_CONFIG),
     NOTICE_OF_ACTING_OR_ISSUE("Notice of acting / notice of issue", standardResolver("noticeOfActingOrIssueList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 290, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG),
+        null, 290, DEFAULT_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false, false,
         null,
-        null, 300, DEFAULT_MANAGED_DOCUMENTS_NOTIFICATION_CONFIG);
+        null, 300, null);
 
     @Getter
     private String description;

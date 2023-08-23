@@ -113,4 +113,9 @@ public class ManageDocumentsUploadedEventTestData {
     public static DocumentReference getNonPDFDocument() {
         return TestDataHelper.testDocumentReference(randomAlphanumeric(10));
     }
+
+    public static boolean isHearingDocument(DocumentType docType) {
+        return DocumentType.COURT_BUNDLE.equals(docType) || DocumentType.CASE_SUMMARY.equals(docType)
+               || DocumentType.POSITION_STATEMENTS.equals(docType) || DocumentType.SKELETON_ARGUMENTS.equals(docType);
+    }
 }
