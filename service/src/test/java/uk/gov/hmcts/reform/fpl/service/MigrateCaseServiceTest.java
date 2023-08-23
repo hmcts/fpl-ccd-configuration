@@ -17,6 +17,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
@@ -73,6 +74,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CHECKLIST_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.GENOGRAM;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
@@ -2788,6 +2798,262 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListCTSC");
             assertThat(caseDetails.getData()).extracting("courtBundleListV2").asList()
                 .containsExactlyInAnyOrder(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
+        }
+    }
+
+    @Nested
+    class MigrateApplicationDocuments {
+        private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
+            THRESHOLD, "thresholdList",
+            SWET, "swetList",
+            CARE_PLAN, "carePlanList",
+            SOCIAL_WORK_CHRONOLOGY, "socialWorkChronList",
+            SOCIAL_WORK_STATEMENT, "otherDocFiledList",
+            GENOGRAM, "genogramList",
+            CHECKLIST_DOCUMENT, "checklistDocList",
+            BIRTH_CERTIFICATE, "birthCertList",
+            OTHER, "otherDocFiledList"
+        );
+
+        private final Map<ApplicationDocumentType, String> applicationDocumentTypeMethodMap = Map.of(
+            THRESHOLD, "migrateApplicationDocumentsToThresholdList",
+            SWET, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            CARE_PLAN, "migrateApplicationDocumentsToCarePlanList",
+            SOCIAL_WORK_CHRONOLOGY, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            SOCIAL_WORK_STATEMENT, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            GENOGRAM, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            CHECKLIST_DOCUMENT, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            BIRTH_CERTIFICATE, "migrateApplicationDocumentsToDocumentsFiledOnIssueList",
+            OTHER, "migrateApplicationDocumentsToDocumentsFiledOnIssueList"
+        );
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = ApplicationDocumentType.class, names = {
+            "THRESHOLD", "SWET", "CARE_PLAN",
+            "SOCIAL_WORK_CHRONOLOGY", "SOCIAL_WORK_STATEMENT",
+            "GENOGRAM", "CHECKLIST_DOCUMENT", "BIRTH_CERTIFICATE", "OTHER"})
+        void shouldMigrateApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            ApplicationDocument ad1 = ApplicationDocument.builder()
+                .documentType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(element(doc1Id, ad1)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> applicationDocumentTypeMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = ApplicationDocumentType.class, names = {
+            "THRESHOLD", "SWET", "CARE_PLAN",
+            "SOCIAL_WORK_CHRONOLOGY", "SOCIAL_WORK_STATEMENT",
+            "GENOGRAM", "CHECKLIST_DOCUMENT", "BIRTH_CERTIFICATE", "OTHER"})
+        void shouldMigrateConfidentialApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            ApplicationDocument ad1 = ApplicationDocument.builder()
+                .documentType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(element(doc1Id, ad1)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCaseService.class.getMethods())
+                .filter(m -> applicationDocumentTypeMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateMixedApplicationDocuments() {
+            UUID doc1Id = UUID.randomUUID();
+            UUID doc2Id = UUID.randomUUID();
+            UUID doc3Id = UUID.randomUUID();
+            UUID doc4Id = UUID.randomUUID();
+            UUID doc5Id = UUID.randomUUID();
+            UUID doc6Id = UUID.randomUUID();
+            UUID doc7Id = UUID.randomUUID();
+            UUID doc8Id = UUID.randomUUID();
+            UUID doc9Id = UUID.randomUUID();
+            UUID doc10Id = UUID.randomUUID();
+            UUID doc11Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document5 = DocumentReference.builder().build();
+            DocumentReference document6 = DocumentReference.builder().build();
+            DocumentReference document7 = DocumentReference.builder().build();
+            DocumentReference document8 = DocumentReference.builder().build();
+            DocumentReference document9 = DocumentReference.builder().build();
+            DocumentReference document10 = DocumentReference.builder().build();
+            DocumentReference document11 = DocumentReference.builder().build();
+
+            ApplicationDocument ad1 = ApplicationDocument.builder()
+                .documentType(THRESHOLD)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+            ApplicationDocument ad2 = ApplicationDocument.builder()
+                .documentType(THRESHOLD)
+                .document(document2)
+                .build();
+            ApplicationDocument ad3 = ApplicationDocument.builder()
+                .documentType(SWET)
+                .document(document3)
+                .build();
+            ApplicationDocument ad4 = ApplicationDocument.builder()
+                .documentType(CARE_PLAN)
+                .document(document4)
+                .build();
+            ApplicationDocument ad5 = ApplicationDocument.builder()
+                .documentType(SOCIAL_WORK_CHRONOLOGY)
+                .document(document5)
+                .build();
+            ApplicationDocument ad6 = ApplicationDocument.builder()
+                .documentType(SOCIAL_WORK_STATEMENT)
+                .document(document6)
+                .build();
+            ApplicationDocument ad7 = ApplicationDocument.builder()
+                .documentType(GENOGRAM)
+                .document(document7)
+                .build();
+            ApplicationDocument ad8 = ApplicationDocument.builder()
+                .documentType(CHECKLIST_DOCUMENT)
+                .document(document8)
+                .build();
+            ApplicationDocument ad9 = ApplicationDocument.builder()
+                .documentType(BIRTH_CERTIFICATE)
+                .document(document9)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+            ApplicationDocument ad10 = ApplicationDocument.builder()
+                .documentType(OTHER)
+                .document(document10)
+                .build();
+            ApplicationDocument ad11 = ApplicationDocument.builder()
+                .documentType(CARE_PLAN)
+                .document(document11)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(
+                    element(doc1Id, ad1), element(doc2Id, ad2), element(doc3Id, ad3), element(doc4Id, ad4),
+                    element(doc5Id, ad5), element(doc6Id, ad6), element(doc7Id, ad7), element(doc8Id, ad8),
+                    element(doc9Id, ad9), element(doc10Id, ad10), element(doc11Id, ad11)
+                ))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicationDocumentsToCarePlanList(caseData);
+            updatedFields.putAll(underTest.migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
+            updatedFields.putAll(underTest.migrateApplicationDocumentsToThresholdList(caseData));
+
+            assertThat(updatedFields).extracting("thresholdListLA").asList().contains(
+                element(doc1Id, ManagedDocument.builder().document(document1).build()));
+            assertThat(updatedFields).extracting("thresholdList").asList().contains(
+                element(doc2Id, ManagedDocument.builder().document(document2).build()));
+            assertThat(updatedFields).extracting("swetList").asList().contains(
+                element(doc3Id, ManagedDocument.builder().document(document3).build()));
+            assertThat(updatedFields).extracting("socialWorkChronList").asList().contains(
+                element(doc5Id, ManagedDocument.builder().document(document5).build()));
+            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+                element(doc6Id, ManagedDocument.builder().document(document6).build()));
+            assertThat(updatedFields).extracting("genogramList").asList().contains(
+                element(doc7Id, ManagedDocument.builder().document(document7).build()));
+            assertThat(updatedFields).extracting("checklistDocList").asList().contains(
+                element(doc8Id, ManagedDocument.builder().document(document8).build()));
+            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+                element(doc10Id, ManagedDocument.builder().document(document10).build()));
+            assertThat(updatedFields).extracting("birthCertListLA").asList().contains(
+                element(doc9Id, ManagedDocument.builder().document(document9).build()));
+
+            assertThat(updatedFields).extracting("carePlanList").asList()
+                .contains(element(doc4Id, ManagedDocument.builder().document(document4).build()));
+            assertThat(updatedFields).extracting("carePlanListLA").asList()
+                .contains(element(doc11Id, ManagedDocument.builder().document(document11).build()));
+        }
+
+        @Test
+        void shouldRollbackMigratedApplicationDocuments() {
+            UUID doc1Id = UUID.randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            Element<ApplicationDocument> element = element(doc1Id,
+                ApplicationDocument.builder().document(document1).build());
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("applicationDocuments", List.of(element));
+            map.put("carePlanList", List.of());
+            map.put("carePlanListLA", List.of());
+            map.put("documentsFiledOnIssueList", List.of());
+            map.put("documentsFiledOnIssueListLA", List.of());
+            map.put("thresholdList", List.of());
+            map.put("thresholdListLA", List.of());
+            map.put("swetList", List.of());
+            map.put("swetListLA", List.of());
+            map.put("socialWorkChronList", List.of());
+            map.put("socialWorkChronListLA", List.of());
+            map.put("genogramList", List.of());
+            map.put("genogramListLA", List.of());
+            map.put("checklistDocList", List.of());
+            map.put("checklistDocListLA", List.of());
+            map.put("birthCertList", List.of());
+            map.put("birthCertListLA", List.of());
+            map.put("otherDocFiledList", List.of());
+            map.put("otherDocFiledListLA", List.of());
+
+            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
+
+            underTest.rollbackApplicationDocuments(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("applicationDocuments").asList()
+                .containsExactly(element);
+            assertThat(caseDetails.getData()).doesNotContainKey("carePlanList");
+            assertThat(caseDetails.getData()).doesNotContainKey("carePlanListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueList");
+            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("thresholdList");
+            assertThat(caseDetails.getData()).doesNotContainKey("thresholdListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("swetList");
+            assertThat(caseDetails.getData()).doesNotContainKey("swetListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronList");
+            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("genogramList");
+            assertThat(caseDetails.getData()).doesNotContainKey("genogramListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocList");
+            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("birthCertList");
+            assertThat(caseDetails.getData()).doesNotContainKey("birthCertListLA");
+            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledList");
+            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledListLA");
         }
     }
 
