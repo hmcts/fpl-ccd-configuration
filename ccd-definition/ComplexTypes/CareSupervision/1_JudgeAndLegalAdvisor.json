@@ -94,7 +94,7 @@
     "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeEnterManually",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Enter details manually",
+    "ElementLabel": "Add legal adviser details",
     "SecurityClassification": "Public",
     "FieldShowCondition": "judgeEmailAddress=\"DO_NOT_SHOW\""
   }

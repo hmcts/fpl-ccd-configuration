@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manualJudgeAllocationWarning",
-    "Label": "You are entering Judge details manually - this will not allocate them the case roles required for Tasks to be auto-assigned.",
+    "Label": "You are entering legal adviser details manually - this will allocate the case roles but any generic inbox email address detailed will create tasks to Available Tasks and not My Tasks.",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -39,7 +39,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manualJudgeAllocationWarningHearingJudge",
-    "Label": "You are entering Judge details manually - this will not allocate them the case roles required for Tasks to be auto-assigned.",
+    "Label": "You are entering legal adviser details manually - this will allocate the case roles but any generic inbox email address detailed will create tasks to Available Tasks and not My Tasks.",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -48,7 +48,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterManually",
-    "Label": "Enter details manually",
+    "Label": "Add legal adviser details",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -57,7 +57,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterManuallyHearingJudge",
-    "Label": "Enter details manually",
+    "Label": "Add legal adviser details",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
