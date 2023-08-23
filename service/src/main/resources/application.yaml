@@ -300,26 +300,32 @@ cafcass:
       noticeOfHearing: ORDER
       noticeOfPlacement: ORDER
       respondentStatement: COURT PAPER
+      respondentsStatements: COURT PAPER
       applicationStatement: COURT PAPER
+      documentsFiledOnIssue: COURT PAPER
       otherReports: COURT PAPER
       threshold: COURT PAPER
       swet: COURT PAPER
       carePlan: COURT PAPER
       socialWorkChronology: COURT PAPER
       socialWorkStatement: COURT PAPER
+      applicantsWitnessStatements: COURT PAPER
       genogram: COURT PAPER
       checklistDocument: COURT PAPER
       birthCertificate: COURT PAPER
       additionalApplications: COURT PAPER
       expertReports: EXPERT
+      drugAndAlcoholReports: EXPERT
       childsGuardianReports: REPORTING TO COURT
+      guardianEvidence: REPORTING TO COURT
       courtBundle: BUNDLE
       caseSummary: BUNDLE
       positionStatementChild: BUNDLE
       positionStatementRespondent: BUNDLE
-      positionStatement: BUNDLE
+      positionStatements: BUNDLE
       other: CORRESPONDENCE
       correspondence: CORRESPONDENCE
+      courtCorrespondence: CORRESPONDENCE
       additionalDocument: APPLICATION
       newApplication: APPLICATION
       placementApplication: APPLICATION
