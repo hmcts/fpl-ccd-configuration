@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -49,6 +50,15 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CHECKLIST_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.GENOGRAM;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
@@ -1167,6 +1177,85 @@ public class MigrateCaseService {
 
         caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
         caseDataMap.remove("skeletonArgumentListLA");
+    }
+
+    private Map<String, Object> migrateApplicationDocuments(CaseData caseData,
+                                                            List<ApplicationDocumentType> applicationDocumentTypes,
+                                                            String newFieldName) {
+        final List<Element<ManagedDocument>> newDocListLA =
+            Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).stream()
+                .filter(fed -> applicationDocumentTypes.contains(fed.getValue().getDocumentType()))
+                .filter(fed -> fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList());
+
+        final List<Element<ManagedDocument>> newDocList =
+            Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).stream()
+                .filter(fed -> applicationDocumentTypes.contains(fed.getValue().getDocumentType()))
+                .filter(fed -> !fed.getValue().isConfidentialDocument())
+                .map(fed -> element(fed.getId(), ManagedDocument.builder()
+                    .document(fed.getValue().getDocument())
+                    .build()))
+                .collect(toList());
+
+        Map<String, Object> ret = new HashMap<>();
+        ret.put(newFieldName, newDocList);
+        ret.put(newFieldName + "LA", newDocListLA);
+        return ret;
+    }
+
+    public Map<String, Object> migrateApplicationDocumentsToThresholdList(CaseData caseData) {
+        return migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList");
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> migrateApplicationDocumentsToDocumentsFiledOnIssueList(CaseData caseData) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET), "swetList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_CHRONOLOGY), "socialWorkChronList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(GENOGRAM), "genogramList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(CHECKLIST_DOCUMENT), "checklistDocList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
+        if (ret.containsKey("otherDocFiledList") || ret.containsKey("otherDocFiledListLA")
+            || ret.containsKey("otherDocFiledListCTSC")) {
+            Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
+            for (String key : temp.keySet()) {
+                if (ret.containsKey(key)) {
+                    ((List) ret.get(key)).addAll((List) temp.get(key));
+                } else {
+                    ret.put(key, temp.get(key));
+                }
+            }
+        }
+        return ret;
+    }
+
+    public Map<String, Object> migrateApplicationDocumentsToCarePlanList(CaseData caseData) {
+        return migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList");
+    }
+
+    public void rollbackApplicationDocuments(CaseDetails caseDetails) {
+        caseDetails.getData().remove("thresholdList");
+        caseDetails.getData().remove("thresholdListLA");
+        caseDetails.getData().remove("documentsFiledOnIssueList");
+        caseDetails.getData().remove("documentsFiledOnIssueListLA");
+        caseDetails.getData().remove("carePlanList");
+        caseDetails.getData().remove("carePlanListLA");
+        caseDetails.getData().remove("swetList");
+        caseDetails.getData().remove("swetListLA");
+        caseDetails.getData().remove("socialWorkChronList");
+        caseDetails.getData().remove("socialWorkChronListLA");
+        caseDetails.getData().remove("genogramList");
+        caseDetails.getData().remove("genogramListLA");
+        caseDetails.getData().remove("checklistDocList");
+        caseDetails.getData().remove("checklistDocListLA");
+        caseDetails.getData().remove("birthCertList");
+        caseDetails.getData().remove("birthCertListLA");
+        caseDetails.getData().remove("otherDocFiledList");
+        caseDetails.getData().remove("otherDocFiledListLA");
     }
 
     public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
