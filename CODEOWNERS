@@ -3,11 +3,17 @@
 * @hmcts/fpl-developers
 
 # Renovate files
+gradle/wrapper/gradle-wrapper.jar
 gradle/wrapper/gradle-wrapper.properties
 Dockerfile
 build.gradle
 charts/**/Chart.yaml
 infrastructure/state.tf
+infrastructure/main.tf
+infrastructure/.terraform-version
 .github/workflows/*.yaml
 package.json
 yarn.lock
+.nvmrc
+gradlew
+gradlew.bat
