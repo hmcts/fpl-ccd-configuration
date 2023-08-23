@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.client.AmApi;
 import uk.gov.hmcts.reform.am.model.AssignmentRequest;
 import uk.gov.hmcts.reform.am.model.GrantType;
+import uk.gov.hmcts.reform.am.model.QueryRequest;
+import uk.gov.hmcts.reform.am.model.QueryResponse;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.am.model.RoleRequest;
@@ -28,6 +30,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -211,7 +215,67 @@ class RoleAssignmentServiceTest {
                 .build());
 
         }
+    }
 
+    @Test
+    void shouldGetRolesAtTime() {
+        when(amApi.queryRoleAssignments(any(), any(), any())).thenReturn(QueryResponse.builder().build());
+
+        ZonedDateTime now = ZonedDateTime.now();
+        underTest.getCaseRolesAtTime(12345L, List.of("test", "test2"), now);
+
+        verify(amApi).queryRoleAssignments(any(), any(), eq(QueryRequest.builder()
+            .validAt(now)
+            .attributes(Map.of("caseId", List.of("12345")))
+            .roleName(List.of("test", "test2"))
+            .build()));
+    }
+
+    @Nested
+    class DeletingRoles {
+
+        @Captor
+        private ArgumentCaptor<String> captor;
+
+        @Test
+        void shouldDeleteARoleAssignment() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").build()))
+                .build());
+
+            ZonedDateTime now = ZonedDateTime.now();
+            underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId");
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .validAt(now)
+                .attributes(Map.of("caseId", List.of("12345")))
+                .actorId(List.of("idamId"))
+                .build()));
+
+            verify(amApi).deleteRoleAssignment(eq("token"), eq("auth"), eq("role-1"));
+        }
+
+        @Test
+        void shouldDeleteAllRolesOnCase() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").build(),
+                    RoleAssignment.builder().id("role-2").build()))
+                .build());
+
+            underTest.deleteAllRolesOnCase(12345L);
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .attributes(Map.of("caseId", List.of("12345")))
+                .roleName(List.of("hearing-judge", "allocated-judge", "hearing-legal-adviser", "allocated-legal-adviser"))
+                .build()));
+
+            verify(amApi, times(2)).deleteRoleAssignment(eq("token"), eq("auth"), captor.capture());
+            assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
+        }
     }
 
 }

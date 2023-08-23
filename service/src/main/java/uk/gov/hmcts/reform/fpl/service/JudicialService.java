@@ -114,30 +114,6 @@ public class JudicialService {
     }
 
     /**
-     * Assign a judge case-role on a specific case, regardless of if there are any existing users with that role
-     * on the case.
-     *
-     * @param caseId the case id to add a case role on
-     * @param userId the user to add a case role to
-     */
-    public void assignJudgeCaseRole(Long caseId, String userId, String caseRole) {
-        roleAssignmentService.assignCaseRole(caseId, List.of(userId), caseRole, RoleCategory.JUDICIAL,
-            ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
-    }
-
-    /**
-     * Assign a legal adviser case-role on a specific case, regardless of if there are any existing users with that role
-     * on the case.
-     *
-     * @param caseId the case id to add a case role on
-     * @param userId the user to add a case role to
-     */
-    public void assignLegalAdviserCaseRole(Long caseId, String userId, String caseRole) {
-        roleAssignmentService.assignCaseRole(caseId, List.of(userId), caseRole, RoleCategory.LEGAL_OPERATIONS,
-            ZonedDateTime.now(), ZonedDateTime.now().plusYears(10));
-    }
-
-    /**
      * Assign an allocated-judge on a case, and REMOVE all existing allocated-[users].
      *
      * @param caseId the case id to add a case role on
