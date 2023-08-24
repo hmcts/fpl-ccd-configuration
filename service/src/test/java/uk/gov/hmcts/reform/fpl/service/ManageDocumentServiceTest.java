@@ -3924,9 +3924,55 @@ class ManageDocumentServiceTest {
             .uploaderType(DocumentUploaderType.SOLICITOR)
             .uploaderCaseRoles(getUploaderCaseRoles(3))
             .build();
+        CourtBundle cb3 = CourtBundle.builder()
+            .document(testDocumentReference(filename3))
+            .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+            .uploaderCaseRoles(getUploaderCaseRoles(1))
+            .build();
+        CourtBundle cb4 = CourtBundle.builder()
+            .document(testDocumentReference(filename4))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .build();
 
         @Test
-        void shouldBeAbleToRemovedDocumentByAdmin() {
+        void shouldBeAbleToRemoveNcCourtBundleWithoutCourtBundleNCByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(DocumentUploaderType.SOLICITOR)
+                .uploaderCaseRoles(getUploaderCaseRoles(3))
+                .build();
+            removedCb.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleFromMultipleCourtBundlesByAdmin() {
             int loginType = 4;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
@@ -3968,6 +4014,221 @@ class ManageDocumentServiceTest {
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId2, cb2)))
                     .courtBundleNC(List.of(element(elementId2, cb2)))
+                    .build())));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(DocumentUploaderType.SOLICITOR)
+                .uploaderCaseRoles(getUploaderCaseRoles(3))
+                .build();
+            removedCb.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleLAFromMultipleCourtBundlesByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId3, cb3),
+                        element(elementId2, cb2)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId3, cb3),
+                        element(elementId2, cb2)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.MISTAKE_ON_DOCUMENT)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListLA###" + elementId3)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb3.getDocument())
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(getUploaderCaseRoles(1))
+                .build();
+            removedCb.setRemovalReason("There is a mistake on the document");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId3, removedCb)))
+                    .courtBundleNC(List.of(element(elementId3, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListLA"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId2, cb2)))
+                    .courtBundleNC(List.of(element(elementId2, cb2)))
+                    .build())));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleLAFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId3, cb3)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId3, cb3)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListLA###" + elementId3)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb3.getDocument())
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(getUploaderCaseRoles(1))
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId3, removedCb)))
+                    .courtBundleNC(List.of(element(elementId3, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListLA"))).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleCTSCFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListCTSC(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId4, cb4)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId4, cb4)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListCTSC###" + elementId4)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb4.getDocument())
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId4, removedCb)))
+                    .courtBundleNC(List.of(element(elementId4, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListCTSC"))).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleWithMultipleHearingCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(
+                    element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                        .courtBundle(new ArrayList<>(List.of(element(elementId1, cb1))))
+                        .courtBundleNC(new ArrayList<>(List.of(element(elementId1, cb1))))
+                        .build()),
+                    element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
+                        .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
+                        .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
+                        .build()))
+                )
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(DocumentUploaderType.SOLICITOR)
+                .uploaderCaseRoles(getUploaderCaseRoles(3))
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
+                    .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
                     .build())));
         }
     }

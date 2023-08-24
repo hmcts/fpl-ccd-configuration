@@ -305,17 +305,17 @@ public class ManageDocumentService {
                         throw new IllegalStateException("Fail to locate the target document");
                     });
                 Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
-                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
-                        throw new IllegalStateException("Fail to locate the target document (nc)");
-                    });
+                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElse(null);
 
                 if (hcbElement.getValue().getCourtBundle().size() == 1
-                    && hcbElement.getValue().getCourtBundleNC().size() == 1) {
+                    && hcbElement.getValue().getCourtBundleNC().size() <= 1) {
                     // multiple court bundles(nc) keep hcbElement, otherwise remove it
                     listOfElement.remove(hcbElement);
                 }
                 hcbElement.getValue().getCourtBundle().remove(target);
-                hcbElement.getValue().getCourtBundleNC().remove(targetNC);
+                if (targetNC != null) {
+                    hcbElement.getValue().getCourtBundleNC().remove(targetNC);
+                }
 
                 final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
                     .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
@@ -326,9 +326,11 @@ public class ManageDocumentService {
                         .courtBundleNC(new ArrayList<>())
                         .build()));
                 target.getValue().setRemovalReason(removalReason); // Setting the removal reason
-                targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
                 hcbFromRemovedList.getValue().getCourtBundle().add(target);
-                hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
+                if (targetNC != null) {
+                    targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
+                    hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
+                }
                 if (isNewHearingCourtBundleInRemovedList) {
                     listOfRemovedElement.add(hcbFromRemovedList);
                 }
