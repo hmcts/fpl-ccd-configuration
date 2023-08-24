@@ -299,8 +299,11 @@ cafcass:
       order: ORDER
       noticeOfHearing: ORDER
       noticeOfPlacement: ORDER
+      judgements: ORDER
+      transcripts: ORDER
       respondentStatement: COURT PAPER
       respondentsStatements: COURT PAPER
+      respondentsWitnessStatements: COURT PAPER
       applicationStatement: COURT PAPER
       documentsFiledOnIssue: COURT PAPER
       otherReports: COURT PAPER
@@ -314,8 +317,16 @@ cafcass:
       checklistDocument: COURT PAPER
       birthCertificate: COURT PAPER
       additionalApplications: COURT PAPER
+      skeletonArguments: COURT PAPER
+      parentAssessments: EXPERT
+      familyAndViabilityAssessments: EXPERT
+      applicantsOtherDocuments: EXPERT
+      meetingNotes: EXPERT
+      contactNotes: EXPERT
       expertReports: EXPERT
       drugAndAlcoholReports: EXPERT
+      letterOfInstruction: EXPERT
+      medicalRecords: EXPERT
       childsGuardianReports: REPORTING TO COURT
       guardianEvidence: REPORTING TO COURT
       courtBundle: BUNDLE
