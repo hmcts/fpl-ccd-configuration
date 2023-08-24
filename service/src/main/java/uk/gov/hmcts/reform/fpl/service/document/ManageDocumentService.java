@@ -181,11 +181,10 @@ public class ManageDocumentService {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 2) {
             String parentFieldName = splitFieldName[0];
-            switch (parentFieldName) {
-                case "hearingDocuments":
-                    return HearingDocuments.class;
-                default:
-                    throw new IllegalStateException("unresolved target class: " + parentFieldName);
+            if ("hearingDocuments".equals(parentFieldName)) {
+                return HearingDocuments.class;
+            } else {
+                throw new IllegalStateException("unresolved target class: " + parentFieldName);
             }
         }
         return CaseData.class;
