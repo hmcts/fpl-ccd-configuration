@@ -477,8 +477,10 @@ public class ManageDocumentService {
                     throw new IllegalStateException("Fail to find the property descriptor of " + fieldName);
                 }
                 return (List<Element>) pd.getReadMethod().invoke(caseData);
+            } catch (IllegalStateException ex) {
+                throw ex;
             } catch (Exception ex) {
-                throw new RuntimeException(format("Fail to grep the documents' filename - %s", fieldName), ex);
+                throw new IllegalStateException(format("Fail to grep the documents' filename - %s", fieldName), ex);
             }
         } else if (splitFieldName.length == 2 && splitFieldName[0].equals("hearingDocuments")) {
             String actualFieldName = splitFieldName[1];
@@ -489,14 +491,16 @@ public class ManageDocumentService {
                     throw new IllegalStateException("Fail to find the property descriptor of " + actualFieldName);
                 }
                 listOfElement = (List<Element>) pd.getReadMethod().invoke(caseData.getHearingDocuments());
+            } catch (IllegalStateException ex) {
+                throw ex;
             } catch (Exception ex) {
-                throw new RuntimeException("Fail to grep the documents' from hearingDocuments", ex);
+                throw new IllegalStateException("Fail to grep the documents' from hearingDocuments", ex);
             }
             if (listOfElement != null) {
                 if (DocumentType.fromJsonFieldName(actualFieldName) == DocumentType.COURT_BUNDLE) {
-                    return listOfElement.stream()
+                    return new ArrayList<>(listOfElement.stream()
                         .flatMap(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream())
-                        .collect(toList());
+                        .toList());
                 } else {
                     return listOfElement;
                 }
