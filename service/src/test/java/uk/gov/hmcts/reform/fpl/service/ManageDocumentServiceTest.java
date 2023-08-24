@@ -3935,6 +3935,39 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(4))
             .build();
 
+        ManagedDocument md1 = ManagedDocument.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .build();
+
+        @Test
+        void shouldBeAbleToRemoveNcThresholdByLA() {
+            int loginType = 1;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.thresholdList(new ArrayList<>(List.of(element(elementId1, md1))));
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("thresholdList###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            ManagedDocument removedMd = ManagedDocument.builder()
+                .document(md1.getDocument())
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                .build();
+            removedMd.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("thresholdListRemoved")).isEqualTo(List.of(element(elementId1, removedMd)));
+            assertThat(result.get("thresholdList")).isEqualTo(List.of());
+        }
+
         @Test
         void shouldBeAbleToRemoveNcCourtBundleWithoutCourtBundleNCByAdmin() {
             int loginType = 4;
@@ -3964,11 +3997,11 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(3))
                 .build();
             removedCb.setRemovalReason("The document was uploaded to the wrong case");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of());
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of());
         }
 
         @Test
@@ -4005,12 +4038,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(3))
                 .build();
             removedCb.setRemovalReason("There is a mistake on the document");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
                     .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId2, cb2)))
                     .courtBundleNC(List.of(element(elementId2, cb2)))
@@ -4049,12 +4082,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(3))
                 .build();
             removedCb.setRemovalReason("The document was uploaded to the wrong case");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
                     .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of());
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of());
         }
 
         @Test
@@ -4091,12 +4124,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(1))
                 .build();
             removedCb.setRemovalReason("There is a mistake on the document");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId3, removedCb)))
                     .courtBundleNC(List.of(element(elementId3, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListLA"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListLA")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId2, cb2)))
                     .courtBundleNC(List.of(element(elementId2, cb2)))
@@ -4136,12 +4169,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(1))
                 .build();
             removedCb.setRemovalReason("Another reason is here");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId3, removedCb)))
                     .courtBundleNC(List.of(element(elementId3, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListLA"))).isEqualTo(List.of());
+            assertThat(result.get("courtBundleListLA")).isEqualTo(List.of());
         }
 
         @Test
@@ -4177,12 +4210,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(4))
                 .build();
             removedCb.setRemovalReason("Another reason is here");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId4, removedCb)))
                     .courtBundleNC(List.of(element(elementId4, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListCTSC"))).isEqualTo(List.of());
+            assertThat(result.get("courtBundleListCTSC")).isEqualTo(List.of());
         }
 
         @Test
@@ -4220,12 +4253,12 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(3))
                 .build();
             removedCb.setRemovalReason("Another reason is here");
-            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
                     .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
-            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of(
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
                     .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
