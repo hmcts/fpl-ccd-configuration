@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -3085,7 +3086,7 @@ class ManageDocumentServiceTest {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
                         || elementIdTwo.equals(((Element) p).getId()))
-                    .collect(Collectors.toList());
+                    .toList();
                 if (flist.size() != 2) {
                     return false;
                 } else {
@@ -3652,7 +3653,6 @@ class ManageDocumentServiceTest {
         DynamicList expectedDynamicList1 = DynamicList.builder().build();
         DynamicList expectedDynamicList2 = DynamicList.builder().build();
         DynamicList expectedDynamicList3 = DynamicList.builder().build();
-        DynamicList expectedDynamicList4 = DynamicList.builder().build();
 
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4})
@@ -3895,6 +3895,80 @@ class ManageDocumentServiceTest {
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             }
+        }
+    }
+
+    @Nested
+    class RemoveDocumentTests {
+
+        UUID hearingCourtBundleElementIdOne = UUID.randomUUID();
+        UUID hearingCourtBundleElementIdTwo = UUID.randomUUID();
+
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        UUID elementId3 = UUID.randomUUID();
+        UUID elementId4 = UUID.randomUUID();
+
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+        String filename3 = "COURT BUNDLE3.docx";
+        String filename4 = "COURT BUNDLE4.docx";
+
+        CourtBundle cb1 = CourtBundle.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        CourtBundle cb2 = CourtBundle.builder()
+            .document(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+
+        @Test
+        void shouldBeAbleToRemovedDocumentByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1),
+                        element(elementId2, cb2)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId1, cb1),
+                        element(elementId2, cb2)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.MISTAKE_ON_DOCUMENT)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(DocumentUploaderType.SOLICITOR)
+                .uploaderCaseRoles(getUploaderCaseRoles(3))
+                .build();
+            removedCb.setRemovalReason("There is a mistake on the document");
+            assertThat((result.get("courtBundleListRemoved"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat((result.get("courtBundleListV2"))).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId2, cb2)))
+                    .courtBundleNC(List.of(element(elementId2, cb2)))
+                    .build())));
         }
     }
 }
