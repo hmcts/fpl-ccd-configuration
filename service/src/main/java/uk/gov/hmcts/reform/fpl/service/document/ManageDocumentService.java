@@ -262,7 +262,7 @@ public class ManageDocumentService {
 
             ret.put("placements", caseData.getPlacementEventData().getPlacements());
             ret.put("placementsNonConfidential", caseData.getPlacementEventData()
-                .getPlacementsNonConfidential(false));
+                .getPlacementsNonConfidential(true));
             ret.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
                 .getPlacementsNonConfidential(true));
         } else {
