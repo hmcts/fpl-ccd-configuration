@@ -53,11 +53,10 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         null, 30),
-    /*
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 40),*/
+        null, 40),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
         (bundle) -> SkeletonArgument.builder()
@@ -83,18 +82,18 @@ public enum DocumentType {
         false, false, false, false,
         null,
         null, 90),
-    /*DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"),
+    DOCUMENTS_FILED_ON_ISSUE("└─ Documents filed on issue", standardResolver("documentsFiledOnIssueList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 100),*/
+        AA_PARENT_APPLICANTS_DOCUMENTS, 100),
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICANTS_DOCUMENTS, 110),
-    /*CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
+    CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 120),*/
+        AA_PARENT_APPLICANTS_DOCUMENTS, 120),
     PARENT_ASSESSMENTS("└─ Parent assessments", standardResolver("parentAssessmentList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
