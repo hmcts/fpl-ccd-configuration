@@ -242,8 +242,7 @@ public class ManageDocumentService {
         if (documentType == PLACEMENT_RESPONSES) {
             Element<Placement> placement = caseData.getPlacementEventData().getPlacements().stream()
                 .filter(placementElement -> placementElement.getValue().getNoticeDocuments().stream()
-                    .filter(nd -> documentElementId.equals(nd.getId()))
-                    .findAny().isPresent())
+                    .anyMatch(nd -> documentElementId.equals(nd.getId())))
                 .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate placement"));
 
             Element<PlacementNoticeDocument> target = placement.getValue().getNoticeDocuments().stream()
