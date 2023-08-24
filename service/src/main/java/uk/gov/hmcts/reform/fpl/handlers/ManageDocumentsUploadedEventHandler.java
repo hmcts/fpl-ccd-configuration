@@ -73,7 +73,6 @@ public class ManageDocumentsUploadedEventHandler {
     private static final String LIST = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
-    public static final String ADDITIONAL_APPLICATIONS = "additional applications"; //TODO TBC obsolete in new flow?
 
     /**
      * Base on the confidential level configuration, send notification to the given recipient.
@@ -187,6 +186,8 @@ public class ManageDocumentsUploadedEventHandler {
                             .build());
                 });
             }
+        } else {
+            log.info("Not notifying Cafcass england");
         }
     }
 
@@ -217,28 +218,59 @@ public class ManageDocumentsUploadedEventHandler {
             new HashMap<>();
 
         // designated LA
-        resultMap.put(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipientsOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToDesignatedLA);
+        Set<String> designatedLA = furtherEvidenceNotificationService
+            .getDesignatedLocalAuthorityRecipientsOnly(caseData);
+        if (designatedLA.isEmpty()) {
+            log.info("No recipient found for designated LA");
+        } else {
+            resultMap.put(designatedLA,
+                DocumentUploadedNotificationConfiguration::getSendToDesignatedLA);
+        }
 
         // secondary LA
-        resultMap.put(furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToSecondaryLA);
+        Set<String> secondaryLA = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(caseData);
+        if (secondaryLA.isEmpty()) {
+            log.info("No recipient found for secondary LA");
+        } else {
+            resultMap.put(secondaryLA,
+                DocumentUploadedNotificationConfiguration::getSendToSecondaryLA);
+        }
 
         // legal representative
-        resultMap.put(furtherEvidenceNotificationService.getLegalRepresentativeOnly(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative);
+        Set<String> legalRepresentative = furtherEvidenceNotificationService.getLegalRepresentativeOnly(caseData);
+        if (legalRepresentative.isEmpty()) {
+            log.info("No recipient found for legal representative");
+        } else {
+            resultMap.put(legalRepresentative,
+                DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative);
+        }
 
         // cafcass representative
-        resultMap.put(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative);
+        Set<String> cafcassRepresentative = furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData);
+        if (cafcassRepresentative.isEmpty()) {
+            log.info("No recipient found for cafcass representative");
+        } else {
+            resultMap.put(cafcassRepresentative,
+                DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative);
+        }
 
         // respondent solicitor
-        resultMap.put(furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor);
+        Set<String> respondentSolicitor = furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData);
+        if (respondentSolicitor.isEmpty()) {
+            log.info("No recipient found for respondent solicitor");
+        } else {
+            resultMap.put(respondentSolicitor,
+                DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor);
+        }
 
         // child solicitor
-        resultMap.put(furtherEvidenceNotificationService.getChildSolicitorEmails(caseData),
-            DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
+        Set<String> childSolicitor = furtherEvidenceNotificationService.getChildSolicitorEmails(caseData);
+        if (childSolicitor.isEmpty()) {
+            log.info("No recipient found for child solicitor");
+        } else {
+            resultMap.put(childSolicitor,
+                DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
+        }
 
         return resultMap;
     }

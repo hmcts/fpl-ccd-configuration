@@ -1219,7 +1219,17 @@ public class ManageDocumentService {
             }
         }
 
-
+        if (log.isInfoEnabled()) {
+            log.info("New non-confidential document found: {}", newDocuments.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+            log.info("New confidential document found: {}", newDocumentsLA.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+            log.info("New confidential (CTSC) document found: {}", newDocumentsCTSC.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+        }
 
         return ManageDocumentsUploadedEvent.builder()
             .caseData(caseData)
