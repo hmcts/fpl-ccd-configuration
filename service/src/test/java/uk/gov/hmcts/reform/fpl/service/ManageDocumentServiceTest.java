@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -3957,6 +3958,131 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(3))
             .build();
 
+        UUID placementId = UUID.randomUUID();
+        UUID placementConfidentialDocId = UUID.randomUUID();
+        PlacementNoticeDocument pnd1 = PlacementNoticeDocument.builder()
+            .response(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        PlacementNoticeDocument pnd2 = PlacementNoticeDocument.builder()
+            .response(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+
+        @Test
+        void shouldBeAbleToRemovePlacementResponseFromSinglePlacementResponseByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.placementEventData(PlacementEventData.builder()
+                .placements(List.of(element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(new ArrayList<>(List.of(element(elementId1, pnd1))))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId, 
+                        PlacementConfidentialDocument.builder().build())))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PLACEMENT_RESPONSES###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            PlacementNoticeDocument removedPnd = PlacementNoticeDocument.builder()
+                .response(pnd1.getDocument())
+                .uploaderType(pnd1.getUploaderType())
+                .uploaderCaseRoles(pnd1.getUploaderCaseRoles())
+                .build();
+            removedPnd.setRemovalReason("The document was uploaded to the wrong case");
+
+            assertThat(result.get("placements")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidential")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidentialNotices")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+        }
+
+        @Test
+        void shouldBeAbleToRemovePlacementResponseFromMultiplePlacementResponsesByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.placementEventData(PlacementEventData.builder()
+                .placements(List.of(element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(new ArrayList<>(List.of(element(elementId1, pnd1), element(elementId2, pnd2))))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PLACEMENT_RESPONSES###" + elementId2)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            PlacementNoticeDocument removedPnd = PlacementNoticeDocument.builder()
+                .response(pnd2.getDocument())
+                .uploaderType(pnd2.getUploaderType())
+                .uploaderCaseRoles(pnd2.getUploaderCaseRoles())
+                .build();
+            removedPnd.setRemovalReason("The document was uploaded to the wrong case");
+
+            assertThat(result.get("placements")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidential")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidentialNotices")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+        }
+
         @Test
         void shouldBeAbleToRemoveNcCaseSummaryBySolicitor() {
             int loginType = 3;
@@ -3989,7 +4115,7 @@ class ManageDocumentServiceTest {
         }
 
         @Test
-        void shouldBeAbleToRemoveMultipleNcCaseSummariesBySolicitor() {
+        void shouldBeAbleToRemoveCaseSummaryFromMultipleNcCaseSummariesBySolicitor() {
             int loginType = 3;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
@@ -4047,7 +4173,7 @@ class ManageDocumentServiceTest {
         }
 
         @Test
-        void shouldBeAbleToRemoveMultipleNcThresholdByLA() {
+        void shouldBeAbleToRemoveThresholdFromMultipleNcThresholdsByLA() {
             int loginType = 1;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
