@@ -294,9 +294,9 @@ public class ManageDocumentService {
                     Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
                             Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
                                 hearingDocuments.getCourtBundleListLA().stream()))
-                        .filter(loe -> ((Element<HearingCourtBundle>) loe).getValue().getCourtBundle().stream().filter(
+                        .filter(loe -> loe.getValue().getCourtBundle().stream().anyMatch(
                             cb -> documentElementId.equals(cb.getId())
-                        ).findAny().isPresent()).findFirst()
+                        )).findFirst()
                         .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
 
                 Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
@@ -317,7 +317,7 @@ public class ManageDocumentService {
                 }
 
                 final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
-                    .filter(e -> e.getId().equals(hcbElement.getId())).findAny().isPresent();
+                    .anyMatch(e -> e.getId().equals(hcbElement.getId()));
                 Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
                     .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
                     .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
