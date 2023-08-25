@@ -119,6 +119,37 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .isEqualTo(testingType < 5 ? "YES" : "NO");
     }
 
+//    @ParameterizedTest
+//    @ValueSource(ints = {1, 2, 3})
+//    void shouldPopulateLanguageRequirement(int testingType) {
+//        CaseData caseData = null;
+//        switch (testingType) {
+//            case 1:
+//                caseData = CaseData.builder()
+//                    .languageRequirement("YES")
+//                    .build();
+//                break;
+//            case 2:
+//                caseData = CaseData.builder()
+//                    .languageRequirement("NO")
+//                    .build();
+//                break;
+//            case 3:
+//                caseData = CaseData.builder()
+//                    .build();
+//                break;
+//            default:
+//                throw new IllegalStateException("undefined testing type");
+//        };
+//
+//        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+//            "manage-document-action-selection");
+//
+//        CaseData responseCaseData = extractCaseData(callbackResponse);
+//        assertThat(responseCaseData.getManageDocumentEventData().getLanguageRequirement())
+//            .isEqualTo(testingType == 1 ? "YES" : "NO");
+//    }
+
     @ParameterizedTest
     @ValueSource(ints = {1, 2})
     void shouldInitialiseUploadableDocumentBundle(int testingType) {
