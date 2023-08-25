@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
