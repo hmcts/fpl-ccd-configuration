@@ -3111,8 +3111,8 @@ class ManageDocumentServiceTest {
                     return flist.stream().allMatch((s) -> {
                         Object wrapped = s.getValue();
                         if (wrapped.getClass().isAssignableFrom(HearingCourtBundle.class)) {
-                            final DocumentReference expectedDocument = elementIdOne.equals(s.getId()) ? expectedDocumentOne
-                                : expectedDocumentTwo;
+                            final DocumentReference expectedDocument = elementIdOne.equals(s.getId())
+                                ? expectedDocumentOne : expectedDocumentTwo;
                             final LanguageTranslationRequirement expectedTranslationRequirements
                                 = elementIdOne.equals(s.getId()) ? LanguageTranslationRequirement.ENGLISH_TO_WELSH
                                 : LanguageTranslationRequirement.WELSH_TO_ENGLISH;
