@@ -34,6 +34,7 @@ public enum DocumentType {
                 .uploaderType(bundle.getUploaderType())
                 .uploaderCaseRoles(bundle.getUploaderCaseRoles())
                 .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+                .translationRequirements(bundle.getTranslationRequirement())
                 .build());
             return HearingCourtBundle.builder()
                 .courtBundle(List.of(courtBundleElement))
@@ -47,6 +48,7 @@ public enum DocumentType {
             .uploaderType(bundle.getUploaderType())
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .translationRequirements(bundle.getTranslationRequirement())
             .build(),
         null,20),
     POSITION_STATEMENTS("Position Statements", standardResolver("hearingDocuments.posStmtList"),
@@ -64,6 +66,7 @@ public enum DocumentType {
             .uploaderType(bundle.getUploaderType())
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .translationRequirements(bundle.getTranslationRequirement())
             .build(),
         null, 50),
     AA_PARENT_ORDERS("Orders", null,
@@ -125,6 +128,7 @@ public enum DocumentType {
             .uploaderType(bundle.getUploaderType())
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .translationRequirements(bundle.getTranslationRequirement())
             .build(),
         AA_PARENT_RESPONDENTS_STATEMENTS, 190),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
@@ -260,6 +264,7 @@ public enum DocumentType {
             .uploaderType(bundle.getUploaderType())
             .uploaderCaseRoles(bundle.getUploaderCaseRoles())
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
+            .translationRequirements(bundle.getTranslationRequirement())
             .build();
     }
 

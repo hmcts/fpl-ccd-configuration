@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -2958,6 +2959,201 @@ class ManageDocumentServiceTest {
                     });
                 }
             });
+    }
+
+    void tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(
+        DocumentType documentType,
+        Function<String, String> fieldNameProvider,
+        int loginType,
+        Confidentiality confidentiality,
+        Predicate<List> matcher) {
+        initialiseUserService(loginType);
+        CaseData caseData = prepareCaseDataForUploadDocumentJourney(
+            List.of(
+                element(elementIdOne, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(documentType.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentOne)
+                    .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                    .confidential(toConfidential(confidentiality))
+                    .build()),
+                element(elementIdTwo, UploadableDocumentBundle.builder()
+                    .documentTypeDynamicList(DynamicList.builder()
+                        .value(DynamicListElement.builder()
+                            .code(documentType.name())
+                            .build())
+                        .build())
+                    .document(expectedDocumentTwo)
+                    .confidential(toConfidential(confidentiality))
+                    .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+                    .build())
+            )
+        );
+
+        String suffix = getFieldNameSuffix(getUploaderType(loginType), confidentiality);
+        assertThat(underTest.uploadDocuments(caseData))
+            .containsKey(fieldNameProvider.apply(suffix))
+            .extracting(fieldNameProvider.apply(suffix)).asList()
+            .matches(matcher);
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleParentAssessmentWithTranslationRequirements(
+        int loginType,
+        Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(DocumentType.PARENT_ASSESSMENTS,
+            suffix -> "parentAssessmentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, ManagedDocument.builder()
+                .document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                .build()))
+                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                .document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .build()))
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleCaseSummaryWithTranslationRequirements(
+        int loginType,
+        Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(DocumentType.CASE_SUMMARY,
+            suffix -> "caseSummaryList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, CaseSummary.builder()
+                .document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                .build()))
+                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                .document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+                .build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleSkeletonArgumentWithTranslationRequirements(
+        int loginType,
+        Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(DocumentType.SKELETON_ARGUMENTS,
+            suffix -> "skeletonArgumentList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, SkeletonArgument.builder()
+                .document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                .build()))
+                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                .document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+                .build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    void shouldPopulateDocumentListWhenUploadMultipleRespondentStatementWithTranslationRequirements(
+        int loginType,
+        Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(
+            DocumentType.RESPONDENTS_STATEMENTS,
+            suffix -> "respStmtList" + suffix, loginType, confidentiality,
+            list -> list.contains(element(elementIdOne, RespondentStatementV2.builder()
+                .document(expectedDocumentOne)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                .build()))
+                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                .document(expectedDocumentTwo)
+                .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
+                .uploaderType(getUploaderType(loginType))
+                .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                .translationRequirements(LanguageTranslationRequirement.WELSH_TO_ENGLISH)
+                .build()))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("buildUploadingDocumentArgs")
+    @SuppressWarnings("unchecked")
+    void shouldPopulateDocumentListWhenUploadMultipleCourtBundleWithTranslationRequirements(
+        int loginType,
+        Confidentiality confidentiality) {
+        tplPopulateDocumentListWhenUploadMultipleDocumentWithTranslationRequirements(DocumentType.COURT_BUNDLE,
+            suffix -> "".equals(suffix) ? "courtBundleListV2" : ("courtBundleList" + suffix), loginType,
+            confidentiality,
+            list -> {
+                List<Element> flist = (List<Element>) list.stream()
+                    .filter(p -> elementIdOne.equals(((Element) p).getId())
+                        || elementIdTwo.equals(((Element) p).getId()))
+                    .collect(Collectors.toList());
+                if (flist.size() != 2) {
+                    return false;
+                } else {
+                    return flist.stream().allMatch((s) -> {
+                        Object wrapped = s.getValue();
+                        if (wrapped.getClass().isAssignableFrom(HearingCourtBundle.class)) {
+                            final DocumentReference expectedDocument = elementIdOne.equals(s.getId())
+                                ? expectedDocumentOne : expectedDocumentTwo;
+                            final LanguageTranslationRequirement expectedTranslationRequirements
+                                = elementIdOne.equals(s.getId()) ? LanguageTranslationRequirement.ENGLISH_TO_WELSH
+                                : LanguageTranslationRequirement.WELSH_TO_ENGLISH;
+
+                            HearingCourtBundle hcb = (HearingCourtBundle) wrapped;
+                            boolean test = hcb.getCourtBundle() != null;
+                            test = test && hcb.getCourtBundle().size() == 1;
+                            test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue()
+                                .getDocument());
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
+                                .getUploaderType());
+                            test = test && getUploaderCaseRoles(loginType).equals(hcb.getCourtBundle().get(0).getValue()
+                                .getUploaderCaseRoles());
+                            test = test && expectedTranslationRequirements.equals(hcb.getCourtBundle()
+                                .get(0).getValue()
+                                .getTranslationRequirements());
+                            test = test && hcb.getCourtBundleNC() != null;
+                            test = test && hcb.getCourtBundleNC().size() == 1;
+                            test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
+                                .getDocument());
+                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
+                                .getUploaderType());
+                            test = test && getUploaderCaseRoles(loginType).equals(hcb.getCourtBundleNC().get(0)
+                                .getValue().getUploaderCaseRoles());
+                            test = test && expectedTranslationRequirements.equals(hcb.getCourtBundleNC()
+                                .get(0).getValue()
+                                .getTranslationRequirements());
+                            return test;
+                        }
+                        return false;
+                    });
+                }
+            }
+        );
     }
 
     void tplPopulateDocumentListWhenUploadMultipleDocument(DocumentType documentType,

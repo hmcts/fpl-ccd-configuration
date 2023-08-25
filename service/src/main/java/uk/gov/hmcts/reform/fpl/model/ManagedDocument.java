@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
@@ -21,4 +22,5 @@ public class ManagedDocument implements WithDocument {
     @Setter
     private String removalReason;
     private String markAsConfidential;
+    private final LanguageTranslationRequirement translationRequirements;
 }
