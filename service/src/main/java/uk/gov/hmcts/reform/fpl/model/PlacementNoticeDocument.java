@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
@@ -32,6 +33,7 @@ public class PlacementNoticeDocument implements WithDocument {
     private DocumentUploaderType uploaderType;
     private List<CaseRole> uploaderCaseRoles;
     private String removalReason;
+    private LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
     public DocumentReference getDocument() {
@@ -41,7 +43,6 @@ public class PlacementNoticeDocument implements WithDocument {
     public String getMarkAsConfidential() {
         return null;
     }
-
 
     @Getter
     @RequiredArgsConstructor

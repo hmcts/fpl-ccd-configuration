@@ -383,6 +383,7 @@ public class ManageDocumentService {
                     .response(e.getValue().getDocument())
                     .uploaderType(uploaderType)
                     .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                    .translationRequirements(e.getValue().getTranslationRequirements())
                     .build()));
                 caseData.setPlacementNoticeResponses(placementNoticeResponses);
                 if (ret.containsKey("placements")) {
