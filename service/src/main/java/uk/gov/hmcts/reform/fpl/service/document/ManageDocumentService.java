@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -264,6 +265,7 @@ public class ManageDocumentService {
                 String fieldName = dt.getFieldName(uploaderType, confidential);
                 final String actualFieldName = getDocumentListActualFieldName(fieldName);
                 final DocumentReference document = e.getValue().getDocument();
+                final LanguageTranslationRequirement translationRequirement = e.getValue().getTranslationRequirements();
 
                 Class documentListHolderClass = getDocumentListHolderClass(fieldName);
                 String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
@@ -287,6 +289,7 @@ public class ManageDocumentService {
                 UploadBundle bundle = UploadBundle.builder().document(document)
                     .uploaderType(uploaderType)
                     .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                    .translationRequirement(translationRequirement)
                     .confidential(confidential)
                     .build();
                 docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));

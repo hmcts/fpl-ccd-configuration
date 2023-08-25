@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.PlacementNoticeRecipientType;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -18,6 +19,7 @@ public class UploadableDocumentBundle {
     private String confidential;
     private DynamicList placementList;
     private PlacementNoticeRecipientType placementNoticeRecipientType;
+    private LanguageTranslationRequirement translationRequirements;
 
     public DocumentType getDocumentTypeSelected() {
         if (getDocumentTypeDynamicList() != null && getDocumentTypeDynamicList().getValue() != null

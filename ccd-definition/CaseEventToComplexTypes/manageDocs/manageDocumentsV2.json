@@ -56,5 +56,15 @@
     "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "hasConfidentialParty = \"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldDisplayOrder": "8",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "languageRequirement = \"Yes\""
   }
 ]
