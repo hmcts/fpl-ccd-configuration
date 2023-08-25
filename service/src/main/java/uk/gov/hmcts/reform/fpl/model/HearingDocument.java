@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class HearingDocument extends DocumentMetaData implements WithDocument {
 
     protected String hearing;
