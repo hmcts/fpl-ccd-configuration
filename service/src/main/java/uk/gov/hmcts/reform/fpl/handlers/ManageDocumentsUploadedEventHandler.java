@@ -200,8 +200,7 @@ public class ManageDocumentsUploadedEventHandler {
                 .forEach((documentType, documents) ->
                     unwrapElements(documents).forEach(document ->
                         translationRequestService.sendRequest(caseData,
-                            // TODO only send document that require translation
-                            Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH),
+                            Optional.ofNullable(document.getTranslationRequirements()),
                             document.getDocument(),
                             String.format("%s - %s - %s", Optional.ofNullable(documentType.getDescription()),
                                 document.getNameForNotification(),

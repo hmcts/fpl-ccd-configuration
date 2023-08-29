@@ -33,10 +33,8 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
 public class HearingDocument extends DocumentMetaData implements WithDocument, NotifyDocumentUploaded {
-public class HearingDocument extends DocumentMetaData implements WithDocument {
+
     protected String hearing;
     protected DocumentReference document;
     protected String removalReason;

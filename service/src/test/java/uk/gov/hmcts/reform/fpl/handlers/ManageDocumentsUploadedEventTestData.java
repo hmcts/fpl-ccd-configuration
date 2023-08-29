@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -84,14 +85,19 @@ public class ManageDocumentsUploadedEventTestData {
                         hearingDocumentsBuilder = (HearingDocuments.HearingDocumentsBuilder) builderMethod
                             .invoke(hearingDocumentsBuilder,
                                 wrapElementsWithUUIDs(docType.getWithDocumentBuilder().apply(UploadBundle.builder()
-                                .document(getPDFDocument()).build())));
+                                    .document(getPDFDocument())
+                                    .translationRequirement(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                                    .build())));
 
                         hasHearingDocument = true;
                     }
                 } else {
                     for (ConfidentialLevel confidentialLevel : confidentialLevels) {
                         caseDataBuilder = addManagedDocument(caseDataBuilder, docType, confidentialLevel,
-                            wrapElementsWithUUIDs(ManagedDocument.builder().document(getPDFDocument()).build()));
+                            wrapElementsWithUUIDs(ManagedDocument.builder()
+                                .document(getPDFDocument())
+                                .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
+                                .build()));
                     }
                 }
             } else {
