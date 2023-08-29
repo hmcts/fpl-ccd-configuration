@@ -196,10 +196,8 @@ public class MigrateCaseController extends CallbackController {
     private void run1681(CaseDetails caseDetails) {
         var migrationId = "DFPL-1681";
         var possibleCaseIds = List.of(1669737648667050L);
-        UUID expectedDocument = UUID.fromString("438c74f9-9519-4d8f-80fb-d65780a55a8e");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeCorrespondenceDocument(getCaseData(caseDetails),
-            migrationId, expectedDocument));
+        caseDetails.getData().remove("correspondenceDocumentsNC");
     }
 }
