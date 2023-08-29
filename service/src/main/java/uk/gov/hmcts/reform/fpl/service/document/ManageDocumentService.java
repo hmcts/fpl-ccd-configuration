@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -248,6 +249,7 @@ public class ManageDocumentService {
                     .response(e.getValue().getDocument())
                     .uploaderType(uploaderType)
                     .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                    .translationRequirements(e.getValue().getTranslationRequirements())
                     .build()));
                 caseData.setPlacementNoticeResponses(placementNoticeResponses);
                 if (ret.containsKey("placements")) {
@@ -261,17 +263,16 @@ public class ManageDocumentService {
                     : updatePlacementNoticesAdmin(caseData);
 
                 ret.put("placements", eventData.getPlacements());
-                if (!isLocalAuthority) {
-                    ret.put("placementsNonConfidential", eventData
-                        .getPlacementsNonConfidential(false));
-                    ret.put("placementsNonConfidentialNotices", eventData
-                        .getPlacementsNonConfidential(true));
-                }
+                ret.put("placementsNonConfidential", eventData
+                    .getPlacementsNonConfidential(true));
+                ret.put("placementsNonConfidentialNotices", eventData
+                    .getPlacementsNonConfidential(true));
             } else {
                 boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
                 String fieldName = dt.getFieldName(uploaderType, confidential);
                 final String actualFieldName = getDocumentListActualFieldName(fieldName);
                 final DocumentReference document = e.getValue().getDocument();
+                final LanguageTranslationRequirement translationRequirement = e.getValue().getTranslationRequirements();
 
                 Class documentListHolderClass = getDocumentListHolderClass(fieldName);
                 String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
@@ -295,6 +296,7 @@ public class ManageDocumentService {
                 UploadBundle bundle = UploadBundle.builder().document(document)
                     .uploaderType(uploaderType)
                     .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+                    .translationRequirement(translationRequirement)
                     .confidential(confidential)
                     .build();
                 docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));

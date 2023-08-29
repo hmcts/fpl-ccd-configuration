@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
@@ -33,6 +34,7 @@ public class ApplicationDocument implements FurtherDocument, WithDocument {
     private List<String> confidential;
     private String removalReason;
     private String markAsConfidential;
+    private final LanguageTranslationRequirement translationRequirements;
 
     @JsonIgnore
     public boolean hasDocument() {

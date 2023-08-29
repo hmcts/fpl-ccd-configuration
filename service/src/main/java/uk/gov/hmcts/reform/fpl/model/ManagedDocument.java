@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
@@ -22,4 +23,5 @@ public class ManagedDocument implements WithDocument, NotifyDocumentUploaded {
     private List<CaseRole> uploaderCaseRoles;
     private String removalReason;
     private String markAsConfidential;
+    private final LanguageTranslationRequirement translationRequirements;
 }

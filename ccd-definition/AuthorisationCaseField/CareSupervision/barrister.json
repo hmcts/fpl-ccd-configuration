@@ -473,14 +473,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentStatements",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "RU",
-    "Comment": "Added update perms so it can be effectively hidden internally in the auth complex type"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respStmtList",
     "UserRole": "[BARRISTER]",
     "CRUD": "RU",
@@ -939,7 +931,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicationDocuments",
     "UserRole": "[BARRISTER]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -979,35 +971,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementChildList",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementChildListV2",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtChildList",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementRespondentList",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementRespondentListV2",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRU"
   },
@@ -1402,5 +1366,67 @@
     "CaseFieldID": "medicalRecordList",
     "UserRole": "[BARRISTER]",
     "CRUD": "R"
+  },  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseFieldID": "carePlanList",
+  "UserRole": "[BARRISTER]",
+  "CRUD": "CRUD"
+},
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsFiledOnIssueList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "thresholdList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "swetList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "socialWorkChronList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "genogramList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "checklistDocList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "birthCertList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherDocFiledList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "CRUD"
   }
 ]

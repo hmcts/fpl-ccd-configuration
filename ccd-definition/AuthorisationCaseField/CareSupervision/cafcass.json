@@ -919,20 +919,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementChildList",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "RD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementChildListV2",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtChildList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
@@ -941,20 +927,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtChildListLA",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementRespondentList",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "RD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "positionStatementRespondentListV2",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
@@ -1047,7 +1019,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicationDocuments",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1076,13 +1048,6 @@
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentStatements",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1685,5 +1650,131 @@
     "CaseFieldID": "medicalRecordListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "carePlanList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "carePlanListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsFiledOnIssueList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsFiledOnIssueListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "thresholdList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "thresholdListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "swetList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "swetListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "socialWorkChronList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "socialWorkChronListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "genogramList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "genogramListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "checklistDocList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "checklistDocListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "birthCertList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "birthCertListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherDocFiledList",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherDocFiledListLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
   }
 ]

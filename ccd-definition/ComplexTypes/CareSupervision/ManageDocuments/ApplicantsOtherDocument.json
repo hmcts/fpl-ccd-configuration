@@ -41,5 +41,14 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Is confidential?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantsOtherDocument",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public"
   }
 ]
