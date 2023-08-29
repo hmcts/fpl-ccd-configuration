@@ -704,8 +704,8 @@ public class MigrateCaseService {
 
         List<Element<SupportingEvidenceBundle>> newCorrespondenceDocumentsNC =
             newCorrespondenceDocuments.stream()
-                .filter(el -> isNull(el.getValue().isConfidentialDocument()) || !el.getValue().isConfidentialDocument())
-                .collect(toList());
+                .filter(el -> !el.getValue().isConfidentialDocument())
+                .toList();
 
         if (newCorrespondenceDocuments.size() != caseData.getCorrespondenceDocuments().size() - 1) {
             throw new AssertionError(format(
