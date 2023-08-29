@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import feign.FeignException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -187,6 +188,48 @@ class RoleAssignmentServiceTest {
         }
 
         @Test
+        void shouldFallbackAndGrantIndividuallyIfBulkFails() {
+            when(systemUserService.getUserId(any())).thenReturn("1234");
+            List<RoleAssignment> roles = List.of(
+                RoleAssignment.builder().attributes(Map.of("caseId", "1-2-3-4")).build(),
+                RoleAssignment.builder().attributes(Map.of("caseId", "1-2-3-4")).build(),
+                RoleAssignment.builder().attributes(Map.of("caseId", "1-2-3-4")).build(),
+                RoleAssignment.builder().attributes(Map.of("caseId", "1-2-3-4")).build()
+            );
+
+            AssignmentRequest badRequest = AssignmentRequest.builder()
+                .requestedRoles(roles)
+                .roleRequest(RoleRequest.builder()
+                    .assignerId("1234")
+                    .reference("fpl-case-role-assignment")
+                    .replaceExisting(false)
+                    .build())
+                .build();
+
+            when(amApi.createRoleAssignment(any(), any(), eq(badRequest))).thenThrow(FeignException.class);
+
+
+            underTest.createRoleAssignments(roles);
+
+            // once that fails, and 4 more times in fallback
+            verify(amApi, times(5)).createRoleAssignment(any(), any(), assignmentRequestCaptor.capture());
+
+            assertThat(assignmentRequestCaptor.getAllValues()).hasSize(5);
+
+            // One bulk, one containing each of the other roles
+            assertThat(assignmentRequestCaptor.getAllValues()).map(AssignmentRequest::getRequestedRoles)
+                .containsAll(List.of(roles, List.of(roles.get(0)), List.of(roles.get(1)), List.of(roles.get(2)),
+                    List.of(roles.get(3))));
+
+            assertThat(assignmentRequestCaptor.getAllValues().get(0).getRoleRequest()).isEqualTo(RoleRequest.builder()
+                .assignerId("1234")
+                .reference("fpl-case-role-assignment")
+                .replaceExisting(false)
+                .build());
+
+        }
+
+        @Test
         void shouldCreateSingleRole() {
             ZonedDateTime now = ZonedDateTime.now();
             when(systemUserService.getUserId(any())).thenReturn("1234");
@@ -278,5 +321,7 @@ class RoleAssignmentServiceTest {
             assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
         }
     }
+
+
 
 }
