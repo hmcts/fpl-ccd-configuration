@@ -450,7 +450,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
     @MethodSource("allHearingDocumentsTypeParameters")
     void shouldNotNotifyTranslationTeamWhenHearingDocumentUploaded(DocumentType documentType,
                                                                    ConfidentialLevel confidentialLevel)
-        throws Exception {CaseData caseDataBefore = commonCaseBuilder().build();
+        throws Exception {
+        CaseData caseDataBefore = commonCaseBuilder().build();
         CaseData caseData;
         try {
             caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),

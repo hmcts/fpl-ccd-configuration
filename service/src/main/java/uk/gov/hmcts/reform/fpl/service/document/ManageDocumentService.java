@@ -73,7 +73,6 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -1183,7 +1182,8 @@ public class ManageDocumentService {
                     Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
                             resultMapByConfidentialLevel.get(confidentialLevel);
 
-                    List documentList, documentListBefore;
+                    List documentList;
+                    List documentListBefore;
                     try {
                         documentList = Optional.ofNullable(ObjectHelper
                             .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
