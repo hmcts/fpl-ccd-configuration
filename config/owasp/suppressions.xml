@@ -298,4 +298,7 @@
     <packageUrl regex="true">^pkg:maven/org\.quartz\-scheduler/quartz@.*$</packageUrl>
     <cve>CVE-2023-39017</cve>
   </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2023-34040</vulnerabilityName>
+  </suppress>
 </suppressions>
