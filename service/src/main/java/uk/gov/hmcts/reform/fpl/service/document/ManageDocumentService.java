@@ -73,6 +73,7 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -329,7 +330,7 @@ public class ManageDocumentService {
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
-            .toList();
+            .collect(toList());
         return dynamicListService.asDynamicList(documentTypes);
     }
 
@@ -1140,7 +1141,7 @@ public class ManageDocumentService {
         map.put("placement", data.getPlacement());
         map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
             doc -> type == null ? true : (doc.getValue().getType() == type)
-        ).toList());
+        ).collect(toList()));
         return map;
     }
 
