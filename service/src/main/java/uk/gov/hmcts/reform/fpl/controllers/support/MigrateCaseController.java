@@ -53,7 +53,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
@@ -61,7 +60,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1681", this::run1681
+        "DFPL-1681", this::run1681,
+        "DFPL-1438", this::run1438,
+        "run1438rollback", this::run1438rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -144,11 +145,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -199,5 +195,38 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("correspondenceDocumentsNC");
+    }
+
+    private void run1438(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateRespondentStatement(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
+        caseDetails.getData().putAll(migrateCaseService
+            .moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
+    }
+
+    private void run1438rollback(CaseDetails caseDetails) {
+        migrateCaseService.rollbackApplicantWitnessStatements(caseDetails);
+        migrateCaseService.rollbackApplicationDocuments(caseDetails);
+        migrateCaseService.rollbackCaseSummaryMigration(caseDetails);
+        migrateCaseService.rollbackCourtBundleMigration(caseDetails);
+        migrateCaseService.rollbackCorrespondenceDocuments(caseDetails);
+        migrateCaseService.rollbackExpertReports(caseDetails);
+        migrateCaseService.rollbackGuardianReports(caseDetails);
+        migrateCaseService.rollbackNoticeOfActingOrIssue(caseDetails);
+        migrateCaseService.rollbackPositionStatementChild(caseDetails);
+        migrateCaseService.rollbackPositionStatementRespondent(caseDetails);
+        migrateCaseService.rollbackSkeletonArgumentList(caseDetails);
     }
 }

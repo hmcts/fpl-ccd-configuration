@@ -189,7 +189,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackMigratePositionStatementChild(CaseDetails caseDetails) {
+    public void rollbackPositionStatementChild(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
@@ -207,7 +207,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackMigratePositionStatementRespondent(CaseDetails caseDetails) {
+    public void rollbackPositionStatementRespondent(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
@@ -1119,19 +1119,19 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public void rollbackMigrateApplicantWitnessStatements(CaseDetails caseDetails) {
+    public void rollbackApplicantWitnessStatements(CaseDetails caseDetails) {
         caseDetails.getData().remove("applicantWitnessStmtList");
         caseDetails.getData().remove("applicantWitnessStmtListLA");
         caseDetails.getData().remove("applicantWitnessStmtListCTSC");
     }
 
-    public void rollbackMigrateGuardianReports(CaseDetails caseDetails) {
+    public void rollbackGuardianReports(CaseDetails caseDetails) {
         caseDetails.getData().remove("guardianEvidenceList");
         caseDetails.getData().remove("guardianEvidenceListLA");
         caseDetails.getData().remove("guardianEvidenceListCTSC");
     }
 
-    public void rollbackMigrateExpertReports(CaseDetails caseDetails) {
+    public void rollbackExpertReports(CaseDetails caseDetails) {
         caseDetails.getData().remove("drugAndAlcoholReportList");
         caseDetails.getData().remove("drugAndAlcoholReportListLA");
         caseDetails.getData().remove("drugAndAlcoholReportListCTSC");
@@ -1143,7 +1143,7 @@ public class MigrateCaseService {
         caseDetails.getData().remove("expertReportListCTSC");
     }
 
-    public void rollbackMigrateNoticeOfActingOrIssue(CaseDetails caseDetails) {
+    public void rollbackNoticeOfActingOrIssue(CaseDetails caseDetails) {
         caseDetails.getData().remove("noticeOfActingOrIssueList");
         caseDetails.getData().remove("noticeOfActingOrIssueListLA");
         caseDetails.getData().remove("noticeOfActingOrIssueListCTSC");
@@ -1170,7 +1170,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackMigratedSkeletonArgumentList(CaseDetails caseDetails) {
+    public void rollbackSkeletonArgumentList(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<SkeletonArgument>> skeletonArgumentList = new ArrayList<>();
@@ -1305,7 +1305,7 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public void rollbackMigrateCorrespondenceDocuments(CaseDetails caseDetails) {
+    public void rollbackCorrespondenceDocuments(CaseDetails caseDetails) {
         caseDetails.getData().remove("correspondenceDocList");
         caseDetails.getData().remove("correspondenceDocListLA");
         caseDetails.getData().remove("correspondenceDocListCTSC");
