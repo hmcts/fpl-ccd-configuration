@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -53,7 +54,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
@@ -62,6 +62,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
         "DFPL-1681", this::run1681,
+        "DFPL-1663", this::run1663,
         "DFPL-1701", this::run1701
     );
 
@@ -145,11 +146,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -197,11 +193,16 @@ public class MigrateCaseController extends CallbackController {
     private void run1681(CaseDetails caseDetails) {
         var migrationId = "DFPL-1681";
         var possibleCaseIds = List.of(1669737648667050L);
-        UUID expectedDocument = UUID.fromString("438c74f9-9519-4d8f-80fb-d65780a55a8e");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeCorrespondenceDocument(getCaseData(caseDetails),
-            migrationId, expectedDocument));
+        caseDetails.getData().remove("correspondenceDocumentsNC");
+    }
+
+    private void run1663(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1663";
+        var possibleCaseIds = List.of(1673973434416600L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("state", State.CLOSED);
     }
 
     private void run1701(CaseDetails caseDetails) {
