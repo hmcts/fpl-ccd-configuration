@@ -3769,7 +3769,7 @@ class ManageDocumentServiceTest {
             List<Arguments> streamList = new ArrayList<>();
 
             for (DocumentType docType : DocumentType.values()) {
-                if(isNotEmpty(docType.getBaseFieldNameResolver())) {
+                if (isNotEmpty(docType.getBaseFieldNameResolver())) {
                     for (ConfidentialLevel level : ConfidentialLevel.values()) {
                         streamList.add(Arguments.of(docType, level));
                     }
