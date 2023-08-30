@@ -61,6 +61,7 @@ public class DocumentUploadedNotificationConfiguration {
 
     public static final DocumentUploadedNotificationConfiguration DEFAULT_ORDER_NOTIFICATION_CONFIG =
         DocumentUploadedNotificationConfiguration.builder()
+            .sendToCafcassEngland(ConfidentialLevel.LA)
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
             .build();
 
