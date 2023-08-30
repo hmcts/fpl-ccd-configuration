@@ -1183,18 +1183,10 @@ public class ManageDocumentService {
                     Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
                             resultMapByConfidentialLevel.get(confidentialLevel);
 
-                    List documentList;
-                    List documentListBefore;
-                    try {
-                        documentList = Optional.ofNullable(ObjectHelper
-                            .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
-                        documentListBefore = Optional.ofNullable(ObjectHelper
-                            .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
-                    } catch (NoSuchMethodException e) {
-                        log.error("No getter for {}. Check configuration of document type: {}",
-                            fieldName, documentType);
-                        continue;
-                    }
+                    List documentList = Optional.ofNullable(ObjectHelper
+                        .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
+                    List documentListBefore = Optional.ofNullable(ObjectHelper
+                        .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
 
                     if (DocumentType.COURT_BUNDLE.equals(documentType)) {
                         documentList = ((List<Element<HearingCourtBundle>>) documentList).stream()
