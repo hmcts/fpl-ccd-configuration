@@ -3769,7 +3769,6 @@ class ManageDocumentServiceTest {
             assertEquals(expectedNewDocumentsCTSC, eventData.getNewDocumentsCTSC());
         }
 
-
         private static Stream<Arguments> allDocumentsTypeParameters() {
             List<Arguments> streamList = new ArrayList<>();
 
