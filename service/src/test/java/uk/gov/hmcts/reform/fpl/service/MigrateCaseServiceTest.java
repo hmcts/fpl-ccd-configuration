@@ -2220,10 +2220,10 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(map).build();
 
-            underTest.rollbackMigrateApplicantWitnessStatements(caseDetails);
-            underTest.rollbackMigrateGuardianReports(caseDetails);
-            underTest.rollbackMigrateExpertReports(caseDetails);
-            underTest.rollbackMigrateNoticeOfActingOrIssue(caseDetails);
+            underTest.rollbackApplicantWitnessStatements(caseDetails);
+            underTest.rollbackGuardianReports(caseDetails);
+            underTest.rollbackExpertReports(caseDetails);
+            underTest.rollbackNoticeOfActingOrIssue(caseDetails);
 
             assertThat(caseDetails.getData()).doesNotContainKey("applicantWitnessStmtList");
             assertThat(caseDetails.getData()).doesNotContainKey("applicantWitnessStmtListLA");
@@ -2653,9 +2653,9 @@ class MigrateCaseServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
             if (isChild) {
-                underTest.rollbackMigratePositionStatementChild(caseDetails);
+                underTest.rollbackPositionStatementChild(caseDetails);
             } else {
-                underTest.rollbackMigratePositionStatementRespondent(caseDetails);
+                underTest.rollbackPositionStatementRespondent(caseDetails);
             }
 
             assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
@@ -3102,7 +3102,7 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
-            underTest.rollbackMigratedSkeletonArgumentList(caseDetails);
+            underTest.rollbackSkeletonArgumentList(caseDetails);
 
             assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
                 .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
@@ -3179,7 +3179,7 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDetailsMap).build();
 
-            underTest.rollbackMigrateCorrespondenceDocuments(caseDetails);
+            underTest.rollbackCorrespondenceDocuments(caseDetails);
 
             assertThat(caseDetailsMap).extracting("correspondenceDocList").isNull();
             assertThat(caseDetailsMap).extracting("correspondenceDocListLA").isNull();
