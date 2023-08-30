@@ -94,42 +94,35 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        if (featureToggleService.isAMMigrationRollbackEnabled()) {
-            judicialService.deleteAllRolesOnCase(caseData.getId());
+    private void migrateRoles(CaseData caseData) {
+        List<RoleAssignment> rolesToAssign = new ArrayList<>();
+
+        // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
+        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
+        if (allocatedJudge.isPresent()
+            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
+            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
+
+            boolean isLegalAdviser = JudgeOrMagistrateTitle.LEGAL_ADVISOR
+                .equals(allocatedJudge.get().getJudgeTitle());
+
+            // attempt to assign allocated-[role]
+            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
+                caseData.getId(),
+                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
+                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
+                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
+                ZonedDateTime.now(),
+                null // no end date
+            ));
         } else {
-            List<RoleAssignment> rolesToAssign = new ArrayList<>();
-
-            // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
-            Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-            if (allocatedJudge.isPresent()
-                && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
-                && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
-
-                boolean isLegalAdviser = JudgeOrMagistrateTitle.LEGAL_ADVISOR
-                    .equals(allocatedJudge.get().getJudgeTitle());
-
-                // attempt to assign allocated-[role]
-                rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                    caseData.getId(),
-                    allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                    isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                    isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
-                    ZonedDateTime.now(),
-                    null // no end date
-                ));
-            } else {
-                log.error("Could not assign allocated-judge on case {}, no email found on the case", caseData.getId());
-            }
-
-            // get hearing judge roles to add (if any)
-            rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
-
-            judicialService.migrateJudgeRoles(rolesToAssign);
+            log.error("Could not assign allocated-judge on case {}, no email found on the case", caseData.getId());
         }
+
+        // get hearing judge roles to add (if any)
+        rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
+
+        judicialService.migrateJudgeRoles(rolesToAssign);
     }
 
     private void run1359(CaseDetails caseDetails) {
@@ -209,6 +202,9 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
         }
         caseDetails.getData().remove("hasBeenAMMigrated");
+
+        // delete all roles on the case - if this fails we WANT the migration to stop, as it has not been rolled back
+        judicialService.deleteAllRolesOnCase(caseData.getId());
     }
 
     private void runAM(CaseDetails caseDetails) {
@@ -254,6 +250,12 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hearingDetails", modified);
         }
         caseDetails.getData().put("hasBeenAMMigrated", "Yes");
+
+        // Convert our newly annotated case details payload to a case data object
+        CaseData newCaseData = getCaseData(caseDetails);
+
+        // Perform migration synchronously - we DO NOT catch if this fails, we need to stop the migration for this case
+        migrateRoles(newCaseData);
     }
 
     private void run1649(CaseDetails caseDetails) {

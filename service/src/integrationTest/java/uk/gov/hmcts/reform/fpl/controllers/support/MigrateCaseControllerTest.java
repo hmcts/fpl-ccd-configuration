@@ -18,16 +18,19 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(MigrateCaseController.class)
@@ -51,6 +54,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private JudicialService judicialService;
 
     @MockBean
     private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
@@ -118,9 +124,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         private final String migrationId = "DFPL-AM";
 
+        @BeforeEach
+        void beforeEach() {
+            when(judicialService.getHearingJudgeRolesForMigration(any())).thenReturn(List.of());
+        }
+
         @Test
         void shouldUpdateAllocatedJudgeId() {
             when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
             CaseData caseData = CaseData.builder()
                 .id(12345L)
@@ -143,6 +155,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldUpdateAllocatedJudgeIdIfLegalAdviser() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
             when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
             CaseData caseData = CaseData.builder()
@@ -167,6 +180,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldUpdateHearingJudgeIdIfLegalAdviser() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
             when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
             CaseData caseData = CaseData.builder()
@@ -198,6 +212,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldUpdateHearingJudgeIdIfJudge() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
             when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
             CaseData caseData = CaseData.builder()
@@ -229,6 +244,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldLeaveHearingsUnchangedIfNotInMapping() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.empty());
             when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
             CaseData caseData = CaseData.builder()

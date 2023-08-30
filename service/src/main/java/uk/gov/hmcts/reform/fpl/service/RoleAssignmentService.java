@@ -68,22 +68,53 @@ public class RoleAssignmentService {
      * Create role assignments based on an already created List of RoleAssignment objects.
      * @param roleAssignments pre-created List of RoleAssignment objects
      */
-    @Retryable(value = {FeignException.class}, label = "Create bulk case role assignment")
     public void createRoleAssignments(List<RoleAssignment> roleAssignments) {
         if (roleAssignments.isEmpty()) {
             log.info("No role assignments to create");
             return;
         }
         String systemUserToken = systemUserService.getSysUserToken();
-        amApi.createRoleAssignment(systemUserToken, authTokenGenerator.generate(), AssignmentRequest.builder()
-            .requestedRoles(roleAssignments)
-            .roleRequest(RoleRequest.builder()
-                .assignerId(systemUserService.getUserId(systemUserToken))
-                .reference("fpl-case-role-assignment")
-                .replaceExisting(false)
-                .build())
-            .build());
+        String serviceToken = authTokenGenerator.generate();
 
+        try {
+            // Attempt in BULK first, works for the majority of cases
+            amApi.createRoleAssignment(systemUserToken, serviceToken, AssignmentRequest.builder()
+                .requestedRoles(roleAssignments)
+                .roleRequest(RoleRequest.builder()
+                    .assignerId(systemUserService.getUserId(systemUserToken))
+                    .reference("fpl-case-role-assignment")
+                    .replaceExisting(false)
+                    .build())
+                .build());
+        } catch (Exception e) {
+            log.error("Failed to bulk grant {} roles on case {}, falling back to granting each individually",
+                roleAssignments.size(), roleAssignments.get(0).getAttributes().get("caseId"), e);
+
+            // if we fail in bulk, we will retry each one individually - a strange workaround, but it was necessary for
+            // some cases...
+            roleAssignments.forEach(r -> grantIndividualRole(r, systemUserToken, serviceToken));
+        }
+    }
+
+    private void grantIndividualRole(RoleAssignment role, String systemUserToken, String serviceToken) {
+        try {
+            log.info("Granting individual case role to {} on case {}", role.getActorId(),
+                role.getAttributes().getOrDefault("caseId", "no-case-id"));
+
+            amApi.createRoleAssignment(systemUserToken, serviceToken, AssignmentRequest.builder()
+                .requestedRoles(List.of(role))
+                .roleRequest(RoleRequest.builder()
+                    .assignerId(systemUserService.getUserId(systemUserToken))
+                    .reference("fpl-case-role-assignment")
+                    .replaceExisting(false)
+                    .build())
+                .build());
+        } catch (Exception e) {
+            log.error("Error when granting individual case role to {} on case {}", role.getActorId(),
+                role.getAttributes().getOrDefault("caseId", "no-case-id"), e);
+
+            // todo - should we fail the whole migration at this point?
+        }
     }
 
     /**
