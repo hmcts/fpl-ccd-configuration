@@ -190,13 +190,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
         throws Exception {
 
         CaseData caseDataBefore = commonCaseBuilder().build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
 
         ManageDocumentsUploadedEvent eventData =
             manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
@@ -249,13 +244,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
                                                          ConfidentialLevel confidentialLevel)
         throws Exception {
         CaseData caseDataBefore = commonCaseBuilder().build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
 
         ManageDocumentsUploadedEvent eventData =
             manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
@@ -321,13 +311,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
                                                          ConfidentialLevel confidentialLevel)
         throws Exception {
         CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.YES.getValue()).build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
         caseData = caseData.toBuilder().languageRequirement(YesNo.YES.getValue()).build();
 
         ManageDocumentsUploadedEvent eventData =
@@ -376,13 +361,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
     void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase()
         throws Exception {
         CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
                 List.of(ConfidentialLevel.NON_CONFIDENTIAL));
-        } catch (Exception e) {
-            return;
-        }
         caseData = caseData.toBuilder().languageRequirement(YesNo.NO.getValue()).build();
 
         ManageDocumentsUploadedEvent eventData =
@@ -401,13 +381,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
         setUp_uploadedBySolicitor();
 
         CaseData caseDataBefore = commonCaseBuilder().build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
 
         ManageDocumentsUploadedEvent eventData =
             manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
@@ -452,13 +427,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
                                                                    ConfidentialLevel confidentialLevel)
         throws Exception {
         CaseData caseDataBefore = commonCaseBuilder().build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
 
         ManageDocumentsUploadedEvent eventData =
             manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
@@ -476,13 +446,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
         setUp_uploadedBySolicitor();
 
         CaseData caseDataBefore = commonCaseBuilder().build();
-        CaseData caseData;
-        try {
-            caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                 List.of(confidentialLevel));
-        } catch (Exception e) {
-            return;
-        }
 
         ManageDocumentsUploadedEvent eventData =
             manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
@@ -496,8 +461,10 @@ public class ManageDocumentsUploadedEventHandlerTest {
         List<Arguments> streamList = new ArrayList<>();
 
         for (DocumentType docType : DocumentType.values()) {
-            for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                streamList.add(Arguments.of(docType, level));
+            if (docType.getBaseFieldNameResolver() != null) {
+                for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                    streamList.add(Arguments.of(docType, level));
+                }
             }
         }
 
