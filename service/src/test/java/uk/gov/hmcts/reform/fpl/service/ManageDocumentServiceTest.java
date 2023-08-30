@@ -93,6 +93,7 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -3722,13 +3723,8 @@ class ManageDocumentServiceTest {
 
             CaseData caseDataBefore = ManageDocumentsUploadedEventTestData.commonCaseBuilder().build();
 
-            CaseData caseData;
-            try {
-                caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+            CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
                     List.of(confidentialLevel));
-            } catch (Exception e) {
-                return;
-            }
 
             List<Element<Object>> documentList = ObjectHelper.getFieldValue(caseData,
                 documentType.getBaseFieldNameResolver().apply(confidentialLevel), List.class);
@@ -3773,8 +3769,10 @@ class ManageDocumentServiceTest {
             List<Arguments> streamList = new ArrayList<>();
 
             for (DocumentType docType : DocumentType.values()) {
-                for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                    streamList.add(Arguments.of(docType, level));
+                if(isNotEmpty(docType.getBaseFieldNameResolver())) {
+                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                        streamList.add(Arguments.of(docType, level));
+                    }
                 }
             }
 
