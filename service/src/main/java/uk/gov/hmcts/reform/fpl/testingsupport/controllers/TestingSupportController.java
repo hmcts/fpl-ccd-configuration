@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
-import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.fnp.client.PaymentApi;
 import uk.gov.hmcts.reform.fnp.model.payment.Payments;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
@@ -167,32 +166,6 @@ public class TestingSupportController {
         } catch (NotificationClientException e) {
             return null;
         }
-    }
-
-    @PostMapping("/testing-support/case/{caseId}/revoke-access")
-    public void revokeCaseAccess(@PathVariable("caseId") Long caseId, @RequestBody Map<String, String> requestBody) {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-
-        final String email = requestBody.get("email");
-        final String password = requestBody.get("password");
-        final String role = requestBody.get("role");
-
-        log.info("About to revoke {} from user {} to case {}", role, email, caseId);
-
-        final String token = idamClient.getAccessToken(email, password);
-        final String userId = idamClient.getUserDetails(token).getId();
-
-        final CaseAssignedUserRolesRequest accessRequest = CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
-                .caseDataId(caseId.toString())
-                .userId(userId)
-                .caseRole(role)
-                .build()))
-            .build();
-
-        caseAccess.removeCaseUserRoles(userToken, authToken.generate(), accessRequest);
-
-        log.info("Role {} revoked from user {} to case {}", role, email, caseId);
     }
 
     @PostMapping("/testing-support/case/{caseId}/access")

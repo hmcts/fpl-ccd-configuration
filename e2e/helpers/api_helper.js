@@ -109,14 +109,6 @@ const grantCaseAccess = async (caseId, user, role) => {
   return await post(url, data, headers);
 };
 
-const revokeCaseAccess = async (caseId, user, role) => {
-  const authToken = await getAuthToken();
-  const url = `${config.fplServiceUrl}/testing-support/case/${caseId}/revoke-access`;
-  const headers = getHeaders(authToken);
-  const data = { email: user.email, password: user.password, role: role };
-  return await post(url, data, headers);
-};
-
 const getLastEvent = async (caseId) => {
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/${caseId}/lastEvent`;
@@ -162,5 +154,4 @@ module.exports = {
   grantCaseAccess,
   getUser,
   pollLastEvent,
-  revokeCaseAccess,
 };
