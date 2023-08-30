@@ -54,7 +54,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
@@ -63,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
         "DFPL-1681", this::run1681,
-        "DFPL-1663", this::run1663
+        "DFPL-1663", this::run1663,
+        "DFPL-1701", this::run1701
     );
 
     @PostMapping("/about-to-submit")
@@ -146,11 +146,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -208,5 +203,15 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1673973434416600L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().put("state", State.CLOSED);
+    }
+
+    private void run1701(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1701";
+        var possibleCaseIds = List.of(1691595070128997L);
+        UUID expectedDocument = UUID.fromString("41803670-2ef1-485e-b842-1896b572600b");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, expectedDocument));
     }
 }
