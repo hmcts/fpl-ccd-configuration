@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -61,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1681", this::run1681
+        "DFPL-1681", this::run1681,
+        "DFPL-1663", this::run1663
     );
 
     @PostMapping("/about-to-submit")
@@ -199,5 +201,12 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("correspondenceDocumentsNC");
+    }
+
+    private void run1663(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1663";
+        var possibleCaseIds = List.of(1673973434416600L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("state", State.CLOSED);
     }
 }
