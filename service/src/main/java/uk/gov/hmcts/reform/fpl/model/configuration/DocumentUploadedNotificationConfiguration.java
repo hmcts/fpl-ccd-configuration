@@ -66,7 +66,7 @@ public class DocumentUploadedNotificationConfiguration {
 
     public static final DocumentUploadedNotificationConfiguration HEARING_DOCUMENT_NOTIFICATION_CONFIG =
         DocumentUploadedNotificationConfiguration.builder()
-            .sendToCafcassEngland(ConfidentialLevel.LA)
+            .sendToCafcassEngland(ConfidentialLevel.CTSC)
             .sendToRespondentSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
             .sendToChildSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
             .sendToDesignatedLA(ConfidentialLevel.LA)

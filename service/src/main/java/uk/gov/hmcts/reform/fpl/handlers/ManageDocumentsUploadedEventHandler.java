@@ -69,7 +69,7 @@ public class ManageDocumentsUploadedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
 
-    private static final String LIST = "•";
+    private static final String BULLET_POINT = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
     public static final String CORRESPONDENCE = "Correspondence";
 
@@ -91,15 +91,14 @@ public class ManageDocumentsUploadedEventHandler {
                 if (isNotEmpty(recipients)) {
                     List<Element<NotifyDocumentUploaded>> documentsToBeSent =
                         consolidateMapByConfiguration(event, getConfidentialLevelFunction)
-                            .entrySet().stream()
-                            .map(Map.Entry::getValue)
+                            .values().stream()
                             .flatMap(List::stream)
-                            .collect(toList());
+                            .toList();
 
                     if (!documentsToBeSent.isEmpty()) {
                         List<String> newDocumentNames = unwrapElements(documentsToBeSent).stream()
                             .map(NotifyDocumentUploaded::getNameForNotification)
-                            .collect(toList());
+                            .toList();
 
                         if (!newDocumentNames.isEmpty()) {
                             furtherEvidenceNotificationService.sendNotification(event.getCaseData(), recipients,
@@ -126,7 +125,7 @@ public class ManageDocumentsUploadedEventHandler {
                     .map(Element::getValue)
                     .map(NotifyDocumentUploaded::getDocument)
                     .filter(documentReference -> hasExtension(documentReference.getFilename(), PDF))
-                    .collect(toList());
+                    .toList();
 
             if (!nonConfidentialPdfDocumentsToBeSent.isEmpty()) {
                 Set<Recipient> allRecipients = new LinkedHashSet<>(sendDocumentService.getStandardRecipients(caseData));
@@ -158,7 +157,8 @@ public class ManageDocumentsUploadedEventHandler {
                 emailTemplateMap.forEach((cafcassEmailContentProvider, documentTypeList) -> {
                     String documentTypes = documentTypeList.stream()
                         .map(docType ->
-                            String.join(" ", LIST, docType.getDescription().replaceAll("└─ ", "")))
+                            String.join(" ", BULLET_POINT,
+                                docType.getDescription().replaceAll("└─ ", "")))
                         .collect(joining("\n"));
 
                     String subjectInfo = documentTypeList.stream()
@@ -324,18 +324,9 @@ public class ManageDocumentsUploadedEventHandler {
                     .equals(getConfidentialLevelFunction.apply(entry.getKey().getNotificationConfiguration())))
                 .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
 
-
         return Stream.of(nonConfidentialDocuments, laLevelDocuments, ctscLevelDocuments)
             .map(Map::entrySet)
             .flatMap(Set::stream)
             .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
-    }
-
-    private Set<DocumentReference> getDocumentReferences(
-        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> documentsMap) {
-
-        return documentsMap.values().stream().flatMap(List::stream)
-            .map(Element::getValue).map(NotifyDocumentUploaded::getDocument)
-            .collect(toSet());
     }
 }

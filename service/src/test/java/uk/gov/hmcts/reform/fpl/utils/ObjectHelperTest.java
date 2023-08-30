@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -50,6 +52,20 @@ public class ObjectHelperTest {
 
         assertEquals("testID", ObjectHelper.getFieldValue(caseData,
             "localAuthorityPolicy.organisation.organisationID", String.class));
+    }
+
+    @Test
+    public void testListInNestedField() throws Exception {
+        List<Element<CaseSummary>> testList = List.of(
+            element(CaseSummary.builder().document(TestDataHelper.testDocumentReference()).build()),
+            element(CaseSummary.builder().document(TestDataHelper.testDocumentReference()).build()),
+            element(CaseSummary.builder().document(TestDataHelper.testDocumentReference()).build()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDocuments(HearingDocuments.builder().caseSummaryList(testList).build())
+            .build();
+
+        assertEquals(testList, ObjectHelper.getFieldValue(caseData, "hearingDocuments.caseSummaryList", List.class));
     }
 
     @Test

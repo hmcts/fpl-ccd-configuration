@@ -330,7 +330,7 @@ public class ManageDocumentService {
             .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
             .sorted(comparing(DocumentType::getDisplayOrder))
             .map(dt -> Pair.of(dt.name(), dt.getDescription()))
-            .collect(toList());
+            .toList();
         return dynamicListService.asDynamicList(documentTypes);
     }
 
@@ -1141,7 +1141,7 @@ public class ManageDocumentService {
         map.put("placement", data.getPlacement());
         map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
             doc -> type == null ? true : (doc.getValue().getType() == type)
-        ).collect(toList()));
+        ).toList());
         return map;
     }
 
@@ -1180,42 +1180,44 @@ public class ManageDocumentService {
                 if (documentType.getBaseFieldNameResolver() != null) {
                     String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
 
-                    try {
-                        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
+                    Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
                             resultMapByConfidentialLevel.get(confidentialLevel);
 
-                        List documentList = Optional.ofNullable(ObjectHelper
+                    List documentList, documentListBefore;
+                    try {
+                        documentList = Optional.ofNullable(ObjectHelper
                             .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
-                        List documentListBefore = Optional.ofNullable(ObjectHelper
+                        documentListBefore = Optional.ofNullable(ObjectHelper
                             .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
-
-                        if (DocumentType.COURT_BUNDLE.equals(documentType)) {
-                            documentList = ((List<Element<HearingCourtBundle>>) documentList).stream()
-                                    .map(Element::getValue)
-                                    .map(HearingCourtBundle::getCourtBundle)
-                                    .flatMap(List::stream)
-                                    .collect(toList());
-
-                            documentListBefore = ((List<Element<HearingCourtBundle>>) documentListBefore).stream()
-                                    .map(Element::getValue)
-                                    .map(HearingCourtBundle::getCourtBundle)
-                                    .flatMap(List::stream)
-                                    .collect(toList());
-                        }
-
-                        for (Object document : documentList) {
-                            if (!documentListBefore.contains(document)) {
-                                List<Element<NotifyDocumentUploaded>> docList =
-                                    Optional.ofNullable(newDocMap.get(documentType))
-                                        .orElse(new ArrayList<>());
-                                newDocMap.putIfAbsent(documentType, docList);
-
-                                docList.add((Element<NotifyDocumentUploaded>) document);
-                            }
-                        }
                     } catch (NoSuchMethodException e) {
-                        log.error("Case File View: No getter for {}. Check configuration of document type: {}",
+                        log.error("No getter for {}. Check configuration of document type: {}",
                             fieldName, documentType);
+                        continue;
+                    }
+
+                    if (DocumentType.COURT_BUNDLE.equals(documentType)) {
+                        documentList = ((List<Element<HearingCourtBundle>>) documentList).stream()
+                            .map(Element::getValue)
+                            .map(HearingCourtBundle::getCourtBundle)
+                            .flatMap(List::stream)
+                            .toList();
+
+                        documentListBefore = ((List<Element<HearingCourtBundle>>) documentListBefore).stream()
+                            .map(Element::getValue)
+                            .map(HearingCourtBundle::getCourtBundle)
+                            .flatMap(List::stream)
+                            .toList();
+                    }
+
+                    for (Object document : documentList) {
+                        if (!documentListBefore.contains(document)) {
+                            List<Element<NotifyDocumentUploaded>> docList =
+                                Optional.ofNullable(newDocMap.get(documentType))
+                                    .orElse(new ArrayList<>());
+                            newDocMap.putIfAbsent(documentType, docList);
+
+                            docList.add((Element<NotifyDocumentUploaded>) document);
+                        }
                     }
                 }
             }

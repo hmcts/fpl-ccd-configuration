@@ -11,6 +11,7 @@ import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -46,7 +47,7 @@ public enum CafcassRequestEmailContentProvider {
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
-            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty())
+            (isEmpty(cafcassData.getHearingDetails()))
                 ? "A new court bundle for this case was uploaded to the Public Law Portal"
                 : String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
@@ -58,7 +59,7 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new case summary"),
         (caseData, cafcassData) ->
-            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty())
+            (isEmpty(cafcassData.getHearingDetails()))
                 ? "A new case summary for this case was uploaded to the Public Law Portal"
                 : String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
@@ -103,7 +104,7 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new skeleton argument"),
         (caseData, cafcassData) ->
-            (cafcassData.getHearingDetails() == null || cafcassData.getHearingDetails().isEmpty())
+            (isEmpty(cafcassData.getHearingDetails()))
                 ? "A skeleton argument for this case was uploaded to the Public Law Portal"
                 : String.format("A skeleton argument for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),

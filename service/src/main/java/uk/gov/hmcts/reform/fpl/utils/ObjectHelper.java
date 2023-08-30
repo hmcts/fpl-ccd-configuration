@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ObjectHelper {
@@ -8,7 +9,7 @@ public class ObjectHelper {
     }
 
     public static <T> T getFieldValue(Object object, String fieldName, Class<T> targetType)
-        throws Exception {
+        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         String getterBaseName;
         int firstDotLocation = fieldName.indexOf('.');

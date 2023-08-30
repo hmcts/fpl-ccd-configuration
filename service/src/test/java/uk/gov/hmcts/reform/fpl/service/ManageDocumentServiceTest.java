@@ -3713,7 +3713,6 @@ class ManageDocumentServiceTest {
         }
     }
 
-
     @Nested
     class BuildManageDocumentsUploadedEventTest {
         @ParameterizedTest
