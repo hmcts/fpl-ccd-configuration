@@ -69,6 +69,17 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCFVrollback
     );
 
+    private void putChangesToCaseDetailsData(CaseDetails caseDetails, Map<String, Object> changes) {
+        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
+            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
+                && ((Collection) entrySet.getValue()).isEmpty())) {
+                caseDetails.getData().remove(entrySet.getKey());
+            } else {
+                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+    }
+
     private void runCFV(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
@@ -89,31 +100,28 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
         changes.putAll(migrateCaseService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
         changes.put("hasBeenCFVMigrated", YesNo.YES);
-        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
-            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                && ((Collection) entrySet.getValue()).isEmpty())) {
-                caseDetails.getData().remove(entrySet.getKey());
-            } else {
-                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
-            }
-        }
+        putChangesToCaseDetailsData(caseDetails, changes);
     }
 
     private void runCFVrollback(CaseDetails caseDetails) {
         migrateCaseService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV", true);
-        migrateCaseService.rollbackApplicantWitnessStatements(caseDetails);
-        migrateCaseService.rollbackApplicationDocuments(caseDetails);
-        migrateCaseService.rollbackCaseSummaryMigration(caseDetails);
-        migrateCaseService.rollbackCourtBundleMigration(caseDetails);
-        migrateCaseService.rollbackCorrespondenceDocuments(caseDetails);
-        migrateCaseService.rollbackExpertReports(caseDetails);
-        migrateCaseService.rollbackGuardianReports(caseDetails);
-        migrateCaseService.rollbackNoticeOfActingOrIssue(caseDetails);
-        migrateCaseService.rollbackPositionStatementChild(caseDetails);
-        migrateCaseService.rollbackPositionStatementRespondent(caseDetails);
-        migrateCaseService.rollbackSkeletonArgumentList(caseDetails);
+                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
+
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCaseService.rollbackApplicantWitnessStatements());
+        changes.putAll(migrateCaseService.rollbackApplicationDocuments());
+        changes.putAll(migrateCaseService.rollbackCaseSummaryMigration(caseDetails));
+        changes.putAll(migrateCaseService.rollbackCourtBundleMigration(caseDetails));
+        changes.putAll(migrateCaseService.rollbackCorrespondenceDocuments());
+        changes.putAll(migrateCaseService.rollbackExpertReports());
+        changes.putAll(migrateCaseService.rollbackGuardianReports());
+        changes.putAll(migrateCaseService.rollbackNoticeOfActingOrIssue());
+        changes.putAll(migrateCaseService.rollbackRespondentStatement());
+        changes.putAll(migrateCaseService.rollbackPositionStatementChild(caseDetails));
+        changes.putAll(migrateCaseService.rollbackPositionStatementRespondent(caseDetails));
+        changes.putAll(migrateCaseService.rollbackSkeletonArgumentList(caseDetails));
         caseDetails.getData().remove("hasBeenCFVMigrated");
+        putChangesToCaseDetailsData(caseDetails, changes);
     }
 
     @PostMapping("/about-to-submit")

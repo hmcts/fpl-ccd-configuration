@@ -2198,51 +2198,45 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldRollbackMigrateAnyOtherDocuments() {
-            Map<String, Object> map = new HashMap<>();
-            map.put("applicantWitnessStmtList", List.of());
-            map.put("applicantWitnessStmtListLA", List.of());
-            map.put("applicantWitnessStmtListCTSC", List.of());
-            map.put("drugAndAlcoholReportList", List.of());
-            map.put("drugAndAlcoholReportListLA", List.of());
-            map.put("drugAndAlcoholReportListCTSC", List.of());
-            map.put("expertReportList", List.of());
-            map.put("expertReportListLA", List.of());
-            map.put("expertReportListCTSC", List.of());
-            map.put("guardianEvidenceList", List.of());
-            map.put("guardianEvidenceListLA", List.of());
-            map.put("guardianEvidenceListCTSC", List.of());
-            map.put("lettersOfInstructionList", List.of());
-            map.put("lettersOfInstructionListLA", List.of());
-            map.put("lettersOfInstructionListCTSC", List.of());
-            map.put("noticeOfActingOrIssueList", List.of());
-            map.put("noticeOfActingOrIssueListLA", List.of());
-            map.put("noticeOfActingOrIssueListCTSC", List.of());
+            assertThat(underTest.rollbackApplicantWitnessStatements())
+                .extracting("applicantWitnessStmtList").isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicantWitnessStatements())
+                .extracting("applicantWitnessStmtListLA").isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicantWitnessStatements())
+                .extracting("applicantWitnessStmtListCTSC").isEqualTo(List.of());
 
-            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
+            assertThat(underTest.rollbackGuardianReports()).extracting("guardianEvidenceList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackGuardianReports()).extracting("guardianEvidenceListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackGuardianReports()).extracting("guardianEvidenceListCTSC")
+                .isEqualTo(List.of());
 
-            underTest.rollbackApplicantWitnessStatements(caseDetails);
-            underTest.rollbackGuardianReports(caseDetails);
-            underTest.rollbackExpertReports(caseDetails);
-            underTest.rollbackNoticeOfActingOrIssue(caseDetails);
+            assertThat(underTest.rollbackExpertReports()).extracting("drugAndAlcoholReportList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("drugAndAlcoholReportListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("drugAndAlcoholReportListCTSC")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("lettersOfInstructionList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("lettersOfInstructionListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("lettersOfInstructionListCTSC")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("expertReportList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("expertReportListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackExpertReports()).extracting("expertReportListCTSC")
+                .isEqualTo(List.of());
 
-            assertThat(caseDetails.getData()).doesNotContainKey("applicantWitnessStmtList");
-            assertThat(caseDetails.getData()).doesNotContainKey("applicantWitnessStmtListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("applicantWitnessStmtListCTSC");
-            assertThat(caseDetails.getData()).doesNotContainKey("drugAndAlcoholReportList");
-            assertThat(caseDetails.getData()).doesNotContainKey("drugAndAlcoholReportListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("drugAndAlcoholReportListCTSC");
-            assertThat(caseDetails.getData()).doesNotContainKey("expertReportList");
-            assertThat(caseDetails.getData()).doesNotContainKey("expertReportListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("expertReportListCTSC");
-            assertThat(caseDetails.getData()).doesNotContainKey("guardianEvidenceList");
-            assertThat(caseDetails.getData()).doesNotContainKey("guardianEvidenceListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("guardianEvidenceListCTSC");
-            assertThat(caseDetails.getData()).doesNotContainKey("lettersOfInstructionList");
-            assertThat(caseDetails.getData()).doesNotContainKey("lettersOfInstructionListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("lettersOfInstructionListCTSC");
-            assertThat(caseDetails.getData()).doesNotContainKey("noticeOfActingOrIssueList");
-            assertThat(caseDetails.getData()).doesNotContainKey("noticeOfActingOrIssueListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("noticeOfActingOrIssueListCTSC");
+            assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListCTSC")
+                .isEqualTo(List.of());
         }
 
         @Test
@@ -2327,6 +2321,13 @@ class MigrateCaseServiceTest {
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtRespList").asList()
                 .contains(positionStatementRespoondentElement);
+        }
+
+        @Test
+        void shouldRollbackMigratedRespondentStatement() {
+            Map<String, Object> updatedFields = underTest.rollbackRespondentStatement();
+            assertThat(updatedFields).extracting("respStmtList", "respStmtListLA", "respStmtListCTSC")
+                .contains(List.of(), List.of(), List.of());
         }
 
         @Test
@@ -2629,16 +2630,18 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
-            underTest.rollbackCaseSummaryMigration(caseDetails);
-            assertThat(caseDetails.getData()).doesNotContainKey("caseSummaryListLA");
-            assertThat(caseDetails.getData()).extracting("caseSummaryList").asList()
+            assertThat(underTest.rollbackCaseSummaryMigration(caseDetails))
+                .extracting("caseSummaryListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackCaseSummaryMigration(caseDetails))
+                .extracting("caseSummaryList").asList()
                 .containsExactlyInAnyOrder(caseSummaryListElementWithConfidentialAddress, caseSummaryListElement,
                     caseSummaryListElementTwo);
         }
 
         @ParameterizedTest
         @ValueSource(booleans = {true, false})
-        void shouldRollbackMigratedPositionStatementChildList(boolean isChild) {
+        void shouldRollbackMigratedPositionStatementList(boolean isChild) {
             Element<? extends HearingDocument> positionStatementElement = element(
                 isChild ? PositionStatementChild.builder().build() :
                     PositionStatementRespondent.builder().build());
@@ -2652,19 +2655,20 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
+            Map<String, Object> changes = null;
             if (isChild) {
-                underTest.rollbackPositionStatementChild(caseDetails);
+                changes = underTest.rollbackPositionStatementChild(caseDetails);
             } else {
-                underTest.rollbackPositionStatementRespondent(caseDetails);
+                changes = underTest.rollbackPositionStatementRespondent(caseDetails);
             }
 
-            assertThat(caseDetails.getData()).extracting(format("positionStatement%sListV2",
+            assertThat(changes).extracting(format("positionStatement%sListV2",
                     isChild ? "Child" : "Respondent")).asList()
                 .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
-            assertThat(caseDetails.getData()).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
-                .isNull();
-            assertThat(caseDetails.getData()).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
-                .isNull();
+            assertThat(changes).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
+                .isEqualTo(List.of());
+            assertThat(changes).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
+                .isEqualTo(List.of());
         }
 
         private Element<CourtBundle> buildCourtBundle() {
@@ -2793,11 +2797,14 @@ class MigrateCaseServiceTest {
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
-            underTest.rollbackCourtBundleMigration(caseDetails);
-            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("courtBundleListCTSC");
-            assertThat(caseDetails.getData()).extracting("courtBundleListV2").asList()
-                .containsExactlyInAnyOrder(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
+            assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
+                .containsOnlyKeys("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC");
+            assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
+                .extracting("courtBundleListLA", "courtBundleListCTSC")
+                .containsExactly(List.of(), List.of());
+            assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
+                .extracting("courtBundleListV2").asList()
+                .contains(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
         }
     }
 
@@ -3004,56 +3011,62 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldRollbackMigratedApplicationDocuments() {
-            UUID doc1Id = UUID.randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
-            Element<ApplicationDocument> element = element(doc1Id,
-                ApplicationDocument.builder().document(document1).build());
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("applicationDocuments", List.of(element));
-            map.put("carePlanList", List.of());
-            map.put("carePlanListLA", List.of());
-            map.put("documentsFiledOnIssueList", List.of());
-            map.put("documentsFiledOnIssueListLA", List.of());
-            map.put("thresholdList", List.of());
-            map.put("thresholdListLA", List.of());
-            map.put("swetList", List.of());
-            map.put("swetListLA", List.of());
-            map.put("socialWorkChronList", List.of());
-            map.put("socialWorkChronListLA", List.of());
-            map.put("genogramList", List.of());
-            map.put("genogramListLA", List.of());
-            map.put("checklistDocList", List.of());
-            map.put("checklistDocListLA", List.of());
-            map.put("birthCertList", List.of());
-            map.put("birthCertListLA", List.of());
-            map.put("otherDocFiledList", List.of());
-            map.put("otherDocFiledListLA", List.of());
-
-            CaseDetails caseDetails = CaseDetails.builder().data(map).build();
-
-            underTest.rollbackApplicationDocuments(caseDetails);
-
-            assertThat(caseDetails.getData()).extracting("applicationDocuments").asList()
-                .containsExactly(element);
-            assertThat(caseDetails.getData()).doesNotContainKey("carePlanList");
-            assertThat(caseDetails.getData()).doesNotContainKey("carePlanListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueList");
-            assertThat(caseDetails.getData()).doesNotContainKey("documentsFiledOnIssueListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("thresholdList");
-            assertThat(caseDetails.getData()).doesNotContainKey("thresholdListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("swetList");
-            assertThat(caseDetails.getData()).doesNotContainKey("swetListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronList");
-            assertThat(caseDetails.getData()).doesNotContainKey("socialWorkChronListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("genogramList");
-            assertThat(caseDetails.getData()).doesNotContainKey("genogramListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocList");
-            assertThat(caseDetails.getData()).doesNotContainKey("checklistDocListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("birthCertList");
-            assertThat(caseDetails.getData()).doesNotContainKey("birthCertListLA");
-            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledList");
-            assertThat(caseDetails.getData()).doesNotContainKey("otherDocFiledListLA");
+            assertThat(underTest.rollbackApplicationDocuments()).containsOnlyKeys(
+                "thresholdList",
+                "thresholdListLA",
+                "documentsFiledOnIssueList",
+                "documentsFiledOnIssueListLA",
+                "carePlanList",
+                "carePlanListLA",
+                "swetList",
+                "swetListLA",
+                "socialWorkChronList",
+                "socialWorkChronListLA",
+                "genogramList",
+                "genogramListLA",
+                "checklistDocList",
+                "checklistDocListLA",
+                "birthCertList",
+                "birthCertListLA",
+                "otherDocFiledList",
+                "otherDocFiledListLA"
+            );
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("thresholdList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("thresholdListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("documentsFiledOnIssueList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("documentsFiledOnIssueListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledListLA")
+                .isEqualTo(List.of());
         }
     }
 
@@ -3104,9 +3117,11 @@ class MigrateCaseServiceTest {
 
             underTest.rollbackSkeletonArgumentList(caseDetails);
 
-            assertThat(caseDetails.getData()).extracting("skeletonArgumentList").asList()
+            assertThat(underTest.rollbackSkeletonArgumentList(caseDetails))
+                .extracting("skeletonArgumentList").asList()
                 .containsExactlyInAnyOrder(skeletonArgument, skeletonArgumentLA);
-            assertThat(caseDetails.getData()).extracting("skeletonArgumentListLA").isNull();
+            assertThat(underTest.rollbackSkeletonArgumentList(caseDetails))
+                .extracting("skeletonArgumentListLA").isEqualTo(List.of());
         }
     }
   
@@ -3172,18 +3187,12 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldRollbackMigrateCorrespondenceDocuments() {
-            Map<String, Object> caseDetailsMap = new HashMap<>();
-            caseDetailsMap.put("correspondenceDocList", List.of(element(ManagedDocument.builder().build())));
-            caseDetailsMap.put("correspondenceDocListLA", List.of(element(ManagedDocument.builder().build())));
-            caseDetailsMap.put("correspondenceDocListCTSC", List.of(element(ManagedDocument.builder().build())));
-
-            CaseDetails caseDetails = CaseDetails.builder().data(caseDetailsMap).build();
-
-            underTest.rollbackCorrespondenceDocuments(caseDetails);
-
-            assertThat(caseDetailsMap).extracting("correspondenceDocList").isNull();
-            assertThat(caseDetailsMap).extracting("correspondenceDocListLA").isNull();
-            assertThat(caseDetailsMap).extracting("correspondenceDocListCTSC").isNull();
+            assertThat(underTest.rollbackCorrespondenceDocuments())
+                .extracting("correspondenceDocList").isEqualTo(List.of());
+            assertThat(underTest.rollbackCorrespondenceDocuments())
+                .extracting("correspondenceDocListLA").isEqualTo(List.of());
+            assertThat(underTest.rollbackCorrespondenceDocuments())
+                .extracting("correspondenceDocListCTSC").isEqualTo(List.of());
         }
     }
 
