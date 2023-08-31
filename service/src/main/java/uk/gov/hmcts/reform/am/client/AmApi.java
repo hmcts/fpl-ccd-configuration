@@ -39,7 +39,7 @@ public interface AmApi {
     @PostMapping(
         value = "/am/role-assignments/query",
         consumes = APPLICATION_JSON_VALUE,
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        headers = {CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE, "size=50"}
     )
     QueryResponse queryRoleAssignments(
         @RequestHeader(AUTHORIZATION) String authorisation,
