@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -62,9 +63,49 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1681", this::run1681,
         "DFPL-1663", this::run1663,
         "DFPL-1701", this::run1701,
-        "DFPL-1438", this::run1438,
-        "run1438rollback", this::run1438rollback
+        "DFPL-CFV", this::runCFV,
+        "DFPL-CFV-Rollback", this::runCFVrollback
     );
+
+    private void runCFV(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCaseService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+                .get("hasBeenCFVMigrated"), "DFPL-CFV");
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
+        caseDetails.getData().putAll(migrateCaseService
+            .migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateRespondentStatement(caseData));
+        caseDetails.getData().putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
+        caseDetails.getData().putAll(migrateCaseService
+            .moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
+        caseDetails.getData().put("hasBeenCFVMigrated", YesNo.YES);
+    }
+
+    private void runCFVrollback(CaseDetails caseDetails) {
+        migrateCaseService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+                .get("hasBeenCFVMigrated"), "DFPL-CFV", true);
+        migrateCaseService.rollbackApplicantWitnessStatements(caseDetails);
+        migrateCaseService.rollbackApplicationDocuments(caseDetails);
+        migrateCaseService.rollbackCaseSummaryMigration(caseDetails);
+        migrateCaseService.rollbackCourtBundleMigration(caseDetails);
+        migrateCaseService.rollbackCorrespondenceDocuments(caseDetails);
+        migrateCaseService.rollbackExpertReports(caseDetails);
+        migrateCaseService.rollbackGuardianReports(caseDetails);
+        migrateCaseService.rollbackNoticeOfActingOrIssue(caseDetails);
+        migrateCaseService.rollbackPositionStatementChild(caseDetails);
+        migrateCaseService.rollbackPositionStatementRespondent(caseDetails);
+        migrateCaseService.rollbackSkeletonArgumentList(caseDetails);
+        caseDetails.getData().put("hasBeenCFVMigrated", YesNo.NO);
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -177,40 +218,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("correspondenceDocumentsNC");
-    }
-
-    private void run1438(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
-        caseDetails.getData().putAll(migrateCaseService
-            .migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateRespondentStatement(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
-        caseDetails.getData().putAll(migrateCaseService
-            .moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
-    }
-
-    private void run1438rollback(CaseDetails caseDetails) {
-        migrateCaseService.rollbackApplicantWitnessStatements(caseDetails);
-        migrateCaseService.rollbackApplicationDocuments(caseDetails);
-        migrateCaseService.rollbackCaseSummaryMigration(caseDetails);
-        migrateCaseService.rollbackCourtBundleMigration(caseDetails);
-        migrateCaseService.rollbackCorrespondenceDocuments(caseDetails);
-        migrateCaseService.rollbackExpertReports(caseDetails);
-        migrateCaseService.rollbackGuardianReports(caseDetails);
-        migrateCaseService.rollbackNoticeOfActingOrIssue(caseDetails);
-        migrateCaseService.rollbackPositionStatementChild(caseDetails);
-        migrateCaseService.rollbackPositionStatementRespondent(caseDetails);
-        migrateCaseService.rollbackSkeletonArgumentList(caseDetails);
     }
 
     private void run1663(CaseDetails caseDetails) {

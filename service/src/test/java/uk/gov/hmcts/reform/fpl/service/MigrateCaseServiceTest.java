@@ -3287,4 +3287,37 @@ class MigrateCaseServiceTest {
         }
 
     }
+
+    @Nested
+    class DoHasCFVMigratedCheck {
+        @Test
+        void shouldDoHasCFVMigratedCheck() {
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "NO", MIGRATION_ID));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "no", MIGRATION_ID));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "No", MIGRATION_ID));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "", MIGRATION_ID));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, null, MIGRATION_ID));
+        }
+
+        @Test
+        void shouldDoHasCFVMigratedCheckOnRollback() {
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "YES", MIGRATION_ID, true));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "Yes", MIGRATION_ID, true));
+            assertDoesNotThrow(() -> underTest.doHasCFVMigratedCheck(1L, "yes", MIGRATION_ID, true));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenDoHasCFVMigratedCheckFails() {
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "YES", MIGRATION_ID));
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "Yes", MIGRATION_ID));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenDoHasCFVMigratedCheckOnRollback() {
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "NO", MIGRATION_ID, true));
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "No", MIGRATION_ID, true));
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, null, MIGRATION_ID, true));
+            assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "", MIGRATION_ID, true));
+        }
+    }
 }
