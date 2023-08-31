@@ -182,7 +182,8 @@ public class MigrateCaseController extends CallbackController {
     private void run1438(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
+        caseDetails.getData().putAll(migrateCaseService
+            .migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
         caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
         caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
         caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(caseData));
