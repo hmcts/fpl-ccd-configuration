@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -1309,5 +1310,29 @@ public class MigrateCaseService {
         caseDetails.getData().remove("correspondenceDocList");
         caseDetails.getData().remove("correspondenceDocListLA");
         caseDetails.getData().remove("correspondenceDocListCTSC");
+    }
+
+    public void doHasCFVMigratedCheck(long caseId, String hasBeenCFVMigrated, String migrationId) {
+        doHasCFVMigratedCheck(caseId, hasBeenCFVMigrated, migrationId, false);
+    }
+
+    public void doHasCFVMigratedCheck(long caseId, String hasBeenCFVMigrated, String migrationId, boolean rollback)
+        throws AssertionError {
+
+        if (!rollback) {
+            if (YesNo.YES.equals(YesNo.fromString(hasBeenCFVMigrated))) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, case has already been migrated",
+                    migrationId, caseId
+                ));
+            }
+        } else {
+            if (ObjectUtils.isEmpty(hasBeenCFVMigrated) || YesNo.NO.equals(YesNo.fromString(hasBeenCFVMigrated))) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, case has already been migrated",
+                    migrationId, caseId
+                ));
+            }
+        }
     }
 }
