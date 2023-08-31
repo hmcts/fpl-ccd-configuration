@@ -104,7 +104,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.rollbackPositionStatementChild(caseDetails);
         migrateCaseService.rollbackPositionStatementRespondent(caseDetails);
         migrateCaseService.rollbackSkeletonArgumentList(caseDetails);
-        caseDetails.getData().put("hasBeenCFVMigrated", YesNo.NO);
+        caseDetails.getData().remove("hasBeenCFVMigrated");
     }
 
     @PostMapping("/about-to-submit")
