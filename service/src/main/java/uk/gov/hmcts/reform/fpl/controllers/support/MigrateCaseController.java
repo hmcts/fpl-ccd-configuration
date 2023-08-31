@@ -28,7 +28,9 @@ import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -71,23 +73,30 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
                 .get("hasBeenCFVMigrated"), "DFPL-CFV");
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
-        caseDetails.getData().putAll(migrateCaseService
-            .migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateCourtBundle(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateExpertReports(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateGuardianReports(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateNoticeOfActingOrIssue(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementRespondent(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migratePositionStatementChild(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateRespondentStatement(caseData));
-        caseDetails.getData().putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
-        caseDetails.getData().putAll(migrateCaseService
-            .moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
-        caseDetails.getData().put("hasBeenCFVMigrated", YesNo.YES);
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCaseService.migrateApplicantWitnessStatements(caseData));
+        changes.putAll(migrateCaseService.migrateApplicationDocumentsToDocumentsFiledOnIssueList(caseData));
+        changes.putAll(migrateCaseService.migrateApplicationDocumentsToThresholdList(caseData));
+        changes.putAll(migrateCaseService.migrateApplicationDocumentsToCarePlanList(caseData));
+        changes.putAll(migrateCaseService.migrateCourtBundle(caseData));
+        changes.putAll(migrateCaseService.migrateCorrespondenceDocuments(caseData));
+        changes.putAll(migrateCaseService.migrateExpertReports(caseData));
+        changes.putAll(migrateCaseService.migrateGuardianReports(caseData));
+        changes.putAll(migrateCaseService.migrateNoticeOfActingOrIssue(caseData));
+        changes.putAll(migrateCaseService.migratePositionStatementRespondent(caseData));
+        changes.putAll(migrateCaseService.migratePositionStatementChild(caseData));
+        changes.putAll(migrateCaseService.migrateRespondentStatement(caseData));
+        changes.putAll(migrateCaseService.migrateSkeletonArgumentList(caseData));
+        changes.putAll(migrateCaseService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
+        changes.put("hasBeenCFVMigrated", YesNo.YES);
+        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
+            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
+                && ((Collection) entrySet.getValue()).isEmpty())) {
+                caseDetails.getData().remove(entrySet.getKey());
+            } else {
+                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
+            }
+        }
     }
 
     private void runCFVrollback(CaseDetails caseDetails) {
