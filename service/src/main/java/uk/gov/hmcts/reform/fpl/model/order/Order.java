@@ -55,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMEN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_OTHERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.AMENDED;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.MANUAL_UPLOAD;
@@ -81,7 +80,7 @@ public enum Order {
         "Blank order (C21)",
         IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
-            TITLE, DETAILS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            TITLE, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         DIGITAL,
@@ -91,7 +90,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN,
             EPO_TYPE_AND_PREVENT_REMOVAL, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE,
-            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
+            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER, CLOSE_CASE)
     ),
     C26_SECURE_ACCOMMODATION_ORDER(
         DIGITAL,
@@ -102,7 +101,7 @@ public enum Order {
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE_TIME, SELECT_SINGLE_CHILD,
             ORDER_BY_CONSENT, REASON_FOR_SECURE_ACCOMMODATION, IS_CHILD_REPRESENTED,
             SECURE_ACCOMMODATION_ORDER_JURISDICTION, MANAGE_ORDER_END_DATE_WITH_MONTH, FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
+            REVIEW_DRAFT_ORDER, CLOSE_CASE)
     ),
     C29_RECOVERY_OF_A_CHILD(
         DIGITAL,
@@ -112,7 +111,7 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN,
-            ORDER_PLACED_CHILD_IN_CUSTODY, FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER, WHICH_OTHERS
+            ORDER_PLACED_CHILD_IN_CUSTODY, FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER
         )
     ),
     C32A_CARE_ORDER(
@@ -122,7 +121,7 @@ public enum Order {
         "Care order (C32A)",
         IsFinalOrder.YES,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER, CLOSE_CASE, WHICH_OTHERS)
+            REVIEW_DRAFT_ORDER, CLOSE_CASE)
     ),
     C32B_DISCHARGE_OF_CARE_ORDER(
         DIGITAL,
@@ -131,7 +130,7 @@ public enum Order {
         "Discharge of care order (C32B)",
         IsFinalOrder.MAYBE,
         List.of(LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DISCHARGE_DETAILS,
-            FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
         DIGITAL,
@@ -141,7 +140,7 @@ public enum Order {
         IsFinalOrder.YES,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
-            MANAGE_ORDER_END_DATE_WITH_MONTH, REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            MANAGE_ORDER_END_DATE_WITH_MONTH, REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C33_INTERIM_CARE_ORDER(
         DIGITAL,
@@ -151,7 +150,7 @@ public enum Order {
         IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION,
-            FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
     C39_CHILD_ASSESSMENT_ORDER(
         DIGITAL,
@@ -166,8 +165,7 @@ public enum Order {
             CHILD_ASSESSMENT_ORDER,
             ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER,
-            CLOSE_CASE,
-            WHICH_OTHERS)
+            CLOSE_CASE)
     ),
     C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
         DIGITAL,
@@ -178,7 +176,7 @@ public enum Order {
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ORDER_BY_CONSENT,
             DETAILS, FURTHER_DIRECTIONS, CHILD_ARRANGEMENT_SPECIFIC_ISSUE_PROHIBITED_STEPS, CLOSE_CASE,
-            REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         DIGITAL,
@@ -188,7 +186,7 @@ public enum Order {
         IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, LINK_APPLICATION, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER, WHICH_OTHERS)
+            REVIEW_DRAFT_ORDER)
     ),
     C35B_INTERIM_SUPERVISION_ORDER(
         DIGITAL,
@@ -204,8 +202,7 @@ public enum Order {
             WHICH_CHILDREN,
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
-            REVIEW_DRAFT_ORDER,
-            WHICH_OTHERS)
+            REVIEW_DRAFT_ORDER)
     ),
     C43A_SPECIAL_GUARDIANSHIP_ORDER(
         DIGITAL,
@@ -223,8 +220,7 @@ public enum Order {
             APPOINTED_GUARDIAN,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER,
-            CLOSE_CASE,
-            WHICH_OTHERS
+            CLOSE_CASE
         )
     ),
     C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS(
@@ -332,7 +328,7 @@ public enum Order {
         "Authority to refuse contact with a child in care (C34B)",
         IsFinalOrder.MAYBE,
         List.of(ORDER_BY_CONSENT, REFUSE_CONTACT_ORDER, RESPONDENTS_REFUSED,
-            APPROVER, APPROVAL_DATE, WHICH_CHILDREN, WHICH_OTHERS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
+            APPROVER, APPROVAL_DATE, WHICH_CHILDREN, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
@@ -355,8 +351,7 @@ public enum Order {
             EDUCATION_SUPERVISION,
             ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER,
-            CLOSE_CASE,
-            WHICH_OTHERS)
+            CLOSE_CASE)
     ),
     C37_EDUCATION_SUPERVISION_ORDER(
         MANUAL_UPLOAD,
@@ -429,7 +424,6 @@ public enum Order {
             WHICH_CHILDREN,
             ORDER_BY_CONSENT,
             PARENTAL_RESPONSIBILITY,
-            WHICH_OTHERS,
             CLOSE_CASE,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
@@ -555,7 +549,7 @@ public enum Order {
         "",
         "",
         IsFinalOrder.NO,
-        List.of(ORDER_TO_AMEND, UPLOAD_AMENDED_ORDER, WHICH_OTHERS)
+        List.of(ORDER_TO_AMEND, UPLOAD_AMENDED_ORDER)
     );
 
     private final OrderSourceType sourceType;
@@ -612,7 +606,6 @@ public enum Order {
             NEED_SEALING,
             REVIEW_DRAFT_ORDER,
             CLOSE_CASE,
-            WHICH_OTHERS,
             TRANSLATION_REQUIREMENTS
         );
     }
