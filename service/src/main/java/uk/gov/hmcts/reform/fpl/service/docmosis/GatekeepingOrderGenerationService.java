@@ -51,6 +51,7 @@ public class GatekeepingOrderGenerationService extends
     private final OrdersLookupService ordersConfig;
     private final CourtService courtService;
 
+    @SuppressWarnings("java:S3252")
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
@@ -104,7 +105,7 @@ public class GatekeepingOrderGenerationService extends
         final List<Element<CustomDirection>> customDirections = nullSafeList(caseData
             .getGatekeepingOrderEventData().getCustomDirections());
 
-        final AtomicInteger directionIndex = new AtomicInteger(1);
+        final AtomicInteger directionIndex = new AtomicInteger(2);
 
         return Stream.of(standardDirections, customDirections)
             .flatMap(Collection::stream)
