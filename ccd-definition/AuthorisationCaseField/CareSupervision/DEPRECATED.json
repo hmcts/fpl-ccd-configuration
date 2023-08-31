@@ -196,7 +196,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[BARRISTER]",
-    "CRUD": "RU",
+    "CRUD": "U",
     "Comment": "Added update perms so it can be effectively hidden internally in the auth complex type"
   },
   {
@@ -204,77 +204,77 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[CAFCASSSOLICITOR]",
-    "CRUD": "RU"
+    "CRUD": "U"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "CRU"
+    "CRUD": "CU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[LABARRISTER]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[LASHARED]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "CRUD"
+    "CRUD": "CUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -287,6 +287,6 @@
       "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
       "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CU"
   }
 ]
