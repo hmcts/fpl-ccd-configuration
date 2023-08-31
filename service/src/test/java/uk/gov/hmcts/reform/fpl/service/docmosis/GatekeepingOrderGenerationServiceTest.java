@@ -325,32 +325,32 @@ class GatekeepingOrderGenerationServiceTest {
         return List.of(
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("1. Request help to take part in proceedings by 12:00pm, 10 May 2030")
+                .title("2. Request help to take part in proceedings by 12:00pm, 10 May 2030")
                 .body("Make an application to the court if you believe any party or witness needs help")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("2. Request permission for expert evidence 3 working days before the hearing")
+                .title("3. Request permission for expert evidence 3 working days before the hearing")
                 .body("Your request must be in line with Family Procedure Rules part 25")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(LOCAL_AUTHORITY)
-                .title("3. Ask for disclosure on 12:00pm, 10 May 2030")
+                .title("4. Ask for disclosure on 12:00pm, 10 May 2030")
                 .body("Serve requests for disclosure on any third parties")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(LOCAL_AUTHORITY)
-                .title("4. First custom direction title by 14 June 2030 at 8:50am")
+                .title("5. First custom direction title by 14 June 2030 at 8:50am")
                 .body("First custom direction description")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(CAFCASS)
-                .title("5. Second custom direction title 1 working day before the hearing")
+                .title("6. Second custom direction title 1 working day before the hearing")
                 .body("Second custom direction description")
                 .build(),
             DocmosisDirection.builder()
                 .assignee(COURT)
-                .title("6. Arrange interpreters by the day of the hearing")
+                .title("7. Arrange interpreters by the day of the hearing")
                 .body("At all hearings, the court must arrange an interpreter for Louise Laurent in French.")
                 .build()
         );
