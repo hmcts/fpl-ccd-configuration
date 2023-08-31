@@ -85,7 +85,7 @@ public class MigrateCaseService {
     public final MigrateRelatingLAService migrateRelatingLAService;
 
     @SuppressWarnings("unchecked")
-    public void rollbackCourtBundleMigration(CaseDetails caseDetails) {
+    public Map<String, Object> rollbackCourtBundleMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
@@ -100,9 +100,11 @@ public class MigrateCaseService {
             newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListCTSC"));
         }
 
-        caseDataMap.put("courtBundleListV2", newHearingCourtBundleList);
-        caseDataMap.remove("courtBundleListLA");
-        caseDataMap.remove("courtBundleListCTSC");
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("courtBundleListV2", newHearingCourtBundleList);
+        ret.put("courtBundleListLA", List.of());
+        ret.put("courtBundleListCTSC", List.of());
+        return ret;
     }
 
     public Map<String, Object> migrateCourtBundle(CaseData caseData) {
@@ -158,7 +160,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackCaseSummaryMigration(CaseDetails caseDetails) {
+    public Map<String, Object> rollbackCaseSummaryMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
         List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
 
@@ -169,8 +171,10 @@ public class MigrateCaseService {
             newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
         }
 
-        caseDataMap.put("caseSummaryList", newCaseSummaryList);
-        caseDataMap.remove("caseSummaryListLA");
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("caseSummaryList", newCaseSummaryList);
+        ret.put("caseSummaryListLA", List.of());
+        return ret;
     }
 
     public Map<String, Object> moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(CaseData caseData) {
@@ -190,7 +194,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackPositionStatementChild(CaseDetails caseDetails) {
+    public Map<String, Object> rollbackPositionStatementChild(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
@@ -202,13 +206,15 @@ public class MigrateCaseService {
             newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
         }
 
-        caseDetails.getData().put("positionStatementChildListV2", newPositionStatementChilds);
-        caseDetails.getData().remove("posStmtChildListLA");
-        caseDetails.getData().remove("posStmtChildList");
+        Map<String, Object>  ret = new HashMap<>();
+        ret.put("positionStatementChildListV2", newPositionStatementChilds);
+        ret.put("posStmtChildListLA", List.of());
+        ret.put("posStmtChildList", List.of());
+        return ret;
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackPositionStatementRespondent(CaseDetails caseDetails) {
+    public Map<String, Object> rollbackPositionStatementRespondent(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
@@ -220,9 +226,11 @@ public class MigrateCaseService {
             newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
         }
 
-        caseDetails.getData().put("positionStatementRespondentListV2", newPositionStatementRespondents);
-        caseDetails.getData().remove("posStmtRespListLA");
-        caseDetails.getData().remove("posStmtRespList");
+        Map<String, Object>  ret = new HashMap<>();
+        ret.put("positionStatementRespondentListV2", newPositionStatementRespondents);
+        ret.put("posStmtRespListLA", List.of());
+        ret.put("posStmtRespList", List.of());
+        return ret;
     }
 
     @SuppressWarnings("squid:CallToDeprecatedMethod")
@@ -962,6 +970,14 @@ public class MigrateCaseService {
             .build());
     }
 
+    public Map<String, Object> rollbackRespondentStatement() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("respStmtList", List.of());
+        ret.put("respStmtListLA", List.of());
+        ret.put("respStmtListCTSC", List.of());
+        return ret;
+    }
+
     public Map<String, Object> migrateRespondentStatement(CaseData caseData) {
         List<Element<RespondentStatementV2>> respStmtList =
             caseData.getRespondentStatements().stream()
@@ -1000,7 +1016,6 @@ public class MigrateCaseService {
         ret.put("respStmtList", respStmtList);
         ret.put("respStmtListLA", respStmtListLA);
         ret.put("respStmtListCTSC", respStmtListCTSC);
-        ret.put("respondentStatements", null);
         return ret;
     }
 
@@ -1120,35 +1135,42 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public void rollbackApplicantWitnessStatements(CaseDetails caseDetails) {
-        caseDetails.getData().remove("applicantWitnessStmtList");
-        caseDetails.getData().remove("applicantWitnessStmtListLA");
-        caseDetails.getData().remove("applicantWitnessStmtListCTSC");
+    public Map<String, Object> rollbackApplicantWitnessStatements() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("applicantWitnessStmtList", List.of());
+        ret.put("applicantWitnessStmtListLA", List.of());
+        ret.put("applicantWitnessStmtListCTSC", List.of());
+        return ret;
     }
 
-    public void rollbackGuardianReports(CaseDetails caseDetails) {
-        caseDetails.getData().remove("guardianEvidenceList");
-        caseDetails.getData().remove("guardianEvidenceListLA");
-        caseDetails.getData().remove("guardianEvidenceListCTSC");
+    public Map<String, Object> rollbackGuardianReports() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("guardianEvidenceList", List.of());
+        ret.put("guardianEvidenceListLA", List.of());
+        ret.put("guardianEvidenceListCTSC", List.of());
+        return ret;
     }
 
-    public void rollbackExpertReports(CaseDetails caseDetails) {
-        caseDetails.getData().remove("drugAndAlcoholReportList");
-        caseDetails.getData().remove("drugAndAlcoholReportListLA");
-        caseDetails.getData().remove("drugAndAlcoholReportListCTSC");
-        caseDetails.getData().remove("lettersOfInstructionList");
-        caseDetails.getData().remove("lettersOfInstructionListLA");
-        caseDetails.getData().remove("lettersOfInstructionListCTSC");
-        caseDetails.getData().remove("expertReportList");
-        caseDetails.getData().remove("expertReportListLA");
-        caseDetails.getData().remove("expertReportListCTSC");
+    public Map<String, Object> rollbackExpertReports() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("drugAndAlcoholReportList", List.of());
+        ret.put("drugAndAlcoholReportListLA", List.of());
+        ret.put("drugAndAlcoholReportListCTSC", List.of());
+        ret.put("lettersOfInstructionList", List.of());
+        ret.put("lettersOfInstructionListLA", List.of());
+        ret.put("lettersOfInstructionListCTSC", List.of());
+        ret.put("expertReportList", List.of());
+        ret.put("expertReportListLA", List.of());
+        ret.put("expertReportListCTSC", List.of());
+        return ret;
     }
 
-    public void rollbackNoticeOfActingOrIssue(CaseDetails caseDetails) {
-        caseDetails.getData().remove("noticeOfActingOrIssueList");
-        caseDetails.getData().remove("noticeOfActingOrIssueListLA");
-        caseDetails.getData().remove("noticeOfActingOrIssueListCTSC");
-        caseDetails.getData().remove("noticeOfActingOrIssueListRemoved");
+    public Map<String, Object> rollbackNoticeOfActingOrIssue() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("noticeOfActingOrIssueList", List.of());
+        ret.put("noticeOfActingOrIssueListLA", List.of());
+        ret.put("noticeOfActingOrIssueListCTSC", List.of());
+        return ret;
     }
 
     public Map<String, Object> migrateSkeletonArgumentList(CaseData caseData) {
@@ -1171,7 +1193,7 @@ public class MigrateCaseService {
     }
 
     @SuppressWarnings("unchecked")
-    public void rollbackSkeletonArgumentList(CaseDetails caseDetails) {
+    public Map<String, Object> rollbackSkeletonArgumentList(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
         List<Element<SkeletonArgument>> skeletonArgumentList = new ArrayList<>();
@@ -1182,8 +1204,10 @@ public class MigrateCaseService {
             skeletonArgumentList.addAll((List) caseDataMap.get("skeletonArgumentListLA"));
         }
 
-        caseDataMap.put("skeletonArgumentList", skeletonArgumentList);
-        caseDataMap.remove("skeletonArgumentListLA");
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentListLA", List.of());
+        return ret;
     }
 
     private Map<String, Object> migrateApplicationDocuments(CaseData caseData,
@@ -1244,25 +1268,27 @@ public class MigrateCaseService {
         return migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList");
     }
 
-    public void rollbackApplicationDocuments(CaseDetails caseDetails) {
-        caseDetails.getData().remove("thresholdList");
-        caseDetails.getData().remove("thresholdListLA");
-        caseDetails.getData().remove("documentsFiledOnIssueList");
-        caseDetails.getData().remove("documentsFiledOnIssueListLA");
-        caseDetails.getData().remove("carePlanList");
-        caseDetails.getData().remove("carePlanListLA");
-        caseDetails.getData().remove("swetList");
-        caseDetails.getData().remove("swetListLA");
-        caseDetails.getData().remove("socialWorkChronList");
-        caseDetails.getData().remove("socialWorkChronListLA");
-        caseDetails.getData().remove("genogramList");
-        caseDetails.getData().remove("genogramListLA");
-        caseDetails.getData().remove("checklistDocList");
-        caseDetails.getData().remove("checklistDocListLA");
-        caseDetails.getData().remove("birthCertList");
-        caseDetails.getData().remove("birthCertListLA");
-        caseDetails.getData().remove("otherDocFiledList");
-        caseDetails.getData().remove("otherDocFiledListLA");
+    public Map<String, Object> rollbackApplicationDocuments() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("thresholdList", List.of());
+        ret.put("thresholdListLA", List.of());
+        ret.put("documentsFiledOnIssueList", List.of());
+        ret.put("documentsFiledOnIssueListLA", List.of());
+        ret.put("carePlanList", List.of());
+        ret.put("carePlanListLA", List.of());
+        ret.put("swetList", List.of());
+        ret.put("swetListLA", List.of());
+        ret.put("socialWorkChronList", List.of());
+        ret.put("socialWorkChronListLA", List.of());
+        ret.put("genogramList", List.of());
+        ret.put("genogramListLA", List.of());
+        ret.put("checklistDocList", List.of());
+        ret.put("checklistDocListLA", List.of());
+        ret.put("birthCertList", List.of());
+        ret.put("birthCertListLA", List.of());
+        ret.put("otherDocFiledList", List.of());
+        ret.put("otherDocFiledListLA", List.of());
+        return ret;
     }
 
     public Map<String, Object> migrateCorrespondenceDocuments(CaseData caseData) {
@@ -1277,7 +1303,7 @@ public class MigrateCaseService {
                 .map(bundleElement ->
                     element(bundleElement.getId(),
                         ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
-                .collect(toList());
+                .toList();
 
         List<Element<ManagedDocument>> correspondenceDocListLA =
             Stream.of(Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()),
@@ -1289,7 +1315,7 @@ public class MigrateCaseService {
                 .map(bundleElement ->
                     element(bundleElement.getId(),
                         ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
-                .collect(toList());
+                .toList();
 
         List<Element<ManagedDocument>> correspondenceDocListCTSC =
             Optional.ofNullable(caseData.getCorrespondenceDocuments()).orElse(List.of()).stream()
@@ -1297,7 +1323,7 @@ public class MigrateCaseService {
                 .map(bundleElement ->
                     element(bundleElement.getId(),
                         ManagedDocument.builder().document(bundleElement.getValue().getDocument()).build()))
-                .collect(toList());
+                .toList();
 
         Map<String, Object> ret = new HashMap<>();
         ret.put("correspondenceDocList", correspondenceDocList);
@@ -1306,10 +1332,12 @@ public class MigrateCaseService {
         return ret;
     }
 
-    public void rollbackCorrespondenceDocuments(CaseDetails caseDetails) {
-        caseDetails.getData().remove("correspondenceDocList");
-        caseDetails.getData().remove("correspondenceDocListLA");
-        caseDetails.getData().remove("correspondenceDocListCTSC");
+    public Map<String, Object> rollbackCorrespondenceDocuments() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("correspondenceDocList", List.of());
+        ret.put("correspondenceDocListLA", List.of());
+        ret.put("correspondenceDocListCTSC", List.of());
+        return ret;
     }
 
     public void doHasCFVMigratedCheck(long caseId, String hasBeenCFVMigrated, String migrationId) {
