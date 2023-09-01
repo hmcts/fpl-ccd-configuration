@@ -71,7 +71,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCFVrollback
     );
 
-    private void putChangesToCaseDetailsData(CaseDetails caseDetails, Map<String, Object> changes) {
+    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
             if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
                 && ((Collection) entrySet.getValue()).isEmpty())) {
@@ -100,7 +100,7 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCFVService.migrateSkeletonArgumentList(caseData));
         changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
         changes.put("hasBeenCFVMigrated", YesNo.YES);
-        putChangesToCaseDetailsData(caseDetails, changes);
+        pushChangesToCaseDetails(caseDetails, changes);
     }
 
     private void runCFVrollback(CaseDetails caseDetails) {
@@ -120,8 +120,8 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
         changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
         changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
-        caseDetails.getData().remove("hasBeenCFVMigrated");
-        putChangesToCaseDetailsData(caseDetails, changes);
+        changes.put("hasBeenCFVMigrated", null);
+        pushChangesToCaseDetails(caseDetails, changes);
     }
 
     @PostMapping("/about-to-submit")

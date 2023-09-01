@@ -300,8 +300,6 @@ public class MigrateCFVService {
         return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "guardianEvidenceList");
     }
 
-
-
     // Expert Reports
 
     public Map<String, Object> rollbackExpertReports() {
