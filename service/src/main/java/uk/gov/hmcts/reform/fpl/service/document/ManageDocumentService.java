@@ -410,6 +410,10 @@ public class ManageDocumentService {
         String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
         PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
             documentListHolderFieldName);
+        if (pd == null) {
+            throw new IllegalArgumentException("unable to get property descriptor from "
+                + documentListHolderClass.getName() + " (" + documentListHolderFieldName + ")");
+        }
         List<Element<?>> docs = null;
         if (changes.containsKey(documentListHolderFieldName)) {
             docs = (List<Element<?>>) changes.get(documentListHolderFieldName);
