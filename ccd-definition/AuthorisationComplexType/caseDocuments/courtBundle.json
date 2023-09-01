@@ -11,9 +11,14 @@
           "[LASHARED]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LAMANAGING]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "RU"
       },
       {
         "UserRoles": [
@@ -44,12 +49,7 @@
           "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-cafcass"
+          "[CHILDSOLICITORO]"
         ],
         "CRUD": "R"
       }
@@ -67,19 +67,14 @@
           "[LASHARED]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "[LABARRISTER]"
-        ],
-        "CRUD": "CRUD"
-      },
-      {
-        "UserRoles": [
+          "[LABARRISTER]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-cafcass"
         ],
-        "CRUD": "R"
+        "CRUD": "RU"
       },
       {
         "UserRoles": [
@@ -156,6 +151,128 @@
         ],
         "CRUD": "R"
       },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass",
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[LABARRISTER]"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "RU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "courtBundle",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "RU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListCTSC",
+    "ListElementCode": "courtBundleNC",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListLA",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "RU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListLA",
+    "ListElementCode": "courtBundle",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "RU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListLA",
+    "ListElementCode": "courtBundleNC",
+    "AccessControl": [
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",

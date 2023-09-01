@@ -653,6 +653,7 @@ public class MigrateCFVService {
                     HearingCourtBundle.builder().build());
                 bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
                 bundle.getValue().setCourtBundle(newCourtBundleList);
+                bundle.getValue().setCourtBundleNC(newCourtBundleList);
                 newHearingCourtBundleList.add(bundle);
             }
 
@@ -661,6 +662,7 @@ public class MigrateCFVService {
                     HearingCourtBundle.builder().build());
                 bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
                 bundle.getValue().setCourtBundle(courtBundleListLA);
+                bundle.getValue().setCourtBundleNC(courtBundleListLA);
                 hearingCourtBundleListLA.add(bundle);
             }
 
@@ -669,6 +671,7 @@ public class MigrateCFVService {
                     HearingCourtBundle.builder().build());
                 bundle.getValue().setHearing(hearingCourtBundle.getValue().getHearing());
                 bundle.getValue().setCourtBundle(courtBundleListCTSC);
+                bundle.getValue().setCourtBundleNC(courtBundleListCTSC);
                 hearingCourtBundleListCTSC.add(bundle);
             }
         }
