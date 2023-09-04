@@ -32,7 +32,7 @@ public class JudicialUsersConfiguration {
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
 
-    private final int JUDICIAL_PAGE_SIZE = 3000;
+    private final int judicialPageSize = 3000;
 
 
     public JudicialUsersConfiguration(@Autowired JudicialApi judicialApi,
@@ -60,7 +60,7 @@ public class JudicialUsersConfiguration {
         String systemUserToken = systemUserService.getSysUserToken();
 
         List<JudicialUserProfile> users = judicialApi.findUsers(systemUserToken, authTokenGenerator.generate(),
-            JUDICIAL_PAGE_SIZE,
+            judicialPageSize,
             JudicialUserRequest.builder()
                 .ccdServiceName("PUBLICLAW")
                 .build());
