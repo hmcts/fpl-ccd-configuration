@@ -38,7 +38,6 @@ public enum DocumentType {
                 .build());
             return HearingCourtBundle.builder()
                 .courtBundle(List.of(courtBundleElement))
-                .courtBundleNC(List.of(courtBundleElement))
                 .build();
         },
         null, 10),
