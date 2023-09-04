@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ModifiedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.FurtherDocument;
@@ -46,6 +48,8 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private final LocalDateTime dateTimeReceived;
     private LocalDateTime dateTimeUploaded;
     private final DocumentReference document;
+    private DocumentUploaderType uploaderType;
+    private List<CaseRole> uploaderCaseRoles;
     private String uploadedBy;
     private List<String> confidential;
     private FurtherEvidenceType type;
@@ -57,6 +61,7 @@ public class SupportingEvidenceBundle implements TranslatableItem, FurtherDocume
     private ExpertReportType expertReportType;
     private List<String> documentAcknowledge;
     private String removalReason;
+    private String markAsConfidential;
 
     public String getHasConfidentialAddress() {
         return ((!isBlank(name) || document != null) && (!YesNo.isYesOrNo(hasConfidentialAddress)))

@@ -127,7 +127,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -140,7 +140,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -185,7 +185,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -198,7 +198,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -243,7 +243,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -257,6 +257,35 @@
           "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placement",
+    "ListElementCode": "placementNoticeDocumentsRemoved",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "CU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
       }
     ]
   },
@@ -301,7 +330,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -314,7 +343,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   }
