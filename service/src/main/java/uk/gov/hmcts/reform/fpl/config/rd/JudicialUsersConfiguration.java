@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.service.JudicialService.JUDICIAL_PAGE_SIZE;
 
 @Slf4j
 @Component
@@ -32,6 +31,8 @@ public class JudicialUsersConfiguration {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
+
+    private final int JUDICIAL_PAGE_SIZE = 3000;
 
 
     public JudicialUsersConfiguration(@Autowired JudicialApi judicialApi,
