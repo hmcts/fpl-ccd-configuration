@@ -49,10 +49,6 @@ public class HearingCourtBundleTest {
                 TEST_ID,
                 CONFIDENTIAL_COURT_BUNDLE
             )))
-            .courtBundleNC(List.of(element(
-                TEST_ID,
-                NON_CONFIDENTIAL_COURT_BUNDLE
-            )))
             .build();
 
         Map<String, Object> serialised = objectMapper.convertValue(initialHearingCourtBundle, new TypeReference<>() {});
@@ -88,7 +84,7 @@ public class HearingCourtBundleTest {
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
             "courtBundle", expectedCourtBundle,
-            "courtBundleNC", expectedNCCourtBundle
+            "courtBundleNC", List.of()
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
@@ -96,29 +92,10 @@ public class HearingCourtBundleTest {
     }
 
     @Test
-    void testCourtBundleNCContainsNonConfidentialBundleOnly() {
-        HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
-            .hearing(TEST_HEARING)
-            .courtBundle(List.of(
-                element(TEST_ID, NON_CONFIDENTIAL_COURT_BUNDLE),
-                element(TEST_ID, CONFIDENTIAL_COURT_BUNDLE)
-            ))
-            .build();
-
-        assertThat(unwrapElements(hearingCourtBundle.getCourtBundle()))
-            .isEqualTo(List.of(NON_CONFIDENTIAL_COURT_BUNDLE, CONFIDENTIAL_COURT_BUNDLE));
-    }
-
-    @Test
     void testSerialisationAndDeserialisationIfEmptyBundle() {
         HearingCourtBundle initialHearingCourtBundle = HearingCourtBundle.builder()
             .hearing(TEST_HEARING)
             .courtBundle(List.of(element(
-                TEST_ID,
-                CourtBundle.builder()
-                    .build()
-            )))
-            .courtBundleNC(List.of(element(
                 TEST_ID,
                 CourtBundle.builder()
                     .build()
@@ -137,7 +114,7 @@ public class HearingCourtBundleTest {
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
             "courtBundle", expectedCourtBundle,
-            "courtBundleNC", expectedCourtBundle
+            "courtBundleNC", List.of()
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
