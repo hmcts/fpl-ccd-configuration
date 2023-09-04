@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -23,10 +25,13 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtLookUpService;
 import uk.gov.hmcts.reform.fpl.service.DfjAreaLookUpService;
+import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -49,20 +54,75 @@ public class MigrateCaseController extends CallbackController {
     private final CourtLookUpService courtLookUpService;
 
     private final MigrateCaseService migrateCaseService;
+    private final MigrateCFVService migrateCFVService;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
-        "DFPL-1401", this::run1401,
-        "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1681", this::run1681
+        "DFPL-1681", this::run1681,
+        "DFPL-1663", this::run1663,
+        "DFPL-1701", this::run1701,
+        "DFPL-CFV", this::runCFV,
+        "DFPL-CFV-Rollback", this::runCFVrollback
     );
+
+    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
+        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
+            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
+                && ((Collection) entrySet.getValue()).isEmpty())) {
+                caseDetails.getData().remove(entrySet.getKey());
+            } else {
+                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+    }
+
+    private void runCFV(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+                .get("hasBeenCFVMigrated"), "DFPL-CFV");
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
+        changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
+        changes.putAll(migrateCFVService.migrateCourtBundle(caseData));
+        changes.putAll(migrateCFVService.migrateCorrespondenceDocuments(caseData));
+        changes.putAll(migrateCFVService.migrateExpertReports(caseData));
+        changes.putAll(migrateCFVService.migrateGuardianReports(caseData));
+        changes.putAll(migrateCFVService.migrateNoticeOfActingOrIssue(caseData));
+        changes.putAll(migrateCFVService.migratePositionStatementRespondent(caseData));
+        changes.putAll(migrateCFVService.migratePositionStatementChild(caseData));
+        changes.putAll(migrateCFVService.migrateRespondentStatement(caseData));
+        changes.putAll(migrateCFVService.migrateSkeletonArgumentList(caseData));
+        changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
+        changes.put("hasBeenCFVMigrated", YesNo.YES);
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
+
+    private void runCFVrollback(CaseDetails caseDetails) {
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
+
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
+        changes.putAll(migrateCFVService.rollbackApplicationDocuments());
+        changes.putAll(migrateCFVService.rollbackCaseSummaryMigration(caseDetails));
+        changes.putAll(migrateCFVService.rollbackCourtBundleMigration(caseDetails));
+        changes.putAll(migrateCFVService.rollbackCorrespondenceDocuments());
+        changes.putAll(migrateCFVService.rollbackExpertReports());
+        changes.putAll(migrateCFVService.rollbackGuardianReports());
+        changes.putAll(migrateCFVService.rollbackNoticeOfActingOrIssue());
+        changes.putAll(migrateCFVService.rollbackRespondentStatement());
+        changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
+        changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
+        changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
+        changes.put("hasBeenCFVMigrated", null);
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -144,30 +204,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
-    private void run1401(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1401";
-        var possibleCaseIds = List.of(1666959378667166L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().put("relatingLA", "NCC");
-    }
-
-    private void run1451(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1451";
-        var possibleCaseIds = List.of(1669909306379829L);
-        final UUID expectedOrderId = UUID.fromString("c93a824b-75ce-4ffd-ad30-ad7f42c01ed9");
-        final UUID expectedHearingOrderBundleId = UUID.fromString("ebdf7ea7-a2e8-4296-be98-109b9070348e");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeDraftUploadedCMOs(getCaseData(caseDetails),
-            migrationId, expectedOrderId));
-        caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
-            migrationId, expectedHearingOrderBundleId));
-    }
-
     private void run1612(CaseDetails caseDetails) {
         var migrationId = "DFPL-1612";
         var possibleCaseIds = List.of(1687780363265112L);
@@ -199,5 +235,22 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().remove("correspondenceDocumentsNC");
+    }
+
+    private void run1663(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1663";
+        var possibleCaseIds = List.of(1673973434416600L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("state", State.CLOSED);
+    }
+
+    private void run1701(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1701";
+        var possibleCaseIds = List.of(1691595070128997L);
+        UUID expectedDocument = UUID.fromString("41803670-2ef1-485e-b842-1896b572600b");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, expectedDocument));
     }
 }
