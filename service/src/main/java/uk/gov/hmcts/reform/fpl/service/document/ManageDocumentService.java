@@ -521,16 +521,12 @@ public class ManageDocumentService {
 
     private List<Element<HearingCourtBundle>> buildCourtBundleList(CaseData caseData, UUID selectedHearingId) {
         HearingBooking hearingBooking = getHearingBooking(caseData, selectedHearingId);
-        List<Element<CourtBundle>> courtBundleNC = caseData.getManageDocumentsCourtBundle().stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
 
         return buildCourtBundlesList(caseData, selectedHearingId,
             caseData.getHearingDocuments().getCourtBundleListV2(),
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
                 .courtBundle(caseData.getManageDocumentsCourtBundle())
-                .courtBundleNC(courtBundleNC)
                 .build()
             );
     }
