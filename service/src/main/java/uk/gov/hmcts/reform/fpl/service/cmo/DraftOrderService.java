@@ -197,8 +197,12 @@ public class DraftOrderService {
 
             for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
                 Element<HearingOrder> hearingOrder = eventData.getCurrentHearingOrderDrafts().get(i);
-                hearingOrder.getValue().setDateSent(time.now().toLocalDate());
-                hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+                if (isEmpty(hearingOrder.getValue().getDateSent())) {
+                    hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+                }
+                if (isEmpty(hearingOrder.getValue().getStatus())) {
+                    hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+                }
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
             addOrdersToBundle(bundles,
