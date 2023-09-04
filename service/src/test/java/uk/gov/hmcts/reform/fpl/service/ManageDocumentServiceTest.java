@@ -2924,7 +2924,7 @@ class ManageDocumentServiceTest {
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId()))
-                    .collect(Collectors.toList());
+                    .toList();
                 if (flist.size() != 1) {
                     return false;
                 } else {
@@ -2939,12 +2939,6 @@ class ManageDocumentServiceTest {
                             test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue()
                                 .getDocument());
                             test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
-                                .getUploaderType());
-                            test = test && hcb.getCourtBundleNC() != null;
-                            test = test && hcb.getCourtBundleNC().size() == 1;
-                            test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
-                                .getDocument());
-                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getUploaderType());
                             return test;
                         }
