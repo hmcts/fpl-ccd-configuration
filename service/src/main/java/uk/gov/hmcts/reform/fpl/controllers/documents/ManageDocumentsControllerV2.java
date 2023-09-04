@@ -155,7 +155,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest request) {
-        // TODO DFPL-1609 Notification Logic
+    public void handleSubmitted(@RequestBody CallbackRequest request) throws Exception {
+        publishEvent(manageDocumentService.buildManageDocumentsUploadedEvent(getCaseData(request),
+            getCaseDataBefore(request)));
     }
 }

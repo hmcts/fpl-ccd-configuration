@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -45,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.DynamicListService;
@@ -53,6 +56,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 
 import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
@@ -99,6 +103,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageDocumentService {
@@ -1456,4 +1461,78 @@ public class ManageDocumentService {
         return placementService.savePlacementNoticeResponsesAdmin(caseData);
     }
 
+    @SuppressWarnings("unchecked")
+    public ManageDocumentsUploadedEvent buildManageDocumentsUploadedEvent(CaseData caseData, CaseData caseDataBefore)
+        throws Exception {
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocuments = new HashMap<>();
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsLA = new HashMap<>();
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocumentsCTSC = new HashMap<>();
+
+        Map<ConfidentialLevel, Map<DocumentType, List<Element<NotifyDocumentUploaded>>>> resultMapByConfidentialLevel =
+            Map.of(ConfidentialLevel.NON_CONFIDENTIAL, newDocuments,
+                ConfidentialLevel.LA, newDocumentsLA,
+                ConfidentialLevel.CTSC, newDocumentsCTSC);
+
+        for (DocumentType documentType : DocumentType.values()) {
+            for (ConfidentialLevel confidentialLevel : resultMapByConfidentialLevel.keySet()) {
+                if (documentType.getBaseFieldNameResolver() != null) {
+                    String fieldName = documentType.getBaseFieldNameResolver().apply(confidentialLevel);
+
+                    Map<DocumentType, List<Element<NotifyDocumentUploaded>>> newDocMap =
+                            resultMapByConfidentialLevel.get(confidentialLevel);
+
+                    List documentList = Optional.ofNullable(ObjectHelper
+                        .getFieldValue(caseData, fieldName, List.class)).orElse(List.of());
+                    List documentListBefore = Optional.ofNullable(ObjectHelper
+                        .getFieldValue(caseDataBefore, fieldName, List.class)).orElse(List.of());
+
+                    if (DocumentType.COURT_BUNDLE.equals(documentType)) {
+                        documentList = ((List<Element<HearingCourtBundle>>) documentList).stream()
+                            .map(Element::getValue)
+                            .map(HearingCourtBundle::getCourtBundle)
+                            .flatMap(List::stream)
+                            .toList();
+
+                        documentListBefore = ((List<Element<HearingCourtBundle>>) documentListBefore).stream()
+                            .map(Element::getValue)
+                            .map(HearingCourtBundle::getCourtBundle)
+                            .flatMap(List::stream)
+                            .toList();
+                    }
+
+                    for (Object document : documentList) {
+                        if (!documentListBefore.contains(document)) {
+                            List<Element<NotifyDocumentUploaded>> docList =
+                                Optional.ofNullable(newDocMap.get(documentType))
+                                    .orElse(new ArrayList<>());
+                            newDocMap.putIfAbsent(documentType, docList);
+
+                            docList.add((Element<NotifyDocumentUploaded>) document);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("New non-confidential document found: {}", newDocuments.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+            log.info("New confidential document found: {}", newDocumentsLA.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+            log.info("New confidential (CTSC) document found: {}", newDocumentsCTSC.entrySet().stream()
+                .map(entry -> entry.getKey().toString() + " " + entry.getValue().size())
+                .collect(Collectors.joining(", ")));
+        }
+
+        return ManageDocumentsUploadedEvent.builder()
+            .caseData(caseData)
+            .initiatedBy(userService.getUserDetails())
+            .uploadedUserType(getUploaderType(caseData))
+            .newDocuments(newDocuments)
+            .newDocumentsLA(newDocumentsLA)
+            .newDocumentsCTSC(newDocumentsCTSC)
+            .build();
+    }
 }
