@@ -2370,6 +2370,13 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "posStmtRespListLA",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicationDocuments",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
   }
 ]
