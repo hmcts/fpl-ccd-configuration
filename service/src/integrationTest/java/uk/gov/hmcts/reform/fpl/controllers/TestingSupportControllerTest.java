@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
@@ -90,9 +89,6 @@ class TestingSupportControllerTest {
 
     @MockBean
     private CaseDocumentClientApi caseDocumentClientApi;
-
-    @MockBean
-    private RoleAssignmentService roleAssignmentService;
 
     @MockBean
     private DocumentUploadClientApi uploadClient;

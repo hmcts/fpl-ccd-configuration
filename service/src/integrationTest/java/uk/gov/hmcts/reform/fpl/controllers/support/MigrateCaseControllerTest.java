@@ -9,36 +9,29 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
-import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
-import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -58,6 +51,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private CaseSubmissionChecker caseSubmissionChecker;
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private JudicialService judicialService;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
@@ -79,128 +81,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     void setup() {
         givenSystemUser();
         givenFplService();
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Dfpl702 {
-        final String migrationId = "DFPL-702";
-
-        @Test
-        void shouldMigrateGlobalSearchRequiredFieldsWithOnboardingCourtInfoOnly() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .caseName("I AM CASE NAME")
-                .children1(List.of(element(Child.builder().party(ChildParty.builder()
-                    .firstName("Kate")
-                    .lastName("Clark")
-                    .dateOfBirth(LocalDate.of(2012, 7, 31))
-                    .build()).build())))
-                .respondents1(List.of(element(Respondent.builder().party(RespondentParty.builder()
-                    .firstName("Ronnie")
-                    .lastName("Clark")
-                    .dateOfBirth(LocalDate.of(1997, 9, 7))
-                    .build()).build())))
-                .court(Court.builder().code("344").build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-            Map<String, Object> caseDetails = response.getData();
-
-            assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
-
-            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
-            // epimms id is defined in courts.json by looking up court code 344
-            @SuppressWarnings("unchecked")
-            Map<String, String> caseManagementLocation = (Map<String, String>)
-                caseDetails.get("caseManagementLocation");
-            assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
-            assertThat(caseManagementLocation).containsEntry("region", "7");
-            @SuppressWarnings("unchecked")
-            Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
-                caseDetails.get("caseManagementCategory");
-            assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
-            assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
-            assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
-
-            assertThat(caseManagementCategory).containsKey("list_items");
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
-            assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
-        }
-
-        @Test
-        void shouldMigrateGlobalSearchRequiredFieldsWithOrdersCourt() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .caseName("I AM CASE NAME")
-                .children1(List.of(element(Child.builder().party(ChildParty.builder()
-                    .firstName("Kate")
-                    .lastName("Clark")
-                    .dateOfBirth(LocalDate.of(2012, 7, 31))
-                    .build()).build())))
-                .respondents1(List.of(element(Respondent.builder().party(RespondentParty.builder()
-                    .firstName("Ronnie")
-                    .lastName("Clark")
-                    .dateOfBirth(LocalDate.of(1997, 9, 7))
-                    .build()).build())))
-                .orders(Orders.builder().orderType(List.of(OrderType.CHILD_ASSESSMENT_ORDER)).court("344").build())
-                .court(Court.builder().code("117").build())
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-                buildCaseDetails(caseData, migrationId)
-            );
-            Map<String, Object> caseDetails = response.getData();
-
-            assertThat(caseDetails.get("caseNameHmctsInternal")).isEqualTo("I AM CASE NAME");
-
-            // court code (344) is defined by application-integration-test.yaml (by LOCAL_AUTHORITY_3_USER_EMAIL)
-            // epimms id is defined in courts.json by looking up court code 344
-            @SuppressWarnings("unchecked")
-            Map<String, String> caseManagementLocation = (Map<String, String>)
-                caseDetails.get("caseManagementLocation");
-            assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
-            assertThat(caseManagementLocation).containsEntry("region", "7");
-            @SuppressWarnings("unchecked")
-            Map<String, Map<String, String>> caseManagementCategory = (Map<String, Map<String, String>>)
-                caseDetails.get("caseManagementCategory");
-            assertThat(caseManagementCategory).containsKey("value");
-            Map<String, String> caseManagementCategoryValue = caseManagementCategory.get("value");
-            assertThat(caseManagementCategoryValue).containsEntry("code", "FPL");
-            assertThat(caseManagementCategoryValue).containsEntry("label", "Family Public Law");
-
-            assertThat(caseManagementCategory).containsKey("list_items");
-            @SuppressWarnings("unchecked")
-            List<Map<String, String>> listItems = (List<Map<String, String>>) caseManagementCategory.get("list_items");
-            assertThat(listItems).contains(Map.of("code", "FPL", "label", "Family Public Law"));
-        }
-
-        @Test
-        void shouldInvokeSubmitSupplementaryData() {
-            final Organisation organisation = testOrganisation();
-
-            final CaseData caseData = CaseData.builder()
-                .id(nextLong())
-                .state(OPEN)
-                .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-                .outsourcingPolicy(organisationPolicy(
-                    organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
-                .build();
-
-            postSubmittedEvent(
-                buildCaseDetails(caseData, migrationId));
-
-            Map<String, Map<String, Map<String, Object>>> supplementaryData = new HashMap<>();
-            supplementaryData.put("supplementary_data_updates",
-                Map.of("$set", Map.of("HMCTSServiceId", "ABA3")));
-
-            verify(coreCaseDataApi).submitSupplementaryData(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
-                caseData.getId().toString(), supplementaryData);
-        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -237,5 +117,222 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     "Migration {id = %s, case reference = %s}, case id not one of the expected options",
                     migrationId, invalidCaseId));
         }
+    }
+
+    @Nested
+    class DfplAm {
+
+        private final String migrationId = "DFPL-AM";
+
+        @BeforeEach
+        void beforeEach() {
+            when(judicialService.getHearingJudgeRolesForMigration(any())).thenReturn(List.of());
+        }
+
+        @Test
+        void shouldUpdateAllocatedJudgeId() {
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+        @Test
+        void shouldUpdateAllocatedJudgeIdIfLegalAdviser() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+
+        @Test
+        void shouldUpdateHearingJudgeIdIfLegalAdviser() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+        @Test
+        void shouldUpdateHearingJudgeIdIfJudge() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.of("12345"));
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.of("12345"));
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isEqualTo(JudicialUser.builder()
+                    .idamId("12345")
+                    .build());
+        }
+
+        @Test
+        void shouldLeaveHearingsUnchangedIfNotInMapping() {
+            when(judicialService.getJudgeUserIdFromEmail("test@test.com")).thenReturn(Optional.empty());
+            when(judicialUsersConfiguration.getJudgeUUID("test@test.com")).thenReturn(Optional.empty());
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com")).thenReturn(Optional.empty());
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isEqualTo(caseData.getHearingDetails());
+        }
+
+        @Test
+        void shouldHaveNoChangeToHearingsIfNone() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isNull();
+        }
+
+        @Test
+        void shouldDoRollback() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeLastName("Test")
+                    .judgeEmailAddress("test@test.com")
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId("12345")
+                        .build())
+                    .build())
+                .hearingDetails(ElementUtils.wrapElements(
+                    HearingBooking.builder()
+                        .startDate(now().plusDays(5))
+                        .endDate(now().plusDays(6))
+                        .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                            .judgeLastName("Test")
+                            .judgeEmailAddress("test@test.com")
+                            .judgeJudicialUser(JudicialUser.builder()
+                                .idamId("12345")
+                                .build())
+                            .build())
+                        .build()
+                ))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId + "-Rollback"));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).hasSize(1);
+            assertThat(responseData.getHearingDetails().get(0).getValue().getJudgeAndLegalAdvisor())
+                .extracting("judgeJudicialUser")
+                .isNull();
+            assertThat(responseData.getAllocatedJudge()).extracting("judgeJudicialUser").isNull();
+        }
+
+        @Test
+        void shouldHaveNoChangeToHearingsInRollbackIfNone() {
+            CaseData caseData = CaseData.builder()
+                .id(12345L)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+                buildCaseDetails(caseData, migrationId + "-Rollback"));
+            CaseData responseData = extractCaseData(response);
+
+            assertThat(responseData.getHearingDetails()).isNull();
+        }
+
     }
 }
