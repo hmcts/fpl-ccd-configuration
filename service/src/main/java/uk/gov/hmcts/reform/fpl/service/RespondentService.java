@@ -37,6 +37,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -77,7 +78,7 @@ public class RespondentService {
 
     //If user entered details that were subsequently hidden after change of mind, remove them
     public List<Element<Respondent>> removeHiddenFields(List<Element<Respondent>> respondents) {
-        respondents.forEach(respondentElement -> {
+        return respondents.stream().map(respondentElement -> {
             Respondent respondent = respondentElement.getValue();
 
             if (NO.getValue().equals(respondent.getLegalRepresentation())) {
@@ -90,9 +91,17 @@ public class RespondentService {
                     respondent.getSolicitor().setRegionalOfficeAddress(null);
                 }
             }
-        });
 
-        return respondents;
+            // Clear address not know reason if address is known
+            RespondentParty party = respondent.getParty();
+            if (party != null && YES.getValue().equals(party.getAddressKnow())
+                && isNotEmpty(party.getAddressNotKnowReason())) {
+                return element(respondentElement.getId(),
+                    respondent.toBuilder().party(party.toBuilder().addressNotKnowReason(null).build()).build());
+            } else {
+                return respondentElement;
+            }
+        }).toList();
     }
 
     public List<Respondent> getRespondentsWithLegalRepresentation(List<Element<Respondent>> respondents) {
