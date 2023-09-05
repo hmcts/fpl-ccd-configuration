@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -98,6 +99,10 @@ public class RespondentService {
                 && isNotEmpty(party.getAddressNotKnowReason())) {
                 return element(respondentElement.getId(),
                     respondent.toBuilder().party(party.toBuilder().addressNotKnowReason(null).build()).build());
+            } else if (party != null && NO.getValue().equals(party.getAddressKnow())
+                && party.getAddress() != null && isNotEmpty(party.getAddress().getAddressLine1())) {
+                return element(respondentElement.getId(),
+                    respondent.toBuilder().party(party.toBuilder().address(Address.builder().build()).build()).build());
             } else {
                 return respondentElement;
             }
