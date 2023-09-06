@@ -3132,17 +3132,6 @@ class ManageDocumentServiceTest {
                             test = test && expectedTranslationRequirements.equals(hcb.getCourtBundle()
                                 .get(0).getValue()
                                 .getTranslationRequirements());
-                            test = test && hcb.getCourtBundleNC() != null;
-                            test = test && hcb.getCourtBundleNC().size() == 1;
-                            test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
-                                .getDocument());
-                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
-                                .getUploaderType());
-                            test = test && getUploaderCaseRoles(loginType).equals(hcb.getCourtBundleNC().get(0)
-                                .getValue().getUploaderCaseRoles());
-                            test = test && expectedTranslationRequirements.equals(hcb.getCourtBundleNC()
-                                .get(0).getValue()
-                                .getTranslationRequirements());
                             return test;
                         }
                         return false;
@@ -3295,12 +3284,6 @@ class ManageDocumentServiceTest {
                             test = test && expectedDocument.equals(hcb.getCourtBundle().get(0).getValue()
                                 .getDocument());
                             test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
-                                .getUploaderType());
-                            test = test && hcb.getCourtBundleNC() != null;
-                            test = test && hcb.getCourtBundleNC().size() == 1;
-                            test = test && expectedDocument.equals(hcb.getCourtBundleNC().get(0).getValue()
-                                .getDocument());
-                            test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
                                 .getUploaderType());
                             return test;
                         }
@@ -3465,12 +3448,6 @@ class ManageDocumentServiceTest {
                         test = test && expectedDocumentOne.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
                         test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
                             .getUploaderType());
-                        test = test && hcb.getCourtBundleNC() != null;
-                        test = test && hcb.getCourtBundleNC().size() == 1;
-                        test = test && expectedDocumentOne.equals(hcb.getCourtBundleNC().get(0).getValue()
-                            .getDocument());
-                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
-                            .getUploaderType());
                         return test;
                     } else {
                         return false;
@@ -3490,12 +3467,6 @@ class ManageDocumentServiceTest {
                         test = test && hcb.getCourtBundle().size() == 1;
                         test = test && expectedDocumentTwo.equals(hcb.getCourtBundle().get(0).getValue().getDocument());
                         test = test && getUploaderType(loginType).equals(hcb.getCourtBundle().get(0).getValue()
-                            .getUploaderType());
-                        test = test && hcb.getCourtBundleNC() != null;
-                        test = test && hcb.getCourtBundleNC().size() == 1;
-                        test = test && expectedDocumentTwo.equals(hcb.getCourtBundleNC().get(0).getValue()
-                            .getDocument());
-                        test = test && getUploaderType(loginType).equals(hcb.getCourtBundleNC().get(0).getValue()
                             .getUploaderType());
                         return test;
                     } else {
