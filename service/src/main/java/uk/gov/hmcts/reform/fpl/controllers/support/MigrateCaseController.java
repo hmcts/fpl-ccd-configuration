@@ -190,14 +190,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1681(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1681";
-        var possibleCaseIds = List.of(1669737648667050L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().remove("correspondenceDocumentsNC");
-    }
-
     private void run1663(CaseDetails caseDetails) {
         var migrationId = "DFPL-1663";
         var possibleCaseIds = List.of(1673973434416600L);
