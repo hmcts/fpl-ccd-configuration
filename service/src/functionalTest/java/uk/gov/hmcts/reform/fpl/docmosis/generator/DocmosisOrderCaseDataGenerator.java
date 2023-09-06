@@ -290,6 +290,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersBirthCertificateRegistrationDistrict("RegDistrict")
                         .manageOrdersBirthCertificateRegistrationSubDistrict("RegSubDistrict")
                         .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
+                        .manageOrdersPlacementOrderOtherDetails("Other Details")
                         .build()
                 );
             case CHILD_ASSESSMENT_ORDER:
