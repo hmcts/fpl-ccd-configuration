@@ -208,7 +208,6 @@ public class DraftOrderService {
                     hearingOrder.getValue().setDateSent(time.now().toLocalDate());
                     hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
                 }
-
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
             addOrdersToBundle(bundles,
