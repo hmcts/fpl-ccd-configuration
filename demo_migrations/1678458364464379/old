@@ -21,7 +21,7 @@
     "reason": "test reason",
     "timeFrame": "Same day"
   },
-  "caseName": "e2e test case",
+  "caseName": "Ashley CFV Migration Test 1",
   "taskList": "<div class='width-50'>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a>Submit application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/cannot-send-yet.png' title='Cannot send yet'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n</div>\n\n<details class='govuk-details'>\n\n<summary class='govuk-details__summary'>\n\n<span class='govuk-details__summary-text'>\n\nWhy can't I submit my application?\n\n</span>\n\n</summary>\n\n<div class='govuk-details__text'>\n\nAdd the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\nAdd the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\nAdd the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\nAdd applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a>\n\nAdd the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\nAdd the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\nAdd the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n</div>\n\n</details>",
   "children1": [
     {
@@ -141,6 +141,31 @@
     }
   ],
   "sendToCtsc": "Yes",
+  "respStmtList": [
+    {
+      "id": "adbf14bd-02e4-45de-9ac7-b03036adc420",
+      "value": {
+        "name": "Test20230905",
+        "notes": "Test Respondent Statement to be migrated",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/35ea36a2-87eb-4d80-bcaf-bc4f6c46ba9f",
+          "document_filename": "UPLOAD_RESPONDENT_STATEMENT.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/35ea36a2-87eb-4d80-bcaf-bc4f6c46ba9f/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "respondentId": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "respondentName": "Joe Bloggs",
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-05T12:25:34.211662002",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No",
+        "translationRequirements": "NO"
+      }
+    }
+  ],
   "respondents1": [
     {
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
@@ -174,10 +199,22 @@
     "document_filename": "c110a.pdf",
     "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7edebb50-783b-4b31-bab7-8c9ddfead7c3/binary"
   },
+  "thresholdList": [
+    {
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7edebb50-783b-4b31-bab7-8c9ddfead7c3",
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7edebb50-783b-4b31-bab7-8c9ddfead7c3/binary"
+        }
+      }
+    }
+  ],
   "SearchCriteria": {
     "SearchParties": [
       {
-        "id": "6009a0b0-6036-4a90-b7b0-c28f51f12725",
+        "id": "e6acbe47-d4ca-439a-90b3-b9caf46df7c3",
         "value": {
           "Name": "Joe Bloggs",
           "PostCode": "RG4 7AA",
@@ -186,7 +223,7 @@
         }
       },
       {
-        "id": "195bcc4f-629e-44e2-bc9a-444809d6210b",
+        "id": "e0c2b367-70a1-4d94-8309-c38fcd505de3",
         "value": {
           "Name": "Timothy Jones",
           "DateOfBirth": "2015-08-01"
@@ -327,6 +364,7 @@
   },
   "caseLocalAuthority": "SA",
   "displayAmountToPay": "Yes",
+  "hasBeenCFVMigrated": "YES",
   "representativeType": "LOCAL_AUTHORITY",
   "familyManCaseNumber": "mockcaseID",
   "languageRequirement": "Yes",
