@@ -6,7 +6,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "parent_expertReports"
+    "CategoryID": "expertReports"
   },
   {
     "LiveFrom": "01/01/2017",
