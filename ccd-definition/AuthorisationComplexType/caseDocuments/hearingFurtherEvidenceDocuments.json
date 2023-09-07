@@ -68,7 +68,7 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       },
       {
         "UserRoles": [
@@ -140,13 +140,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
-        "CRUD": "CRUD"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
+        "CRUD": "CUD"
       },
       {
         "UserRoles": [
@@ -202,39 +196,6 @@
           "[LAMANAGING]"
         ],
         "CRUD": "CUD"
-      },
-      {
-        "UserRoles": [
-          "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[SOLICITOR]",
-          "[SOLICITORA]",
-          "[SOLICITORB]",
-          "[SOLICITORC]",
-          "[SOLICITORD]",
-          "[SOLICITORE]",
-          "[SOLICITORF]",
-          "[SOLICITORG]",
-          "[SOLICITORH]",
-          "[SOLICITORI]",
-          "[SOLICITORJ]",
-          "[CHILDSOLICITORA]",
-          "[CHILDSOLICITORB]",
-          "[CHILDSOLICITORC]",
-          "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]",
-          "[CHILDSOLICITORF]",
-          "[CHILDSOLICITORG]",
-          "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]",
-          "[CHILDSOLICITORJ]",
-          "[CHILDSOLICITORK]",
-          "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]",
-          "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]"
-        ],
-        "CRUD": "R"
       },
       {
         "UserRoles": [
