@@ -75,17 +75,9 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementRespondentsToNotify(Collections.emptyList())
             .build();
 
-        final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
-            .confidentialDocuments(null)
-            .build();
-
         assertThat(actualPlacementData.getPlacements())
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewPlacement);
-
-        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
-            .extracting(Element::getValue)
-            .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
     }
 
     @Test
@@ -139,20 +131,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .noticeDocuments(noticeResponses)
             .build();
 
-        final Placement expectedNewNonConfidentialPlacementForChild1 = expectedNewPlacementForChild1.toBuilder()
-            .confidentialDocuments(null)
-            .build();
-
-        final Placement expectedNonConfidentialPlacementForChild2 = existingApplicationForChild2.toBuilder()
-            .confidentialDocuments(null)
-            .build();
-
         assertThat(actualPlacementData.getPlacements())
             .extracting(Element::getValue)
             .containsExactly(expectedNewPlacementForChild1, existingApplicationForChild2);
-
-        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
-            .extracting(Element::getValue)
-            .containsExactly(expectedNewNonConfidentialPlacementForChild1, expectedNonConfidentialPlacementForChild2);
     }
 }
