@@ -61,9 +61,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1663", this::run1663,
-        "DFPL-1701", this::run1701,
-        "DFPL-1722", this::run1722
+        "DFPL-1722", this::run1722,
+        "DFPL-1725", this::run1725
     );
 
     @PostMapping("/about-to-submit")
@@ -190,27 +189,20 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1663(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1663";
-        var possibleCaseIds = List.of(1673973434416600L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().put("state", State.CLOSED);
-    }
-
-    private void run1701(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1701";
-        var possibleCaseIds = List.of(1691595070128997L);
-        UUID expectedDocument = UUID.fromString("41803670-2ef1-485e-b842-1896b572600b");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
-            migrationId, expectedDocument));
-    }
-
     private void run1722(CaseDetails caseDetails) {
         var migrationId = "DFPL-1722";
         var possibleCaseIds = List.of(1673969247479769L);
         String expectedJudicialMessage = "d3a3591e-9370-4417-8ce8-04a11a9679f6";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
+    }
+
+    private void run1725(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1725";
+        var possibleCaseIds = List.of(1660307161883143L);
+        String expectedJudicialMessage = "4ef749ef-80fd-40df-9b38-711ddf958e7a";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
