@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -73,9 +72,12 @@ public class PlacementEventData {
         if (isEmpty(placements)) {
             return emptyList();
         }
+
         return placements.stream()
-            .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
-            .collect(toList());
+                .filter(element -> element.getValue().getPlacementNotice() != null)
+                .filter(element -> !element.getValue().getPlacementNotice().isEmpty())
+                .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
+                .toList();
     }
 
     public void setPlacement(Placement placement) {
