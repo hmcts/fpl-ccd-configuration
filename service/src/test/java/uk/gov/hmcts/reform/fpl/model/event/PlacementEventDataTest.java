@@ -145,15 +145,6 @@ class PlacementEventDataTest {
             final List<Element<Placement>> actualNonConfidentialPlacements = underTest
                     .getPlacementsNonConfidential(true);
 
-            final Placement nonConfidentialPlacement1 = Placement.builder()
-                    .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
-                    .noticeDocuments(wrapElements(noticeDocument))
-                    .build();
-
-            final Placement nonConfidentialPlacement2 = Placement.builder()
-                    .supportingDocuments(wrapElements(supportingDocument3))
-                    .build();
-
             assertThat(actualNonConfidentialPlacements)
                     .extracting(Element::getValue).isEmpty();
         }

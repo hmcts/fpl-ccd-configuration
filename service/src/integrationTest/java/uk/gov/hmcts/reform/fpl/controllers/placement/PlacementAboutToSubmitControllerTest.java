@@ -40,6 +40,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .response(testDocumentReference())
             .build());
 
+        DocumentReference placementNoticeDocument = testDocumentReference();
+
         final Placement newPlacement = Placement.builder()
             .childId(child1.getId())
             .childName("Alex Brown")
@@ -47,6 +49,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementUploadDateTime(now())
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
+            .placementNotice(placementNoticeDocument)
             .noticeDocuments(noticeResponses)
             .build();
 
@@ -54,6 +57,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .childId(child2.getId())
             .childName("Emma Green")
             .application(testDocumentReference())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -77,6 +81,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
             .confidentialDocuments(null)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         assertThat(actualPlacementData.getPlacements())
@@ -97,6 +102,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .response(testDocumentReference())
             .build());
 
+        DocumentReference placementNoticeDocument = testDocumentReference();
 
         final Placement existingApplicationForChild1 = Placement.builder()
             .childId(child1.getId())
@@ -104,6 +110,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .application(testDocumentReference())
             .placementUploadDateTime(LocalDateTime.of(2020, 10, 10, 12, 0))
             .placementRespondentsToNotify(Collections.emptyList())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final Placement existingApplicationForChild2 = Placement.builder()
@@ -115,12 +122,14 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .document(testDocumentReference())
                 .build()))
             .placementRespondentsToNotify(Collections.emptyList())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
             .noticeDocuments(noticeResponses)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -145,6 +154,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
         final Placement expectedNonConfidentialPlacementForChild2 = existingApplicationForChild2.toBuilder()
             .confidentialDocuments(null)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         assertThat(actualPlacementData.getPlacements())
