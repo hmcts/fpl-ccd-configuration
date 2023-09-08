@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -130,6 +132,43 @@ class MigrateCFVServiceTest {
             "GUARDIAN_REPORTS",
             "OTHER_REPORTS",
             "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateLinkedHearingAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .uploadedBy("HMCTS")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
         void shouldMigrateConfidentialAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
@@ -165,6 +204,45 @@ class MigrateCFVServiceTest {
             "GUARDIAN_REPORTS",
             "OTHER_REPORTS",
             "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateConfidentialHearingAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type)
+            throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .uploadedBy("HMCTS")
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
         void shouldMigrateAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
@@ -177,6 +255,42 @@ class MigrateCFVServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateHearingAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
                 .build();
 
             Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
@@ -234,7 +348,44 @@ class MigrateCFVServiceTest {
             "GUARDIAN_REPORTS",
             "OTHER_REPORTS",
             "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
-        void shouldMigrateApplicantWitnessStatementUploadedBySolicitor(FurtherEvidenceType type) throws Exception {
+        void shouldMigrateConfidentialHearingAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateAnyOtherDocumentsUploadedBySolicitor(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
             DocumentReference document1 = DocumentReference.builder().build();
@@ -246,6 +397,43 @@ class MigrateCFVServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
+                .filter(m -> furtherEvidenceTypeToMigrateMethodMap.get(type).equals(m.getName()))
+                .findFirst().get()
+                .invoke(underTest, caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateHearingAnyOtherDocumentsUploadedBySolicitor(FurtherEvidenceType type)
+            throws Exception {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
                 .build();
 
             Map<String, Object> updatedFields = (Map<String, Object>) stream(MigrateCFVService.class.getMethods())
@@ -306,6 +494,37 @@ class MigrateCFVServiceTest {
         @ParameterizedTest
         @EnumSource(value = ExpertReportType.class, names = {
             "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateHearingExpertReportUploadedByCTSC(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .uploadedBy("HMCTS")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
         void shouldMigrateConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
@@ -335,6 +554,38 @@ class MigrateCFVServiceTest {
         @ParameterizedTest
         @EnumSource(value = ExpertReportType.class, names = {
             "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateHearingConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .uploadedBy("HMCTS")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
         void shouldMigrateExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
@@ -348,6 +599,36 @@ class MigrateCFVServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateHearingExpertReportsUploadedByLA(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
                 .build();
 
             Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
@@ -392,6 +673,37 @@ class MigrateCFVServiceTest {
         @ParameterizedTest
         @EnumSource(value = ExpertReportType.class, names = {
             "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateHearingConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .confidential(List.of("CONFIDENTIAL"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
         void shouldMigrateExpertReportUploadedBySolicitor(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
@@ -405,6 +717,36 @@ class MigrateCFVServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
+
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "CTSC").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type) + "LA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting(getExpertReportFieldName(type)).asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = ExpertReportType.class, names = {
+            "PROFESSIONAL_DRUG", "PROFESSIONAL_HAIR", "TOXICOLOGY_REPORT", "NEUROSURGEON"})
+        void shouldMigrateHearingExpertReportUploadedBySolicitor(ExpertReportType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(EXPERT_REPORTS)
+                .expertReportType(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
                 .build();
 
             Map<String, Object> updatedFields = underTest.migrateExpertReports(caseData);
