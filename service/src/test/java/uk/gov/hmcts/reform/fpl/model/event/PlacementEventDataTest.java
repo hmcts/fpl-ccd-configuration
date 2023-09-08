@@ -132,6 +132,32 @@ class PlacementEventDataTest {
                 .containsExactly(nonConfidentialPlacement1, nonConfidentialPlacement2);
         }
 
+        @Test
+        void shouldNotReturnNonConfidentialPlacementsWhenNoticeOfPlacementIsNotProduced() {
+
+            placement1.setPlacementNotice(null);
+            placement2.setPlacementNotice(null);
+
+            final PlacementEventData underTest = PlacementEventData.builder()
+                    .placements(wrapElements(placement1, placement2))
+                    .build();
+
+            final List<Element<Placement>> actualNonConfidentialPlacements = underTest
+                    .getPlacementsNonConfidential(true);
+
+            final Placement nonConfidentialPlacement1 = Placement.builder()
+                    .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
+                    .noticeDocuments(wrapElements(noticeDocument))
+                    .build();
+
+            final Placement nonConfidentialPlacement2 = Placement.builder()
+                    .supportingDocuments(wrapElements(supportingDocument3))
+                    .build();
+
+            assertThat(actualNonConfidentialPlacements)
+                    .extracting(Element::getValue).isEmpty();
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnNonConfidentialVersionOfExistingPlacements2(List<Element<Placement>> placements) {
