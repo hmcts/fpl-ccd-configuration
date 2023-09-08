@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -80,13 +81,11 @@ public class MigrateCFVService {
             .build());
     }
 
-    private static Map<String, Object> migrateFurtherEvidenceDocuments(CaseData caseData,
-                                                                       FurtherEvidenceType furtherEvidenceType,
-                                                                       String newFieldName) {
+    private static Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate(
+        FurtherEvidenceType furtherEvidenceType, String newFieldName) {
         final List<ExpertReportType> drugAndAlcoholReportTypes = List.of(PROFESSIONAL_DRUG, PROFESSIONAL_HAIR,
             TOXICOLOGY_REPORT);
-
-        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate = a -> {
+        return a -> {
             if (EXPERT_REPORTS.equals(furtherEvidenceType)) {
                 switch (newFieldName) {
                     case "expertReportList":
@@ -100,58 +99,157 @@ public class MigrateCFVService {
                 return true;
             }
         };
+    }
 
-        // uploaded by LA
-        final List<Element<ManagedDocument>> newDocListLA =
+    private static Function<Element<SupportingEvidenceBundle>, Element<ManagedDocument>> toManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Predicate<Element<SupportingEvidenceBundle>> matchFurtherEvidenceType(FurtherEvidenceType type) {
+        return e -> type.equals(e.getValue().getType());
+    }
+
+    private static Predicate<Element<SupportingEvidenceBundle>> isConfidentialDocument() {
+        return e -> e.getValue().isConfidentialDocument();
+    }
+
+    private static Predicate<Element<SupportingEvidenceBundle>> isNonConfidentialDocument() {
+        return e -> !e.getValue().isConfidentialDocument();
+    }
+
+    private static Predicate<Element<SupportingEvidenceBundle>> isUploadedByHMCTS() {
+        return e -> e.getValue().isUploadedByHMCTS();
+    }
+
+    private static Predicate<Element<SupportingEvidenceBundle>> isNotUploadedByHMCTS() {
+        return e -> !e.getValue().isUploadedByHMCTS();
+    }
+
+    private static List<Element<ManagedDocument>> convertManagedDocumentFromFurtherEvidenceDocumentByLA(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        return Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
+            .filter(matchFurtherEvidenceType(furtherEvidenceType))
+            .filter(expertReportTypePredicate)
+            .filter(isConfidentialDocument())
+            .map(toManagedDocumentElement())
+            .collect(toList());
+    }
+
+    private static List<Element<ManagedDocument>> convertManagedDocumentFromFurtherEvidenceDocumentByAdmin(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        return Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .filter(matchFurtherEvidenceType(furtherEvidenceType))
+            .filter(expertReportTypePredicate)
+            .filter(isConfidentialDocument())
+            .map(toManagedDocumentElement())
+            .collect(toList());
+    }
+
+    private static List<Element<ManagedDocument>> convertManagedDocumentFromNonConfidentialFurtherEvidenceDocument(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        final List<Element<ManagedDocument>> newDocList =
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
-                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(matchFurtherEvidenceType(furtherEvidenceType))
                 .filter(expertReportTypePredicate)
-                .filter(fed -> fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
+                .filter(isNonConfidentialDocument())
+                .map(toManagedDocumentElement())
                 .collect(toList());
-
-        final List<Element<ManagedDocument>> newDocList = new ArrayList<>(
-            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()).stream()
-                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
-                .filter(expertReportTypePredicate)
-                .filter(fed -> !fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList()));
-
-        // uploaded by admin
-        final List<Element<ManagedDocument>> newDocListCTSC =
-            Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
-                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
-                .filter(expertReportTypePredicate)
-                .filter(fed -> fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList());
-
         newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()).stream()
-                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(matchFurtherEvidenceType(furtherEvidenceType))
                 .filter(expertReportTypePredicate)
-                .filter(fed -> !fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList()));
-
+                .filter(isNonConfidentialDocument())
+                .map(toManagedDocumentElement())
+                .toList());
         newDocList.addAll(
             Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()).stream()
-                .filter(fed -> furtherEvidenceType.equals(fed.getValue().getType()))
+                .filter(matchFurtherEvidenceType(furtherEvidenceType))
                 .filter(expertReportTypePredicate)
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList()));
+                .map(toManagedDocumentElement())
+                .toList());
+        return newDocList;
+    }
 
+    private static List<Element<ManagedDocument>> convertManagedDocumentFromHearingFurtherEvidenceDocumentByAdmin(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        return Optional.ofNullable(caseData.getHearingFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .flatMap(e -> e.getValue().getSupportingEvidenceBundle().stream())
+            .filter(matchFurtherEvidenceType(furtherEvidenceType))
+            .filter(expertReportTypePredicate)
+            .filter(isConfidentialDocument())
+            .filter(isUploadedByHMCTS())
+            .map(toManagedDocumentElement())
+            .collect(toList());
+    }
+
+    private static List<Element<ManagedDocument>> convertManagedDocumentFromHearingFurtherEvidenceDocumentByLA(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        return Optional.ofNullable(caseData.getHearingFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .flatMap(e -> e.getValue().getSupportingEvidenceBundle().stream())
+            .filter(matchFurtherEvidenceType(furtherEvidenceType))
+            .filter(expertReportTypePredicate)
+            .filter(isConfidentialDocument()) // Private solicitor cannot upload confidential documents.
+            .filter(isNotUploadedByHMCTS())  // i.e. confidential documents are uploaded by LA
+            .map(toManagedDocumentElement())
+            .collect(toList());
+    }
+
+    private static List<Element<ManagedDocument>>
+        convertManagedDocumentFromNonConfidentialHearingFurtherEvidenceDocument(
+        CaseData caseData,
+        FurtherEvidenceType furtherEvidenceType,
+        Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate
+    ) {
+        return Optional.ofNullable(caseData.getHearingFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .flatMap(e -> e.getValue().getSupportingEvidenceBundle().stream())
+            .filter(matchFurtherEvidenceType(furtherEvidenceType))
+            .filter(expertReportTypePredicate)
+            .filter(isNonConfidentialDocument())
+            .map(toManagedDocumentElement())
+            .collect(toList());
+    }
+
+    private static Map<String, Object> migrateFurtherEvidenceDocuments(CaseData caseData,
+                                                                       FurtherEvidenceType furtherEvidenceType,
+                                                                       String newFieldName) {
+        final Predicate<Element<SupportingEvidenceBundle>> expertReportTypePredicate = expertReportTypePredicate(
+            furtherEvidenceType, newFieldName);
+
+        // uploaded by LA
+        final List<Element<ManagedDocument>> newDocListLA = convertManagedDocumentFromFurtherEvidenceDocumentByLA(
+            caseData, furtherEvidenceType, expertReportTypePredicate);
+
+        // uploaded by admin
+        final List<Element<ManagedDocument>> newDocListCTSC = convertManagedDocumentFromFurtherEvidenceDocumentByAdmin(
+            caseData, furtherEvidenceType, expertReportTypePredicate);
+
+        // all non-confidential documents
+        final List<Element<ManagedDocument>> newDocList =
+            convertManagedDocumentFromNonConfidentialFurtherEvidenceDocument(caseData, furtherEvidenceType,
+                expertReportTypePredicate);
+
+        // Relates to hearing
+        newDocListLA.addAll(convertManagedDocumentFromHearingFurtherEvidenceDocumentByLA(caseData,
+            furtherEvidenceType, expertReportTypePredicate));
+        newDocListCTSC.addAll(convertManagedDocumentFromHearingFurtherEvidenceDocumentByAdmin(caseData,
+            furtherEvidenceType, expertReportTypePredicate));
+        newDocList.addAll(convertManagedDocumentFromNonConfidentialHearingFurtherEvidenceDocument(caseData,
+            furtherEvidenceType, expertReportTypePredicate));
 
         Map<String, Object> ret = new HashMap<>();
         ret.put(newFieldName, newDocList);
