@@ -63,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -1040,17 +1041,17 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            DocumentReference placementNoticeDocument = testDocumentReference();
+
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .placementNotice(placementNoticeDocument)
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
