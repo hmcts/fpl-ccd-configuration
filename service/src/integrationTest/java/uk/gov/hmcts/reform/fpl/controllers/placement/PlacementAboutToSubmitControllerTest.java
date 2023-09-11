@@ -31,6 +31,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
     private final Document sealedDocument = testDocument();
     private final DocumentReference application = testDocumentReference("application.doc");
 
+    private final DocumentReference placementNoticeDocument = testDocumentReference("placementNotice.pdf");
+
     @Test
     void shouldSaveNewPlacementApplication() {
 
@@ -39,8 +41,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .recipientName("Local authority")
             .response(testDocumentReference())
             .build());
-
-        DocumentReference placementNoticeDocument = testDocumentReference();
 
         final Placement newPlacement = Placement.builder()
             .childId(child1.getId())
@@ -101,8 +101,6 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .recipientName("Local authority")
             .response(testDocumentReference())
             .build());
-
-        DocumentReference placementNoticeDocument = testDocumentReference();
 
         final Placement existingApplicationForChild1 = Placement.builder()
             .childId(child1.getId())
