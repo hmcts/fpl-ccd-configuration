@@ -109,7 +109,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         assertThat(docmosisChild.getFathersName()).isEqualTo("James White");
         assertThat(docmosisChild.getMothersName()).isEqualTo("Laura White");
         assertThat(docmosisChild.getDateOfBirth()).isEqualTo("20/11/2018");
-        assertThat(docmosisChild.getGender()).isEqualTo("Girl");
+        assertThat(docmosisChild.getGender()).isEqualTo("Female");
         assertThat(docmosisChild.getBirthCertificate().getNumber()).isEqualTo("testBcNumber");
         assertThat(docmosisChild.getBirthCertificate().getDate()).isEqualTo("testBcDateAsFreeText");
         assertThat(docmosisChild.getBirthCertificate().getRegistrationDistrict()).isEqualTo("testBcRegDistrict");
