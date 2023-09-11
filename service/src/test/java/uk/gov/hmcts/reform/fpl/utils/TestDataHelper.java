@@ -53,7 +53,6 @@ import java.util.stream.Stream;
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDate.now;
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
@@ -157,7 +156,7 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild() {
-        return testChild(null);
+        return testChild(ChildGender.OTHER);
     }
 
     public static Element<Child> testChild(ChildGender childGender) {
@@ -165,7 +164,7 @@ public class TestDataHelper {
     }
 
     public static Element<Child> testChild(String firstName, String lastName) {
-        return testChild(firstName, lastName, null, now());
+        return testChild(firstName, lastName, ChildGender.OTHER, now());
     }
 
     public static Element<Child> testChild(String firstName, String lastName, ChildGender gender, LocalDate dob) {
