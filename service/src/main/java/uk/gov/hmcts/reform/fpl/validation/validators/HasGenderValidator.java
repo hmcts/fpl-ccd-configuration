@@ -8,7 +8,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ChildGender.fromLabel;
 
 public class HasGenderValidator implements ConstraintValidator<HasGender, ChildParty> {
     @Override
