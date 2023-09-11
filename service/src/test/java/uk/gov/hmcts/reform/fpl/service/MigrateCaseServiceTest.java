@@ -1041,10 +1041,7 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
-            DocumentReference placementNoticeDocument = testDocumentReference();
-
             var placementRemaining = element(placementToRemain, Placement.builder()
-                            .placementNotice(placementNoticeDocument)
                             .build());
 
             List<Element<Placement>> placements = List.of(

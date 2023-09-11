@@ -143,7 +143,7 @@ class PlacementEventDataTest {
                     .build();
 
             final List<Element<Placement>> actualNonConfidentialPlacements = underTest
-                    .getPlacementsNonConfidential(true);
+                    .getPlacementsNonConfidentialWithNotices(true);
 
             assertThat(actualNonConfidentialPlacements)
                     .extracting(Element::getValue).isEmpty();
