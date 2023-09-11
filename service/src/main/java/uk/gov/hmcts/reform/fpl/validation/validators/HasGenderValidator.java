@@ -4,11 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
+import java.util.Optional;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
 
