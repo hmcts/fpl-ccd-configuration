@@ -250,7 +250,7 @@ public class CaseDataExtractionService {
     private DocmosisChild buildChild(ChildParty child) {
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .gender(child.getGender())
+            .gender(child.getGender().getLabel())
             .dateOfBirth(ofNullable(child.getDateOfBirth())
                 .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
                 .orElse(null))

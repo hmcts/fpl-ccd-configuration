@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -58,7 +59,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .fathersName("James White")
                     .mothersName("Laura White")
                     .dateOfBirth(LocalDate.of(2018, NOVEMBER, 20))
-                    .gender("Girl")
+                    .gender(ChildGender.GIRL)
                     .build())
                 .build()
         );

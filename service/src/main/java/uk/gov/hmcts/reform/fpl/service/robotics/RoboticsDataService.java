@@ -231,7 +231,7 @@ public class RoboticsDataService {
         return Child.builder()
             .firstName(childParty.getFirstName())
             .lastName(childParty.getLastName())
-            .gender(convertStringToGender(childParty.getGender()))
+            .gender(childParty.getGender().getRoboticsLabel()) //needs to return BOY/GIRL/OTHER instead of MALE/FEMALE/OTHER
             .dob(formatDate(childParty.getDateOfBirth(), "d-MMM-y"))
             .isParty(false)
             .build();

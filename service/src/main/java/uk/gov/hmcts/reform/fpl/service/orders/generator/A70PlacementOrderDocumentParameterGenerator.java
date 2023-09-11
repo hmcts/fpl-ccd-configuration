@@ -62,7 +62,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                     .name(getStringValueOrDefault(childInfo.getFullName()))
                     .fathersName(getStringValueOrDefault(childInfo.getFathersName()))
                     .mothersName(getStringValueOrDefault(childInfo.getMothersName()))
-                    .gender(getStringValueOrDefault(childInfo.getGender()))
+                    .gender(getStringValueOrDefault(childInfo.getGender().getLabel()))
                     .dateOfBirth(getFormattedDateOrDefault(childInfo.getDateOfBirth()))
                     .birthCertificate(DocmosisBirthCertificate.builder()
                         .number(manageOrdersEventData.getManageOrdersBirthCertificateNumber())

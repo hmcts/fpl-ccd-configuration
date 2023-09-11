@@ -178,7 +178,7 @@ public class TestDataHelper {
         return ChildParty.builder()
             .firstName(firstName)
             .lastName(lastName)
-            .gender(ofNullable(gender).map(ChildGender::getLabel).orElse(null))
+            .gender(gender)
             .dateOfBirth(dob)
             .build();
     }

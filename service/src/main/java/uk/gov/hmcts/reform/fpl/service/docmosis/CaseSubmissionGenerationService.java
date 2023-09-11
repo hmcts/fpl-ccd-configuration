@@ -708,7 +708,7 @@ public class CaseSubmissionGenerationService
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth(), applicationLanguage))
             .gender(formatGenderDisplay(
-                ChildGender.fromLabel(child.getGender()).getLabel(applicationLanguage),
+                child.getGender().getLabel(applicationLanguage),
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
             .livingSituation(getChildLivingSituation(child, isConfidential, applicationLanguage))

@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildGender.fromLabel;
 public class HasGenderValidator implements ConstraintValidator<HasGender, ChildParty> {
     @Override
     public boolean isValid(ChildParty child, ConstraintValidatorContext constraintValidatorContext) {
-        String gender = OTHER == fromLabel(child.getGender()) ? child.getGenderIdentification() : child.getGender();
+        String gender = OTHER == child.getGender() ? child.getGenderIdentification() : child.getGender().getLabel();
         return StringUtils.isNotBlank(gender);
     }
 }
