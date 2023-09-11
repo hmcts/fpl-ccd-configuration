@@ -61,7 +61,7 @@ Child 2
 Name                                                                Emma White
 Age                                                                 ${age} years old
 Date of birth                                                       1 January 2020
-Gender                                                              Girl
+Gender                                                              Female
 Child’s living situation                                            -
 Key dates                                                           -
 Care and contact plan                                               -
