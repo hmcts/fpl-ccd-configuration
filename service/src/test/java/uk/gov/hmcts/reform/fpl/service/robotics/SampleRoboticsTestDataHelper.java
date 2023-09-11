@@ -123,14 +123,14 @@ public class SampleRoboticsTestDataHelper {
         return ImmutableSet.of(Child.builder()
                 .firstName("Sarah")
                 .lastName("Reeves")
-                .gender("FEMALE")
+                .gender("Girl")
                 .dob("2-FEB-2002")
                 .isParty(false)
                 .build(),
             Child.builder()
                 .firstName("Tom")
                 .lastName("Reeves")
-                .gender("MALE")
+                .gender("Boy")
                 .dob("15-JUN-2018")
                 .isParty(false)
                 .build());

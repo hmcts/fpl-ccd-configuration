@@ -16,7 +16,7 @@ class HasGenderValidatorTest extends AbstractValidationTest {
     private static final String ERROR_MESSAGE = "Tell us the gender of all children in the case";
 
     @ParameterizedTest
-    @ValueSource(strings = {"Boy", "Girl"})
+    @ValueSource(strings = {"Male", "Female"})
     void shouldNotReturnAnErrorIfStandardGenderProvided(String standardGender) {
         ChildParty child = ChildParty.builder()
             .gender(ChildGender.fromLabel(standardGender))
