@@ -28,6 +28,8 @@ java:
     PARENTAL_RESPONSIBILITY_FATHER_KEYWORD: ParentalResponsibChg
     PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD: ParentalResponsibility
     DECLARATION_OF_PARENTAGE: Private
+    RD_STAFF_API_ENABLED: true
+    RD_JUDICIAL_API_ENABLED: true
   keyVaults:
     fpl:
       secrets:
@@ -90,7 +92,7 @@ xui-webapp:
     devcpuRequests: 500m
     devmemoryRequests: 512Mi
     devcpuLimits: 1
-    devmemoryLimits: 1Gi
+    devmemoryLimits: 4Gi
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10

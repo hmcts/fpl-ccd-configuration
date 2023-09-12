@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper;
 
 import java.net.URI;
@@ -31,6 +32,9 @@ public abstract class AbstractEmailContentProvider {
     @Autowired
     private DocumentDownloadService documentDownloadService;
 
+    @Autowired
+    private DocumentService documentService;
+
     public String getCaseUrl(Long caseId) {
         return caseUrlService.getCaseUrl(caseId);
     }
@@ -49,7 +53,7 @@ public abstract class AbstractEmailContentProvider {
     }
 
     protected String getDocumentUrl(DocumentReference document) {
-        String binaryUrl = document.getBinaryUrl();
+        String binaryUrl = documentService.getDocumentBinaryUrl(document);
         try {
             URI uri = new URI(binaryUrl);
             return caseUrlService.getBaseUrl() + uri.getPath();

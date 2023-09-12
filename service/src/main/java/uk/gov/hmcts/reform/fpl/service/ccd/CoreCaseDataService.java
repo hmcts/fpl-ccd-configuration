@@ -38,8 +38,7 @@ public class CoreCaseDataService {
     private final CCDConcurrencyHelper concurrencyHelper;
 
     public CaseDetails performPostSubmitCallbackWithoutChange(Long caseId, String eventName) {
-        return performPostSubmitCallback(caseId, eventName,
-            (caseDetaills) -> Map.of(), true);
+        return performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
     }
 
     public CaseDetails performPostSubmitCallback(Long caseId,

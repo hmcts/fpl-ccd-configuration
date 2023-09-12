@@ -316,7 +316,7 @@ public class PlacementService {
                 .dateOfBirth(formatLocalDateToString(placementChild.getParty().getDateOfBirth(), DATE))
                 .gender(placementChild.getParty().getGender())
                 .build())
-            .courtName(caseData.getCourt().getName())
+            .courtName(courtService.getCourtName(caseData))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .hearingDate(String.format(formatLocalDateTimeBaseUsingFormat(
                     placementEventData.getPlacementNoticeDateTime(), DATE_TIME_WITH_ORDINAL_SUFFIX),

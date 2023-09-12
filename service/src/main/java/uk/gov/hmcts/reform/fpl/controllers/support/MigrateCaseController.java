@@ -36,7 +36,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
 @Api
 @Slf4j
@@ -57,13 +56,13 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
-        "DFPL-1466", this::run1466,
         "DFPL-1501", this::run1616,
         "DFPL-1584", this::run1612,
-        "DFPL-1352", this::run1352,
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
+        "DFPL-1724", this::run1724,
+        "DFPL-1725", this::run1725,
         "DFPL-796", this::run796
     );
 
@@ -147,11 +146,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -169,15 +163,6 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedOrderId));
         caseDetails.getData().putAll(migrateCaseService.removeHearingOrdersBundlesDrafts(getCaseData(caseDetails),
             migrationId, expectedHearingOrderBundleId));
-    }
-
-    private void run1466(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1466";
-        var possibleCaseIds = List.of(1665396049325141L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, UUID.fromString("b8da3a48-441f-4210-a21c-7008d256aa32")));
     }
 
     private void run1612(CaseDetails caseDetails) {
@@ -200,29 +185,29 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
-    private void run1352(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1352";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getCourt().getCode().equals(RCJ_HIGH_COURT_CODE)) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is in the High Court",
-                migrationId, caseData.getId()
-            ));
-        }
-        if (caseData.getSendToCtsc().equals("Yes")) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Skipping migration as case is already sending to the CTSC",
-                migrationId, caseData.getId()
-            ));
-        }
-        caseDetails.getData().put("sendToCtsc", "Yes");
-    }
-
     private void run1486(CaseDetails caseDetails) {
         var migrationId = "DFPL-1486";
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
+    }
+
+    private void run1724(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1724";
+        var possibleCaseIds = List.of(1670340332769311L);
+        String expectedJudicialMessage = "0cca095f-f637-41f1-885c-7a87da734417";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
+    }
+
+    private void run1725(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1725";
+        var possibleCaseIds = List.of(1660307161883143L);
+        String expectedJudicialMessage = "4ef749ef-80fd-40df-9b38-711ddf958e7a";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
     }
 
     private void run796(CaseDetails caseDetails) {

@@ -148,9 +148,10 @@ class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
                 organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
+        // Exception is only thrown now at the very end if the creator also couldn't be assigned the role
         assertThatThrownBy(() -> postSubmittedEvent(caseData))
             .getRootCause()
-            .isEqualTo(new GrantCaseAccessException(caseData.getId(), of(LOGGED_USER_ID, OTHER_USER_ID), LASOLICITOR));
+            .isEqualTo(new GrantCaseAccessException(caseData.getId(), of(LOGGED_USER_ID), LASOLICITOR));
     }
 
     private void givenUserInOrganisation(Organisation organisation) {

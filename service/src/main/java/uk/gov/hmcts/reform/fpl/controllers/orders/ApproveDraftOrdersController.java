@@ -104,8 +104,6 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(callbackRequest)));
-
-        draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 
     @PostMapping("/post-submit-callback/about-to-submit")
@@ -139,5 +137,13 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/post-submit-callback/submitted")
+    public void handlePostSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 }
