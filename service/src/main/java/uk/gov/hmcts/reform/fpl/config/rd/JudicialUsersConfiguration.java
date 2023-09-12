@@ -44,7 +44,12 @@ public class JudicialUsersConfiguration {
         this.authTokenGenerator = authTokenGenerator;
         log.info("Attempting to gather all judges.");
         if (jrdEnabled) {
-            mapping = this.getAllJudges();
+            try {
+                mapping = this.getAllJudges();
+            } catch (Exception e) {
+                mapping = Map.of();
+                log.error("Could not download list of publiclaw judiciary from JRD", e);
+            }
         } else {
             mapping = Map.of();
         }
@@ -72,7 +77,7 @@ public class JudicialUsersConfiguration {
 
     @Recover
     public Map<String, String> recoverFailedJudgeCall(FeignException e) {
-        log.error("Could not download list of publiclaw judiciary from JRD", e);
+        log.error("Recover - Could not download list of publiclaw judiciary from JRD", e);
         return Map.of();
     }
 

@@ -9,8 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
-import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -95,12 +93,6 @@ class ListGatekeepingHearingControllerAboutToSubmitTest extends AbstractCallback
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private JudicialUsersConfiguration judicialUsersConfiguration;
-
-    @MockBean
-    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     ListGatekeepingHearingControllerAboutToSubmitTest() {
         super("list-gatekeeping-hearing");

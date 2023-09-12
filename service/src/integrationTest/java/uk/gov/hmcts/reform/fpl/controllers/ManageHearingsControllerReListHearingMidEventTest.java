@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -19,12 +16,6 @@ class ManageHearingsControllerReListHearingMidEventTest extends ManageHearingsCo
     ManageHearingsControllerReListHearingMidEventTest() {
         super("manage-hearings");
     }
-
-    @MockBean
-    private JudicialUsersConfiguration judicialUsersConfiguration;
-
-    @MockBean
-    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldPrePopulateNewReListedHearingWithAdjournedHearingDetails() {

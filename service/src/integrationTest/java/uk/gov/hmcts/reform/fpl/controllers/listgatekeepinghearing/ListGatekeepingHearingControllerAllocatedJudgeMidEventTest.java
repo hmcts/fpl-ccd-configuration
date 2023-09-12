@@ -3,28 +3,14 @@ package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.rd.client.JudicialApi;
-import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
-
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 
 @WebMvcTest(ListGatekeepingHearingController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -34,95 +20,38 @@ class ListGatekeepingHearingControllerAllocatedJudgeMidEventTest extends Abstrac
         super("list-gatekeeping-hearing/allocated-judge");
     }
 
-    @MockBean
-    private JudicialApi jrdApi;
-
-    @MockBean
-    private JudicialUsersConfiguration judicialUsersConfiguration;
-
-    @MockBean
-    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
-
     @Test
-    void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
-        given(jrdApi.findUsers(any(), any(), anyInt(), any())).willReturn(List.of(JudicialUserProfile.builder()
-            .build()));
-        CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .judicialUser(JudicialUser.builder()
-                .personalCode("1234")
-                .build())
-            .build();
+    void shouldNotReturnAValidationErrorWhenJudgeEmailIsValidAndSetJudgeAndLegalAdvisorField() {
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-
-        assertThat((callbackResponse.getErrors())).isNull();
-    }
-
-    @Test
-    void shouldNotReturnAValidationErrorWhenJudgeEnteredManually() {
-        CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .tempAllocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
+        final CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(DISTRICT_JUDGE)
+                .judgeLastName("Judge")
                 .judgeEmailAddress("email@example.com")
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+
+        final CaseData responseData = extractCaseData(callbackResponse);
 
         assertThat((callbackResponse.getErrors())).isNull();
-    }
-
-
-    @Test
-    void shouldReturnAValidationErrorWhenNoPersonalCode() {
-        CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.NO)
-            .judicialUser(JudicialUser.builder()
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-
-        assertThat(callbackResponse.getErrors()).contains(
-            "You must search for a judge or enter their details manually");
+        assertThat(responseData.getJudgeAndLegalAdvisor().getAllocatedJudgeLabel())
+            .isEqualTo("Case assigned to: District Judge Judge");
     }
 
     @Test
-    void shouldReturnAValidationErrorWhenEnterManuallyAndInvalidEmail() {
-        CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .tempAllocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-                .judgeEmailAddress("<not valid email address>")
+    void shouldReturnAValidationErrorWhenJudgeEmailIsInvalid() {
+
+        final CaseData caseData = CaseData.builder()
+            .allocatedJudge(Judge.builder()
+                .judgeEmailAddress("<John Doe> johndoe@email.com")
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+        final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");
     }
-
-    @Test
-    void shouldAddExtraInfoIfInMapping() {
-        when(legalAdviserUsersConfiguration.getLegalAdviserUUID("test@test.com"))
-            .thenReturn(Optional.of("1234"));
-
-        CaseData caseData = CaseData.builder()
-            .enterManually(YesNo.YES)
-            .tempAllocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.LEGAL_ADVISOR)
-                .judgeEmailAddress("test@test.com")
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-        CaseData after = extractCaseData(callbackResponse);
-
-        assertThat((callbackResponse.getErrors())).isNull();
-        assertThat(after.getAllocatedJudge().getJudgeJudicialUser().getIdamId()).isEqualTo("1234");
-    }
-
 }

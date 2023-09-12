@@ -1946,15 +1946,7 @@ class ManageHearingsServiceTest {
             "hearingDuration",
             "hearingDays",
             "hearingHours",
-            "hearingEndDateTime",
-            "hearingJudge",
-            "enterManuallyHearingJudge",
-            "useAllocatedJudge",
-            "allocatedJudgeLabel",
-            "judicialUser",
-            "enterManually",
-            "judicialUserHearingJudge"
-        );
+            "hearingEndDateTime");
     }
 
     private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {

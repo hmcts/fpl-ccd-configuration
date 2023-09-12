@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,23 +14,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
-import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
-import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
@@ -40,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.service.sdo.ListGatekeepingHearingDecider;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +82,6 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
-    private final JudicialService judicialService;
 
     private final CaseConverter converter;
 
@@ -112,8 +104,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
         caseDetails.getData().put("sendNoticeOfHearing", YES.getValue());
-        caseDetails.getData().put("enterManually", NO.getValue());
-        caseDetails.getData().put("enterManuallyHearingJudge", NO.getValue());
 
         setNewHearing(caseDetails);
 
@@ -147,14 +137,7 @@ public class ListGatekeepingHearingController extends CallbackController {
             "gatekeepingOrderHasHearing1",
             "gatekeepingOrderHasHearing2",
             "gatekeepingOrderIssuingJudge",
-            "customDirections",
-            "judicialUser",
-            "enterManually",
-            "judicialUserHearingJudge",
-            "enterManuallyHearingJudge",
-            "hearingJudge",
-            "allocatedJudgeLabel",
-            "useAllocatedJudge"
+            "customDirections"
         );
 
         caseData.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
@@ -170,53 +153,19 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
+        final Judge allocatedJudge = caseData.getAllocatedJudge();
 
-        Optional<String> error = judicialService.validateTempAllocatedJudge(caseData);
+        final Optional<String> error = validateEmailService.validate(allocatedJudge.getJudgeEmailAddress());
 
         if (error.isPresent()) {
             return respond(caseDetails, List.of(error.get()));
         }
 
-        Judge allocatedJudge;
-        if (caseData.getEnterManually().equals(YesNo.NO)
-            && !ObjectUtils.isEmpty(caseData.getJudicialUser())
-            && !ObjectUtils.isEmpty(caseData.getJudicialUser().getPersonalCode())) {
-
-            Optional<JudicialUserProfile> jup = judicialService.getJudge(caseData.getJudicialUser().getPersonalCode());
-            if (jup.isPresent()) {
-                allocatedJudge = Judge.fromJudicialUserProfile(jup.get());
-                caseDetails.getData().put("allocatedJudge", allocatedJudge);
-            } else {
-                return respond(caseDetails,
-                    List.of("No Judge could be found, please retry your search or enter their details manually."));
-            }
-        } else {
-            // lookup the manual entry to see if we can do a mapping anyway
-            allocatedJudge = caseData.getTempAllocatedJudge();
-            Optional<String> possibleId = judicialService
-                .getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
-            if (possibleId.isPresent()) {
-                // if they are in our maps - add their UUID extra info to the case
-                caseDetails.getData().put("allocatedJudge",
-                    allocatedJudge.toBuilder()
-                        .judgeJudicialUser(JudicialUser.builder()
-                            .idamId(possibleId.get())
-                            .build())
-                        .build());
-            } else {
-                // put the temporary manual entry into the proper field
-                caseDetails.getData().put("allocatedJudge", caseData.getTempAllocatedJudge());
-            }
-        }
-
-        // todo - test removal of this, as we use the manual label field now on the hearing judge page
         caseDetails.getData().put(
             "judgeAndLegalAdvisor",
             JudgeAndLegalAdvisor.builder()
                 .allocatedJudgeLabel(buildAllocatedJudgeLabel(allocatedJudge))
                 .build());
-
-        caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(allocatedJudge));
 
         return respond(caseDetails);
     }
@@ -252,70 +201,26 @@ public class ListGatekeepingHearingController extends CallbackController {
 
     @PostMapping("validate-judge-email/mid-event")
     public CallbackResponse validateJudgeEmailMidEvent(@RequestBody CallbackRequest callbackRequest) {
+
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        // todo - refactor me, triple nested if!!!
-        JudgeAndLegalAdvisor hearingJudge;
-        if (NO.equals(caseData.getUseAllocatedJudge()) || isEmpty(caseData.getUseAllocatedJudge())) {
-            final Optional<String> error = judicialService.validateHearingJudge(caseData);
+        final JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
+
+        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
+            final Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
             if (error.isPresent()) {
                 return respond(caseDetails, List.of(error.get()));
             }
-
-            if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-                Optional<JudicialUserProfile> jup = judicialService
-                    .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
-
-                if (jup.isPresent()) {
-                    // found judge details from JRD
-                    hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    return respond(caseDetails,
-                        List.of("No Judge could be found, please retry your search or enter their"
-                            + " details manually."));
-                }
-            } else {
-                // entered the judge manually, want to use a custom hearing judge
-                // check if we can use our mappings to manually add a UUID based on their email
-                Optional<String> possibleId = judicialService
-                    .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
-                if (possibleId.isPresent()) {
-                    // we've found a match in our map - add it to the case details
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .judgeJudicialUser(JudicialUser.builder()
-                            .idamId(possibleId.get())
-                            .build())
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    // cannot find the email entered in our map, so just default to the info provided
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                }
-            }
-        } else {
-            // hearing judge == allocated judge
-            hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
-                .legalAdvisorName(caseData.getLegalAdvisorName())
-                .build();
         }
-
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
 
         return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
-        final CaseData caseData = getCaseData(request);
-
-        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
-        publishEvent(new NewAllocatedJudgeEvent(caseData.getAllocatedJudge(), caseData.getId()));
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(request), getCaseDataBefore(request)));
         triggerPostSubmissionHearingEvents(request);
         triggerPostSealingEvents(request);
     }
@@ -404,13 +309,12 @@ public class ListGatekeepingHearingController extends CallbackController {
     }
 
     private void triggerPostSubmissionHearingEvents(CallbackRequest request) {
+
         final CaseData caseData = getCaseData(request);
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, Optional.empty()));
-
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
                     }

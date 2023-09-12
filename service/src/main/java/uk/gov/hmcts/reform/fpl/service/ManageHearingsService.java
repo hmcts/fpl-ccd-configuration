@@ -419,14 +419,7 @@ public class ManageHearingsService {
             HEARING_MINUTES,
             HEARING_HOURS,
             HEARING_DURATION,
-            HEARING_END_DATE_TIME,
-            "judicialUser",
-            "enterManually",
-            "judicialUserHearingJudge",
-            "enterManuallyHearingJudge",
-            "hearingJudge",
-            "allocatedJudgeLabel",
-            "useAllocatedJudge"
+            HEARING_END_DATE_TIME
         );
     }
 
