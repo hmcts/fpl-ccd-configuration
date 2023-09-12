@@ -20,7 +20,7 @@ public interface StaffApi {
     List<StaffProfile> getAllStaffResponseDetails(
         @RequestHeader("Authorization") String authorization,
         @RequestHeader("ServiceAuthorization") String serviceAuthorization,
-        @RequestHeader("page_size") int pageSize,
+        @RequestHeader("page-size") int pageSize,
         @RequestParam("serviceCode") String serviceCode,
         @RequestParam("userType") String jobTitle
     );

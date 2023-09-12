@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -27,6 +30,10 @@ import uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import uk.gov.hmcts.reform.am.model.RoleCategory;
+import uk.gov.hmcts.reform.am.model.RoleType;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -321,7 +328,5 @@ class RoleAssignmentServiceTest {
             assertThat(captor.getAllValues()).containsExactlyInAnyOrder("role-1", "role-2");
         }
     }
-
-
 
 }

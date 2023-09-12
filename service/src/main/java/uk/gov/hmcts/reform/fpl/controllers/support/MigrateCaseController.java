@@ -71,7 +71,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1649", this::run1649,
         "DFPL-1486", this::run1486,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback
+        "DFPL-AM-Rollback", this::runAmRollback,
+        "DFPL-1725", this::run1725
     );
 
     @PostMapping("/about-to-submit")
@@ -271,5 +272,14 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId, messageId));
         caseDetails.getData().putAll(migrateCaseService.removeCourtBundleByBundleId(caseData, migrationId,
             expectedHearingId, expectedCourtBundleId));
+
+    private void run1725(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1725";
+        var possibleCaseIds = List.of(1660307161883143L);
+        String expectedJudicialMessage = "4ef749ef-80fd-40df-9b38-711ddf958e7a";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
     }
 }
