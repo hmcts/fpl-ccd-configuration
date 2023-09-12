@@ -1405,7 +1405,8 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
             assertThat(updatedFields).extracting("courtBundleListV2").asList().size().isEqualTo(2);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(courtBundleOne, courtBundleTwo);
-            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(courtBundleOne, courtBundleTwo);
+            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList()
+                .contains(courtBundleOne, courtBundleTwo);
         }
 
         @Test
