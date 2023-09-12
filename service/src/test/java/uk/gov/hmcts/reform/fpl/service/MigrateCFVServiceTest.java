@@ -1405,7 +1405,6 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
             assertThat(updatedFields).extracting("courtBundleListV2").asList().size().isEqualTo(2);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(courtBundleOne, courtBundleTwo);
-            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(courtBundleOne, courtBundleTwo);
         }
 
         @Test
@@ -1433,8 +1432,6 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundle,
                 confidentialBundleTwo);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
-            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(confidentialBundle,
-                confidentialBundleTwo, nonConfidentialBundle);
         }
 
         @Test
@@ -1461,8 +1458,6 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListLA").asList().contains(confidentialBundleLA);
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundleCTSC);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
-            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(confidentialBundleLA,
-                confidentialBundleCTSC, nonConfidentialBundle);
         }
 
         @Test
@@ -1479,8 +1474,6 @@ class MigrateCFVServiceTest {
                 .courtBundle(List.of(buildCourtBundle())).build());
 
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
-            caseDataMap.put("courtBundleListV2Backup", List.of(nonConfidentialBundle, confidentialBundleLA,
-                confidentialBundleCTSC));
             caseDataMap.put("courtBundleListV2", List.of(nonConfidentialBundle));
             caseDataMap.put("courtBundleListLA", List.of(confidentialBundleLA));
             caseDataMap.put("courtBundleListCTSC", List.of(confidentialBundleCTSC));
@@ -1488,11 +1481,10 @@ class MigrateCFVServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
-                .containsOnlyKeys("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC",
-                    "courtBundleListV2Backup");
+                .containsOnlyKeys("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC");
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
-                .extracting("courtBundleListLA", "courtBundleListCTSC", "courtBundleListV2Backup")
-                .containsExactly(List.of(), List.of(), List.of());
+                .extracting("courtBundleListLA", "courtBundleListCTSC")
+                .containsExactly(List.of(), List.of());
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
                 .extracting("courtBundleListV2").asList()
                 .contains(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);

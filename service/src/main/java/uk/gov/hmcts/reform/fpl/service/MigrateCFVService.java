@@ -707,12 +707,22 @@ public class MigrateCFVService {
     public Map<String, Object> rollbackCourtBundleMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
+        List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
+
+        if (caseDataMap.get("courtBundleListV2") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListV2"));
+        }
+        if (caseDataMap.get("courtBundleListLA") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListLA"));
+        }
+        if (caseDataMap.get("courtBundleListCTSC") != null) {
+            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListCTSC"));
+        }
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("courtBundleListV2", caseDataMap.get("courtBundleListV2Backup"));
+        ret.put("courtBundleListV2", newHearingCourtBundleList);
         ret.put("courtBundleListLA", List.of());
         ret.put("courtBundleListCTSC", List.of());
-        ret.put("courtBundleListV2Backup", List.of());
         return ret;
     }
 
@@ -762,7 +772,6 @@ public class MigrateCFVService {
         }
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("courtBundleListV2Backup", hearingCourtBundles);
         ret.put("courtBundleListV2", newHearingCourtBundleList);
         ret.put("courtBundleListLA", hearingCourtBundleListLA);
         ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
