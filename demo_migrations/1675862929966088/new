@@ -206,7 +206,7 @@
   "SearchCriteria": {
     "SearchParties": [
       {
-        "id": "b3fdf490-dfb2-4c8c-866e-2022ecd94ed1",
+        "id": "2fc1545a-aea5-44bb-8feb-ae8bf6d3d01e",
         "value": {
           "Name": "Joe Bloggs",
           "PostCode": "RG4 7AA",
@@ -215,7 +215,7 @@
         }
       },
       {
-        "id": "16b0ff03-248a-4c6d-8e04-8307e2ee6967",
+        "id": "740c6c34-9948-4d38-8c4d-c97b0f4b612b",
         "value": {
           "Name": "Timothy Jones",
           "DateOfBirth": "2015-08-01"
@@ -597,6 +597,24 @@
               ],
               "hasConfidentialAddress": "No"
             }
+          },
+          {
+            "id": "1836b0a8-30a1-4b42-ab55-b189ede9d342",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
           }
         ],
         "courtBundleNC": []
@@ -616,6 +634,22 @@
                 "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341",
                 "document_filename": "LA_UPLOAD_COURT_BUNDLE.docx",
                 "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341/binary"
+              },
+              "confidential": [],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "9e6a3485-a54e-4086-97e1-9c7ce29e78c5",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f/binary"
               },
               "confidential": [],
               "uploaderCaseRoles": [],
@@ -1188,6 +1222,85 @@
           "ACK_RELATED_TO_CASE"
         ],
         "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "courtBundleListV2Backup": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "courtBundle": [
+          {
+            "id": "def98f32-0078-4872-b07e-e620df615785",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341",
+                "document_filename": "LA_UPLOAD_COURT_BUNDLE.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341/binary"
+              },
+              "confidential": [],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "2b63e8aa-89ad-4c52-b318-d97c219c9174",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7168a7e1-30b3-4858-a62c-5281d15b963d",
+                "document_filename": "LA_UPLOAD_COURT_BUNDLE_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7168a7e1-30b3-4858-a62c-5281d15b963d/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "9e6a3485-a54e-4086-97e1-9c7ce29e78c5",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f/binary"
+              },
+              "confidential": [],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "1836b0a8-30a1-4b42-ab55-b189ede9d342",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "courtBundleNC": []
       }
     }
   ],
