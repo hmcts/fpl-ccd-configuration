@@ -68,16 +68,30 @@ rd_professional:
   api:
     url: ${RD_PROFESSIONAL_API_URL:http://localhost:8765}
 
+rd_judicial:
+  api:
+    enabled: false
+    url: ${RD_JUDICIAL_API_URL:http://localhost:8765}
+
+rd_staff:
+  api:
+    enabled: false
+    url: ${RD_STAFF_API_URL:http://localhost:8765}
+
+am_role_assignment:
+  api:
+    url: ${AM_API_URL:http://localhost:4096}
+
 fees-register:
   api:
-    url: http://localhost:8765
+    url: ${FEES_REGISTER_API_URL:http://localhost:8765}
 
 send-letter:
   url: http://localhost:8765
 
 payment:
   api:
-    url: http://localhost:8765
+    url: ${PAYMENT_API_URL:http://localhost:8765}
 
 manage-case:
   ui:

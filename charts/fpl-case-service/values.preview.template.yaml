@@ -28,6 +28,8 @@ java:
     PARENTAL_RESPONSIBILITY_FATHER_KEYWORD: ParentalResponsibChg
     PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD: ParentalResponsibility
     DECLARATION_OF_PARENTAGE: Private
+    RD_STAFF_API_ENABLED: true
+    RD_JUDICIAL_API_ENABLED: true
   keyVaults:
     fpl:
       secrets:
