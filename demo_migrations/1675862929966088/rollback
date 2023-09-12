@@ -1,0 +1,1534 @@
+{
+  "court": {
+    "code": "344",
+    "name": "Family Court sitting at Swansea",
+    "email": "FamilyPublicLaw+sa@gmail.com"
+  },
+  "orders": {
+    "orderType": [
+      "CARE_ORDER"
+    ]
+  },
+  "grounds": {
+    "thresholdReason": [
+      "noCare"
+    ],
+    "thresholdDetails": "mock threshold details"
+  },
+  "hearing": {
+    "reason": "test reason",
+    "timeFrame": "Same day"
+  },
+  "caseName": "Ashley CFV Migration Test 3",
+  "taskList": "<div class='width-50'>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a>Submit application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/cannot-send-yet.png' title='Cannot send yet'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n</div>\n\n<details class='govuk-details'>\n\n<summary class='govuk-details__summary'>\n\n<span class='govuk-details__summary-text'>\n\nWhy can't I submit my application?\n\n</span>\n\n</summary>\n\n<div class='govuk-details__text'>\n\nAdd the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\nAdd the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\nAdd the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\nAdd applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a>\n\nAdd the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\nAdd the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\nAdd the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n</div>\n\n</details>",
+  "children1": [
+    {
+      "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "Jones",
+          "firstName": "Timothy",
+          "dateOfBirth": "2015-08-01"
+        }
+      }
+    }
+  ],
+  "solicitor": {
+    "dx": "160010 Kingsway 7",
+    "name": "John Smith",
+    "email": "solicitor@email.com",
+    "mobile": "07000000000",
+    "reference": "reference",
+    "telephone": "00000000000"
+  },
+  "applicants": [
+    {
+      "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+      "value": {
+        "party": {
+          "email": {
+            "email": "swansea@test.com"
+          },
+          "address": {
+            "County": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 12, Pinnacle Apartments",
+            "AddressLine2": "Saffron Central Square 11"
+          },
+          "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+          "jobTitle": "Legal adviser",
+          "partyType": "ORGANISATION",
+          "pbaNumber": "PBA0082848",
+          "clientCode": "8888",
+          "mobileNumber": {
+            "telephoneNumber": "07000000000"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "00000000000",
+            "contactDirection": "Jonathon Walker"
+          },
+          "organisationName": "Swansea City Council",
+          "customerReference": "Example reference"
+        },
+        "leadApplicantIndicator": "Yes"
+      }
+    }
+  ],
+  "sealedCMOs": [
+    {
+      "id": "7316a1b3-9d75-4596-a811-4fa60b3339c5",
+      "value": {
+        "type": "AGREED_CMO",
+        "order": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "cmo6.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "title": "Agreed CMO discussed at hearing",
+        "status": "APPROVED",
+        "hearing": "Case management hearing, 1 March 2020",
+        "dateSent": "2021-07-06",
+        "dateIssued": "2021-07-06",
+        "supportingDocs": [
+          {
+            "id": "e2281677-bcb3-4bb4-b1cb-d359db96796f",
+            "value": {
+              "name": "case summary",
+              "notes": "this is the case summary",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+                "document_filename": "mockFile.txt",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+              },
+              "confidential": []
+            }
+          }
+        ],
+        "judgeTitleAndName": "Her Honour Judge Reed",
+        "lastUploadedOrder": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "mockFile.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        }
+      }
+    },
+    {
+      "id": "22c004bf-17f1-4e86-ba6d-ce5b955d6227",
+      "value": {
+        "type": "AGREED_CMO",
+        "order": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "cmo5.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "title": "Agreed CMO discussed at hearing",
+        "status": "APPROVED",
+        "hearing": "Case management hearing, 1 January 2020",
+        "dateSent": "2021-07-05",
+        "dateIssued": "2021-07-05",
+        "supportingDocs": [],
+        "judgeTitleAndName": "Her Honour Judge Reed",
+        "lastUploadedOrder": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "mockFile.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        }
+      }
+    }
+  ],
+  "sendToCtsc": "Yes",
+  "respondents1": [
+    {
+      "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "RG4 7AA",
+            "PostTown": "Reading",
+            "AddressLine1": "Flat 2",
+            "AddressLine2": "Caversham House 15-17",
+            "AddressLine3": "Church Road"
+          },
+          "lastName": "Bloggs",
+          "firstName": "Joe",
+          "dateOfBirth": "1980-01-01",
+          "placeOfBirth": "London",
+          "telephoneNumber": {
+            "telephoneNumber": "00000 000000"
+          },
+          "relationshipToChild": "Uncle"
+        }
+      }
+    }
+  ],
+  "dateSubmitted": "2023-02-08",
+  "SearchCriteria": {
+    "SearchParties": [
+      {
+        "id": "d1d8bed4-6014-460a-ad62-60f96b8be4d7",
+        "value": {
+          "Name": "Joe Bloggs",
+          "PostCode": "RG4 7AA",
+          "DateOfBirth": "1980-01-01",
+          "AddressLine1": "Flat 2"
+        }
+      },
+      {
+        "id": "aff0bacd-62ac-4f86-a0e4-a445fdfc44b7",
+        "value": {
+          "Name": "Timothy Jones",
+          "DateOfBirth": "2015-08-01"
+        }
+      }
+    ]
+  },
+  "allocatedJudge": {
+    "judgeTitle": "HER_HONOUR_JUDGE",
+    "judgeLastName": "Moley",
+    "judgeEmailAddress": "moley@example.com"
+  },
+  "deadline26week": "2023-08-09",
+  "documentViewLA": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Care plan</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/73e52128-a2c5-4458-ab22-413a034d6726/binary'>LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/672119b6-5b27-4e3b-afea-21f575618ced/binary'>LA_UPLOAD_CAREPLAN.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary'>LA_UPLOAD_SWC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary'>LA_UPLOAD_SWC.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/773932f1-ac19-4eec-8895-78db935a4897/binary'>LA_UPLOAD_SWS_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary'>LA_UPLOAD_SWS.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Application statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">EEEE</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">EEEE</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/7030ba41-25fd-4238-ba2f-7bd85f12ff19/binary'>LA_UPLOAD_NH_APPLICANT_STMT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">DDDD</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">DDDD</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/41ee862e-1028-4e2a-8f26-a78e3271743d/binary'>LA_UPLOAD_NH_APPLICANT_STMT.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">A</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary'>LA_UPLOAD_APPLICANT_STMT.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Child's guardian reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">D</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">C</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">GGGG</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/25bcfbc5-d1d1-4e59-af67-af034d3d7565/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">FFFFF</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Joe Bloggs statements</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">B</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/6b9678c4-ed35-45af-859c-c9f4cdfb203c/binary'>UPLOAD_RESPONDENT_STATEMENT confidential.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/321294fa-b06a-4cd7-9da8-5963aec8a860/binary'>UPLOAD_RESPONDENT_STATEMENT.docx</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "documentViewNC": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Care plan</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/672119b6-5b27-4e3b-afea-21f575618ced/binary'>LA_UPLOAD_CAREPLAN.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary'>LA_UPLOAD_SWC.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary'>LA_UPLOAD_SWS.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Application statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">DDDD</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">DDDD</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/41ee862e-1028-4e2a-8f26-a78e3271743d/binary'>LA_UPLOAD_NH_APPLICANT_STMT.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">A</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary'>LA_UPLOAD_APPLICANT_STMT.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Child's guardian reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">C</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">FFFFF</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Joe Bloggs statements</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/321294fa-b06a-4cd7-9da8-5963aec8a860/binary'>UPLOAD_RESPONDENT_STATEMENT.docx</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "hearingDetails": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "type": "CASE_MANAGEMENT",
+        "venue": "96",
+        "endDate": "2050-01-02T16:30:00",
+        "startDate": "2050-01-01T15:15:00",
+        "hearingNeedsBooked": [
+          "INTERPRETER",
+          "SPOKEN_OR_WRITTEN_WELSH",
+          "SOMETHING_ELSE"
+        ],
+        "venueCustomAddress": {},
+        "hearingNeedsDetails": "Some details",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Reed",
+          "legalAdvisorName": "Rupert Robert"
+        }
+      }
+    }
+  ],
+  "caseSummaryList": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/75d8f7d3-479c-4ff5-96f5-226b3d4bd36c",
+          "document_filename": "LA_UPLOAD_CASE_SUMMARY.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/75d8f7d3-479c-4ff5-96f5-226b3d4bd36c/binary"
+        },
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "orderCollection": [
+    {
+      "id": "50ef824b-0fc3-4786-9c0e-c675cf28d8cc",
+      "value": {
+        "type": "C23 - Emergency protection order",
+        "children": [
+          {
+            "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+            "value": {
+              "party": {
+                "gender": "Boy",
+                "lastName": "Jones",
+                "firstName": "Timothy",
+                "dateOfBirth": "2015-08-01"
+              },
+              "finalOrderIssued": "Yes"
+            }
+          }
+        ],
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "C23 - Emergency protection order.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
+        "markedFinal": "No",
+        "dateTimeIssued": "2021-07-09T10:13:20.725018",
+        "approvalDateTime": "2021-07-09T10:11:05",
+        "furtherDirections": {},
+        "childrenDescription": "Timothy Jones",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Moley",
+          "judgeEmailAddress": "moley@example.com"
+        },
+        "unsealedDocumentCopy": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "c23_emergency_protection_order.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        }
+      }
+    },
+    {
+      "id": "81c1dcc9-78f3-469c-9bb5-c6c39f09a925",
+      "value": {
+        "type": "C23 - Emergency protection order",
+        "children": [
+          {
+            "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+            "value": {
+              "party": {
+                "gender": "Boy",
+                "lastName": "Jones",
+                "firstName": "Timothy",
+                "dateOfBirth": "2015-08-01"
+              },
+              "finalOrderIssued": "Yes"
+            }
+          }
+        ],
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "C23 - Emergency protection order.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
+        "markedFinal": "No",
+        "dateTimeIssued": "2021-07-07T10:12:42.925666",
+        "approvalDateTime": "2021-07-07T10:11:05",
+        "furtherDirections": {},
+        "childrenDescription": "Timothy Jones",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Moley",
+          "judgeEmailAddress": "moley@example.com"
+        },
+        "unsealedDocumentCopy": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "c23_emergency_protection_order.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        }
+      }
+    },
+    {
+      "id": "7f59d034-89cf-4f85-9fa3-73f8fba7b266",
+      "value": {
+        "type": "Discharge of care order (C32B)",
+        "children": [
+          {
+            "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+            "value": {
+              "party": {
+                "gender": "Boy",
+                "lastName": "Jones",
+                "firstName": "Timothy",
+                "dateOfBirth": "2015-08-01"
+              },
+              "finalOrderIssued": "Yes"
+            }
+          }
+        ],
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "Discharge of care order (C32B).pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "orderType": "C32B_DISCHARGE_OF_CARE_ORDER",
+        "markedFinal": "Yes",
+        "approvalDate": "2021-07-07",
+        "dateTimeIssued": "2021-07-07T10:12:15.71137",
+        "furtherDirections": {},
+        "childrenDescription": "Timothy Jones",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Moley",
+          "judgeEmailAddress": "moley@example.com"
+        },
+        "unsealedDocumentCopy": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "c32b_discharge_of_care_order.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        }
+      }
+    },
+    {
+      "id": "3c4af2b9-1cd9-40c6-ac30-50c16821e869",
+      "value": {
+        "type": "C32 - Care order",
+        "children": [
+          {
+            "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+            "value": {
+              "party": {
+                "gender": "Boy",
+                "lastName": "Jones",
+                "firstName": "Timothy",
+                "dateOfBirth": "2015-08-01"
+              },
+              "finalOrderIssued": "Yes"
+            }
+          }
+        ],
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "C32 - Care order.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "orderType": "C32_CARE_ORDER",
+        "markedFinal": "Yes",
+        "approvalDate": "2012-11-03",
+        "dateTimeIssued": "2021-07-07T10:11:44.069464",
+        "needTranslation": "Yes",
+        "furtherDirections": {},
+        "childrenDescription": "Timothy Jones",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "Reed",
+          "legalAdvisorName": "Jack Nickolson",
+          "judgeEmailAddress": "jack.nickolson@judge.com"
+        },
+        "unsealedDocumentCopy": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "c32_care_order.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "translationRequirements": "ENGLISH_TO_WELSH"
+      }
+    }
+  ],
+  "gatekeeperEmails": [
+    {
+      "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
+      "value": {
+        "email": "familypubliclaw+gatekeeper@gmail.com"
+      }
+    }
+  ],
+  "localAuthorities": [
+    {
+      "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+      "value": {
+        "name": "Swansea City Council",
+        "email": "test@test.com",
+        "phone": "02027725772",
+        "address": {
+          "County": "Swansea",
+          "Country": "United Kingdom",
+          "PostCode": "CR0 2GE",
+          "PostTown": "Swansea",
+          "AddressLine1": "Flat 1, Swansea Apartments",
+          "AddressLine2": "Swansea Central Square 11",
+          "AddressLine3": "40 Fleet street"
+        },
+        "pbaNumber": "PBA1234567",
+        "colleagues": [
+          {
+            "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+            "value": {
+              "role": "SOLICITOR",
+              "email": "test@test.com",
+              "fullName": "Solicitor 1",
+              "notificationRecipient": "Yes"
+            }
+          }
+        ],
+        "designated": "Yes"
+      }
+    }
+  ],
+  "courtBundleListV2": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "courtBundle": [
+          {
+            "id": "def98f32-0078-4872-b07e-e620df615785",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341",
+                "document_filename": "LA_UPLOAD_COURT_BUNDLE.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/80d16330-e04d-4806-a191-a158a8814341/binary"
+              },
+              "confidential": [],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "2b63e8aa-89ad-4c52-b318-d97c219c9174",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7168a7e1-30b3-4858-a62c-5281d15b963d",
+                "document_filename": "LA_UPLOAD_COURT_BUNDLE_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7168a7e1-30b3-4858-a62c-5281d15b963d/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "9e6a3485-a54e-4086-97e1-9c7ce29e78c5",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/548b3f66-1ac0-4456-8ed9-c3875765542f/binary"
+              },
+              "confidential": [],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "1836b0a8-30a1-4b42-ab55-b189ede9d342",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be",
+                "document_filename": "ADMIN_UPLOAD_COURT_BUNDLE_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d9a04838-0abc-429a-a0fc-7b1ee90998be/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "uploaderCaseRoles": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "courtBundleNC": []
+      }
+    }
+  ],
+  "documentViewHMCTS": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Care plan</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/73e52128-a2c5-4458-ab22-413a034d6726/binary'>LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/672119b6-5b27-4e3b-afea-21f575618ced/binary'>LA_UPLOAD_CAREPLAN.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary'>LA_UPLOAD_SWC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary'>LA_UPLOAD_SWC.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/773932f1-ac19-4eec-8895-78db935a4897/binary'>LA_UPLOAD_SWS_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary'>LA_UPLOAD_SWS.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Application statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">EEEE</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">EEEE</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/7030ba41-25fd-4238-ba2f-7bd85f12ff19/binary'>LA_UPLOAD_NH_APPLICANT_STMT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">DDDD</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">DDDD</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/41ee862e-1028-4e2a-8f26-a78e3271743d/binary'>LA_UPLOAD_NH_APPLICANT_STMT.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">B</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">B</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/4a26dad9-07d6-4e63-83fd-4727f3a9af88/binary'>LA_UPLOAD_APPLICANT_STMT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">A</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary'>LA_UPLOAD_APPLICANT_STMT.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Child's guardian reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">D</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">C</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">GGGG</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/25bcfbc5-d1d1-4e59-af67-af034d3d7565/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">FFFFF</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Joe Bloggs statements</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">B</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/6b9678c4-ed35-45af-859c-c9f4cdfb203c/binary'>UPLOAD_RESPONDENT_STATEMENT confidential.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/321294fa-b06a-4cd7-9da8-5963aec8a860/binary'>UPLOAD_RESPONDENT_STATEMENT.docx</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "submissionConsent": [
+    "agree"
+  ],
+  "allocationProposal": {
+    "proposal": "District judge"
+  },
+  "caseLocalAuthority": "SA",
+  "representativeType": "LOCAL_AUTHORITY",
+  "urgentHearingOrder": {
+    "order": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+      "document_filename": "uho.pdf",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+    },
+    "dateAdded": "2021-07-03",
+    "allocation": "Lay justices",
+    "unsealedOrder": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+      "document_filename": "mockFile.docx",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+    }
+  },
+  "familyManCaseNumber": "mockcaseID",
+  "languageRequirement": "Yes",
+  "applicationDocuments": [
+    {
+      "id": "4d26f5d5-348f-47f8-9db0-ff4550c4bee2",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/672119b6-5b27-4e3b-afea-21f575618ced",
+          "document_filename": "LA_UPLOAD_CAREPLAN.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/672119b6-5b27-4e3b-afea-21f575618ced/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "documentName": null,
+        "documentType": "CARE_PLAN",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:40.699482586",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    },
+    {
+      "id": "38bd831e-03e9-4077-93fc-616ea262aee3",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73e52128-a2c5-4458-ab22-413a034d6726",
+          "document_filename": "LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73e52128-a2c5-4458-ab22-413a034d6726/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "documentName": null,
+        "documentType": "CARE_PLAN",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:41.122456185",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    },
+    {
+      "id": "1f34645d-43c6-4ce6-a20a-ff128843bded",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec",
+          "document_filename": "LA_UPLOAD_SWC.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "documentName": null,
+        "documentType": "SOCIAL_WORK_CHRONOLOGY",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:41.548521625",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    },
+    {
+      "id": "21181b1e-a5e7-483f-b37b-96ebac9380a0",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805",
+          "document_filename": "LA_UPLOAD_SWC_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "documentName": null,
+        "documentType": "SOCIAL_WORK_CHRONOLOGY",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:41.881689176",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    },
+    {
+      "id": "14adf89d-b0ad-4892-a93f-650bdc62548d",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1",
+          "document_filename": "LA_UPLOAD_SWS.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "documentName": null,
+        "documentType": "SOCIAL_WORK_STATEMENT",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:42.286811234",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    },
+    {
+      "id": "78bfc7ea-b3fc-43c1-8827-3377a56fa390",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897",
+          "document_filename": "LA_UPLOAD_SWS_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "documentName": null,
+        "documentType": "SOCIAL_WORK_STATEMENT",
+        "uploaderType": null,
+        "removalReason": null,
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-06T16:38:42.651047877",
+        "uploaderCaseRoles": [],
+        "markAsConfidential": null,
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "translationRequirements": null
+      }
+    }
+  ],
+  "caseSummaryCourtName": "Family Court sitting at Swansea",
+  "dateAndTimeSubmitted": "2023-02-08T13:28:52.785",
+  "localAuthorityPolicy": {
+    "Organisation": {
+      "OrganisationID": "ORGSA",
+      "OrganisationName": "Swansea City Council"
+    },
+    "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+  },
+  "respondentStatements": [
+    {
+      "id": "59715f76-057a-48a8-b67c-a17e72872558",
+      "value": {
+        "respondentId": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "respondentName": "Joe Bloggs",
+        "supportingEvidenceLA": [
+          {
+            "id": "17517189-67ad-49ff-855a-3eeb5052d519",
+            "value": {
+              "name": "A",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860",
+                "document_filename": "UPLOAD_RESPONDENT_STATEMENT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-06T16:40:50.300262188",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "9b8e739a-78f1-4f8e-ad65-9be862edf11a",
+            "value": {
+              "name": "B",
+              "notes": "B",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6b9678c4-ed35-45af-859c-c9f4cdfb203c",
+                "document_filename": "UPLOAD_RESPONDENT_STATEMENT confidential.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6b9678c4-ed35-45af-859c-c9f4cdfb203c/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-06T16:40:50.300864721",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "supportingEvidenceNC": [
+          {
+            "id": "17517189-67ad-49ff-855a-3eeb5052d519",
+            "value": {
+              "name": "A",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860",
+                "document_filename": "UPLOAD_RESPONDENT_STATEMENT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-06T16:40:50.300262188",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "supportingEvidenceBundle": [
+          {
+            "id": "17517189-67ad-49ff-855a-3eeb5052d519",
+            "value": {
+              "name": "A",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860",
+                "document_filename": "UPLOAD_RESPONDENT_STATEMENT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/321294fa-b06a-4cd7-9da8-5963aec8a860/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-06T16:40:50.300262188",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "9b8e739a-78f1-4f8e-ad65-9be862edf11a",
+            "value": {
+              "name": "B",
+              "notes": "B",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6b9678c4-ed35-45af-859c-c9f4cdfb203c",
+                "document_filename": "UPLOAD_RESPONDENT_STATEMENT confidential.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6b9678c4-ed35-45af-859c-c9f4cdfb203c/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-06T16:40:50.300864721",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "skeletonArgumentList": [
+    {
+      "id": "0205085b-e20a-493d-a592-48788377cbd6",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "partyId": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/afc41eb4-fb7d-48f8-9aec-2630efdc936b",
+          "document_filename": "LA_UPLOAD_SKELETON_ARGUMENTS.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/afc41eb4-fb7d-48f8-9aec-2630efdc936b/binary"
+        },
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "partyName": "Respondent - Joe Bloggs",
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "dateTimeUploaded": "2023-09-06T16:59:39.922317592",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "a9b97d14-e5c8-45f7-b585-4deaf5525437",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "partyId": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/554450c2-361f-42d2-a711-9b50e3e4aee9",
+          "document_filename": "LA_UPLOAD_SKELETON_ARGUMENTS_TWO.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/554450c2-361f-42d2-a711-9b50e3e4aee9/binary"
+        },
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "partyName": "Child - Timothy Jones",
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "dateTimeUploaded": "2023-09-06T17:00:57.402790228",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "e490cbd2-8854-45e3-b4bc-004e3d46a187",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "partyId": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a3fde208-e0cf-4ca1-8115-39d5b3597e6c",
+          "document_filename": "LA_UPLOAD_SKELETON_ARGUMENTS_THREE.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a3fde208-e0cf-4ca1-8115-39d5b3597e6c/binary"
+        },
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "partyName": "Applicant - Swansea City Council",
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "dateTimeUploaded": "2023-09-06T17:02:02.167949289",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "caseLocalAuthorityName": "Swansea City Council",
+  "caseSummaryDateOfIssue": "2023-02-08",
+  "caseSummaryLATabHidden": "No",
+  "showFurtherEvidenceTab": "YES",
+  "standardDirectionOrder": {
+    "orderDoc": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+      "document_filename": "sdo.pdf",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+    },
+    "uploader": "judiciary-only@mailnesia.com (judiciary)",
+    "orderStatus": "SEALED",
+    "dateOfUpload": "2021-07-04",
+    "lastUploadedOrder": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+      "document_filename": "mockFile.docx",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+    },
+    "standardDirections": [],
+    "judgeAndLegalAdvisor": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    }
+  },
+  "correspondenceDocuments": [
+    {
+      "id": "bb318ef8-c89e-4d90-b625-857fecac51fb",
+      "value": {
+        "name": "F",
+        "notes": "F",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1bffd614-de35-4cb1-93cd-2018de926bfc",
+          "document_filename": "ADMIN_UPLOAD_CORRESPONDENCE_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1bffd614-de35-4cb1-93cd-2018de926bfc/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:20:23.501633663",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "confidentialTabLabel": "Confidential",
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "6c5eb235-4ee0-4dc3-8940-87bd303f30d4",
+      "value": {
+        "name": "E",
+        "notes": "E",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/388a53e9-0e86-4cdd-bb50-e92f814673b3",
+          "document_filename": "ADMIN_UPLOAD_CORRESPONDENCE.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/388a53e9-0e86-4cdd-bb50-e92f814673b3/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:20:23.501618426",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "caseSummaryCaseFlagNotes": null,
+  "caseSummaryHighCourtCase": "No",
+  "caseSummaryHasNextHearing": "Yes",
+  "caseSummaryNextHearingCMO": null,
+  "correspondenceDocumentsLA": [
+    {
+      "id": "6b2c75bb-b595-47d9-b267-34c87b2ba991",
+      "value": {
+        "name": "D",
+        "notes": "D",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/78f1a07c-bc1a-4911-acc6-1f451615ae37",
+          "document_filename": "LA_UPLOAD_CORRESPONDENCE_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/78f1a07c-bc1a-4911-acc6-1f451615ae37/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:03:59.217776054",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "confidentialTabLabel": "Confidential",
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "af601a72-e07d-43b3-9440-43628ddcefec",
+      "value": {
+        "name": "C",
+        "notes": "C",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486",
+          "document_filename": "LA_UPLOAD_CORRESPONDENCE.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:03:59.217758228",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "correspondenceDocumentsNC": [
+    {
+      "id": "6c5eb235-4ee0-4dc3-8940-87bd303f30d4",
+      "value": {
+        "name": "E",
+        "notes": "E",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/388a53e9-0e86-4cdd-bb50-e92f814673b3",
+          "document_filename": "ADMIN_UPLOAD_CORRESPONDENCE.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/388a53e9-0e86-4cdd-bb50-e92f814673b3/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:20:23.501618426",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "noticeOfProceedingsBundle": [
+    {
+      "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "blah_c6.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "needTranslation": "Yes",
+        "translationRequirements": "ENGLISH_TO_WELSH"
+      }
+    },
+    {
+      "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb92",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb",
+          "document_filename": "blah_c6a.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/540cc03f-131f-4c4e-804a-2498e2a22ceb/binary"
+        },
+        "needTranslation": "Yes",
+        "translationRequirements": "ENGLISH_TO_WELSH"
+      }
+    }
+  ],
+  "caseSummaryCafcassGuardian": null,
+  "caseSummaryHasFinalHearing": null,
+  "caseSummaryLAHighCourtCase": "No",
+  "caseSummaryLASolicitorName": null,
+  "caseSummaryNextHearingDate": "2050-01-01",
+  "caseSummaryNextHearingType": "Case management",
+  "caseSummaryOrdersRequested": "Care order",
+  "furtherEvidenceDocumentsLA": [
+    {
+      "id": "596220cc-7bbf-426f-aa9f-b62080904973",
+      "value": {
+        "name": "DDDD",
+        "type": "APPLICANT_STATEMENT",
+        "notes": "DDDD",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/41ee862e-1028-4e2a-8f26-a78e3271743d",
+          "document_filename": "LA_UPLOAD_NH_APPLICANT_STMT.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/41ee862e-1028-4e2a-8f26-a78e3271743d/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T10:04:27.355422249",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "51de14f5-4111-4dcf-b3fa-b1a262d76e10",
+      "value": {
+        "name": "EEEE",
+        "type": "APPLICANT_STATEMENT",
+        "notes": "EEEE",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7030ba41-25fd-4238-ba2f-7bd85f12ff19",
+          "document_filename": "LA_UPLOAD_NH_APPLICANT_STMT_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/7030ba41-25fd-4238-ba2f-7bd85f12ff19/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T10:04:27.355937359",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "confidentialTabLabel": "Confidential",
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "13348102-5345-42cf-bb91-011e6cd3fa5b",
+      "value": {
+        "name": "FFFFF",
+        "type": "EXPERT_REPORTS",
+        "notes": "FFFF",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a341ffdb-86da-4c1d-b970-fe2ad34872e7",
+          "document_filename": "LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T11:18:06.642879511",
+        "expertReportType": "psychiatricOnChild",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "11d23de0-95db-490c-aef0-05f34e215da3",
+      "value": {
+        "name": "GGGG",
+        "type": "EXPERT_REPORTS",
+        "notes": "GGGG",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25bcfbc5-d1d1-4e59-af67-af034d3d7565",
+          "document_filename": "LA_UPLOAD_NH_EXPERT_PSYCHIATRIC_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25bcfbc5-d1d1-4e59-af67-af034d3d7565/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T11:18:06.643485243",
+        "expertReportType": "psychiatricOnChild",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "confidentialTabLabel": "Confidential",
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "caseSummaryFinalHearingDate": null,
+  "caseSummaryFlagAddedByEmail": null,
+  "caseSummaryLASolicitorEmail": null,
+  "caseSummaryNextHearingJudge": null,
+  "caseSummaryNumberOfChildren": 1,
+  "correspondenceDocumentsLANC": [
+    {
+      "id": "af601a72-e07d-43b3-9440-43628ddcefec",
+      "value": {
+        "name": "C",
+        "notes": "C",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486",
+          "document_filename": "LA_UPLOAD_CORRESPONDENCE.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-06T17:03:59.217758228",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "caseSummaryPreviousCourtName": null,
+  "furtherEvidenceDocumentsLANC": [
+    {
+      "id": "596220cc-7bbf-426f-aa9f-b62080904973",
+      "value": {
+        "name": "DDDD",
+        "type": "APPLICANT_STATEMENT",
+        "notes": "DDDD",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/41ee862e-1028-4e2a-8f26-a78e3271743d",
+          "document_filename": "LA_UPLOAD_NH_APPLICANT_STMT.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/41ee862e-1028-4e2a-8f26-a78e3271743d/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T10:04:27.355422249",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "13348102-5345-42cf-bb91-011e6cd3fa5b",
+      "value": {
+        "name": "FFFFF",
+        "type": "EXPERT_REPORTS",
+        "notes": "FFFF",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a341ffdb-86da-4c1d-b970-fe2ad34872e7",
+          "document_filename": "LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary"
+        },
+        "uploadedBy": "kurt@swansea.gov.uk",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-07T11:18:06.642879511",
+        "expertReportType": "psychiatricOnChild",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "positionStatementChildListV2": [
+    {
+      "id": "6b09cf38-6cd2-4526-a9cb-1868e52c94cf",
+      "value": {
+        "childId": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/51bc96ef-9e99-467c-830e-fd4417470b99",
+          "document_filename": "LA_UPLOAD_POSITION_STATEMENT_CHILD.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/51bc96ef-9e99-467c-830e-fd4417470b99/binary"
+        },
+        "childName": "Timothy Jones",
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "caseSummaryAllocatedJudgeName": "Her Honour Judge Moley",
+  "caseSummaryFlagAssessmentForm": null,
+  "caseSummaryHasPreviousHearing": null,
+  "caseSummaryPreviousHearingCMO": null,
+  "caseSummaryAllocatedJudgeEmail": "moley@example.com",
+  "caseSummaryFlagAddedByFullName": null,
+  "caseSummaryLanguageRequirement": "Yes",
+  "caseSummaryPreviousHearingDate": null,
+  "caseSummaryPreviousHearingType": null,
+  "hearingFurtherEvidenceDocuments": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "hearingName": "Case management hearing, 1 January 2050",
+        "supportingEvidenceLA": [
+          {
+            "id": "3c12d744-7040-41cc-870c-9b0d5fa2daa3",
+            "value": {
+              "name": "A",
+              "type": "APPLICANT_STATEMENT",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e",
+                "document_filename": "LA_UPLOAD_APPLICANT_STMT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.740696613",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "3c7b5f2c-a5f0-4f85-b510-df834accf0a3",
+            "value": {
+              "name": "B",
+              "type": "APPLICANT_STATEMENT",
+              "notes": "B",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a26dad9-07d6-4e63-83fd-4727f3a9af88",
+                "document_filename": "LA_UPLOAD_APPLICANT_STMT_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a26dad9-07d6-4e63-83fd-4727f3a9af88/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741317854",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "65ce53f7-a524-4733-9497-fa2077797c06",
+            "value": {
+              "name": "C",
+              "type": "GUARDIAN_REPORTS",
+              "notes": "C",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a",
+                "document_filename": "LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741326302",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "10356878-e1f8-4cd3-aeb5-bb6027d4f423",
+            "value": {
+              "name": "D",
+              "type": "GUARDIAN_REPORTS",
+              "notes": "D",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb",
+                "document_filename": "LA_UPLOAD_CHILD_GUARDIAN_REPORT_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741330753",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "supportingEvidenceNC": [
+          {
+            "id": "3c12d744-7040-41cc-870c-9b0d5fa2daa3",
+            "value": {
+              "name": "A",
+              "type": "APPLICANT_STATEMENT",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e",
+                "document_filename": "LA_UPLOAD_APPLICANT_STMT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.740696613",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "65ce53f7-a524-4733-9497-fa2077797c06",
+            "value": {
+              "name": "C",
+              "type": "GUARDIAN_REPORTS",
+              "notes": "C",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a",
+                "document_filename": "LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741326302",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "supportingEvidenceBundle": [
+          {
+            "id": "3c12d744-7040-41cc-870c-9b0d5fa2daa3",
+            "value": {
+              "name": "A",
+              "type": "APPLICANT_STATEMENT",
+              "notes": "A",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e",
+                "document_filename": "LA_UPLOAD_APPLICANT_STMT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.740696613",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "3c7b5f2c-a5f0-4f85-b510-df834accf0a3",
+            "value": {
+              "name": "B",
+              "type": "APPLICANT_STATEMENT",
+              "notes": "B",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a26dad9-07d6-4e63-83fd-4727f3a9af88",
+                "document_filename": "LA_UPLOAD_APPLICANT_STMT_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a26dad9-07d6-4e63-83fd-4727f3a9af88/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741317854",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "65ce53f7-a524-4733-9497-fa2077797c06",
+            "value": {
+              "name": "C",
+              "type": "GUARDIAN_REPORTS",
+              "notes": "C",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a",
+                "document_filename": "LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741326302",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "10356878-e1f8-4cd3-aeb5-bb6027d4f423",
+            "value": {
+              "name": "D",
+              "type": "GUARDIAN_REPORTS",
+              "notes": "D",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb",
+                "document_filename": "LA_UPLOAD_CHILD_GUARDIAN_REPORT_CONFIDENTIAL.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb/binary"
+              },
+              "uploadedBy": "kurt@swansea.gov.uk",
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "needTranslation": "NO",
+              "dateTimeUploaded": "2023-09-07T09:30:56.741330753",
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "confidentialTabLabel": "Confidential",
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "caseSummaryHasUnresolvedMessages": null,
+  "caseSummaryLALanguageRequirement": "Yes",
+  "documentsWithConfidentialAddress": [],
+  "positionStatementRespondentListV2": [
+    {
+      "id": "41fd5285-ee6b-4b2b-a5be-42c9ab67fefc",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/86970dec-7ee5-4d88-88a6-5aeff03cef87",
+          "document_filename": "LA_UPLOAD_POSITION_STATEMENT_RESPONDENT.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/86970dec-7ee5-4d88-88a6-5aeff03cef87/binary"
+        },
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "respondentId": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "respondentName": "Joe Bloggs",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "applicationDocumentsToFollowReason": null,
+  "caseSummaryFirstRespondentLastName": "Bloggs",
+  "caseSummaryFirstRespondentLegalRep": null,
+  "caseSummaryNextHearingEmailAddress": null
+}
