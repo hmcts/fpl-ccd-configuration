@@ -10,17 +10,16 @@ import java.util.stream.Stream;
 public enum ChildGender {
 
     @JsonProperty("Boy")
-    BOY("Male", "Gwryw", "he", "himself", "Boy"),
+    BOY("Male", "Gwryw", "he", "himself"),
     @JsonProperty("Girl")
-    GIRL("Female", "Benyw", "she", "herself", "Girl"),
+    GIRL("Female", "Benyw", "she", "herself"),
     @JsonProperty("Other")
-    OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves", "Other");
+    OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 
     private final String label;
     private final String welshLabel;
     private final String subjectPronoun;
     private final String reflexivePronoun;
-    private final String roboticsLabel;
 
     public static ChildGender fromLabel(String label) {
         return Stream.of(ChildGender.values())
@@ -43,9 +42,5 @@ public enum ChildGender {
 
     public String getSubjectPronoun() {
         return subjectPronoun;
-    }
-
-    public String getRoboticsLabel() {
-        return roboticsLabel;
     }
 }
