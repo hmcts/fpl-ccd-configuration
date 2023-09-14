@@ -24,7 +24,8 @@
     "FieldType": "Document",
     "ElementLabel": "Order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,7 +33,8 @@
     "ListElementCode": "translatedOrder",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
