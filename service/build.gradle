@@ -146,6 +146,7 @@ task runContractTests(type: Test, description: 'Runs contract tests.', group: 'V
   testLogging.showStandardStreams = true
 }
 
+
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
   logger.lifecycle("Runs pact consumer Tests")
   testClassesDirs = sourceSets.contractTest.output.classesDirs
