@@ -184,14 +184,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "respondentsStatements",
-    "CategoryLabel": "Respondents' statements",
-    "ParentCategoryID": "parent_respondentsStatements",
-    "DisplayOrder": "1001"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "respondentWitnessStatements",
     "CategoryLabel": "Witness statements",
     "ParentCategoryID": "parent_respondentsStatements",
@@ -283,13 +275,6 @@
     "CategoryID": "placementApplicationsAndResponses",
     "CategoryLabel": "Placement applications and responses",
     "DisplayOrder": "19"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "ploPilotDocuments",
-    "CategoryLabel": "PLO pilot documents",
-    "DisplayOrder": "20"
   },
   {
     "LiveFrom": "01/01/2017",

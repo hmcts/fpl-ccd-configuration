@@ -499,6 +499,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListRemoved",
+    "UserRole": "[LASHARED]",
+    "CRUD": "U"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
     "UserRole": "[LASHARED]",
     "CRUD": "CRUD"
@@ -2285,6 +2292,48 @@
     "CaseFieldID": "skeletonArgumentListLA",
     "UserRole": "[LASHARED]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "posStmtList",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "posStmtListLA",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "policeDisclosureList",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "policeDisclosureListLA",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "medicalRecordList",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "medicalRecordListLA",
+    "UserRole": "[LASHARED]",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

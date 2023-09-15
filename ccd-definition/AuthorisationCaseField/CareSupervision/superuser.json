@@ -1404,7 +1404,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "componentLauncher",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1636,6 +1636,13 @@
     "CaseFieldID": "skeletonArgumentListCTSC",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListRemoved",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "U"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -957,6 +957,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "courtBundleListRemoved",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "U"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
     "UserRole": "[BARRISTER]",
     "CRUD": "CRU"
@@ -1349,10 +1356,30 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "carePlanList",
+    "CaseFieldID": "posStmtList",
     "UserRole": "[BARRISTER]",
-    "CRUD": "CRUD"
+    "CRUD": "R"
   },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "policeDisclosureList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "medicalRecordList",
+    "UserRole": "[BARRISTER]",
+    "CRUD": "R"
+  },  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseFieldID": "carePlanList",
+  "UserRole": "[BARRISTER]",
+  "CRUD": "CRUD"
+},
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
