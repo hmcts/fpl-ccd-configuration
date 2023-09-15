@@ -127,7 +127,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -140,7 +140,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -185,7 +185,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -198,7 +198,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -243,7 +243,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -301,7 +301,7 @@
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -314,7 +314,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       }
     ]
   }

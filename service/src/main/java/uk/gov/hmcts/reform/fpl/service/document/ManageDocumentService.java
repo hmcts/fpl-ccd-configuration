@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.fpl.service.document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.DocumentWithConfidentialAddress;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
@@ -25,26 +31,32 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.cfv.UploadBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.DynamicListService;
 import uk.gov.hmcts.reform.fpl.service.PlacementService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -54,12 +66,20 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.BARRISTER;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -74,6 +94,8 @@ public class ManageDocumentService {
     private final DocumentUploadHelper documentUploadHelper;
     private final UserService user;
     private final PlacementService placementService;
+    private final DynamicListService dynamicListService;
+    private final UserService userService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_SOLICITOR_KEY = "correspondenceDocumentsSolicitor";
@@ -115,6 +137,202 @@ public class ManageDocumentService {
         bundle -> bundle.getValue().isUploadedByHMCTS();
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
+
+    private String getDocumentListHolderFieldName(String fieldName) {
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            return splitFieldName[1];
+        } else {
+            return fieldName;
+        }
+    }
+
+    private Class getDocumentListHolderClass(String fieldName) {
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            String parentFieldName = splitFieldName[0];
+            switch (parentFieldName) {
+                case "hearingDocuments":
+                    return HearingDocuments.class;
+                default:
+                    throw new IllegalStateException("unresolved target class: " + parentFieldName);
+            }
+        }
+        return CaseData.class;
+    }
+
+    private Object getDocumentListHolder(String fieldName, CaseData caseData) throws Exception {
+        String[] splitFieldName = fieldName.split("\\.");
+        if (splitFieldName.length == 2) {
+            PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(CaseData.class, splitFieldName[0]);
+            if (pd != null) {
+                return pd.getReadMethod().invoke(caseData);
+            } else {
+                throw new IllegalArgumentException("unable to get property descriptor from CaseData.class: "
+                    + splitFieldName[0]);
+            }
+        } else {
+            return caseData;
+        }
+    }
+
+    public DocumentUploaderType getUploaderType(CaseData caseData) {
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+        if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
+            return SOLICITOR;
+        }
+        if (caseRoles.contains(CaseRole.BARRISTER)) {
+            return BARRISTER;
+        }
+        if (userService.isHmctsUser()) {
+            return HMCTS;
+        }
+        if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
+            return DESIGNATED_LOCAL_AUTHORITY;
+        }
+        if (caseRoles.contains(CaseRole.LASHARED)) {
+            return SECONDARY_LOCAL_AUTHORITY;
+        }
+
+        throw new IllegalStateException("Unable to determine document uploader type");
+    }
+
+    public boolean allowMarkDocumentConfidential(CaseData caseData) {
+        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
+            .contains(getUploaderType(caseData));
+    }
+
+    private boolean isLocalAuthority(DocumentUploaderType type) {
+        return List.of(DESIGNATED_LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY).contains(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void uploadPlacementResponse(Map<String, Object> changes, DocumentUploaderType uploaderType,
+                                         Element<UploadableDocumentBundle> e, CaseData caseData) {
+        boolean isLocalAuthority = isLocalAuthority(uploaderType);
+        boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
+        boolean isAdmin = !(isSolicitor || isLocalAuthority);
+
+        Map<String, Object> initialisedPlacement = null;
+        PlacementNoticeDocument.RecipientType recipientType = null;
+        if (!isAdmin) {
+            initialisedPlacement = initialisePlacementHearingResponseFields(caseData,
+                isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT :
+                    PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY);
+            recipientType = isSolicitor ? PlacementNoticeDocument.RecipientType.RESPONDENT :
+                PlacementNoticeDocument.RecipientType.LOCAL_AUTHORITY;
+        } else {
+            initialisedPlacement = initialisePlacementHearingResponseFields(caseData);
+        }
+        caseData.getPlacementEventData().setPlacement((Placement) initialisedPlacement.get("placement"));
+        List<Element<PlacementNoticeDocument>> placementNoticeResponses = (List<Element<PlacementNoticeDocument>>)
+            Optional.ofNullable(initialisedPlacement.get("placementNoticeResponses")).orElse(new ArrayList<>());
+        placementNoticeResponses.add(element(PlacementNoticeDocument.builder()
+            .type(recipientType)
+            .response(e.getValue().getDocument())
+            .uploaderType(uploaderType)
+            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .translationRequirements(e.getValue().getTranslationRequirements())
+            .build()));
+        caseData.setPlacementNoticeResponses(placementNoticeResponses);
+        if (changes.containsKey("placements")) {
+            caseData.getPlacementEventData().setPlacements((List<Element<Placement>>) changes.get("placements"));
+        }
+
+        PlacementEventData eventData = isAdmin
+            ? updatePlacementNoticesAdmin(caseData)
+            : ((isLocalAuthority ? updatePlacementNoticesLA(caseData) : updatePlacementNoticesSolicitor(caseData)));
+
+        changes.put("placements", eventData.getPlacements());
+        changes.put("placementsNonConfidential", eventData
+            .getPlacementsNonConfidential(true));
+        changes.put("placementsNonConfidentialNotices", eventData
+            .getPlacementsNonConfidential(true));
+    }
+
+    @SuppressWarnings("unchecked")
+    public void uploadGenericDocuments(Map<String, Object> changes, DocumentType dt, DocumentUploaderType uploaderType,
+                                       Element<UploadableDocumentBundle> e, CaseData caseData) {
+        boolean confidential = YES.equals(YesNo.fromString(e.getValue().getConfidential()));
+        String fieldName = dt.getFieldName(uploaderType, confidential);
+
+        Class documentListHolderClass = getDocumentListHolderClass(fieldName);
+        String documentListHolderFieldName = getDocumentListHolderFieldName(fieldName);
+        PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(documentListHolderClass,
+            documentListHolderFieldName);
+        if (pd == null) {
+            throw new IllegalArgumentException("unable to get property descriptor from "
+                + documentListHolderClass.getName() + " (" + documentListHolderFieldName + ")");
+        }
+        List<Element<?>> docs = null;
+        if (changes.containsKey(documentListHolderFieldName)) {
+            docs = (List<Element<?>>) changes.get(documentListHolderFieldName);
+        }
+        if (docs == null) {
+            try {
+                Object bean = getDocumentListHolder(fieldName, caseData);
+                docs = (List<Element<?>>) pd.getReadMethod().invoke(bean);
+            } catch (Exception ex) {
+                throw new IllegalArgumentException("Unable to read bean property: " + fieldName);
+            }
+            if (docs == null) {
+                docs = new ArrayList<>();
+            }
+        }
+        UploadBundle bundle = UploadBundle.builder().document(e.getValue().getDocument())
+            .uploaderType(uploaderType)
+            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .translationRequirement(e.getValue().getTranslationRequirements())
+            .confidential(confidential)
+            .build();
+        docs.add(element(e.getId(), dt.getWithDocumentBuilder().apply(bundle)));
+        changes.put(documentListHolderFieldName, docs);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> uploadDocuments(CaseData caseData) {
+        DocumentUploaderType uploaderType = getUploaderType(caseData);
+        List<Element<UploadableDocumentBundle>> elements  = caseData.getManageDocumentEventData()
+            .getUploadableDocumentBundle();
+        Map<String, Object> changes = new HashMap<>();
+        elements.forEach(e -> {
+            DocumentType dt = e.getValue().getDocumentTypeSelected();
+            if (dt == PLACEMENT_RESPONSES) {
+                uploadPlacementResponse(changes, uploaderType, e,  caseData);
+            } else {
+                uploadGenericDocuments(changes, dt, uploaderType, e, caseData);
+            }
+        });
+        return changes;
+    }
+
+    private boolean isHiddenFromUpload(DocumentType documentType, DocumentUploaderType uploaderType) {
+        switch (uploaderType) {
+            case SOLICITOR:
+                return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
+            case DESIGNATED_LOCAL_AUTHORITY:
+            case SECONDARY_LOCAL_AUTHORITY:
+                return documentType.isHiddenFromLAUpload() || documentType.isHiddenFromUpload();
+            case HMCTS:
+                return documentType.isHiddenFromCTSCUpload() || documentType.isHiddenFromUpload();
+            case BARRISTER:
+                return true;
+            default:
+                throw new IllegalStateException("unrecognised uploaderType: " + uploaderType);
+        }
+    }
+
+    public DynamicList buildDocumentTypeDynamicList(CaseData caseData) {
+        boolean hasPlacementNotices = caseData.getPlacementEventData().getPlacements().stream()
+            .anyMatch(el -> el.getValue().getPlacementNotice() != null);
+        final List<Pair<String, String>> documentTypes = Arrays.stream(DocumentType.values())
+            .filter(documentType -> !isHiddenFromUpload(documentType, getUploaderType(caseData)))
+            .filter(documentType -> PLACEMENT_RESPONSES == documentType ? hasPlacementNotices : true)
+            .sorted(comparing(DocumentType::getDisplayOrder))
+            .map(dt -> Pair.of(dt.name(), dt.getDescription()))
+            .collect(toList());
+        return dynamicListService.asDynamicList(documentTypes);
+    }
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> eventData = new HashMap<>();
@@ -918,17 +1136,13 @@ public class ManageDocumentService {
         PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
         map.put("placement", data.getPlacement());
         map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments().stream().filter(
-            doc -> doc.getValue().getType() == type
-        ));
+            doc -> type == null ? true : (doc.getValue().getType() == type)
+        ).collect(toList()));
         return map;
     }
 
     public Map<String, Object> initialisePlacementHearingResponseFields(CaseData caseData) {
-        Map<String, Object> map = new HashMap<>();
-        PlacementEventData data = placementService.preparePlacementFromExisting(caseData);
-        map.put("placement", data.getPlacement());
-        map.put("placementNoticeResponses", data.getPlacement().getNoticeDocuments());
-        return map;
+        return initialisePlacementHearingResponseFields(caseData, null);
     }
 
     public PlacementEventData updatePlacementNoticesLA(CaseData caseData) {

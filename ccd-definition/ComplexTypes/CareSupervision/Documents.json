@@ -68,7 +68,7 @@
     "ID": "Documents",
     "ListElementCode": "confidential",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ConfidentialDocument",
+    "FieldTypeParameter": "CaseRole",
     "ElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
     "SecurityClassification": "Public",
     "Searchable": "N",
@@ -110,6 +110,41 @@
     "ListElementCode": "removalReason",
     "FieldType": "Text",
     "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Documents",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
     "SecurityClassification": "Public"
   }
 ]
