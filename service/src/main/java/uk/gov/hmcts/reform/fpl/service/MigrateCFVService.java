@@ -707,7 +707,6 @@ public class MigrateCFVService {
     public Map<String, Object> rollbackCourtBundleMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
 
-
         Map<String, Object> ret = new HashMap<>();
         ret.put("courtBundleListV2", caseDataMap.get("courtBundleListV2Backup"));
         ret.put("courtBundleListLA", List.of());
