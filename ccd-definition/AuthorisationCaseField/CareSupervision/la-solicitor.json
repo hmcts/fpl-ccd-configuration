@@ -24,13 +24,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseName",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },
@@ -2412,7 +2405,7 @@
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRUD"
   },
-  {
+   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDraftReview",
@@ -3436,48 +3429,6 @@
     "CaseFieldID": "skeletonArgumentListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtList",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtListLA",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "policeDisclosureList",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "policeDisclosureListLA",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "medicalRecordList",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "medicalRecordListLA",
-    "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

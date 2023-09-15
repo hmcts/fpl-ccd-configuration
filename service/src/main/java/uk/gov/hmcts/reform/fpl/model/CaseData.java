@@ -58,7 +58,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
-import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -696,9 +695,6 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentLA manageDocumentLA;
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
     private final ManageDocumentSubtypeList manageDocumentSubtypeList;
-    @JsonUnwrapped
-    @Builder.Default
-    private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     /**
@@ -1220,7 +1216,7 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
-    private List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
@@ -1344,9 +1340,5 @@ public class CaseData extends CaseDataParent {
         } else {
             return Optional.empty();
         }
-    }
-
-    public void setPlacementNoticeResponses(List<Element<PlacementNoticeDocument>> placementNoticeResponses) {
-        this.placementNoticeResponses = placementNoticeResponses;
     }
 }

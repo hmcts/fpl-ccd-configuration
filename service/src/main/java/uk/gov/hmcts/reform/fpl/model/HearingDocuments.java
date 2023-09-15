@@ -60,11 +60,6 @@ public class HearingDocuments {
     private final List<Element<PositionStatementRespondent>> posStmtRespListLA;
     private final List<Element<PositionStatementRespondent>> posStmtRespListCTSC;
     private final List<Element<PositionStatementRespondent>> posStmtRespListRemoved;
-
-    private final List<Element<ManagedDocument>> posStmtList;
-    private final List<Element<ManagedDocument>> posStmtListLA;
-    private final List<Element<ManagedDocument>> posStmtListCTSC;
-    private final List<Element<ManagedDocument>> posStmtListRemoved;
     // the element ID of each Skeleton argument is unique
     private final List<Element<SkeletonArgument>> skeletonArgumentList;
     private final List<Element<SkeletonArgument>> skeletonArgumentListLA;

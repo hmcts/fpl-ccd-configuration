@@ -6,7 +6,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "expertReports"
+    "CategoryID": "parent_expertReports"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -14,41 +14,6 @@
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExpertReport",
-    "ListElementCode": "uploaderType",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "DocumentUploaderType",
-    "ElementLabel": "Document Uploader Type",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExpertReport",
-    "ListElementCode": "uploaderCaseRoles",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "CaseRole",
-    "ElementLabel": "Document Uploader Case Roles",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExpertReport",
-    "ListElementCode": "markAsConfidential",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Is confidential?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ExpertReport",
-    "ListElementCode": "translationRequirements",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LanguageTranslationRequirement",
-    "ElementLabel": "Is translation needed?",
     "SecurityClassification": "Public"
   }
 ]
