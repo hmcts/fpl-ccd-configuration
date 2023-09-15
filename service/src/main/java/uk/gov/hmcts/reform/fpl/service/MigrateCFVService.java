@@ -600,15 +600,13 @@ public class MigrateCFVService {
         ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList"));
-        if (ret.containsKey("otherDocFiledList") || ret.containsKey("otherDocFiledListLA")
-            || ret.containsKey("otherDocFiledListCTSC")) {
-            Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
-            for (String key : temp.keySet()) {
-                if (ret.containsKey(key)) {
-                    ((List) ret.get(key)).addAll((List) temp.get(key));
-                } else {
-                    ret.put(key, temp.get(key));
-                }
+
+        Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
+        for (String key : temp.keySet()) {
+            if (ret.containsKey(key)) {
+                ((List) ret.get(key)).addAll((List) temp.get(key));
+            } else {
+                ret.put(key, temp.get(key));
             }
         }
         return ret;
