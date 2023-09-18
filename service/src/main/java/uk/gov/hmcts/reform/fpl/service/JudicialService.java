@@ -192,7 +192,8 @@ public class JudicialService {
             HearingBooking booking = bookings.get(i);
             HearingBooking after = (i < bookings.size() - 1) ? bookings.get(i + 1) : null;
 
-            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
+            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
+                || ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
                 continue; // no judge UUID to grant roles on
             }
 
