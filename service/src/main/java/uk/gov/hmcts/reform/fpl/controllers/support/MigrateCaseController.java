@@ -101,7 +101,7 @@ public class MigrateCaseController extends CallbackController {
                 null // no end date
             ));
         } else {
-            log.error("Could not assign allocated-judge on case {}, no email found on the case", caseData.getId());
+            log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
         }
 
         // get hearing judge roles to add (if any)
