@@ -1488,8 +1488,8 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.removeNoticeOfProceedingsBundle(caseData,
                 noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s}, " +
-                        "notice of proceedings bundle %s not found",
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + "notice of proceedings bundle %s not found",
                     MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
         }
     }
