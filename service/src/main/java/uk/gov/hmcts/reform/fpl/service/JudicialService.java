@@ -137,7 +137,6 @@ public class JudicialService {
      * @param email the email to lookup
      * @return an Optional UUID String containing the user's idamId
      */
-    @Retryable(value = {FeignException.class}, label = "Search IDAM for a UUID by email address")
     public Optional<String> getJudgeUserIdFromEmail(String email) {
         if (isEmpty(email)) {
             return Optional.empty();

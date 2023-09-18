@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -37,6 +36,7 @@ import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 
 @Api
@@ -88,7 +88,7 @@ public class MigrateCaseController extends CallbackController {
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
 
-            boolean isLegalAdviser = JudgeOrMagistrateTitle.LEGAL_ADVISOR
+            boolean isLegalAdviser = LEGAL_ADVISOR
                 .equals(allocatedJudge.get().getJudgeTitle());
 
             // attempt to assign allocated-[role]
@@ -151,8 +151,15 @@ public class MigrateCaseController extends CallbackController {
 
         Judge allocatedJudge = caseData.getAllocatedJudge();
         if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
-            Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(allocatedJudge.getJudgeEmailAddress());
+            String email = allocatedJudge.getJudgeEmailAddress();
+            Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
             // add the UUID to the allocated judge and save on the case
+
+            if (uuid.isEmpty()) {
+                log.info("Could not find judge UUID, caseId={}, allocatedJudge, ejudiciary={}, judgeTitle={}",
+                    caseData.getId(), email.toLowerCase().endsWith("@ejudiciary.net"), allocatedJudge.getJudgeTitle());
+            }
+
             uuid.ifPresent(s -> caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
                 .judgeJudicialUser(JudicialUser.builder()
                     .idamId(s)
@@ -166,8 +173,9 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking val = el.getValue();
                 if (!isEmpty(val.getJudgeAndLegalAdvisor())
                     && !isEmpty(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
-                    Optional<String> uuid = judicialService
-                        .getJudgeUserIdFromEmail(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
+
+                    String email = val.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+                    Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
                     if (uuid.isPresent()) {
                         el.setValue(val.toBuilder()
                                 .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
@@ -177,6 +185,10 @@ public class MigrateCaseController extends CallbackController {
                                     .build())
                             .build());
                         return el;
+                    } else {
+                        log.info("Could not find judge UUID, caseId={}, hearingId={}, ejudiciary={}, judgeTitle={}",
+                            caseData.getId(), el.getId(), email.toLowerCase().endsWith("@ejudiciary.net"),
+                            val.getJudgeAndLegalAdvisor().getJudgeTitle());
                     }
                 }
                 return el;
