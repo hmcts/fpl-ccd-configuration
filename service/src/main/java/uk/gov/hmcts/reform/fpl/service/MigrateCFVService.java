@@ -547,18 +547,6 @@ public class MigrateCFVService {
         ret.put("documentsFiledOnIssueListLA", List.of());
         ret.put("carePlanList", List.of());
         ret.put("carePlanListLA", List.of());
-        ret.put("swetList", List.of());
-        ret.put("swetListLA", List.of());
-        ret.put("socialWorkChronList", List.of());
-        ret.put("socialWorkChronListLA", List.of());
-        ret.put("genogramList", List.of());
-        ret.put("genogramListLA", List.of());
-        ret.put("checklistDocList", List.of());
-        ret.put("checklistDocListLA", List.of());
-        ret.put("birthCertList", List.of());
-        ret.put("birthCertListLA", List.of());
-        ret.put("otherDocFiledList", List.of());
-        ret.put("otherDocFiledListLA", List.of());
         return ret;
     }
 
@@ -592,23 +580,11 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> migrateApplicationDocuments(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET), "swetList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_CHRONOLOGY), "socialWorkChronList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(GENOGRAM), "genogramList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(CHECKLIST_DOCUMENT), "checklistDocList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET, SOCIAL_WORK_CHRONOLOGY, SOCIAL_WORK_STATEMENT,
+                GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, OTHER),
+            "documentsFiledOnIssueList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList"));
-
-        Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
-        for (String key : temp.keySet()) {
-            if (ret.containsKey(key)) {
-                ((List) ret.get(key)).addAll((List) temp.get(key));
-            } else {
-                ret.put(key, temp.get(key));
-            }
-        }
         return ret;
     }
 

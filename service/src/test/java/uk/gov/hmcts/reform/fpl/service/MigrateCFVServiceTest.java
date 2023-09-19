@@ -1511,14 +1511,14 @@ class MigrateCFVServiceTest {
     class MigrateApplicationDocuments {
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
             THRESHOLD, "thresholdList",
-            SWET, "swetList",
+            SWET, "documentsFiledOnIssueList",
             CARE_PLAN, "carePlanList",
-            SOCIAL_WORK_CHRONOLOGY, "socialWorkChronList",
-            SOCIAL_WORK_STATEMENT, "otherDocFiledList",
-            GENOGRAM, "genogramList",
-            CHECKLIST_DOCUMENT, "checklistDocList",
-            BIRTH_CERTIFICATE, "birthCertList",
-            OTHER, "otherDocFiledList"
+            SOCIAL_WORK_CHRONOLOGY, "documentsFiledOnIssueList",
+            SOCIAL_WORK_STATEMENT, "documentsFiledOnIssueList",
+            GENOGRAM, "documentsFiledOnIssueList",
+            CHECKLIST_DOCUMENT, "documentsFiledOnIssueList",
+            BIRTH_CERTIFICATE, "documentsFiledOnIssueList",
+            OTHER, "documentsFiledOnIssueList"
         );
 
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeMethodMap = Map.of(
@@ -1685,19 +1685,19 @@ class MigrateCFVServiceTest {
                 element(doc1Id, ManagedDocument.builder().document(document1).build()));
             assertThat(updatedFields).extracting("thresholdList").asList().contains(
                 element(doc2Id, ManagedDocument.builder().document(document2).build()));
-            assertThat(updatedFields).extracting("swetList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc3Id, ManagedDocument.builder().document(document3).build()));
-            assertThat(updatedFields).extracting("socialWorkChronList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc5Id, ManagedDocument.builder().document(document5).build()));
-            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc6Id, ManagedDocument.builder().document(document6).build()));
-            assertThat(updatedFields).extracting("genogramList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc7Id, ManagedDocument.builder().document(document7).build()));
-            assertThat(updatedFields).extracting("checklistDocList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc8Id, ManagedDocument.builder().document(document8).build()));
-            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc10Id, ManagedDocument.builder().document(document10).build()));
-            assertThat(updatedFields).extracting("birthCertListLA").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueListLA").asList().contains(
                 element(doc9Id, ManagedDocument.builder().document(document9).build()));
 
             assertThat(updatedFields).extracting("carePlanList").asList()
@@ -1714,19 +1714,7 @@ class MigrateCFVServiceTest {
                 "documentsFiledOnIssueList",
                 "documentsFiledOnIssueListLA",
                 "carePlanList",
-                "carePlanListLA",
-                "swetList",
-                "swetListLA",
-                "socialWorkChronList",
-                "socialWorkChronListLA",
-                "genogramList",
-                "genogramListLA",
-                "checklistDocList",
-                "checklistDocListLA",
-                "birthCertList",
-                "birthCertListLA",
-                "otherDocFiledList",
-                "otherDocFiledListLA"
+                "carePlanListLA"
             );
             assertThat(underTest.rollbackApplicationDocuments()).extracting("thresholdList")
                 .isEqualTo(List.of());
@@ -1739,30 +1727,6 @@ class MigrateCFVServiceTest {
             assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanList")
                 .isEqualTo(List.of());
             assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledListLA")
                 .isEqualTo(List.of());
         }
     }
