@@ -111,7 +111,8 @@ public class RoleAssignmentService {
                     .build())
                 .build());
         } catch (Exception e) {
-            log.error("Error when granting individual case role to {} on case {}", role.getActorId(),
+            log.error("Error when granting individual case role {} to {} on case {}",
+                role.getRoleName(), role.getActorId(),
                 role.getAttributes().getOrDefault("caseId", "no-case-id"), e);
         }
     }
