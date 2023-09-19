@@ -206,7 +206,7 @@
   "SearchCriteria": {
     "SearchParties": [
       {
-        "id": "f856bf67-a26d-4427-aa10-0b79420dafa2",
+        "id": "8ea2b6aa-0a13-47c7-8b7e-cdb63b94e9a2",
         "value": {
           "Name": "Joe Bloggs",
           "PostCode": "RG4 7AA",
@@ -215,7 +215,7 @@
         }
       },
       {
-        "id": "5477d5eb-9b75-458b-b43b-0c2b9c799663",
+        "id": "ce5cfad9-3648-43f6-88fd-b19dd6654b43",
         "value": {
           "Name": "Timothy Jones",
           "DateOfBirth": "2015-08-01"
@@ -665,18 +665,6 @@
     }
   ],
   "documentViewHMCTS": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Care plan</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/73e52128-a2c5-4458-ab22-413a034d6726/binary'>LA_UPLOAD_CAREPLAN_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_CAREPLAN.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/672119b6-5b27-4e3b-afea-21f575618ced/binary'>LA_UPLOAD_CAREPLAN.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary'>LA_UPLOAD_SWC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWC.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary'>LA_UPLOAD_SWC.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS_CONFIDENTIAL.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/773932f1-ac19-4eec-8895-78db935a4897/binary'>LA_UPLOAD_SWS_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LA_UPLOAD_SWS.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:38pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary'>LA_UPLOAD_SWS.docx</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Application statement</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">EEEE</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">EEEE</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/7030ba41-25fd-4238-ba2f-7bd85f12ff19/binary'>LA_UPLOAD_NH_APPLICANT_STMT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">DDDD</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">10:04am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">DDDD</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/41ee862e-1028-4e2a-8f26-a78e3271743d/binary'>LA_UPLOAD_NH_APPLICANT_STMT.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">B</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">B</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/4a26dad9-07d6-4e63-83fd-4727f3a9af88/binary'>LA_UPLOAD_APPLICANT_STMT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document name</dt>     <dd class=\"govuk-summary-list__value\">A</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/c8d0c4ad-11a8-4db1-96bd-8b33e3e7906e/binary'>LA_UPLOAD_APPLICANT_STMT.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Child's guardian reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">D</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/4a2d2f2b-1d50-49d3-815e-7fe2d29cacfb/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">C</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">9:30am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/e3db6299-54a0-4fde-9d73-037cba6fea6a/binary'>LA_UPLOAD_CHILD_GUARDIAN_REPORT.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Expert reports</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">GGGG</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/25bcfbc5-d1d1-4e59-af67-af034d3d7565/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC_CONFIDENTIAL.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">FFFFF</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">11:18am, 7 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Expert report type</dt>     <dd class=\"govuk-summary-list__value\">Psychiatric - On child only</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/a341ffdb-86da-4c1d-b970-fe2ad34872e7/binary'>LA_UPLOAD_NH_EXPERT_PSYCHIATRIC.docx</a></dd></div></dl></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Joe Bloggs statements</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">B</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/6b9678c4-ed35-45af-859c-c9f4cdfb203c/binary'>UPLOAD_RESPONDENT_STATEMENT confidential.docx</a></dd></div></dl></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">A</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">kurt@swansea.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:40pm, 6 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/321294fa-b06a-4cd7-9da8-5963aec8a860/binary'>UPLOAD_RESPONDENT_STATEMENT.docx</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
-  "otherDocFiledList": [
-    {
-      "id": "14adf89d-b0ad-4892-a93f-650bdc62548d",
-      "value": {
-        "document": {
-          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1",
-          "document_filename": "LA_UPLOAD_SWS.docx",
-          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary"
-        }
-      }
-    }
-  ],
   "submissionConsent": [
     "agree"
   ],
@@ -714,30 +702,6 @@
   },
   "familyManCaseNumber": "mockcaseID",
   "languageRequirement": "Yes",
-  "otherDocFiledListLA": [
-    {
-      "id": "78bfc7ea-b3fc-43c1-8827-3377a56fa390",
-      "value": {
-        "document": {
-          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897",
-          "document_filename": "LA_UPLOAD_SWS_CONFIDENTIAL.docx",
-          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897/binary"
-        }
-      }
-    }
-  ],
-  "socialWorkChronList": [
-    {
-      "id": "1f34645d-43c6-4ce6-a20a-ff128843bded",
-      "value": {
-        "document": {
-          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec",
-          "document_filename": "LA_UPLOAD_SWC.docx",
-          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary"
-        }
-      }
-    }
-  ],
   "applicationDocuments": [
     {
       "id": "4d26f5d5-348f-47f8-9db0-ff4550c4bee2",
@@ -1097,6 +1061,24 @@
       }
     }
   ],
+  "caseSummaryListBackup": [
+    {
+      "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/75d8f7d3-479c-4ff5-96f5-226b3d4bd36c",
+          "document_filename": "LA_UPLOAD_CASE_SUMMARY.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/75d8f7d3-479c-4ff5-96f5-226b3d4bd36c/binary"
+        },
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
   "correspondenceDocList": [
     {
       "id": "6c5eb235-4ee0-4dc3-8940-87bd303f30d4",
@@ -1115,18 +1097,6 @@
           "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486",
           "document_filename": "LA_UPLOAD_CORRESPONDENCE.docx",
           "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/87f44b4f-36c6-4642-8d27-f2a5e7e22486/binary"
-        }
-      }
-    }
-  ],
-  "socialWorkChronListLA": [
-    {
-      "id": "21181b1e-a5e7-483f-b37b-96ebac9380a0",
-      "value": {
-        "document": {
-          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805",
-          "document_filename": "LA_UPLOAD_SWC_CONFIDENTIAL.docx",
-          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary"
         }
       }
     }
@@ -1409,6 +1379,28 @@
       }
     }
   ],
+  "documentsFiledOnIssueList": [
+    {
+      "id": "1f34645d-43c6-4ce6-a20a-ff128843bded",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec",
+          "document_filename": "LA_UPLOAD_SWC.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/f4bf600d-a6f8-4531-9e6c-c67f04067aec/binary"
+        }
+      }
+    },
+    {
+      "id": "14adf89d-b0ad-4892-a93f-650bdc62548d",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1",
+          "document_filename": "LA_UPLOAD_SWS.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1ce1855f-e51a-4bfd-9a7a-addbf369e1c1/binary"
+        }
+      }
+    }
+  ],
   "noticeOfProceedingsBundle": [
     {
       "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
@@ -1582,6 +1574,28 @@
           "ACK_RELATED_TO_CASE"
         ],
         "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "documentsFiledOnIssueListLA": [
+    {
+      "id": "21181b1e-a5e7-483f-b37b-96ebac9380a0",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805",
+          "document_filename": "LA_UPLOAD_SWC_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/e32f4a1b-c32a-4f4e-9e49-2965c161b805/binary"
+        }
+      }
+    },
+    {
+      "id": "78bfc7ea-b3fc-43c1-8827-3377a56fa390",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897",
+          "document_filename": "LA_UPLOAD_SWS_CONFIDENTIAL.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/773932f1-ac19-4eec-8895-78db935a4897/binary"
+        }
       }
     }
   ],
