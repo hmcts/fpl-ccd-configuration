@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -54,7 +53,6 @@ public class MigrateCaseController extends CallbackController {
     private final DfjAreaLookUpService dfjAreaLookUpService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1359", this::run1359,
         "DFPL-1401", this::run1401,
         "DFPL-1451", this::run1451,
         "DFPL-1501", this::run1616,
@@ -62,8 +60,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1681", this::run1681,
-        "DFPL-1663", this::run1663
+        "DFPL-1725", this::run1725,
+        "DFPL-1734", this::run1734
     );
 
     @PostMapping("/about-to-submit")
@@ -146,11 +144,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().remove("caseManagementCategory");
     }
 
-    private void run1359(CaseDetails caseDetails) {
-        migrateCaseService.doDocumentViewNCCheck(caseDetails.getId(), "DFPL-1359", caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.refreshDocumentViews(getCaseData(caseDetails)));
-    }
-
     private void run1401(CaseDetails caseDetails) {
         var migrationId = "DFPL-1401";
         var possibleCaseIds = List.of(1666959378667166L);
@@ -195,18 +188,23 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1681(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1681";
-        var possibleCaseIds = List.of(1669737648667050L);
+    private void run1725(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1725";
+        var possibleCaseIds = List.of(1660307161883143L);
+        String expectedJudicialMessage = "4ef749ef-80fd-40df-9b38-711ddf958e7a";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().remove("correspondenceDocumentsNC");
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
     }
 
-    private void run1663(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1663";
-        var possibleCaseIds = List.of(1673973434416600L);
+    private void run1734(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1734";
+        var possibleCaseIds = List.of(1688113759453556L);
+        String expectedJudicialMessage = "0c451518-220a-461a-a7d6-499054babcc4";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        caseDetails.getData().put("state", State.CLOSED);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
     }
 }

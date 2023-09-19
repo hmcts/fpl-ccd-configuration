@@ -25,7 +25,8 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-publiclaw-gatekeeper",
             "caseworker-publiclaw-localAuthority",
             "caseworker-publiclaw-courtadmin",
-            "caseworker-caa"
+            "caseworker-caa",
+            "caseworker-ras-validation"
         };
         lib.createRoles(roles);
 
