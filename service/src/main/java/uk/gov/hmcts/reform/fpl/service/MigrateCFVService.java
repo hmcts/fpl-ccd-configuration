@@ -668,18 +668,10 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackCaseSummaryMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
-        List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
-
-        if (caseDataMap.get("caseSummaryListLA") != null) {
-            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryListLA"));
-        }
-        if (caseDataMap.get("caseSummaryList") != null) {
-            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
-        }
-
         Map<String, Object> ret = new HashMap<>();
-        ret.put("caseSummaryList", newCaseSummaryList);
+        ret.put("caseSummaryList", caseDataMap.get("caseSummaryListBackup"));
         ret.put("caseSummaryListLA", List.of());
+        ret.put("caseSummaryListBackup", List.of());
         return ret;
     }
 
@@ -694,6 +686,7 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
+        ret.put("caseSummaryListBackup", caseData.getHearingDocuments().getCaseSummaryList());
         ret.put("caseSummaryListLA", caseSummaryListLA);
         ret.put("caseSummaryList", newCaseSummaryList);
         return ret;
@@ -704,7 +697,6 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackCourtBundleMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
-
         Map<String, Object> ret = new HashMap<>();
         ret.put("courtBundleListV2", caseDataMap.get("courtBundleListV2Backup"));
         ret.put("courtBundleListLA", List.of());

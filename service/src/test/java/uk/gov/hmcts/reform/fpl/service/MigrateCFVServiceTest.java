@@ -1266,6 +1266,8 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
                 caseData);
+            assertThat(updatedFields).extracting("caseSummaryListBackup").asList()
+                .containsExactly(caseSummaryListElement);
             assertThat(updatedFields).extracting("caseSummaryList").asList().isEmpty();
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElement);
@@ -1291,6 +1293,9 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
                 caseData);
+            assertThat(updatedFields).extracting("caseSummaryListBackup").asList()
+                .containsExactly(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress,
+                    caseSummaryListElementTwo);
             assertThat(updatedFields).extracting("caseSummaryList").asList()
                 .containsExactly(caseSummaryListElement, caseSummaryListElementTwo);
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
@@ -1308,6 +1313,8 @@ class MigrateCFVServiceTest {
                 .build());
 
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("caseSummaryListBackup",List.of(caseSummaryListElementWithConfidentialAddress,
+                caseSummaryListElement, caseSummaryListElementTwo));
             caseDataMap.put("caseSummaryListLA", List.of(caseSummaryListElementWithConfidentialAddress));
             caseDataMap.put("caseSummaryList", List.of(caseSummaryListElement, caseSummaryListElementTwo));
 
