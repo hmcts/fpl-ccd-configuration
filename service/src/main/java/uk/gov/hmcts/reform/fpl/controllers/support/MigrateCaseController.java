@@ -60,8 +60,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-702", this::run702,
         "DFPL-702rollback", this::run702rollback,
         "DFPL-1486", this::run1486,
-        "DFPL-1725", this::run1725,
-        "DFPL-1734", this::run1734
+        "DFPL-1748", this::run1748
     );
 
     @PostMapping("/about-to-submit")
@@ -188,23 +187,13 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.addRelatingLA(migrationId, caseDetails.getId()));
     }
 
-    private void run1725(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1725";
-        var possibleCaseIds = List.of(1660307161883143L);
-        String expectedJudicialMessage = "4ef749ef-80fd-40df-9b38-711ddf958e7a";
+    private void run1748(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1748";
+        var possibleCaseIds = List.of(1682070556592612L);
+        UUID expectedHearingId = UUID.fromString("c7fcfcd9-3d60-4755-abfc-12fccd558f60");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
-            migrationId, expectedJudicialMessage));
-    }
-
-    private void run1734(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1734";
-        var possibleCaseIds = List.of(1688113759453556L);
-        String expectedJudicialMessage = "0c451518-220a-461a-a7d6-499054babcc4";
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
-            migrationId, expectedJudicialMessage));
+        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
+            migrationId, expectedHearingId));
     }
 }
