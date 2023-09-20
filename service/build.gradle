@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id "idea"
   id "info.solidsoft.pitest" version '1.5.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.804'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.805'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -290,7 +290,7 @@ def versions = [
   serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
-  lombok          : '1.18.28'
+  lombok          : '1.18.30'
 ]
 
 dependencies {
