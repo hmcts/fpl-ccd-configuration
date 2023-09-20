@@ -288,19 +288,7 @@ public class MigrateCFVService {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackPositionStatementChild(CaseDetails caseDetails) {
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
-
-        if (caseDataMap.get("posStmtChildListLA") != null) {
-            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildListLA"));
-        }
-        if (caseDataMap.get("posStmtChildList") != null) {
-            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
-        }
-
         Map<String, Object>  ret = new HashMap<>();
-        ret.put("positionStatementChildListV2", newPositionStatementChilds);
         ret.put("posStmtChildListLA", List.of());
         ret.put("posStmtChildList", List.of());
         return ret;
@@ -320,7 +308,6 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("positionStatementChildListV2", null);
         ret.put("posStmtChildListLA", posStmtChildListLA);
         ret.put("posStmtChildList", posStmtChildList);
         return ret;
@@ -330,19 +317,7 @@ public class MigrateCFVService {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackPositionStatementRespondent(CaseDetails caseDetails) {
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
-
-        if (caseDataMap.get("posStmtRespListLA") != null) {
-            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespListLA"));
-        }
-        if (caseDataMap.get("posStmtRespList") != null) {
-            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
-        }
-
         Map<String, Object>  ret = new HashMap<>();
-        ret.put("positionStatementRespondentListV2", newPositionStatementRespondents);
         ret.put("posStmtRespListLA", List.of());
         ret.put("posStmtRespList", List.of());
         return ret;
@@ -362,7 +337,6 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("positionStatementRespondentListV2", null);
         ret.put("posStmtRespListLA", posStmtRespListLA);
         ret.put("posStmtRespList", posStmtRespList);
         return ret;
