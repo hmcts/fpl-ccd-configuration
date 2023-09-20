@@ -206,7 +206,7 @@
   "SearchCriteria": {
     "SearchParties": [
       {
-        "id": "8ea2b6aa-0a13-47c7-8b7e-cdb63b94e9a2",
+        "id": "7a180731-b577-43b4-862f-210f9fd9f9cd",
         "value": {
           "Name": "Joe Bloggs",
           "PostCode": "RG4 7AA",
@@ -215,7 +215,7 @@
         }
       },
       {
-        "id": "ce5cfad9-3648-43f6-88fd-b19dd6654b43",
+        "id": "96f74a3c-0210-49b6-b633-44c8d31c418f",
         "value": {
           "Name": "Timothy Jones",
           "DateOfBirth": "2015-08-01"
@@ -1645,6 +1645,27 @@
       }
     }
   ],
+  "positionStatementChildListV2": [
+    {
+      "id": "6b09cf38-6cd2-4526-a9cb-1868e52c94cf",
+      "value": {
+        "childId": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/51bc96ef-9e99-467c-830e-fd4417470b99",
+          "document_filename": "LA_UPLOAD_POSITION_STATEMENT_CHILD.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/51bc96ef-9e99-467c-830e-fd4417470b99/binary"
+        },
+        "childName": "Timothy Jones",
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
   "caseSummaryAllocatedJudgeName": "Her Honour Judge Moley",
   "caseSummaryFlagAssessmentForm": null,
   "caseSummaryHasPreviousHearing": null,
@@ -1893,6 +1914,27 @@
   "caseSummaryHasUnresolvedMessages": null,
   "caseSummaryLALanguageRequirement": "Yes",
   "documentsWithConfidentialAddress": [],
+  "positionStatementRespondentListV2": [
+    {
+      "id": "41fd5285-ee6b-4b2b-a5be-42c9ab67fefc",
+      "value": {
+        "hearing": "Case management hearing, 1 January 2050",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/86970dec-7ee5-4d88-88a6-5aeff03cef87",
+          "document_filename": "LA_UPLOAD_POSITION_STATEMENT_RESPONDENT.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/86970dec-7ee5-4d88-88a6-5aeff03cef87/binary"
+        },
+        "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "respondentId": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "respondentName": "Joe Bloggs",
+        "uploaderCaseRoles": [],
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
   "applicationDocumentsToFollowReason": null,
   "caseSummaryFirstRespondentLastName": "Bloggs",
   "caseSummaryFirstRespondentLegalRep": null,
