@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
@@ -19,6 +23,13 @@ public abstract class AbstractJudge {
     private final String judgeLastName;
     private final String judgeFullName;
     private final String judgeEmailAddress;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final YesNo judgeEnterManually;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final JudicialUser judgeJudicialUser;
+
 
     @JsonIgnore
     public String getJudgeOrMagistrateTitle() {
@@ -36,5 +47,8 @@ public abstract class AbstractJudge {
         return judgeLastName;
     }
 
+    public YesNo getJudgeEnterManually() {
+        return !isEmpty(this.judgeEnterManually) ? this.judgeEnterManually : YesNo.YES;
+    }
 }
 
