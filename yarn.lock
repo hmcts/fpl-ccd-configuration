@@ -828,19 +828,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/config@npm:8.15.10":
-  version: 8.15.10
-  resolution: "@wdio/config@npm:8.15.10"
+"@wdio/config@npm:8.16.11":
+  version: 8.16.11
+  resolution: "@wdio/config@npm:8.16.11"
   dependencies:
     "@wdio/logger": 8.11.0
-    "@wdio/types": 8.15.10
-    "@wdio/utils": 8.15.10
+    "@wdio/types": 8.16.7
+    "@wdio/utils": 8.16.11
     decamelize: ^6.0.0
     deepmerge-ts: ^5.0.0
     glob: ^10.2.2
     import-meta-resolve: ^3.0.0
     read-pkg-up: ^10.0.0
-  checksum: 68d196492b08fc9f54a400354ada78418a56eb2b6d8bc5c534fdfdc65c0df58823aefc4c7c8f248a4f17b4a613947d85b1469058dfeab66dbfd5a0d1225715a3
+  checksum: 3e7aa863307f847fe9cd559878a61f9927fe7c389514b2281c120b81a7753a16fb329be224099daf8385d5a3e01c84cc012c4e37d943ba275fa46b7380546a64
   languageName: node
   linkType: hard
 
@@ -856,10 +856,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/protocols@npm:8.14.6":
-  version: 8.14.6
-  resolution: "@wdio/protocols@npm:8.14.6"
-  checksum: f3d0a38eb7e59ff865af4396e8196a361b96f7b736687af2237c5110d2d79ead2f3f15f4d0dde3a8edfd930aee8ee51efd339094d4581f855d38f6e8ee898a98
+"@wdio/protocols@npm:8.16.5":
+  version: 8.16.5
+  resolution: "@wdio/protocols@npm:8.16.5"
+  checksum: 53f561f4d03dd34ed39c40729a3f586571223e1ea3d679e4cbe508ada1a6d98a2fc5a30ce4a35a1838f128de2e4f8d31f577d69afdb6885d2cb6ff1c7e4b3042
   languageName: node
   linkType: hard
 
@@ -872,22 +872,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wdio/types@npm:8.15.10":
-  version: 8.15.10
-  resolution: "@wdio/types@npm:8.15.10"
+"@wdio/types@npm:8.16.7":
+  version: 8.16.7
+  resolution: "@wdio/types@npm:8.16.7"
   dependencies:
     "@types/node": ^20.1.0
-  checksum: 1052fc52a5f5524b2264042727e37283716076010cb6a0edfde736588e51ff21435c87013f6af5cd69eb5548523447ca6521d540b79b498e15523c9fa5084d87
+  checksum: ac1aeeac85935319e8b87241574db0c19905c4c706205a81a33fa66a67e01a76fec4e0af96df7c160a17351de180c7f3eceaed6b1fc9d543f4533257577605fe
   languageName: node
   linkType: hard
 
-"@wdio/utils@npm:8.15.10":
-  version: 8.15.10
-  resolution: "@wdio/utils@npm:8.15.10"
+"@wdio/utils@npm:8.16.11":
+  version: 8.16.11
+  resolution: "@wdio/utils@npm:8.16.11"
   dependencies:
     "@puppeteer/browsers": ^1.6.0
     "@wdio/logger": 8.11.0
-    "@wdio/types": 8.15.10
+    "@wdio/types": 8.16.7
     decamelize: ^6.0.0
     deepmerge-ts: ^5.1.0
     edgedriver: ^5.3.5
@@ -897,8 +897,9 @@ __metadata:
     import-meta-resolve: ^3.0.0
     locate-app: ^2.1.0
     safaridriver: ^0.1.0
+    split2: ^4.2.0
     wait-port: ^1.0.4
-  checksum: 895067cbb078890d0a7055e706c7d70ce1c4cfbc2e0fa04faae83d441eb95d3c5c7cb409af0afdfd54efe090ff48966c525337a0b79a46bfbfa2f8d6d61ccfc8
+  checksum: d044cd135c02fc3d2d605a3607a60c2c318658649fbb8679e400fe33c7d5d2ef07e5e8730599bec3b42c04abbc880dfd3a22cf0e074ed5a78308ba8eaac37f9f
   languageName: node
   linkType: hard
 
@@ -1114,36 +1115,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"archiver-utils@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "archiver-utils@npm:2.1.0"
+"archiver-utils@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "archiver-utils@npm:4.0.1"
   dependencies:
-    glob: ^7.1.4
+    glob: ^8.0.0
     graceful-fs: ^4.2.0
     lazystream: ^1.0.0
-    lodash.defaults: ^4.2.0
-    lodash.difference: ^4.5.0
-    lodash.flatten: ^4.4.0
-    lodash.isplainobject: ^4.0.6
-    lodash.union: ^4.6.0
+    lodash: ^4.17.15
     normalize-path: ^3.0.0
-    readable-stream: ^2.0.0
-  checksum: 5665f40bde87ee82cb638177bdccca8cc6e55edea1b94338f7e6b56a1d9367b0d9a39e42b47866eaf84b8c67669a7d250900a226207ecc30fa163b52aae859a5
+    readable-stream: ^3.6.0
+  checksum: 2917cdf63a912c74002a4a1e6de3076a4691030b4e722efdd6d862447b61cd64c8b7688d331b1d35f8d4fc661d6e34f91bc1ffc79478fca2e48ad060acece18c
   languageName: node
   linkType: hard
 
-"archiver@npm:^5.0.0":
-  version: 5.2.0
-  resolution: "archiver@npm:5.2.0"
+"archiver@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "archiver@npm:6.0.1"
   dependencies:
-    archiver-utils: ^2.1.0
-    async: ^3.2.0
+    archiver-utils: ^4.0.1
+    async: ^3.2.4
     buffer-crc32: ^0.2.1
     readable-stream: ^3.6.0
-    readdir-glob: ^1.0.0
-    tar-stream: ^2.1.4
-    zip-stream: ^4.0.4
-  checksum: e8e043b9ebc39f5574f979de3cdb273beed2039b2577d4fa14d4b7f700afb74c8359f366480c9c7b2e66bf9f150d6abf5b2bffd7dd0dc335bf99be38ffbfecc9
+    readdir-glob: ^1.1.2
+    tar-stream: ^3.0.0
+    zip-stream: ^5.0.1
+  checksum: 20549eef7366173440a86873387412226568744a410626f826998b0dda85fe84e739c542d9db9aca3923b772436eb795eafdff29c2983e683355fdd9faaa0fdb
   languageName: node
   linkType: hard
 
@@ -1212,10 +1209,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "async@npm:3.2.0"
-  checksum: 6739fae769e6c9f76b272558f118ef041d45c979c573a8fe93f8cfbc32eb9c92da032e9effe6bbcc9b1131292cde6c4a9e61a442894aa06a262addd8dd3adda1
+"async@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "async@npm:3.2.4"
+  checksum: 43d07459a4e1d09b84a20772414aa684ff4de085cbcaec6eea3c7a8f8150e8c62aa6cd4e699fe8ee93c3a5b324e777d34642531875a0817a35697522c1b02e89
   languageName: node
   linkType: hard
 
@@ -1379,7 +1376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer-crc32@npm:^0.2.1, buffer-crc32@npm:^0.2.13, buffer-crc32@npm:~0.2.3":
+"buffer-crc32@npm:^0.2.1, buffer-crc32@npm:~0.2.3":
   version: 0.2.13
   resolution: "buffer-crc32@npm:0.2.13"
   checksum: 06252347ae6daca3453b94e4b2f1d3754a3b146a111d81c68924c22d91889a40623264e95e67955b1cb4a68cbedf317abeabb5140a9766ed248973096db5ce1c
@@ -1871,15 +1868,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compress-commons@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "compress-commons@npm:4.1.0"
+"compress-commons@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "compress-commons@npm:5.0.1"
   dependencies:
-    buffer-crc32: ^0.2.13
-    crc32-stream: ^4.0.1
+    crc-32: ^1.2.0
+    crc32-stream: ^5.0.0
     normalize-path: ^3.0.0
     readable-stream: ^3.6.0
-  checksum: 3348bea7a1cce04b430f6ec3125eebbc0e23bd8dd14d30ec2fb113d3733f95ae6b12d5b33ad794e7ceab70f57e38a6c2642d96a64bc83e490a3ddae8db469949
+  checksum: 65a68e56211a8d1dbe9dab0d35f1bd60a4df27aa01e6c3f0883080263e228c460758bab4f083637a380d4a96d2326722972a42ea1951360cc69728a3915f209f
   languageName: node
   linkType: hard
 
@@ -1945,13 +1942,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crc32-stream@npm:^4.0.1":
-  version: 4.0.2
-  resolution: "crc32-stream@npm:4.0.2"
+"crc32-stream@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "crc32-stream@npm:5.0.0"
   dependencies:
     crc-32: ^1.2.0
     readable-stream: ^3.4.0
-  checksum: 1099559283b86e8a55390228b57ff4d57a74cac6aa8086aa4730f84317c9f93e914aeece115352f2d706a9df7ed75327ffacd86cfe23f040aef821231b528e76
+  checksum: 8e5dd04f22f3fbecc623492395107fbed2114f225bd606e39e8ed338f2fc1c454ac02a05741243620ab526473cb867fa86411a44a7ffcd88457cc1c2af82d0bc
   languageName: node
   linkType: hard
 
@@ -2932,7 +2929,7 @@ __metadata:
     moment: 2.29.4
     node-fetch: ^2.6.9
     puppeteer: 19.11.1
-    webdriverio: 8.15.10
+    webdriverio: 8.16.11
   peerDependencies:
     debug: 4.3.4
     mocha-junit-reporter: ^2.2.0
@@ -3234,7 +3231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.1":
+"glob@npm:^8.0.0, glob@npm:^8.0.1":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -4256,27 +4253,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.defaults@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "lodash.defaults@npm:4.2.0"
-  checksum: 84923258235592c8886e29de5491946ff8c2ae5c82a7ac5cddd2e3cb697e6fbdfbbb6efcca015795c86eec2bb953a5a2ee4016e3735a3f02720428a40efbb8f1
-  languageName: node
-  linkType: hard
-
-"lodash.difference@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.difference@npm:4.5.0"
-  checksum: ecee276aa578f300e79350805a14a51be8d1f12b3c1389a19996d8ab516f814211a5f65c68331571ecdad96522b863ccc484b55504ce8c9947212a29f8857d5a
-  languageName: node
-  linkType: hard
-
-"lodash.flatten@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "lodash.flatten@npm:4.4.0"
-  checksum: 0ac34a393d4b795d4b7421153d27c13ae67e08786c9cbb60ff5b732210d46f833598eee3fb3844bb10070e8488efe390ea53bb567377e0cb47e9e630bf0811cb
-  languageName: node
-  linkType: hard
-
 "lodash.isempty@npm:^4.4.0":
   version: 4.4.0
   resolution: "lodash.isempty@npm:4.4.0"
@@ -4295,13 +4271,6 @@ __metadata:
   version: 3.0.2
   resolution: "lodash.isobject@npm:3.0.2"
   checksum: 6c1667cbc4494d0a13a3617a4b23278d6d02dac520311f2bbb43f16f2cf71d2e6eb9dec8057315b77459df4890c756a256a087d3f4baa44a79ab5d6c968b060e
-  languageName: node
-  linkType: hard
-
-"lodash.isplainobject@npm:^4.0.6":
-  version: 4.0.6
-  resolution: "lodash.isplainobject@npm:4.0.6"
-  checksum: 29c6351f281e0d9a1d58f1a4c8f4400924b4c79f18dfc4613624d7d54784df07efaff97c1ff2659f3e085ecf4fff493300adc4837553104cef2634110b0d5337
   languageName: node
   linkType: hard
 
@@ -4340,13 +4309,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.union@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "lodash.union@npm:4.6.0"
-  checksum: 1514dc6508b2614ec071a6470f36eb7a70f69bf1abb6d55bdfdc21069635a4517783654b28504c0f025059a7598d37529766888e6d5902b8ab28b712228f7b2a
-  languageName: node
-  linkType: hard
-
 "lodash.zip@npm:^4.2.0":
   version: 4.2.0
   resolution: "lodash.zip@npm:4.2.0"
@@ -4354,7 +4316,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:>= 3.7.0, lodash@npm:^4.17.10, lodash@npm:^4.17.12, lodash@npm:^4.17.21":
+"lodash@npm:>= 3.7.0, lodash@npm:^4.17.10, lodash@npm:^4.17.12, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -4587,7 +4549,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1":
+"minimatch@npm:^5.0.1, minimatch@npm:^5.1.0":
   version: 5.1.6
   resolution: "minimatch@npm:5.1.6"
   dependencies:
@@ -5717,21 +5679,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^2.0.0, readable-stream@npm:^2.0.5":
-  version: 2.3.7
-  resolution: "readable-stream@npm:2.3.7"
-  dependencies:
-    core-util-is: ~1.0.0
-    inherits: ~2.0.3
-    isarray: ~1.0.0
-    process-nextick-args: ~2.0.0
-    safe-buffer: ~5.1.1
-    string_decoder: ~1.1.1
-    util-deprecate: ~1.0.1
-  checksum: e4920cf7549a60f8aaf694d483a0e61b2a878b969d224f89b3bc788b8d920075132c4b55a7494ee944c7b6a9a0eada28a7f6220d80b0312ece70bbf08eeca755
-  languageName: node
-  linkType: hard
-
 "readable-stream@npm:^2.0.2, readable-stream@npm:~2.3.6":
   version: 2.3.8
   resolution: "readable-stream@npm:2.3.8"
@@ -5747,6 +5694,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"readable-stream@npm:^2.0.5":
+  version: 2.3.7
+  resolution: "readable-stream@npm:2.3.7"
+  dependencies:
+    core-util-is: ~1.0.0
+    inherits: ~2.0.3
+    isarray: ~1.0.0
+    process-nextick-args: ~2.0.0
+    safe-buffer: ~5.1.1
+    string_decoder: ~1.1.1
+    util-deprecate: ~1.0.1
+  checksum: e4920cf7549a60f8aaf694d483a0e61b2a878b969d224f89b3bc788b8d920075132c4b55a7494ee944c7b6a9a0eada28a7f6220d80b0312ece70bbf08eeca755
+  languageName: node
+  linkType: hard
+
 "readable-stream@npm:^3.1.1, readable-stream@npm:^3.4.0, readable-stream@npm:^3.6.0":
   version: 3.6.0
   resolution: "readable-stream@npm:3.6.0"
@@ -5758,12 +5720,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readdir-glob@npm:^1.0.0":
-  version: 1.1.1
-  resolution: "readdir-glob@npm:1.1.1"
+"readdir-glob@npm:^1.1.2":
+  version: 1.1.3
+  resolution: "readdir-glob@npm:1.1.3"
   dependencies:
-    minimatch: ^3.0.4
-  checksum: 8dc4ff606aa9ac8f6ac628dfad918aed6514c8b427922928f2ef380a1be106d5b6f1d106af34607955ad504f89f39d83a9b42c5316ed8b96b5f75391e33a6afc
+    minimatch: ^5.1.0
+  checksum: 1dc0f7440ff5d9378b593abe9d42f34ebaf387516615e98ab410cf3a68f840abbf9ff1032d15e0a0dbffa78f9e2c46d4fafdbaac1ca435af2efe3264e3f21874
   languageName: node
   linkType: hard
 
@@ -6236,6 +6198,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"split2@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "split2@npm:4.2.0"
+  checksum: 05d54102546549fe4d2455900699056580cca006c0275c334611420f854da30ac999230857a85fdd9914dc2109ae50f80fda43d2a445f2aa86eccdc1dfce779d
+  languageName: node
+  linkType: hard
+
 "sprintf-js@npm:1.1.1":
   version: 1.1.1
   resolution: "sprintf-js@npm:1.1.1"
@@ -6497,7 +6466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-stream@npm:^3.1.5":
+"tar-stream@npm:^3.0.0, tar-stream@npm:^3.1.5":
   version: 3.1.6
   resolution: "tar-stream@npm:3.1.6"
   dependencies:
@@ -6835,37 +6804,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webdriver@npm:8.15.10":
-  version: 8.15.10
-  resolution: "webdriver@npm:8.15.10"
+"webdriver@npm:8.16.11":
+  version: 8.16.11
+  resolution: "webdriver@npm:8.16.11"
   dependencies:
     "@types/node": ^20.1.0
     "@types/ws": ^8.5.3
-    "@wdio/config": 8.15.10
+    "@wdio/config": 8.16.11
     "@wdio/logger": 8.11.0
-    "@wdio/protocols": 8.14.6
-    "@wdio/types": 8.15.10
-    "@wdio/utils": 8.15.10
+    "@wdio/protocols": 8.16.5
+    "@wdio/types": 8.16.7
+    "@wdio/utils": 8.16.11
     deepmerge-ts: ^5.1.0
     got: ^ 12.6.1
     ky: ^0.33.0
     ws: ^8.8.0
-  checksum: 6ee4dbd96c6c98148a879aae301cce779f157a1fa19df84604290f574b37fdad76b43cf7fbf4f5546102070fd1490e98bf1061e4585dd14ddae5e7dde00c20b0
+  checksum: 809331016bb04c303252f84a0b4d965dc716f18a798829dc35601cf7ed1fbfbf3f49d35a01ffe5573bdb3175121cbec36d18492f107fe47ecde8a4bffae0af88
   languageName: node
   linkType: hard
 
-"webdriverio@npm:8.15.10":
-  version: 8.15.10
-  resolution: "webdriverio@npm:8.15.10"
+"webdriverio@npm:8.16.11":
+  version: 8.16.11
+  resolution: "webdriverio@npm:8.16.11"
   dependencies:
     "@types/node": ^20.1.0
-    "@wdio/config": 8.15.10
+    "@wdio/config": 8.16.11
     "@wdio/logger": 8.11.0
-    "@wdio/protocols": 8.14.6
+    "@wdio/protocols": 8.16.5
     "@wdio/repl": 8.10.1
-    "@wdio/types": 8.15.10
-    "@wdio/utils": 8.15.10
-    archiver: ^5.0.0
+    "@wdio/types": 8.16.7
+    "@wdio/utils": 8.16.11
+    archiver: ^6.0.0
     aria-query: ^5.0.0
     css-shorthand-properties: ^1.1.1
     css-value: ^0.0.1
@@ -6881,13 +6850,13 @@ __metadata:
     resq: ^1.9.1
     rgb2hex: 0.2.5
     serialize-error: ^11.0.1
-    webdriver: 8.15.10
+    webdriver: 8.16.11
   peerDependencies:
     devtools: ^8.14.0
   peerDependenciesMeta:
     devtools:
       optional: true
-  checksum: b4652df9bdc90e5430dafd42644c65441826d01ef324dfa9e00b943e1d96e0a5a0e53615309fb3cb6634e6d5f14962fd7d824e9cdbf36d3053a26f82df189cb8
+  checksum: 74199a7900ee81f1ccdf0e9096ab5a7ee6c9c1ec53a82293e64d5f06123f041155b3d9b594ac7e78e9fea4abb7f3c961f03d2f18fd2ca1ce50748c19b00a1a82
   languageName: node
   linkType: hard
 
@@ -7238,13 +7207,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zip-stream@npm:^4.0.4":
-  version: 4.1.0
-  resolution: "zip-stream@npm:4.1.0"
+"zip-stream@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "zip-stream@npm:5.0.1"
   dependencies:
-    archiver-utils: ^2.1.0
-    compress-commons: ^4.1.0
+    archiver-utils: ^4.0.1
+    compress-commons: ^5.0.1
     readable-stream: ^3.6.0
-  checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
+  checksum: 116cee5a2c1ecce7aa440b665470653f58ef56670c6aafa1b5491c9f9335992352145502af5fa865ac82f46336905e37fb7cbc649c2be72e2152c6b91802995c
   languageName: node
   linkType: hard
