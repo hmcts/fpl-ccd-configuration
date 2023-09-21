@@ -487,7 +487,8 @@ public class MigrateCFVService {
         }
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentList", caseDataMap.get("skeletonArgumentListBackup"));
+        ret.put("skeletonArgumentListBackup", List.of());
         ret.put("skeletonArgumentListLA", List.of());
         return ret;
     }
@@ -506,6 +507,7 @@ public class MigrateCFVService {
                 .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentListBackup", caseData.getHearingDocuments().getSkeletonArgumentList());
         ret.put("skeletonArgumentList", skeletonArgumentList);
         ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
         return ret;
