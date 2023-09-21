@@ -188,8 +188,8 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking booking = hearing.getValue();
 
                 booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                    .judgeEnterManually(null)
-                    .judgeJudicialUser(null)
+                        .judgeEnterManually(null)
+                        .judgeJudicialUser(null)
                     .build());
                 hearing.setValue(booking);
                 return hearing;
@@ -238,11 +238,11 @@ public class MigrateCaseController extends CallbackController {
                     Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
                     if (uuid.isPresent()) {
                         el.setValue(val.toBuilder()
-                            .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                .judgeJudicialUser(JudicialUser.builder()
-                                    .idamId(uuid.get())
+                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
+                                    .judgeJudicialUser(JudicialUser.builder()
+                                        .idamId(uuid.get())
+                                        .build())
                                     .build())
-                                .build())
                             .build());
                         return el;
                     } else {
