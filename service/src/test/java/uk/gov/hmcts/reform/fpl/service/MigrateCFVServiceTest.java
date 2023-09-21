@@ -1766,6 +1766,7 @@ class MigrateCFVServiceTest {
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
             caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
             caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
+            caseDataMap.put("skeletonArgumentListBackup", List.of(skeletonArgument, skeletonArgumentLA));
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
