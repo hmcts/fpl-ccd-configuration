@@ -184,6 +184,11 @@ public class CaseData extends CaseDataParent {
     private String courtField;
     private String dfjArea;
 
+    private final JudicialUser judicialUser;
+    private final JudicialUser judicialUserHearingJudge;
+    private final YesNo enterManually;
+    private final YesNo enterManuallyHearingJudge;
+
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
     }
@@ -260,6 +265,18 @@ public class CaseData extends CaseDataParent {
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
+
+    @Temp
+    private final Judge tempAllocatedJudge;
+
+    // Temporary hearing judge field + legal advisor
+    @Temp
+    private final Judge hearingJudge;
+    @Temp
+    private final String legalAdvisorName;
+    @Temp
+    private final YesNo useAllocatedJudge;
+
     @NotNull(message = "Add the hearing urgency details")
     @Valid
     private final Hearing hearing;

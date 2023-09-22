@@ -936,7 +936,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
-            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtChildList").asList()
                 .contains(positionStatementTwo, positionStatementOne);
@@ -957,7 +956,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
-            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtChildList").asList()
@@ -978,7 +976,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
-            assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtRespList").asList()
                 .contains(positionStatementTwo, positionStatementOne);
@@ -999,7 +996,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
-            assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtRespList").asList()
@@ -1352,9 +1348,6 @@ class MigrateCFVServiceTest {
                 changes = underTest.rollbackPositionStatementRespondent(caseDetails);
             }
 
-            assertThat(changes).extracting(format("positionStatement%sListV2",
-                    isChild ? "Child" : "Respondent")).asList()
-                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
             assertThat(changes).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
                 .isEqualTo(List.of());
             assertThat(changes).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
@@ -1773,6 +1766,7 @@ class MigrateCFVServiceTest {
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
             caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
             caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
+            caseDataMap.put("skeletonArgumentListBackup", List.of(skeletonArgument, skeletonArgumentLA));
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
