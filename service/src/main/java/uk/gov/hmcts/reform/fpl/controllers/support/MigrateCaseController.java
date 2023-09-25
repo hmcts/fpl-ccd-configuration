@@ -88,18 +88,22 @@ public class MigrateCaseController extends CallbackController {
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
 
-            boolean isLegalAdviser = LEGAL_ADVISOR
-                .equals(allocatedJudge.get().getJudgeTitle());
+            Optional<RoleCategory> userRoleCategory = judicialService
+                .getUserRoleCategory(allocatedJudge.get().getJudgeEmailAddress());
 
-            // attempt to assign allocated-[role]
-            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                caseData.getId(),
-                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
-                ZonedDateTime.now(),
-                null // no end date
-            ));
+            if (userRoleCategory.isPresent()) {
+                // attempt to assign allocated-[role]
+                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
+
+                rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
+                    caseData.getId(),
+                    allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
+                    isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
+                    userRoleCategory.get(),
+                    ZonedDateTime.now(),
+                    null // no end date
+                ));
+            }
         } else {
             log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
         }
@@ -149,6 +153,10 @@ public class MigrateCaseController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
+        // 1. cleanup from past migration
+        judicialService.deleteAllRolesOnCase(caseData.getId());
+
+        // 2. Add UUIDs for judges + legal advisers
         Judge allocatedJudge = caseData.getAllocatedJudge();
         if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
             String email = allocatedJudge.getJudgeEmailAddress();
@@ -203,7 +211,7 @@ public class MigrateCaseController extends CallbackController {
         // Convert our newly annotated case details payload to a case data object
         CaseData newCaseData = getCaseData(caseDetails);
 
-        // Perform migration synchronously - we DO NOT catch if this fails, we need to stop the migration for this case
+        // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
     }
 
