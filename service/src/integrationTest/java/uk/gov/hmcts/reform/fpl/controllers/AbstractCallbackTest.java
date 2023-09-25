@@ -26,6 +26,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private final String eventName;
     private final String eventId;
 
