@@ -7,7 +7,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U"
       },
@@ -37,7 +38,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -55,7 +55,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -85,7 +86,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -103,7 +103,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -133,7 +134,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -151,7 +151,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -181,7 +182,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -199,7 +199,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -229,7 +230,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -247,7 +247,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -277,7 +278,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -295,7 +295,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -325,7 +326,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -343,7 +343,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -373,7 +374,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -391,7 +391,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -421,7 +422,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -439,7 +439,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -469,7 +470,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -487,7 +487,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -517,7 +518,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -535,7 +535,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -565,7 +566,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -583,7 +583,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -613,7 +614,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -631,7 +631,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -661,7 +662,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -679,7 +679,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -709,7 +710,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -727,7 +727,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -757,7 +758,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -775,7 +775,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -805,7 +806,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -823,7 +823,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -853,7 +854,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -871,7 +871,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -901,7 +902,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -919,7 +919,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -949,7 +950,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -967,7 +967,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
@@ -997,7 +998,6 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -1015,7 +1015,8 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "RU"
       },
