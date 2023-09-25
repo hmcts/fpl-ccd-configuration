@@ -17,7 +17,6 @@ import java.util.Arrays;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +72,7 @@ class CaseFlagControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService, timeout(10000)).performPostSubmitCallback(
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-case-summary"),
             any());
