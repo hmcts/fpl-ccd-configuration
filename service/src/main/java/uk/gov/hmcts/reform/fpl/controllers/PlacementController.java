@@ -109,9 +109,7 @@ public class PlacementController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         PlacementEventData eventData = placementService.preparePayment(caseData);
-        /*Todo, remove line if placement not needed for later mid events or submitting.  In testing
-        check that no 'placements' key remains on postgres data following submission.
-        caseProperties.put("placement", eventData.getPlacement());*/
+        caseProperties.put("placement", eventData.getPlacement());
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());
 
@@ -192,6 +190,7 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
 
         caseDetails.getData().remove("placementIdToBeSealed");
+        caseDetails.getData().remove("placement");
 
         return respond(caseDetails);
     }
