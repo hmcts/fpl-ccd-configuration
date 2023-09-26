@@ -45,6 +45,11 @@ public class PlacementController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
 
         final CaseDetails caseDetails = request.getCaseDetails();
+
+        /* DFPL-1735.  Working data for a placement is kept in the 'placement' json key.  On some cases
+        this was accidentally stored.  This line removes the key so that a new placement starts afresh. */
+        caseDetails.getData().remove("placement");
+
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
@@ -104,7 +109,9 @@ public class PlacementController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         PlacementEventData eventData = placementService.preparePayment(caseData);
-        caseProperties.put("placement", eventData.getPlacement());
+        /*Todo, remove line if placement not needed for later mid events or submitting.  In testing
+        check that no 'placements' key remains on postgres data following submission.
+        caseProperties.put("placement", eventData.getPlacement());*/
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());
 
