@@ -48,4 +48,15 @@ public class AdditionalApplicationsBundle {
             return applicationReviewed;
         }
     }
+
+    @JsonIgnore
+    public String getApplicantName() {
+        if (isNotEmpty(c2DocumentBundle)) {
+            return c2DocumentBundle.getApplicantName();
+        }
+        if (isNotEmpty(otherApplicationsBundle)) {
+            return otherApplicationsBundle.getApplicantName();
+        }
+        throw new MissingApplicationException(uploadedDateTime);
+    }
 }

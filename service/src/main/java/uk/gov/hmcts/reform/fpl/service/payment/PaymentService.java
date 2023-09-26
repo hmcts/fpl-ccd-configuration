@@ -110,16 +110,13 @@ public class PaymentService {
 
     public void makePaymentForAdditionalApplications(Long caseId, CaseData caseData, FeesData feesData) {
         final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
-
-        final String localAuthorityName = nonNull(caseData.getCaseLocalAuthority())
-            ? localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority())
-            : getApplicant(caseData).getName();
+        final String applicantName = caseData.getAdditionalApplicationsBundle().get(0).getValue().getApplicantName();
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             pbaPayment.getPbaNumber(),
             defaultIfBlank(pbaPayment.getClientCode(), BLANK_PARAMETER_VALUE),
             defaultIfBlank(pbaPayment.getFileReference(), BLANK_PARAMETER_VALUE),
-            localAuthorityName,
+            "On behalf of " + applicantName,
             feesData);
 
         paymentClient.callPaymentsApi(paymentRequest);
