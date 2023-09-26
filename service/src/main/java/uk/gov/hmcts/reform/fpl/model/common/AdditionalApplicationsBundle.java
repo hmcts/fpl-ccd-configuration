@@ -48,5 +48,4 @@ public class AdditionalApplicationsBundle {
             return applicationReviewed;
         }
     }
-
 }
