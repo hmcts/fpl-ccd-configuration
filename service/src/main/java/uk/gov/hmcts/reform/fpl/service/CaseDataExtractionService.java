@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -250,7 +251,7 @@ public class CaseDataExtractionService {
     private DocmosisChild buildChild(ChildParty child) {
         return DocmosisChild.builder()
             .name(child.getFullName())
-            .gender(child.getGender())
+            .gender(Optional.ofNullable(child.getGender()).map(ChildGender::getLabel).orElse(null))
             .dateOfBirth(ofNullable(child.getDateOfBirth())
                 .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
                 .orElse(null))

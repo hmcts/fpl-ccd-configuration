@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
@@ -8,8 +9,11 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public enum ChildGender {
 
-    BOY("Boy", "Bachgen", "he", "himself"),
-    GIRL("Girl", "Merch", "she", "herself"),
+    @JsonProperty("Boy")
+    BOY("Male", "Gwryw", "he", "himself"),
+    @JsonProperty("Girl")
+    GIRL("Female", "Benyw", "she", "herself"),
+    @JsonProperty("Other")
     OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 
     private final String label;
@@ -39,5 +43,4 @@ public enum ChildGender {
     public String getSubjectPronoun() {
         return subjectPronoun;
     }
-
 }

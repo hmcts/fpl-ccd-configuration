@@ -140,8 +140,10 @@ public class PlacementController extends CallbackController {
 
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementIdToBeSealed", eventData.getPlacementIdToBeSealed());
-        caseDetails.getData().put("placementsNonConfidential", eventData.getPlacementsNonConfidential(false));
-        caseDetails.getData().put("placementsNonConfidentialNotices", eventData.getPlacementsNonConfidential(true));
+        caseDetails.getData().put("placementsNonConfidential",
+                eventData.getPlacementsNonConfidentialWithNotices(false));
+        caseDetails.getData().put("placementsNonConfidentialNotices",
+                eventData.getPlacementsNonConfidentialWithNotices(true));
 
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 

@@ -78,7 +78,6 @@ public class C26SecureAccommodationOrderDocumentParameterGenerator implements Do
             .map(Element::getValue)
             .map(Child::getParty)
             .map(ChildParty::getGender)
-            .map(ChildGender::fromLabel)
             .orElseThrow();
 
         StringBuffer orderGrounds = buildOrderGrounds(eventData, selectedChildGender);
