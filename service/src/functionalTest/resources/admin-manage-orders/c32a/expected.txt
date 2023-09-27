@@ -4,7 +4,7 @@ Section 31 Children Act 1989
 Ordered on ${issueDate} by Her Honour Judge Jimbo
 Family Court sitting at Swansea
 Child in the case
-Jim Test Boy Born 31 March 2016
+Jim Test Male Born 31 March 2016
 Care order restrictions
 While a care order is in place, no one can change the child’s surname or take the child out of
 the UK unless they have written consent from all people with parental responsibility, or
