@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -94,7 +95,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("orderJurisdiction", "NO"),
         Map.entry("selectSingleChild", "NO"),
         Map.entry("dischargeOfCareDetails", "NO"),
-        Map.entry("whichOthers", "YES"),
+        Map.entry("whichOthers", "NO"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
         Map.entry("approvalDateTime", "NO"),
@@ -136,10 +137,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         .build();
 
     private static final Child CHILD_1 = Child.builder()
-        .party(ChildParty.builder().firstName("first1").lastName("last1").build())
+        .party(ChildParty.builder().firstName("first1").lastName("last1").gender(ChildGender.BOY).build())
         .build();
     private static final Child CHILD_2 = Child.builder()
-        .party(ChildParty.builder().firstName("first2").lastName("last2").build())
+        .party(ChildParty.builder().firstName("first2").lastName("last2").gender(ChildGender.OTHER).build())
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
@@ -547,7 +548,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderJurisdiction", "NO"),
             Map.entry("selectSingleChild", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
-            Map.entry("whichOthers", "YES"),
+            Map.entry("whichOthers", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -608,7 +609,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderJurisdiction", "NO"),
             Map.entry("selectSingleChild", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
-            Map.entry("whichOthers", "YES"),
+            Map.entry("whichOthers", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),

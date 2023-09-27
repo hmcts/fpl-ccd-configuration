@@ -16,10 +16,10 @@ class HasGenderValidatorTest extends AbstractValidationTest {
     private static final String ERROR_MESSAGE = "Tell us the gender of all children in the case";
 
     @ParameterizedTest
-    @ValueSource(strings = {"Boy", "Girl"})
+    @ValueSource(strings = {"Male", "Female"})
     void shouldNotReturnAnErrorIfStandardGenderProvided(String standardGender) {
         ChildParty child = ChildParty.builder()
-            .gender(standardGender)
+            .gender(ChildGender.fromLabel(standardGender))
             .build();
 
         List<String> validationErrors = validate(child);
@@ -30,7 +30,7 @@ class HasGenderValidatorTest extends AbstractValidationTest {
     @Test
     void shouldNotReturnAnErrorIfNonStandardGenderProvided() {
         ChildParty child = ChildParty.builder()
-            .gender(ChildGender.OTHER.getLabel())
+            .gender(ChildGender.OTHER)
             .genderIdentification("other")
             .build();
 
@@ -50,7 +50,7 @@ class HasGenderValidatorTest extends AbstractValidationTest {
     @Test
     void shouldReturnAnErrorIfNonStandardGenderIsNotProvided() {
         ChildParty child = ChildParty.builder()
-            .gender(ChildGender.OTHER.getLabel())
+            .gender(ChildGender.OTHER)
             .build();
 
         List<String> validationErrors = validate(child);

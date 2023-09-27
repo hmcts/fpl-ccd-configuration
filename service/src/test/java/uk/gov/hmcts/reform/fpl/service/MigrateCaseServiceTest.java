@@ -1040,17 +1040,14 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
@@ -1698,6 +1695,80 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, hearing court bundle not found",
                     MIGRATION_ID, 1, targetBundleId));
+        }
+    }
+
+    @Nested
+    class RemoveCorrespondenceDocument {
+        private final Element<SupportingEvidenceBundle> correspondenceDocument1 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocument2 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocumentToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocumentConfidential =
+            element(SupportingEvidenceBundle.builder().hasConfidentialAddress("Yes").build());
+
+        @Test
+        void shouldRemoveCorrespondenceDocument() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(
+                    List.of(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
+        }
+
+        @Test
+        void shouldRemoveCorrespondenceDocumentIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocumentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList().isEmpty();
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfCorrespondenceDocumentNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, correspondence document not found",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldNotPutConfidentialDocsInNc() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2,
+                    correspondenceDocumentToBeRemoved, correspondenceDocumentConfidential))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentConfidential);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
         }
     }
 

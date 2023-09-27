@@ -692,6 +692,30 @@ public class MigrateCaseService {
         }
     }
 
+    public Map<String, Object> removeCorrespondenceDocument(CaseData caseData,
+                                                            String migrationId,
+                                                            UUID expectedDocumentId) {
+
+        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocuments =
+            caseData.getCorrespondenceDocuments().stream()
+                .filter(el -> !expectedDocumentId.equals(el.getId()))
+                .collect(toList());
+
+        List<Element<SupportingEvidenceBundle>> newCorrespondenceDocumentsNC =
+            newCorrespondenceDocuments.stream()
+                .filter(el -> !el.getValue().isConfidentialDocument())
+                .toList();
+
+        if (newCorrespondenceDocuments.size() != caseData.getCorrespondenceDocuments().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, correspondence document not found",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("correspondenceDocuments", newCorrespondenceDocuments,
+                    "correspondenceDocumentsNC", newCorrespondenceDocumentsNC);
+    }
+
     public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
         // lookup in map
         Optional<String> relatingLA = migrateRelatingLAService.getRelatingLAString(caseId.toString());
