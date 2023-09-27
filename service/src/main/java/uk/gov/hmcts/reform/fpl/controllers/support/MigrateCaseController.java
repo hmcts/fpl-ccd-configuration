@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -56,7 +57,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1725", this::run1725
+        "DFPL-1725", this::run1725,
+        "DFPL-1756", this::run1756
     );
 
     @PostMapping("/about-to-submit")
@@ -215,5 +217,15 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
             migrationId, expectedJudicialMessage));
+    }
+
+    private void run1756(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1756";
+        var possibleCaseIds = List.of(1690369736046741L);
+        UUID expectedApplicationDocumentId = UUID.fromString("ee450bc0-0a21-48f0-8e0c-c148c9957024");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeApplicationDocument(getCaseData(caseDetails),
+            migrationId, expectedApplicationDocumentId));
     }
 }
