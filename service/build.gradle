@@ -284,7 +284,7 @@ repositories {
 def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2',
+  springfoxSwagger: '3.0.0',
   log4j           : '2.16.0',
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
