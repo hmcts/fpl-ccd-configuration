@@ -11,14 +11,14 @@ import static uk.gov.hmcts.reform.fpl.enums.ChildGender.OTHER;
 class ChildGenderTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"boy", "BOY", "Boy"})
-    void shouldReturnBoy(String value) {
+    @ValueSource(strings = {"male", "MALE", "male"})
+    void shouldReturnMale(String value) {
         assertThat(ChildGender.fromLabel(value)).isEqualTo(BOY);
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"girl", "GIRL", "Girl"})
-    void shouldReturnGirl(String value) {
+    @ValueSource(strings = {"female", "FEMALE", "Female"})
+    void shouldReturnFemale(String value) {
         assertThat(ChildGender.fromLabel(value)).isEqualTo(GIRL);
     }
 

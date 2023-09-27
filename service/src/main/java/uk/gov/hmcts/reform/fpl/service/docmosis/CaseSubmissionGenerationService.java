@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
-import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
@@ -708,7 +707,8 @@ public class CaseSubmissionGenerationService
             .name(child.getFullName())
             .age(formatAge(child.getDateOfBirth(), applicationLanguage))
             .gender(formatGenderDisplay(
-                ChildGender.fromLabel(child.getGender()).getLabel(applicationLanguage),
+                Optional.ofNullable(child.getGender())
+                    .map(gender -> gender.getLabel(applicationLanguage)).orElse(null),
                 child.getGenderIdentification()))
             .dateOfBirth(formatDateDisplay(child.getDateOfBirth(), applicationLanguage))
             .livingSituation(getChildLivingSituation(child, isConfidential, applicationLanguage))

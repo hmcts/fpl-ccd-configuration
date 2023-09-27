@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -66,7 +67,7 @@ class ChildrenCheckerTest {
                 .party(ChildParty.builder()
                         .firstName("Alex")
                         .lastName("Brown")
-                        .gender("Boy")
+                        .gender(ChildGender.BOY)
                         .dateOfBirth(LocalDate.now().minusYears(20))
                         .build())
                 .build();
@@ -87,7 +88,7 @@ class ChildrenCheckerTest {
                 .party(ChildParty.builder()
                         .firstName("Alex")
                         .lastName("Brown")
-                        .gender("Other")
+                        .gender(ChildGender.OTHER)
                         .dateOfBirth(LocalDate.now().minusYears(20))
                         .build())
                 .build();
@@ -108,7 +109,7 @@ class ChildrenCheckerTest {
                 .party(ChildParty.builder()
                         .firstName("Alex")
                         .lastName("Brown")
-                        .gender("Boy")
+                        .gender(ChildGender.BOY)
                         .dateOfBirth(LocalDate.now().plusDays(1))
                         .build())
                 .build();
