@@ -446,5 +446,40 @@
     "RoleName": "magistrate",
     "ReadOnly": "Y",
     "AccessProfiles": "caseworker-publiclaw-magistrate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-magistrate",
+    "ReadOnly": "Y",
+    "AccessProfiles": "caseworker-publiclaw-magistrate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-magistrate",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-magistrate"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-courtadmin",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-judiciary",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "idam:caseworker-publiclaw-gatekeeper",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-gatekeeper"
   }
 ]

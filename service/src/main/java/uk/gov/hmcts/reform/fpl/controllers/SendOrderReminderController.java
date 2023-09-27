@@ -56,13 +56,6 @@ public class SendOrderReminderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        // TODO - do we need to store anything special? Already storing shouldSendOrderReminder through the flow
-        return respond(caseDetails);
-    }
-
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);

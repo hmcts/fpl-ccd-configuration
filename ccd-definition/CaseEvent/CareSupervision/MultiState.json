@@ -1092,10 +1092,10 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/submitted",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
+    "Publish": "Y",
     "EndButtonLabel": "Send reminder"
   },
   {
