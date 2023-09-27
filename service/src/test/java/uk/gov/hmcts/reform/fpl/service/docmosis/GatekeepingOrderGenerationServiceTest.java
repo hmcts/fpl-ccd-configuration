@@ -362,17 +362,17 @@ class GatekeepingOrderGenerationServiceTest {
         return List.of(
             DocmosisChild.builder()
                 .name("Bran Stark")
-                .gender("Boy")
+                .gender("Male")
                 .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
             DocmosisChild.builder()
                 .name("Sansa Stark")
-                .gender("Boy")
+                .gender("Male")
                 .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build(),
             DocmosisChild.builder()
                 .name("Jon Snow")
-                .gender("Girl")
+                .gender("Female")
                 .dateOfBirth(formatLocalDateToString(today, LONG))
                 .build()
         );
