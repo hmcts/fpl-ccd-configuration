@@ -457,13 +457,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-magistrate",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-magistrate"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "idam:caseworker-publiclaw-courtadmin",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-courtadmin"
