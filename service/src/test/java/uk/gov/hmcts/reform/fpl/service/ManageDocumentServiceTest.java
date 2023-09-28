@@ -2791,7 +2791,7 @@ class ManageDocumentServiceTest {
 
     private static Stream<Arguments> buildUploadingDocumentArgs() {
         List<Arguments> args = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 6; i++) {
             for (Confidentiality c : Confidentiality.values()) {
                 args.add(Arguments.of(i, c));
             }
@@ -2833,6 +2833,16 @@ class ManageDocumentServiceTest {
     private void initialiseUserService(int loginType) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(new HashSet<>(getUploaderCaseRoles(loginType)));
         when(userService.isHmctsUser()).thenReturn(4 == loginType); // HMCTS for loginType = 4
+        switch (loginType) {
+            case 4:
+                when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
+                break;
+            case 5:
+                when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.CAFCASS.getRoleName()));
+                break;
+            default:
+                break;
+        }
     }
 
     private static DocumentUploaderType getUploaderType(int loginType) {
@@ -2845,6 +2855,8 @@ class ManageDocumentServiceTest {
                 return DocumentUploaderType.SOLICITOR;
             case 4:
                 return DocumentUploaderType.HMCTS;
+            case 5:
+                return DocumentUploaderType.CAFCASS;
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
         }
@@ -2859,6 +2871,7 @@ class ManageDocumentServiceTest {
             case 3:
                 return List.of(CaseRole.SOLICITORA);
             case 4:
+            case 5:
                 return List.of();
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
@@ -3565,6 +3578,7 @@ class ManageDocumentServiceTest {
                 case HMCTS:
                     test = test && list.contains(element(placementAdminId, placementAdmin));
                     return test;
+                case CAFCASS:
                 case SOLICITOR:
                     test = test && list.contains(element(placementRespondentId, placementRespondent));
                     return test;
@@ -3674,6 +3688,7 @@ class ManageDocumentServiceTest {
                 case HMCTS:
                     test = test && list.contains(element(placementAdminId, placementAdmin));
                     return test;
+                case CAFCASS:
                 case SOLICITOR:
                     test = test && list.contains(element(placementRespondentId, placementRespondent));
                     return test;
@@ -3840,7 +3855,7 @@ class ManageDocumentServiceTest {
         DynamicList expectedDynamicList3 = DynamicList.builder().build();
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4})
+        @ValueSource(ints = {1, 2, 3, 4, 5})
         void testForNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
             initialiseUserService(loginType);
             DocumentUploaderType uploaderType = getUploaderType(loginType);
@@ -3872,7 +3887,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4})
+        @ValueSource(ints = {1, 2, 3, 4, 5})
         void testForNonConfidentialCourtBundleUploadedByHMCTS(int loginType) {
             initialiseUserService(loginType);
             DocumentUploaderType uploaderType = getUploaderType(loginType);
@@ -3909,48 +3924,46 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4})
+        @ValueSource(ints = {1, 2})
         void testForNonConfidentialCourtBundleUploadedByLA(int loginType) {
-            for (int i = 1; i < 3; i++) { // DESIGNATED_LOCAL_AUTHORITY and SECONDARY_LOCAL_AUTHORITY
-                initialiseUserService(loginType);
-                DocumentUploaderType uploaderType = getUploaderType(loginType);
-                CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-                builder.hearingDocuments(HearingDocuments.builder()
-                    .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
-                        .courtBundle(List.of(
-                            element(elementId1, CourtBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(i))
-                                .uploaderCaseRoles(getUploaderCaseRoles(i))
-                                .build()),
-                            element(elementId2, CourtBundle.builder()
-                                .document(testDocumentReference(filename2))
-                                .uploaderType(getUploaderType(i))
-                                .uploaderCaseRoles(getUploaderCaseRoles(i))
-                                .build())
-                        ))
-                        .build())))
-                    .build());
+            initialiseUserService(loginType);
+            DocumentUploaderType uploaderType = getUploaderType(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build())
+                    ))
+                    .build())))
+                .build());
 
-                when(dynamicListService.asDynamicList(List.of(
-                    Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
-                    Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
-                ))).thenReturn(expectedDynamicList1);
-                when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
-                DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-                if (uploaderType == DocumentUploaderType.HMCTS
-                    || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-                    || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
-                    assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-                } else {
-                    assertThat(dynamicList).isEqualTo(expectedDynamicList2);
-                }
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            if (uploaderType == DocumentUploaderType.HMCTS
+                || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             }
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4})
+        @ValueSource(ints = {1, 2, 3, 4, 5})
         void testForNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
@@ -4024,7 +4037,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4})
+        @ValueSource(ints = {1, 2, 3, 4, 5})
         void testForConfidentialCTSCUploadedAndNonConfidentialCourtBundleExist(
             int loginType) {
             initialiseUserService(loginType);
