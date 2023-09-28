@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -2651,6 +2652,19 @@ class ManageDocumentServiceTest {
     })
     void shouldPopulatePropertiesForSolicitorUsers(CaseRole caseRole) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(false);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
+    }
+
+    @Test
+    void shouldPopulatePropertiesForCafcassUser() {
+        when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.CAFCASS.getRoleName()));
         when(userService.isHmctsUser()).thenReturn(false);
 
         CaseData caseData = CaseData.builder()

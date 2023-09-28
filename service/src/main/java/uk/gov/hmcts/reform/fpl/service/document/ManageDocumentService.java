@@ -229,12 +229,11 @@ public class ManageDocumentService {
     }
 
     public boolean allowMarkDocumentConfidential(CaseData caseData) {
-        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
-            .contains(getUploaderType(caseData));
+        return !List.of(SOLICITOR, BARRISTER, CAFCASS).contains(getUploaderType(caseData));
     }
 
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
-        return List.of(DocumentUploaderType.HMCTS).contains(getUploaderType(caseData));
+        return List.of(HMCTS).contains(getUploaderType(caseData));
     }
 
     @SuppressWarnings("unchecked")
@@ -558,7 +557,7 @@ public class ManageDocumentService {
                 WithDocument wd = ((WithDocument) e.getValue());
                 DocumentReference document = wd.getDocument();
 
-                if (uploaderType != DocumentUploaderType.HMCTS) {
+                if (uploaderType != HMCTS && uploaderType != CAFCASS) {
                     List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
                         ? new ArrayList<>() : wd.getUploaderCaseRoles();
                     final Set<CaseRole> currentUploaderCaseRoles = Optional
@@ -567,6 +566,11 @@ public class ManageDocumentService {
 
                     if (!docCaseRoles.stream().filter(cr -> currentUploaderCaseRoles.contains(cr)).findAny()
                         .isPresent()) {
+                        continue;
+                    }
+                }
+                if (uploaderType == CAFCASS) {
+                    if (!uploaderType.equals(wd.getUploaderType())) {
                         continue;
                     }
                 }
