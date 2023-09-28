@@ -728,4 +728,26 @@ public class MigrateCaseService {
 
         return Map.of("relatingLA", relatingLA.get());
     }
+
+
+    public Map<String, Object> removeSealedCMO(CaseData caseData,
+                                               String migrationId,
+                                               UUID expectedCMOId) {
+
+        List<Element<HearingOrder>> updatedSealedCMOs = ElementUtils.removeElementWithUUID(
+            caseData.getSealedCMOs(), expectedCMOId);
+
+        if (updatedSealedCMOs.size() != caseData.getSealedCMOs().size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
+                migrationId, caseData.getId(), expectedCMOId));
+        }
+
+        List<Element<HearingOrder>> updatedOrdersToBeSent = ElementUtils.removeElementWithUUID(
+            caseData.getOrdersToBeSent(), expectedCMOId);
+
+        return Map.of(
+            "sealedCMOs", updatedSealedCMOs,
+            "ordersToBeSent", updatedOrdersToBeSent);
+    }
 }
