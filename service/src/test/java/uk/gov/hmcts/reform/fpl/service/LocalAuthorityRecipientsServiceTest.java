@@ -175,7 +175,8 @@ class LocalAuthorityRecipientsServiceTest {
             given(featureToggles.isRestrictedFromPrimaryApplicantEmails("12345")).willReturn(true);
 
             assertThat(underTest.getRecipients(recipientsRequest))
-                .containsExactlyInAnyOrder(LA_2_INBOX, designatedLAColleague2.getEmail(), designatedLAColleague3.getEmail());
+                .containsExactlyInAnyOrder(LA_2_INBOX, designatedLAColleague2.getEmail(),
+                    designatedLAColleague3.getEmail());
         }
 
         @Test
