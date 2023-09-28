@@ -226,6 +226,10 @@ ccd:
   postgresql:
     persistence:
       enabled: false
+    image:
+        registry: hmctspublic.azurecr.io
+        repository: imported/bitnami/postgresql
+        tag: '11.16.0'
     postgresConfig:
       maxConnections: "300"
 
