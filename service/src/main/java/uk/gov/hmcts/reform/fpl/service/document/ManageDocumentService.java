@@ -369,7 +369,7 @@ public class ManageDocumentService {
     private void uploadPlacementResponse(Map<String, Object> changes, DocumentUploaderType uploaderType,
                                          Element<UploadableDocumentBundle> e, CaseData caseData) {
         boolean isLocalAuthority = isLocalAuthority(uploaderType);
-        boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
+        boolean isSolicitor = uploaderType == SOLICITOR || uploaderType == CAFCASS;
         boolean isAdmin = !(isSolicitor || isLocalAuthority);
 
         Map<String, Object> initialisedPlacement = null;
