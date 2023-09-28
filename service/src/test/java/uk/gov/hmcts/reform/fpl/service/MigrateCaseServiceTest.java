@@ -60,7 +60,6 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1803,21 +1802,21 @@ class MigrateCaseServiceTest {
 
     @Nested
     class RemoveSealedCMO {
-        private final Element<HearingOrder> SEALED_CMO_1 = ElementUtils.element(HearingOrder.builder().build());
-        private final Element<HearingOrder> SEALED_CMO_2 = ElementUtils.element(HearingOrder.builder().build());
-        private final List<Element<HearingOrder>> SEALED_CMOS = List.of(SEALED_CMO_1, SEALED_CMO_2);
-        private final List<Element<HearingOrder>> ORDERS_TO_BE_SENT = List.of(SEALED_CMO_1, SEALED_CMO_2);
+        private final Element<HearingOrder> sealedCmo1 = ElementUtils.element(HearingOrder.builder().build());
+        private final Element<HearingOrder> sealedCmo2 = ElementUtils.element(HearingOrder.builder().build());
+        private final List<Element<HearingOrder>> sealedCmos = List.of(sealedCmo1, sealedCmo2);
+        private final List<Element<HearingOrder>> orderToBeSent = List.of(sealedCmo1, sealedCmo2);
 
         @Test
         void shouldRemoveSealedCMO() {
             CaseData caseData = CaseData.builder().id(1L)
-                .sealedCMOs(SEALED_CMOS)
-                .ordersToBeSent(ORDERS_TO_BE_SENT)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(orderToBeSent)
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, SEALED_CMO_1.getId());
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId());
 
-            List<Element<HearingOrder>> expectedList = List.of(SEALED_CMO_2);
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
             assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
             assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(expectedList);
@@ -1826,12 +1825,12 @@ class MigrateCaseServiceTest {
         @Test
         void shouldRemoveSealedCMOIfNoOrdersToBeSent() {
             CaseData caseData = CaseData.builder().id(1L)
-                .sealedCMOs(SEALED_CMOS)
+                .sealedCMOs(sealedCmos)
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, SEALED_CMO_1.getId());
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId());
 
-            List<Element<HearingOrder>> expectedList = List.of(SEALED_CMO_2);
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
             assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
             assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(List.of());
@@ -1841,11 +1840,11 @@ class MigrateCaseServiceTest {
         void shouldThrowExceptionIfCMONotFound() {
             CaseData caseData = CaseData.builder().id(1L).build();
 
-            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, SEALED_CMO_1.getId()))
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId()))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
-                    MIGRATION_ID, "1", SEALED_CMO_1.getId()));
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
         }
     }
 }
