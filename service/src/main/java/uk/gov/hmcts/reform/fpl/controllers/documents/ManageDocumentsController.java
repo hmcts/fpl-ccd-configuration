@@ -320,13 +320,10 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(request);
 
         DocumentUploaderType userType = getUploaderType(caseData.getId());
-        if (this.featureToggleService.isNewDocumentUploadNotificationEnabled()
-            || (!DocumentUploaderType.SOLICITOR.equals(userType) && !DocumentUploaderType.BARRISTER.equals(userType))) {
-            UserDetails userDetails = userService.getUserDetails();
+        UserDetails userDetails = userService.getUserDetails();
 
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), userType, userDetails));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+            getCaseDataBefore(request), userType, userDetails));
     }
 
     private DocumentUploaderType getUploaderType(Long id) {
