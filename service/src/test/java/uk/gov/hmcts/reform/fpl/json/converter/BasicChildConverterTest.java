@@ -36,7 +36,7 @@ class BasicChildConverterTest {
             .firstName("Alex")
             .lastName("Smith")
             .dateOfBirth(LocalDate.now().minusYears(8))
-            .gender(ChildGender.BOY.getLabel())
+            .gender(ChildGender.BOY)
             .email(testEmail())
             .address(testAddress())
             .additionalNeeds(randomAlphanumeric(5))
@@ -49,7 +49,7 @@ class BasicChildConverterTest {
             .firstName("Alex")
             .lastName("Smith")
             .dateOfBirth(LocalDate.now().minusYears(8))
-            .gender(ChildGender.BOY.getLabel())
+            .gender(ChildGender.BOY)
             .build();
 
         Child child = Child.builder()
