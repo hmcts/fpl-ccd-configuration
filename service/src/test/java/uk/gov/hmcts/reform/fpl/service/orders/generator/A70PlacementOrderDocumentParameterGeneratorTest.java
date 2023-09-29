@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -58,7 +59,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .fathersName("James White")
                     .mothersName("Laura White")
                     .dateOfBirth(LocalDate.of(2018, NOVEMBER, 20))
-                    .gender("Girl")
+                    .gender(ChildGender.GIRL)
                     .build())
                 .build()
         );
@@ -109,7 +110,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
         assertThat(docmosisChild.getFathersName()).isEqualTo("James White");
         assertThat(docmosisChild.getMothersName()).isEqualTo("Laura White");
         assertThat(docmosisChild.getDateOfBirth()).isEqualTo("20/11/2018");
-        assertThat(docmosisChild.getGender()).isEqualTo("Girl");
+        assertThat(docmosisChild.getGender()).isEqualTo("Female");
         assertThat(docmosisChild.getBirthCertificate().getNumber()).isEqualTo("testBcNumber");
         assertThat(docmosisChild.getBirthCertificate().getDate()).isEqualTo("testBcDateAsFreeText");
         assertThat(docmosisChild.getBirthCertificate().getRegistrationDistrict()).isEqualTo("testBcRegDistrict");

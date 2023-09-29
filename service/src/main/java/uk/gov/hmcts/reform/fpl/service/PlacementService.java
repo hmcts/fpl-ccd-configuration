@@ -314,7 +314,7 @@ public class PlacementService {
             .child(DocmosisChild.builder()
                 .name(placementChild.getParty().getFullName())
                 .dateOfBirth(formatLocalDateToString(placementChild.getParty().getDateOfBirth(), DATE))
-                .gender(placementChild.getParty().getGender())
+                .gender(placementChild.getParty().getGender().getLabel())
                 .build())
             .courtName(courtService.getCourtName(caseData))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
