@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AddressNotKnowReason;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -231,7 +232,8 @@ public class RoboticsDataService {
         return Child.builder()
             .firstName(childParty.getFirstName())
             .lastName(childParty.getLastName())
-            .gender(convertStringToGender(childParty.getGender()))
+            .gender(convertStringToGender(
+                Optional.ofNullable(childParty.getGender()).map(ChildGender::getLabel).orElse(null)))
             .dob(formatDate(childParty.getDateOfBirth(), "d-MMM-y"))
             .isParty(false)
             .build();

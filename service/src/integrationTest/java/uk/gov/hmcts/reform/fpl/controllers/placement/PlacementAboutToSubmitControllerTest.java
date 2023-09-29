@@ -31,6 +31,8 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
     private final Document sealedDocument = testDocument();
     private final DocumentReference application = testDocumentReference("application.doc");
 
+    private final DocumentReference placementNoticeDocument = testDocumentReference("placementNotice.pdf");
+
     @Test
     void shouldSaveNewPlacementApplication() {
 
@@ -47,6 +49,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .placementUploadDateTime(now())
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
+            .placementNotice(placementNoticeDocument)
             .noticeDocuments(noticeResponses)
             .build();
 
@@ -54,6 +57,7 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .childId(child2.getId())
             .childName("Emma Green")
             .application(testDocumentReference())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -77,13 +81,14 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
         final Placement expectedNewNonConfidentialPlacement = expectedNewPlacement.toBuilder()
             .confidentialDocuments(null)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         assertThat(actualPlacementData.getPlacements())
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewPlacement);
 
-        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
+        assertThat(actualPlacementData.getPlacementsNonConfidentialWithNotices(true))
             .extracting(Element::getValue)
             .containsExactly(existingPlacement, expectedNewNonConfidentialPlacement);
     }
@@ -97,13 +102,13 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
             .response(testDocumentReference())
             .build());
 
-
         final Placement existingApplicationForChild1 = Placement.builder()
             .childId(child1.getId())
             .childName("Alex Brown")
             .application(testDocumentReference())
             .placementUploadDateTime(LocalDateTime.of(2020, 10, 10, 12, 0))
             .placementRespondentsToNotify(Collections.emptyList())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final Placement existingApplicationForChild2 = Placement.builder()
@@ -115,12 +120,14 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
                 .document(testDocumentReference())
                 .build()))
             .placementRespondentsToNotify(Collections.emptyList())
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final Placement newPlacementForChild1 = existingApplicationForChild1.toBuilder()
             .supportingDocuments(wrapElements(statementOfFacts))
             .confidentialDocuments(wrapElements(annexB))
             .noticeDocuments(noticeResponses)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         final CaseData caseData = CaseData.builder()
@@ -145,13 +152,14 @@ class PlacementAboutToSubmitControllerTest extends AbstractPlacementControllerTe
 
         final Placement expectedNonConfidentialPlacementForChild2 = existingApplicationForChild2.toBuilder()
             .confidentialDocuments(null)
+            .placementNotice(placementNoticeDocument)
             .build();
 
         assertThat(actualPlacementData.getPlacements())
             .extracting(Element::getValue)
             .containsExactly(expectedNewPlacementForChild1, existingApplicationForChild2);
 
-        assertThat(actualPlacementData.getPlacementsNonConfidential(true))
+        assertThat(actualPlacementData.getPlacementsNonConfidentialWithNotices(true))
             .extracting(Element::getValue)
             .containsExactly(expectedNewNonConfidentialPlacementForChild1, expectedNonConfidentialPlacementForChild2);
     }
