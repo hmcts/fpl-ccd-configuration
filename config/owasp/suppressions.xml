@@ -301,4 +301,8 @@
   <suppress>
     <vulnerabilityName>CVE-2023-34040</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes>Spring GraphQL - not used in FPL</notes>
+    <vulnerabilityName>CVE-2023-34047</vulnerabilityName>
+  </suppress>
 </suppressions>

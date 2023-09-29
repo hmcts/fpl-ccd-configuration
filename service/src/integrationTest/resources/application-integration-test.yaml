@@ -49,6 +49,18 @@ rd_professional:
   api:
     url: http://fake-rd-professional-api
 
+rd_judicial:
+  api:
+    url: http://fake-jrd-api
+
+rd_staff:
+  api:
+    url: http://fake-staff-api
+
+am_role_assignment:
+  api:
+    url: http://fake-am-api
+
 send-letter:
   url: http://fake-send-letter
 
