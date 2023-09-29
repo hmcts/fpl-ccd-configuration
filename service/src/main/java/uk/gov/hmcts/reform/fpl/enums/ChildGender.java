@@ -13,7 +13,7 @@ public enum ChildGender {
     BOY("Male", "Gwryw", "he", "himself"),
     @JsonProperty("Girl")
     GIRL("Female", "Benyw", "she", "herself"),
-    @JsonProperty("Other")
+    @JsonProperty("They identify in another way")
     OTHER("They identify in another way", "Maent yn uniaethu mewn ffordd arall", "they", "themselves");
 
     private final String label;
