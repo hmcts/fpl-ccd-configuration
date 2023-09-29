@@ -224,7 +224,7 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1688113759453556L);
         String expectedNoticeOfProceedingsBundleId = "694d1904-2226-448e-bbc9-55685e8fa940";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
+        
         caseDetails.getData().putAll(migrateCaseService.removeNoticeOfProceedingsBundle(getCaseData(caseDetails),
             expectedNoticeOfProceedingsBundleId, migrationId));
     }
@@ -234,7 +234,7 @@ public class MigrateCaseController extends CallbackController {
         var possibleCaseIds = List.of(1682070556592612L);
         UUID expectedHearingId = UUID.fromString("c7fcfcd9-3d60-4755-abfc-12fccd558f60");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
+        
         caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
             migrationId, expectedHearingId));
     }
