@@ -1041,17 +1041,14 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()

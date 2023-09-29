@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -63,10 +64,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     private static final Child CHILD_1 = Child.builder()
-        .party(ChildParty.builder().firstName("first1").lastName("last1").build())
+        .party(ChildParty.builder().firstName("first1").lastName("last1").gender(ChildGender.BOY).build())
         .build();
     private static final Child CHILD_2 = Child.builder()
-        .party(ChildParty.builder().firstName("first2").lastName("last2").build())
+        .party(ChildParty.builder().firstName("first2").lastName("last2").gender(ChildGender.GIRL).build())
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
