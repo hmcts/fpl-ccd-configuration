@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.CHILD_ARRANGEMENT_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C43OrderType.SPECIFIC_ISSUE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.A81_PLACEMENT_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
@@ -53,6 +54,10 @@ class OrderTest {
     void fileExtension() {
         assertThat(A70_PLACEMENT_ORDER.fileName(RenderFormat.PDF)).isEqualTo("a70_placement_order.pdf");
         assertThat(A70_PLACEMENT_ORDER.fileName(RenderFormat.WORD)).isEqualTo("a70_placement_order.doc");
+        assertThat(A81_PLACEMENT_BLANK_ORDER.fileName(RenderFormat.PDF))
+            .isEqualTo("a81_placement_blank_order.pdf");
+        assertThat(A81_PLACEMENT_BLANK_ORDER.fileName(RenderFormat.WORD))
+            .isEqualTo("a81_placement_blank_order.doc");
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c21_blank_order.pdf");
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
         assertThat(C26_SECURE_ACCOMMODATION_ORDER.fileName(RenderFormat.PDF))
@@ -117,6 +122,7 @@ class OrderTest {
     @Test
     void firstSection() {
         assertThat(A70_PLACEMENT_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
+        assertThat(A81_PLACEMENT_BLANK_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
         assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C23_EMERGENCY_PROTECTION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C26_SECURE_ACCOMMODATION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
@@ -188,6 +194,9 @@ class OrderTest {
             Arguments.of(C21_BLANK_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C21_BLANK_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(A81_PLACEMENT_BLANK_ORDER, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(A81_PLACEMENT_BLANK_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(A81_PLACEMENT_BLANK_ORDER, REVIEW, Optional.empty()),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),

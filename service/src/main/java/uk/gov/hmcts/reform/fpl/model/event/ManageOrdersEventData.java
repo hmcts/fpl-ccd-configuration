@@ -146,6 +146,10 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersPartyToBeBefriended3;
     LocalDate manageOrdersFamilyAssistanceEndDate;
 
+    String manageOrdersPreamblesText;
+    String manageOrdersParagraphs;
+    String manageOrdersCostOrders;
+
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {
         if (isEmpty(manageOrdersChildArrangementsOrderTypes) && manageOrdersChildArrangementsOrderType != null) {

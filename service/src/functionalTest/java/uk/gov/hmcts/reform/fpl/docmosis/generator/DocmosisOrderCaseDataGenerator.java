@@ -282,6 +282,14 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersChildPlacementApplication(buildDynamicList(0, Pair.of(PLACEMENT_ID, "Placement")))
                         .build()
                 );
+            case PLACEMENT_BLANK_ORDER:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersParagraphs("Paragraphs")
+                        .manageOrdersCostOrders("Cost Orders")
+                        .manageOrdersPreamblesText("Preambles Text")
+                        .build()
+                );
             case CHILD_PLACEMENT:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

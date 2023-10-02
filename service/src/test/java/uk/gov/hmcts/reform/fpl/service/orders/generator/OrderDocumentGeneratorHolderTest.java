@@ -21,6 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.A81_PLACEMENT_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
@@ -57,6 +58,8 @@ class OrderDocumentGeneratorHolderTest {
     private A70PlacementOrderDocumentParameterGenerator a70PlacementOrderDocumentParameterGenerator;
     @Mock
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
+    @Mock
+    private A81PlacementBlankOrderDocumentParameterGenerator a81PlacementBlankOrderDocumentParameterGenerator;
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     @Mock
@@ -136,6 +139,7 @@ class OrderDocumentGeneratorHolderTest {
             {
                 put(A70_PLACEMENT_ORDER, a70PlacementOrderDocumentParameterGenerator);
                 put(C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator);
+                put(A81_PLACEMENT_BLANK_ORDER, a81PlacementBlankOrderDocumentParameterGenerator);
                 put(C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator);
                 put(C26_SECURE_ACCOMMODATION_ORDER, c26SecureAccommodationOrderDocumentParameterGenerator);
                 put(C29_RECOVERY_OF_A_CHILD, c29RecoveryOfAChildDocumentParameterGenerator);
