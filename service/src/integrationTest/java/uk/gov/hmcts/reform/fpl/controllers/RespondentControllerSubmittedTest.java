@@ -85,7 +85,6 @@ class RespondentControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CASE_ID = "1234567890123456";
     private static final long CASE_ID_LONG = 1234567890123456L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     private final Organisation organisation1 = organisation("ORG_1");
     private final Organisation organisation2 = organisation("ORG_2");

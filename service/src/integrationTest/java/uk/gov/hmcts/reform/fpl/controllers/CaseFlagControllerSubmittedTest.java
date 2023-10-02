@@ -73,7 +73,7 @@ class CaseFlagControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService, timeout(10000)).performPostSubmitCallback(
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-case-summary"),
             any());
