@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -58,6 +59,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1725", this::run1725,
+        "DFPL-1702", this::run1702,
         "DFPL-1739", this::run1739,
         "DFPL-1748", this::run1748
     );
@@ -218,6 +220,13 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
             migrationId, expectedJudicialMessage));
+    }
+
+    private void run1702(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1702";
+        var possibleCaseIds = List.of(1659968928016476L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().put("state", State.CASE_MANAGEMENT);
     }
 
     private void run1739(CaseDetails caseDetails) {
