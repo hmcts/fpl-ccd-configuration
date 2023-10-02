@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -57,7 +58,7 @@ class ChildrenCheckerIsStartedTest {
                         .firstName("")
                         .lastName("")
                         .dateOfBirth(null)
-                        .gender("")
+                        .gender(null)
                         .livingSituation("")
                         .keyDates("")
                         .careAndContactPlan("")
@@ -135,7 +136,7 @@ class ChildrenCheckerIsStartedTest {
                 ChildParty.builder().firstName("Test").build(),
                 ChildParty.builder().lastName("Test").build(),
                 ChildParty.builder().dateOfBirth(LocalDate.now()).build(),
-                ChildParty.builder().gender("Boy").build(),
+                ChildParty.builder().gender(ChildGender.BOY).build(),
                 ChildParty.builder().livingSituation("Test").build(),
                 ChildParty.builder().keyDates("Test").build(),
                 ChildParty.builder().careAndContactPlan("Test").build(),
