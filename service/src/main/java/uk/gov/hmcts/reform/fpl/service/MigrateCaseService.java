@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -542,6 +543,31 @@ public class MigrateCaseService {
         }
 
         return Map.of("skeletonArgumentList", updatedSkeletonArguments);
+    }
+
+    public Map<String, Object> removeNoticeOfProceedingsBundle(CaseData caseData, String noticeOfProceedingsBundleId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<DocumentBundle>> noticeOfProceedingsBundle = caseData.getNoticeOfProceedingsBundle();
+
+        if (noticeOfProceedingsBundle.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, noticeOfProceedingsBundle is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<DocumentBundle>> updatedNoticeOfProceedingsBundle =
+            ElementUtils.removeElementWithUUID(noticeOfProceedingsBundle, UUID.fromString(noticeOfProceedingsBundleId));
+
+        if (updatedNoticeOfProceedingsBundle.size() != noticeOfProceedingsBundle.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, notice of proceedings bundle %s not found",
+                migrationId, caseId, noticeOfProceedingsBundleId
+            ));
+        }
+
+        return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
     }
 
     public Map<String, Object> addCourt(String courtId) {
