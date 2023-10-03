@@ -256,6 +256,7 @@ class PaymentServiceTest {
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("customerReference")
+                .organisationName("On behalf of Applicant Name")
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(feeForAdditionalApplications))
                 .build();
@@ -263,7 +264,6 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
@@ -274,6 +274,7 @@ class PaymentServiceTest {
             CaseData caseData = buildCaseData(CLIENT_CODE, customerReference);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .organisationName("On behalf of Applicant Name")
                 .customerReference(BLANK_PARAMETER_VALUE)
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
@@ -282,7 +283,6 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
@@ -294,10 +294,11 @@ class PaymentServiceTest {
                 CUSTOMER_REFERENCE,
                 feeForAdditionalApplications);
 
+            expectedPaymentRequest.setOrganisationName("On behalf of Applicant Name");
+
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
@@ -308,6 +309,7 @@ class PaymentServiceTest {
             when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .organisationName("On behalf of Applicant Name")
                 .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(feeForAdditionalApplications))
@@ -316,7 +318,6 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         private CaseData buildCaseData(String clientCode, String customerReference) {
@@ -324,6 +325,9 @@ class PaymentServiceTest {
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(List.of(
                     element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder()
+                            .applicantName("Applicant Name")
+                            .build())
                         .pbaPayment(PBAPayment.builder()
                             .clientCode(clientCode)
                             .fileReference(customerReference)
