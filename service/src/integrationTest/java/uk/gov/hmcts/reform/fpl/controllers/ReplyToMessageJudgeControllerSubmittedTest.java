@@ -42,7 +42,6 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String MESSAGE = "Some note";
     private static final String REPLY = "Reply";
     private static final String LAST_NAME = "Davidson";
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @MockBean
     private NotificationClient notificationClient;
