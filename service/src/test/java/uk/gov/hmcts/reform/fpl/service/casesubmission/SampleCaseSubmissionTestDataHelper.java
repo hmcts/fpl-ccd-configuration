@@ -139,7 +139,7 @@ public class SampleCaseSubmissionTestDataHelper {
         return of(DocmosisChild.builder()
                 .name("Tom Reeves")
                 .age(formatAgeDisplay(parse("2018-06-15"), LANGUAGE))
-                .gender("Boy")
+                .gender("Male")
                 .dateOfBirth("15 June 2018")
                 .livingSituation("Living with respondents\nConfidential\nDate this began: 8 November 2018")
                 .keyDates("child starting primary school or taking GCSEs")
@@ -159,7 +159,7 @@ public class SampleCaseSubmissionTestDataHelper {
             DocmosisChild.builder()
                 .name("Sarah Reeves")
                 .age(formatAgeDisplay(parse("2002-02-02"), LANGUAGE))
-                .gender("Girl")
+                .gender("Female")
                 .dateOfBirth("2 February 2002")
                 .livingSituation("Living with respondents\nCarnegie House\nCentral Milton Keynes\nMilton Keynes"
                     + "\nMK\nLondon\nMK10 1SA\nBT66 7RR\nDate this began: 2 February 2002")

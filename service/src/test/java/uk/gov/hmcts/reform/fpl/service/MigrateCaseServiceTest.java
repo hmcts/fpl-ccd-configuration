@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -1040,17 +1041,14 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
@@ -1436,6 +1434,60 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
                     MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveNoticeOfProceedingsBundle {
+        private final Element<DocumentBundle> noticeOfProceedings1 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedings2 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedingsToBeRemoved =
+            element(DocumentBundle.builder().build());
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2,
+                    noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList()
+                .containsExactly(noticeOfProceedings1, noticeOfProceedings2);
+        }
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundleIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " notice of proceedings bundle %s not found",
+                    MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
         }
     }
 
