@@ -127,7 +127,6 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
             .build())
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
