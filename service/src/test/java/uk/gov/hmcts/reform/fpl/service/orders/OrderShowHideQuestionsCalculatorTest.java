@@ -89,7 +89,7 @@ class OrderShowHideQuestionsCalculatorTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
-            Map.entry("childPlacementQuestionsForBlank", "NO"),
+            Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
             Map.entry("manageOrdersChildAssessment", "NO"),
             Map.entry("manageOrdersEducationSupervision", "NO"),
             Map.entry("orderPlacedChildInCustody", "NO"),
@@ -166,7 +166,7 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("parentResponsible", "NO");
         careOrderQuestions.put("childPlacementApplications", "NO");
         careOrderQuestions.put("childPlacementQuestions", "NO");
-        careOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        careOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         careOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         careOrderQuestions.put("orderPlacedChildInCustody", "NO");
         careOrderQuestions.put("manageOrdersChildAssessment", "NO");
@@ -209,7 +209,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("parentResponsible", "NO");
         dischargeOfCareQuestions.put("childPlacementApplications", "NO");
         dischargeOfCareQuestions.put("childPlacementQuestions", "NO");
-        dischargeOfCareQuestions.put("childPlacementQuestionsForBlank", "NO");
+        dischargeOfCareQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         dischargeOfCareQuestions.put("manageOrdersEducationSupervision", "NO");
         dischargeOfCareQuestions.put("orderPlacedChildInCustody", "NO");
         dischargeOfCareQuestions.put("manageOrdersChildAssessment", "NO");
@@ -252,7 +252,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("parentResponsible", "NO");
         epoQuestions.put("childPlacementApplications", "NO");
         epoQuestions.put("childPlacementQuestions", "NO");
-        epoQuestions.put("childPlacementQuestionsForBlank", "NO");
+        epoQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         epoQuestions.put("manageOrdersEducationSupervision", "NO");
         epoQuestions.put("orderPlacedChildInCustody", "NO");
         epoQuestions.put("manageOrdersChildAssessment", "NO");
@@ -295,7 +295,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("parentResponsible", "NO");
         blankOrderQuestions.put("childPlacementApplications", "NO");
         blankOrderQuestions.put("childPlacementQuestions", "NO");
-        blankOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        blankOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         blankOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         blankOrderQuestions.put("orderPlacedChildInCustody", "NO");
         blankOrderQuestions.put("manageOrdersChildAssessment", "NO");
@@ -338,7 +338,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("parentResponsible", "NO");
         supervisionOrderQuestions.put("childPlacementApplications", "NO");
         supervisionOrderQuestions.put("childPlacementQuestions", "NO");
-        supervisionOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        supervisionOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         supervisionOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         supervisionOrderQuestions.put("orderPlacedChildInCustody", "NO");
         supervisionOrderQuestions.put("manageOrdersChildAssessment", "NO");
@@ -381,7 +381,7 @@ class OrderShowHideQuestionsCalculatorTest {
         specialGuardianshipOrderQuestions.put("parentResponsible", "NO");
         specialGuardianshipOrderQuestions.put("childPlacementApplications", "NO");
         specialGuardianshipOrderQuestions.put("childPlacementQuestions", "NO");
-        specialGuardianshipOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        specialGuardianshipOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         specialGuardianshipOrderQuestions.put("orderPlacedChildInCustody", "NO");
         specialGuardianshipOrderQuestions.put("manageOrdersChildAssessment", "NO");
@@ -424,7 +424,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("parentResponsible", "NO");
         appointmentOfChildrensGuardianQuestions.put("childPlacementApplications", "NO");
         appointmentOfChildrensGuardianQuestions.put("childPlacementQuestions", "NO");
-        appointmentOfChildrensGuardianQuestions.put("childPlacementQuestionsForBlank", "NO");
+        appointmentOfChildrensGuardianQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersEducationSupervision", "NO");
         appointmentOfChildrensGuardianQuestions.put("orderPlacedChildInCustody", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersChildAssessment", "NO");
@@ -467,7 +467,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childArrangementSpecificOrder.put("parentResponsible", "NO");
         childArrangementSpecificOrder.put("childPlacementApplications", "NO");
         childArrangementSpecificOrder.put("childPlacementQuestions", "NO");
-        childArrangementSpecificOrder.put("childPlacementQuestionsForBlank", "NO");
+        childArrangementSpecificOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         childArrangementSpecificOrder.put("manageOrdersEducationSupervision", "NO");
         childArrangementSpecificOrder.put("orderPlacedChildInCustody", "NO");
         childArrangementSpecificOrder.put("manageOrdersChildAssessment", "NO");
@@ -512,7 +512,7 @@ class OrderShowHideQuestionsCalculatorTest {
         refusedContactOrderQuestions.put("parentResponsible", "NO");
         refusedContactOrderQuestions.put("childPlacementApplications", "NO");
         refusedContactOrderQuestions.put("childPlacementQuestions", "NO");
-        refusedContactOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        refusedContactOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         refusedContactOrderQuestions.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
         refusedContactOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         refusedContactOrderQuestions.put("orderPlacedChildInCustody","NO");
@@ -555,7 +555,7 @@ class OrderShowHideQuestionsCalculatorTest {
         secureAccommodationOrderQuestions.put("parentResponsible", "NO");
         secureAccommodationOrderQuestions.put("childPlacementApplications", "NO");
         secureAccommodationOrderQuestions.put("childPlacementQuestions", "NO");
-        secureAccommodationOrderQuestions.put("childPlacementQuestionsForBlank", "NO");
+        secureAccommodationOrderQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         secureAccommodationOrderQuestions.put("manageOrdersEducationSupervision", "NO");
         secureAccommodationOrderQuestions.put("orderPlacedChildInCustody", "NO");
         secureAccommodationOrderQuestions.put("manageOrdersChildAssessment", "NO");
@@ -600,7 +600,7 @@ class OrderShowHideQuestionsCalculatorTest {
         contactWithAChildOrderInCareOrder.put("refuseContactQuestions", "NO");
         contactWithAChildOrderInCareOrder.put("childPlacementApplications", "NO");
         contactWithAChildOrderInCareOrder.put("childPlacementQuestions", "NO");
-        contactWithAChildOrderInCareOrder.put("childPlacementQuestionsForBlank", "NO");
+        contactWithAChildOrderInCareOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         contactWithAChildOrderInCareOrder.put("orderPlacedChildInCustody", "NO");
         contactWithAChildOrderInCareOrder.put("manageOrdersEducationSupervision", "NO");
         contactWithAChildOrderInCareOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
@@ -643,7 +643,7 @@ class OrderShowHideQuestionsCalculatorTest {
         parentalResponsibilityOrder.put("parentResponsible", "YES");
         parentalResponsibilityOrder.put("childPlacementApplications", "NO");
         parentalResponsibilityOrder.put("childPlacementQuestions", "NO");
-        parentalResponsibilityOrder.put("childPlacementQuestionsForBlank", "NO");
+        parentalResponsibilityOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         parentalResponsibilityOrder.put("manageOrdersEducationSupervision", "NO");
         parentalResponsibilityOrder.put("orderPlacedChildInCustody", "NO");
         parentalResponsibilityOrder.put("manageOrdersChildAssessment", "NO");
@@ -686,7 +686,7 @@ class OrderShowHideQuestionsCalculatorTest {
         recoveryOfChildQuestions.put("parentResponsible", "NO");
         recoveryOfChildQuestions.put("childPlacementApplications", "NO");
         recoveryOfChildQuestions.put("childPlacementQuestions", "NO");
-        recoveryOfChildQuestions.put("childPlacementQuestionsForBlank", "NO");
+        recoveryOfChildQuestions.put("childPlacementQuestionsForBlankOrder", "NO");
         recoveryOfChildQuestions.put("orderPlacedChildInCustody", "YES");
         recoveryOfChildQuestions.put("manageOrdersChildAssessment", "NO");
         recoveryOfChildQuestions.put("manageOrdersEducationSupervision", "NO");
@@ -731,7 +731,7 @@ class OrderShowHideQuestionsCalculatorTest {
         placementOrder.put("parentResponsible", "NO");
         placementOrder.put("childPlacementApplications", "YES");
         placementOrder.put("childPlacementQuestions", "YES");
-        placementOrder.put("childPlacementQuestionsForBlank", "NO");
+        placementOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         placementOrder.put("manageOrdersEducationSupervision", "NO");
         placementOrder.put("orderPlacedChildInCustody", "NO");
         placementOrder.put("manageOrdersChildAssessment", "NO");
@@ -774,7 +774,7 @@ class OrderShowHideQuestionsCalculatorTest {
         childAssessmentOrder.put("parentResponsible", "NO");
         childAssessmentOrder.put("childPlacementApplications", "NO");
         childAssessmentOrder.put("childPlacementQuestions", "NO");
-        childAssessmentOrder.put("childPlacementQuestionsForBlank", "NO");
+        childAssessmentOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         childAssessmentOrder.put("orderPlacedChildInCustody", "NO");
         childAssessmentOrder.put("manageOrdersChildAssessment", "YES");
         childAssessmentOrder.put("refuseContactQuestions", "NO");
@@ -828,7 +828,8 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionEducationOrder.put("respondentsRefused", "NO");
         supervisionEducationOrder.put("refuseContactQuestions", "NO");
         supervisionEducationOrder.put("childPlacementApplications", "NO");
-        supervisionEducationOrder.put("childPlacementQuestionsForBlank", "NO");
+        supervisionEducationOrder.put("childPlacementQuestions", "NO");
+        supervisionEducationOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         supervisionEducationOrder.put("orderPlacedChildInCustody", "NO");
         supervisionEducationOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
         supervisionEducationOrder.put("manageOrdersEducationSupervision", "YES");
@@ -873,7 +874,7 @@ class OrderShowHideQuestionsCalculatorTest {
         varyOrExtendSupervisionOrder.put("refuseContactQuestions", "NO");
         varyOrExtendSupervisionOrder.put("childPlacementApplications", "NO");
         varyOrExtendSupervisionOrder.put("childPlacementQuestions", "NO");
-        varyOrExtendSupervisionOrder.put("childPlacementQuestionsForBlank", "NO");
+        varyOrExtendSupervisionOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         varyOrExtendSupervisionOrder.put("orderPlacedChildInCustody", "NO");
         varyOrExtendSupervisionOrder.put("manageOrdersEducationSupervision", "NO");
         varyOrExtendSupervisionOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "YES");
@@ -918,7 +919,7 @@ class OrderShowHideQuestionsCalculatorTest {
         leaveToChangeChildSurname.put("refuseContactQuestions", "NO");
         leaveToChangeChildSurname.put("childPlacementApplications", "NO");
         leaveToChangeChildSurname.put("childPlacementQuestions", "NO");
-        leaveToChangeChildSurname.put("childPlacementQuestionsForBlank", "NO");
+        leaveToChangeChildSurname.put("childPlacementQuestionsForBlankOrder", "NO");
         leaveToChangeChildSurname.put("orderPlacedChildInCustody", "NO");
         leaveToChangeChildSurname.put("manageOrdersEducationSupervision", "NO");
         leaveToChangeChildSurname.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
@@ -963,7 +964,7 @@ class OrderShowHideQuestionsCalculatorTest {
         declarationOfParentage.put("refuseContactQuestions", "NO");
         declarationOfParentage.put("childPlacementApplications", "NO");
         declarationOfParentage.put("childPlacementQuestions", "NO");
-        declarationOfParentage.put("childPlacementQuestionsForBlank", "NO");
+        declarationOfParentage.put("childPlacementQuestionsForBlankOrder", "NO");
         declarationOfParentage.put("orderPlacedChildInCustody", "NO");
         declarationOfParentage.put("manageOrdersEducationSupervision", "NO");
         declarationOfParentage.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
@@ -1008,7 +1009,7 @@ class OrderShowHideQuestionsCalculatorTest {
         familyAssistanceOrder.put("refuseContactQuestions", "NO");
         familyAssistanceOrder.put("childPlacementApplications", "NO");
         familyAssistanceOrder.put("childPlacementQuestions", "NO");
-        familyAssistanceOrder.put("childPlacementQuestionsForBlank", "NO");
+        familyAssistanceOrder.put("childPlacementQuestionsForBlankOrder", "NO");
         familyAssistanceOrder.put("orderPlacedChildInCustody", "NO");
         familyAssistanceOrder.put("manageOrdersEducationSupervision", "NO");
         familyAssistanceOrder.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
@@ -1085,7 +1086,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("uploadAmendedOrder", "NO"),
                 Map.entry("childPlacementApplications", "NO"),
                 Map.entry("childPlacementQuestions", "NO"),
-                Map.entry("childPlacementQuestionsForBlank", "NO"),
+                Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
                 Map.entry("manageOrdersChildAssessment", "NO"),
                 Map.entry("manageOrdersEducationSupervision", "NO"),
                 Map.entry("orderPlacedChildInCustody", "NO"),
@@ -1138,7 +1139,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("parentResponsible", "NO"),
                 Map.entry("childPlacementApplications", "NO"),
                 Map.entry("childPlacementQuestions", "NO"),
-                Map.entry("childPlacementQuestionsForBlank", "NO"),
+                Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
                 Map.entry("manageOrdersChildAssessment", "NO"),
                 Map.entry("manageOrdersEducationSupervision", "NO"),
                 Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),

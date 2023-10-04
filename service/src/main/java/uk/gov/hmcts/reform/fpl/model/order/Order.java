@@ -82,7 +82,6 @@ public enum Order {
         IsFinalOrder.MAYBE,
         List.of(CHILD_PLACEMENT_APPLICATIONS, APPROVER, APPROVAL_DATE,
             CHILD_PLACEMENT_FOR_BLANK_ORDER,
-            CLOSE_CASE,
             REVIEW_DRAFT_ORDER)
     ),
     C21_BLANK_ORDER(
