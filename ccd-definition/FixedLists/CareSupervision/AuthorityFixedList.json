@@ -772,13 +772,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "NTH",
-    "ListElement": "Northamptonshire County Council",
-    "DisplayOrder": 265
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
     "ListElementCode": "NHB",
     "ListElement": "Northumberland County Council",
     "DisplayOrder": 267

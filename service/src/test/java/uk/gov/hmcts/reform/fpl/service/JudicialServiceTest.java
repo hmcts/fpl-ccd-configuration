@@ -84,6 +84,7 @@ class JudicialServiceTest {
     class Migrations {
         private static final String JUDGE_1_ID = "judge 1 id";
         private static final String JUDGE_2_ID = "judge 2 id";
+        private static final String JUDGE_3_ID = "judge 3 id";
 
         private static final JudgeAndLegalAdvisor JUDGE_1 = JudgeAndLegalAdvisor.builder()
             .judgeEmailAddress("judge1@test.com")
@@ -101,6 +102,15 @@ class JudicialServiceTest {
                 .build())
             .build();
 
+        private static final JudgeAndLegalAdvisor JUDGE_3 = JudgeAndLegalAdvisor.builder()
+            .judgeEmailAddress("judge3@test.com")
+            .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+            .otherTitle("JLA")
+            .judgeJudicialUser(JudicialUser.builder()
+                .idamId(JUDGE_3_ID)
+                .build())
+            .build();
+
         private static final HearingBooking HEARING_1 = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(5))
             .judgeAndLegalAdvisor(JUDGE_1)
@@ -109,6 +119,11 @@ class JudicialServiceTest {
         private static final HearingBooking HEARING_2 = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(10))
             .judgeAndLegalAdvisor(JUDGE_2)
+            .build();
+
+        private static final HearingBooking HEARING_3 = HearingBooking.builder()
+            .startDate(LocalDateTime.now().plusDays(15))
+            .judgeAndLegalAdvisor(JUDGE_3)
             .build();
 
         @BeforeEach
@@ -120,19 +135,22 @@ class JudicialServiceTest {
                 .thenReturn(Optional.empty());
             when(judicialUsersConfiguration.getJudgeUUID(JUDGE_2.getJudgeEmailAddress()))
                 .thenReturn(Optional.of(JUDGE_2_ID));
+            when(judicialUsersConfiguration.getJudgeUUID(JUDGE_3.getJudgeEmailAddress()))
+                .thenReturn(Optional.empty());
 
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_1.getJudgeEmailAddress()))
                 .thenReturn(Optional.of(JUDGE_1_ID));
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_2.getJudgeEmailAddress()))
                 .thenReturn(Optional.empty());
-
+            when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_3.getJudgeEmailAddress()))
+                .thenReturn(Optional.of(JUDGE_3_ID));
         }
 
         @Test
         void shouldGenerateRoleAssignmentsBasedOnHearingDates() {
             CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
-                .hearingDetails(wrapElements(HEARING_1, HEARING_2))
+                .hearingDetails(wrapElements(HEARING_1, HEARING_2, HEARING_3))
                 .build();
 
             List<RoleAssignment> roles = underTest.getHearingJudgeRolesForMigration(caseData);
@@ -141,7 +159,7 @@ class JudicialServiceTest {
         }
 
         void verifyHearingRoleAssignments(List<RoleAssignment> roles) {
-            assertThat(roles).hasSize(2);
+            assertThat(roles).hasSize(3);
             assertThat(roles.get(0)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
                     HEARING_1.getStartDate().atZone(ZoneId.systemDefault()),
@@ -149,6 +167,10 @@ class JudicialServiceTest {
             assertThat(roles.get(1)).extracting("roleName", "roleCategory", "beginTime", "endTime")
                 .containsExactly("hearing-judge", RoleCategory.JUDICIAL,
                     HEARING_2.getStartDate().atZone(ZoneId.systemDefault()),
+                    HEARING_3.getStartDate().atZone(ZoneId.systemDefault()));
+            assertThat(roles.get(2)).extracting("roleName", "roleCategory", "beginTime", "endTime")
+                .containsExactly("hearing-legal-adviser", RoleCategory.LEGAL_OPERATIONS,
+                    HEARING_3.getStartDate().atZone(ZoneId.systemDefault()),
                     null);
         }
 
