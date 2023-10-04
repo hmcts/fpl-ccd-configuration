@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.A81_PLACEMENT_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.AMENED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
@@ -304,6 +305,51 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("partyAllowedContactsAndConditions", "NO");
         blankOrderQuestions.put("declarationOfParentage", "NO");
         blankOrderQuestions.put("familyAssistanceOrder", "NO");
+
+        Map<String, String> placementBlankOrderQuestions = new HashMap<>(commonQuestions);
+        placementBlankOrderQuestions.put("orderTitle", "NO");
+        placementBlankOrderQuestions.put("hearingDetails", "NO");
+        placementBlankOrderQuestions.put("linkApplication", "NO");
+        placementBlankOrderQuestions.put("approvalDate", "YES");
+        placementBlankOrderQuestions.put("orderDetails", "NO");
+        placementBlankOrderQuestions.put("approvalDateTime", "NO");
+        placementBlankOrderQuestions.put("epoIncludePhrase", "NO");
+        placementBlankOrderQuestions.put("uploadOrderFile", "NO");
+        placementBlankOrderQuestions.put("needSealing", "NO");
+        placementBlankOrderQuestions.put("epoChildrenDescription", "NO");
+        placementBlankOrderQuestions.put("epoExpiryDate", "NO");
+        placementBlankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
+        placementBlankOrderQuestions.put("cafcassJurisdictions", "NO");
+        placementBlankOrderQuestions.put("selectSingleChild", "NO");
+        placementBlankOrderQuestions.put("reasonForSecureAccommodation", "NO");
+        placementBlankOrderQuestions.put("childLegalRepresentation", "NO");
+        placementBlankOrderQuestions.put("orderJurisdiction", "NO");
+        placementBlankOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
+        placementBlankOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
+        placementBlankOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        placementBlankOrderQuestions.put("childArrangementSpecificIssueProhibitedSteps", "NO");
+        placementBlankOrderQuestions.put("whichOthers", "NO");
+        placementBlankOrderQuestions.put("dischargeOfCareDetails", "NO");
+        placementBlankOrderQuestions.put("closeCase", "NO");
+        placementBlankOrderQuestions.put("whichChildren", "NO");
+        placementBlankOrderQuestions.put("orderIsByConsent", "NO");
+        placementBlankOrderQuestions.put("furtherDirections", "NO");
+        placementBlankOrderQuestions.put("isFinalOrder", "YES");
+        placementBlankOrderQuestions.put("appointedGuardian", "NO");
+        placementBlankOrderQuestions.put("respondentsRefused", "NO");
+        placementBlankOrderQuestions.put("refuseContactQuestions", "NO");
+        placementBlankOrderQuestions.put("parentResponsible", "NO");
+        placementBlankOrderQuestions.put("childPlacementApplications", "YES");
+        placementBlankOrderQuestions.put("childPlacementQuestions", "NO");
+        placementBlankOrderQuestions.put("childPlacementQuestionsForBlankOrder", "YES");
+        placementBlankOrderQuestions.put("manageOrdersEducationSupervision", "NO");
+        placementBlankOrderQuestions.put("orderPlacedChildInCustody", "NO");
+        placementBlankOrderQuestions.put("manageOrdersChildAssessment", "NO");
+        placementBlankOrderQuestions.put("manageOrdersVaryOrExtendSupervisionOrder", "NO");
+        placementBlankOrderQuestions.put("leaveToChangeChildSurname", "NO");
+        placementBlankOrderQuestions.put("partyAllowedContactsAndConditions", "NO");
+        placementBlankOrderQuestions.put("declarationOfParentage", "NO");
+        placementBlankOrderQuestions.put("familyAssistanceOrder", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("orderTitle", "NO");
@@ -1021,6 +1067,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
         return Stream.of(
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
+            Arguments.of(A81_PLACEMENT_BLANK_ORDER, placementBlankOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
             Arguments.of(C26_SECURE_ACCOMMODATION_ORDER, secureAccommodationOrderQuestions),
             Arguments.of(C29_RECOVERY_OF_A_CHILD, recoveryOfChildQuestions),
