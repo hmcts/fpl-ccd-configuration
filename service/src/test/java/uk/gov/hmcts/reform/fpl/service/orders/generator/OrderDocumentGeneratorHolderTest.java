@@ -119,7 +119,7 @@ class OrderDocumentGeneratorHolderTest {
     @BeforeEach
     void setUp() {
         generators = List.of(
-            a70PlacementOrderDocumentParameterGenerator,
+            a70PlacementOrderDocumentParameterGenerator, a81PlacementBlankOrderDocumentParameterGenerator,
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c26SecureAccommodationOrderDocumentParameterGenerator, c29RecoveryOfAChildDocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
