@@ -40,9 +40,9 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
             .orderType(GeneratedOrderType.BLANK_ORDER)
             .localAuthorityName(localAuthorityName)
             .recitalsOrPreamble(eventData.getManageOrdersPreamblesText())
-            .orderDetails("THE COURT ORDERS THAT:\n\n" + eventData.getManageOrdersParagraphs() +
-                (isEmpty(eventData.getManageOrdersCostOrders())
-                    ? "" : ("\n\n" + eventData.getManageOrdersCostOrders())))   
+            .orderDetails("THE COURT ORDERS THAT:\n\n" + eventData.getManageOrdersParagraphs()
+                + (isEmpty(eventData.getManageOrdersCostOrders())
+                ? "" : ("\n\n" + eventData.getManageOrdersCostOrders())))
             .build();
     }
 

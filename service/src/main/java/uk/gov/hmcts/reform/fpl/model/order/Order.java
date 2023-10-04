@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRAN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_FOR_BLANK;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_FOR_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DECLARATION_OF_PARENTAGE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
@@ -81,7 +81,7 @@ public enum Order {
         "Placement order (A81)",
         IsFinalOrder.MAYBE,
         List.of(CHILD_PLACEMENT_APPLICATIONS, APPROVER, APPROVAL_DATE,
-            CHILD_PLACEMENT_FOR_BLANK,
+            CHILD_PLACEMENT_FOR_BLANK_ORDER,
             CLOSE_CASE,
             REVIEW_DRAFT_ORDER)
     ),

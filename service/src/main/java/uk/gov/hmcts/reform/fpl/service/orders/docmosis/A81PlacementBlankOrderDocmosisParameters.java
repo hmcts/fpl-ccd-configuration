@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
