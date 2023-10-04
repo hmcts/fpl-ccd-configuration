@@ -12,10 +12,15 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver",
-      "caseworker-ras-validation"
+      "caseworker-approver"
     ],
     "CRUD": "D"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "UserRole": "caseworker-ras-validation",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

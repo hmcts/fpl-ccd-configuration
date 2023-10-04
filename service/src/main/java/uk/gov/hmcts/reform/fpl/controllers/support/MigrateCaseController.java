@@ -38,7 +38,6 @@ import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.LEGAL_ADVISOR;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 
 @Api
@@ -61,8 +60,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1725", this::run1725,
         "DFPL-1702", this::run1702,
         "DFPL-1739", this::run1739,
-        "DFPL-1773", this::run1773,
-        "DFPL-1774", this::run1774
+        "DFPL-1774", this::run1774,
+        "DFPL-1748", this::run1748
     );
 
     @PostMapping("/about-to-submit")
@@ -94,18 +93,22 @@ public class MigrateCaseController extends CallbackController {
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
             && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
 
-            boolean isLegalAdviser = LEGAL_ADVISOR
-                .equals(allocatedJudge.get().getJudgeTitle());
+            Optional<RoleCategory> userRoleCategory = judicialService
+                .getUserRoleCategory(allocatedJudge.get().getJudgeEmailAddress());
 
-            // attempt to assign allocated-[role]
-            rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                caseData.getId(),
-                allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                isLegalAdviser ? RoleCategory.LEGAL_OPERATIONS : RoleCategory.JUDICIAL,
-                ZonedDateTime.now(),
-                null // no end date
-            ));
+            if (userRoleCategory.isPresent()) {
+                // attempt to assign allocated-[role]
+                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
+
+                rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
+                    caseData.getId(),
+                    allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
+                    isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
+                    userRoleCategory.get(),
+                    ZonedDateTime.now(),
+                    null // no end date
+                ));
+            }
         } else {
             log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
         }
@@ -155,6 +158,10 @@ public class MigrateCaseController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
+        // 1. cleanup from past migration
+        judicialService.deleteAllRolesOnCase(caseData.getId());
+
+        // 2. Add UUIDs for judges + legal advisers
         Judge allocatedJudge = caseData.getAllocatedJudge();
         if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
             String email = allocatedJudge.getJudgeEmailAddress();
@@ -209,7 +216,7 @@ public class MigrateCaseController extends CallbackController {
         // Convert our newly annotated case details payload to a case data object
         CaseData newCaseData = getCaseData(caseDetails);
 
-        // Perform migration synchronously - we DO NOT catch if this fails, we need to stop the migration for this case
+        // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
     }
 
@@ -249,13 +256,23 @@ public class MigrateCaseController extends CallbackController {
             expectedNoticeOfProceedingsBundleId, migrationId));
     }
 
-    private void run1773(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1773";
-        var possibleCaseIds = List.of(1664798096031087L);
-        UUID expectedDocId = UUID.fromString("e1ca76d1-c9ed-45e5-b562-259174986df4");
+    private void run1774(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1774";
+        var possibleCaseIds = List.of(1673513048854158L);
+        UUID expectedCMOId = UUID.fromString("5d6caafa-57c5-487d-9997-ba452107842c");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(getCaseData(caseDetails),
-            migrationId, expectedDocId));
+        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(getCaseData(caseDetails),
+            migrationId, expectedCMOId));
+    }
+
+    private void run1748(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1748";
+        var possibleCaseIds = List.of(1682070556592612L);
+        UUID expectedHearingId = UUID.fromString("c7fcfcd9-3d60-4755-abfc-12fccd558f60");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(getCaseData(caseDetails),
+            migrationId, expectedHearingId));
     }
 }
