@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 
 @EqualsAndHashCode(callSuper = true)
@@ -11,12 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 @Value
 @SuperBuilder(toBuilder = true)
 public class A81PlacementBlankOrderDocmosisParameters extends DocmosisParameters {
-
-    private String localAuthorityName;
-    private String localAuthorityAddress;
-    private String applicationDate;
-    private DocmosisChild child;
-    private String preamblesText;
-    private String paragraphs;
-    private String costOrders;
+    GeneratedOrderType orderType;
+    String orderDetails;
+    String furtherDirections;
+    String localAuthorityName;
+    String recitalsOrPreamble;
+    String paragraphs;
+    String costOrders;
 }

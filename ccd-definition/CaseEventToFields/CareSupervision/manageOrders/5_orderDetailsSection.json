@@ -608,7 +608,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.childPlacementQuestionsForBlank=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -621,7 +621,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.childPlacementQuestionsForBlank=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -634,7 +634,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.childPlacementQuestionsForBlank=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -647,7 +647,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.childPlacementQuestionsForBlank=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -660,7 +660,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\" OR orderTempQuestions.childPlacementQuestionsForBlank=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childPlacementQuestions=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
