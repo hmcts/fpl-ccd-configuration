@@ -29,6 +29,7 @@ class FeatureToggleServiceTest {
     private static final String LD_USER_KEY = "test_key";
     private static final String ENVIRONMENT = "test_env";
     private static final String LOCAL_AUTHORITY = "test_local_authority";
+    private static final String CASE_ID = "1234356";
 
     private static LDClient ldClient = Mockito.mock(LDClient.class);
     private static FeatureToggleService service = new FeatureToggleService(ldClient, LD_USER_KEY, ENVIRONMENT);
@@ -62,6 +63,19 @@ class FeatureToggleServiceTest {
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsCaseRestrictedFromUsingOnboardingSharedInbox(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRestrictedFromPrimaryApplicantEmails(CASE_ID)).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("restrict-primary-applicant-emails"),
+            argThat(ldUser(ENVIRONMENT).with("caseId", CASE_ID).build()),
+            eq(false));
+    }
+
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
