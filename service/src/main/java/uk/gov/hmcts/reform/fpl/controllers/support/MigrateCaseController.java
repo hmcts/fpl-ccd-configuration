@@ -256,16 +256,6 @@ public class MigrateCaseController extends CallbackController {
             expectedNoticeOfProceedingsBundleId, migrationId));
     }
 
-    private void run1774(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1774";
-        var possibleCaseIds = List.of(1673513048854158L);
-        UUID expectedCMOId = UUID.fromString("5d6caafa-57c5-487d-9997-ba452107842c");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(getCaseData(caseDetails),
-            migrationId, expectedCMOId));
-    }
-
     private void run1748(CaseDetails caseDetails) {
         var migrationId = "DFPL-1748";
         var possibleCaseIds = List.of(1682070556592612L);
