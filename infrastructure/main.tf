@@ -57,6 +57,7 @@ module "key-vault" {
 
   #aks migration
   managed_identity_object_id = var.managed_identity_object_id
+  create_managed_identity    = true
 }
 
 module "fpl-scheduler-db" {
