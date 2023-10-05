@@ -113,7 +113,6 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_NUMBER = "FMN1";
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String JUDGE_EMAIL = "judge@judge.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 

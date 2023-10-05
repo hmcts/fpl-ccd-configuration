@@ -29,6 +29,8 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     private final String eventName;
     private final String eventId;
 
+    protected static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
+
     protected AbstractCallbackTest(String eventName) {
         this.eventName = eventName;
         this.eventId = eventName;
