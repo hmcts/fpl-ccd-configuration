@@ -50,10 +50,4 @@ public class A81PlacementBlankOrderDocumentParameterGenerator implements Docmosi
     public DocmosisTemplates template() {
         return DocmosisTemplates.ORDER_V2;
     }
-
-    private String getOrderTitle(CaseData caseData) {
-        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
-        String orderTitle = eventData.getManageOrdersTitle();
-        return isBlank(orderTitle) ? "Order" : orderTitle;
-    }
 }
