@@ -249,7 +249,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1739(CaseDetails caseDetails) {
         var migrationId = "DFPL-1739";
-        var possibleCaseIds = List.of(1688113759453556L);
+        var possibleCaseIds = List.of(1693997744879716L);
         String expectedNoticeOfProceedingsBundleId = "694d1904-2226-448e-bbc9-55685e8fa940";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
