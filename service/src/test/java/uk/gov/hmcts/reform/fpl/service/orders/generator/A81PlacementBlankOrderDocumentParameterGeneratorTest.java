@@ -98,6 +98,6 @@ class A81PlacementBlankOrderDocumentParameterGeneratorTest {
             .localAuthorityName(LA_NAME)
             .orderType(TYPE)
             .recitalsOrPreamble("Preambles Text is here")
-            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here\n\ncost orders is here");
+            .orderDetails("THE COURT ORDERS THAT:\n\nparagraphs is here");
     }
 }
