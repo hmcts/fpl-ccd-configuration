@@ -1869,7 +1869,8 @@ class MigrateCaseServiceTest {
                 .ordersToBeSent(orderToBeSent)
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true);
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(),
+                true);
 
             List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
