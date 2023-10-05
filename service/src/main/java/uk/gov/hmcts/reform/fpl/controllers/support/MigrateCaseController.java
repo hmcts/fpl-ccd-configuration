@@ -239,6 +239,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(getCaseData(caseDetails),
             migrationId, expectedCMOId));
     }
+
     private void run1702(CaseDetails caseDetails) {
         var migrationId = "DFPL-1702";
         var possibleCaseIds = List.of(1659968928016476L);
