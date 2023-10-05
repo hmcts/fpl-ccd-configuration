@@ -237,7 +237,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(getCaseData(caseDetails),
-            migrationId, expectedCMOId));
+            migrationId, expectedCMOId, true));
     }
 
     private void run1702(CaseDetails caseDetails) {

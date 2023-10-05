@@ -43,6 +43,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -758,7 +759,8 @@ public class MigrateCaseService {
 
     public Map<String, Object> removeSealedCMO(CaseData caseData,
                                                String migrationId,
-                                               UUID expectedCMOId) {
+                                               UUID expectedCMOId,
+                                               boolean removeOrderToBeSent) {
 
         List<Element<HearingOrder>> updatedSealedCMOs = ElementUtils.removeElementWithUUID(
             caseData.getSealedCMOs(), expectedCMOId);
@@ -769,11 +771,21 @@ public class MigrateCaseService {
                 migrationId, caseData.getId(), expectedCMOId));
         }
 
-        List<Element<HearingOrder>> updatedOrdersToBeSent = ElementUtils.removeElementWithUUID(
-            caseData.getOrdersToBeSent(), expectedCMOId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("sealedCMOs", updatedSealedCMOs);
 
-        return Map.of(
-            "sealedCMOs", updatedSealedCMOs,
-            "ordersToBeSent", updatedOrdersToBeSent);
+        if (removeOrderToBeSent) {
+            List<Element<HearingOrder>> updatedOrdersToBeSent = ElementUtils.removeElementWithUUID(
+                caseData.getOrdersToBeSent(), expectedCMOId);
+            if (updatedOrdersToBeSent.size() != nullSafeList(caseData.getOrdersToBeSent()).size() - 1) {
+                throw new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
+                    migrationId, caseData.getId(), expectedCMOId));
+            }
+
+            resultMap.put("ordersToBeSent", updatedOrdersToBeSent);
+        }
+
+        return resultMap;
     }
 }

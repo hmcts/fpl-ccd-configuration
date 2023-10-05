@@ -1869,7 +1869,7 @@ class MigrateCaseServiceTest {
                 .ordersToBeSent(orderToBeSent)
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId());
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true);
 
             List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
@@ -1883,22 +1883,37 @@ class MigrateCaseServiceTest {
                 .sealedCMOs(sealedCmos)
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId());
+            Map<String, Object> updatedFields =
+                underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false);
 
             List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
             assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
-            assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(List.of());
+            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
         }
 
         @Test
         void shouldThrowExceptionIfCMONotFound() {
             CaseData caseData = CaseData.builder().id(1L).build();
 
-            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId()))
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderToBeSentNotFound() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(List.of(sealedCmo2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
                     MIGRATION_ID, "1", sealedCmo1.getId()));
         }
     }
