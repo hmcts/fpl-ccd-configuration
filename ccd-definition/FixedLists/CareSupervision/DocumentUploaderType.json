@@ -28,5 +28,11 @@
     "ID": "DocumentUploaderType",
     "ListElementCode": "BARRISTER",
     "ListElement": "Barrister"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "CAFCASS",
+    "ListElement": "CAFCASS"
   }
 ]

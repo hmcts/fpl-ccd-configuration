@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -93,6 +94,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.BARRISTER;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
@@ -215,6 +217,9 @@ public class ManageDocumentService {
         if (caseRoles.contains(CaseRole.LASHARED)) {
             return SECONDARY_LOCAL_AUTHORITY;
         }
+        if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
+            return CAFCASS;
+        }
 
         throw new IllegalStateException("Unable to determine document uploader type");
     }
@@ -224,12 +229,11 @@ public class ManageDocumentService {
     }
 
     public boolean allowMarkDocumentConfidential(CaseData caseData) {
-        return !List.of(DocumentUploaderType.SOLICITOR, DocumentUploaderType.BARRISTER)
-            .contains(getUploaderType(caseData));
+        return !List.of(SOLICITOR, BARRISTER, CAFCASS).contains(getUploaderType(caseData));
     }
 
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
-        return List.of(DocumentUploaderType.HMCTS).contains(getUploaderType(caseData));
+        return List.of(HMCTS).contains(getUploaderType(caseData));
     }
 
     @SuppressWarnings("unchecked")
@@ -365,7 +369,7 @@ public class ManageDocumentService {
     private void uploadPlacementResponse(Map<String, Object> changes, DocumentUploaderType uploaderType,
                                          Element<UploadableDocumentBundle> e, CaseData caseData) {
         boolean isLocalAuthority = isLocalAuthority(uploaderType);
-        boolean isSolicitor = uploaderType == DocumentUploaderType.SOLICITOR;
+        boolean isSolicitor = uploaderType == SOLICITOR || uploaderType == CAFCASS;
         boolean isAdmin = !(isSolicitor || isLocalAuthority);
 
         Map<String, Object> initialisedPlacement = null;
@@ -464,6 +468,7 @@ public class ManageDocumentService {
     private boolean isHiddenFromUpload(DocumentType documentType, DocumentUploaderType uploaderType) {
         switch (uploaderType) {
             case SOLICITOR:
+            case CAFCASS:
                 return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
@@ -552,7 +557,7 @@ public class ManageDocumentService {
                 WithDocument wd = ((WithDocument) e.getValue());
                 DocumentReference document = wd.getDocument();
 
-                if (uploaderType != DocumentUploaderType.HMCTS) {
+                if (uploaderType != HMCTS && uploaderType != CAFCASS) {
                     List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
                         ? new ArrayList<>() : wd.getUploaderCaseRoles();
                     final Set<CaseRole> currentUploaderCaseRoles = Optional
@@ -561,6 +566,11 @@ public class ManageDocumentService {
 
                     if (!docCaseRoles.stream().filter(cr -> currentUploaderCaseRoles.contains(cr)).findAny()
                         .isPresent()) {
+                        continue;
+                    }
+                }
+                if (uploaderType == CAFCASS) {
+                    if (!uploaderType.equals(wd.getUploaderType())) {
                         continue;
                     }
                 }

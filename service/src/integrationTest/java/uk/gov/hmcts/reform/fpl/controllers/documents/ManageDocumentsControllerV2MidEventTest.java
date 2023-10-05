@@ -90,7 +90,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
     @ParameterizedTest
     @EnumSource(value = DocumentUploaderType.class, names = {
-        "SOLICITOR", "DESIGNATED_LOCAL_AUTHORITY", "SECONDARY_LOCAL_AUTHORITY", "HMCTS", "BARRISTER"
+        "SOLICITOR", "DESIGNATED_LOCAL_AUTHORITY", "SECONDARY_LOCAL_AUTHORITY", "HMCTS", "BARRISTER", "CAFCASS"
     })
     void shouldPopulateAskForPlacementNoticeRecipientType(DocumentUploaderType uploaderType) {
         CaseData caseData = CaseData.builder().build();
