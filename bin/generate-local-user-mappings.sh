@@ -19,10 +19,10 @@ hillingdon_user_ids=$(echo $(get_users_ids hillingdon) | tr -d ' ')
 swindon_user_ids=$(echo $(get_users_ids swindon) | tr -d ' ')
 wiltshire_user_ids=$(echo $(get_users_ids wiltshire) | tr -d ' ')
 
-cat > $user_mappings_file
-
+cat > $user_mappings_file <<EOL
 spring:
   profiles: user-mappings
 fpl:
   local_authority_user:
-      mapping: 'FPLA=>0;HN=>${hillingdon_user_ids};SN=>${swindon_user_ids};SNW=>${wiltshire_user_ids}'
+    mapping: 'FPLA=>0;HN=>${hillingdon_user_ids};SN=>${swindon_user_ids};SNW=>${wiltshire_user_ids}'
+EOL
