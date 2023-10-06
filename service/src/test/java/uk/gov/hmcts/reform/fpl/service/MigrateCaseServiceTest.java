@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -1852,5 +1853,69 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
         }
 
+    }
+
+    @Nested
+    class RemoveSealedCMO {
+        private final Element<HearingOrder> sealedCmo1 = ElementUtils.element(HearingOrder.builder().build());
+        private final Element<HearingOrder> sealedCmo2 = ElementUtils.element(HearingOrder.builder().build());
+        private final List<Element<HearingOrder>> sealedCmos = List.of(sealedCmo1, sealedCmo2);
+        private final List<Element<HearingOrder>> orderToBeSent = List.of(sealedCmo1, sealedCmo2);
+
+        @Test
+        void shouldRemoveSealedCMO() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(orderToBeSent)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(),
+                true);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(expectedList);
+        }
+
+        @Test
+        void shouldRemoveSealedCMOIfNoOrdersToBeSent() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .build();
+
+            Map<String, Object> updatedFields =
+                underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfCMONotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderToBeSentNotFound() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(List.of(sealedCmo2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
     }
 }
