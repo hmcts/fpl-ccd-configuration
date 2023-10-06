@@ -21,8 +21,17 @@ Family public law's implementation of the CCD template
 
 ## Getting Started
 
-Create the following file (It is already included in .gitignore)
-`service/src/main/resources/application-feature-toggle.yaml`:
+Create the following two files (they are already included in .gitignore)
+
+`service/src/main/resources/application-user-mappings.yaml`:
+```
+spring:
+  profiles: user-mappings
+fpl:
+  local_authority_user:
+    mapping: <get from key vault>
+```
+and `service/src/main/resources/application-feature-toggle.yaml`:
 ```
 spring:
   config:
@@ -199,7 +208,7 @@ CCD_CONFIGURER_IMPORTER_USERNAME=<USER> \
 CCD_CONFIGURER_IMPORTER_PASSWORD=<PASSWORD> \
 CCD_API_GATEWAY_IDAM_CLIENT_SECRET=<IDAM_CLIENT_SECRET> \
 CCD_API_GATEWAY_S2S_SECRET=<S2S_SECRET> \
-fpla-docker/bin/utils/ccd-import-definition.sh <FILEPATH>
+bin/ccd-import-definition.sh <FILEPATH>
 ```
 
 where:
