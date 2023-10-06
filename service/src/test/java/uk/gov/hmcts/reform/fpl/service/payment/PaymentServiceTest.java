@@ -266,6 +266,23 @@ class PaymentServiceTest {
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
         }
 
+        @Test
+        void shouldMakeCorrectPaymentForAdditionalApplicationsWithCorrectNameIfRespondent() {
+            CaseData caseData = buildCaseData(CLIENT_CODE, CUSTOMER_REFERENCE, "John Smith, Respondent 1");
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .organisationName("On behalf of John Smith, Respondent 1")
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+
         @ParameterizedTest
         @NullAndEmptySource
         void shouldMakeCorrectPaymentForAdditionalApplicationsWhenCustomerReferenceIsInvalid(
@@ -321,12 +338,16 @@ class PaymentServiceTest {
         }
 
         private CaseData buildCaseData(String clientCode, String customerReference) {
+            return buildCaseData(clientCode, customerReference, "Applicant Name, Applicant");
+        }
+
+        private CaseData buildCaseData(String clientCode, String customerReference, String applicantName) {
             return CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(List.of(
                     element(AdditionalApplicationsBundle.builder()
                         .c2DocumentBundle(C2DocumentBundle.builder()
-                            .applicantName("Applicant Name")
+                            .applicantName(applicantName)
                             .build())
                         .pbaPayment(PBAPayment.builder()
                             .clientCode(clientCode)
@@ -334,6 +355,7 @@ class PaymentServiceTest {
                             .pbaNumber(PBA_NUMBER)
                             .build()).build()))).build();
         }
+
 
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()

@@ -110,7 +110,13 @@ public class PaymentService {
 
     public void makePaymentForAdditionalApplications(Long caseId, CaseData caseData, FeesData feesData) {
         final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
-        final String applicantName = caseData.getAdditionalApplicationsBundle().get(0).getValue().getApplicantName();
+        String applicantName = caseData.getAdditionalApplicationsBundle().get(0).getValue().getApplicantName();
+
+        // strip out the ", Applicant" from the label: "Swansea City Council, Applicant"
+        int splitAt = applicantName.lastIndexOf(",");
+        if (splitAt > 0 && (applicantName.endsWith("Applicant") || applicantName.endsWith("Secondary LA"))) {
+            applicantName = applicantName.substring(0, splitAt);
+        }
 
         CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
             pbaPayment.getPbaNumber(),
