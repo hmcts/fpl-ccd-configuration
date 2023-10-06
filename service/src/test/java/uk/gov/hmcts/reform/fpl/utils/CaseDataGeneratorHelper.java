@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.RandomStringUtils;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -140,7 +141,7 @@ public class CaseDataGeneratorHelper {
                 .party(ChildParty.builder()
                     .firstName("Bran")
                     .lastName("Stark")
-                    .gender("Boy")
+                    .gender(ChildGender.BOY)
                     .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
@@ -148,7 +149,7 @@ public class CaseDataGeneratorHelper {
                 .party(ChildParty.builder()
                     .firstName("Sansa")
                     .lastName("Stark")
-                    .gender("Boy")
+                    .gender(ChildGender.BOY)
                     .dateOfBirth(dateOfBirth)
                     .build())
                 .build(),
@@ -156,7 +157,7 @@ public class CaseDataGeneratorHelper {
                 .party(ChildParty.builder()
                     .firstName("Jon")
                     .lastName("Snow")
-                    .gender("Girl")
+                    .gender(ChildGender.GIRL)
                     .dateOfBirth(dateOfBirth)
                     .build())
                 .build()

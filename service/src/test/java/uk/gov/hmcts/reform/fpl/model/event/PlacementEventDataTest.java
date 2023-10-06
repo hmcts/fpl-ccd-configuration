@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -63,15 +64,18 @@ class PlacementEventDataTest {
             .response(testDocumentReference())
             .build();
 
+        DocumentReference placementNoticeDocument = testDocumentReference();
         private final Placement placement1 = Placement.builder()
             .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
             .confidentialDocuments(wrapElements(confidentialDocument1))
             .noticeDocuments(wrapElements(noticeDocument))
+            .placementNotice(placementNoticeDocument)
             .build();
 
         private final Placement placement2 = Placement.builder()
             .supportingDocuments(wrapElements(supportingDocument3))
             .confidentialDocuments(wrapElements(confidentialDocument2, confidentialDocument3))
+            .placementNotice(placementNoticeDocument)
             .build();
 
         @Test
@@ -86,6 +90,7 @@ class PlacementEventDataTest {
 
             final Placement nonConfidentialPlacement1 = Placement.builder()
                 .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
+                .placementNotice(placementNoticeDocument)
                 .noticeDocuments(wrapElements(noticeDocument.toBuilder()
                     .response(null)
                     .build()))
@@ -93,6 +98,7 @@ class PlacementEventDataTest {
 
             final Placement nonConfidentialPlacement2 = Placement.builder()
                 .supportingDocuments(wrapElements(supportingDocument3))
+                .placementNotice(placementNoticeDocument)
                 .build();
 
             assertThat(actualNonConfidentialPlacements)
@@ -113,15 +119,34 @@ class PlacementEventDataTest {
             final Placement nonConfidentialPlacement1 = Placement.builder()
                 .supportingDocuments(wrapElements(supportingDocument1, supportingDocument2))
                 .noticeDocuments(wrapElements(noticeDocument))
+                .placementNotice(placementNoticeDocument)
                 .build();
 
             final Placement nonConfidentialPlacement2 = Placement.builder()
                 .supportingDocuments(wrapElements(supportingDocument3))
+                .placementNotice(placementNoticeDocument)
                 .build();
 
             assertThat(actualNonConfidentialPlacements)
                 .extracting(Element::getValue)
                 .containsExactly(nonConfidentialPlacement1, nonConfidentialPlacement2);
+        }
+
+        @Test
+        void shouldNotReturnNonConfidentialPlacementsWhenNoticeOfPlacementIsNotProduced() {
+
+            placement1.setPlacementNotice(null);
+            placement2.setPlacementNotice(null);
+
+            final PlacementEventData underTest = PlacementEventData.builder()
+                    .placements(wrapElements(placement1, placement2))
+                    .build();
+
+            final List<Element<Placement>> actualNonConfidentialPlacements = underTest
+                    .getPlacementsNonConfidentialWithNotices(true);
+
+            assertThat(actualNonConfidentialPlacements)
+                    .extracting(Element::getValue).isEmpty();
         }
 
         @ParameterizedTest

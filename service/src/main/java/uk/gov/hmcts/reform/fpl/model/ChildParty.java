@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -23,7 +24,7 @@ import javax.validation.groups.Default;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @HasGender(groups = {Default.class, SealedSDOGroup.class})
 public final class ChildParty extends Party {
-    private final String gender;
+    private final ChildGender gender;
     private final String genderIdentification;
     private final String livingSituation;
     private final String livingSituationDetails;
@@ -82,7 +83,7 @@ public final class ChildParty extends Party {
                       Address address,
                       EmailAddress email,
                       Telephone telephoneNumber,
-                      String gender,
+                      ChildGender gender,
                       String genderIdentification,
                       String livingSituation,
                       String livingSituationDetails,

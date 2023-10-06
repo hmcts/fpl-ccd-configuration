@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "YesOrNoFixedList",
+    "ListElementCode": "YES",
+    "ListElement": "Yes",
+    "DisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "YesOrNoFixedList",
+    "ListElementCode": "NO",
+    "ListElement": "No",
+    "DisplayOrder": 1
+  }
+]
