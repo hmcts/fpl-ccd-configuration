@@ -36,9 +36,6 @@ service/bin
 requirements.lock
 charts/*/charts/*.tgz
 
-# user mappings file
-application-user-mappings.yaml
-
 # feature toggle file
 application-feature-toggle.yaml
 
