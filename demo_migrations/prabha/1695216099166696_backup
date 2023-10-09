@@ -1,0 +1,1432 @@
+{
+  "court": {
+    "code": "344",
+    "name": "Family Court sitting at Swansea",
+    "email": "FamilyPublicLaw+sa@gmail.com",
+    "region": null,
+    "epimmsId": null,
+    "regionId": null,
+    "dateTransferred": null
+  },
+  "orders": {
+    "court": "344",
+    "address": {
+      "County": null,
+      "Country": null,
+      "PostCode": null,
+      "PostTown": null,
+      "AddressLine1": null,
+      "AddressLine2": null,
+      "AddressLine3": null
+    },
+    "epoType": null,
+    "excluded": null,
+    "orderType": [
+      "CARE_ORDER"
+    ],
+    "directions": "No",
+    "otherOrder": null,
+    "directionDetails": null,
+    "particularsOfChildren": [],
+    "emergencyProtectionOrders": [],
+    "particularsOfChildrenDetails": null,
+    "emergencyProtectionOrderDetails": null,
+    "emergencyProtectionOrderDirections": [],
+    "childAssessmentOrderContactDirections": null,
+    "childRecoveryOrderDirectionsAppliedFor": null,
+    "childAssessmentOrderAssessmentDirections": null,
+    "emergencyProtectionOrderDirectionDetails": null,
+    "educationSupervisionOrderDirectionsAppliedFor": null,
+    "educationSupervisionOrderPriorConsultationType": [],
+    "educationSupervisionOrderPriorConsultationOtherLA": null
+  },
+  "dfjArea": "SWANSEA",
+  "grounds": {
+    "thresholdReason": [
+      "beyondControl"
+    ],
+    "thresholdDetails": "Give details"
+  },
+  "hearing": {
+    "type": "Standard case management hearing",
+    "reason": null,
+    "timeFrame": "Within 18 days",
+    "reason2Days": null,
+    "reason7Days": null,
+    "reason12Days": null,
+    "reducedNotice": "No",
+    "withoutNotice": "No",
+    "type_GiveReason": "Reason for case",
+    "respondentsAware": "No",
+    "reducedNoticeReason": null,
+    "withoutNoticeReason": null,
+    "respondentsAwareReason": null
+  },
+  "caseName": "CFVMigrationclosed",
+  "taskList": "<div class='width-50'>\n\n<br/>\n\n<div class='govuk-tag govuk-tag--blue'>C110a Application</div>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterLocalAuthority'>Applicant's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/information-added.png' title='Information added'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/selectCourt'>Select court to issue</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/languageSelection'>Welsh language requirements</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/submitApplication'>Submit application</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n</div>",
+  "children1": [
+    {
+      "id": "ec7dd79d-d2c1-4b98-ad56-8f2cd9954cf0",
+      "value": {
+        "party": {
+          "gender": "Girl",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "WD3 1BS",
+            "PostTown": "Rickmansworth",
+            "AddressLine1": "5",
+            "AddressLine2": "Emperor House",
+            "AddressLine3": "12 Church Street"
+          },
+          "partyId": "751e0aeb-5fff-4034-8e1f-d02dca0b10a8",
+          "adoption": "No",
+          "keyDates": "Deates",
+          "lastName": "Romeo",
+          "firstName": "baby",
+          "dateOfBirth": "2020-02-02",
+          "fathersName": "Sohar",
+          "mothersName": "Marum",
+          "detailsHidden": "No",
+          "additionalNeeds": "No",
+          "livingSituation": "Living with respondents",
+          "litigationIssues": "YES",
+          "addressChangeDate": "2023-01-01",
+          "careAndContactPlan": "Care is arranged",
+          "fathersResponsibility": "No",
+          "litigationIssuesDetails": "Reason",
+          "socialWorkerTelephoneNumber": {
+            "telephoneNumber": "04654756878"
+          }
+        },
+        "legalCounsellors": []
+      }
+    }
+  ],
+  "allParties": [
+    {
+      "id": "1239d9a2-5c42-4120-a5cc-598ec5354768",
+      "value": {
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+        "directionType": "Request permission for expert evidence",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "894076ab-0b42-49b3-b83b-19ea2d16bf67",
+      "value": {
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
+        "directionType": "Request help to take part in proceedings",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "2c55871c-d842-478b-9375-085d569fda1d",
+      "value": {
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
+        "directionType": "Ask for disclosure",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "3977594d-ff78-4a12-b129-47c243c72c7c",
+      "value": {
+        "assignee": "ALL_PARTIES",
+        "readOnly": "No",
+        "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+        "directionType": "Attend the pre-hearing and hearing",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "b7d83986-c96e-448f-bef2-bc7bdc437b0b",
+      "value": {
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+        "directionType": "Contact alternative carers",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "sendToCtsc": "Yes",
+  "multiCourts": "YES",
+  "preparedSDO": {
+    "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de",
+    "document_filename": "Gatekeeping Order.docx",
+    "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de/binary"
+  },
+  "childPolicy0": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORA]"
+  },
+  "childPolicy1": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORB]"
+  },
+  "childPolicy2": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORC]"
+  },
+  "childPolicy3": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORD]"
+  },
+  "childPolicy4": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORE]"
+  },
+  "childPolicy5": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORF]"
+  },
+  "childPolicy6": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORG]"
+  },
+  "childPolicy7": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORH]"
+  },
+  "childPolicy8": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORI]"
+  },
+  "childPolicy9": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORJ]"
+  },
+  "respondents1": [
+    {
+      "id": "8867417a-8ef8-452a-83c2-c5ebb2114ac3",
+      "value": {
+        "party": {
+          "gender": "Female",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "TW20 9GP",
+            "PostTown": "Egham",
+            "AddressLine1": "Flat 15a",
+            "AddressLine2": "Albany Court",
+            "AddressLine3": "Albany Place"
+          },
+          "partyId": "77a86286-3fe1-444c-8a86-0e9d24c46183",
+          "lastName": "dad",
+          "firstName": "Roha",
+          "addressKnow": "Yes",
+          "dateOfBirth": "2005-03-02",
+          "telephoneNumber": {
+            "telephoneNumber": "08987689876968"
+          },
+          "litigationIssues": "DONT_KNOW",
+          "relationshipToChild": "Relationship",
+          "contactDetailsHidden": "No"
+        },
+        "representedBy": [],
+        "legalCounsellors": [],
+        "legalRepresentation": "No"
+      }
+    }
+  ],
+  "childPolicy10": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORK]"
+  },
+  "childPolicy11": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORL]"
+  },
+  "childPolicy12": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORM]"
+  },
+  "childPolicy13": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORN]"
+  },
+  "childPolicy14": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[CHILDSOLICITORO]"
+  },
+  "dateSubmitted": "2023-09-20",
+  "groundsForEPO": {},
+  "submittedForm": {
+    "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/9a6eeca6-696f-41fa-9984-2c6d1d95986c",
+    "document_filename": "CFVMigrationclosed.pdf",
+    "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/9a6eeca6-696f-41fa-9984-2c6d1d95986c/binary"
+  },
+  "SearchCriteria": {
+    "SearchParties": [
+      {
+        "id": "7f23087f-290b-44cc-bfff-fee8e001c279",
+        "value": {
+          "Name": "Roha dad",
+          "PostCode": "TW20 9GP",
+          "DateOfBirth": "2005-03-02",
+          "AddressLine1": "Flat 15a"
+        }
+      },
+      {
+        "id": "a0227190-c5ac-455f-943c-078fad1ff2e4",
+        "value": {
+          "Name": "baby Romeo",
+          "PostCode": "WD3 1BS",
+          "DateOfBirth": "2020-02-02",
+          "AddressLine1": "5"
+        }
+      }
+    ]
+  },
+  "deadline26week": "2024-03-20",
+  "documentViewLA": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LargeTestFile5.doc</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/880cb1df-b3cc-4dbd-bfd4-b54989137f0d/binary'>LargeTestFile5.doc</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Genogram</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">some100mfile.pdf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/0fab265d-eccc-467d-846b-76e6754b4bf1/binary'>some100mfile.pdf</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Checklist document</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">NoPlacementLA.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/af5aac22-b4e1-41d5-9fd9-3f46de335abf/binary'>NoPlacementLA.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Notice of Acting / Notice of Issue</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">judge support docuemnt</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:02pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary'>Petition.pdf</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "documentViewNC": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LargeTestFile5.doc</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/880cb1df-b3cc-4dbd-bfd4-b54989137f0d/binary'>LargeTestFile5.doc</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Genogram</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">some100mfile.pdf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/0fab265d-eccc-467d-846b-76e6754b4bf1/binary'>some100mfile.pdf</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Notice of Acting / Notice of Issue</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">judge support docuemnt</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:02pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary'>Petition.pdf</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "hearingDetails": [
+    {
+      "id": "2d94de96-637a-4b72-971b-088ad6a01f86",
+      "value": {
+        "type": "CASE_MANAGEMENT",
+        "venue": "75",
+        "others": [],
+        "status": null,
+        "endDate": "2023-11-07T16:00:00",
+        "presence": null,
+        "startDate": "2023-11-07T16:00:00",
+        "attendance": [
+          "VIDEO",
+          "PHONE"
+        ],
+        "typeReason": null,
+        "hearingDays": 1,
+        "typeDetails": null,
+        "vacatedDate": null,
+        "hearingHours": null,
+        "endDateDerived": "Yes",
+        "hearingMinutes": null,
+        "othersNotified": "",
+        "additionalNotes": "note",
+        "hearingDuration": "1 days",
+        "needTranslation": "NO",
+        "noticeOfHearing": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0ebcff24-ccbc-4830-b4d3-e3bb979d96fa",
+          "document_filename": "Notice_of_hearing_20September.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0ebcff24-ccbc-4830-b4d3-e3bb979d96fa/binary"
+        },
+        "attendanceDetails": "Enim consequatur iu",
+        "hearingJudgeLabel": "Her Honour Judge cv",
+        "legalAdvisorLabel": "cx",
+        "cancellationReason": null,
+        "hearingNeedsBooked": null,
+        "venueCustomAddress": {},
+        "allocatedJudgeLabel": null,
+        "customPreviousVenue": null,
+        "hearingNeedsDetails": null,
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "cv",
+          "legalAdvisorName": "cx",
+          "judgeEmailAddress": "fr_applicant_sol@sharklasers.com"
+        },
+        "preAttendanceDetails": "Laudantium veritati",
+        "previousHearingVenue": {
+          "newVenue": null,
+          "previousVenue": null,
+          "usePreviousVenue": null,
+          "newVenueCustomAddress": {}
+        },
+        "caseManagementOrderId": null,
+        "translationRequirements": "NO",
+        "translatedNoticeOfHearing": null,
+        "translationUploadDateTime": null
+      }
+    },
+    {
+      "id": "c739c0ca-4389-4a97-acea-4c37d527dbfb",
+      "value": {
+        "type": "ISSUE_RESOLUTION",
+        "venue": "75",
+        "others": [],
+        "status": null,
+        "endDate": "2023-09-20T10:00:00",
+        "presence": null,
+        "startDate": "2023-09-20T10:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "typeReason": null,
+        "hearingDays": 1,
+        "typeDetails": null,
+        "vacatedDate": null,
+        "hearingHours": null,
+        "endDateDerived": "Yes",
+        "hearingMinutes": null,
+        "othersNotified": "",
+        "additionalNotes": "dsfs",
+        "hearingDuration": "1 days",
+        "needTranslation": "NO",
+        "noticeOfHearing": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/959ee6fe-02bb-493e-8f2a-4a90e95cb055",
+          "document_filename": "Notice_of_hearing_20September.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/959ee6fe-02bb-493e-8f2a-4a90e95cb055/binary"
+        },
+        "attendanceDetails": "xbzxcb",
+        "hearingJudgeLabel": "His Honour Judge d",
+        "legalAdvisorLabel": "ds",
+        "cancellationReason": null,
+        "hearingNeedsBooked": null,
+        "venueCustomAddress": {},
+        "allocatedJudgeLabel": null,
+        "customPreviousVenue": null,
+        "hearingNeedsDetails": null,
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HIS_HONOUR_JUDGE",
+          "judgeLastName": "d",
+          "legalAdvisorName": "ds",
+          "judgeEmailAddress": "fr_applicant_sol@sharklasers.com"
+        },
+        "preAttendanceDetails": "1 hour before the hearing",
+        "previousHearingVenue": {
+          "newVenue": null,
+          "previousVenue": "Swansea Magistrates' Court, Swansea, Grove Place, Swansea, SA1 5DB",
+          "usePreviousVenue": "Yes",
+          "newVenueCustomAddress": {}
+        },
+        "caseManagementOrderId": null,
+        "translationRequirements": "NO",
+        "translatedNoticeOfHearing": null,
+        "translationUploadDateTime": null
+      }
+    }
+  ],
+  "otherOrderType": "NO",
+  "courtDirections": [
+    {
+      "id": "b2e1e840-ca04-4c44-bbd9-bdf3e5df315f",
+      "value": {
+        "assignee": "COURT",
+        "readOnly": "No",
+        "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+        "directionType": "Arrange interpreters",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "7f93d827-dc32-49a5-b404-ec23793e4889",
+      "value": {
+        "assignee": "COURT",
+        "readOnly": "No",
+        "directionText": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
+        "directionType": "Arrange interpreters",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "ordersSolicitor": {},
+  "swanseaDFJCourt": "344",
+  "c2DocumentBundle": [],
+  "gatekeeperEmails": [
+    {
+      "id": "40c83c6c-66c8-4130-b3ab-5ae8a1300bc7",
+      "value": {
+        "email": "gatekeeper@mailnesia.com"
+      }
+    }
+  ],
+  "localAuthorities": [
+    {
+      "id": "11dafcb1-53db-47c1-a0a6-d9c2cdbe0dd8",
+      "value": {
+        "id": "IWGOT5W",
+        "name": "London Borough Hillingdon",
+        "email": "FamilyPublicLaw+hn@gmail.com",
+        "phone": "03243648768",
+        "address": {
+          "PostCode": "CR0 2GE",
+          "PostTown": "London",
+          "AddressLine1": "Flat 1, Hillingdon Apartments",
+          "AddressLine2": "Hillingdon Central Square 1"
+        },
+        "pbaNumber": "PBA0082848",
+        "clientCode": "Co11",
+        "colleagues": [
+          {
+            "id": "0ad0a881-fa56-453a-8ce2-bc01446c10fb",
+            "value": {
+              "dx": "DX34",
+              "role": "SOLICITOR",
+              "email": "Mary@mailinator.com",
+              "phone": "0465867869",
+              "title": null,
+              "fullName": "Sol Mary",
+              "reference": "So124",
+              "mainContact": "Yes",
+              "notificationRecipient": "Yes"
+            }
+          }
+        ],
+        "designated": "Yes",
+        "legalTeamManager": "Team",
+        "customerReference": "Customerco456"
+      }
+    }
+  ],
+  "cafcassDirections": [
+    {
+      "id": "c8292285-54a1-46e5-8a09-288fee228264",
+      "value": {
+        "assignee": "CAFCASS",
+        "readOnly": "Yes",
+        "directionText": "All of the advocates who will appear at the related hearing must attend. ",
+        "directionType": "Arrange an advocates' meeting",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "4fcd4e3b-3b95-49b0-ba4d-9a4668f44f01",
+      "value": {
+        "assignee": "CAFCASS",
+        "readOnly": "Yes",
+        "directionText": "Send to the court and all parties.",
+        "directionType": "Send the guardian's analysis to all parties",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "7a3ea592-0991-490f-a7aa-f15e6ecf2bfe",
+      "value": {
+        "assignee": "CAFCASS",
+        "readOnly": "No",
+        "directionText": "",
+        "directionType": "Appoint a children's guardian",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "2ec144da-6227-4d3f-bf15-153f51430c50",
+      "value": {
+        "assignee": "CAFCASS",
+        "readOnly": "No",
+        "directionText": "",
+        "directionType": "Appoint a children's guardian",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "courtBundleListLA": [
+    {
+      "id": "2d94de96-637a-4b72-971b-088ad6a01f86",
+      "value": {
+        "hearing": "Case management hearing, 7 November 2023",
+        "courtBundle": [
+          {
+            "id": "6fb12df8-081a-4ca0-94e5-88cd0f29fd49",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4658e334-4a6b-4d0a-bce1-739934df0e2a",
+                "document_filename": "Court Bundle 2.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4658e334-4a6b-4d0a-bce1-739934df0e2a/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "courtBundleNC": []
+      }
+    }
+  ],
+  "courtBundleListV2": [
+    {
+      "id": "2d94de96-637a-4b72-971b-088ad6a01f86",
+      "value": {
+        "hearing": "Case management hearing, 7 November 2023",
+        "courtBundle": [
+          {
+            "id": "eda4e789-c1c1-4470-b3a7-0820a5b8ab6e",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170",
+                "document_filename": "GeneralLetter.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "8341edff-abd3-46b3-bb33-039b92a92b92",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53",
+                "document_filename": "Doc3.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "courtBundleNC": []
+      }
+    }
+  ],
+  "documentViewHMCTS": "<p><div class='width-50'>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Applicant's statements and application documents</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Social work chronology</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">LargeTestFile5.doc</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/880cb1df-b3cc-4dbd-bfd4-b54989137f0d/binary'>LargeTestFile5.doc</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Genogram</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">some100mfile.pdf</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/0fab265d-eccc-467d-846b-76e6754b4bf1/binary'>some100mfile.pdf</a></dd></div></dl></div></details></div></details><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Checklist document</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">NoPlacementLA.docx</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">sam@hillingdon.gov.uk</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">2:38pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/confidential.png' title='Confidential'/></dt>     <dd class=\"govuk-summary-list__value\"></dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/af5aac22-b4e1-41d5-9fd9-3f46de335abf/binary'>NoPlacementLA.docx</a></dd></div></dl></div></details></div></details></div></details>\n\n<details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">Notice of Acting / Notice of Issue</summary>       <div class=\"govuk-details__text\"><details class=\"govuk-details\">       <summary class=\"govuk-details__summary\">judge support docuemnt</summary>       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\"><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Uploaded by</dt>     <dd class=\"govuk-summary-list__value\">HMCTS</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Date and time uploaded</dt>     <dd class=\"govuk-summary-list__value\">4:02pm, 20 September 2023</dd></div><div class=\"govuk-summary-list__row\">     <dt class=\"govuk-summary-list__key\">Document</dt>     <dd class=\"govuk-summary-list__value\"><a href='https://manage-case.demo.platform.hmcts.net/documentsv2/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary'>Petition.pdf</a></dd></div></dl></div></details></div></details>\n\n</div></p>",
+  "draftUploadedCMOs": [],
+  "respondentPolicy0": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+  },
+  "respondentPolicy1": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+  },
+  "respondentPolicy2": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+  },
+  "respondentPolicy3": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+  },
+  "respondentPolicy4": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+  },
+  "respondentPolicy5": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+  },
+  "respondentPolicy6": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+  },
+  "respondentPolicy7": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+  },
+  "respondentPolicy8": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+  },
+  "respondentPolicy9": {
+    "Organisation": {},
+    "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+  },
+  "selectedHearingId": "c739c0ca-4389-4a97-acea-4c37d527dbfb",
+  "submissionConsent": [
+    "agree"
+  ],
+  "EPO_REASONING_SHOW": [],
+  "allocationDecision": {
+    "proposal": "Circuit judge",
+    "proposalReason": "fdgd",
+    "judgeLevelRadio": null,
+    "allocationProposalPresent": "Yes"
+  },
+  "allocationProposal": {
+    "proposal": "Circuit judge",
+    "proposalReason": "fdgd"
+  },
+  "caseLocalAuthority": "HN",
+  "displayAmountToPay": "Yes",
+  "hasBeenCFVMigrated": "YES",
+  "representativeType": "LOCAL_AUTHORITY",
+  "familyManCaseNumber": "case",
+  "hasHearingsToReList": null,
+  "hasHearingsToVacate": "Yes",
+  "languageRequirement": null,
+  "applicationDocuments": [
+    {
+      "id": "33cd8c25-6189-4d1b-a478-1a3695708db1",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/880cb1df-b3cc-4dbd-bfd4-b54989137f0d",
+          "document_filename": "LargeTestFile5.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/880cb1df-b3cc-4dbd-bfd4-b54989137f0d/binary"
+        },
+        "uploadedBy": "sam@hillingdon.gov.uk",
+        "confidential": [],
+        "documentName": null,
+        "documentType": "SOCIAL_WORK_CHRONOLOGY",
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-20T14:38:39.34489332",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ]
+      }
+    },
+    {
+      "id": "3a8c6d42-c455-462a-927c-57dab0e8e8c8",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0fab265d-eccc-467d-846b-76e6754b4bf1",
+          "document_filename": "some100mfile.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0fab265d-eccc-467d-846b-76e6754b4bf1/binary"
+        },
+        "uploadedBy": "sam@hillingdon.gov.uk",
+        "confidential": [],
+        "documentName": null,
+        "documentType": "GENOGRAM",
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-20T14:38:39.763459047",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ]
+      }
+    },
+    {
+      "id": "837915de-3393-4900-ad04-972913a580da",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/af5aac22-b4e1-41d5-9fd9-3f46de335abf",
+          "document_filename": "NoPlacementLA.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/af5aac22-b4e1-41d5-9fd9-3f46de335abf/binary"
+        },
+        "uploadedBy": "sam@hillingdon.gov.uk",
+        "confidential": [
+          "CONFIDENTIAL"
+        ],
+        "documentName": null,
+        "documentType": "CHECKLIST_DOCUMENT",
+        "includedInSWET": null,
+        "dateTimeUploaded": "2023-09-20T14:38:39.989102173",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ]
+      }
+    }
+  ],
+  "caseSummaryCourtName": "Family Court sitting at Swansea",
+  "dateAndTimeSubmitted": "2023-09-20T14:23:32.076074427+01:00",
+  "localAuthorityPolicy": {
+    "Organisation": {
+      "OrganisationID": "IWGOT5W",
+      "OrganisationName": "London Borough Hillingdon"
+    },
+    "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+  },
+  "respondentDirections": [
+    {
+      "id": "6680e03e-898a-4bf3-90b2-8b9a2c4a8f0c",
+      "value": {
+        "assignee": "PARENTS_AND_RESPONDENTS",
+        "readOnly": "Yes",
+        "directionText": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+        "directionType": "Send response to threshold statement to all parties",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "caseNameHmctsInternal": "CFVMigrationclosed",
+  "correspondenceDocList": [
+    {
+      "id": "bc1885de-3e37-4f73-bfd9-23018beff914",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f",
+          "document_filename": "Supplement Dummy.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f/binary"
+        }
+      }
+    },
+    {
+      "id": "cbe5e235-a4a1-4f8e-b06d-ff42c1b30d7d",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f",
+          "document_filename": "Doc3.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f/binary"
+        }
+      }
+    },
+    {
+      "id": "25a4b38a-4259-4630-9240-4d374208e073",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252",
+          "document_filename": "Doc4.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252/binary"
+        }
+      }
+    }
+  ],
+  "toReListHearingsLabel": null,
+  "caseLocalAuthorityName": "London Borough Hillingdon",
+  "caseManagementCategory": {
+    "value": {
+      "code": "FPL",
+      "label": "Family Public Law"
+    },
+    "list_items": [
+      {
+        "code": "FPL",
+        "label": "Family Public Law"
+      }
+    ]
+  },
+  "caseManagementLocation": {
+    "region": "7",
+    "baseLocation": "234946"
+  },
+  "caseSummaryDateOfIssue": "2023-09-20",
+  "caseSummaryLATabHidden": "Yes",
+  "documentsSentToParties": [
+    {
+      "id": "c31663c6-51b9-4ef4-a24a-16d896788f74",
+      "value": {
+        "partyName": "Roha dad",
+        "documentsSentToParty": [
+          {
+            "id": "5c49e296-635d-4eb7-b9c4-a63598a4ffee",
+            "value": {
+              "sentAt": "3:50pm, 20 September 2023",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1f31e9ae-6a69-4678-9c75-c1c3e99abb31",
+                "document_filename": "Notice_of_hearing_20September.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/1f31e9ae-6a69-4678-9c75-c1c3e99abb31/binary"
+              },
+              "letterId": "8b033be9-7a9b-45f5-9ed7-b60a33cdedf9",
+              "partyName": "Roha dad",
+              "coversheet": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6e887e2a-0ca4-4e5b-adb0-6748502a07fe",
+                "document_filename": "Coversheet.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/6e887e2a-0ca4-4e5b-adb0-6748502a07fe/binary"
+              }
+            }
+          },
+          {
+            "id": "b16fd651-260d-4797-9f43-6564e527e505",
+            "value": {
+              "sentAt": "3:55pm, 20 September 2023",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/81811cdf-02bc-47fa-a48b-9a417b56c29a",
+                "document_filename": "Notice_of_hearing_20September.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/81811cdf-02bc-47fa-a48b-9a417b56c29a/binary"
+              },
+              "letterId": "a7537a2b-bae2-46f7-9ea7-794324856ae8",
+              "partyName": "Roha dad",
+              "coversheet": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d68b2a9c-4224-41b9-9233-f1d73be9001c",
+                "document_filename": "Coversheet.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/d68b2a9c-4224-41b9-9233-f1d73be9001c/binary"
+              }
+            }
+          },
+          {
+            "id": "95932b3a-8ac4-427b-968f-ae72b12359e1",
+            "value": {
+              "sentAt": "4:18pm, 20 September 2023",
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/827105fa-dd27-4317-b5a1-fe1476cc53f4",
+                "document_filename": "D84.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/827105fa-dd27-4317-b5a1-fe1476cc53f4/binary"
+              },
+              "letterId": "d4d6eca2-f5f9-43a4-95a6-58480a54b081",
+              "partyName": "Roha dad",
+              "coversheet": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/23858975-e1d1-4ff8-8d2d-079b3ba6e874",
+                "document_filename": "Coversheet.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/23858975-e1d1-4ff8-8d2d-079b3ba6e874/binary"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "gatekeepingOrderRouter": "UPLOAD",
+  "noticeOfChangeAnswers0": {
+    "respondentLastName": "dad",
+    "respondentFirstName": "Roha"
+  },
+  "otherPartiesDirections": [
+    {
+      "id": "115f7dfe-441d-4714-94ad-e6024802676f",
+      "value": {
+        "assignee": "OTHERS",
+        "readOnly": "Yes",
+        "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
+        "directionType": "Object to a request for disclosure",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "showFurtherEvidenceTab": "YES",
+  "standardDirectionOrder": {
+    "orderDoc": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de",
+      "document_filename": "Gatekeeping Order.docx",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de/binary"
+    },
+    "uploader": "hmcts-admin hmcts-admin",
+    "orderStatus": "DRAFT",
+    "dateOfUpload": "2023-09-20",
+    "needTranslation": "NO",
+    "standardDirections": [],
+    "judgeAndLegalAdvisor": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "fsg",
+      "legalAdvisorName": "legal",
+      "judgeEmailAddress": "sfg@mailinator.com"
+    },
+    "translationRequirements": "NO"
+  },
+  "urgentDirectionsRouter": null,
+  "correspondenceDocuments": [
+    {
+      "id": "bc1885de-3e37-4f73-bfd9-23018beff914",
+      "value": {
+        "name": "filecafcass",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f",
+          "document_filename": "Supplement Dummy.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f/binary"
+        },
+        "uploadedBy": "cafcass@example.com",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T16:16:37.605632233",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "cbe5e235-a4a1-4f8e-b06d-ff42c1b30d7d",
+      "value": {
+        "name": "support2",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f",
+          "document_filename": "Doc3.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T14:42:33.76858902",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "25a4b38a-4259-4630-9240-4d374208e073",
+      "value": {
+        "name": "corres",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252",
+          "document_filename": "Doc4.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T14:42:33.768571087",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "courtBundleListV2Backup": [
+    {
+      "id": "2d94de96-637a-4b72-971b-088ad6a01f86",
+      "value": {
+        "hearing": "Case management hearing, 7 November 2023",
+        "courtBundle": [
+          {
+            "id": "6fb12df8-081a-4ca0-94e5-88cd0f29fd49",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4658e334-4a6b-4d0a-bce1-739934df0e2a",
+                "document_filename": "Court Bundle 2.docx",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4658e334-4a6b-4d0a-bce1-739934df0e2a/binary"
+              },
+              "confidential": [
+                "CONFIDENTIAL"
+              ],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "eda4e789-c1c1-4470-b3a7-0820a5b8ab6e",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170",
+                "document_filename": "GeneralLetter.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "8341edff-abd3-46b3-bb33-039b92a92b92",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53",
+                "document_filename": "Doc3.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "courtBundleNC": [
+          {
+            "id": "eda4e789-c1c1-4470-b3a7-0820a5b8ab6e",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170",
+                "document_filename": "GeneralLetter.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0273356c-d2f1-4536-a658-98e245efc170/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          },
+          {
+            "id": "8341edff-abd3-46b3-bb33-039b92a92b92",
+            "value": {
+              "document": {
+                "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53",
+                "document_filename": "Doc3.pdf",
+                "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/73f2533f-d2ad-4788-af77-3940561b3f53/binary"
+              },
+              "confidential": [],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "respondentStatementList": null,
+  "toReListHearingDateList": null,
+  "caseSummaryCaseFlagNotes": null,
+  "caseSummaryHighCourtCase": "No",
+  "furtherEvidenceDocuments": [
+    {
+      "id": "af6bd916-9f62-4b11-8ab0-82c4c5c10f6a",
+      "value": {
+        "name": "judge support docuemnt",
+        "type": "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE",
+        "notes": "notes",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a",
+          "document_filename": "Petition.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T16:02:16.759973663",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "localAuthorityDirections": [
+    {
+      "id": "8659ad7e-1a6c-4c76-b54b-ec1cc0cc3d02",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "directionText": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
+        "directionType": "Send documents to all parties",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "f9dd47d5-3dc7-47cb-a608-2f015269a900",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "directionText": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
+        "directionType": "Send missing annex documents to the court and all parties",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "0268af64-42ee-43a2-a51f-ef67d25ab26b",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+        "directionType": "Identify alternative carers",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "651f0a1a-44b7-44c8-9ccf-f48cc42ff82c",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "directionText": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+        "directionType": "Send translated case documents to respondents",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "6295eb88-8408-4784-8c84-cdcc3d950002",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+        "directionType": "Lodge a bundle",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "6b1b6b1b-797f-4b43-a4e4-3ee87c517e2d",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "directionText": "Send to the court and all parties.",
+        "directionType": "Send case summary to all parties",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "ca657a6f-000e-4d4c-98fb-a730e2d8deee",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
+        "directionType": "Urgently consider jurisdiction and invite any representations",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    },
+    {
+      "id": "87b1ff8b-083a-47e9-9f3e-69bdd0499951",
+      "value": {
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "directionText": "",
+        "directionType": "Reduce time for service of notice of the proceedings",
+        "directionNeeded": "Yes",
+        "directionRemovable": "Yes"
+      }
+    }
+  ],
+  "caseSummaryHasNextHearing": "Yes",
+  "caseSummaryNextHearingCMO": null,
+  "correspondenceDocumentsNC": [
+    {
+      "id": "bc1885de-3e37-4f73-bfd9-23018beff914",
+      "value": {
+        "name": "filecafcass",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f",
+          "document_filename": "Supplement Dummy.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/a67de8b8-98be-4a95-bacc-a4e67557746f/binary"
+        },
+        "uploadedBy": "cafcass@example.com",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T16:16:37.605632233",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "cbe5e235-a4a1-4f8e-b06d-ff42c1b30d7d",
+      "value": {
+        "name": "support2",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f",
+          "document_filename": "Doc3.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/4450b115-a6b1-4d31-aebc-df1059d6310f/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T14:42:33.76858902",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    },
+    {
+      "id": "25a4b38a-4259-4630-9240-4d374208e073",
+      "value": {
+        "name": "corres",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252",
+          "document_filename": "Doc4.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/25ec6575-e0a4-4319-a882-2d4624f72252/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T14:42:33.768571087",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "documentsFiledOnIssueList": [
+    {
+      "id": "33cd8c25-6189-4d1b-a478-1a3695708db1",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/880cb1df-b3cc-4dbd-bfd4-b54989137f0d",
+          "document_filename": "LargeTestFile5.doc",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/880cb1df-b3cc-4dbd-bfd4-b54989137f0d/binary"
+        }
+      }
+    },
+    {
+      "id": "3a8c6d42-c455-462a-927c-57dab0e8e8c8",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0fab265d-eccc-467d-846b-76e6754b4bf1",
+          "document_filename": "some100mfile.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/0fab265d-eccc-467d-846b-76e6754b4bf1/binary"
+        }
+      }
+    }
+  ],
+  "noticeOfActingOrIssueList": [
+    {
+      "id": "af6bd916-9f62-4b11-8ab0-82c4c5c10f6a",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a",
+          "document_filename": "Petition.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary"
+        }
+      }
+    }
+  ],
+  "caseSummaryCafcassGuardian": null,
+  "caseSummaryHasFinalHearing": null,
+  "caseSummaryLAHighCourtCase": "No",
+  "caseSummaryLASolicitorName": "Sol Mary",
+  "caseSummaryNextHearingDate": "2023-11-07",
+  "caseSummaryNextHearingType": "Case management",
+  "caseSummaryOrdersRequested": "Care order",
+  "furtherEvidenceDocumentsNC": [
+    {
+      "id": "af6bd916-9f62-4b11-8ab0-82c4c5c10f6a",
+      "value": {
+        "name": "judge support docuemnt",
+        "type": "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE",
+        "notes": "notes",
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a",
+          "document_filename": "Petition.pdf",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/ac0e2b51-47c2-4b3b-aa9d-2facc7836f8a/binary"
+        },
+        "uploadedBy": "HMCTS",
+        "confidential": [],
+        "needTranslation": "NO",
+        "dateTimeUploaded": "2023-09-20T16:02:16.759973663",
+        "documentAcknowledge": [
+          "ACK_RELATED_TO_CASE"
+        ],
+        "hasConfidentialAddress": "No"
+      }
+    }
+  ],
+  "groundsForContactWithChild": {},
+  "hearingOrdersBundlesDrafts": [],
+  "caseSummaryFinalHearingDate": null,
+  "caseSummaryFlagAddedByEmail": null,
+  "caseSummaryLASolicitorEmail": "Mary@mailinator.com",
+  "caseSummaryNextHearingJudge": null,
+  "caseSummaryNumberOfChildren": 1,
+  "documentsFiledOnIssueListLA": [
+    {
+      "id": "837915de-3393-4900-ad04-972913a580da",
+      "value": {
+        "document": {
+          "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/af5aac22-b4e1-41d5-9fd9-3f46de335abf",
+          "document_filename": "NoPlacementLA.docx",
+          "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/af5aac22-b4e1-41d5-9fd9-3f46de335abf/binary"
+        }
+      }
+    }
+  ],
+  "noticeOfChangeChildAnswers0": {
+    "respondentLastName": "Romeo",
+    "respondentFirstName": "baby"
+  },
+  "additionalApplicationsBundle": [
+    {
+      "id": "5248d5c7-8058-4c98-828b-529d1c282085",
+      "value": {
+        "author": "cafcass@example.com",
+        "pbaPayment": {
+          "pbaNumber": "PBA1234567",
+          "clientCode": "coo",
+          "fileReference": "css",
+          "usePbaPayment": "Yes"
+        },
+        "amountToPay": "23200",
+        "uploadedDateTime": "20 September 2023, 4:18pm",
+        "applicationReviewed": "NO",
+        "otherApplicationsBundle": {
+          "id": "8745da2f-0613-49ac-b8c8-a0ee2a1bdc44",
+          "author": "cafcass@example.com",
+          "document": {
+            "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/519bd6f8-0f59-4ac8-8182-3b304d52a60d",
+            "document_filename": "D84.pdf",
+            "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/519bd6f8-0f59-4ac8-8182-3b304d52a60d/binary"
+          },
+          "respondents": [
+            {
+              "id": "8867417a-8ef8-452a-83c2-c5ebb2114ac3",
+              "value": {
+                "party": {
+                  "gender": "Female",
+                  "address": {
+                    "County": "",
+                    "Country": "United Kingdom",
+                    "PostCode": "TW20 9GP",
+                    "PostTown": "Egham",
+                    "AddressLine1": "Flat 15a",
+                    "AddressLine2": "Albany Court",
+                    "AddressLine3": "Albany Place"
+                  },
+                  "partyId": "77a86286-3fe1-444c-8a86-0e9d24c46183",
+                  "lastName": "dad",
+                  "firstName": "Roha",
+                  "addressKnow": "Yes",
+                  "dateOfBirth": "2005-03-02",
+                  "telephoneNumber": {
+                    "telephoneNumber": "08987689876968"
+                  },
+                  "litigationIssues": "DONT_KNOW",
+                  "relationshipToChild": "Relationship",
+                  "contactDetailsHidden": "No"
+                },
+                "representedBy": [],
+                "legalCounsellors": [],
+                "legalRepresentation": "No"
+              }
+            }
+          ],
+          "applicantName": "baby Romeo, Child 1",
+          "applicationType": "C12_WARRANT_TO_ASSIST_PERSON",
+          "uploadedDateTime": "20 September 2023, 4:18pm",
+          "supplementsBundle": [],
+          "supportingEvidenceLA": [],
+          "supportingEvidenceNC": [],
+          "urgencyTimeFrameType": "SAME_DAY",
+          "supportingEvidenceBundle": []
+        }
+      }
+    }
+  ],
+  "caseSummaryPreviousCourtName": null,
+  "gatekeepingOrderIssuingJudge": {
+    "judgeTitle": "HER_HONOUR_JUDGE",
+    "otherTitle": null,
+    "judgeFullName": null,
+    "judgeLastName": "fsg",
+    "legalAdvisorName": "legal",
+    "judgeEmailAddress": "sfg@mailinator.com",
+    "useAllocatedJudge": null,
+    "allocatedJudgeLabel": null
+  },
+  "gatekeepingOrderSealDecision": {
+    "nextSteps": null,
+    "dateOfIssue": null,
+    "orderStatus": null,
+    "draftDocument": {
+      "document_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de",
+      "document_filename": "Gatekeeping Order.docx",
+      "document_binary_url": "http://dm-store-demo.service.core-compute-demo.internal/documents/2d845f05-f012-4086-8b63-dfe41d4636de/binary"
+    }
+  },
+  "groundsForChildRecoveryOrder": {},
+  "secureAccommodationOrderType": "NO",
+  "caseSummaryAllocatedJudgeName": null,
+  "caseSummaryFlagAssessmentForm": null,
+  "caseSummaryHasPreviousHearing": "Yes",
+  "caseSummaryPreviousHearingCMO": null,
+  "caseSummaryAllocatedJudgeEmail": null,
+  "caseSummaryFlagAddedByFullName": null,
+  "caseSummaryLanguageRequirement": "No",
+  "caseSummaryPreviousHearingDate": "2023-09-20",
+  "caseSummaryPreviousHearingType": "Issue resolution",
+  "groundsForChildAssessmentOrder": {},
+  "contactWithChildInCareOrderType": null,
+  "refuseContactWithChildOrderType": null,
+  "caseSummaryHasUnresolvedMessages": null,
+  "caseSummaryLALanguageRequirement": "No",
+  "documentsWithConfidentialAddress": [],
+  "groundsForRefuseContactWithChild": {},
+  "gatekeepingOrderListOrSendToAdmin": "YES",
+  "applicationDocumentsToFollowReason": null,
+  "caseSummaryFirstRespondentLastName": "dad",
+  "caseSummaryFirstRespondentLegalRep": null,
+  "caseSummaryNextHearingEmailAddress": null,
+  "groundsForSecureAccommodationOrder": {},
+  "groundsForEducationSupervisionOrder": {},
+  "gatekeepingOrderListOrSendToAdminReason": null
+}
