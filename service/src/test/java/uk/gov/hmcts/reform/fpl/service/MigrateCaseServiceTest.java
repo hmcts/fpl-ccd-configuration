@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -45,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -1040,17 +1042,14 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
@@ -1439,6 +1438,60 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveNoticeOfProceedingsBundle {
+        private final Element<DocumentBundle> noticeOfProceedings1 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedings2 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedingsToBeRemoved =
+            element(DocumentBundle.builder().build());
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2,
+                    noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList()
+                .containsExactly(noticeOfProceedings1, noticeOfProceedings2);
+        }
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundleIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " notice of proceedings bundle %s not found",
+                    MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
+        }
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_METHOD)
     @Nested
     class AddCourt {
@@ -1800,5 +1853,69 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
         }
 
+    }
+
+    @Nested
+    class RemoveSealedCMO {
+        private final Element<HearingOrder> sealedCmo1 = ElementUtils.element(HearingOrder.builder().build());
+        private final Element<HearingOrder> sealedCmo2 = ElementUtils.element(HearingOrder.builder().build());
+        private final List<Element<HearingOrder>> sealedCmos = List.of(sealedCmo1, sealedCmo2);
+        private final List<Element<HearingOrder>> orderToBeSent = List.of(sealedCmo1, sealedCmo2);
+
+        @Test
+        void shouldRemoveSealedCMO() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(orderToBeSent)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(),
+                true);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(expectedList);
+        }
+
+        @Test
+        void shouldRemoveSealedCMOIfNoOrdersToBeSent() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .build();
+
+            Map<String, Object> updatedFields =
+                underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfCMONotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderToBeSentNotFound() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(List.of(sealedCmo2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
     }
 }

@@ -58,7 +58,6 @@ class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String CHILD_LAST_NAME = "something";
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     @MockBean
     private NotificationClient notificationClient;
     @MockBean

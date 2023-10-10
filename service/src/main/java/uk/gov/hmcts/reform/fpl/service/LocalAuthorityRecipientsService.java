@@ -63,15 +63,20 @@ public class LocalAuthorityRecipientsService {
     private List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
-        localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority()).ifPresent(recipients::add);
+        // from onboarding config
+        if (!featureToggles.isRestrictedFromPrimaryApplicantEmails(caseData.getId().toString())) {
+            localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority()).ifPresent(recipients::add);
+        }
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
             Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
 
+            // from localAuthorities object on case -> shared inbox email address
             localAuthority.map(LocalAuthority::getEmail)
                 .filter(StringUtils::isNotBlank)
                 .ifPresent(recipients::add);
 
+            // colleagues as added in applicant details
             if (featureToggles.emailsToSolicitorEnabled(caseData.getCaseLocalAuthority())) {
                 localAuthority.map(LocalAuthority::getContactEmails).ifPresent(recipients::addAll);
             }
