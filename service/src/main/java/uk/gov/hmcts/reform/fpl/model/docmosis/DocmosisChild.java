@@ -28,4 +28,5 @@ public class DocmosisChild {
     private final String litigationIssues;
     private final String detailsHiddenReason;
     private final DocmosisBirthCertificate birthCertificate;
+    private final String placementOrderOtherDetails;
 }

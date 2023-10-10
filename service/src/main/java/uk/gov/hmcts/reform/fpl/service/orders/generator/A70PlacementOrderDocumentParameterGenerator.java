@@ -75,6 +75,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                             manageOrdersEventData.getManageOrdersBirthCertificateRegistrationSubDistrict())
                         .registrationCounty(manageOrdersEventData.getManageOrdersBirthCertificateRegistrationCounty())
                         .build())
+                    .placementOrderOtherDetails(manageOrdersEventData.getManageOrdersPlacementOrderOtherDetails())
                     .build()
             )
             .applicationDate(applicationDate)

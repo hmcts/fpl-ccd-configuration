@@ -32,7 +32,7 @@ public class JudicialUsersConfiguration {
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
 
-    private final int judicialPageSize = 3000;
+    private final int judicialPageSize = 10000;
 
 
     public JudicialUsersConfiguration(@Autowired JudicialApi judicialApi,
