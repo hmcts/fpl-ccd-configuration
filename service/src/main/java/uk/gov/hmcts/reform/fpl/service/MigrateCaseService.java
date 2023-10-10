@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -756,7 +759,6 @@ public class MigrateCaseService {
         return Map.of("relatingLA", relatingLA.get());
     }
 
-
     public Map<String, Object> removeSealedCMO(CaseData caseData,
                                                String migrationId,
                                                UUID expectedCMOId,
@@ -787,5 +789,29 @@ public class MigrateCaseService {
         }
 
         return resultMap;
+    }
+
+    public static List<String> extractChangeOrganisationRequestJsonPropertyValues() {
+        List<String> jsonPropertyValues = new ArrayList<>();
+
+        // Get all fields declared in the class
+        Field[] fields = ChangeOrganisationRequest.class.getDeclaredFields();
+
+        for (Field field : fields) {
+            // Check if the field has the JsonProperty annotation
+            if (field.isAnnotationPresent(JsonProperty.class)) {
+                JsonProperty jsonPropertyAnnotation = field.getAnnotation(JsonProperty.class);
+
+                // Get the value of the annotation and add it to the list
+                String jsonPropertyName = jsonPropertyAnnotation.value();
+                jsonPropertyValues.add(jsonPropertyName);
+            }
+        }
+
+        return jsonPropertyValues;
+    }
+
+    public void clearChangeOrganisationRequest(CaseDetails caseDetails) {
+        caseDetails.getData().remove("changeOrganisationRequestField");
     }
 }
