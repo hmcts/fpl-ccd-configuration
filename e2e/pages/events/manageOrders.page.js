@@ -264,6 +264,7 @@ const placement = {
   birthCertificateDistrict: '#manageOrdersBirthCertificateRegistrationDistrict',
   birthCertificateSubDistrict: '#manageOrdersBirthCertificateRegistrationSubDistrict',
   birthCertificateCounty: '#manageOrdersBirthCertificateRegistrationCounty',
+  placementOrderOtherDetails: '#manageOrdersPlacementOrderOtherDetails',
 };
 
 // Actions
@@ -580,6 +581,7 @@ function fillPlacementOrderSpecificFields(values) {
   I.fillField(placement.birthCertificateDistrict, values.birthCertificateDistrict);
   I.fillField(placement.birthCertificateSubDistrict, values.birthCertificateSubDistrict);
   I.fillField(placement.birthCertificateCounty, values.birthCertificateCounty);
+  I.fillField(placement.placementOrderOtherDetails, values.placementOrderOtherDetails);
 }
 
 module.exports = {
