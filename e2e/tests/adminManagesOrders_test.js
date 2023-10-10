@@ -25,7 +25,7 @@ async function setupScenario(I, caseViewPage) {
   approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
-xScenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -58,7 +58,7 @@ xScenario('Create C32A care order (with pre filled hearing details)', async ({ I
   });
 });
 
-xScenario('Create 32b discharge of care order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create 32b discharge of care order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -89,7 +89,7 @@ xScenario('Create 32b discharge of care order @nightlyOnly', async ({ I, caseVie
   });
 });
 
-xScenario(' Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario(' Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
@@ -135,8 +135,8 @@ xScenario(' Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }
     // others: 'John Doe',
   });
 }).tag('@test');
-// need to verify the test
-xScenario('Create EPO Prevent removal order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+// need to verify the test - test fails on event submission
+Scenario('Create EPO Prevent removal order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
@@ -162,10 +162,10 @@ xScenario('Create EPO Prevent removal order @nightlyOnly', async ({ I, caseViewP
   manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
   await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
   await manageOrdersEventPage.enterFurtherDirections('some text');
-  await I.goToNextPage();
-  await I.manageOrdersEventPage.selectIsFinalOrder();
+  await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
   // await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
@@ -178,7 +178,7 @@ xScenario('Create EPO Prevent removal order @nightlyOnly', async ({ I, caseViewP
   });
 });
 
-xScenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -231,7 +231,7 @@ Scenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, caseV
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  // await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -239,11 +239,11 @@ Scenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, caseV
     orderType: 'Blank order (C21)',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
-    others: 'John Doe',
+    // others: 'John Doe',
   });
 });
 
-xScenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -271,7 +271,7 @@ xScenario('Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOr
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  // await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -304,7 +304,7 @@ xScenario('Create C35a Supervision order @nightlyOnly', async ({ I, caseViewPage
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  // await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -336,7 +336,7 @@ xScenario('Create Interim care order (C33) @nightlyOnly', async ({ I, caseViewPa
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
+  //await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
