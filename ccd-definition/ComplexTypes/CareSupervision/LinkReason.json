@@ -1,0 +1,20 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LinkReason",
+    "ListElementCode": "reason",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseLinkReason",
+    "ElementLabel": "",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LinkReason",
+    "ListElementCode": "otherDescription",
+    "FieldType": "Text",
+    "ElementLabel": "Please enter your reason for linking this case.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "reason=\"OTHER\""
+  }
+]
