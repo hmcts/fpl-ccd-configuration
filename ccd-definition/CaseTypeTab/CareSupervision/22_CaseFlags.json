@@ -1,0 +1,42 @@
+[
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "TabID": "caseFlagsTab",
+    "TabLabel": "Case Flags",
+    "TabDisplayOrder": 22,
+    "CaseFieldID": "caseFlags",
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "TabID": "caseFlagsTab",
+    "TabLabel": "Case Flags",
+    "TabDisplayOrder": 22,
+    "CaseFieldID": "applicantFlags",
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "TabID": "caseFlagsTab",
+    "TabLabel": "Case Flags",
+    "TabDisplayOrder": 22,
+    "CaseFieldID": "respondentFlags",
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "TabID": "caseFlagsTab",
+    "TabLabel": "Case Flags",
+    "TabDisplayOrder": 22,
+    "CaseFieldID": "flagLauncher",
+    "TabFieldDisplayOrder": 5,
+    "DisplayContextParameter": "#ARGUMENT(READ)"
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "caseFlags",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "applicantFlags",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "respondentFlags",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "[STATE]=\"IMPOSSIBLE\"",
+    "RetainHiddenValue": "Yes"
+  },
+  {
+    "LiveFrom": "01/09/2022",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageFlags",
+    "CaseFieldID": "flagLauncher",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "DisplayContextParameter": "#ARGUMENT(UPDATE)"
+  }
+  }
