@@ -19,6 +19,7 @@
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
+    "DisplayContextParameter" : "#ARGUMENT(UPDATE,LinkedCases)",
     "PageID": "maintainCaseLink",
     "PageLabel": "Manage case links",
     "PageDisplayOrder": 1,
