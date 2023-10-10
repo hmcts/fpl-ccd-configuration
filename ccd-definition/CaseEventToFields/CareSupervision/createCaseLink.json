@@ -10,7 +10,7 @@
     "PageLabel": "Link cases",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "LinkedCasesComponentLauncher=\"DONOTSHOW\""
+    "FieldShowCondition": "LinkedCasesComponentLauncher=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2018",
