@@ -26,6 +26,7 @@ public class DraftOrdersReviewDataBuilder {
 
         int counter = 1;
         for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
+
             if (orderElement.getValue().getType().isCmo()) {
                 draftOrdersTitles.add(String.format("CMO%s", ordersBundle.getHearingId() != null
                     ? " for " + ordersBundle.getHearingName() : EMPTY));
