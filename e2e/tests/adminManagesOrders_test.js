@@ -209,7 +209,7 @@ Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPa
   });
 });
 
-xScenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(closedCaseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
 
@@ -243,7 +243,7 @@ xScenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, case
   });
 });
 
-xScenario(' Create Recoveryof a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario(' Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -279,11 +279,11 @@ xScenario(' Create Recoveryof a child (C29)', async ({ I, caseViewPage, manageOr
     orderType: manageOrdersEventPage.orders.title.c29,
     orderTitle: orderTitle,
     approvalDate: approvalDate,
-    others: 'John Doe',
+    // others: 'John Doe',
   });
 });
 
-xScenario('Create C35a Supervision order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create C35a Supervision order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -311,11 +311,11 @@ xScenario('Create C35a Supervision order @nightlyOnly', async ({ I, caseViewPage
     orderIndex: 1,
     orderType: 'Supervision order (C35A)',
     approvalDate: approvalDate,
-    others: 'John Doe',
+    // others: 'John Doe',
   });
 });
 
-xScenario('Create Interim care order (C33) @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Create Interim care order (C33) @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -343,7 +343,7 @@ xScenario('Create Interim care order (C33) @nightlyOnly', async ({ I, caseViewPa
     orderIndex: 1,
     orderType: manageOrdersEventPage.orders.title.c33,
     approvalDate: approvalDate,
-    others: 'John Doe',
+    //others: 'John Doe',
   });
 });
 
