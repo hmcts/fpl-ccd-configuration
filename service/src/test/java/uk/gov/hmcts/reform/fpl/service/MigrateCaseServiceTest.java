@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -40,6 +41,8 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -1917,5 +1920,23 @@ class MigrateCaseServiceTest {
                     "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
                     MIGRATION_ID, "1", sealedCmo1.getId()));
         }
+    }
+
+    @Nested
+    class ClearChangeOrganisationRequest {
+
+        @Test
+        void shouldClearChangeOrganisationRequestFields() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>(Map.of("changeOrganisationRequestField", ChangeOrganisationRequest.builder()
+                    .caseRoleId(DynamicList.builder()
+                        .value(DynamicListElement.builder().code("TEST").build())
+                        .build())
+                    .build())))
+                .build();
+            underTest.clearChangeOrganisationRequest(caseDetails);
+            assertThat(caseDetails.getData().get("changeOrganisationRequestField")).isNull();
+        }
+
     }
 }
