@@ -69,7 +69,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1739", this::run1739,
         "DFPL-1756", this::run1756,
         "DFPL-1748", this::run1748,
-        "DFPL-1782", this::run1782
+        "DFPL-1782", this::run1782,
+        "DFPL-1793", this::run1793
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -335,5 +336,9 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "5b437e95-602a-4247-9901-8c3a34621888", migrationId));
+    }
+
+    private void run1793(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 }
