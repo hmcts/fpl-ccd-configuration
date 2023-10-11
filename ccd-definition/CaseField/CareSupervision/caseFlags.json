@@ -12,7 +12,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantFlags",
-    "Label": "Flags for Application",
+    "Label": "Flags for Applicant",
     "FieldType": "Flags",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -21,7 +21,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondentFlags",
-    "Label": "Flags of Respondent",
+    "Label": "Flags for Respondent",
     "FieldType": "Flags",
     "SecurityClassification": "Public",
     "Searchable": "N"

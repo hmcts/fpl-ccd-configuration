@@ -1091,7 +1091,7 @@
     "ID": "createFlags",
     "Name": "Create Flag",
     "Description": "Create Case Flag",
-    "DisplayOrder": 35,
+    "DisplayOrder": 36,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
