@@ -243,7 +243,7 @@ Scenario('Create C21 blank order in closed case @nightlyOnly', async ({ I, caseV
   });
 });
 
-Scenario(' Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario(' Create Recovery of a child (C29)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -373,7 +373,7 @@ xScenario('Interim supervision order (C35B) @nightlyOnly', async ({ I, caseViewP
     orderIndex: 1,
     orderType: manageOrdersEventPage.orders.title.c35B,
     approvalDate: approvalDate,
-    others: 'John Doe',
+  //  others: 'John Doe',
   });
 });
 

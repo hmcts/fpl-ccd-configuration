@@ -23,7 +23,7 @@ properties([
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
 
-def type = 'nodejs'
+def type = 'java'
 def product = 'fpl'
 def component = 'case-service'
 def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
@@ -84,7 +84,7 @@ withNightlyPipeline(type, product, component) {
   //enableMutationTest()
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
- // enableCrossBrowserTest(['chrome', 'firefox'])
+  enableCrossBrowserTest(['chrome', 'firefox'])
   enableFortifyScan('fpl-aat')
 
 
@@ -98,8 +98,8 @@ withNightlyPipeline(type, product, component) {
   //}
 
   before('fullFunctionalTest') {
-    //yarnBuilder.yarn('yarn-update')
-   // yarnBuilder.yarn('install-dependencies')
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 5
@@ -117,9 +117,9 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fullFunctionalTest') {
-   // yarnBuilder.yarn('test:functional-nightly')
-   // archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  //  archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    yarnBuilder.yarn('test:fullfunctional')
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
