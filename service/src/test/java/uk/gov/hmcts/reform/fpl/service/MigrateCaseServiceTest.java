@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -1938,5 +1939,55 @@ class MigrateCaseServiceTest {
             assertThat(caseDetails.getData().get("changeOrganisationRequestField")).isNull();
         }
 
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveLocalAuthority {
+        private final Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder().build());
+        private final Element<LocalAuthority> localAuthority2 = element(LocalAuthority.builder().build());
+        private final Element<LocalAuthority> localAuthorityToBeRemoved =
+            element(LocalAuthority.builder().build());
+
+        @Test
+        void shouldRemoveLocalAuthority() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2, localAuthorityToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+                localAuthorityToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("localAuthorities").asList()
+                .containsExactly(localAuthority1, localAuthority2);
+        }
+
+        @Test
+        void shouldRemoveLocalAuthorityIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthorityToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+                localAuthorityToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("localAuthorities").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfLocalAuthorityNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+                localAuthorityToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
+                    MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
     }
 }

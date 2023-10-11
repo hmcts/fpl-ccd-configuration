@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -55,7 +56,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1788", this::run1788
+        "DFPL-1802", this::run1802
     );
 
     @PostMapping("/about-to-submit")
@@ -214,13 +215,13 @@ public class MigrateCaseController extends CallbackController {
         migrateRoles(newCaseData);
     }
 
-    private void run1788(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1788";
-        var possibleCaseIds = List.of(1696235742490880L);
-        String expectedJudicialMessage = "95bbd54b-f8ed-471d-b06c-0c48f1f70130";
+    private void run1802(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1802";
+        var possibleCaseIds = List.of(1683295453455055L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
-            migrationId, expectedJudicialMessage));
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeElementFromLocalAuthorities(caseData, migrationId,
+            UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
     }
 }
