@@ -756,7 +756,6 @@ public class MigrateCaseService {
         return Map.of("relatingLA", relatingLA.get());
     }
 
-
     public Map<String, Object> removeSealedCMO(CaseData caseData,
                                                String migrationId,
                                                UUID expectedCMOId,
@@ -787,5 +786,9 @@ public class MigrateCaseService {
         }
 
         return resultMap;
+    }
+
+    public void clearChangeOrganisationRequest(CaseDetails caseDetails) {
+        caseDetails.getData().remove("changeOrganisationRequestField");
     }
 }
