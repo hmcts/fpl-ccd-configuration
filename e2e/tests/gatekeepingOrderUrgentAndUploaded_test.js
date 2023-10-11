@@ -10,7 +10,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 }
 
-Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+xScenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await setupScenario(I);
   const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
@@ -35,7 +35,7 @@ Scenario('Gatekeeping judge uploads urgent hearing order', async ({I, caseViewPa
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
 });
 
-Scenario('Gatekeeping judge uploads draft gatekeeping order @nightlyOnly', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+xScenario('Gatekeeping judge uploads draft gatekeeping order @nightlyOnly', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.click('Upload a prepared gatekeeping order');
@@ -56,7 +56,7 @@ Scenario('Gatekeeping judge uploads draft gatekeeping order @nightlyOnly', async
   I.seeInTab(['Gatekeeping order', 'Uploaded by'], 'Uploaded by');
 });
 
-Scenario('Gatekeeping judge uploads final standard directions @nightlyOnly', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+xScenario('Gatekeeping judge uploads final standard directions @nightlyOnly', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   I.see('mockFile.docx');

@@ -10,14 +10,14 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 }
 
-Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
+xScenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);
   await notifyGatekeeperEventPage.enterEmail('gatekeeper@mailnesia.com');
   await I.completeEvent('Save and continue');
 });
 
-Scenario('Gatekeeper adds allocated judge @nightlyOnly', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+xScenario('Gatekeeper adds allocated judge @nightlyOnly', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');

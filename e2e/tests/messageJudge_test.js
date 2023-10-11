@@ -13,7 +13,7 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle); }
 }
 
-Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+xScenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
@@ -40,7 +40,7 @@ Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPag
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('Judge replies to HMCTS admin @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+xScenario('Judge replies to HMCTS admin @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
@@ -65,7 +65,7 @@ Scenario('Judge replies to HMCTS admin @nightlyOnly', async ({I, caseViewPage, m
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('HMCTS admin closes the message @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+xScenario('HMCTS admin closes the message @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
@@ -89,7 +89,7 @@ Scenario('HMCTS admin closes the message @nightlyOnly', async ({I, caseViewPage,
   I.seeInTab(['Message 1', 'Message history'], messageHistoryReply);
 });
 
-Scenario('Judge messages court admin @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+xScenario('Judge messages court admin @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);

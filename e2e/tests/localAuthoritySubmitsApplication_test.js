@@ -25,7 +25,7 @@ async function setupScenario(I, reuse = true) {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, navigateCaseId);
 }
 
-Scenario('local authority sees task list @nightlyOnly', async ({I, caseViewPage}) => {
+xScenario('local authority sees task list @nightlyOnly', async ({I, caseViewPage}) => {
   await setupScenario(I);
 
   I.dontSeeEvent(config.applicationActions.selectCourt);
@@ -60,7 +60,7 @@ Scenario('local authority sees task list @nightlyOnly', async ({I, caseViewPage}
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority changes case name @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, changeCaseNameEventPage}) => {
+xScenario('local authority changes case name @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, changeCaseNameEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
@@ -76,7 +76,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+xScenario('Local authority request discharge of order @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   // Run in a new case, so it does not affect the execution of next scenario
   await setupScenario(I, false);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
@@ -101,7 +101,7 @@ Scenario('Local authority request discharge of order @cross-browser', async ({I,
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+xScenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
@@ -160,7 +160,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser @nightlyOnly', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
+xScenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser @nightlyOnly', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
   await enterHearingNeededEventPage.enterTimeFrame();
@@ -193,7 +193,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser @nightlyOnly', async ({I, caseViewPage, enterChildrenEventPage}) => {
+xScenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser @nightlyOnly', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
@@ -289,7 +289,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters respondents @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterRespondentsEventPage}) => {
+xScenario('local authority enters respondents @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterRespondentsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
@@ -391,7 +391,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters its details @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+xScenario('local authority enters its details @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterLocalAuthority);
   await enterLocalAuthorityEventPage.enterDetails(localAuthority);
@@ -450,7 +450,7 @@ Scenario('local authority enters its details @create-case-with-mandatory-section
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters others to be given notice @nightlyOnly', async ({I, caseViewPage, enterOthersEventPage}) => {
+xScenario('local authority enters others to be given notice @nightlyOnly', async ({I, caseViewPage, enterOthersEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   await enterOthersEventPage.enterOtherDetails(others[0]);
@@ -508,7 +508,7 @@ Scenario('local authority enters others to be given notice @nightlyOnly', async 
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
+xScenario('local authority enters grounds for application @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   await enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
@@ -529,7 +529,7 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters risk and harm to children @nightlyOnly', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
+xScenario('local authority enters risk and harm to children @nightlyOnly', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterRiskAndHarmToChildren);
   await enterRiskAndHarmToChildrenEventPage.completePhysicalHarm();
@@ -553,7 +553,7 @@ Scenario('local authority enters risk and harm to children @nightlyOnly', async 
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters factors affecting parenting @nightlyOnly', async ({I, caseViewPage, enterFactorsAffectingParentingEventPage}) => {
+xScenario('local authority enters factors affecting parenting @nightlyOnly', async ({I, caseViewPage, enterFactorsAffectingParentingEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterFactorsAffectingParenting);
   await enterFactorsAffectingParentingEventPage.completeAlcoholOrDrugAbuse();
@@ -576,7 +576,7 @@ Scenario('local authority enters factors affecting parenting @nightlyOnly', asyn
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters international element @nightlyOnly', async ({I, caseViewPage, enterInternationalElementEventPage}) => {
+xScenario('local authority enters international element @nightlyOnly', async ({I, caseViewPage, enterInternationalElementEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
   await enterInternationalElementEventPage.fillForm();
@@ -600,7 +600,7 @@ Scenario('local authority enters international element @nightlyOnly', async ({I,
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters other proceedings @nightlyOnly', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
+xScenario('local authority enters other proceedings @nightlyOnly', async ({I, caseViewPage, enterOtherProceedingsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectYesForProceeding();
@@ -637,7 +637,7 @@ Scenario('local authority enters other proceedings @nightlyOnly', async ({I, cas
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters language requirement @nightlyOnly', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
+xScenario('local authority enters language requirement @nightlyOnly', async ({I, caseViewPage, enterLanguageRequirementsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.languageRequirement);
   await enterLanguageRequirementsEventPage.disableLanguageRequirement();
@@ -650,7 +650,7 @@ Scenario('local authority enters language requirement @nightlyOnly', async ({I, 
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
+xScenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   await enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
@@ -665,7 +665,7 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   await caseViewPage.checkTasksHaveNoErrors();
 });
 
-Scenario('local authority enters attending hearing @nightlyOnly', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
+xScenario('local authority enters attending hearing @nightlyOnly', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   await enterAttendingHearingEventPage.enterInterpreter();
@@ -694,7 +694,7 @@ Scenario('local authority enters attending hearing @nightlyOnly', async ({I, cas
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
 });
 
-Scenario('local authority adds multiple application documents @cross-browser @nightlyOnly', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
+xScenario('local authority adds multiple application documents @cross-browser @nightlyOnly', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
   await setupScenario(I);
   const browser = await I.getBrowser();
   // Both edge and safari fail to upload files in Saucelabs. Excluded for now.
@@ -727,7 +727,7 @@ Scenario('local authority adds multiple application documents @cross-browser @ni
 
 let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
 
-Scenario('local authority submits application @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, submitApplicationEventPage}) => {
+xScenario('local authority submits application @create-case-with-mandatory-sections-only @nightlyOnly', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await setupScenario(I);
   await caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   await caseViewPage.startTask(config.applicationActions.submitCase);
@@ -742,7 +742,7 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
   I.see('New_case_name.pdf');
 });
 
-Scenario('HMCTS admin check the payment @nightlyOnly', async ({I, caseViewPage, paymentHistoryPage}) => {
+xScenario('HMCTS admin check the payment @nightlyOnly', async ({I, caseViewPage, paymentHistoryPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);

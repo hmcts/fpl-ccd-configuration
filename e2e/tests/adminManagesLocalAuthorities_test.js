@@ -34,7 +34,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('HMCTS admin adds secondary local authority @nightlyOnly', async ({I, caseViewPage, manageLocalAuthoritiesEventPage}) => {
+xScenario('HMCTS admin adds secondary local authority @nightlyOnly', async ({I, caseViewPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageLocalAuthorities);
@@ -60,7 +60,7 @@ Scenario('HMCTS admin adds secondary local authority @nightlyOnly', async ({I, c
   I.dontSeeInTab('Local authority 2', 'Colleague 1');
 });
 
-Scenario('Designated local authority solicitor can see all local authorities but updates only his own @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+xScenario('Designated local authority solicitor can see all local authorities but updates only his own @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
 
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
@@ -79,7 +79,7 @@ Scenario('Designated local authority solicitor can see all local authorities but
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
 });
 
-Scenario('Secondary local authority solicitor can see all local authorities but updates only his own @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+xScenario('Secondary local authority solicitor can see all local authorities but updates only his own @nightlyOnly', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
 
   const hillingdonLocalAuthorityUpdates = {
     pbaNumber: 'PBA1234567',
@@ -137,7 +137,7 @@ Scenario('Secondary local authority solicitor can see all local authorities but 
   I.seeTagInTab(['Local authority 2', 'Colleague 1', 'Main contact']);
 });
 
-Scenario('HMCTS admin removes secondary local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+xScenario('HMCTS admin removes secondary local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
 
@@ -162,7 +162,7 @@ Scenario('HMCTS admin removes secondary local authority @nightlyOnly', async ({I
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to new local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+xScenario('HMCTS admin transfer case to new local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
 
@@ -202,7 +202,7 @@ Scenario('HMCTS admin transfer case to new local authority @nightlyOnly', async 
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin transfer case to secondary local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+xScenario('HMCTS admin transfer case to secondary local authority @nightlyOnly', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
 

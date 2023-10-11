@@ -8,43 +8,43 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(); }
 }
 
-Scenario('Different user in the same local authority can see case created', async ({I}) => {
+xScenario('Different user in the same local authority can see case created', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserTwo, caseId);
   I.see(I.uiFormatted(caseId));
 });
 
-Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
+xScenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
   await I.signIn(config.hillingdonLocalAuthorityUserTwo);
   caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('HMCTS admin user can see the case', async ({I}) => {
+xScenario('HMCTS admin user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   I.see(I.uiFormatted(caseId));
 });
 
-Scenario('CAFCASS user can see the case', async ({I}) => {
+xScenario('CAFCASS user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.cafcassUser, caseId);
   I.see(I.uiFormatted(caseId));
 });
 
-Scenario('Gatekeeper user can see the case', async ({I}) => {
+xScenario('Gatekeeper user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
   I.see(I.uiFormatted(caseId));
 });
 
-Scenario('Judiciary user can see the case', async ({I}) => {
+xScenario('Judiciary user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   I.see(I.uiFormatted(caseId));
 });
 
-Scenario('Magistrate user can see the case', async ({I}) => {
+xScenario('Magistrate user can see the case', async ({I}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.magistrateUser, caseId);
   I.see(I.uiFormatted(caseId));

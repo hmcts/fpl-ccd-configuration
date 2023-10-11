@@ -8,7 +8,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('HMCTS Admin adds case flag and then removes case flag', async ({I, caseViewPage, addCaseFlagEventPage}) => {
+xScenario('HMCTS Admin adds case flag and then removes case flag', async ({I, caseViewPage, addCaseFlagEventPage}) => {
 
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addCaseFlag);

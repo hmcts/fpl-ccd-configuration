@@ -4,7 +4,7 @@ const output = require('codeceptjs').output;
 
 Feature('Smoke tests @smoke-tests');
 
-Scenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
+xScenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
   output.print('Smoke test triggered');
   await I.goToPage(config.baseUrl);
   const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;

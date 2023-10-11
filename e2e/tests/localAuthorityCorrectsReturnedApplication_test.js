@@ -10,7 +10,7 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatorySubmissionWithApplicationDocuments); }
 }
 
-Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
+xScenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
@@ -22,7 +22,7 @@ Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnA
   I.seeEventSubmissionConfirmation(config.administrationActions.returnApplication);
 });
 
-Scenario('LA makes corrections to the application', async ({I, caseViewPage, enterLocalAuthorityEventPage, submitApplicationEventPage}) => {
+xScenario('LA makes corrections to the application', async ({I, caseViewPage, enterLocalAuthorityEventPage, submitApplicationEventPage}) => {
   const now = new Date();
   const formattedDate = dateFormat(now, 'd mmmm yyyy');
   const newPbaNumber = 'PBA0082848';

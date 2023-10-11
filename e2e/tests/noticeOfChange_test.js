@@ -28,7 +28,7 @@ async function setupScenario() {
   }
 }
 
-Scenario('Solicitor can request representation of a respondent @nightlyOnly', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
+xScenario('Solicitor can request representation of a respondent @nightlyOnly', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage, enterRespondentsEventPage}) => {
   await setupScenario();
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
 

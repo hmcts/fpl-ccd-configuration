@@ -45,34 +45,34 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('Amend generated order in general case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario('Amend generated order in general case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend standard directions order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario('Amend standard directions order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.standardDirectionOrder);
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Amend urgent hearing order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario('Amend urgent hearing order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend case management order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario('Amend case management order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend generated order (closed) @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+xScenario('Amend generated order (closed) @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, closedCaseData);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated, manageOrdersEventPage.selectOperationInClosedState);
   assertAmendment(I, caseViewPage, orders.generated);

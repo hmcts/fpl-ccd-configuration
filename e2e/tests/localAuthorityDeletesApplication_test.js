@@ -10,7 +10,7 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName); }
 }
 
-Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
+xScenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);

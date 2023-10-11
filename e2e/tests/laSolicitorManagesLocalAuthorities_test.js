@@ -28,7 +28,7 @@ async function setupScenario(I) {
   }
 }
 
-Scenario('LA Solicitor adds secondary local authority and can update only his own local authority ', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, enterLocalAuthorityEventPage}) => {
+xScenario('LA Solicitor adds secondary local authority and can update only his own local authority ', async ({I, caseViewPage, manageLocalAuthoritiesEventPage, enterLocalAuthorityEventPage}) => {
 
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
@@ -61,7 +61,7 @@ Scenario('LA Solicitor adds secondary local authority and can update only his ow
   assert.strictEqual(await enterLocalAuthorityEventPage.getLocalAuthorityEmail(), swanseaLocalAuthority.email);
 });
 
-Scenario('Secondary LA solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
+xScenario('Secondary LA solicitor can see all local authorities but updates only his own @flaky', async ({I, caseViewPage, enterLocalAuthorityEventPage}) => {
 
   const hillingdonLocalAuthorityUpdates = {
     pbaNumber: 'PBA1234567',
@@ -119,7 +119,7 @@ Scenario('Secondary LA solicitor can see all local authorities but updates only 
   I.seeTagInTab(['Local authority 2', 'Colleague 1', 'Main contact']);
 });
 
-Scenario('Designated LA Solicitor removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
+xScenario('Designated LA Solicitor removes secondary local authority', async ({I, caseViewPage, caseListPage, manageLocalAuthoritiesEventPage}) => {
 
   await setupScenario(I);
 

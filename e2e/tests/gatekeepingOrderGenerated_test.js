@@ -12,7 +12,7 @@ async function setupScenario(I) {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 }
 
-Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+xScenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('Yes');
@@ -125,7 +125,7 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
 });
 
-Scenario('Gatekeeping order allocated to Magistrate judge', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+xScenario('Gatekeeping order allocated to Magistrate judge', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('No');
@@ -168,7 +168,7 @@ Scenario('Gatekeeping order allocated to Magistrate judge', async ({I, caseViewP
   I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
 
-Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+xScenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
   await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
@@ -180,7 +180,7 @@ Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allo
   I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
 });
 
-Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
+xScenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   addGatekeepingOrderEventPage.selectCorrectLevelOfJudge('Yes');

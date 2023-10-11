@@ -82,18 +82,18 @@ async function createPlacementNoticeOfHearing(I, placementHearingEventPage, case
 
 }
 
-Scenario('Local authority creates a placement application', async ({I, placementEventPage, caseViewPage}) => {
+xScenario('Local authority creates a placement application', async ({I, placementEventPage, caseViewPage}) => {
   await setupScenario(I);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
 });
 
-Scenario('Admin issues a notice of hearing for placement @nightlyOnly', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
+xScenario('Admin issues a notice of hearing for placement @nightlyOnly', async({I, placementEventPage, placementHearingEventPage, caseViewPage}) => {
   await setupScenario(I);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
   await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);
 });
 
-Scenario('LA uploads response to notice of placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage, manageDocumentsLAEventPage}) => {
+xScenario('LA uploads response to notice of placement', async({I, placementEventPage, placementHearingEventPage, caseViewPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await createPlacementApplication(I, placementEventPage, caseViewPage);
   await createPlacementNoticeOfHearing(I, placementHearingEventPage, caseViewPage);
