@@ -11,7 +11,7 @@ properties([
       description: 'The URL of idam api'),
     string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
       description: 'The organisation id of Swansea local authority'),
-    string(name: 'SECURITY_RULES',
+    string(name: 'SecurityRules',
       defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
       description: 'The security rules to use'),
     string(name: 'FUNCTIONAL_TESTS_WORKERS',
