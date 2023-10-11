@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 
 import java.util.List;
@@ -34,6 +36,15 @@ public class AllocatedJudgeController extends CallbackController {
         if (!error.isEmpty()) {
             return respond(caseDetails, List.of(error.get()));
         }
+
+        Judge allocatedJudge = caseData.getAllocatedJudge();
+        if (JudgeOrMagistrateTitle.MAGISTRATES.equals(allocatedJudge.getJudgeTitle())) {
+            allocatedJudge = allocatedJudge.toBuilder().judgeLastName(null).build();
+        } else {
+            allocatedJudge = allocatedJudge.toBuilder().judgeFullName(null).build();
+        }
+
+        caseDetails.getData().put("allocatedJudge", allocatedJudge);
 
         return respond(caseDetails);
     }
