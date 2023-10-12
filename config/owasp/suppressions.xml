@@ -8,34 +8,10 @@
     <cve>CVE-2021-46877</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2022-25857</cve>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2020-10693</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <cve>CVE-2022-25647</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2016-1000027</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2021-22060</cve>
-  </suppress>
-  <suppress>
     <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
   </suppress>
   <suppress>
     <cpe>cpe:/a:apache:tomcat</cpe>
-  </suppress>
-  <suppress>
-    <cpe>cpe:/a:apache:tomcat</cpe>
-  </suppress>
-  <suppress>
-    <cpe>cpe:/a:apache:log4j</cpe>
-  </suppress>
-  <suppress>
-    <cpe>cpe:/a:apache:log4j</cpe>
   </suppress>
   <suppress>
     <cpe>cpe:/a:qos:logback</cpe>
