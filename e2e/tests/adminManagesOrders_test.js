@@ -46,14 +46,12 @@ Scenario('Create C32A care order (with pre filled hearing details)', async ({ I,
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOthers(manageOrdersEventPage.whichOthers.allOthers.options.select, [0]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'Care order (C32A)',
     approvalDate: approvalDate,
-    others: 'John Doe',
   });
 });
 
