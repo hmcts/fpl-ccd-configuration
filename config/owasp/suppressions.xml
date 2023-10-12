@@ -4,6 +4,12 @@
     <cve>CVE-2020-36518</cve>
   </suppress>
   <suppress>
+    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
+  </suppress>
+  <suppress>
     <notes><![CDATA[
    file name: jackson-databind-2.12.5.jar
    ]]></notes>
@@ -11,23 +17,13 @@
     <cve>CVE-2021-46877</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
+    <cve>CVE-2021-42550</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
-  </suppress>
-
-  <suppress>
-    <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
+    <cve>CVE-2021-43980</cve>
   </suppress>
   <suppress>
-    <cpe>cpe:/a:apache:tomcat</cpe>
-  </suppress>
-  <suppress>
-    <cpe>cpe:/a:qos:logback</cpe>
-  </suppress>
-  <suppress>
-    <cve>CVE-2022-21724</cve>
+    <cve>CVE-2022-1471</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-22950</cve>
@@ -39,22 +35,10 @@
     <cve>CVE-2022-22968</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2022-25647</cve>
-  </suppress>
-  <suppress>
     <cve>CVE-2022-22970</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-22971</cve>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2022-26520</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2022-22968</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2022-22976</vulnerabilityName>
@@ -62,15 +46,32 @@
   <suppress>
     <vulnerabilityName>CVE-2022-22978</vulnerabilityName>
   </suppress>
-  <!-- Known FP, see https://github.com/jeremylong/DependencyCheck/issues/4671 -->
   <suppress>
-    <vulnerabilityName>CVE-2022-31569</vulnerabilityName>
+    <cve>CVE-2022-23181</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2022-31197</vulnerabilityName>
+    <cve>CVE-2022-25857</cve>
   </suppress>
   <suppress>
-    <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+    <cve>CVE-2022-29885</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-34305</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-38749</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-38750</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-38751</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-38752</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2022-41854</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-42003</cve>
@@ -79,116 +80,44 @@
     <cve>CVE-2022-42004</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2022-42889</cve>
+    <cve>CVE-2022-42252</cve>
   </suppress>
   <suppress>
-    <cve>CVE-2022-41946</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2022-3064</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2023-24998</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2023-20861</cve>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089130</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089152</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1090142</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1090141</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1090532</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1090431</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089129</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1088667</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1088948</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1088664</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1088730</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1088697</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089015</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089128</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089425</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1089600</vulnerabilityName>
+    <cve>CVE-2022-45143</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-45688</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>1091168</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091173</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091174</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091190</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091188</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091189</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091238</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091239</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>1091238</vulnerabilityName>
-    <vulnerabilityName>1091239</vulnerabilityName>
+    <vulnerabilityName>CVE-2023-2976</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2023-20860</vulnerabilityName>
   </suppress>
   <suppress>
+    <cve>CVE-2023-20861</cve>
+  </suppress>
+  <suppress>
     <vulnerabilityName>CVE-2023-20863</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <vulnerabilityName>CVE-2023-20873</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2023-20883</vulnerabilityName>
   </suppress>
   <suppress>
+    <cve>CVE-2023-24998</cve>
+  </suppress>
+  <suppress>
+    <cve>CVE-2023-28708</cve>
+  </suppress>
+  <suppress>
+    <notes>Spring GraphQL - not used in FPL</notes>
+    <vulnerabilityName>CVE-2023-34047</vulnerabilityName>
+  </suppress>
+  <suppress>
     <vulnerabilityName>CVE-2023-35116</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2023-2976</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2023-20873</vulnerabilityName>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -198,10 +127,6 @@
     <cve>CVE-2023-39017</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2023-34040</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes>Spring GraphQL - not used in FPL</notes>
-    <vulnerabilityName>CVE-2023-34047</vulnerabilityName>
+    <cve>CVE-2023-41080</cve>
   </suppress>
 </suppressions>
