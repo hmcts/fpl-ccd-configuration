@@ -17,12 +17,6 @@
     <cpe>cpe:/a:qos:logback</cpe>
   </suppress>
   <suppress>
-    <cve>CVE-2021-42550</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2020-36518</cve>
-  </suppress>
-  <suppress>
     <cve>CVE-2022-21724</cve>
   </suppress>
   <suppress>
@@ -30,9 +24,6 @@
   </suppress>
   <suppress>
     <cve>CVE-2022-22965</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2016-1000027</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-22968</cve>
@@ -47,13 +38,7 @@
     <cve>CVE-2022-22971</cve>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2020-0187</vulnerabilityName>
-  </suppress>
-  <suppress>
     <vulnerabilityName>CVE-2022-26520</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2021-22044</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2022-22968</vulnerabilityName>
@@ -66,12 +51,6 @@
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2022-22978</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2021-22060</vulnerabilityName>
   </suppress>
   <!-- Known FP, see https://github.com/jeremylong/DependencyCheck/issues/4671 -->
   <suppress>
@@ -94,15 +73,6 @@
   </suppress>
   <suppress>
     <cve>CVE-2022-41946</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2021-37533</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2021-4277</cve>
-  </suppress>
-  <suppress>
-    <cve>CVE-2021-4235</cve>
   </suppress>
   <suppress>
     <cve>CVE-2022-3064</cve>
@@ -138,13 +108,7 @@
     <vulnerabilityName>1088667</vulnerabilityName>
   </suppress>
   <suppress>
-    <vulnerabilityName>CVE-2020-15522</vulnerabilityName>
-  </suppress>
-  <suppress>
     <vulnerabilityName>1088948</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2021-22053</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>1088664</vulnerabilityName>
@@ -212,9 +176,6 @@
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2023-2976</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
   </suppress>
   <suppress>
     <vulnerabilityName>CVE-2023-20873</vulnerabilityName>
