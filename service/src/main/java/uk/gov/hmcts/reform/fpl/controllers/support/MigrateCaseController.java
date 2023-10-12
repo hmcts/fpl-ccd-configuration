@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -62,7 +61,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCFVrollback,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1793", this::run1793
+        "DFPL-1788", this::run1788
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -274,7 +273,13 @@ public class MigrateCaseController extends CallbackController {
         migrateRoles(newCaseData);
     }
 
-    private void run1793(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    private void run1788(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1788";
+        var possibleCaseIds = List.of(1696235742490880L);
+        String expectedJudicialMessage = "95bbd54b-f8ed-471d-b06c-0c48f1f70130";
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
+            migrationId, expectedJudicialMessage));
     }
 }
