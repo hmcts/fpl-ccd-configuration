@@ -1077,12 +1077,11 @@
     "Name": "Link cases",
     "Description": "Link cases",
     "DisplayOrder": 40,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
+    "ShowEventNotes": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1091,11 +1090,10 @@
     "Name": "Manage case links",
     "Description": "Manage case links",
     "DisplayOrder": 41,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
+    "ShowEventNotes": "N"
   }
 ]
