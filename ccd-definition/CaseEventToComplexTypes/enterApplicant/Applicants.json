@@ -122,7 +122,7 @@
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "applicants",
     "ListElementCode": "party.telephoneNumber",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "Applicants",
@@ -130,7 +130,7 @@
     "CaseFieldID": "applicants",
     "ListElementCode": "party.telephoneNumber.telephoneNumber",
     "EventElementLabel": "*Telephone number",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "Applicants",
