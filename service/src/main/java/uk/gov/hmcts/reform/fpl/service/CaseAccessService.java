@@ -38,8 +38,8 @@ public class CaseAccessService {
     private final SystemUserService systemUserService;
     private final OrganisationService organisationService;
 
-    private final List<String> excludedCaseRoles = List.of(ALLOCATED_JUDGE.getRoleName(), HEARING_JUDGE.getRoleName(),
-        ALLOCATED_LEGAL_ADVISER.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
+    private final List<String> excludedInternalWACaseRoles = List.of(ALLOCATED_JUDGE.getRoleName(),
+        HEARING_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
 
     //TO-DO remove once FPLA-2946 migration is done
     public void grantCaseRoleToUsers(Long caseId, Set<String> userIds, CaseRole caseRole) {
@@ -90,7 +90,7 @@ public class CaseAccessService {
 
         return userRolesResource.getCaseAssignedUserRoles().stream()
             .map(CaseAssignedUserRole::getCaseRole)
-            .filter(role -> !excludedCaseRoles.contains(role)) // keep only external case roles, filter out WA roles
+            .filter(role -> !excludedInternalWACaseRoles.contains(role))
             .map(CaseRole::from)
             .collect(Collectors.toSet());
     }
