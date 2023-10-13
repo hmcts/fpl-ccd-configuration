@@ -55,8 +55,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1788", this::run1788,
-        "DFPL-1804", this::run1804
+        "DFPL-1810", this::run1810
     );
 
     @PostMapping("/about-to-submit")
@@ -215,18 +214,13 @@ public class MigrateCaseController extends CallbackController {
         migrateRoles(newCaseData);
     }
 
-    private void run1788(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1788";
+    private void run1810(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1810";
         var possibleCaseIds = List.of(1696235742490880L);
-        String expectedJudicialMessage = "95bbd54b-f8ed-471d-b06c-0c48f1f70130";
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
-            migrationId, expectedJudicialMessage));
-    }
-
-    private void run1804(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
+            "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
 
 }
