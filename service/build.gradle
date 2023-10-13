@@ -307,9 +307,13 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-config'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+  implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.7.10'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
 
@@ -337,6 +341,7 @@ dependencies {
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.11'
+  implementation group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '3.0.0'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
@@ -345,9 +350,10 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
-  implementation group: 'org.json', name: 'json', version: '20230618'
+  implementation group: 'org.json', name: 'json', version: '20230227'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.80'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.80'
+  implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
