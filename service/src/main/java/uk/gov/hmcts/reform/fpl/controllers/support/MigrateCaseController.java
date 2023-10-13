@@ -62,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCFVrollback,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1788", this::run1788
+        "DFPL-1788", this::run1788,
+        "DFPL-1804", this::run1804
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -283,4 +284,9 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(getCaseData(caseDetails),
             migrationId, expectedJudicialMessage));
     }
+
+    private void run1804(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
 }
