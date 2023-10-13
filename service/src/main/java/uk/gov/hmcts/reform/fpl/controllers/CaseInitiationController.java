@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlag;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -99,6 +100,7 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("court", updatedCaseData.getCourt());
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
+        caseDetails.put("caseFlags", CaseFlag.builder().build());
 
         if (updatedCaseData.getCourt() != null) {
             String courtCode = updatedCaseData.getCourt().getCode();

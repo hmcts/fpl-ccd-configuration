@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.caseflag.CaseFlag;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -187,6 +188,10 @@ public class CaseData extends CaseDataParent {
     private final JudicialUser judicialUserHearingJudge;
     private final YesNo enterManually;
     private final YesNo enterManuallyHearingJudge;
+
+    private CaseFlag caseFlags;
+    private CaseFlag applicantFlags;
+    private CaseFlag respondentFlags;
 
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());

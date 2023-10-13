@@ -4765,5 +4765,12 @@
     "CaseFieldID": "applicantFlags",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "flagLauncher",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
   }
 ]
