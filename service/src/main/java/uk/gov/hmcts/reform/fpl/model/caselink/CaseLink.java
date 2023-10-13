@@ -18,14 +18,14 @@ import java.util.List;
 public class CaseLink {
 
     @JsonProperty(value = "CaseReference")
-    private final String caseReference;
+    private String caseReference;
 
     @JsonProperty("ReasonForLink")
-    private final List<LinkReason> reasonForLink;
+    private List<LinkReason> reasonForLink;
 
     @JsonProperty("CreatedDateTime")
-    private final LocalDateTime createdDateTime;
+    private LocalDateTime createdDateTime;
 
     @JsonProperty(value = "CaseType")
-    private final String caseType;
+    private String caseType;
 }

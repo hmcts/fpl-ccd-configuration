@@ -15,8 +15,8 @@ import lombok.Data;
 public class LinkReason {
 
     @JsonProperty(value = "Reason")
-    private final String reason;
+    private String reason;
 
     @JsonProperty(value = "OtherDescription")
-    private final String otherDescription;
+    private String otherDescription;
 }
