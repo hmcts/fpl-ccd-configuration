@@ -14,4 +14,11 @@
     <packageUrl regex="true">^pkg:maven/org.quartz-scheduler/quartz@.*$</packageUrl>
     <cve>CVE-2023-39017</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: jackson-databind-2.13.5.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
