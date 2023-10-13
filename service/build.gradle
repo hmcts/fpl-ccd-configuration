@@ -317,8 +317,8 @@ dependencies {
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
+  implementation group: 'org.log4j', name: 'log4j-api', version: versions.log4j
+  implementation group: 'org.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
@@ -342,7 +342,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.11'
   implementation group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '3.0.0'
-
+  implementation group: 'org.springframework.plugin', name: 'spring-plugin-metadata', version: '3.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
