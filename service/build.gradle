@@ -365,6 +365,7 @@ dependencies {
   implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+  implementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.0'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
