@@ -337,7 +337,6 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
-  implementation group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '3.0.0'
   implementation group: 'org.springframework.plugin', name: 'spring-plugin-metadata', version: '3.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
