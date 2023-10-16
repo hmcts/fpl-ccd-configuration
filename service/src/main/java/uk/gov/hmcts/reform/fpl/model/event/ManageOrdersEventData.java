@@ -99,6 +99,7 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
+    String manageOrdersPlacementOrderOtherDetails;
     String manageOrdersLeaName;
     ManageOrderEndDateOption manageOrdersEndDateWithEducationAge;
     PlacedUnderOrder manageOrdersPlacedUnderOrder;

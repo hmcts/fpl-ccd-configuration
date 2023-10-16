@@ -52,7 +52,7 @@ public enum OrderQuestionBlock {
     CHILD_PLACEMENT("childPlacementQuestions", OrderSection.ORDER_DETAILS, List.of("manageOrdersSerialNumber",
         "manageOrdersBirthCertificateNumber", "manageOrdersBirthCertificateDate",
         "manageOrdersBirthCertificateRegistrationDistrict", "manageOrdersBirthCertificateRegistrationSubDistrict",
-        "manageOrdersBirthCertificateRegistrationCounty")),
+        "manageOrdersBirthCertificateRegistrationCounty", "manageOrdersPlacementOrderOtherDetails")),
     TITLE("orderTitle", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle")),
     FURTHER_DIRECTIONS("furtherDirections", OrderSection.ORDER_DETAILS,

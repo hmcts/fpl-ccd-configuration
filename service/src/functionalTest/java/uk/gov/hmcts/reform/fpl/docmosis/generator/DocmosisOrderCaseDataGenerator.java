@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.docmosis.generator;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
@@ -61,7 +62,7 @@ public class DocmosisOrderCaseDataGenerator {
             .mothersName("Elizabeth Kruger")
             .fathersName("Jason Kruger")
             .dateOfBirth(LocalDate.of(2010, 1, 1))
-            .gender("Boy")
+            .gender(ChildGender.BOY)
             .build()
         ).build()
     );
@@ -290,6 +291,7 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersBirthCertificateRegistrationDistrict("RegDistrict")
                         .manageOrdersBirthCertificateRegistrationSubDistrict("RegSubDistrict")
                         .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
+                        .manageOrdersPlacementOrderOtherDetails("Other Details")
                         .build()
                 );
             case CHILD_ASSESSMENT_ORDER:
