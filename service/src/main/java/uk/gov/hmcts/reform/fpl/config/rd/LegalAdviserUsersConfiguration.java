@@ -42,12 +42,7 @@ public class LegalAdviserUsersConfiguration {
         this.staffApi = staffApi;
         log.info("Attempting to gather all legal advisers");
         if (staffEnabled) {
-            try {
-                mapping = this.getAllLegalAdvisers();
-            } catch (Exception e) {
-                mapping = Map.of();
-                log.error("Could not download list of publiclaw legal advisers from SRD", e);
-            }
+            mapping = this.getAllLegalAdvisers();
         } else {
             mapping = Map.of();
         }
@@ -71,7 +66,7 @@ public class LegalAdviserUsersConfiguration {
 
     @Recover
     public Map<String, String> recoverFailedLegalAdviserCall(FeignException e) {
-        log.error("Recover - Could not download list of publiclaw legal advisers from SRD", e);
+        log.error("Could not download list of publiclaw legal advisers from SRD", e);
         return Map.of();
     }
 
