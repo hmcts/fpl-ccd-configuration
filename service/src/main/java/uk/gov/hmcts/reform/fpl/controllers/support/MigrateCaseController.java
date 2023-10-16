@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -55,6 +56,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
+        "DFPL-1804", this::run1804,
+        "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810
     );
 
@@ -221,6 +224,20 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
+    }
+  
+    private void run1802(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1802";
+        var possibleCaseIds = List.of(1683295453455055L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeElementFromLocalAuthorities(caseData, migrationId,
+            UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
+    }
+
+    private void run1804(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
 }
