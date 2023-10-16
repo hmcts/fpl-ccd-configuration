@@ -101,6 +101,8 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("multiCourts", updatedCaseData.getMultiCourts());
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", updatedCaseData.getCaseName());
         caseDetails.put("caseFlags", CaseFlag.builder().build());
+        caseDetails.put("applicantFlags", CaseFlag.builder().build());
+        caseDetails.put("respondentFlags", CaseFlag.builder().build());
 
         if (updatedCaseData.getCourt() != null) {
             String courtCode = updatedCaseData.getCourt().getCode();
