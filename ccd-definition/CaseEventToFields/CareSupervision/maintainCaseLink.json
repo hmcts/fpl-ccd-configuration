@@ -10,7 +10,8 @@
     "PageLabel": "Manage case links",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "LinkedCasesComponentLauncher=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "LinkedCasesComponentLauncher=\"DO_NOT_SHOW\"",
+    "RetainHiddenValue": "Yes"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -18,7 +19,7 @@
     "CaseEventID": "maintainCaseLink",
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "DisplayContextParameter" : "#ARGUMENT(UPDATE,LinkedCases)",
     "PageID": "maintainCaseLink",
     "PageLabel": "Manage case links",

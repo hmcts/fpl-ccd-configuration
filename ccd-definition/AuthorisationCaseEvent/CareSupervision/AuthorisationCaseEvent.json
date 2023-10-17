@@ -1596,7 +1596,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -1609,7 +1609,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CRUD"
       }
     ]
   },  
