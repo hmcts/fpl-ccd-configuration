@@ -411,7 +411,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             doThrow(AssertionError.class).when(migrateCFVService)
                 .doHasCFVMigratedCheck(anyLong(), any(), any(), eq(true));
-
+            
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class);
