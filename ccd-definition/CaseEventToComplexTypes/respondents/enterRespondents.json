@@ -448,5 +448,14 @@
     "ListElementCode": "legalCounsellors",
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
+    "EventElementLabel": "Telephone Number",
+    "DisplayContext": "MANDATORY"
   }
 ]
