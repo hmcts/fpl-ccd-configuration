@@ -270,6 +270,20 @@ public class ManageDocumentsUploadedEventHandler {
                 DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
         }
 
+        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
+            Optional<String> recipientIsWelsh =
+                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
+                    .map(CafcassLookupConfiguration.Cafcass::getEmail);
+            if (recipientIsWelsh.isPresent()) {
+                resultMap.put(Set.of(recipientIsWelsh.get()),
+                    DocumentUploadedNotificationConfiguration::getSendToCafcassWelsh);
+            } else {
+                log.info("No recipient found for Cafcass Welsh");
+            }
+        } else {
+            log.info("Not notifying Cafcass Welsh");
+        }
+
         return resultMap;
     }
 
