@@ -250,7 +250,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.email",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -259,7 +259,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.organisation",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -276,7 +276,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
     "EventElementLabel": " ",
     "FieldShowCondition": "respondents1.solicitor.organisation.OrganisationName=\"\""
