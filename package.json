@@ -49,7 +49,7 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
-  "packageManager": "yarn@3.6.3",
+  "packageManager": "yarn@3.6.4",
   "license": "MIT"
 }
 
