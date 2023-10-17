@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
@@ -90,6 +91,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
     private final JudicialService judicialService;
+    private final SendDocumentService sendDocumentService;
 
     private final CaseConverter converter;
 
@@ -375,7 +377,7 @@ public class ListGatekeepingHearingController extends CallbackController {
                     publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, Optional.empty()));
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, true));
                     }
 
                     if (needTemporaryHearingJudgeAllocated(caseData, hearingBooking)) {
@@ -419,11 +421,8 @@ public class ListGatekeepingHearingController extends CallbackController {
 
         listGatekeepingHearingDecider.buildEventToPublish(caseData)
             .ifPresent(eventToPublish -> {
-                coreCaseDataService.performPostSubmitCallback(
-                    caseData.getId(),
-                    "internal-change-SEND_DOCUMENT",
-                    caseDetails1 -> Map.of("documentToBeSent", eventToPublish.getOrder())
-                );
+                sendDocumentService.sendDocuments(caseData, List.of(eventToPublish.getOrder()),
+                    sendDocumentService.getRepresentativesServedByPost(caseData));
                 publishEvent(eventToPublish);
             });
     }

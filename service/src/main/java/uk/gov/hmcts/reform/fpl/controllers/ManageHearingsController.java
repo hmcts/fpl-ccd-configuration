@@ -465,7 +465,7 @@ public class ManageHearingsController extends CallbackController {
                     publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
 
                     if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
