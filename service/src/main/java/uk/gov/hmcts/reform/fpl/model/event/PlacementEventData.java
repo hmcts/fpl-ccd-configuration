@@ -74,8 +74,20 @@ public class PlacementEventData {
             return emptyList();
         }
         return placements.stream()
-            .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
-            .collect(toList());
+                .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
+                .collect(toList());
+    }
+
+    public List<Element<Placement>> getPlacementsNonConfidentialWithNotices(boolean withNoticesResponses) {
+        if (isEmpty(placements)) {
+            return emptyList();
+        }
+
+        return placements.stream()
+                .filter(element -> element.getValue().getPlacementNotice() != null)
+                .filter(element -> !element.getValue().getPlacementNotice().isEmpty())
+                .map(element -> element(element.getId(), element.getValue().nonConfidential(withNoticesResponses)))
+                .toList();
     }
 
     public void setPlacement(Placement placement) {
