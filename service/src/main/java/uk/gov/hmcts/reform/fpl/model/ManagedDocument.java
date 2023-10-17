@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
@@ -21,6 +22,7 @@ public class ManagedDocument implements WithDocument, NotifyDocumentUploaded {
     private DocumentReference document;
     private DocumentUploaderType uploaderType;
     private List<CaseRole> uploaderCaseRoles;
+    @Setter
     private String removalReason;
     private String markAsConfidential;
     private final LanguageTranslationRequirement translationRequirements;

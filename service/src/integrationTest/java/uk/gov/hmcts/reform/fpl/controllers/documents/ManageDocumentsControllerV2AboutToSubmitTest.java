@@ -176,6 +176,47 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
         assertThat(extractedCaseData.getParentAssessmentList()).contains(expectedElement);
     }
 
+    @SuppressWarnings("unchecked")
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldPopulateFieldsInRemoveDocumentAction(int testingType) {
+        switch (testingType) {
+            case 1:
+                givenCurrentUser(buildUserDetailsWithLARole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(LASOLICITOR));
+                given(userService.isHmctsUser()).willReturn(false);
+                break;
+            case 2:
+                givenCurrentUser(buildUserDetailsWithCourtAdminRole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet());
+                given(userService.isHmctsUser()).willReturn(true);
+                break;
+            case 3:
+                givenCurrentUser(buildUserDetailsWithSolicitorRole());
+                given(userService.getCaseRoles(eq(CASE_ID))).willReturn(newHashSet(SOLICITORA));;
+                given(userService.isHmctsUser()).willReturn(false);
+                break;
+        }
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build())
+            .build();
+
+        Element<ManagedDocument> expectedElement = element(ManagedDocument.builder()
+            .document(TestDataHelper.testDocumentReference()).build());
+        when(manageDocumentService.removeDocuments(any()))
+            .thenReturn(Map.of("parentAssessmentListRemoved", List.of(expectedElement)));
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        assertThat((List) response.getData().get("parentAssessmentListRemoved")).isNotEmpty();
+
+        CaseData extractedCaseData = extractCaseData(response);
+        assertThat(extractedCaseData.getParentAssessmentListRemoved()).contains(expectedElement);
+    }
+
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getManageDocumentEventData().getManageDocumentAction()).isNull();
         assertThat(caseData.getManageDocumentEventData().getUploadableDocumentBundle()).isEmpty();

@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -48,7 +49,11 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldPopulateAllowMarkDocumentConfidential(boolean allow) {
-        CaseData caseData = CaseData.builder().build();
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.UPLOAD_DOCUMENTS)
+                .build())
+            .build();
 
         when(manageDocumentService.allowMarkDocumentConfidential(any())).thenReturn(allow);
 
@@ -61,8 +66,31 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPopulateAllowSelectDocumentTypeToRemoveDocument(boolean allow) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build())
+            .build();
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(allow);
+        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any()))
+            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any()))
+            .thenReturn(DynamicList.builder().listItems(List.of()).build());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-action-selection");
+
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        assertThat(responseCaseData.getManageDocumentEventData().getAllowSelectDocumentTypeToRemoveDocument())
+            .isEqualTo(allow ? "YES" : "NO");
+    }
+
+    @ParameterizedTest
     @EnumSource(value = DocumentUploaderType.class, names = {
-        "SOLICITOR", "DESIGNATED_LOCAL_AUTHORITY", "SECONDARY_LOCAL_AUTHORITY", "HMCTS", "BARRISTER"
+        "SOLICITOR", "DESIGNATED_LOCAL_AUTHORITY", "SECONDARY_LOCAL_AUTHORITY", "HMCTS", "BARRISTER", "CAFCASS"
     })
     void shouldPopulateAskForPlacementNoticeRecipientType(DocumentUploaderType uploaderType) {
         CaseData caseData = CaseData.builder().build();
@@ -166,6 +194,34 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldReturnNoDocumentErrorMessageWhenThereIsNoAvailableDocumentToBeRemoved() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .build())
+            .build();
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(true);
+        when(manageDocumentService.buildDocumentTypeDynamicListForRemoval(any())).thenReturn(DynamicList.builder()
+            .listItems(List.of())
+            .build());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-action-selection");
+        extractCaseData(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("There is no document to be removed.");
+
+        when(manageDocumentService.allowSelectDocumentTypeToRemoveDocument(any())).thenReturn(false);
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any())).thenReturn(DynamicList.builder()
+            .listItems(List.of())
+            .build());
+
+        callbackResponse = postMidEvent(caseData,"manage-document-action-selection");
+        extractCaseData(callbackResponse);
+        assertThat(callbackResponse.getErrors()).contains("There is no document to be removed.");
+    }
+
+    @Test
     void shouldContainErrorIfSelectedDocumentTypeIsNonUploadableInUploadDocumentAction() {
         Arrays.stream(new DocumentType[] {
             DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS, DocumentType.AA_PARENT_EXPERT_REPORTS,
@@ -186,7 +242,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+            assertThat(callbackResponse.getErrors()).contains("You are trying to upload a document to a parent folder, "
                 + "you need to choose one of the available sub folders.");
         });
     }
@@ -220,7 +276,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+            assertThat(callbackResponse.getErrors()).contains("You are trying to upload a document to a parent folder, "
                 + "you need to choose one of the available sub folders.");
         });
     }
@@ -254,7 +310,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
                 "manage-document-upload-new-doc");
-            callbackResponse.getErrors().contains("You are trying to upload a document to a parent folder, "
+            assertThat(callbackResponse.getErrors()).contains("You are trying to upload a document to a parent folder, "
                 + "you need to choose one of the available sub folders.");
         });
     }
@@ -363,5 +419,49 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
                 "manage-document-upload-new-doc");
             assertThat(callbackResponse.getErrors()).isNull();
         });
+    }
+
+    @Test
+    void shouldPopulateDocumentsToBeRemovedAfterSelectingDocumentType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .availableDocumentTypesForRemoval(DynamicList.builder()
+                    .value(DynamicListElement.builder().code(DocumentType.CASE_SUMMARY.name()).build())
+                    .build())
+                .build())
+            .build();
+
+        DynamicList expectedDynamicList = DynamicList.builder().listItems(List.of()).build();
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any(), eq(DocumentType.CASE_SUMMARY)))
+            .thenReturn(expectedDynamicList);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-type-selection");
+
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        assertThat(responseCaseData.getManageDocumentEventData()
+            .getDocumentsToBeRemoved())
+            .isEqualTo(expectedDynamicList);
+    }
+
+    @Test
+    void shouldGetErrorWhenSelectingAnInvalidDocumentType() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .availableDocumentTypesForRemoval(DynamicList.builder()
+                    .value(DynamicListElement.builder().code(DocumentType.AA_PARENT_EXPERT_REPORTS.name()).build())
+                    .build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-type-selection");
+
+        extractCaseData(callbackResponse);
+
+        assertThat(callbackResponse.getErrors()).contains("You are trying to remove a document from a parent folder, "
+            + "you need to choose one of the available sub folders.");
     }
 }

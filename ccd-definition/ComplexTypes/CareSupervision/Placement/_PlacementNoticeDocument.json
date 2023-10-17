@@ -89,5 +89,13 @@
     "FieldTypeParameter": "CaseRole",
     "ElementLabel": "Document Uploader Case Roles",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementNoticeDocument",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
   }
 ]

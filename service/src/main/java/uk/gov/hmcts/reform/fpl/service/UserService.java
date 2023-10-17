@@ -59,7 +59,7 @@ public class UserService {
         return idam.getUserDetails(requestData.authorisation());
     }
 
-    private Set<String> getIdamRoles() {
+    public Set<String> getIdamRoles() {
         return requestData.userRoles();
     }
 

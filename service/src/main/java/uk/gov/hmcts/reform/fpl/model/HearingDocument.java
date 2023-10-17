@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
@@ -37,6 +39,7 @@ public class HearingDocument extends DocumentMetaData implements WithDocument, N
 
     protected String hearing;
     protected DocumentReference document;
+    @Setter
     protected String removalReason;
     protected String hasConfidentialAddress;
     protected List<String> documentAcknowledge;

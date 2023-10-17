@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -61,6 +62,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLO
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -178,13 +180,12 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(expectedCaseUpdateRequest));
 
         checkUntil(() -> {
-
             verify(notificationClient).sendEmail(
                 PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE,
                 DEFAULT_ADMIN_EMAIL,
@@ -236,7 +237,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(expectedCaseUpdateRequest));

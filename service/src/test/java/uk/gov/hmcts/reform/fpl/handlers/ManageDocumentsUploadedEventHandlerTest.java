@@ -80,7 +80,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
     private static final String CHILD_SOLICITOR_1_EMAIL = "child_solicitor1@example.com";
     private static final String CHILD_SOLICITOR_2_EMAIL = "child_solicitor2@example.com";
     private static final String CHILD_SOLICITOR_3_EMAIL = "child_solicitor3@example.com";
-    private static final String CAFCASS_WELSH_EMAIL = "cafcass.welsh@example.com";
 
     private static final Set<String> DESIGNATED_LA_RECIPIENTS = Set.of(LA_USER_EMAIL);
     private static final Set<String> SECONDARY_LA_RECIPIENTS = Set.of(LA2_USER_EMAIL);
@@ -90,7 +89,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
         REP_SOLICITOR_3_EMAIL);
     private static final Set<String> CHILD_SOLICITOR_RECIPIENTS = Set.of(CHILD_SOLICITOR_1_EMAIL,
         CHILD_SOLICITOR_2_EMAIL, CHILD_SOLICITOR_3_EMAIL);
-    private static final Set<String> CAFCASS_WELSH_RECIPIENTS = Set.of(CAFCASS_WELSH_EMAIL);
 
     private static final UserDetails LA_USER_DETAIL = UserDetails.builder()
         .id("LA_USER_ID")
@@ -121,8 +119,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
             CAFCASS_REPRESENTATIVE_RECIPIENTS,
             DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative,
             REP_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor,
-            CHILD_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToChildSolicitor,
-            CAFCASS_WELSH_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToCafcassWelsh
+            CHILD_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToChildSolicitor
         );
 
     @InjectMocks
@@ -175,9 +172,6 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
         when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(
             Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
-
-        when(cafcassLookupConfiguration.getCafcassWelsh(any())).thenReturn(
-            Optional.of(new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_WELSH_EMAIL)));
     }
 
     void setUp_uploadedByLA() {

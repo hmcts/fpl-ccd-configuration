@@ -46,7 +46,6 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
@@ -269,20 +268,6 @@ public class ManageDocumentsUploadedEventHandler {
         } else {
             resultMap.put(childSolicitor,
                 DocumentUploadedNotificationConfiguration::getSendToChildSolicitor);
-        }
-
-        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
-            Optional<String> recipientIsWelsh =
-                cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority())
-                    .map(CafcassLookupConfiguration.Cafcass::getEmail);
-            if (recipientIsWelsh.isPresent()) {
-                resultMap.put(Set.of(recipientIsWelsh.get()),
-                    DocumentUploadedNotificationConfiguration::getSendToCafcassWelsh);
-            } else {
-                log.info("No recipient found for Cafcass Welsh");
-            }
-        } else {
-            log.info("Not notifying Cafcass Welsh");
         }
 
         return resultMap;

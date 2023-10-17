@@ -22,7 +22,9 @@ import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentRemovalReason;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
@@ -43,6 +45,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -91,6 +94,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -172,6 +176,9 @@ class ManageDocumentServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CaseConverter caseConverter;
 
     @InjectMocks
     private ManageDocumentService underTest;
@@ -2643,7 +2650,7 @@ class ManageDocumentServiceTest {
         "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
         "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
     })
-    void shouldNotAllowMarkDocumentConfidential(CaseRole caseRole) {
+    void shouldPopulatePropertiesForSolicitorUsers(CaseRole caseRole) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
         when(userService.isHmctsUser()).thenReturn(false);
 
@@ -2652,11 +2659,25 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(false);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
+    }
+
+    @Test
+    void shouldPopulatePropertiesForCafcassUser() {
+        when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.CAFCASS.getRoleName()));
+        when(userService.isHmctsUser()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .build();
+
+        assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(false);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
     }
 
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {"LASHARED", "LASOLICITOR", "EPSMANAGING", "LAMANAGING", "LABARRISTER"})
-    void shouldAllowMarkDocumentConfidential(CaseRole caseRole) {
+    void shouldPopulatePropertiesForLAUsers(CaseRole caseRole) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of(caseRole));
         when(userService.isHmctsUser()).thenReturn(false);
 
@@ -2665,10 +2686,11 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(false);
     }
 
     @Test
-    void shouldAllowMarkDocumentConfidentialForHmctsUser() {
+    void shouldPopulatePropertiesForHmctsUser() {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(Set.of());
         when(userService.isHmctsUser()).thenReturn(true);
 
@@ -2677,6 +2699,7 @@ class ManageDocumentServiceTest {
             .build();
 
         assertThat(underTest.allowMarkDocumentConfidential(caseData)).isEqualTo(true);
+        assertThat(underTest.allowSelectDocumentTypeToRemoveDocument(caseData)).isEqualTo(true);
     }
 
     private static Pair<String, String> toPair(DocumentType documentType) {
@@ -2744,9 +2767,7 @@ class ManageDocumentServiceTest {
             .build()
             : CaseData.builder().id(CASE_ID).build();
 
-        DynamicList expectedDynamicList = DynamicList.builder()
-            .value(DynamicListElement.builder().label("SUCCESS").code("SUCCESS").build())
-            .build();
+        DynamicList expectedDynamicList = DynamicList.builder().build();
         when(dynamicListService.asDynamicList(expectedPairList)).thenReturn(expectedDynamicList);
 
         assertThat(underTest.buildDocumentTypeDynamicList(caseData)).isEqualTo(expectedDynamicList);
@@ -2770,7 +2791,7 @@ class ManageDocumentServiceTest {
 
     private static Stream<Arguments> buildUploadingDocumentArgs() {
         List<Arguments> args = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 6; i++) {
             for (Confidentiality c : Confidentiality.values()) {
                 args.add(Arguments.of(i, c));
             }
@@ -2812,6 +2833,16 @@ class ManageDocumentServiceTest {
     private void initialiseUserService(int loginType) {
         when(userService.getCaseRoles(CASE_ID)).thenReturn(new HashSet<>(getUploaderCaseRoles(loginType)));
         when(userService.isHmctsUser()).thenReturn(4 == loginType); // HMCTS for loginType = 4
+        switch (loginType) {
+            case 4:
+                when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.HMCTS_ADMIN.getRoleName()));
+                break;
+            case 5:
+                when(userService.getIdamRoles()).thenReturn(Set.of(UserRole.CAFCASS.getRoleName()));
+                break;
+            default:
+                break;
+        }
     }
 
     private static DocumentUploaderType getUploaderType(int loginType) {
@@ -2824,6 +2855,8 @@ class ManageDocumentServiceTest {
                 return DocumentUploaderType.SOLICITOR;
             case 4:
                 return DocumentUploaderType.HMCTS;
+            case 5:
+                return DocumentUploaderType.CAFCASS;
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
         }
@@ -2838,6 +2871,7 @@ class ManageDocumentServiceTest {
             case 3:
                 return List.of(CaseRole.SOLICITORA);
             case 4:
+            case 5:
                 return List.of();
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
@@ -3268,7 +3302,7 @@ class ManageDocumentServiceTest {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
                         || elementIdTwo.equals(((Element) p).getId()))
-                    .collect(Collectors.toList());
+                    .toList();
                 if (flist.size() != 2) {
                     return false;
                 } else {
@@ -3544,6 +3578,7 @@ class ManageDocumentServiceTest {
                 case HMCTS:
                     test = test && list.contains(element(placementAdminId, placementAdmin));
                     return test;
+                case CAFCASS:
                 case SOLICITOR:
                     test = test && list.contains(element(placementRespondentId, placementRespondent));
                     return test;
@@ -3653,6 +3688,7 @@ class ManageDocumentServiceTest {
                 case HMCTS:
                     test = test && list.contains(element(placementAdminId, placementAdmin));
                     return test;
+                case CAFCASS:
                 case SOLICITOR:
                     test = test && list.contains(element(placementRespondentId, placementRespondent));
                     return test;
@@ -3676,6 +3712,985 @@ class ManageDocumentServiceTest {
                 .containsKey("placementsNonConfidentialNotices")
                 .extracting("placements").asList()
                 .matches(matcher);
+        }
+    }
+
+    @Nested
+    class BuildDocumentTypeDynamicListForRemovalTest {
+
+        DynamicList expectedDynamicList1 = DynamicList.builder().build();
+
+        @Test
+        void shouldShowAnEmptyDynamicList() {
+            when(caseConverter.toMap(any())).thenReturn(Map.of());
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowASingleDocumentType() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of("courtBundleListV2", List.of(
+                element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(CourtBundle.builder()
+                            .document(testDocumentReference())
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(CourtBundle.builder()
+                            .document(testDocumentReference())
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build())
+                    ))
+                    .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowMultipleDocumentTypes() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of(
+                "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
+                "courtBundleListV2", List.of(
+                    element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build()),
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build())
+                        ))
+                        .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription()),
+                Pair.of(DocumentType.AA_PARENT_ORDERS.name(), DocumentType.AA_PARENT_ORDERS.getDescription()),
+                Pair.of(DocumentType.TRANSCRIPTS.name(), DocumentType.TRANSCRIPTS.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder().build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowPlacementResponseInDocumentTypes() {
+            initialiseUserService(4);
+            DocumentUploaderType uploaderType = getUploaderType(4);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of(
+                "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
+                "courtBundleListV2", List.of(
+                    element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build()),
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .build())
+                        ))
+                        .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription()),
+                Pair.of(DocumentType.AA_PARENT_ORDERS.name(), DocumentType.AA_PARENT_ORDERS.getDescription()),
+                Pair.of(DocumentType.TRANSCRIPTS.name(), DocumentType.TRANSCRIPTS.getDescription()),
+                Pair.of(DocumentType.PLACEMENT_RESPONSES.name(), DocumentType.PLACEMENT_RESPONSES.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(Placement.builder()
+                        .noticeDocuments(List.of(element(PlacementNoticeDocument.builder().build())))
+                        .build())))
+                    .build())
+                .build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+    }
+
+    @Nested
+    class BuildAvailableDocumentsToBeRemovedTest {
+
+        private CaseData.CaseDataBuilder createCaseDataBuilderForRemovalDocumentJourney() {
+            return CaseData.builder().id(CASE_ID)
+                .manageDocumentEventData(ManageDocumentEventData.builder()
+                    .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                    .build());
+        }
+
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        UUID elementId3 = UUID.randomUUID();
+        UUID elementId4 = UUID.randomUUID();
+
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+        String filename3 = "COURT BUNDLE3.docx";
+        String filename4 = "COURT BUNDLE4.docx";
+
+        DynamicList expectedDynamicList1 = DynamicList.builder().build();
+        DynamicList expectedDynamicList2 = DynamicList.builder().build();
+        DynamicList expectedDynamicList3 = DynamicList.builder().build();
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void testForNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
+            initialiseUserService(loginType);
+            DocumentUploaderType uploaderType = getUploaderType(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(uploaderType)
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void testForNonConfidentialCourtBundleUploadedByHMCTS(int loginType) {
+            initialiseUserService(loginType);
+            DocumentUploaderType uploaderType = getUploaderType(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            if (uploaderType == DocumentUploaderType.HMCTS) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2})
+        void testForNonConfidentialCourtBundleUploadedByLA(int loginType) {
+            initialiseUserService(loginType);
+            DocumentUploaderType uploaderType = getUploaderType(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            if (uploaderType == DocumentUploaderType.HMCTS
+                || uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void testForNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            if (loginType == 1 || loginType == 2) { // LAs should get an empty dynamic list
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {3}) // testing for solicitor login type only
+        void shouldReturnEmptyDynamicListWhenNonConfidentialCourtBundleAreUploadedByOthers(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(null)
+                            .build()),
+                        element(elementId3, CourtBundle.builder()
+                            .document(testDocumentReference(filename3))
+                            .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(elementId4, CourtBundle.builder()
+                            .document(testDocumentReference(filename4))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(List.of(CaseRole.SOLICITORJ))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void testForConfidentialCTSCUploadedAndNonConfidentialCourtBundleExist(
+            int loginType) {
+            initialiseUserService(loginType);
+            DocumentUploaderType uploaderType = getUploaderType(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListCTSC(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId3, CourtBundle.builder()
+                            .document(testDocumentReference(filename3))
+                            .uploaderType(DocumentUploaderType.HMCTS)
+                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .build()),
+                        element(elementId4, CourtBundle.builder()
+                            .document(testDocumentReference(filename4))
+                            // no uploaderType and uploaderCaseRoles means the case is migrated from existing data
+                            .build())
+                    ))
+                    .build())))
+                .courtBundleListV2(List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(elementId1, CourtBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .build()),
+                        element(elementId2, CourtBundle.builder()
+                            .document(testDocumentReference(filename2))
+                            .uploaderType(DocumentUploaderType.SOLICITOR)
+                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .build())
+                    ))
+                    .build())))
+                .build());
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2)
+            ))).thenReturn(expectedDynamicList1);
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId1), filename1),
+                Pair.of(format("hearingDocuments.courtBundleListV2###%s", elementId2), filename2),
+                Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId3), filename3),
+                Pair.of(format("hearingDocuments.courtBundleListCTSC###%s", elementId4), filename4)
+            ))).thenReturn(expectedDynamicList2);
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList3);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            if (uploaderType == DocumentUploaderType.HMCTS) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList2);
+            } else if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
+                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList3);
+            } else {
+                assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+            }
+        }
+    }
+
+    @Nested
+    class RemoveDocumentTests {
+
+        UUID hearingCourtBundleElementIdOne = UUID.randomUUID();
+        UUID hearingCourtBundleElementIdTwo = UUID.randomUUID();
+
+        UUID elementId1 = UUID.randomUUID();
+        UUID elementId2 = UUID.randomUUID();
+        UUID elementId3 = UUID.randomUUID();
+        UUID elementId4 = UUID.randomUUID();
+
+        String filename1 = "COURT BUNDLE1.docx";
+        String filename2 = "COURT BUNDLE2.docx";
+        String filename3 = "COURT BUNDLE3.docx";
+        String filename4 = "COURT BUNDLE4.docx";
+
+        CourtBundle cb1 = CourtBundle.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        CourtBundle cb2 = CourtBundle.builder()
+            .document(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        CourtBundle cb3 = CourtBundle.builder()
+            .document(testDocumentReference(filename3))
+            .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+            .uploaderCaseRoles(getUploaderCaseRoles(1))
+            .build();
+        CourtBundle cb4 = CourtBundle.builder()
+            .document(testDocumentReference(filename4))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .build();
+
+        ManagedDocument md1 = ManagedDocument.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .build();
+        ManagedDocument md2 = ManagedDocument.builder()
+            .document(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .build();
+
+        CaseSummary cs1 = CaseSummary.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        CaseSummary cs2 = CaseSummary.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+
+        UUID placementId = UUID.randomUUID();
+        UUID placementConfidentialDocId = UUID.randomUUID();
+        PlacementNoticeDocument pnd1 = PlacementNoticeDocument.builder()
+            .response(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+        PlacementNoticeDocument pnd2 = PlacementNoticeDocument.builder()
+            .response(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(getUploaderCaseRoles(3))
+            .build();
+
+        @Test
+        void shouldBeAbleToRemovePlacementResponseFromSinglePlacementResponseByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.placementEventData(PlacementEventData.builder()
+                .placements(List.of(element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(new ArrayList<>(List.of(element(elementId1, pnd1))))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PLACEMENT_RESPONSES###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            PlacementNoticeDocument removedPnd = PlacementNoticeDocument.builder()
+                .response(pnd1.getDocument())
+                .uploaderType(pnd1.getUploaderType())
+                .uploaderCaseRoles(pnd1.getUploaderCaseRoles())
+                .build();
+            removedPnd.setRemovalReason("The document was uploaded to the wrong case");
+
+            assertThat(result.get("placements")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidential")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidentialNotices")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of())
+                    .noticeDocumentsRemoved(List.of(element(elementId1, removedPnd)))
+                    .build())
+            ));
+        }
+
+        @Test
+        void shouldBeAbleToRemovePlacementResponseFromMultiplePlacementResponsesByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.placementEventData(PlacementEventData.builder()
+                .placements(List.of(element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(new ArrayList<>(List.of(element(elementId1, pnd1), element(elementId2, pnd2))))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("PLACEMENT_RESPONSES###" + elementId2)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            PlacementNoticeDocument removedPnd = PlacementNoticeDocument.builder()
+                .response(pnd2.getDocument())
+                .uploaderType(pnd2.getUploaderType())
+                .uploaderCaseRoles(pnd2.getUploaderCaseRoles())
+                .build();
+            removedPnd.setRemovalReason("The document was uploaded to the wrong case");
+
+            assertThat(result.get("placements")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .confidentialDocuments(List.of(element(placementConfidentialDocId,
+                        PlacementConfidentialDocument.builder().build())))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidential")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+            assertThat(result.get("placementsNonConfidentialNotices")).isEqualTo(List.of(
+                element(placementId, Placement.builder()
+                    .childId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+                    .noticeDocuments(List.of(element(elementId1, pnd1)))
+                    .noticeDocumentsRemoved(List.of(element(elementId2, removedPnd)))
+                    .build())
+            ));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCaseSummaryBySolicitor() {
+            int loginType = 3;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(new ArrayList<>(List.of(element(elementId1, cs1))))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.caseSummaryList###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CaseSummary removedCs = CaseSummary.builder()
+                .document(cs1.getDocument())
+                .uploaderType(cs1.getUploaderType())
+                .uploaderCaseRoles(cs1.getUploaderCaseRoles())
+                .build();
+            removedCs.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("caseSummaryListRemoved")).isEqualTo(List.of(
+                element(elementId1, removedCs)
+            ));
+            assertThat(result.get("caseSummaryList")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCaseSummaryFromMultipleNcCaseSummariesBySolicitor() {
+            int loginType = 3;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .caseSummaryList(new ArrayList<>(List.of(element(elementId1, cs1), element(elementId2, cs2))))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.caseSummaryList###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CaseSummary removedCs = CaseSummary.builder()
+                .document(cs1.getDocument())
+                .uploaderType(cs1.getUploaderType())
+                .uploaderCaseRoles(cs1.getUploaderCaseRoles())
+                .build();
+            removedCs.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("caseSummaryListRemoved")).isEqualTo(List.of(
+                element(elementId1, removedCs)
+            ));
+            assertThat(result.get("caseSummaryList")).isEqualTo(List.of(element(elementId2, cs2)));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcThresholdByLA() {
+            int loginType = 1;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.thresholdList(new ArrayList<>(List.of(element(elementId1, md1))));
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("thresholdList###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            ManagedDocument removedMd = ManagedDocument.builder()
+                .document(md1.getDocument())
+                .uploaderType(md1.getUploaderType())
+                .uploaderCaseRoles(md1.getUploaderCaseRoles())
+                .build();
+            removedMd.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("thresholdListRemoved")).isEqualTo(List.of(element(elementId1, removedMd)));
+            assertThat(result.get("thresholdList")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveThresholdFromMultipleNcThresholdsByLA() {
+            int loginType = 1;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.thresholdList(new ArrayList<>(List.of(element(elementId1, md1), element(elementId2, md2))));
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("thresholdList###" + elementId2)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            ManagedDocument removedMd = ManagedDocument.builder()
+                .document(md2.getDocument())
+                .uploaderType(md2.getUploaderType())
+                .uploaderCaseRoles(md2.getUploaderCaseRoles())
+                .build();
+            removedMd.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("thresholdListRemoved")).isEqualTo(List.of(element(elementId2, removedMd)));
+            assertThat(result.get("thresholdList")).isEqualTo(List.of(element(elementId1, md1)));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleWithoutCourtBundleNCByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(cb1.getUploaderType())
+                .uploaderCaseRoles(cb1.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleFromMultipleCourtBundlesByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1),
+                        element(elementId2, cb2)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId1, cb1),
+                        element(elementId2, cb2)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.MISTAKE_ON_DOCUMENT)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(cb1.getUploaderType())
+                .uploaderCaseRoles(cb1.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("There is a mistake on the document");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId2, cb2)))
+                    .courtBundleNC(List.of(element(elementId2, cb2)))
+                    .build())));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId1, cb1)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(cb1.getUploaderType())
+                .uploaderCaseRoles(cb1.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("The document was uploaded to the wrong case");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleLAFromMultipleCourtBundlesByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId3, cb3),
+                        element(elementId2, cb2)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId3, cb3),
+                        element(elementId2, cb2)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.MISTAKE_ON_DOCUMENT)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListLA###" + elementId3)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb3.getDocument())
+                .uploaderType(cb3.getUploaderType())
+                .uploaderCaseRoles(cb3.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("There is a mistake on the document");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId3, removedCb)))
+                    .courtBundleNC(List.of(element(elementId3, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListLA")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId2, cb2)))
+                    .courtBundleNC(List.of(element(elementId2, cb2)))
+                    .build())));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleLAFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId3, cb3)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId3, cb3)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListLA###" + elementId3)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb3.getDocument())
+                .uploaderType(cb3.getUploaderType())
+                .uploaderCaseRoles(cb3.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId3, removedCb)))
+                    .courtBundleNC(List.of(element(elementId3, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListLA")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveCourtBundleCTSCFromSingleCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListCTSC(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(
+                        element(elementId4, cb4)
+                    )))
+                    .courtBundleNC(new ArrayList<>(List.of(
+                        element(elementId4, cb4)
+                    )))
+                    .build())))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListCTSC###" + elementId4)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb4.getDocument())
+                .uploaderType(cb4.getUploaderType())
+                .uploaderCaseRoles(cb4.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId4, removedCb)))
+                    .courtBundleNC(List.of(element(elementId4, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListCTSC")).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldBeAbleToRemoveNcCourtBundleWithMultipleHearingCourtBundleByAdmin() {
+            int loginType = 4;
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.hearingDocuments(HearingDocuments.builder()
+                .courtBundleListV2(List.of(
+                    element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                        .courtBundle(new ArrayList<>(List.of(element(elementId1, cb1))))
+                        .courtBundleNC(new ArrayList<>(List.of(element(elementId1, cb1))))
+                        .build()),
+                    element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
+                        .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
+                        .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
+                        .build()))
+                )
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.OTHER)
+                .manageDocumentRemoveDocAnotherReason("Another reason is here")
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code("hearingDocuments.courtBundleListV2###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            CourtBundle removedCb = CourtBundle.builder()
+                .document(cb1.getDocument())
+                .uploaderType(cb1.getUploaderType())
+                .uploaderCaseRoles(cb1.getUploaderCaseRoles())
+                .build();
+            removedCb.setRemovalReason("Another reason is here");
+            assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(elementId1, removedCb)))
+                    .courtBundleNC(List.of(element(elementId1, removedCb)))
+                    .build())));
+            assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
+                element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
+                    .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
+                    .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
+                    .build())));
         }
     }
 
@@ -3743,6 +4758,5 @@ class ManageDocumentServiceTest {
 
             return streamList.stream();
         }
-
     }
 }

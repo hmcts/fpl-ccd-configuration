@@ -288,19 +288,7 @@ public class MigrateCFVService {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackPositionStatementChild(CaseDetails caseDetails) {
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        List<Element<PositionStatementChild>> newPositionStatementChilds = new ArrayList<>();
-
-        if (caseDataMap.get("posStmtChildListLA") != null) {
-            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildListLA"));
-        }
-        if (caseDataMap.get("posStmtChildList") != null) {
-            newPositionStatementChilds.addAll((List) caseDataMap.get("posStmtChildList"));
-        }
-
         Map<String, Object>  ret = new HashMap<>();
-        ret.put("positionStatementChildListV2", newPositionStatementChilds);
         ret.put("posStmtChildListLA", List.of());
         ret.put("posStmtChildList", List.of());
         return ret;
@@ -320,7 +308,6 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("positionStatementChildListV2", null);
         ret.put("posStmtChildListLA", posStmtChildListLA);
         ret.put("posStmtChildList", posStmtChildList);
         return ret;
@@ -330,19 +317,7 @@ public class MigrateCFVService {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackPositionStatementRespondent(CaseDetails caseDetails) {
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        List<Element<PositionStatementRespondent>> newPositionStatementRespondents = new ArrayList<>();
-
-        if (caseDataMap.get("posStmtRespListLA") != null) {
-            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespListLA"));
-        }
-        if (caseDataMap.get("posStmtRespList") != null) {
-            newPositionStatementRespondents.addAll((List) caseDataMap.get("posStmtRespList"));
-        }
-
         Map<String, Object>  ret = new HashMap<>();
-        ret.put("positionStatementRespondentListV2", newPositionStatementRespondents);
         ret.put("posStmtRespListLA", List.of());
         ret.put("posStmtRespList", List.of());
         return ret;
@@ -362,7 +337,6 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("positionStatementRespondentListV2", null);
         ret.put("posStmtRespListLA", posStmtRespListLA);
         ret.put("posStmtRespList", posStmtRespList);
         return ret;
@@ -513,7 +487,8 @@ public class MigrateCFVService {
         }
 
         Map<String, Object> ret = new HashMap<>();
-        ret.put("skeletonArgumentList", skeletonArgumentList);
+        ret.put("skeletonArgumentList", caseDataMap.get("skeletonArgumentListBackup"));
+        ret.put("skeletonArgumentListBackup", List.of());
         ret.put("skeletonArgumentListLA", List.of());
         return ret;
     }
@@ -532,6 +507,7 @@ public class MigrateCFVService {
                 .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
+        ret.put("skeletonArgumentListBackup", caseData.getHearingDocuments().getSkeletonArgumentList());
         ret.put("skeletonArgumentList", skeletonArgumentList);
         ret.put("skeletonArgumentListLA", skeletonArgumentListLA);
         return ret;
@@ -547,18 +523,6 @@ public class MigrateCFVService {
         ret.put("documentsFiledOnIssueListLA", List.of());
         ret.put("carePlanList", List.of());
         ret.put("carePlanListLA", List.of());
-        ret.put("swetList", List.of());
-        ret.put("swetListLA", List.of());
-        ret.put("socialWorkChronList", List.of());
-        ret.put("socialWorkChronListLA", List.of());
-        ret.put("genogramList", List.of());
-        ret.put("genogramListLA", List.of());
-        ret.put("checklistDocList", List.of());
-        ret.put("checklistDocListLA", List.of());
-        ret.put("birthCertList", List.of());
-        ret.put("birthCertListLA", List.of());
-        ret.put("otherDocFiledList", List.of());
-        ret.put("otherDocFiledListLA", List.of());
         return ret;
     }
 
@@ -592,25 +556,11 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> migrateApplicationDocuments(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET), "swetList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_CHRONOLOGY), "socialWorkChronList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SOCIAL_WORK_STATEMENT), "otherDocFiledList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(GENOGRAM), "genogramList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(CHECKLIST_DOCUMENT), "checklistDocList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(BIRTH_CERTIFICATE), "birthCertList"));
+        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET, SOCIAL_WORK_CHRONOLOGY, SOCIAL_WORK_STATEMENT,
+                GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, OTHER),
+            "documentsFiledOnIssueList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList"));
         ret.putAll(migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList"));
-        if (ret.containsKey("otherDocFiledList") || ret.containsKey("otherDocFiledListLA")
-            || ret.containsKey("otherDocFiledListCTSC")) {
-            Map<String, Object> temp = migrateApplicationDocuments(caseData, List.of(OTHER), "otherDocFiledList");
-            for (String key : temp.keySet()) {
-                if (ret.containsKey(key)) {
-                    ((List) ret.get(key)).addAll((List) temp.get(key));
-                } else {
-                    ret.put(key, temp.get(key));
-                }
-            }
-        }
         return ret;
     }
 
@@ -670,18 +620,10 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackCaseSummaryMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
-        List<Element<CaseSummary>> newCaseSummaryList = new ArrayList<>();
-
-        if (caseDataMap.get("caseSummaryListLA") != null) {
-            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryListLA"));
-        }
-        if (caseDataMap.get("caseSummaryList") != null) {
-            newCaseSummaryList.addAll((List) caseDataMap.get("caseSummaryList"));
-        }
-
         Map<String, Object> ret = new HashMap<>();
-        ret.put("caseSummaryList", newCaseSummaryList);
+        ret.put("caseSummaryList", caseDataMap.get("caseSummaryListBackup"));
         ret.put("caseSummaryListLA", List.of());
+        ret.put("caseSummaryListBackup", List.of());
         return ret;
     }
 
@@ -696,6 +638,7 @@ public class MigrateCFVService {
             .collect(toList());
 
         Map<String, Object> ret = new HashMap<>();
+        ret.put("caseSummaryListBackup", caseData.getHearingDocuments().getCaseSummaryList());
         ret.put("caseSummaryListLA", caseSummaryListLA);
         ret.put("caseSummaryList", newCaseSummaryList);
         return ret;
@@ -706,23 +649,11 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> rollbackCourtBundleMigration(CaseDetails caseDetails) {
         Map<String, Object> caseDataMap = caseDetails.getData();
-
-        List<Element<HearingCourtBundle>> newHearingCourtBundleList = new ArrayList<>();
-
-        if (caseDataMap.get("courtBundleListV2") != null) {
-            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListV2"));
-        }
-        if (caseDataMap.get("courtBundleListLA") != null) {
-            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListLA"));
-        }
-        if (caseDataMap.get("courtBundleListCTSC") != null) {
-            newHearingCourtBundleList.addAll((List) caseDataMap.get("courtBundleListCTSC"));
-        }
-
         Map<String, Object> ret = new HashMap<>();
-        ret.put("courtBundleListV2", newHearingCourtBundleList);
+        ret.put("courtBundleListV2", caseDataMap.get("courtBundleListV2Backup"));
         ret.put("courtBundleListLA", List.of());
         ret.put("courtBundleListCTSC", List.of());
+        ret.put("courtBundleListV2Backup", List.of());
         return ret;
     }
 
@@ -772,6 +703,7 @@ public class MigrateCFVService {
         }
 
         Map<String, Object> ret = new HashMap<>();
+        ret.put("courtBundleListV2Backup", hearingCourtBundles);
         ret.put("courtBundleListV2", newHearingCourtBundleList);
         ret.put("courtBundleListLA", hearingCourtBundleListLA);
         ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);

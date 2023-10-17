@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -62,7 +63,8 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                     .name(getStringValueOrDefault(childInfo.getFullName()))
                     .fathersName(getStringValueOrDefault(childInfo.getFathersName()))
                     .mothersName(getStringValueOrDefault(childInfo.getMothersName()))
-                    .gender(getStringValueOrDefault(childInfo.getGender()))
+                    .gender(Optional.ofNullable(childInfo.getGender())
+                        .map(ChildGender::getLabel).orElse("unknown"))
                     .dateOfBirth(getFormattedDateOrDefault(childInfo.getDateOfBirth()))
                     .birthCertificate(DocmosisBirthCertificate.builder()
                         .number(manageOrdersEventData.getManageOrdersBirthCertificateNumber())
@@ -73,6 +75,7 @@ public class A70PlacementOrderDocumentParameterGenerator implements DocmosisPara
                             manageOrdersEventData.getManageOrdersBirthCertificateRegistrationSubDistrict())
                         .registrationCounty(manageOrdersEventData.getManageOrdersBirthCertificateRegistrationCounty())
                         .build())
+                    .placementOrderOtherDetails(manageOrdersEventData.getManageOrdersPlacementOrderOtherDetails())
                     .build()
             )
             .applicationDate(applicationDate)

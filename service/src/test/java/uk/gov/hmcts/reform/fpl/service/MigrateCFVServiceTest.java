@@ -936,7 +936,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
-            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtChildList").asList()
                 .contains(positionStatementTwo, positionStatementOne);
@@ -957,7 +956,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementChild(caseData);
-            assertThat(updatedFields).extracting("positionStatementChildListV2").isNull();
             assertThat(updatedFields).extracting("posStmtChildListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtChildList").asList()
@@ -978,7 +976,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
-            assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("posStmtRespList").asList()
                 .contains(positionStatementTwo, positionStatementOne);
@@ -999,7 +996,6 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementRespondent(caseData);
-            assertThat(updatedFields).extracting("positionStatementRespondentListV2").isNull();
             assertThat(updatedFields).extracting("posStmtRespListLA").asList()
                 .contains(positionStatementWithConfidentialAddress);
             assertThat(updatedFields).extracting("posStmtRespList").asList()
@@ -1266,6 +1262,8 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
                 caseData);
+            assertThat(updatedFields).extracting("caseSummaryListBackup").asList()
+                .containsExactly(caseSummaryListElement);
             assertThat(updatedFields).extracting("caseSummaryList").asList().isEmpty();
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
                 .containsExactly(caseSummaryListElement);
@@ -1291,6 +1289,9 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(
                 caseData);
+            assertThat(updatedFields).extracting("caseSummaryListBackup").asList()
+                .containsExactly(caseSummaryListElement, caseSummaryListElementWithConfidentialAddress,
+                    caseSummaryListElementTwo);
             assertThat(updatedFields).extracting("caseSummaryList").asList()
                 .containsExactly(caseSummaryListElement, caseSummaryListElementTwo);
             assertThat(updatedFields).extracting("caseSummaryListLA").asList()
@@ -1308,6 +1309,8 @@ class MigrateCFVServiceTest {
                 .build());
 
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("caseSummaryListBackup",List.of(caseSummaryListElementWithConfidentialAddress,
+                caseSummaryListElement, caseSummaryListElementTwo));
             caseDataMap.put("caseSummaryListLA", List.of(caseSummaryListElementWithConfidentialAddress));
             caseDataMap.put("caseSummaryList", List.of(caseSummaryListElement, caseSummaryListElementTwo));
 
@@ -1345,9 +1348,6 @@ class MigrateCFVServiceTest {
                 changes = underTest.rollbackPositionStatementRespondent(caseDetails);
             }
 
-            assertThat(changes).extracting(format("positionStatement%sListV2",
-                    isChild ? "Child" : "Respondent")).asList()
-                .containsExactlyInAnyOrder(positionStatementElement, positionStatementElementLA);
             assertThat(changes).extracting(format("posStmt%sList", isChild ? "Child" : "Resp"))
                 .isEqualTo(List.of());
             assertThat(changes).extracting(format("posStmt%sListLA", isChild ? "Child" : "Resp"))
@@ -1405,6 +1405,8 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().isEmpty();
             assertThat(updatedFields).extracting("courtBundleListV2").asList().size().isEqualTo(2);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(courtBundleOne, courtBundleTwo);
+            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList()
+                .contains(courtBundleOne, courtBundleTwo);
         }
 
         @Test
@@ -1432,6 +1434,8 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundle,
                 confidentialBundleTwo);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
+            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(confidentialBundle,
+                confidentialBundleTwo, nonConfidentialBundle);
         }
 
         @Test
@@ -1458,6 +1462,8 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("courtBundleListLA").asList().contains(confidentialBundleLA);
             assertThat(updatedFields).extracting("courtBundleListCTSC").asList().contains(confidentialBundleCTSC);
             assertThat(updatedFields).extracting("courtBundleListV2").asList().contains(nonConfidentialBundle);
+            assertThat(updatedFields).extracting("courtBundleListV2Backup").asList().contains(confidentialBundleLA,
+                confidentialBundleCTSC, nonConfidentialBundle);
         }
 
         @Test
@@ -1474,6 +1480,8 @@ class MigrateCFVServiceTest {
                 .courtBundle(List.of(buildCourtBundle())).build());
 
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
+            caseDataMap.put("courtBundleListV2Backup", List.of(nonConfidentialBundle, confidentialBundleLA,
+                confidentialBundleCTSC));
             caseDataMap.put("courtBundleListV2", List.of(nonConfidentialBundle));
             caseDataMap.put("courtBundleListLA", List.of(confidentialBundleLA));
             caseDataMap.put("courtBundleListCTSC", List.of(confidentialBundleCTSC));
@@ -1481,10 +1489,11 @@ class MigrateCFVServiceTest {
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
-                .containsOnlyKeys("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC");
+                .containsOnlyKeys("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC",
+                    "courtBundleListV2Backup");
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
-                .extracting("courtBundleListLA", "courtBundleListCTSC")
-                .containsExactly(List.of(), List.of());
+                .extracting("courtBundleListLA", "courtBundleListCTSC", "courtBundleListV2Backup")
+                .containsExactly(List.of(), List.of(), List.of());
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
                 .extracting("courtBundleListV2").asList()
                 .contains(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
@@ -1495,14 +1504,14 @@ class MigrateCFVServiceTest {
     class MigrateApplicationDocuments {
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
             THRESHOLD, "thresholdList",
-            SWET, "swetList",
+            SWET, "documentsFiledOnIssueList",
             CARE_PLAN, "carePlanList",
-            SOCIAL_WORK_CHRONOLOGY, "socialWorkChronList",
-            SOCIAL_WORK_STATEMENT, "otherDocFiledList",
-            GENOGRAM, "genogramList",
-            CHECKLIST_DOCUMENT, "checklistDocList",
-            BIRTH_CERTIFICATE, "birthCertList",
-            OTHER, "otherDocFiledList"
+            SOCIAL_WORK_CHRONOLOGY, "documentsFiledOnIssueList",
+            SOCIAL_WORK_STATEMENT, "documentsFiledOnIssueList",
+            GENOGRAM, "documentsFiledOnIssueList",
+            CHECKLIST_DOCUMENT, "documentsFiledOnIssueList",
+            BIRTH_CERTIFICATE, "documentsFiledOnIssueList",
+            OTHER, "documentsFiledOnIssueList"
         );
 
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeMethodMap = Map.of(
@@ -1669,19 +1678,19 @@ class MigrateCFVServiceTest {
                 element(doc1Id, ManagedDocument.builder().document(document1).build()));
             assertThat(updatedFields).extracting("thresholdList").asList().contains(
                 element(doc2Id, ManagedDocument.builder().document(document2).build()));
-            assertThat(updatedFields).extracting("swetList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc3Id, ManagedDocument.builder().document(document3).build()));
-            assertThat(updatedFields).extracting("socialWorkChronList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc5Id, ManagedDocument.builder().document(document5).build()));
-            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc6Id, ManagedDocument.builder().document(document6).build()));
-            assertThat(updatedFields).extracting("genogramList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc7Id, ManagedDocument.builder().document(document7).build()));
-            assertThat(updatedFields).extracting("checklistDocList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc8Id, ManagedDocument.builder().document(document8).build()));
-            assertThat(updatedFields).extracting("otherDocFiledList").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().contains(
                 element(doc10Id, ManagedDocument.builder().document(document10).build()));
-            assertThat(updatedFields).extracting("birthCertListLA").asList().contains(
+            assertThat(updatedFields).extracting("documentsFiledOnIssueListLA").asList().contains(
                 element(doc9Id, ManagedDocument.builder().document(document9).build()));
 
             assertThat(updatedFields).extracting("carePlanList").asList()
@@ -1698,19 +1707,7 @@ class MigrateCFVServiceTest {
                 "documentsFiledOnIssueList",
                 "documentsFiledOnIssueListLA",
                 "carePlanList",
-                "carePlanListLA",
-                "swetList",
-                "swetListLA",
-                "socialWorkChronList",
-                "socialWorkChronListLA",
-                "genogramList",
-                "genogramListLA",
-                "checklistDocList",
-                "checklistDocListLA",
-                "birthCertList",
-                "birthCertListLA",
-                "otherDocFiledList",
-                "otherDocFiledListLA"
+                "carePlanListLA"
             );
             assertThat(underTest.rollbackApplicationDocuments()).extracting("thresholdList")
                 .isEqualTo(List.of());
@@ -1723,30 +1720,6 @@ class MigrateCFVServiceTest {
             assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanList")
                 .isEqualTo(List.of());
             assertThat(underTest.rollbackApplicationDocuments()).extracting("carePlanListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("swetListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("socialWorkChronListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("genogramListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("checklistDocListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("birthCertListLA")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledList")
-                .isEqualTo(List.of());
-            assertThat(underTest.rollbackApplicationDocuments()).extracting("otherDocFiledListLA")
                 .isEqualTo(List.of());
         }
     }
@@ -1793,6 +1766,7 @@ class MigrateCFVServiceTest {
             Map<String, Object> caseDataMap = new HashMap<String, Object>();
             caseDataMap.put("skeletonArgumentList", List.of(skeletonArgument));
             caseDataMap.put("skeletonArgumentListLA", List.of(skeletonArgumentLA));
+            caseDataMap.put("skeletonArgumentListBackup", List.of(skeletonArgument, skeletonArgumentLA));
 
             CaseDetails caseDetails = CaseDetails.builder().data(caseDataMap).build();
 
