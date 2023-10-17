@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -27,6 +30,12 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
     ManageHearingsControllerEditHearingMidEventTest() {
         super("manage-hearings");
     }
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldPopulatePreviousVenueFieldsWhenUserSelectsAddNewHearing() {
