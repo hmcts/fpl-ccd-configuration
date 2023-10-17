@@ -93,7 +93,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyCafcass() {
-        underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCafcass(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         assertThat(response())
             .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
@@ -133,7 +133,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyLocalAuthority() {
-        underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyLocalAuthority(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         assertThat(response())
             .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
@@ -173,7 +173,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyRepresentatives() {
-        underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyRepresentatives(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
 
         assertThat(response())
             .hasSubject("New case management hearing, " + CHILD_LAST_NAME)
@@ -213,7 +213,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyCtsc() {
-        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING));
+        underTest.notifyCtsc(new SendNoticeOfHearing(CASE_DATA, HEARING, false));
         String caseName = "FAM_NUM, 1111-1111-1111-1111, case management, 12 December 2021";
 
         assertThat(response())

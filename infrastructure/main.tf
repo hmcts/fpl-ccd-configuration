@@ -54,9 +54,6 @@ module "key-vault" {
   resource_group_name     = azurerm_resource_group.rg.name
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
-
-  #aks migration
-  managed_identity_object_id = var.managed_identity_object_id
   create_managed_identity    = true
 }
 

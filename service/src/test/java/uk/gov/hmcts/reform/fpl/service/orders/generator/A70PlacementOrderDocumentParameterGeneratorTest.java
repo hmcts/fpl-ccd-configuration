@@ -90,6 +90,7 @@ class A70PlacementOrderDocumentParameterGeneratorTest {
                     .manageOrdersBirthCertificateRegistrationDistrict("testBcRegDistrict")
                     .manageOrdersBirthCertificateRegistrationSubDistrict("testBcRegSubDistrict")
                     .manageOrdersBirthCertificateRegistrationCounty("testBcRegCounty")
+                    .manageOrdersPlacementOrderOtherDetails("testPlacementOrderOtherDetails")
                     .build()
             )
             .build();

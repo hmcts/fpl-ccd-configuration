@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
+@EqualsAndHashCode
 public class HearingOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
     private List<String> documentAcknowledge;
     private String title;
