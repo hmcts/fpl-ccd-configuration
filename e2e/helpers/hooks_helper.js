@@ -1,15 +1,22 @@
-const recorder = require('codeceptjs').recorder;
-const output = require('codeceptjs').output;
-const lodash = require('lodash');
-const retryableErrors = [
-  'Execution context was destroyed',
-  'Node is either not visible or not an HTMLElement',
-  'Node is detached from document',
-  'net::ERR_ABORTED'];
+const { output, event } = require('codeceptjs');
+const { Helper } = require('codeceptjs');
+//const lodash = require('lodash');
+//const retryableErrors = [
+//  'Execution context was destroyed',
+//  'Node is either not visible or not an HTMLElement',
+//  'Node is detached from document',
+//  'net::ERR_ABORTED'
+//];
 
 module.exports = class HooksHelpers extends Helper {
   getHelper() {
-    return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return this.helpers['Playwright'];
+  }
+
+  _init() {
+    // Register event listeners
+    event.dispatcher.on(event.step.before, (step) => this._beforeStep(step));
+    event.dispatcher.on(event.step.after, (step) => this._afterStep(step));
   }
 
   _test(test) {
@@ -17,14 +24,6 @@ module.exports = class HooksHelpers extends Helper {
     if (retries !== -1 || test.retries() === -1) {
       test.retries(retries);
     }
-  }
-
-  _beforeSuite() {
-    recorder.retry({
-      retries: 10,
-      minTimeout: 1000,
-      when: err => lodash.some(retryableErrors, retryableError => err.message.indexOf(retryableError) > -1),
-    });
   }
 
   _beforeStep(step) {

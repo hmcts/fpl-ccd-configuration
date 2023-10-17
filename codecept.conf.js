@@ -1,6 +1,11 @@
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
+const config = {
+  WaitForTimeout: 5000,
+  WaitForAction: 350,
+};
+
 exports.config = {
   output: './output',
   multiple: {
@@ -39,19 +44,18 @@ exports.config = {
     },
   },
   helpers: {
-    Puppeteer: {
-      show: process.env.SHOW_BROWSER_WINDOW || false,
-      restart: false,
-      keepCookies: true,
-      keepBrowserState: true,
-      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
-      chrome: {
-        ignoreHTTPSErrors: true,
-        args: process.env.DISABLE_WEB_SECURITY === 'true' ? [`--disable-web-security`,] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
-      },
-      windowSize: '1280x960',
-    },
+  Playwright: {
+      url: 'http://localhost:3000',
+      show: true,
+      browser: 'chromium',
+          waitForTimeout: config.WaitForTimeout,
+          waitForAction: 350,
+          timeout: config.WaitForTimeout,
+          retries: 5,
+          waitForNavigation: 'load',
+          ignoreHTTPSErrors: true,
+          bypassCSP: true
+          },
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
     },

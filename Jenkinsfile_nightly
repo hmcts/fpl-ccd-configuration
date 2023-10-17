@@ -108,6 +108,42 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
+  afterSuccess('fullFunctionalTest') {
+
+    Exception ex = null;
+    try {
+      builder.gradle('e2eTestsNightlyFirefox')
+    } catch (Exception caught) {
+      ex = caught;
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTestsNightlyFirefox",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report Firefox"
+      ]
+      try {
+        builder.gradle('e2eTestsNightlyMsEdge')
+      } finally {
+
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report MS Edge"
+        ]
+        if (ex != null) {
+          throw ex;
+        }
+      }
+    }
+  }
+
   before('crossBrowserTest') {
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')

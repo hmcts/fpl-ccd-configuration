@@ -1,6 +1,7 @@
 const {getAccessibilityTestResult} = require('./accessibility/runner');
 const {generateAccessibilityReport} = require('../reporters/accessibility-reporter/customReporter');
 const testConfig = require('../config.js');
+const { Helper } = require('codeceptjs');
 
 class Generate_report_helper extends Helper {
 
