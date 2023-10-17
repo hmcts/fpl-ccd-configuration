@@ -24,11 +24,14 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -52,9 +55,12 @@ public class MigrateCaseController extends CallbackController {
     private final AuthTokenGenerator authToken;
 
     private final MigrateCaseService migrateCaseService;
+    private final MigrateCFVService migrateCFVService;
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-CFV", this::runCFV,
+        "DFPL-CFV-Rollback", this::runCFVrollback,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1804", this::run1804,
@@ -65,7 +71,7 @@ public class MigrateCaseController extends CallbackController {
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
             if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                && ((Collection) entrySet.getValue()).isEmpty())) {
+                                                && ((Collection) entrySet.getValue()).isEmpty())) {
                 caseDetails.getData().remove(entrySet.getKey());
             } else {
                 caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
@@ -76,7 +82,7 @@ public class MigrateCaseController extends CallbackController {
     private void runCFV(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV");
+            .get("hasBeenCFVMigrated"), "DFPL-CFV");
         Map<String, Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
         changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
@@ -96,7 +102,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void runCFVrollback(CaseDetails caseDetails) {
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
+            .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
 
         Map<String, Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
@@ -188,8 +194,8 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking booking = hearing.getValue();
 
                 booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                        .judgeEnterManually(null)
-                        .judgeJudicialUser(null)
+                    .judgeEnterManually(null)
+                    .judgeJudicialUser(null)
                     .build());
                 hearing.setValue(booking);
                 return hearing;
@@ -242,11 +248,11 @@ public class MigrateCaseController extends CallbackController {
                     Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
                     if (uuid.isPresent()) {
                         el.setValue(val.toBuilder()
-                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                    .judgeJudicialUser(JudicialUser.builder()
-                                        .idamId(uuid.get())
-                                        .build())
+                            .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
+                                .judgeJudicialUser(JudicialUser.builder()
+                                    .idamId(uuid.get())
                                     .build())
+                                .build())
                             .build());
                         return el;
                     } else {
@@ -279,7 +285,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
-  
+
     private void run1802(CaseDetails caseDetails) {
         var migrationId = "DFPL-1802";
         var possibleCaseIds = List.of(1683295453455055L);

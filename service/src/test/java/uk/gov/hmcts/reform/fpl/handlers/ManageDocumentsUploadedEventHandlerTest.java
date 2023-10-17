@@ -211,7 +211,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
         if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
             expectedNewDocuments = eventData.getNewDocuments();
-            levelAllowed = NON_CONFIDENTIAL_ALLOWED;
+            levelAllowed = NOccd-definition/AuthorisationCaseField/CareSupervision/solicitor.jsonN_CONFIDENTIAL_ALLOWED;
         } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
             expectedNewDocuments = eventData.getNewDocumentsLA();
             levelAllowed = LA_ALLOWED;
