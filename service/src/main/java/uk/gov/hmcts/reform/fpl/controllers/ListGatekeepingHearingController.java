@@ -257,57 +257,20 @@ public class ListGatekeepingHearingController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        // todo - refactor me, triple nested if!!!
-        JudgeAndLegalAdvisor hearingJudge;
         if (NO.equals(caseData.getUseAllocatedJudge()) || isEmpty(caseData.getUseAllocatedJudge())) {
-            final Optional<String> error = judicialService.validateHearingJudge(caseData);
-
-            if (error.isPresent()) {
-                return respond(caseDetails, List.of(error.get()));
-            }
-
-            if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-                Optional<JudicialUserProfile> jup = judicialService
-                    .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
-
-                if (jup.isPresent()) {
-                    // found judge details from JRD
-                    hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    return respond(caseDetails,
-                        List.of("No Judge could be found, please retry your search or enter their"
-                            + " details manually."));
-                }
-            } else {
-                // entered the judge manually, want to use a custom hearing judge
-                // check if we can use our mappings to manually add a UUID based on their email
-                Optional<String> possibleId = judicialService
-                    .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
-                if (possibleId.isPresent()) {
-                    // we've found a match in our map - add it to the case details
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .judgeJudicialUser(JudicialUser.builder()
-                            .idamId(possibleId.get())
-                            .build())
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    // cannot find the email entered in our map, so just default to the info provided
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                }
+            // validate + add to caseDetails the judgeAndLegalAdvisor field
+            List<String> possibleErrors = judicialService.validateHearingJudgeEmail(caseDetails, caseData);
+            if (possibleErrors.size() > 0) {
+                return respond(caseDetails, possibleErrors);
             }
         } else {
             // hearing judge == allocated judge
-            hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+            JudgeAndLegalAdvisor hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
                 .legalAdvisorName(caseData.getLegalAdvisorName())
                 .build();
+            caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         }
 
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
 
         return respond(caseDetails);
     }

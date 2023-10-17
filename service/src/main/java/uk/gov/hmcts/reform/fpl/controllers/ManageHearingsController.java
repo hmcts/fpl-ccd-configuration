@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -35,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
-import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -329,59 +327,20 @@ public class ManageHearingsController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        // todo - refactor me, triple nested if!!!
-
-        JudgeAndLegalAdvisor hearingJudge;
         if (caseData.getUseAllocatedJudge().equals(NO)) {
-            final Optional<String> error = judicialService.validateHearingJudge(caseData);
-
-            if (error.isPresent()) {
-                return respond(caseDetails, List.of(error.get()));
-            }
-
-            if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
-                // not entering manually - lookup the personal_code in JRD
-                Optional<JudicialUserProfile> jup = judicialService
-                    .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
-
-                if (jup.isPresent()) {
-                    // we have managed to search the user from the personal code
-                    hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    return respond(caseDetails,
-                        List.of("No Judge could be found, please retry your search or enter their"
-                            + " details manually."));
-                }
-            } else {
-                // entered the judge manually - lookup in our mappings and add UUID manually
-                Optional<String> possibleId = judicialService
-                    .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
-
-                if (possibleId.isPresent()) {
-                    // we can manually assign the role again based on our knowledge of JRD/SRD
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .judgeJudicialUser(JudicialUser.builder()
-                            .idamId(possibleId.get())
-                            .build())
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                } else {
-                    // We cannot assign manually, just have to leave the judge as is.
-                    hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
-                        .legalAdvisorName(caseData.getLegalAdvisorName())
-                        .build();
-                }
+            // validate + add to caseDetails the judgeAndLegalAdvisor field
+            List<String> possibleErrors = judicialService.validateHearingJudgeEmail(caseDetails, caseData);
+            if (possibleErrors.size() > 0) {
+                return respond(caseDetails, possibleErrors);
             }
         } else {
             // we want to use the existing allocated judge
-            hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+            JudgeAndLegalAdvisor hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
                 .legalAdvisorName(caseData.getLegalAdvisorName())
                 .build();
+            caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         }
 
-        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
 
         return respond(caseDetails);
     }

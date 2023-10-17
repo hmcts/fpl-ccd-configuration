@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -392,4 +394,50 @@ public class JudicialService {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
     }
 
+    public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
+        JudgeAndLegalAdvisor hearingJudge;
+
+        final Optional<String> error = this.validateHearingJudge(caseData);
+
+        if (error.isPresent()) {
+            return List.of(error.get());
+        }
+
+        if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
+            // not entering manually - lookup the personal_code in JRD
+            Optional<JudicialUserProfile> jup = this
+                .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+
+            if (jup.isPresent()) {
+                // we have managed to search the user from the personal code
+                hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            } else {
+                return List.of("No Judge could be found, please retry your search or enter their"
+                        + " details manually.");
+            }
+        } else {
+            // entered the judge manually - lookup in our mappings and add UUID manually
+            Optional<String> possibleId = this
+                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
+
+            if (possibleId.isPresent()) {
+                // we can manually assign the role again based on our knowledge of JRD/SRD
+                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId(possibleId.get())
+                        .build())
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            } else {
+                // We cannot assign manually, just have to leave the judge as is.
+                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            }
+        }
+        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
+        return List.of();
+    }
 }
