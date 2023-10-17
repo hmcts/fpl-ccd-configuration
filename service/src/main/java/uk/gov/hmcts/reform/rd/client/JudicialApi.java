@@ -20,7 +20,10 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 )
 public interface JudicialApi {
 
-    @PostMapping("/refdata/judicial/users")
+    @PostMapping(
+        value = "/refdata/judicial/users",
+        headers = "accept=application/vnd.jrd.api+json;Version=2.0"
+    )
     List<JudicialUserProfile> findUsers(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
