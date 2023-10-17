@@ -107,7 +107,7 @@ module.exports = {
   },
 
   async completeEvent(button, changeDetails, confirmationPage = false, selector = '.mat-tab-list') {
-    await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+    await this.retryUntilExists(() => this.click('submit'), '.check-your-answers');
     if (changeDetails != null) {
       await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
     }
