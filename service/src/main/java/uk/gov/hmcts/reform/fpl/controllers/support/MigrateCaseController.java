@@ -71,7 +71,7 @@ public class MigrateCaseController extends CallbackController {
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
             if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                                                && ((Collection) entrySet.getValue()).isEmpty())) {
+                && ((Collection) entrySet.getValue()).isEmpty())) {
                 caseDetails.getData().remove(entrySet.getKey());
             } else {
                 caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
@@ -82,7 +82,7 @@ public class MigrateCaseController extends CallbackController {
     private void runCFV(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-            .get("hasBeenCFVMigrated"), "DFPL-CFV");
+                .get("hasBeenCFVMigrated"), "DFPL-CFV");
         Map<String, Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
         changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
@@ -102,7 +102,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void runCFVrollback(CaseDetails caseDetails) {
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-            .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
+                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
 
         Map<String, Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
@@ -194,8 +194,8 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking booking = hearing.getValue();
 
                 booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                    .judgeEnterManually(null)
-                    .judgeJudicialUser(null)
+                        .judgeEnterManually(null)
+                        .judgeJudicialUser(null)
                     .build());
                 hearing.setValue(booking);
                 return hearing;
@@ -248,11 +248,11 @@ public class MigrateCaseController extends CallbackController {
                     Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
                     if (uuid.isPresent()) {
                         el.setValue(val.toBuilder()
-                            .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                .judgeJudicialUser(JudicialUser.builder()
-                                    .idamId(uuid.get())
+                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
+                                    .judgeJudicialUser(JudicialUser.builder()
+                                        .idamId(uuid.get())
+                                        .build())
                                     .build())
-                                .build())
                             .build());
                         return el;
                     } else {
