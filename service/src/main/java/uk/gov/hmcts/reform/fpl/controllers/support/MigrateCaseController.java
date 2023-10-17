@@ -285,7 +285,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
-
+  
     private void run1802(CaseDetails caseDetails) {
         var migrationId = "DFPL-1802";
         var possibleCaseIds = List.of(1683295453455055L);
