@@ -408,7 +408,7 @@
     "CaseEventID": "changeOtherToRespondent",
     "CaseFieldID": "transformedRespondent",
     "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
-    "EventElementLabel": "Telephone Number",
+    "EventElementLabel": "*Telephone Number",
     "DisplayContext": "MANDATORY"
   }
 ]
