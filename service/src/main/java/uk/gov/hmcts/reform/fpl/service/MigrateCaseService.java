@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -756,7 +757,6 @@ public class MigrateCaseService {
         return Map.of("relatingLA", relatingLA.get());
     }
 
-
     public Map<String, Object> removeSealedCMO(CaseData caseData,
                                                String migrationId,
                                                UUID expectedCMOId,
@@ -787,5 +787,27 @@ public class MigrateCaseService {
         }
 
         return resultMap;
+    }
+
+    public void clearChangeOrganisationRequest(CaseDetails caseDetails) {
+        caseDetails.getData().remove("changeOrganisationRequestField");
+    }
+
+    public Map<String, Object> removeElementFromLocalAuthorities(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedLocalAuthorityId) {
+        Long caseId = caseData.getId();
+        List<Element<LocalAuthority>> localAuthoritiesList =
+            caseData.getLocalAuthorities().stream()
+                .filter(el -> !el.getId().equals(expectedLocalAuthorityId))
+                .toList();
+
+        if (localAuthoritiesList.size() != caseData.getLocalAuthorities()
+            .size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid local authorities",
+                migrationId, caseId));
+        }
+        return Map.of("localAuthorities", localAuthoritiesList);
     }
 }

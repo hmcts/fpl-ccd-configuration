@@ -195,10 +195,19 @@ public class DraftOrderService {
                 .flatMap(id -> findElement(id, hearings))
                  .orElse(null);
 
+            List<HearingOrder> existingC21Documents = unwrapElements(unwrapElements(bundles).stream()
+                .filter(bundle -> Objects.equals(bundle.getHearingId(), selectedHearingId))
+                .findFirst()
+                .map(HearingOrdersBundle::getOrders)
+                .orElse(List.of()));
+
             for (int i = 0; i < eventData.getCurrentHearingOrderDrafts().size(); i++) {
                 Element<HearingOrder> hearingOrder = eventData.getCurrentHearingOrderDrafts().get(i);
-                hearingOrder.getValue().setDateSent(time.now().toLocalDate());
-                hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+
+                if (!existingC21Documents.contains(hearingOrder.getValue())) {
+                    hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+                    hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+                }
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
             addOrdersToBundle(bundles,
