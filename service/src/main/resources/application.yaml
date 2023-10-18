@@ -259,7 +259,6 @@ scheduler:
         instanceId: AUTO
       jobStore:
         isClustered: true
-        class: org.quartz.impl.jdbcjobstore.JobStoreTX
         driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
         dataSource: schedulerDataSource
   schedulerConf:
