@@ -4,7 +4,7 @@ const config = require('../../config');
 module.exports = {
 
   fields: {
-    jurisdiction: '#cc-jurisdiction',
+    jurisdiction: 'cc-jurisdiction',
     caseType: '#cc-case-type',
     event: '#cc-event',
     outsourcingLAs: '#outsourcingLAs',
@@ -18,6 +18,7 @@ module.exports = {
   populateForm(caseName, outsourcingLA) {
     // wait until the dropdown is populated
     I.runAccessibilityTest();
+
     I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.grabCurrentUrl();

@@ -30,7 +30,11 @@ module.exports = class BrowserHelpers extends Helper {
 
   async hasSelector(selector) {
     const elements = await this.locateSelector(selector);
-    return elements.length > 0;
+    if (elements !== undefined) {
+      return elements.length > 0;
+    } else {
+      return false;
+    }
   }
 
   async waitForSelector(locator, timeout = 30) {
