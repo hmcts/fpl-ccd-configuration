@@ -13,7 +13,8 @@
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
       "caseworker-caa",
-      "caseworker-approver"
+      "caseworker-approver",
+      "caseworker-ras-validation"
     ],
     "CRUD": "CRU"
   },

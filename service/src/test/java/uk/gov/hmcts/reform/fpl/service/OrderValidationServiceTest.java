@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -85,7 +86,7 @@ class OrderValidationServiceTest {
     private CaseData buildCaseDataWithMandatoryFields(final OrderStatus orderStatus) {
         return buildCaseData(orderStatus).toBuilder()
             .respondents1(buildRespondent("Uncle"))
-            .children1(buildChild("Boy", time.now().toLocalDate().minusYears(1)))
+            .children1(buildChild(ChildGender.BOY, time.now().toLocalDate().minusYears(1)))
             .hearingDetails(createHearingBookingsFromInitialDate(LocalDateTime.now()))
             .allocatedJudge(Judge.builder().build())
             .build();
@@ -106,7 +107,7 @@ class OrderValidationServiceTest {
             .build();
     }
 
-    private static List<Element<Child>> buildChild(final String gender, final LocalDate dob) {
+    private static List<Element<Child>> buildChild(final ChildGender gender, final LocalDate dob) {
         return wrapElements(Child.builder()
             .party(
                 ChildParty.builder()

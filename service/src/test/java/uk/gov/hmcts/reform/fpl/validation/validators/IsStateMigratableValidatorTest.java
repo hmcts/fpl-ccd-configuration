@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -56,7 +57,7 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
             .children1(wrapElements(
                 Child.builder()
                     .party(ChildParty.builder()
-                        .gender("Male")
+                        .gender(ChildGender.BOY)
                         .build())
                     .build()))
             .build();
@@ -73,7 +74,7 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
                 Child.builder()
                     .finalOrderIssued("No")
                     .party(ChildParty.builder()
-                        .gender("Male")
+                        .gender(ChildGender.BOY)
                         .build())
                     .build()))
             .build();
@@ -89,7 +90,7 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
             .children1(wrapElements(
                 Child.builder()
                     .party(ChildParty.builder()
-                        .gender("Male")
+                        .gender(ChildGender.BOY)
                         .build())
                     .build()))
             .build();
