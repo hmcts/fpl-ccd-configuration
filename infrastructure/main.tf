@@ -15,6 +15,14 @@ provider "azurerm" {
   features {}
 }
 
+#DFPL-1754: postgres v15 flexible server
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.subscription
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = var.location
@@ -55,6 +63,43 @@ module "key-vault" {
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
   create_managed_identity    = true
+}
+
+#DFPL-1754: postgres v15 flexible server
+module "fpl-scheduler-postgres-v15--flexible-server" {
+
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
+  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server-${var.env}"
+  env                = var.env
+
+  product            = var.product
+  component          = var.component
+  business_area      = "cft"
+
+  location           = var.location
+
+  pgsql_databases = [
+    {
+      name : "fpl_scheduler"
+    }
+  ]
+
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql, pg_stat_statements, pg_buffercache"
+    }
+  ]
+
+  pgsql_version      = 15
+  common_tags        = var.common_tags
+
+  admin_user_object_id = var.jenkins_AAD_objectId
+
 }
 
 module "fpl-scheduler-db" {
