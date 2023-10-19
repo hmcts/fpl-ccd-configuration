@@ -1377,5 +1377,33 @@
     "CaseFieldID": "gatekeepingOrderListOrSendToAdminReason",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseFlags",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentFlags",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "applicantFlags",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "flagLauncher",
+    "UserRole": "caseworker-publiclaw-superuser",
+    "CRUD": "CRUD"
   }
 ]
