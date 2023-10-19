@@ -380,7 +380,7 @@ public class ManageHearingsController extends CallbackController {
 
             final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
-            hearingsService.sendNoticeOfHearing(caseData, editedHearingBooking);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, editedHearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingId);
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
@@ -390,7 +390,7 @@ public class ManageHearingsController extends CallbackController {
                 final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
                 final UUID reListedHearingId = hearingsService
                     .adjournAndReListHearing(caseData, adjournedHearingId, reListedHearing);
-                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+                hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
@@ -405,7 +405,7 @@ public class ManageHearingsController extends CallbackController {
                 final UUID reListedHearingId = hearingsService
                     .vacateAndReListHearing(caseData, vacatedHearingId, reListedHearing);
 
-                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+                hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
@@ -418,7 +418,7 @@ public class ManageHearingsController extends CallbackController {
             final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
             final UUID reListedHearingId = hearingsService.reListHearing(caseData, cancelledHearingId, reListedHearing);
 
-            hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
             data.put(SELECTED_HEARING_ID, reListedHearingId);
         } else {
@@ -426,7 +426,7 @@ public class ManageHearingsController extends CallbackController {
             final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
-            hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, hearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
         }
