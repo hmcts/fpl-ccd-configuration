@@ -95,6 +95,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
             "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersPlacementOrderOtherDetails",
             "manageOrdersLeaName",
             "manageOrdersEndDateWithEducationAge",
             "manageOrdersPlacedUnderOrder",
@@ -129,7 +130,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersHearingParty1",
             "manageOrdersHearingParty2",
             "manageOrdersPersonWhoseParenthoodIs",
-            "manageOrdersParentageAction"
+            "manageOrdersParentageAction",
+            "manageOrdersParagraphs",
+            "manageOrdersCostOrders",
+            "manageOrdersPreamblesText"
         );
     }
 }

@@ -44,11 +44,12 @@ exports.config = {
       restart: false,
       keepCookies: true,
       keepBrowserState: true,
-      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
+      waitForNavigation: ['networkidle2'],
+      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '90000'),
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.DISABLE_WEB_SECURITY === 'true' ? [`--disable-web-security`,] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
+        devtools:  false,
       },
       windowSize: '1280x960',
     },
@@ -138,7 +139,10 @@ exports.config = {
     manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
   },
   plugins: {
-    pauseOnFail: {},
+
+    pauseOnFail: {
+      enabled: false
+    },
     retryFailedStep: {
       enabled: true,
     },

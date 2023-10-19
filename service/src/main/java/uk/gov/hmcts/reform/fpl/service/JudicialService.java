@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -30,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -151,6 +151,20 @@ public class JudicialService {
         }
     }
 
+    public Optional<RoleCategory> getUserRoleCategory(String email) {
+        Optional<String> judge = judicialUsersConfiguration.getJudgeUUID(email);
+        Optional<String> legalAdviser = legalAdviserUsersConfiguration.getLegalAdviserUUID(email);
+
+        if (judge.isPresent()) {
+            return Optional.of(RoleCategory.JUDICIAL);
+        }
+        if (legalAdviser.isPresent()) {
+            return Optional.of(RoleCategory.LEGAL_OPERATIONS);
+        }
+
+        return Optional.empty();
+    }
+
     /**
      * Gets the allocated judge on the case, and checks for a valid email address.
      *
@@ -212,18 +226,28 @@ public class JudicialService {
 
         return judgeTimes.stream()
             .filter(time -> ObjectUtils.isEmpty(time.getEndTime()) || time.getEndTime().isAfter(ZonedDateTime.now()))
-            .map(time -> RoleAssignmentUtils.buildRoleAssignment(
-                caseData.getId(),
-                time.getJudgeId(),
-                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(time.getJudgeType())
-                    ? HEARING_LEGAL_ADVISER.getRoleName()
-                    : HEARING_JUDGE.getRoleName(),
-                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(time.getJudgeType())
-                    ? RoleCategory.LEGAL_OPERATIONS
-                    : RoleCategory.JUDICIAL,
-                time.getStartTime(),
-                time.getEndTime() // no end date
-            )).toList();
+            .map(time -> {
+                Optional<RoleCategory> userRoleCategory = this.getUserRoleCategory(time.getEmailAddress());
+
+                if (userRoleCategory.isEmpty()) {
+                    return null;
+                }
+
+                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
+
+                return RoleAssignmentUtils.buildRoleAssignment(
+                    caseData.getId(),
+                    time.getJudgeId(),
+                    isLegalAdviser
+                        ? HEARING_LEGAL_ADVISER.getRoleName()
+                        : HEARING_JUDGE.getRoleName(),
+                    userRoleCategory.get(),
+                    time.getStartTime(),
+                    time.getEndTime() // no end date
+                );
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     public void migrateJudgeRoles(List<RoleAssignment> roles) {

@@ -64,7 +64,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final State NON_RESTRICTED_STATE = SUBMITTED;
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String ORGANISATION_NAME = "Test organisation";
     private static final String ORGANISATION_ID = "dun dun duuuuuuuun *synthy*";
     private static final String MAIN_SOLICITOR_FIRST_NAME = "dun dun duuuuuuuun *orchestral*";
