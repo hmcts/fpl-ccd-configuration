@@ -305,5 +305,14 @@
     <notes>Spring GraphQL - not used in FPL</notes>
     <vulnerabilityName>CVE-2023-34047</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+   file name: json-20210307.jar
+   ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.json/json@.*$</packageUrl>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
+
+
 </suppressions>
 
