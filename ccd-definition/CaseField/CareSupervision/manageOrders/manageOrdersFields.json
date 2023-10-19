@@ -1063,5 +1063,32 @@
     "Label": "End date",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersPreamblesText",
+    "FieldType": "TextArea",
+    "Label": "Preambles Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersParagraphs",
+    "FieldType": "TextArea",
+    "Label": "Paragraphs",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersCostOrders",
+    "FieldType": "TextArea",
+    "Label": "Cost Orders",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
