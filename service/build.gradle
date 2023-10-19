@@ -363,7 +363,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.0'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.1'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
   testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.1.1'
 
