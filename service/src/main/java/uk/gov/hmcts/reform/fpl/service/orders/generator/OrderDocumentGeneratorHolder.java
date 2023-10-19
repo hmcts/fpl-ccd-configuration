@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class OrderDocumentGeneratorHolder {
 
     // parameter generators
+    private final A81PlacementBlankOrderDocumentParameterGenerator a81PlacementBlankOrderDocumentParameterGenerator;
     private final A70PlacementOrderDocumentParameterGenerator a70PlacementOrderDocumentParameterGenerator;
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
@@ -58,6 +59,7 @@ public class OrderDocumentGeneratorHolder {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
                 a70PlacementOrderDocumentParameterGenerator,
+                a81PlacementBlankOrderDocumentParameterGenerator,
                 c21BlankOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator,
                 c26SecureAccommodationOrderDocumentParameterGenerator,
