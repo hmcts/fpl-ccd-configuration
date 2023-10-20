@@ -71,7 +71,7 @@ public class LegalAdviserUsersConfiguration {
 
     @Recover
     public Map<String, String> recoverFailedLegalAdviserCall(FeignException e) {
-        log.error("Recover - Could not download list of publiclaw legal advisers from SRD", e);
+        log.error("Could not download list of publiclaw legal advisers from SRD", e);
         return Map.of();
     }
 
