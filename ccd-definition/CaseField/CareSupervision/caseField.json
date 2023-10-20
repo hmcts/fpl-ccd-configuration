@@ -11,6 +11,78 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialUser",
+    "Label": "Search for Judge",
+    "FieldType": "JudicialUser",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judicialUserHearingJudge",
+    "Label": "Search for Judge",
+    "FieldType": "JudicialUser",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manualJudgeAllocationWarning",
+    "Label": "You are entering legal adviser details manually - this will allocate the case roles but any generic inbox email address detailed will create tasks to Available Tasks and not My Tasks.",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manualJudgeAllocationWarningHearingJudge",
+    "Label": "You are entering legal adviser details manually - this will allocate the case roles but any generic inbox email address detailed will create tasks to Available Tasks and not My Tasks.",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "enterManually",
+    "Label": "Add legal adviser details",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "enterManuallyHearingJudge",
+    "Label": "Add legal adviser details",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "useAllocatedJudge",
+    "Label": "Is the allocated judge or magistrate sitting this hearing?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "legalAdvisorName",
+    "Label": "Justices' Legal Adviser's full name",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "taskList",
     "Label": "Case name",
     "FieldType": "Text",
@@ -787,6 +859,26 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "tempAllocatedJudge",
+    "Label": "Allocated Judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary field to workaround hidden fields being removed (for the case where we search for a judge)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingJudge",
+    "Label": "Hearing Judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temp field for assigning a hearing judge"
   },
   {
     "LiveFrom": "01/01/2017",
