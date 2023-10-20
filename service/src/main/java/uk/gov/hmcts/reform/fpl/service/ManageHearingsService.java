@@ -317,20 +317,24 @@ public class ManageHearingsService {
         }
     }
 
-    public void sendNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
+    public void buildNoticeOfHearingIfYes(CaseData caseData, HearingBooking hearingBooking) {
         if (YES.getValue().equals(caseData.getSendNoticeOfHearing())) {
-            DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
-            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
-                NOTICE_OF_HEARING);
-            Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
-                NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
-
-            hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
-
-            Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
-                hearingBooking::setTranslationRequirements
-            );
+            buildNoticeOfHearing(caseData, hearingBooking);
         }
+    }
+
+    public void buildNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
+        DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
+            NOTICE_OF_HEARING);
+        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+            NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
+
+        hearingBooking.setNoticeOfHearing(DocumentReference.buildFromDocument(document));
+
+        Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
+            hearingBooking::setTranslationRequirements
+        );
     }
 
     public void addOrUpdate(Element<HearingBooking> hearingBooking, CaseData caseData) {
@@ -419,7 +423,14 @@ public class ManageHearingsService {
             HEARING_MINUTES,
             HEARING_HOURS,
             HEARING_DURATION,
-            HEARING_END_DATE_TIME
+            HEARING_END_DATE_TIME,
+            "judicialUser",
+            "enterManually",
+            "judicialUserHearingJudge",
+            "enterManuallyHearingJudge",
+            "hearingJudge",
+            "allocatedJudgeLabel",
+            "useAllocatedJudge"
         );
     }
 
