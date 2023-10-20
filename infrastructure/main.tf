@@ -86,6 +86,8 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
+  pgsql_version      = "15"
+
   pgsql_server_configuration = [
     {
       name  = "azure.extensions"
@@ -93,7 +95,6 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  pgsql_version      = "14"
   common_tags        = var.common_tags
 
   admin_user_object_id = var.jenkins_AAD_objectId
