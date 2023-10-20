@@ -25,12 +25,11 @@ module.exports = class BrowserHelpers extends Helper {
 
   async locateSelector(selector) {
     const helper = this.getHelper();
-    return helper.page.locator(selector).elements(); // Use page.locator for Playwright
+    return helper._locate(selector);
   }
 
   async hasSelector(selector) {
-    const elements = await this.locateSelector(selector);
-    return elements.length > 0;
+    return (await this.locateSelector(selector)).length;
   }
 
   async waitForSelector(locator, timeout = 30) {
