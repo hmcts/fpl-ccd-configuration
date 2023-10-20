@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.migration.HearingJudgeTime;
@@ -39,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils.buildRoleAssignment;
 
 @Slf4j
@@ -112,6 +116,45 @@ public class JudicialService {
     }
 
     /**
+     * Assign an allocated-judge on a case, and REMOVE all existing allocated-[users].
+     *
+     * @param caseId the case id to add a case role on
+     * @param userId the user to assign allocated-judge to
+     */
+    public void assignAllocatedJudge(Long caseId, String userId, boolean isLegalAdviser) {
+        // remove existing judges/legal advisers (if any) by setting their role assignment to expire now
+        removeExistingAllocatedJudgesAndLegalAdvisers(caseId);
+
+        // add new allocated judge
+        if (isLegalAdviser) {
+            roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), ALLOCATED_LEGAL_ADVISER,
+                ZonedDateTime.now(), null);
+        } else {
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), ALLOCATED_JUDGE, ZonedDateTime.now(),
+                null);
+        }
+    }
+
+    /**
+     * Assign a hearing-judge on a case, and SET all existing hearing-[users] at that time to expire.
+     *
+     * @param caseId   the case id to add a case role on
+     * @param userId   the user to assign hearing-judge to
+     * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
+     */
+    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting, ZonedDateTime ending,
+                                   boolean isLegalAdviser) {
+        setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
+
+        if (isLegalAdviser) {
+            roleAssignmentService.assignLegalAdvisersRole(caseId, List.of(userId), HEARING_LEGAL_ADVISER, starting,
+                ending);
+        } else {
+            roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, ending);
+        }
+    }
+
+    /**
      * Calls to Judicial Reference Data to check if a judge exists.
      *
      * @param personalCode the judge's personal_code to check
@@ -132,11 +175,54 @@ public class JudicialService {
     }
 
     /**
+     * Validate a JudicialUser field - if they don't have a personalCode then return an error.
+     *
+     * @param judicialUser the judicial user to check
+     * @return an Optional error message if the judge could not be found or was empty
+     */
+    public Optional<String> validateJudicialUserField(JudicialUser judicialUser) {
+        if (isEmpty(judicialUser) || isEmpty(judicialUser.getPersonalCode())) {
+            return Optional.of("You must search for a judge or enter their details manually");
+        }
+
+        if (!this.checkJudgeExists(judicialUser.getPersonalCode())) {
+            return Optional.of("Judge could not be found, please search again or enter their details manually");
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Attempts to retrieve a Judicial User Profile from Judicial Reference Data based on a given personalCode.
+     *
+     * @param personalCode the Judicial user's personalCode
+     * @return An optional JudicialUserProfile containing the details of the Judge
+     */
+    @Retryable(value = {FeignException.class}, label = "Search JRD for a judge by personal code")
+    public Optional<JudicialUserProfile> getJudge(String personalCode) {
+        if (isEmpty(personalCode)) {
+            return Optional.empty();
+        }
+        String systemUserToken = systemUserService.getSysUserToken();
+        List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
+            authTokenGenerator.generate(),
+            JUDICIAL_PAGE_SIZE,
+            JudicialUserRequest.fromPersonalCode(personalCode));
+
+        if (judges.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(judges.get(0));
+        }
+    }
+
+    /**
      * Lookup a specific email address in our lookup map.
      *
      * @param email the email to lookup
      * @return an Optional UUID String containing the user's idamId
      */
+    @Retryable(value = {FeignException.class}, label = "Search IDAM for a UUID by email address")
     public Optional<String> getJudgeUserIdFromEmail(String email) {
         if (isEmpty(email)) {
             return Optional.empty();
@@ -194,6 +280,47 @@ public class JudicialService {
             .collect(Collectors.toSet());
     }
 
+    // TODO - see if these can be combined/parameterised somehow
+    public Optional<String> validateAllocatedJudge(CaseData caseData) {
+        Optional<String> error;
+        if (caseData.getEnterManually().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUser());
+        } else {
+            // validate manual judge details
+            String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
+    public Optional<String> validateTempAllocatedJudge(CaseData caseData) {
+        Optional<String> error;
+        if (caseData.getEnterManually().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUser());
+        } else {
+            // validate manual judge details
+            String email = caseData.getTempAllocatedJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
+
+    public Optional<String> validateHearingJudge(CaseData caseData) {
+        Optional<String> error;
+        if (caseData.getEnterManuallyHearingJudge().equals(YesNo.NO)) {
+            // validate judge
+            error = this.validateJudicialUserField(caseData.getJudicialUserHearingJudge());
+        } else {
+            // validate manual judge details
+            String email = caseData.getHearingJudge().getJudgeEmailAddress();
+            error = validateEmailService.validate(email);
+        }
+        return error;
+    }
+
     public List<RoleAssignment> getHearingJudgeRolesForMigration(CaseData caseData) {
         List<HearingBooking> bookings = caseData.getAllNonCancelledHearings()
             .stream()
@@ -206,8 +333,7 @@ public class JudicialService {
             HearingBooking booking = bookings.get(i);
             HearingBooking after = (i < bookings.size() - 1) ? bookings.get(i + 1) : null;
 
-            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
-                || ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
+            if (ObjectUtils.isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
                 continue; // no judge UUID to grant roles on
             }
 
@@ -268,4 +394,50 @@ public class JudicialService {
         roleAssignmentService.deleteAllRolesOnCase(caseId);
     }
 
+    public List<String> validateHearingJudgeEmail(CaseDetails caseDetails, CaseData caseData) {
+        JudgeAndLegalAdvisor hearingJudge;
+
+        final Optional<String> error = this.validateHearingJudge(caseData);
+
+        if (error.isPresent()) {
+            return List.of(error.get());
+        }
+
+        if (caseData.getEnterManuallyHearingJudge().equals(NO)) {
+            // not entering manually - lookup the personal_code in JRD
+            Optional<JudicialUserProfile> jup = this
+                .getJudge(caseData.getJudicialUserHearingJudge().getPersonalCode());
+
+            if (jup.isPresent()) {
+                // we have managed to search the user from the personal code
+                hearingJudge = JudgeAndLegalAdvisor.fromJudicialUserProfile(jup.get()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            } else {
+                return List.of("No Judge could be found, please retry your search or enter their"
+                        + " details manually.");
+            }
+        } else {
+            // entered the judge manually - lookup in our mappings and add UUID manually
+            Optional<String> possibleId = this
+                .getJudgeUserIdFromEmail(caseData.getHearingJudge().getJudgeEmailAddress());
+
+            if (possibleId.isPresent()) {
+                // we can manually assign the role again based on our knowledge of JRD/SRD
+                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId(possibleId.get())
+                        .build())
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            } else {
+                // We cannot assign manually, just have to leave the judge as is.
+                hearingJudge = JudgeAndLegalAdvisor.from(caseData.getHearingJudge()).toBuilder()
+                    .legalAdvisorName(caseData.getLegalAdvisorName())
+                    .build();
+            }
+        }
+        caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
+        return List.of();
+    }
 }

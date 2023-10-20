@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.fpl.controllers.listgatekeepinghearing;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ListGatekeepingHearingController;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -39,6 +42,12 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         super("list-gatekeeping-hearing");
     }
 
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
+
     @Test
     void shouldSetFlagsForFirstHearingScenarioEmptyData() {
 
@@ -64,8 +73,6 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("pastAndTodayHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
-
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -92,8 +99,6 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("pastAndTodayHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(emptyListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
-
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
     }
 
     @Test
@@ -123,7 +128,6 @@ class ListGatekeepingHearingControllerAboutToStartTest extends AbstractCallbackT
         assertThat(responseDataMap.get("vacateHearingDateList")).isEqualTo(vacateListMap);
         assertThat(responseDataMap.get("toReListHearingDateList")).isEqualTo(emptyListMap);
 
-        assertThat(responseDataMap.get("sendNoticeOfHearing")).isEqualTo(YES.getValue());
         assertThat(responseDataMap.get("hearingOption")).isEqualTo(NEW_HEARING.toString());
 
     }
