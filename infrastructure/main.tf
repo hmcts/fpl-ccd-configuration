@@ -15,7 +15,6 @@ provider "azurerm" {
   features {}
 }
 
-#DFPL-1754: postgres v15 flexible server
 provider "azurerm" {
   features {}
   skip_provider_registration = true
@@ -65,7 +64,6 @@ module "key-vault" {
   create_managed_identity    = true
 }
 
-#DFPL-1754: postgres v15 flexible server
 module "fpl-scheduler-postgres-v15--flexible-server" {
 
   providers = {
