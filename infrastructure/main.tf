@@ -64,7 +64,7 @@ module "key-vault" {
   create_managed_identity    = true
 }
 
-module "fpl-scheduler-postgres-v15--flexible-server" {
+module "fpl-scheduler-postgres-v15-flexible-server" {
 
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
