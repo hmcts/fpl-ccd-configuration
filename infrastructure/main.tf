@@ -82,7 +82,7 @@ module "fpl-scheduler-postgres-v15--flexible-server" {
 
   pgsql_databases = [
     {
-      name : "fpl_scheduler"
+      name: "scheduler"
     }
   ]
 
