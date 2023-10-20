@@ -25,7 +25,7 @@ async function setupScenario(I, caseViewPage) {
   approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
-Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@prabha Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
