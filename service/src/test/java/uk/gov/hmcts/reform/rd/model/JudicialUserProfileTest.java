@@ -23,6 +23,15 @@ class JudicialUserProfileTest {
     }
 
     @Test
+    void shouldLookupJudgeTitlesCaseInsensitive() {
+        JudicialUserProfile jup = JudicialUserProfile.builder()
+            .fullName("HIS HONOUR JUDGE John Smith")
+            .build();
+
+        assertThat(jup.getTitle()).isEqualTo("His Honour Judge");
+    }
+
+    @Test
     void shouldUseUnknownIfNoJudgeTitle() {
         JudicialUserProfile jup = JudicialUserProfile.builder()
             .fullName("Random Title Here John Smith")

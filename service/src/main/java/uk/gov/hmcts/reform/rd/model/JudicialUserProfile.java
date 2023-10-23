@@ -82,7 +82,7 @@ public class JudicialUserProfile {
             // if no title from JRD - pattern match it from the known list of titles in JRD full name fields
             // todo - test removal once elinks is deployed in prod.
             for (String title : TITLES) {
-                if (fullName.contains(title)) {
+                if (fullName.toLowerCase().contains(title.toLowerCase())) {
                     return title;
                 }
             }
