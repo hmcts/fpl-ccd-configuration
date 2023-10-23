@@ -5,7 +5,7 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "hasSession",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 5,
