@@ -40,8 +40,18 @@ class JudicialUserProfileTest {
         assertThat(jup.getTitle()).isEqualTo("Unknown");
     }
 
+    @Test
+    void shouldUseJudicialUserProfileTitleIfPresent() {
+        JudicialUserProfile jup = JudicialUserProfile.builder()
+            .title("His Honour Judge")
+            .fullName("His Honour Judge John Smith")
+            .build();
+
+        assertThat(jup.getTitle()).isEqualTo("His Honour Judge");
+    }
+
     private static Stream<Arguments> judgeTitleNames() {
-        return List.of("Baroness",
+        return Stream.of("Baroness",
             "Deputy District Judge",
             "District Judge (MC)",
             "District Judge",
@@ -67,7 +77,7 @@ class JudicialUserProfileTest {
             "Judge",
             "Dame",
             "Sir"
-        ).stream().map(Arguments::of);
+        ).map(Arguments::of);
     }
 
 }
