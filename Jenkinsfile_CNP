@@ -92,7 +92,7 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
       ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+        ./ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
       ccdDefinitionFilePath = useShutteredCaseDef == '1'
@@ -101,7 +101,7 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
 
       sh """
         eval \$(./variables/load-${env}-environment-variables.sh)
-        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+        ./ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     }
   }
@@ -199,7 +199,7 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./fpla-docker/bin/add-roles.sh
+      ./bin/add-ccd-user-roles.sh
     """
 
     archiveCoreCaseDataDefinitions('preview')

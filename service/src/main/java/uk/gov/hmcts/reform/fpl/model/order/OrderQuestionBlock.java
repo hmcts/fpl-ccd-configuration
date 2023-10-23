@@ -52,7 +52,9 @@ public enum OrderQuestionBlock {
     CHILD_PLACEMENT("childPlacementQuestions", OrderSection.ORDER_DETAILS, List.of("manageOrdersSerialNumber",
         "manageOrdersBirthCertificateNumber", "manageOrdersBirthCertificateDate",
         "manageOrdersBirthCertificateRegistrationDistrict", "manageOrdersBirthCertificateRegistrationSubDistrict",
-        "manageOrdersBirthCertificateRegistrationCounty")),
+        "manageOrdersBirthCertificateRegistrationCounty", "manageOrdersPlacementOrderOtherDetails")),
+    CHILD_PLACEMENT_FOR_BLANK_ORDER("childPlacementQuestionsForBlankOrder", OrderSection.ORDER_DETAILS, List.of(
+        "manageOrdersPreamblesText", "manageOrdersParagraphs", "manageOrdersCostOrders")),
     TITLE("orderTitle", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle")),
     FURTHER_DIRECTIONS("furtherDirections", OrderSection.ORDER_DETAILS,

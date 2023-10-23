@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -112,7 +114,6 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_NUMBER = "FMN1";
-    private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String JUDGE_EMAIL = "judge@judge.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
@@ -220,6 +221,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
     @MockBean
     private CafcassNotificationService cafcassNotificationService;
+
+    @MockBean
+    private JudicialUsersConfiguration judicialUsersConfiguration;
+
+    @MockBean
+    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");

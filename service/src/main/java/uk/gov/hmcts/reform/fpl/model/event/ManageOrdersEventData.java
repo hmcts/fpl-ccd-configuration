@@ -99,6 +99,7 @@ public class ManageOrdersEventData {
     String manageOrdersBirthCertificateRegistrationDistrict;
     String manageOrdersBirthCertificateRegistrationSubDistrict;
     String manageOrdersBirthCertificateRegistrationCounty;
+    String manageOrdersPlacementOrderOtherDetails;
     String manageOrdersLeaName;
     ManageOrderEndDateOption manageOrdersEndDateWithEducationAge;
     PlacedUnderOrder manageOrdersPlacedUnderOrder;
@@ -145,6 +146,10 @@ public class ManageOrdersEventData {
     DynamicList manageOrdersPartyToBeBefriended2;
     DynamicList manageOrdersPartyToBeBefriended3;
     LocalDate manageOrdersFamilyAssistanceEndDate;
+
+    String manageOrdersPreamblesText;
+    String manageOrdersParagraphs;
+    String manageOrdersCostOrders;
 
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {

@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
@@ -135,7 +136,7 @@ class CaseDataExtractionServiceTest {
             .party(ChildParty.builder()
                 .firstName("John")
                 .lastName("Smith")
-                .gender("Male")
+                .gender(ChildGender.BOY)
                 .dateOfBirth(LocalDate.of(2020, 1, 1))
                 .build())
             .build());
