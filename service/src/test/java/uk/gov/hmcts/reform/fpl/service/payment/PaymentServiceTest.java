@@ -256,6 +256,7 @@ class PaymentServiceTest {
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("customerReference")
+                .organisationName("Swansea City Council")
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(feeForAdditionalApplications))
                 .build();
@@ -263,7 +264,39 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
+        }
+
+        @Test
+        void shouldMakeCorrectPaymentForAdditionalApplicationsWithCorrectNameIfRespondent() {
+            CaseData caseData = buildCaseData(CLIENT_CODE, CUSTOMER_REFERENCE, "John Smith, Respondent 1");
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .organisationName("On behalf of John Smith, Respondent 1")
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
+
+        @Test
+        void shouldMakeCorrectPaymentForAdditionalApplicationsWithCorrectNameIfSecondaryLA() {
+            final String secondaryLA = "Devon County Council";
+            CaseData caseData = buildCaseData(CLIENT_CODE, CUSTOMER_REFERENCE, secondaryLA + ", Secondary LA");
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .organisationName(secondaryLA)
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
         }
 
         @ParameterizedTest
@@ -274,6 +307,7 @@ class PaymentServiceTest {
             CaseData caseData = buildCaseData(CLIENT_CODE, customerReference);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .organisationName("Swansea City Council")
                 .customerReference(BLANK_PARAMETER_VALUE)
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
@@ -282,7 +316,6 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
@@ -294,10 +327,11 @@ class PaymentServiceTest {
                 CUSTOMER_REFERENCE,
                 feeForAdditionalApplications);
 
+            expectedPaymentRequest.setOrganisationName("Swansea City Council");
+
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         @ParameterizedTest
@@ -308,6 +342,7 @@ class PaymentServiceTest {
             when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .organisationName("Swansea City Council")
                 .customerReference(CUSTOMER_REFERENCE)
                 .amount(feeForAdditionalApplications.getCalculatedAmount())
                 .fees(List.of(feeForAdditionalApplications))
@@ -316,20 +351,27 @@ class PaymentServiceTest {
             paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
-            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
         }
 
         private CaseData buildCaseData(String clientCode, String customerReference) {
+            return buildCaseData(clientCode, customerReference, "Swansea City Council, Applicant");
+        }
+
+        private CaseData buildCaseData(String clientCode, String customerReference, String applicantName) {
             return CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(List.of(
                     element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder()
+                            .applicantName(applicantName)
+                            .build())
                         .pbaPayment(PBAPayment.builder()
                             .clientCode(clientCode)
                             .fileReference(customerReference)
                             .pbaNumber(PBA_NUMBER)
                             .build()).build()))).build();
         }
+
 
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()
