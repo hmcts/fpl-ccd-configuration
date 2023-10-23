@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PlacementController extends CallbackController {
 
+    private static final String PLACEMENT = "placement";
     private final PlacementService placementService;
     private final RespondentService respondentService;
     private final CoreCaseDataService coreCaseDataService;
@@ -45,6 +46,11 @@ public class PlacementController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
 
         final CaseDetails caseDetails = request.getCaseDetails();
+
+        /* DFPL-1735.  Working data for a placement is kept in the 'placement' json key.  On some cases
+        this was accidentally stored.  This line removes the key so that a new placement starts afresh. */
+        caseDetails.getData().remove(PLACEMENT);
+
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
@@ -104,7 +110,7 @@ public class PlacementController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
 
         PlacementEventData eventData = placementService.preparePayment(caseData);
-        caseProperties.put("placement", eventData.getPlacement());
+        caseProperties.put(PLACEMENT, eventData.getPlacement());
         caseProperties.put("placementPaymentRequired", eventData.getPlacementPaymentRequired());
         caseProperties.put("placementFee", eventData.getPlacementFee());
 
@@ -166,7 +172,7 @@ public class PlacementController extends CallbackController {
                         updates.put("placements", sealedEventData.getPlacements());
                     }
                     if (isNotEmpty(sealedEventData.getPlacement())) {
-                        updates.put("placement", sealedEventData.getPlacement());
+                        updates.put(PLACEMENT, sealedEventData.getPlacement());
                     }
                 }
                 return updates;
@@ -187,6 +193,7 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
 
         caseDetails.getData().remove("placementIdToBeSealed");
+        caseDetails.getData().remove(PLACEMENT);
 
         return respond(caseDetails);
     }

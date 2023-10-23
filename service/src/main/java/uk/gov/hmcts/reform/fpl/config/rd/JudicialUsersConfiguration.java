@@ -77,7 +77,7 @@ public class JudicialUsersConfiguration {
 
     @Recover
     public Map<String, String> recoverFailedJudgeCall(FeignException e) {
-        log.error("Recover - Could not download list of publiclaw judiciary from JRD", e);
+        log.error("Could not download list of publiclaw judiciary from JRD", e);
         return Map.of();
     }
 

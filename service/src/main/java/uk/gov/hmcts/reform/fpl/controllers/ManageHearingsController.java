@@ -15,12 +15,15 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
+import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -87,6 +90,7 @@ public class ManageHearingsController extends CallbackController {
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
+    private final JudicialService judicialService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -110,6 +114,7 @@ public class ManageHearingsController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.populateHearingLists(caseData));
+        caseDetails.getData().put("enterManuallyHearingJudge", NO.getValue());
 
         return respond(caseDetails);
     }
@@ -319,18 +324,23 @@ public class ManageHearingsController extends CallbackController {
 
     @PostMapping("validate-judge-email/mid-event")
     public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        final CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
-
-        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
-
-            if (error.isPresent()) {
-                return respond(caseDetails, List.of(error.get()));
+        if (caseData.getUseAllocatedJudge().equals(NO)) {
+            // validate + add to caseDetails the judgeAndLegalAdvisor field
+            List<String> possibleErrors = judicialService.validateHearingJudgeEmail(caseDetails, caseData);
+            if (possibleErrors.size() > 0) {
+                return respond(caseDetails, possibleErrors);
             }
+        } else {
+            // we want to use the existing allocated judge
+            JudgeAndLegalAdvisor hearingJudge = JudgeAndLegalAdvisor.from(caseData.getAllocatedJudge()).toBuilder()
+                .legalAdvisorName(caseData.getLegalAdvisorName())
+                .build();
+            caseDetails.getData().put("judgeAndLegalAdvisor", hearingJudge);
         }
+
 
         return respond(caseDetails);
     }
@@ -370,7 +380,7 @@ public class ManageHearingsController extends CallbackController {
 
             final Element<HearingBooking> hearingBookingElement = element(hearingBookingId, editedHearingBooking);
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
-            hearingsService.sendNoticeOfHearing(caseData, editedHearingBooking);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, editedHearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingId);
         } else if (ADJOURN_HEARING == caseData.getHearingOption()) {
@@ -380,7 +390,7 @@ public class ManageHearingsController extends CallbackController {
                 final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
                 final UUID reListedHearingId = hearingsService
                     .adjournAndReListHearing(caseData, adjournedHearingId, reListedHearing);
-                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+                hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
@@ -395,7 +405,7 @@ public class ManageHearingsController extends CallbackController {
                 final UUID reListedHearingId = hearingsService
                     .vacateAndReListHearing(caseData, vacatedHearingId, reListedHearing);
 
-                hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+                hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
@@ -408,7 +418,7 @@ public class ManageHearingsController extends CallbackController {
             final HearingBooking reListedHearing = hearingsService.getCurrentHearingBooking(caseData);
             final UUID reListedHearingId = hearingsService.reListHearing(caseData, cancelledHearingId, reListedHearing);
 
-            hearingsService.sendNoticeOfHearing(caseData, reListedHearing);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, reListedHearing);
 
             data.put(SELECTED_HEARING_ID, reListedHearingId);
         } else {
@@ -416,7 +426,7 @@ public class ManageHearingsController extends CallbackController {
             final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
             hearingsService.addOrUpdate(hearingBookingElement, caseData);
-            hearingsService.sendNoticeOfHearing(caseData, hearingBooking);
+            hearingsService.buildNoticeOfHearingIfYes(caseData, hearingBooking);
 
             data.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
         }
@@ -439,16 +449,23 @@ public class ManageHearingsController extends CallbackController {
         publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest)));
 
+        publishEvent(new HandleHearingModificationRolesEvent(caseData, getCaseDataBefore(callbackRequest)));
+
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())
                 && standardDirectionsService.hasEmptyDates(caseData)) {
                 publishEvent(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
             }
 
+            Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
+                getCaseDataBefore(callbackRequest).getAllNonCancelledHearings());
+
             hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
                 .ifPresent(hearingBooking -> {
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
+
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking));
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
 
                     if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
