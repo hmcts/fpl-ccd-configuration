@@ -55,3 +55,7 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
+
+variable "fpl_scheduler_db_name_v15" {
+  default = "fpl_scheduler"
+}

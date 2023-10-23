@@ -18,7 +18,7 @@ provider "azurerm" {
 provider "azurerm" {
   features {}
   skip_provider_registration = true
-  alias                      = "postgres_network"
+  alias                      = "cft_vnet"
   subscription_id            = var.subscription
 }
 
@@ -67,7 +67,7 @@ module "key-vault" {
 module "fpl-scheduler-postgres-v15-flexible-server" {
 
   providers = {
-    azurerm.postgres_network = azurerm.postgres_network
+    azurerm.postgres_network = azurerm.cft_vnet
   }
 
   source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
@@ -82,7 +82,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
 
   pgsql_databases = [
     {
-      name = "fpl_scheduler"
+      name : var.fpl_scheduler_db_name_v15
     }
   ]
 
