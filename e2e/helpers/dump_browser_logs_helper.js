@@ -1,12 +1,14 @@
 const fs = require('fs');
-const { clearString, screenshotOutputFolder } = require('codeceptjs/lib/utils');
+const { clearString } = require('codeceptjs/lib/utils');
+const { screenshotOutputFolder } = require('codeceptjs').output;
+const { Helper } = require('codeceptjs');
 
 /**
- * Builds output file name for given test. Name includes test name and hook name (if applicable).
+ * Builds output file name for a given test. The name includes the test title and hook name (if applicable).
  *
  * @param test
  */
-function buildOutputFileName (test) {
+function buildOutputFileName(test) {
   let fileName = clearString(test.title);
   if (test.ctx && test.ctx.test && test.ctx.test.type === 'hook') {
     fileName += clearString(`_${test.ctx.test.title}`);
@@ -14,40 +16,20 @@ function buildOutputFileName (test) {
   return screenshotOutputFolder(fileName);
 }
 
-/**
- * Converts a JavaScript value to a JSON string in pretty format.
- *
- * @param value - JavaScript object
- * @returns {string} - pretty formatted value
- */
-function stringify(value) {
-  const replacer = undefined;
-  const indentationSize = 2;
-  return JSON.stringify(value, replacer, indentationSize);
-}
-
 module.exports = class HooksHelpers extends Helper {
   async _failed(test) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    let logs = await helper.grabBrowserLogs();
-    if (logs !== undefined) {
-      logs = logs.map(log => {
-        return {
-          type: log.type(),
-          message: log.text(),
-          location: log.location().url,
-        };
-      });
+    const helper = this.helpers['Playwright'];
 
-      if (logs.length > 0) {
-        fs.writeFileSync(`${buildOutputFileName(test)}.browser.log`, stringify(logs));
-      }
+    const logs = await helper.page.context().tracing.stop();
+
+    if (logs.length > 0) {
+      fs.writeFileSync(`${buildOutputFileName(test)}.trace.json`, JSON.stringify(logs, null, 2));
     }
 
-    const source = await helper.grabSource();
+    const source = await helper.page.content();
     fs.writeFileSync(`${buildOutputFileName(test)}.browser.html`, source);
 
-    const url = await helper.grabCurrentUrl();
+    const url = await helper.page.url();
     fs.writeFileSync(`${buildOutputFileName(test)}.browser.url`, url);
   }
 };

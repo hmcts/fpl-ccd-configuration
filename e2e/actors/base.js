@@ -25,7 +25,7 @@ const { I } = inject();
 module.exports = {
   async signIn(user) {
     console.log('base signIn');
-    if (!(this.isPuppeteer() &&  (currentUser === user))) {
+    if (!(currentUser === user)) {
       console.log(`Logging in as ${user.email}`);
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
@@ -67,22 +67,16 @@ module.exports = {
 
   async logWithHmctsAccount() {
     const hmctsLoginIn = 'div.win-scroll';
-
-    if (await this.hasSelector(hmctsLoginIn)) {
-      if (!config.hmctsUser.email || !config.hmctsUser.password) {
-        throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
-      }
-      await within(hmctsLoginIn, () => {
-        this.fillField('//input[@type="email"]', config.hmctsUser.email);
-        this.wait(0.2);
-        this.click('Next');
-        this.wait(0.2);
-        this.fillField('//input[@type="password"]', config.hmctsUser.password);
-        this.wait(0.2);
-        this.click('Sign in');
-        this.click('Yes');
-      });
+    if (!config.hmctsUser.email || !config.hmctsUser.password) {
+      throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
+    await within(hmctsLoginIn, () => {
+      this.fillField('//input[@type="text"]', config.hmctsUser.email);
+      this.wait(0.2);
+      this.fillField('//input[@type="password"]', config.hmctsUser.password);
+      this.wait(0.2);
+      this.click('Sign in');
+    });
   },
 
   async rejectCookies() {
@@ -101,6 +95,19 @@ module.exports = {
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     await this.completeEvent('Save and continue');
     this.waitForElement('.alert-message', 60);
+    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
+    output.print(`Case created #${caseId}`);
+    return caseId;
+  },
+
+  async createCaseSmokeTest(user, caseName, outsourcingLA) {
+    await this.waitForSelector('ccd-search-result');
+    await this.waitForSelector('a[href="/cases/case-filter"]');
+    await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
+
+    await openApplicationEventPage.populateForm(caseName, outsourcingLA);
+    I.click('Submit');
+    this.waitForElement('.alert-message', 90);
     const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
     output.print(`Case created #${caseId}`);
     return caseId;
@@ -378,7 +385,7 @@ module.exports = {
   async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
     const originalUrl = await this.grabCurrentUrl();
     // override this for now
-    maxNumberOfTries = 1;
+    //maxNumberOfTries = 1;
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);

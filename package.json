@@ -8,7 +8,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
-    "codeceptjs": "3.5.6",
+    "codeceptjs": "^3.5.6",
     "dateformat": "^4.6.3",
     "debug": "4.3.4",
     "eslint": "7.32.0",
@@ -40,8 +40,8 @@
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --immutable --silent",
-    "lint-ui-tests": "/usr/bin/yarn lint"
-
+    "lint-ui-tests": "/usr/bin/yarn lint",
+    "test:crossbrowser:codeceptjs": "codeceptjs --config ./src/test/cross-browser/codecept.conf.js"
   },
   "peerDependencies": {
     "debug": "4.3.4",
@@ -49,8 +49,11 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
-  "packageManager": "yarn@3.6.4",
-  "license": "MIT"
+  "packageManager": "yarn@3.6.3",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.39.0"
+  }
 }
 
 
