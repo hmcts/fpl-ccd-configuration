@@ -89,7 +89,7 @@ Scenario('Create 32b discharge of care order @nightlyOnly', async ({ I, caseView
   });
 });
 
-Scenario(' Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario(' Create EPO order @xBrowser', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
