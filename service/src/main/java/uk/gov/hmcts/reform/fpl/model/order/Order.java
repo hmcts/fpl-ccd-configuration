@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ARRAN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_APPLICATIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CHILD_PLACEMENT_FOR_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DECLARATION_OF_PARENTAGE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
@@ -71,6 +72,16 @@ public enum Order {
         List.of(CHILD_PLACEMENT_APPLICATIONS, APPROVER, APPROVAL_DATE,
             CHILD_PLACEMENT,
             CLOSE_CASE,
+            REVIEW_DRAFT_ORDER)
+    ),
+    A81_PLACEMENT_BLANK_ORDER(
+        DIGITAL,
+        "Placement order",
+        "Section 21 of the Adoption and Children Act 2002",
+        "Placement order (A81)",
+        IsFinalOrder.MAYBE,
+        List.of(CHILD_PLACEMENT_APPLICATIONS, APPROVER, APPROVAL_DATE,
+            CHILD_PLACEMENT_FOR_BLANK_ORDER,
             REVIEW_DRAFT_ORDER)
     ),
     C21_BLANK_ORDER(
