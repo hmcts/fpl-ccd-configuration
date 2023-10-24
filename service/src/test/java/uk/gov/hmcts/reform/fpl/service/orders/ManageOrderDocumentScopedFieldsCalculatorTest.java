@@ -130,7 +130,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersHearingParty1",
             "manageOrdersHearingParty2",
             "manageOrdersPersonWhoseParenthoodIs",
-            "manageOrdersParentageAction"
+            "manageOrdersParentageAction",
+            "manageOrdersParagraphs",
+            "manageOrdersCostOrders",
+            "manageOrdersPreamblesText"
         );
     }
 }

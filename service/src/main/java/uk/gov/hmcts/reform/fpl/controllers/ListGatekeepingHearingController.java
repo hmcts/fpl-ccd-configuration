@@ -90,6 +90,7 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final ListGatekeepingHearingDecider listGatekeepingHearingDecider;
     private final CoreCaseDataService coreCaseDataService;
+    private final JudicialService judicialService;
     private final SendDocumentService sendDocumentService;
     private final JudicialService judicialService;
 
@@ -321,7 +322,7 @@ public class ListGatekeepingHearingController extends CallbackController {
         final Element<HearingBooking> hearingBookingElement = element(hearingBooking);
 
         hearingsService.addOrUpdate(hearingBookingElement, eventData);
-        hearingsService.sendNoticeOfHearing(eventData, hearingBooking);
+        hearingsService.buildNoticeOfHearing(eventData, hearingBooking);
 
         caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
 
