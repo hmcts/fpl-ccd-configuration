@@ -1,3 +1,4 @@
+# "subscription" only used by cnp-module-postgres, remove with "fpl-scheduler-db" in main.tf
 variable "subscription" {}
 
 variable "product" {
@@ -55,3 +56,9 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
+
+variable "fpl_scheduler_db_name_v15" {
+  default = "fpl_scheduler"
+}
+
+variable "aks_subscription_id" {} # provided by the Jenkins library
