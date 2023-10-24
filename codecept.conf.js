@@ -46,7 +46,7 @@ exports.config = {
   helpers: {
     Playwright: {
       url: 'http://localhost:3000',
-      show: false,
+      show: process.env.SHOW_BROWSER_WINDOW || false,
       browser: 'chromium',
       waitForTimeout: config.WaitForTimeout,
       waitForAction: 350,
