@@ -92,8 +92,6 @@ public class ListGatekeepingHearingController extends CallbackController {
     private final CoreCaseDataService coreCaseDataService;
     private final JudicialService judicialService;
     private final SendDocumentService sendDocumentService;
-    private final JudicialService judicialService;
-
     private final CaseConverter converter;
 
     @PostMapping("/about-to-start")
