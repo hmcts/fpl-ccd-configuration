@@ -276,7 +276,7 @@ scheduler:
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
     - name: 'Create chasing work allocation tasks'
-      enabled: true
+      enabled: false
       cronGroup: "NIGHTLY_CRON"
       description: 'Create work allocation tasks if a CMO has not been uploaded within 5 days'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CreateWAOrderChasingTasks'
