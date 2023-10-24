@@ -97,6 +97,6 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "amountToPay = \"DO_NOT_SHOW\"",
     "ShowSummaryChangeOption": "Y",
-    "Publish": "Y"
+    "Publish": "N"
   }
 ]

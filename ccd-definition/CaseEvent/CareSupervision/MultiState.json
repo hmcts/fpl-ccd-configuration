@@ -27,7 +27,7 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "Publish": "Y"
+    "Publish": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -235,7 +235,7 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/submitted",
     "RetriesTimeoutURLSubmittedEvent": "0",
-    "Publish": "Y"
+    "Publish": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -298,7 +298,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "Publish": "Y",
+    "Publish": "N",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
   },
   {
@@ -520,7 +520,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
-    "Publish": "Y",
+    "Publish": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/update-task-list/submitted"
@@ -537,7 +537,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
-    "Publish": "Y",
+    "Publish": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
@@ -557,7 +557,7 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/placement/submitted",
     "RetriesTimeoutURLSubmittedEvent": "0",
-    "Publish": "Y"
+    "Publish": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -790,7 +790,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
-    "Publish": "Y",
+    "Publish": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/about-to-submit",
@@ -810,7 +810,7 @@
     "ShowEventNotes": "Y",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-draft-orders/submitted",
-    "Publish": "Y"
+    "Publish": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -877,7 +877,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "Publish": "Y",
+    "Publish": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/submitted"
@@ -895,7 +895,7 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "Publish": "Y",
+    "Publish": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/reply-message-judge/submitted",
@@ -985,7 +985,7 @@
     "EndButtonLabel": "Save and continue",
     "ShowSummary": "Y",
     "ShowEventNotes": "N",
-    "Publish": "Y"
+    "Publish": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1097,7 +1097,7 @@
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-order-reminder/submitted",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "Publish": "Y",
+    "Publish": "N",
     "EndButtonLabel": "Send reminder"
   },
   {
@@ -1112,7 +1112,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "Publish": "Y",
+    "Publish": "N",
     "EndButtonLabel": "Done"
   }
 ]

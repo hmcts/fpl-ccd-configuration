@@ -103,7 +103,7 @@
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 3,
-    "Publish": "Y",
+    "Publish": "N",
     "FieldShowCondition": "isMessageRegardingAdditionalApplications=\"DO_NOT_SHOW\""
   }
 ]
