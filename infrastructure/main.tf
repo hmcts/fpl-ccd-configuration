@@ -80,7 +80,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
 
   pgsql_databases = [
     {
-      name : var.fpl_scheduler_db_name_v15
+      name = var.fpl_scheduler_db_name_v15
     }
   ]
 
@@ -148,5 +148,11 @@ data "azurerm_key_vault_secret" "system-update-user-password" {
 resource "azurerm_key_vault_secret" "idam-owner-password" {
   name         = "idam-owner-password"
   value        = data.azurerm_key_vault_secret.system-update-user-password.value
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
+  name         = "scheduler-db-password-v15"
+  value        = module.fpl-scheduler-postgres-v15-flexible-server.password
   key_vault_id = module.key-vault.key_vault_id
 }
