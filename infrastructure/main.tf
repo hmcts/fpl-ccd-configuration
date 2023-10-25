@@ -71,7 +71,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
   }
 
   source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server-${var.env}"
+  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
   env                = var.env
 
   product            = var.product
@@ -148,5 +148,11 @@ data "azurerm_key_vault_secret" "system-update-user-password" {
 resource "azurerm_key_vault_secret" "idam-owner-password" {
   name         = "idam-owner-password"
   value        = data.azurerm_key_vault_secret.system-update-user-password.value
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
+  name         = "scheduler-db-password-v15"
+  value        = module.fpl-scheduler-postgres-v15-flexible-server.password
   key_vault_id = module.key-vault.key_vault_id
 }
