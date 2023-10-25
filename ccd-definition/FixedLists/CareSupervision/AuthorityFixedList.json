@@ -982,6 +982,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SOS",
+    "ListElement": "Southend on Sea City Council",
+    "DisplayOrder": 351
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "STF",
     "ListElement": "Staffordshire County Council",
     "DisplayOrder": 355
