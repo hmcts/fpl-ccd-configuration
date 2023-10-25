@@ -571,7 +571,7 @@
       "caseworker-caa",
       "caseworker-approver"
     ],
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

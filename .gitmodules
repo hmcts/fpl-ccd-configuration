@@ -1,4 +1,0 @@
-[submodule "fpla-docker"]
-	path = fpla-docker
-	url = ../../hmcts/fpla-docker.git
-	branch = master

@@ -646,6 +646,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersPlacementOrderOtherDetails",
+    "FieldType": "TextArea",
+    "Label": "Other details or any other directions",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersPlacedUnderOrder",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Label": "Which order placed the child in the care of the local authority?",
@@ -1053,6 +1062,33 @@
     "FieldType": "Date",
     "Label": "End date",
     "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersPreamblesText",
+    "FieldType": "TextArea",
+    "Label": "Preambles Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersParagraphs",
+    "FieldType": "TextArea",
+    "Label": "Paragraphs",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersCostOrders",
+    "FieldType": "TextArea",
+    "Label": "Cost Orders",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   }
 ]

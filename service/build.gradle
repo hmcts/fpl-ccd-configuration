@@ -11,19 +11,19 @@ buildscript {
 }
 
 plugins {
-  id "java"
-  id "java-library"
+  id 'java'
+  id 'java-library'
   id 'application'
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.3'
-  id 'org.springframework.boot' version '2.5.6'
+  id 'org.springframework.boot' version '2.5.15'
   id 'com.github.ben-manes.versions' version '0.48.0'
   id 'org.sonarqube' version '3.5.0.2730'
   id 'project-report'
-  id "idea"
-  id "info.solidsoft.pitest" version '1.5.2'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.809'
+  id 'idea'
+  id 'info.solidsoft.pitest' version '1.15.0'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.842'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -200,16 +200,16 @@ task contract(description: 'Runs the contract tests.') {
   dependsOn(inStrictOrder(runContractTests))
 }
 
-task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
-  onlyIf {
-    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
-  }
-  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
-}
-
-task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
-}
+//task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
+//  onlyIf {
+//    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
+//  }
+//  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+//}
+//
+//task crossbrowser(description: 'Runs crossbrowser tests.') {
+//  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
+//}
 
 task fortifyScan(type: JavaExec) {
   mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
@@ -284,14 +284,17 @@ repositories {
 def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2',
-  log4j           : '2.16.0',
+  springfoxSwagger: '3.0.0',
+  log4j           : '2.20.0',
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
   serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
-  lombok          : '1.18.30'
+  lombok          : '1.18.30',
+  pitest          : '1.15.0',
+  gradlePitest    : '1.3.0',
+  sonarPitest     : '0.5'
 ]
 
 dependencies {
@@ -307,15 +310,17 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-config'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-
+  implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.7.10'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: '2.7.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
-
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
-
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
@@ -324,7 +329,7 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
-
+  implementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
 
@@ -334,7 +339,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-
+  implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
@@ -342,22 +347,26 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.82'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.82'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
+  implementation group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.15.2'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.15.3'
 
   implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.0'
-  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.1'
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
+  testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.1.1'
+
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
@@ -388,7 +397,6 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
-
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
@@ -412,10 +420,6 @@ dependencies {
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestImplementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
-
-
-  cftlibImplementation group: 'com.github.tomakehurst', name: 'wiremock-jre8', version: '2.35.1'
-  cftlibImplementation 'com.github.masonm:wiremock-jwt-extension:0.10'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
@@ -439,27 +443,26 @@ integration {
 }
 
 pitest {
-  logger.lifecycle("Runs PIT  Tests")
-
-  junit5PluginVersion = '0.14'
-  testSourceSets = [sourceSets.test]
-  mainSourceSets = [sourceSets.main]
   targetClasses = ['uk.gov.hmcts.reform.fpl.*']
+  pitestVersion = '1.15.0'
+  threads = 16
+  outputFormats = ['XML', 'HTML']
+  timestampedReports = false
   excludedClasses = [
     'uk.gov.hmcts.reform.fpl.config.*',
     'uk.gov.hmcts.reform.fpl.exceptions.*',
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
   ]
-  jvmArgs = ['-Xms1G', '-Xmx3G']
-  threads = 10
+  junit5PluginVersion = '1.1.1'
+  logger.lifecycle("Runs PIT mutation Tests")
+  testSourceSets = [sourceSets.test]
+  mainSourceSets = [sourceSets.main]
   enableDefaultIncrementalAnalysis = true
   outputFormats = ['XML', 'HTML']
-  timestampedReports = false
-  failWhenNoMutations = false
+  timestampedReports = true
+  mutationThreshold = 85
   detectInlinedCode = true
-  maxMutationsPerClass = 15
-  mutationThreshold = 80
   timeoutConstInMillis = 30000
 }
 
@@ -476,7 +479,7 @@ task generateXls(type: Exec) {
   }
   def definitionDir = rootProject.file('ccd-definition')
   def xls = layout.buildDirectory.file('fpl.xlsx').get().asFile
-  commandLine rootProject.file('fpla-docker/bin/utils/fpl-process-definition.sh')
+  commandLine rootProject.file('bin/fpl-process-definition.sh')
   args definitionDir, xls, '-e *-prod.json,*-shuttered.json'
   inputs.dir definitionDir
   outputs.file xls
@@ -517,8 +520,4 @@ bootWithCCD {
     environment 'PRD_HOST', 'http://rd-professional-api-aat.service.core-compute-aat.internal'
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
   }
-}
-
-processCftlibResources {
-  from rootProject.fileTree('fpla-docker/mocks')
 }

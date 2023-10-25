@@ -1,3 +1,4 @@
+# "subscription" only used by cnp-module-postgres, remove with "fpl-scheduler-db" in main.tf
 variable "subscription" {}
 
 variable "product" {
@@ -34,10 +35,6 @@ variable "jenkins_AAD_objectId" {
   description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
 
-variable "managed_identity_object_id" {
-  default = ""
-}
-
 variable "appinsights_location" {
   type        = string
   default     = "West Europe"
@@ -59,3 +56,9 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
+
+variable "fpl_scheduler_db_name_v15" {
+  default = "fpl_scheduler"
+}
+
+variable "aks_subscription_id" {} # provided by the Jenkins library
