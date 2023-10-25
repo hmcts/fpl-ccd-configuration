@@ -65,11 +65,10 @@
     "CaseEventID": "listGatekeepingHearing",
     "CaseFieldID": "hearingTypeDetails",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "ListGatekeepingHearingEnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 5,
-    "FieldShowCondition": "hearingType=\"OTHER\""
+    "PageDisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
