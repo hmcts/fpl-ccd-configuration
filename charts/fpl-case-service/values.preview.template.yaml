@@ -90,7 +90,7 @@ xui-webapp:
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 500m
-    devmemoryRequests: 512Mi
+    devmemoryRequests: 1Gi
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     readinessPeriod: 5
