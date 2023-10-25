@@ -15,7 +15,7 @@
     "RetriesTimeoutURLSubmittedEvent": "0",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Submit",
-    "Publish": "N"
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
