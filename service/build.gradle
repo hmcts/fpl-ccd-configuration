@@ -204,7 +204,7 @@ task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower t
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
-  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+  commandLine '/usr/bin/yarn', '--silent', 'run', 'test:crossbrowser'
 }
 
 task crossbrowser(description: 'Runs crossbrowser tests.') {
