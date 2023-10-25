@@ -76,8 +76,8 @@ module.exports = {
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
   hmctsUser: {
-    email: process.env.HMCTS_USER_USERNAME || 'kurt@swansea.gov.uk',
-    password: process.env.HMCTS_USER_PASSWORD || defaultPassword,
+    email: process.env.HMCTS_USER_USERNAME,
+    password: process.env.HMCTS_USER_PASSWORD,
   },
   privateSolicitorOne: {
     email: 'solicitor1@solicitors.uk',

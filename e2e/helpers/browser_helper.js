@@ -1,28 +1,45 @@
 const testConfig = require('../config.js');
-const { runAccessibility } = require('./accessibility/runner');
-const { Helper } = require('codeceptjs');
-
+const {runAccessibility} = require('./accessibility/runner');
 
 module.exports = class BrowserHelpers extends Helper {
+
   getHelper() {
-    return this.helpers['Playwright']; // Use Playwright instead of Puppeteer or WebDriver
+    return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+  }
+
+  isPuppeteer() {
+    return this.helpers['Puppeteer'];
   }
 
   async getBrowser() {
     const helper = this.getHelper();
-    return helper.page; // Use helper.page for Playwright
+    if (this.isPuppeteer()) {
+      return (await helper.options.browser);
+    }
+    return (await helper.config.browser);
   }
 
-  async clickBrowserBack() {
+  clickBrowserBack() {
     const helper = this.getHelper();
-    await helper.page.goBack(); // Use page.goBack() for Playwright
+    if (this.isPuppeteer()) {
+      return helper.page.goBack();
+    } else {
+      return helper.browser.back();
+    }
   }
 
-  async reloadPage() {
+  reloadPage() {
     const helper = this.getHelper();
-    await helper.page.reload(); // Use page.reload() for Playwright
+    return helper.refreshPage();
   }
 
+  /**
+   * Finds elements described by selector.
+   * If element cannot be found an empty collection is returned.
+   *
+   * @param selector - element selector
+   * @returns {Promise<Array>} - promise holding either collection of elements or empty collection if element is not found
+   */
   async locateSelector(selector) {
     const helper = this.getHelper();
     return helper._locate(selector);
@@ -32,50 +49,101 @@ module.exports = class BrowserHelpers extends Helper {
     return (await this.locateSelector(selector)).length;
   }
 
-  async waitForSelector(locator, timeout = 30) {
+  /**
+   * Finds element described by locator.
+   * If element cannot be found immediately function retries ever `retryInterval` seconds until `sec` seconds is reached.
+   * If element still cannot be found after the waiting time an undefined is returned.
+   *
+   * @param locator - element CSS locator
+   * @param timeout - optional time in seconds to wait
+   * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
+   */
+  async waitForSelector(locator, timeout = 60) {
     const helper = this.getHelper();
+
     const retryInterval = 5;
     const numberOfRetries = timeout < retryInterval ? 1 : Math.floor(timeout / retryInterval);
+    // console.log('timeout: ' + timeout);
+    // console.log('retryInterval: ' + retryInterval);
+    // console.log('timeout / retryInterval: ' + (timeout / retryInterval));
+    // console.log('Math.floor(timeout / retryInterval): ' + Math.floor(timeout / retryInterval));
+    // console.log('numberOfRetries: ' + numberOfRetries);
 
+    let result = undefined;
     for (let tryNumber = 0; tryNumber <= numberOfRetries; tryNumber++) {
-      console.log('waitForSelector ' + locator + ' try number ' + (tryNumber + 1));
+      console.log('waitForSelector ' + locator + ' try number ' + (tryNumber+1));
       try {
-        await helper.page.waitForSelector(locator, { timeout: retryInterval * 1000 });
+        if (this.isPuppeteer()) {
+          const context = await helper._getContext();
+          result = await context.waitForSelector(locator, {timeout: retryInterval * 1000});
+        } else {
+          result = await helper.waitForElement(locator, retryInterval);
+        }
       } catch (e) {
         if (e.name !== 'TimeoutError') {
           throw e;
         }
       }
-      console.log('found it!');
-      return;
+      if (result !== undefined) {
+        console.log('found it!');
+        return result;
+      }
     }
     console.log('not found it after ' + (numberOfRetries + 1) + ' tries (' + timeout + 's)');
+    return result;
   }
 
   async waitForAnySelector(selectors, maxWaitInSecond) {
-    return this.waitForSelector(selectors.join(','), maxWaitInSecond);
+    return this.waitForSelector([].concat(selectors).join(','), maxWaitInSecond);
   }
 
   async canSee(selector) {
     const helper = this.getHelper();
     try {
-      const numVisible = await helper.page.locator(selector).count();
-      return numVisible > 0;
+      const numVisible = await helper.grabNumberOfVisibleElements(selector);
+      return !!numVisible;
     } catch (err) {
       return false;
     }
   }
 
+  /**
+   * Grabs text from a element specified by locator.
+   *
+   * Note: When error is not found undefined is returned. That behaviour is bit different from a behaviour of
+   * default `grabTextFrom` function which throws an error and fails test when element is not found.
+   *
+   * @param locator - element locator
+   * @returns {Promise<string|undefined>}
+   */
   async grabText(locator) {
-    const helper = this.getHelper();
-    const element = await helper.page.locator(locator).first();
-    return element ? element.innerText() : undefined;
+    const elements = await this.locateSelector(locator);
+
+    const texts = elements.map(async (element) => {
+      return (await element.getProperty('innerText')).jsonValue();
+    });
+
+    return texts[0];
   }
 
   async grabAttribute(locator, attr) {
-    const helper = this.getHelper();
-    const element = await helper.page.locator(locator).first();
-    return element ? element.getAttribute(attr) : undefined;
+    const elements = await this.locateSelector(locator);
+
+    let getAttribute;
+
+    if(this.isPuppeteer()){
+      getAttribute = async (element, attr) =>  (await element.getProperty(attr)).jsonValue();
+    } else {
+      getAttribute = async (element, attr) => await element.getAttribute(attr);
+    }
+
+    const texts = elements.map(async element => getAttribute(element, attr));
+
+    if (texts.length > 1) {
+      throw new Error(`More than one element found for locator ${locator}`);
+    } else {
+      return texts[0];
+    }
   }
 
   async runAccessibilityTest() {
@@ -84,24 +152,41 @@ module.exports = class BrowserHelpers extends Helper {
     if (!testConfig.TestForAccessibility) {
       return;
     }
-    const url = await helper.page.url();
-    const page = helper.page;
+    const url = await helper.grabCurrentUrl();
+    const {page} = await helper;
 
     await runAccessibility(url, page);
   }
 
-  async canClick(selector) {
+  async canClick(selector){
     const elements = await this.locateSelector(selector);
-    return elements.length > 0 && (await elements[0].isIntersectingViewport());
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
+      throw new Error(`No element found for locator ${selector}`);
+    }
+    else if(elements[0].isClickable) {
+      return await elements[0].isClickable();
+    }
+    return true;
   }
 
   async scrollToElement(selector) {
     const helper = this.getHelper();
-    const element = await helper.page.locator(selector).first();
-    if (element) {
-      await element.scrollIntoViewIfNeeded();
-    } else {
+    const elements = await this.locateSelector(selector);
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
       throw new Error(`No element found for locator ${selector}`);
+    }
+    if(this.isPuppeteer()){
+      await helper.page.evaluate(selectorArg => document.querySelector(selectorArg).scrollIntoView(), selector);
+    } else {
+      await helper.executeScript('arguments[0].scrollIntoView()', elements[0]);
     }
   }
 };
