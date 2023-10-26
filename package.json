@@ -23,7 +23,6 @@
     "mochawesome": "^6.3.1",
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
-    "puppeteer": "19.11.1",
     "webdriverio": "8.16.15"
   },
   "scripts": {
@@ -50,7 +49,10 @@
     "mochawesome": "^6.3.1"
   },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.39.0"
+  }
 }
 
 
