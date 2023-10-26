@@ -15,6 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -31,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -70,6 +74,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
+    private static final String IS_DRAFT_ORDER_MANDATORY = "isDraftOrderMandatory";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -80,6 +85,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -99,10 +105,18 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+            boolean isDraftOrderMandatory = userService.hasUserRole(UserRole.LOCAL_AUTHORITY)
+                || userService.hasAnyCaseRoleFrom(CaseRole.representativeSolicitors(), caseData.getId());
+
             // Initialise the C2 document bundle so we can have a dynamic list present
-            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
-                .hearingList(caseData.buildDynamicHearingList())
-                .build());
+            C2DocumentBundle.C2DocumentBundleBuilder tempC2Builder = C2DocumentBundle.builder()
+                .hearingList(caseData.buildDynamicHearingList());
+            if (isDraftOrderMandatory) {
+                tempC2Builder.draftOrdersBundle(List.of(element(DraftOrder.builder().build())));
+            }
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, tempC2Builder.build());
+
+            caseDetails.getData().put(IS_DRAFT_ORDER_MANDATORY, YesNo.from(isDraftOrderMandatory));
         }
         return respond(caseDetails);
     }
