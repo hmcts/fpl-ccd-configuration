@@ -40,7 +40,8 @@
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --immutable --silent",
-    "lint-ui-tests": "/usr/bin/yarn lint"
+    "lint-ui-tests": "/usr/bin/yarn lint",
+    "test:singleTest":"NODE_TLS_REJECT_UNAUTHORIZED=0  codeceptjs run-multiple parallel --grep ''  --verbose"
 
   },
   "peerDependencies": {
@@ -50,10 +51,7 @@
     "mochawesome": "^6.3.1"
   },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT",
-  "dependencies": {
-    "playwright": "^1.39.0"
-  }
+  "license": "MIT"
 }
 
 
