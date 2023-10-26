@@ -45,6 +45,11 @@ public class PlacementNoticeController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         final CaseDetails caseDetails = request.getCaseDetails();
+
+        /* DFPL-1735.  Working data for a placement is kept in the 'placement' json key.  On some cases
+        this was accidentally stored.  This line removes the key so that a new placement starts afresh. */
+        caseDetails.getData().remove("placement");
+
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap caseProperties = CaseDetailsMap.caseDetailsMap(caseDetails);
 
@@ -88,7 +93,6 @@ public class PlacementNoticeController extends CallbackController {
 
         final PlacementEventData eventData = placementService.savePlacementNotice(caseData);
 
-        caseDetails.getData().put("placement", eventData.getPlacement());
         caseDetails.getData().put("placements", eventData.getPlacements());
         caseDetails.getData().put("placementsNonConfidential",
                 eventData.getPlacementsNonConfidentialWithNotices(false));
