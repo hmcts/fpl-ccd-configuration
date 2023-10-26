@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -231,10 +233,56 @@ class CaseAccessServiceTest {
     @Nested
     class UserCaseRoles {
 
-        @Test
-        void shouldGetUserCaseRoles() {
+        @BeforeEach
+        void beforeEach() {
             when(requestData.userId()).thenReturn(USER_1_ID);
             when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"allocated-judge", "hearing-judge", "allocated-legal-adviser", "hearing-legal-adviser"})
+        void shouldFilterOutInternalStaffRoles(String roleToFilter) {
+            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
+                        CaseAssignedUserRole.builder()
+                            .caseRole(roleToFilter)
+                            .userId(USER_1_ID)
+                            .caseDataId("123")
+                            .build()))
+                    .build());
+
+            Set<CaseRole> roles =  caseRoleService.getUserCaseRoles(123L);
+
+            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+                List.of("123"), List.of(USER_1_ID));
+            assertThat(roles).isEmpty();
+        }
+
+        @Test
+        void shouldFilterOutInternalStaffRolesAndKeepExternalRoles() {
+            when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
+                .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
+                        CaseAssignedUserRole.builder()
+                            .caseRole("allocated-judge")
+                            .userId(USER_1_ID)
+                            .caseDataId("123")
+                            .build(),
+                        CaseAssignedUserRole.builder()
+                            .caseRole("[CHILDSOLICITORA]")
+                            .userId(USER_1_ID)
+                            .caseDataId("123")
+                            .build()))
+                    .build());
+
+            Set<CaseRole> roles =  caseRoleService.getUserCaseRoles(123L);
+
+            verify(caseAccessDataStoreApi).getUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN,
+                List.of("123"), List.of(USER_1_ID));
+            assertThat(roles).containsExactly(CaseRole.CHILDSOLICITORA);
+        }
+
+        @Test
+        void shouldGetUserCaseRoles() {
             when(caseAccessDataStoreApi.getUserRoles(any(), any(), any(), any()))
                 .thenReturn(CaseAssignedUserRolesResource.builder().caseAssignedUserRoles(List.of(
                     CaseAssignedUserRole.builder()
