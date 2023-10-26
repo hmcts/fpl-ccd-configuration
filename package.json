@@ -23,7 +23,8 @@
     "mochawesome": "^6.3.1",
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
-    "webdriverio": "8.20.4"
+    "webdriverio": "8.20.4",
+    "playwright": "^1.39.0"
   },
   "scripts": {
     "lint": "eslint e2e",
