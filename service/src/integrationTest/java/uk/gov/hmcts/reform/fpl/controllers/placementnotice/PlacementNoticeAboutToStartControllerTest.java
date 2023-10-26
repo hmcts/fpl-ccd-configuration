@@ -62,6 +62,7 @@ class PlacementNoticeAboutToStartControllerTest extends AbstractPlacementNoticeC
 
         assertThat(actualPlacementData.getHasExistingPlacements()).isEqualTo(YES);
         assertThat(actualPlacementData.getPlacements()).isNotEmpty();
+        assertThat(actualPlacementData.getPlacement()).isNull();
     }
 
 }
