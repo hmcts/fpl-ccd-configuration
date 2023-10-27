@@ -25,7 +25,7 @@
     "node-fetch": "^2.6.9",
     "playwright": "^1.39.0",
     "webdriverio": "8.20.4",
-    "node-gyp": "^6.1.0"
+    "node-gyp": "^9.4.0"
   },
   "scripts": {
     "lint": "eslint e2e",
