@@ -20,7 +20,7 @@
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "DisplayContextParameter" : "#ARGUMENT(CREATE)",
+    "DisplayContextParameter" : "#ARGUMENT(CREATE,LinkedCases)",
     "PageID": "createCaseLink",
     "PageLabel": "Link cases",
     "PageDisplayOrder": 1,
