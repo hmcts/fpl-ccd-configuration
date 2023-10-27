@@ -1594,7 +1594,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CRUD"
       }
@@ -1607,7 +1608,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CRUD"
       }
