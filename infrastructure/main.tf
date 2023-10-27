@@ -73,6 +73,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
   source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
   env                = var.env
+  pgsql_admin_username = var.pgsql_admin_username
 
   product            = var.product
   component          = var.component
