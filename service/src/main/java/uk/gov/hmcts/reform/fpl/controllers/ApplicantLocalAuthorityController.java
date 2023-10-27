@@ -47,6 +47,13 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
 
+        if (!applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
+            // user is not operating on behalf of the applicant - it's likely a respondent solicitor on a 3rd party
+            // case (both actual applicant + respondent get [SOLICITORA] roles so can't do this via event permissions
+            return respond(caseDetails,
+                List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
+        }
+
         caseDetails.getData().put(LOCAL_AUTHORITY, localAuthority);
         caseDetails.getData().put(COLLEAGUES, localAuthority.getColleagues());
 
