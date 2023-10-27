@@ -49,8 +49,12 @@
     "mochawesome": "^6.3.1"
   },
   "resolutions": {
-    "fsevents": "^2.3.3"
+    "fsevents": "^2.3.3",
+    "node-gyp": "^9.4.0"
   },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-gyp": "^9.4.0"
+  }
 }
