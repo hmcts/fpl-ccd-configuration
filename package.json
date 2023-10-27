@@ -24,7 +24,8 @@
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
     "playwright": "^1.39.0",
-    "webdriverio": "8.20.4"
+    "webdriverio": "8.20.4",
+    "node-gyp": "^9.4.0"
   },
   "scripts": {
     "lint": "eslint e2e",
@@ -48,13 +49,6 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
-  "resolutions": {
-    "fsevents": "^2.3.3",
-    "node-gyp": "^9.4.0"
-  },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT",
-  "dependencies": {
-    "node-gyp": "^9.4.0"
-  }
+  "license": "MIT"
 }
