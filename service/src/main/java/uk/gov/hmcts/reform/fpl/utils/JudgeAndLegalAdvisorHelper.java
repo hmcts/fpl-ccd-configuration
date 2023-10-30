@@ -64,7 +64,7 @@ public class JudgeAndLegalAdvisorHelper {
             .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
             .legalAdvisorName(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getLegalAdvisorName())
             .allocatedJudgeLabel(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getAllocatedJudgeLabel())
-            .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? YesNo.YES.toString() : judgeAndLegalAdvisor.getUseAllocatedJudge())
+            .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getUseAllocatedJudge())
             .build();
     }
 
