@@ -970,7 +970,7 @@ class ManageLocalAuthoritiesServiceTest {
             final Court courtTransferred = underTest.transferCourtWithoutTransferLA(caseData);
 
             assertThat(courtTransferred.getCode()).isEqualTo(newCourt.getCode());
-            assertThat(courtTransferred.getName()).isEqualTo(newCourt.getName());
+            assertThat(courtTransferred.getName()).isEqualTo("Family Court sitting at " + newCourt.getName());
             assertThat(courtTransferred.getDateTransferred()).isEqualTo(
                 LocalDateTime.of(1997, Month.JULY, 1, 11, 00));
             assertThat(caseData.getPastCourtList()).hasSize(1);
