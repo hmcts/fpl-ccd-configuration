@@ -116,10 +116,10 @@ class C36VariationOrExtensionOfSupervisionOrdersParameterGeneratorTest {
 
         switch (orderType) {
             case VARIATION_OF_SUPERVISION_ORDER:
-                stringBuilder.append("The Court varies the Supervision Order for the Care Order ");
+                stringBuilder.append("The Court varies the Supervision Order ");
                 break;
             case EXTENSION_OF_SUPERVISION_ORDER:
-                stringBuilder.append("The Court extends the Supervision Order for the Care Order ");
+                stringBuilder.append("The Court extends the Supervision Order ");
                 break;
         }
 
