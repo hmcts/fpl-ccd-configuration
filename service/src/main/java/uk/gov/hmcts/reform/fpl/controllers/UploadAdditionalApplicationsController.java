@@ -220,7 +220,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE);
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
+            "isDraftOrderMandatory");
 
         return respond(caseDetails);
     }

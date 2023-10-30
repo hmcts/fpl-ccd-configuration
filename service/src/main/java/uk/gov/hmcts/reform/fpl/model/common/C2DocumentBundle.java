@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,7 +45,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    @JsonAlias("draftOrdersBundleOptional")
     private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
@@ -118,5 +116,21 @@ public class C2DocumentBundle implements ApplicationsBundle {
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
+    }
+
+    public static class C2DocumentBundleBuilder {
+        // draft order is optional when admin uploading C2, but mandatory for LA and solicitor
+        // Therefore, the CCD definition is split into two fields
+        public C2DocumentBundleBuilder draftOrdersBundleOptional(List<Element<DraftOrder>> draftOrdersBundleOptional) {
+            List<Element<DraftOrder>> draftOrdersBundle = new ArrayList<>();
+            if (this.draftOrdersBundle != null) {
+                draftOrdersBundle.addAll(this.draftOrdersBundle);
+            }
+            if (draftOrdersBundleOptional != null) {
+                draftOrdersBundle.addAll(draftOrdersBundleOptional);
+            }
+            this.draftOrdersBundle = draftOrdersBundle;
+            return this;
+        }
     }
 }
