@@ -47,6 +47,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -771,6 +772,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
             .caseSummaryNextHearingDate(hearingDate)
+            .caseSummaryNextHearingDateTime(LocalDateTime.of(hearingDate, LocalTime.of(13, 0, 0)))
             .caseSummaryCourtName(COURT_NAME)
             .caseSummaryLanguageRequirement("No")
             .caseSummaryLALanguageRequirement("No")

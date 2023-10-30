@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailC
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
@@ -115,6 +117,8 @@ class DraftOrdersApprovedEventHandlerTest {
     private TranslationRequestService translationRequestService;
     @Mock
     private CafcassNotificationService cafcassNotificationService;
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
     @Captor
     private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
     @Captor
@@ -564,6 +568,22 @@ class DraftOrdersApprovedEventHandlerTest {
             Optional.of(TRANSLATION_REQUIREMENTS),
             ORDER_2, "Title 2 - 3 February 2020");
         verifyNoMoreInteractions(translationRequestService);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenDraftOrderApproved() {
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .build();
+
+        List<HearingOrder> orders = List.of();
+
+        underTest.createWorkAllocationTask(new DraftOrdersApproved(caseData, orders));
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CMO_REVIEWED);
     }
 
     private HearingOrder hearingOrder() {
