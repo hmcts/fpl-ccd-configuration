@@ -56,7 +56,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1804", this::run1804,
+        "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837
@@ -226,7 +226,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
-  
+
     private void run1802(CaseDetails caseDetails) {
         var migrationId = "DFPL-1802";
         var possibleCaseIds = List.of(1683295453455055L);
@@ -237,7 +237,7 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
     }
 
-    private void run1804(CaseDetails caseDetails) {
+    private void run1813(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
