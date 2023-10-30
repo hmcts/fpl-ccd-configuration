@@ -432,11 +432,12 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .localAuthoritiesEventData(eventData)
                 .build();
 
-            final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
+            final AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(initialCaseData);
+            final CaseData updatedCaseData = extractCaseData(resp);
 
             Court currentCourt = updatedCaseData.getCourt();
             assertThat(currentCourt.getCode()).isEqualTo("384");
-            assertThat(currentCourt.getName()).isEqualTo("Wrexham");
+            assertThat(currentCourt.getName()).isEqualTo("Family Court sitting at Wrexham");
             assertThat(currentCourt.getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
 
@@ -448,6 +449,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(lastCourt.getCode()).isEqualTo(COURT_1.getCode());
             assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
             assertThat(updatedCaseData.getCourtField()).isNull();
+            assertThat(resp.getData()).extracting("caseManagementLocation")
+                .extracting("baseLocation", "region").containsExactly("637145", "7");
         }
 
         @Test
@@ -476,7 +479,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .pastCourtList(List.of(element(
                     Court.builder()
                         .code("378")
-                        .name("Wolverhampton")
+                        .name("Family Court sitting at Wolverhampton")
                         .dateTransferred(LocalDateTime.of(1997, Month.JUNE, 30, 23, 59))
                         .build()
                 )))
@@ -486,7 +489,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
             Court currentCourt = updatedCaseData.getCourt();
             assertThat(currentCourt.getCode()).isEqualTo("384");
-            assertThat(currentCourt.getName()).isEqualTo("Wrexham");
+            assertThat(currentCourt.getName()).isEqualTo("Family Court sitting at Wrexham");
             assertThat(currentCourt.getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(2);
 
@@ -561,7 +564,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
             assertThat(updatedCaseData.getCourt().getCode()).isEqualTo("380");
-            assertThat(updatedCaseData.getCourt().getName()).isEqualTo("Worcester");
+            assertThat(updatedCaseData.getCourt().getName()).isEqualTo("Family Court sitting at Worcester");
             assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
             assertThat(updatedCaseData.getSendToCtsc()).isEqualTo(YesNo.YES.getValue());
