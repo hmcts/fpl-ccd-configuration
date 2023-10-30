@@ -33,7 +33,7 @@ export class SignInPage {
   }
 
   async isSignedIn() {
-    await this.applyLocator.click({ timeout: 75000 });
+    await this.applyLocator.click({ timeout: 65000 });
     await expect(this.applyLocator).toBeVisible();
   }
 }
