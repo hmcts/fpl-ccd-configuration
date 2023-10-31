@@ -81,7 +81,7 @@
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 4,
     "ShowSummaryChangeOption": "N",
-    "Publish": "N",
+    "Publish": "Y",
     "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
   }
 ]
