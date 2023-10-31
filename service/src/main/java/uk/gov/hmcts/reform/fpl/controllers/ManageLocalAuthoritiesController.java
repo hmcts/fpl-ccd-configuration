@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction;
@@ -206,10 +207,16 @@ public class ManageLocalAuthoritiesController extends CallbackController {
         }
 
         if (TRANSFER_COURT == action) {
-            Court oldCourt = caseData.getCourt();
+            final Court oldCourt = caseData.getCourt();
             Court courtTransferred = service.transferCourtWithoutTransferLA(caseData);
             caseDetails.getData().put(PAST_COURT_LIST_KEY, caseData.getPastCourtList());
             caseDetails.getData().put(COURT_KEY, courtTransferred);
+
+            // Add the caseManagementLocation for global search/challenged access
+            caseDetails.getData().put("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(courtTransferred.getEpimmsId())
+                .region(courtTransferred.getRegionId())
+                .build());
 
             if (!isEmpty(courtTransferred) && RCJ_HIGH_COURT_CODE.equals(courtTransferred.getCode())) {
                 // transferred to the high court -> turn off sendToCtsc
