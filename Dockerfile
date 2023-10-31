@@ -9,5 +9,4 @@ COPY lib/applicationinsights.json /opt/app/
 
 CMD ["service.jar"]
 FROM mcr.microsoft.com/playwright:focal AS BASE
-RUN PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright yarn add playwright-chromium@1.11.1
-RUN PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright yarn test
+RUN PLAYWRIGHT_BROWSERS_PATH=0
