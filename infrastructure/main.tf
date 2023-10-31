@@ -15,6 +15,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.aks_subscription_id
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
   location = var.location
@@ -55,6 +62,42 @@ module "key-vault" {
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
   create_managed_identity    = true
+}
+
+module "fpl-scheduler-postgres-v15-flexible-server" {
+
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
+  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
+  env                = var.env
+  pgsql_admin_username = var.pgsql_admin_username
+
+  product            = var.product
+  component          = var.component
+  business_area      = "cft"
+
+  pgsql_databases = [
+    {
+      name : var.fpl_scheduler_db_name_v15
+    }
+  ]
+
+  pgsql_version      = "15"
+
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql, pg_stat_statements, pg_buffercache"
+    }
+  ]
+
+  common_tags        = var.common_tags
+
+  admin_user_object_id = var.jenkins_AAD_objectId
+
 }
 
 module "fpl-scheduler-db" {
@@ -106,5 +149,16 @@ data "azurerm_key_vault_secret" "system-update-user-password" {
 resource "azurerm_key_vault_secret" "idam-owner-password" {
   name         = "idam-owner-password"
   value        = data.azurerm_key_vault_secret.system-update-user-password.value
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
+  name         = "scheduler-db-password-v15"
+  value        = module.fpl-scheduler-postgres-v15-flexible-server.password
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "update-summary-tab-cron" {
+  name         = "update-summary-tab-cron"
   key_vault_id = module.key-vault.key_vault_id
 }
