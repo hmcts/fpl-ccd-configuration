@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.ADD;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.REMOVE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -351,9 +352,13 @@ public class ManageLocalAuthoritiesService {
             .map(DynamicList::getValueCode)
             .flatMap(courtLookUpService::getCourtByCode);
         if (chosenCourt.isPresent()) {
-            chosenCourt.get().setDateTransferred(time.now());
+            boolean isHighCourt = chosenCourt.get().getCode().equals(RCJ_HIGH_COURT_CODE);
+            Court newCourt = chosenCourt.get().toBuilder()
+                .dateTransferred(time.now())
+                .name((isHighCourt ? "" : "Family Court sitting at ") + chosenCourt.get().getName())
+                .build();
             caseData.setPastCourtList(buildPastCourtsList(caseData));
-            caseData.setCourt(chosenCourt.get());
+            caseData.setCourt(newCourt);
             return caseData.getCourt();
         }
         return null;
