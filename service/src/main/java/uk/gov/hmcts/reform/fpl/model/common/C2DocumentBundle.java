@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,7 +45,6 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    @JsonAlias("draftOrdersBundleOptional")
     private List<Element<DraftOrder>> draftOrdersBundle;
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
