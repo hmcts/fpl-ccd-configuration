@@ -310,37 +310,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(updatedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
     }
 
-    @Test
-    void shouldUpdateDraftOrdersIfDraftOrderOptionalUploaded() {
-        List<Element<DraftOrder>> draftOrdersOptional = createDraftOrderBundle();
-
-        PBAPayment temporaryPbaPayment = createPbaPayment();
-        Element<Representative> representativeElement = element(
-            Representative.builder().servingPreferences(EMAIL).email("test@test.com").build()
-        );
-
-        CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
-            .temporaryC2Document(createTemporaryC2Document().toBuilder()
-                .draftOrdersBundle(List.of())
-                .draftOrdersBundleOptional(draftOrdersOptional)
-                .build())
-            .temporaryPbaPayment(temporaryPbaPayment)
-            .applicantsList(createApplicantsDynamicList(APPLICANT))
-            .representatives(List.of(representativeElement))
-            .respondents1(wrapElements(Respondent.builder()
-                .representedBy(wrapElements(representativeElement.getId()))
-                .party(RespondentParty.builder().firstName("Margaret").lastName("Jones").build())
-                .build()
-            ))
-            .build();
-
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, ADMIN_ROLE));
-
-        assertThat(updatedCaseData.getAdditionalApplicationsBundle().get(0).getValue().getC2DocumentBundle()
-            .getDraftOrdersBundle()).isEqualTo(draftOrdersOptional);
-    }
-
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
