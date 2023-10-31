@@ -144,4 +144,6 @@ public class CaseDataParent {
     @NotNull(message = "Add the grounds for the application")
     @Valid
     protected final GroundsForEducationSupervisionOrder groundsForEducationSupervisionOrder;
+
+    protected final YesNo shouldSendOrderReminder;
 }

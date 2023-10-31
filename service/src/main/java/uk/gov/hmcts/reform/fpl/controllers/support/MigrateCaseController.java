@@ -63,9 +63,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCFVrollback,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1804", this::run1804,
+        "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810
+        "DFPL-1810", this::run1810,
+        "DFPL-1837", this::run1837
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -285,7 +286,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
-  
+
     private void run1802(CaseDetails caseDetails) {
         var migrationId = "DFPL-1802";
         var possibleCaseIds = List.of(1683295453455055L);
@@ -296,8 +297,19 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
     }
 
-    private void run1804(CaseDetails caseDetails) {
+    private void run1813(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
+    private void run1837(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1837";
+        var possibleCaseIds = List.of(1649154482198017L);
+        var expectedHearingId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
+        var expectedDocId = UUID.fromString("982dc7f7-11a7-4eb6-b1ab-7778d20dcf27");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
+            migrationId, expectedHearingId, expectedDocId));
+    }
 }

@@ -1019,7 +1019,8 @@ public class CaseData extends CaseDataParent {
     private final List<Element<HearingOrder>> ordersToBeSent;
 
     @JsonUnwrapped
-    private final ReviewDraftOrdersData reviewDraftOrdersData;
+    @Builder.Default
+    private final ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
@@ -1229,7 +1230,9 @@ public class CaseData extends CaseDataParent {
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
     @JsonUnwrapped
-    private final CaseProgressionReportEventData caseProgressionReportEventData;
+    @Builder.Default
+    private final CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData
+        .builder().build();
 
     @JsonUnwrapped
     @Builder.Default
