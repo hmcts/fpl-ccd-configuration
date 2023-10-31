@@ -37,6 +37,7 @@ class RespondentValidatorTest {
     private static final CaseData CASE_DATA_BEFORE = mock(CaseData.class);
     private static final List<Respondent> RESPONDENTS = List.of(mock(Respondent.class));
     private static final List<String> EMAILS = List.of("test@example.com");
+    private static final List<String> TELEPHONES = List.of("1234 567 897");
     public static final LocalDateTime NOW = LocalDateTime.of(2012, 6, 20, 12, 0, 0);
 
     @Mock
@@ -224,6 +225,8 @@ class RespondentValidatorTest {
 
         when(respondentService.getRespondentSolicitorEmails(RESPONDENTS))
             .thenReturn(EMAILS);
+        when(respondentService.getRespondentSolicitorTelephones(RESPONDENTS))
+            .thenReturn(TELEPHONES);
 
         when(validateEmailService.validate(EMAILS, "Representative"))
             .thenReturn(List.of("emailValidatorError"));
