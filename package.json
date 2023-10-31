@@ -44,6 +44,7 @@
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --immutable --silent",
     "lint-ui-tests": "/usr/bin/yarn lint"
+
   },
   "peerDependencies": {
     "debug": "4.3.4",
@@ -57,3 +58,5 @@
   "packageManager": "yarn@3.6.4",
   "license": "MIT"
 }
+
+
