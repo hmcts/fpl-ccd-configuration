@@ -117,4 +117,20 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
         return documentReferences;
     }
+
+    public static class C2DocumentBundleBuilder {
+        // draft order is optional when admin uploading C2, but mandatory for LA and solicitor
+        // Therefore, the CCD definition is split into two fields
+        public C2DocumentBundleBuilder draftOrdersBundleOptional(List<Element<DraftOrder>> draftOrdersBundleOptional) {
+            List<Element<DraftOrder>> draftOrdersBundle = new ArrayList<>();
+            if (this.draftOrdersBundle != null) {
+                draftOrdersBundle.addAll(this.draftOrdersBundle);
+            }
+            if (draftOrdersBundleOptional != null) {
+                draftOrdersBundle.addAll(draftOrdersBundleOptional);
+            }
+            this.draftOrdersBundle = draftOrdersBundle;
+            return this;
+        }
+    }
 }

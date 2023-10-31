@@ -184,7 +184,19 @@
     "EventElementLabel": "Draft Orders",
     "ListElementCode": "draftOrdersBundle",
     "FieldDisplayOrder": "16",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "isDraftOrderMandatory=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Draft Orders",
+    "ListElementCode": "draftOrdersBundleOptional",
+    "FieldDisplayOrder": "16",
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "isDraftOrderMandatory=\"NO\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -243,6 +255,67 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledge",
+    "FieldDisplayOrder": "21",
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Tick to confirm this document is related to this case"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "File name",
+    "ListElementCode": "draftOrdersBundleOptional.title",
+    "FieldDisplayOrder": "17",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundleOptional.notes",
+    "FieldDisplayOrder": "18",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundleOptional.document",
+    "EventElementLabel": "Upload document",
+    "FieldDisplayOrder": "19",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundleOptional.documentAcknowledgeLabel",
+    "FieldDisplayOrder": "20",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundleOptional.documentAcknowledgeLabelForCYA",
+    "FieldDisplayOrder": "20",
+    "DisplayContext": "READONLY",
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "draftOrdersBundleOptional.documentAcknowledge",
     "FieldDisplayOrder": "21",
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
