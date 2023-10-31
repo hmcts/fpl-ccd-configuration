@@ -101,6 +101,7 @@ public class ManageHearingsController extends CallbackController {
 
         if (caseData.getAllocatedJudge() != null) {
             caseDetails.getData().put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+            caseDetails.getData().put("allocatedJudgeLabel", buildAllocatedJudgeLabel(caseData.getAllocatedJudge()));
         }
 
         boolean isFirstHearing = isEmpty(caseData.getAllHearings());

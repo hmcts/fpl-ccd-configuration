@@ -2,11 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.77.0"
+      version = "3.78.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "2.44.1"
+      version = "2.45.0"
     }
   }
 }
@@ -156,4 +156,14 @@ resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
   name         = "scheduler-db-password-v15"
   value        = module.fpl-scheduler-postgres-v15-flexible-server.password
   key_vault_id = module.key-vault.key_vault_id
+}
+    
+resource "azurerm_key_vault_secret" "update-summary-tab-cron" {
+  name         = "update-summary-tab-cron"
+  value        = "0 0 3 ? * * *"
+  key_vault_id = module.key-vault.key_vault_id
+  # After secret is created, manual changes to value aren't reverted
+  lifecycle {
+    ignore_changes = [ value ]
+  }
 }
