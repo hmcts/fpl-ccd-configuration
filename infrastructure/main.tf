@@ -157,3 +157,8 @@ resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
   value        = module.fpl-scheduler-postgres-v15-flexible-server.password
   key_vault_id = module.key-vault.key_vault_id
 }
+
+data "azurerm_key_vault_secret" "update-summary-tab-cron" {
+  name         = "update-summary-tab-cron"
+  key_vault_id = module.key-vault.key_vault_id
+}
