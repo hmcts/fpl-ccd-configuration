@@ -211,11 +211,11 @@ task contract(description: 'Runs the contract tests.') {
 //  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 //}
 
-task fortifyScan(type: JavaExec) {
-  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
-  classpath += sourceSets.test.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-}
+//task fortifyScan(type: JavaExec) {
+//  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+//  classpath += sourceSets.test.runtimeClasspath
+//  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+//}
 
 task highLevelDataSetup(type: JavaExec, description: 'High level data step mock implementation - DO NOTHING.') {
   onlyIf {
@@ -387,6 +387,7 @@ dependencies {
 
   // Fortify client for Fortify scans
   testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
