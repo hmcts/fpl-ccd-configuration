@@ -53,5 +53,8 @@
     "yargs-parser": "^20.2.9"
   },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "playwright-chromium": "1.11.1"
+  }
 }
