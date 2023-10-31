@@ -6,7 +6,7 @@ Feature('Smoke tests @smoke-tests');
 
 Scenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
   output.print('Smoke test triggered');
-  await I.goToPage(config.baseUrl);
+  await I.goToPage(config.baseUrl, config.smokeTestUser);
   const caseName = `Smoke test case (${moment().format('YYYY-MM-DD HH:MM')})`;
   const caseId = await I.createCaseSmokeTest(config.swanseaLocalAuthorityUserOne, caseName);
   I.navigateToCaseList();
