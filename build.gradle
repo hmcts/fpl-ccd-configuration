@@ -31,7 +31,6 @@ dependencyCheck {
       yarnEnabled = false
     }
   }
-  analyzers.nodeAudit.yarnEnabled = false
   analyzedTypes = ['jar']
   scanConfigurations = ['runtimeClasspath']
 }
