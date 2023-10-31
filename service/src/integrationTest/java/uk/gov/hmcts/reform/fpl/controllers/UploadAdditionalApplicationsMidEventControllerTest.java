@@ -311,6 +311,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             assertThat(response.getData().get("temporaryC2Document")).isNotNull();
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("draftOrdersBundle").isNotNull();
         }
 
         @Test
@@ -323,6 +324,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
             assertThat(response.getData().get("temporaryC2Document")).isNotNull();
             assertThat(response.getData().get("temporaryC2Document")).extracting("hearingList").isNotNull();
+            assertThat(response.getData().get("temporaryC2Document")).extracting("draftOrdersBundle").isNotNull();
         }
 
         @Test
