@@ -11,13 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -31,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -43,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
@@ -64,9 +60,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @MockBean
     private FeeService feeService;
-
-    @MockBean
-    private UserService userService;
 
     UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
@@ -343,50 +336,6 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             assertThat(response.getData().get("temporaryC2Document")).isNull();
         }
 
-        @Test
-        void mandatoryDraftOrderIfUserIsLA() {
-            when(userService.hasUserRole(UserRole.LOCAL_AUTHORITY)).thenReturn(true);
-            when(userService.hasAnyCaseRoleFrom(CaseRole.representativeSolicitors(), 1L)).thenReturn(false);
-
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .additionalApplicationType(List.of(C2_ORDER))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
-
-            assertThat(response.getData().get("isDraftOrderMandatory")).isEqualTo("YES");
-        }
-
-        @Test
-        void mandatoryDraftOrderIfUserIsSolicitor() {
-            when(userService.hasUserRole(UserRole.LOCAL_AUTHORITY)).thenReturn(false);
-            when(userService.hasAnyCaseRoleFrom(CaseRole.representativeSolicitors(), 1L)).thenReturn(true);
-
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .additionalApplicationType(List.of(C2_ORDER))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
-
-            assertThat(response.getData().get("isDraftOrderMandatory")).isEqualTo("YES");
-        }
-
-        @Test
-        void optionalDraftOrderIfUserIsNotLaNorSolicitor() {
-            when(userService.hasUserRole(UserRole.LOCAL_AUTHORITY)).thenReturn(false);
-            when(userService.hasAnyCaseRoleFrom(CaseRole.representativeSolicitors(), 1L)).thenReturn(false);
-
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .additionalApplicationType(List.of(C2_ORDER))
-                .build();
-
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),"initial-choice");
-
-            assertThat(response.getData().get("isDraftOrderMandatory")).isEqualTo("NO");
-        }
     }
 
 }
