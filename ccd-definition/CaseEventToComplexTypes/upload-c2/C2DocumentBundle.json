@@ -184,7 +184,7 @@
     "EventElementLabel": "Draft Orders",
     "ListElementCode": "draftOrdersBundle",
     "FieldDisplayOrder": "16",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",

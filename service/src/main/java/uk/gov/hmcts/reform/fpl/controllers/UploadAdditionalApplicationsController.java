@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @Api
 @Slf4j
@@ -102,6 +103,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             // Initialise the C2 document bundle so we can have a dynamic list present
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, C2DocumentBundle.builder()
                 .hearingList(caseData.buildDynamicHearingList())
+                .draftOrdersBundle(wrapElementsWithUUIDs(DraftOrder.builder().build()))
                 .build());
         }
         return respond(caseDetails);
