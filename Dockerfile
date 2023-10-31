@@ -8,5 +8,3 @@ COPY build/libs/service.jar /opt/app/
 COPY lib/applicationinsights.json /opt/app/
 
 CMD ["service.jar"]
-FROM mcr.microsoft.com/playwright:focal AS BASE
-RUN PLAYWRIGHT_BROWSERS_PATH=0
