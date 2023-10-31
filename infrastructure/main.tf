@@ -158,7 +158,12 @@ resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
   key_vault_id = module.key-vault.key_vault_id
 }
 
-data "azurerm_key_vault_secret" "update-summary-tab-cron" {
+resource "azurerm_key_vault_secret" "update-summary-tab-cron" {
   name         = "update-summary-tab-cron"
+  value        = "0 0 3 ? * * *"
   key_vault_id = module.key-vault.key_vault_id
+  # After secret is created, manual changes to value aren't reverted
+  lifecycle {
+    ignore_changes = [ value ]
+  }
 }
