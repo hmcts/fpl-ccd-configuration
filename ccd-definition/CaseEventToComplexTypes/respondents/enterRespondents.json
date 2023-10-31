@@ -446,6 +446,6 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
     "EventElementLabel": "*Telephone Number",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   }
 ]

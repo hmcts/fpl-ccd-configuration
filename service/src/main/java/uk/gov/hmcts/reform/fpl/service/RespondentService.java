@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -123,6 +124,17 @@ public class RespondentService {
             .stream()
             .map(Respondent::getSolicitor)
             .map(RespondentSolicitor::getEmail)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getRespondentSolicitorTelephones(List<Respondent> respondents) {
+        return respondents
+            .stream()
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getTelephoneNumber)
+            .filter(Objects::nonNull)
+            .map(Telephone::getTelephoneNumber)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }

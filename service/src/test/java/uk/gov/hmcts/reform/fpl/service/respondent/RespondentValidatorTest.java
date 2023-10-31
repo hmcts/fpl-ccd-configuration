@@ -228,4 +228,35 @@ class RespondentValidatorTest {
         when(validateEmailService.validate(EMAILS, "Representative"))
             .thenReturn(List.of("emailValidatorError"));
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldReturnErrorWhenMissingLegalRepresentativeTelephoneNumber(boolean hideRespondentIndex) {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(NOW.toLocalDate().minusDays(1))
+                .addressKnow(YesNo.YES.getValue())
+                .address(Address.builder()
+                    .addressLine1("Line 1")
+                    .postTown("Town")
+                    .postcode("GU1 FFF")
+                    .country("United Kingdom")
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(element(respondent), element(respondent)))
+            .build();
+
+        when(respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1()))
+            .thenReturn(RESPONDENTS);
+        when(respondentService.getRespondentSolicitorTelephones(RESPONDENTS))
+            .thenReturn(List.of());
+
+        List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE, hideRespondentIndex);
+
+        assertThat(actual).isEqualTo(List.of(
+            "Telephone number of legal representative is required."));
+    }
 }

@@ -409,6 +409,6 @@
     "CaseFieldID": "transformedRespondent",
     "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
     "EventElementLabel": "*Telephone Number",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   }
 ]

@@ -438,6 +438,6 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   }
 ]
