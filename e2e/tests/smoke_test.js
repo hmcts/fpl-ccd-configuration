@@ -12,7 +12,7 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   const caseId = await I.createCaseSmokeTest(config.swanseaLocalAuthorityUserOne, caseName);
   caseListPage.navigate();
   I.grabCurrentUrl();
-  caseListPage.searchForCasesWithName(caseName, 'Open');
+  caseListPage.searchForCasesWithName(caseName);
   I.grabCurrentUrl();
   I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseId}')]`, 90);
   I.grabCurrentUrl();
