@@ -44,11 +44,11 @@ module.exports = {
     surname: '(local-authority-barrister)',
   },
   hmctsAdminUser: {
-    email: 'hmcts-admin@example.com',
+    email: 'fpl-ctsc-admin@justice.gov.uk',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
   hmctsSuperUser: {
-    email: 'hmcts-superuser@mailnesia.com',
+    email: 'fpl-ctsc-team-leader@justice.gov.uk',
     password: process.env.SUPER_USER_PASSWORD || defaultPassword,
   },
   cafcassUser: {
@@ -88,9 +88,9 @@ module.exports = {
     password: process.env.LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
-  baseUrl: process.env.URL || 'http://localhost:3000',
-  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4013',
-  idamApiUrl: process.env.IDAM_API_URL || 'https://idam-api.aat.platform.hmcts.net',
+  baseUrl: process.env.URL || 'https://manage-case.aat.platform.hmcts.net',
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://fpl-case-service-aat.service.core-compute-aat.internal',
+  idamApiUrl: 'https://idam-api.aat.platform.hmcts.net',
   swanseaOrgId: process.env.SWANSEA_ORG_ID || 'ORGSA',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
