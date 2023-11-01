@@ -215,6 +215,29 @@ public class ManageHearingsService {
         return reListedBooking.getId();
     }
 
+    public Map<String, Object> clearPopulatedHearingFields() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("hearingTypeDetails", null);
+        data.put("hearingType", null);
+        data.put("hearingTypeReason", null);
+        data.put(HEARING_START_DATE, null);
+        data.put(HEARING_END_DATE, null);
+        data.put("judgeAndLegalAdvisor", null);
+        data.put("hearingAttendance", List.of());
+        data.put("hearingAttendanceDetails", null);
+        data.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, null);
+        data.put("sendNoticeOfHearingTranslationRequirements", null);
+        data.put(HEARING_DURATION, null);
+        data.put(HEARING_DAYS, null);
+        data.put(HEARING_HOURS, null);
+        data.put(HEARING_MINUTES, null);
+        data.put(HEARING_END_DATE_TIME, null);
+        data.put(PREVIOUS_HEARING_VENUE_KEY, null);
+        data.put("hearingVenue", null);
+        data.put("hearingVenueCustom", null);
+        return data;
+    }
+
     public Map<String, Object> initiateNewHearing(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
