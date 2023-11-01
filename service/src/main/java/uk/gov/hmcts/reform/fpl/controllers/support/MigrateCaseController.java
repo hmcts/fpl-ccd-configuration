@@ -59,7 +59,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837
+        "DFPL-1837", this::run1837,
+        "DFPL-1842", this::run1842
     );
 
     @PostMapping("/about-to-submit")
@@ -252,4 +253,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
             migrationId, expectedHearingId, expectedDocId));
     }
+
+    private void run1842(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1842";
+        var possibleCaseIds = List.of(1643109401093000L);
+        var expectedPositionStatementId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
+            migrationId, expectedPositionStatementId));
+    }
+
 }
