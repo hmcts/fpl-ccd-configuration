@@ -257,7 +257,7 @@ public class MigrateCaseController extends CallbackController {
     private void run1842(CaseDetails caseDetails) {
         var migrationId = "DFPL-1842";
         var possibleCaseIds = List.of(1643109401093000L);
-        var expectedPositionStatementId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
+        var expectedPositionStatementId = UUID.fromString("ae94c8a7-25f1-4ca3-b381-4ce847f9ec36");
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         CaseData caseData = getCaseData(caseDetails);
