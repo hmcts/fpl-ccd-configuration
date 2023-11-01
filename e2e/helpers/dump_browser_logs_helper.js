@@ -47,7 +47,7 @@ module.exports = class HooksHelpers extends Helper {
     // const source = undefined; //await helper.grabSource();
     //fs.writeFileSync(`${buildOutputFileName(test)}.browser.html`, source);
 
-    //const url = await helper.grabCurrentUrl();
-    //fs.writeFileSync(`${buildOutputFileName(test)}.browser.url`, url);
+    const url = "undefined"; //await helper.grabCurrentUrl();
+    fs.writeFileSync(`${buildOutputFileName(test)}.browser.url`, url);
   }
 };
