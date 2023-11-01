@@ -94,8 +94,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   before('fullFunctionalTest') {
-    env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = false
-    env.PLAYWRIGHT_BROWSERS_PATH = 0
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
