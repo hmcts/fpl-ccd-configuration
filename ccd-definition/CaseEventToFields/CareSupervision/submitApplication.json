@@ -84,5 +84,19 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "displayAmountToPay=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "submitApplication",
+    "CaseFieldID": "hearing",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "amountToPay = \"DO_NOT_SHOW\"",
+    "ShowSummaryChangeOption": "Y",
+    "Publish": "Y"
   }
 ]

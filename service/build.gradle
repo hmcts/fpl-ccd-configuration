@@ -18,12 +18,12 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.3'
   id 'org.springframework.boot' version '2.5.15'
-  id 'com.github.ben-manes.versions' version '0.48.0'
+  id 'com.github.ben-manes.versions' version '0.49.0'
   id 'org.sonarqube' version '3.5.0.2730'
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.851'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.855'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -285,7 +285,7 @@ def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '3.0.0',
-  log4j           : '2.20.0',
+  log4j           : '2.21.1',
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
   serenity        : '2.4.5',
@@ -310,20 +310,20 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.7.10'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.7.10'
+  implementation group: 'org.springframework.security', name: 'spring-security-config', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.8.8'
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.8.8'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: '2.7.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
@@ -375,7 +375,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
