@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -20,10 +21,12 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
@@ -53,6 +56,8 @@ public class GeneratedPlacementOrderEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final UserService userService;
+    private final WorkAllocationTaskService workAllocationTaskService;
 
     @EventListener
     public void sendPlacementOrderEmail(final GeneratedPlacementOrderEvent orderEvent) {
@@ -120,6 +125,14 @@ public class GeneratedPlacementOrderEventHandler {
             orderEvent.getOrderNotificationDocument(),
             child);
         sendEmail(notifyData, emailRecipients, caseData.getId());
+    }
+
+    @EventListener
+    public void createWorkAllocationTask(GeneratedPlacementOrderEvent event) {
+        if (userService.isJudiciaryUser()) {
+            CaseData caseData = event.getCaseData();
+            workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
+        }
     }
 
     private void sendOrderByEmail(final CaseData caseData,
