@@ -6,7 +6,8 @@
     "CaseFieldID": "hearing",
     "ListElementCode": "timeFrame",
     "EventElementLabel": "*When do you need a hearing?",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

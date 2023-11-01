@@ -18,5 +18,10 @@
     "courtCode": "22",
     "courtField": "liverpoolDFJCourt",
     "dfjArea": "LIVERPOOL"
+  },
+  {
+    "courtCode": "117",
+    "courtField": "westLondonDFJCourt",
+    "dfjArea": "WEST_LONDON"
   }
 ]
