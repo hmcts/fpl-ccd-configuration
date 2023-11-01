@@ -37,7 +37,7 @@ class JudicialUserProfileTest {
             .fullName("Random Title Here John Smith")
             .build();
 
-        assertThat(jup.getTitle()).isEqualTo("Unknown");
+        assertThat(jup.getTitle()).isEqualTo("Judge");
     }
 
     @Test
