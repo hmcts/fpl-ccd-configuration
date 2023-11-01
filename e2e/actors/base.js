@@ -30,26 +30,26 @@ module.exports = {
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
-      await this.retryUntilExists(async () => {
+      //await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
-        await this.goToPage(baseUrl);
+        await this.goToPage(baseUrl, user);
         I.grabCurrentUrl();
 
-        if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-          await this.refreshPage();
-          I.grabCurrentUrl();
-        }
+        // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
+        //   await this.refreshPage();
+        //   I.grabCurrentUrl();
+        // }
+        //
+        // if (await this.hasSelector(signedInSelector)) {
+        //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+        //   I.grabCurrentUrl();
+        // }
+        //
+        // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+        // I.grabCurrentUrl();
 
-        if (await this.hasSelector(signedInSelector)) {
-          await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-          I.grabCurrentUrl();
-        }
-
-        await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        I.grabCurrentUrl();
-
-      }, signedInSelector, false, 10);
-      await this.rejectCookies();
+      //}, signedInSelector, false, 10);
+      //await this.rejectCookies();
       I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
@@ -60,23 +60,24 @@ module.exports = {
     I.grabCurrentUrl();
   },
 
-  async goToPage(url) {
+  async goToPage(url, user) {
     this.amOnPage(url);
-    await this.logWithHmctsAccount();
+    await this.logWithHmctsAccount(user);
   },
 
-  async logWithHmctsAccount() {
-    const hmctsLoginIn = 'div.win-scroll';
-    if (!config.hmctsUser.email || !config.hmctsUser.password) {
+  async logWithHmctsAccount(user) {
+    //const hmctsLoginIn = 'div.win-scroll';
+    if (!user.email || !user.password) {
       throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
-    await within(hmctsLoginIn, () => {
-      this.fillField('//input[@type="text"]', config.hmctsUser.email);
+   // await within(hmctsLoginIn, () => {
+      this.waitForElement('//input[@type="text"]', 20);
+      this.fillField('//input[@type="text"]', user.email);
       this.wait(0.2);
-      this.fillField('//input[@type="password"]', config.hmctsUser.password);
-      this.wait(0.2);
+      this.fillField('//input[@type="password"]', user.password);
+      this.wait(0.5);
       this.click('Sign in');
-    });
+   // });
   },
 
   async rejectCookies() {
@@ -208,21 +209,31 @@ module.exports = {
   },
 
   async navigateToCaseDetails(caseId) {
-    const currentUrl = await this.grabCurrentUrl();
-    if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
-      await this.retryUntilExists(async () => {
-        await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, '#next-step');
-    }
+    this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
+    I.wait(0.5);
+    //await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
+    // const currentUrl = await this.grabCurrentUrl();
+    // if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
+    //   await this.retryUntilExists(async () => {
+    //
+    //   }, '#next-step');
+    // }
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
+    await I.goToPage(config.baseUrl);
+    await I.goToPage(config.baseUrl, config.hmctsUser);
+
     await this.signIn(user);
+    I.wait(10);
     await this.navigateToCaseDetails(caseId);
   },
 
-  navigateToCaseList() {
-    caseListPage.navigate();
+  navigateToCaseList(caseIdAndName, caseListPage) {
+    caseListPage.searchForCasesWithName(caseIdAndName.caseName);
+    I.wait(90);
+    I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseIdAndName.caseId}')]`, 100);
+    I.seeCaseInSearchResult(caseIdAndName.caseId);
   },
 
   async fillDate(date, sectionId = 'form') {
@@ -318,13 +329,10 @@ module.exports = {
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
-    await apiHelper.populateWithData(caseId, data);
-    if (this.isPuppeteer()) {
-      await this.refreshPage();
-    }
+    let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
+    await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
-
-    return caseId;
+    return {caseId, caseName};
   },
 
   async submitNewCase(user, name) {
@@ -364,7 +372,7 @@ module.exports = {
     this.click('Previous');
   },
 
-  uiFormatted(id) { return id.match(/.{1,4}/g).join('-');},
+  uiFormatted(id) { return '#' + id.match(/.{1,4}/g).join('-');},
 
   async getActiveElementIndex() {
     return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;

@@ -45,16 +45,32 @@ exports.config = {
   },
   helpers: {
     Playwright: {
-      url: 'http://localhost:3000',
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      browser: 'chromium',
       waitForTimeout: config.WaitForTimeout,
       waitForAction: 350,
       timeout: config.WaitForTimeout,
       retries: 5,
       waitForNavigation: 'load',
       ignoreHTTPSErrors: true,
-      bypassCSP: true
+      bypassCSP: true,
+      chrome: {
+        'ignoreHTTPSErrors': true,
+        'ignore-certificate-errors': true,
+        'defaultViewport': {
+          'width': 1280,
+          'height': 960
+        },
+        args: [
+          // '--headless',
+          '--disable-gpu',
+          '--no-sandbox',
+          '--allow-running-insecure-content',
+          '--ignore-certificate-errors',
+          // '--proxy-server=proxyout.reform.hmcts.net:8080',
+          // '--proxy-bypass-list=*beta*LB.reform.hmcts.net',
+          '--window-size=1440,1400'
+        ]
+      },
     },
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',

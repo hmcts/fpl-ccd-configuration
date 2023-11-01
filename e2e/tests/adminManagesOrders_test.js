@@ -25,7 +25,7 @@ async function setupScenario(I, caseViewPage) {
   approvalDate = moment(approvalDate).add(1, 'days').toDate();
 }
 
-Scenario('Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@prabha Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -89,7 +89,7 @@ Scenario('Create 32b discharge of care order @nightlyOnly', async ({ I, caseView
   });
 });
 
-Scenario(' Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario(' Create EPO order @xBrowser', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(caseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);

@@ -99,5 +99,4 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");
     }
-
 }
