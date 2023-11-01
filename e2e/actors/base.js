@@ -229,8 +229,11 @@ module.exports = {
     await this.navigateToCaseDetails(caseId);
   },
 
-  navigateToCaseList() {
-    caseListPage.navigate();
+  navigateToCaseList(caseIdAndName, caseListPage) {
+    caseListPage.searchForCasesWithName(caseIdAndName.caseName);
+    I.wait(90);
+    I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseIdAndName.caseId}')]`, 100);
+    I.seeCaseInSearchResult(caseIdAndName.caseId);
   },
 
   async fillDate(date, sectionId = 'form') {

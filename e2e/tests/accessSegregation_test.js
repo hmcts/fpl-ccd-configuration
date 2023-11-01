@@ -12,11 +12,8 @@ Scenario('Different user in the same local authority can see case created', asyn
   await setupScenario(I);
   await I.goToPage(config.baseUrl, config.swanseaLocalAuthorityUserTwo);
   I.wait(30);
-  //I.navigateToCaseList();
-  caseListPage.searchForCasesWithName(caseIdAndName.caseName);
-  I.wait(90);
-  I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseIdAndName.caseId}')]`, 100);
-  I.seeCaseInSearchResult(caseIdAndName.caseId);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
+
 });
 
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
@@ -25,32 +22,32 @@ Scenario('Different user in a different local authority cannot see case created'
   caseListPage.verifyCaseIsNotAccessibleSearchByCaseName(caseIdAndName);
 });
 
-xScenario('HMCTS admin user can see the case', async ({I}) => {
+Scenario('HMCTS admin user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseIdAndName);
-  I.see(I.uiFormatted(caseIdAndName));
+  await I.goToPage(config.baseUrl, config.hmctsAdminUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-xScenario('CAFCASS user can see the case', async ({I}) => {
+Scenario('CAFCASS user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.cafcassUser, caseIdAndName);
-  I.see(I.uiFormatted(caseIdAndName));
+  await I.goToPage(config.baseUrl, config.cafcassUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-xScenario('Gatekeeper user can see the case', async ({I}) => {
+Scenario('Gatekeeper user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseIdAndName);
-  I.see(I.uiFormatted(caseIdAndName));
+  await I.goToPage(config.baseUrl, config.gateKeeperUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-xScenario('Judiciary user can see the case', async ({I}) => {
+Scenario('Judiciary user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseIdAndName);
-  I.see(I.uiFormatted(caseIdAndName));
+  await I.goToPage(config.baseUrl, config.judicaryUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-xScenario('Magistrate user can see the case', async ({I}) => {
+Scenario('Magistrate user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.magistrateUser, caseIdAndName);
-  I.see(I.uiFormatted(caseIdAndName));
+  await I.goToPage(config.baseUrl, config.magistrateUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
