@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
@@ -84,12 +85,22 @@ public class AllocatedJudgeController extends CallbackController {
                 .getJudgeUserIdFromEmail(caseData.getAllocatedJudge().getJudgeEmailAddress());
 
             // if they are in our maps - add their UUID extra info to the case
-            possibleId.ifPresent(s -> caseDetails.getData().put("allocatedJudge",
+            possibleId.ifPresentOrElse(s -> caseDetails.getData().put("allocatedJudge",
                 caseData.getAllocatedJudge().toBuilder()
                     .judgeJudicialUser(JudicialUser.builder()
                         .idamId(s)
                         .build())
-                    .build()));
+                    .build()),
+                () -> {
+                    Judge allocatedJudge = caseData.getAllocatedJudge();
+                    if (JudgeOrMagistrateTitle.MAGISTRATES.equals(allocatedJudge.getJudgeTitle())) {
+                        allocatedJudge = allocatedJudge.toBuilder().judgeLastName(null).build();
+                    } else {
+                        allocatedJudge = allocatedJudge.toBuilder().judgeFullName(null).build();
+                    }
+
+                    caseDetails.getData().put("allocatedJudge", allocatedJudge);
+                });
         }
 
         removeTemporaryFields(caseDetails, "judicialUser", "enterManually");
