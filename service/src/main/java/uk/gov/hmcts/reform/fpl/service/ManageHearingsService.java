@@ -246,6 +246,29 @@ public class ManageHearingsService {
         return findHearingBooking(id, hearingBookings).orElseThrow(() -> new NoHearingBookingException(id));
     }
 
+    public Map<String, Object> populateNewHearingCaseFields() {
+        Map<String, Object> caseFields = new HashMap<>();
+        caseFields.put("hearingTypeDetails", null);
+        caseFields.put("hearingType", null);
+        caseFields.put("hearingTypeReason", null);
+        caseFields.put(HEARING_START_DATE, null);
+        caseFields.put(HEARING_END_DATE, null);
+        caseFields.put("judgeAndLegalAdvisor", null);
+        caseFields.put("hearingAttendance", null);
+        caseFields.put("hearingAttendanceDetails", null);
+        caseFields.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, null);
+        caseFields.put("sendNoticeOfHearingTranslationRequirements", null);
+        caseFields.put(HEARING_DURATION, null);
+        caseFields.put(HEARING_DAYS, null);
+        caseFields.put(HEARING_HOURS, null);
+        caseFields.put(HEARING_MINUTES, null);
+        caseFields.put(HEARING_END_DATE_TIME, null);
+        caseFields.put(PREVIOUS_HEARING_VENUE_KEY, null);
+        caseFields.put("hearingVenue", null);
+        caseFields.put("hearingVenueCustom", null);
+        return caseFields;
+    }
+
     public Map<String, Object> populateHearingCaseFields(HearingBooking hearingBooking, Judge allocatedJudge) {
         Map<String, Object> caseFields = new HashMap<>();
 
