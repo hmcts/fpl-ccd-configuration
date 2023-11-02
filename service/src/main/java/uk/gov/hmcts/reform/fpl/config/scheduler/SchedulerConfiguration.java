@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.quartz.Job;
 import org.quartz.Scheduler;
@@ -28,6 +29,7 @@ import javax.sql.DataSource;
 
 @Getter
 @Setter
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Configuration
 @ConfigurationProperties("scheduler")
@@ -40,6 +42,8 @@ public class SchedulerConfiguration {
 
     @Bean
     public DataSource schedulerDataSource() {
+        log.info("initialising Datasource with URL: " + datasourceConf.getUrl());
+        log.info("initialising Datasource with User: " + datasourceConf.getUsername());
         DataSource dataSource = datasourceConf.initializeDataSourceBuilder().build();
         migrateDatabase(dataSource);
         return dataSource;
