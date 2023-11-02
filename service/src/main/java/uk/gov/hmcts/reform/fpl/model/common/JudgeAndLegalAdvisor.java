@@ -83,7 +83,7 @@ public class JudgeAndLegalAdvisor extends AbstractJudge {
     public static JudgeAndLegalAdvisor fromJudicialUserProfile(JudicialUserProfile jup) {
         return JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.OTHER)
-            .otherTitle(jup.getPostNominals())
+            .otherTitle(jup.getTitle())
             .judgeLastName(jup.getSurname())
             .judgeFullName(jup.getFullName())
             .judgeEmailAddress(jup.getEmailId())
