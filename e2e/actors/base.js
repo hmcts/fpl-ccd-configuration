@@ -196,11 +196,13 @@ module.exports = {
   },
 
   seeCaseInSearchResult(caseId) {
-    this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    caseId = normalizeCaseId(caseId);
+    this.seeElement(`a[href$='${caseId}']`);
   },
 
   dontSeeCaseInSearchResult(caseId) {
-    this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    caseId = normalizeCaseId(caseId);
+    this.dontSeeElement(`a[href$='${caseId}']`);
   },
 
   seeEndStateForEvent(eventName, state) {
