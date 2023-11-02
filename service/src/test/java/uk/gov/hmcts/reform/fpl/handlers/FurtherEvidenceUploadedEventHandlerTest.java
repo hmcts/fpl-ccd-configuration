@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificationUserType;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
@@ -43,10 +46,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.furtherevidence.FurtherEvidenceUploadDifferenceCalculator;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -69,14 +75,17 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -88,6 +97,7 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploadNotificat
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.SOLICITOR;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.CASE_ID;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.CONFIDENTIAL_1;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.CONFIDENTIAL_2;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.LA_USER;
@@ -100,12 +110,16 @@ import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestD
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithAdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithC2AdditionalApplicationBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithConfidentialLADocuments;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByHmtcs;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesByLA;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithCorrespondencesBySolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildCaseDataWithNonConfidentialPDFRespondentStatementsSolicitor;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildHearingFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildNonConfidentialDocumentList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildRespondentStatementsList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.buildSubmittedCaseData;
+import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.commonCaseBuilder;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createCourtBundleList;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyApplicationDocument;
 import static uk.gov.hmcts.reform.fpl.handlers.FurtherEvidenceUploadedEventTestData.createDummyEvidenceBundle;
@@ -172,8 +186,20 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Mock
+    private FeatureToggleService featureToggleService;
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
+    @Mock
+    private UserService userService;
 
     private static final Consumer<CaseData> EMPTY_CASE_DATA_MODIFIER = whatever -> { };
+
+    @BeforeEach
+    void beforeEach() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+        given(userService.getCaseRoles(CASE_ID)).willReturn(Set.of(LASOLICITOR));
+    }
 
     private void verifyCafcassNotificationTemplate(
         DocumentUploaderType uploaderType,
@@ -962,6 +988,91 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     private static List<String> buildConfidentialDocumentsNamesList() {
         return List.of(CONFIDENTIAL_1, CONFIDENTIAL_2);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenNewCorrespondenceIsAddedByLA() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        CaseData caseData = buildCaseDataWithCorrespondencesByLA();
+        CaseData caseDataBefore = commonCaseBuilder().build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenNewCorrespondenceIsAddedBySolicitor() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        CaseData caseData = buildCaseDataWithCorrespondencesBySolicitor();
+        CaseData caseDataBefore = commonCaseBuilder().build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
+    }
+
+    private static Stream<Arguments> createWorkAllocationByHmctsParam() {
+        return Stream.of(
+            Arguments.of(true, false, true),
+            Arguments.of(false, false, false),
+            Arguments.of(false, true, true)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createWorkAllocationByHmctsParam")
+    void createWorkAllocationTaskWhenNewCorrespondenceIsAddedByHmcts(boolean isCafcassUser,
+                                                                     boolean isJudiciaryUser,
+                                                                     boolean shouldSend) {
+        given(userService.isCafcassUser()).willReturn(isCafcassUser);
+        given(userService.isJudiciaryUser()).willReturn(isJudiciaryUser);
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        CaseData caseData = buildCaseDataWithCorrespondencesByHmtcs();
+        CaseData caseDataBefore = commonCaseBuilder().build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                DESIGNATED_LOCAL_AUTHORITY,
+                userDetailsLA()
+            );
+        furtherEvidenceUploadedEventHandler.createWorkAllocationTask(furtherEvidenceUploadedEvent);
+
+        verify(workAllocationTaskService, times(shouldSend ? 1 : 0)).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
     }
 
     private static UserDetails getUserDetails(DocumentUploaderType uploaderType) {

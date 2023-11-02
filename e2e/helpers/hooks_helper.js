@@ -28,10 +28,10 @@ module.exports = class HooksHelpers extends Helper {
   }
 
   _beforeStep(step) {
-    //const helper = this.getHelper();
-    //if (step.name !== 'amOnPage') {
-      //return helper.waitForInvisible('xuilib-loading-spinner', 30);
-   // }
+    const helper = this.getHelper();
+    // if (step.name !== 'amOnPage') {
+    //   return helper.waitForInvisible('xuilib-loading-spinner', 30);
+    // }
   }
 
   _afterStep(step) {

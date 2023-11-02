@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.854'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.855'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -285,10 +285,10 @@ def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '3.0.0',
-  log4j           : '2.20.0',
+  log4j           : '2.21.1',
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
-  serenity        : '2.4.5',
+  serenity        : '2.6.0',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
   lombok          : '1.18.30',
@@ -322,8 +322,9 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+  implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.3'
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
@@ -375,7 +376,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 
@@ -387,6 +388,7 @@ dependencies {
 
   // Fortify client for Fortify scans
   testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity

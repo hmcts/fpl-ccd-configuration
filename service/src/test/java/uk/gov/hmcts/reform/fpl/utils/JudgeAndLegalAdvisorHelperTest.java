@@ -245,6 +245,24 @@ class JudgeAndLegalAdvisorHelperTest {
         assertThat(getHearingJudge(judgeAndLegalAdvisor)).isNull();
     }
 
+    @Test
+    void shouldReturnJudgeWhenAllocatedJudgeAndLegalAdvisorIsNulled() {
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Dread")
+            .judgeEmailAddress("dread@example.com")
+            .legalAdvisorName(null)
+            .useAllocatedJudge(null)
+            .allocatedJudgeLabel(null)
+            .build();
+
+        Judge allocatedJudge = buildJudge();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(null, allocatedJudge);
+
+        assertThat(judgeAndLegalAdvisor).isEqualTo(expectedJudgeAndLegalAdvisor);
+    }
+
+
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
         return JudgeAndLegalAdvisor.builder()
             .judgeTitle(MAGISTRATES)

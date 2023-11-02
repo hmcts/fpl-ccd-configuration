@@ -72,7 +72,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, null);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, null,
+            hearings.get(0).getId());
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -114,7 +115,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, null);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, null,
+            hearings.get(0).getId());
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -141,8 +143,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         List<Element<HearingBooking>> hearings = List.of(hearingWithCMOId(now().plusDays(3), cmoId));
         Element<HearingOrder> cmoElement = element(cmoId,
-            orderWithDocs(
-                hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT, newArrayList(existingSupportingDoc)));
+            orderWithDocs(hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT,
+                newArrayList(existingSupportingDoc), hearings.get(0).getId()));
 
         UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
             .previousCMO(cmoElement.getValue().getOrder())
@@ -167,7 +169,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         HearingOrder cmo = orderWithDocs(
             hearings.get(0).getValue(), HearingOrderType.DRAFT_CMO, DRAFT,
-            null);
+            null, hearings.get(0).getId());
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -305,12 +307,13 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     }
 
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
-                                       List<Element<SupportingEvidenceBundle>> supportingDocs) {
+                                       List<Element<SupportingEvidenceBundle>> supportingDocs, UUID hearingId) {
         return HearingOrder.builder()
             .type(type)
             .title(type == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
             .status(status)
             .hearing(hearing.toLabel())
+            .hearingId(hearingId)
             .order(DOCUMENT_REFERENCE)
             .dateSent(dateNow())
             .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
