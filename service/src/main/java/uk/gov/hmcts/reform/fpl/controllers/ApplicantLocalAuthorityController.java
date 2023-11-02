@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
@@ -47,7 +48,8 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
 
-        if (!applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
+        if (!caseData.getState().equals(OPEN) && !caseData.getState().equals(RETURNED)
+            && !applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
             // user is not operating on behalf of the applicant - it's likely a respondent solicitor on a 3rd party
             // case (both actual applicant + respondent get [SOLICITORA] roles so can't do this via event permissions
             return respond(caseDetails,
