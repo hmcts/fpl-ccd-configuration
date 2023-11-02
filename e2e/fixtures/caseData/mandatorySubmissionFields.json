@@ -1,7 +1,7 @@
 {
   "state": "SUBMITTED",
   "caseData": {
-    "caseName": "e2e test case",
+    "caseName": "${CASE_NAME}",
     "orders": {
       "orderType": [
         "CARE_ORDER"
