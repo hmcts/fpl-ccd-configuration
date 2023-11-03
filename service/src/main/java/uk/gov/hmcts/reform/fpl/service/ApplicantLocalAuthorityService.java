@@ -320,6 +320,7 @@ public class ApplicantLocalAuthorityService {
         }
         return false;
     }
+
     public boolean isApplicantOrOnBehalfOfOrgId(String orgId, CaseData caseData) {
         return isOrgIdInPolicy(orgId, caseData.getLocalAuthorityPolicy())
             || isOrgIdInPolicy(orgId, caseData.getOutsourcingPolicy())
