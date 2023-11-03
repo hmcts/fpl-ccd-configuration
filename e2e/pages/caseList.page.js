@@ -70,14 +70,14 @@ module.exports = {
   },
 
   locateCaseProperty(caseId, columnNumber) {
-    const caseRow = this.locateCase(caseId);
+    const caseRow = `a[href$='${caseId}']`;
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
   },
 
   async verifyCaseIsShareable(caseId) {
     I.navigateToCaseList();
-    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
+    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), `a[href$='${caseId}']`, false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
