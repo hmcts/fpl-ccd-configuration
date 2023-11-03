@@ -70,5 +70,18 @@
     "PageDisplayOrder": 2,
     "PageFieldDisplayOrder": 3,
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "replyToMessageJudgeOrLegalAdviser",
+    "CaseFieldID": "latestRoleSent",
+    "DisplayContext": "READONLY",
+    "PageID": "ReplyToMessage",
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 4,
+    "ShowSummaryChangeOption": "N",
+    "Publish": "Y",
+    "FieldShowCondition": "judicialMessageReply=\"DO_NOT_SHOW\""
   }
 ]

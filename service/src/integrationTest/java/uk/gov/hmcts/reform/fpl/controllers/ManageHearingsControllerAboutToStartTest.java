@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -69,10 +70,13 @@ class ManageHearingsControllerAboutToStartTest extends ManageHearingsControllerT
                 .build())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(initialCaseData));
+        AboutToStartOrSubmitCallbackResponse resp = postAboutToStartEvent(initialCaseData);
+        CaseData updatedCaseData = extractCaseData(resp);
 
         assertThat(updatedCaseData.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
             .allocatedJudgeLabel("Case assigned to: His Honour Judge Richards").build());
+
+        assertThat(resp.getData().get("allocatedJudgeLabel")).isEqualTo("Case assigned to: His Honour Judge Richards");
     }
 
     @Test

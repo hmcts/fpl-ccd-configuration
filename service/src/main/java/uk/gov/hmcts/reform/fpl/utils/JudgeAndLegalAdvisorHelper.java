@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
@@ -30,7 +31,7 @@ public class JudgeAndLegalAdvisorHelper {
 
     public static JudgeAndLegalAdvisor getSelectedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                         Judge allocatedJudge) {
-        if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
+        if (isEmpty(judgeAndLegalAdvisor) || judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
             return migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
         } else {
             return judgeAndLegalAdvisor;
@@ -60,9 +61,9 @@ public class JudgeAndLegalAdvisorHelper {
             .judgeLastName(allocatedJudge.getJudgeLastName())
             .judgeFullName(allocatedJudge.getJudgeFullName())
             .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
-            .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
-            .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
-            .useAllocatedJudge(judgeAndLegalAdvisor.getUseAllocatedJudge())
+            .legalAdvisorName(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getLegalAdvisorName())
+            .allocatedJudgeLabel(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getUseAllocatedJudge())
             .build();
     }
 

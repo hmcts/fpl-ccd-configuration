@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -68,6 +69,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
+
+    @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
 
     UploadC2DocumentsSubmittedControllerTest() {
         super("upload-c2");
