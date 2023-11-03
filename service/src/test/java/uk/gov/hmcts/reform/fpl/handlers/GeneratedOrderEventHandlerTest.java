@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.others.OtherRecipientsInbox;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -122,6 +125,10 @@ class GeneratedOrderEventHandlerTest {
     private ArgumentCaptor<OrderCafcassData> orderCaptor;
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Mock
+    private UserService userService;
+    @Mock
+    private WorkAllocationTaskService workAllocationTaskService;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -380,5 +387,23 @@ class GeneratedOrderEventHandlerTest {
                 any(),
                 any(),
                 any());
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenJudgeUploadsOrder() {
+        given(userService.isJudiciaryUser()).willReturn(true);
+        underTest.createWorkAllocationTask(EVENT);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(CASE_DATA,
+            WorkAllocationTaskType.ORDER_UPLOADED);
+    }
+
+    @Test
+    void shouldNotCreateWorkAllocationTaskWhenNonJudgeUserUploadsOrder() {
+        given(userService.isJudiciaryUser()).willReturn(false);
+        underTest.createWorkAllocationTask(EVENT);
+
+        verify(workAllocationTaskService, never()).createWorkAllocationTask(any(),
+            any());
     }
 }

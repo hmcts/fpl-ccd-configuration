@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
@@ -11,8 +12,10 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FailedPBAPaymentContentProvider;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import java.util.List;
@@ -31,9 +34,13 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAsse
     CtscEmailLookupConfiguration.class,
     FailedPBAPaymentContentProvider.class,
     ObjectMapper.class,
-    CaseUrlService.class
+    CaseUrlService.class,
+    WorkAllocationTaskService.class
 })
 class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private FailedPBAPaymentEventHandler underTest;
