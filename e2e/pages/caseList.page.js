@@ -9,7 +9,7 @@ module.exports = {
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled_Yes',
     evidenceNotHandled: '#evidenceHandled_No',
-    caseId: 'CCD Case Number',
+    caseId: 'CASE_REFERENCE',
     caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
@@ -52,14 +52,14 @@ module.exports = {
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
-    I.wait(30);
+    I.wait(60);
     I.click('Apply');
     I.runAccessibilityTest().then(() => {});
   },
 
   setInitialSearchFields(state = 'Any') {
     // wait for initial filters to load
-    I.waitForVisible(this.fields.jurisdiction, 30);
+    I.waitForVisible(this.fields.jurisdiction, 90);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
     I.selectOption(this.fields.caseState, state);
@@ -70,14 +70,14 @@ module.exports = {
   },
 
   locateCaseProperty(caseId, columnNumber) {
-    const caseRow = this.locateCase(caseId);
+    const caseRow = `a[href$='${caseId}']`;
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
   },
 
   async verifyCaseIsShareable(caseId) {
     I.navigateToCaseList();
-    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
+    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), `a[href$='${caseId}']`, false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
@@ -87,6 +87,12 @@ module.exports = {
     this.searchForCasesWithId(caseId);
     I.waitForInvisible(this.fields.spinner, 30);
     I.grabCurrentUrl();
+    I.see('No cases found. Try using different filters.');
+  },
+
+  verifyCaseIsNotAccessibleSearchByCaseName(caseIdAndName) {
+    this.searchForCasesWithName(caseIdAndName.caseName);
+    I.wait(90);
     I.see('No cases found. Try using different filters.');
   },
 
