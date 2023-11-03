@@ -132,7 +132,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
-        caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
