@@ -79,8 +79,6 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
   component          = var.component
   business_area      = "cft"
 
-  subnet_suffix = "expanded"
-
   pgsql_databases = [
     {
       name : var.fpl_scheduler_db_name_v15
