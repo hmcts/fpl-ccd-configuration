@@ -95,8 +95,10 @@ public class ReplyToMessageJudgeController extends CallbackController {
             publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
         }
 
+        /*
+         * Disable as
         publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest)));
-
+        */
     }
 }

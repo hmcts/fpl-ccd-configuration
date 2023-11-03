@@ -91,11 +91,13 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .urgency("High")
                     .build())))
             .build();
+        /*
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(i.getArgument(1))
             .token("token")
             .build());
+            */
 
         postSubmittedEvent(asCaseDetails(caseData));
 
@@ -110,9 +112,11 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
+        /*
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
+         */
     }
 
     @Test
@@ -162,9 +166,11 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
+        /*
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary()));
+         */
     }
 
     private Map<String, Object> caseSummary() {
