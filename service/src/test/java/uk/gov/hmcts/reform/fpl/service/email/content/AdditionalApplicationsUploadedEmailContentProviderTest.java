@@ -268,6 +268,19 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
+    @Test
+    void shouldReturnC2ByConsentLabel() {
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .type(C2ApplicationType.WITHOUT_NOTICE)
+                .supplementsBundle(List.of()).build())
+            .build();
+
+        List<String> actualTypes = underTest.getApplicationTypes(additionalApplicationsBundle);
+
+        assertThat(actualTypes).isEqualTo(List.of("C2 (By consent)"));
+    }
+
     private CaseData buildCaseData() {
         List<Supplement> supplements = Arrays.asList(
             Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build(),
