@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -135,7 +136,7 @@ public class RespondentService {
             .map(RespondentSolicitor::getTelephoneNumber)
             .filter(Objects::nonNull)
             .map(Telephone::getTelephoneNumber)
-            .filter(Objects::nonNull)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.toList());
     }
 
