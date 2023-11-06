@@ -445,6 +445,7 @@ public class ManageHearingsService {
             END_DATE_FLAG,
             "hasSession",
             HEARING_ATTENDANCE,
+            HEARING_ATTENDANCE_DETAILS,
             PRE_HEARING_ATTENDANCE_DETAILS_KEY,
             "hearingOption",
             "hasOthers",
