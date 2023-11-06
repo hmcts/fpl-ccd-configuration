@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
