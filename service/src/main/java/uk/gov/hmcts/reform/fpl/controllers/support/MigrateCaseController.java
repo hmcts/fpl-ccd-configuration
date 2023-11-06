@@ -67,7 +67,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
-        "DFPL-1842", this::run1842
+        "DFPL-1842", this::run1842,
+        "DFPL-1850", this::run1850
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -323,6 +324,10 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
             migrationId, expectedPositionStatementId));
+    }
+
+    private void run1850(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
 }
