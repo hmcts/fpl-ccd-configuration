@@ -67,17 +67,17 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldThrowErrorIfNotInApplicantOrgAndInCaseManagementState() {
-            final CaseData caseData = CaseData.builder()
-                .state(State.CASE_MANAGEMENT)
-                .localAuthorityPolicy(createPolicy("ORG2"))
-                .sharedLocalAuthorityPolicy(createPolicy("ORG3"))
-                .outsourcingPolicy(createPolicy("ORG4"))
-                .build();
+        final CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .localAuthorityPolicy(createPolicy("ORG2"))
+            .sharedLocalAuthorityPolicy(createPolicy("ORG3"))
+            .outsourcingPolicy(createPolicy("ORG4"))
+            .build();
 
-            final AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+        final AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
-            assertThat(response.getErrors()).containsExactly(
-                "You must be the applicant or acting on behalf of the applicant to modify these details.");
+        assertThat(response.getErrors()).containsExactly(
+            "You must be the applicant or acting on behalf of the applicant to modify these details.");
     }
 
     @ParameterizedTest
