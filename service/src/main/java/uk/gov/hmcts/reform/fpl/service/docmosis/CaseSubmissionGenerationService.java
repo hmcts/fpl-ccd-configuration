@@ -101,6 +101,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
+@SuppressWarnings("java:S2583")
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class CaseSubmissionGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisCaseSubmission> {
