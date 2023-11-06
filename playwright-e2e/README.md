@@ -40,3 +40,14 @@ This is to allow for ExUI loading spinner to finish, it is currently very slow i
 Playwright provides a couple of great debugging capabilities at all levels. The ones that you will probably find most useful are:
 
 For all options take a look at: https://playwright.dev/docs/debug
+
+## Defining standards
+
+### Define standard naming conventions
+We recommend the following:
+
+- Use camelCase for variable and function names.
+- Use PascalCase for class names and interface names.
+- Use camelCase for interface members.
+- Use PascalCase for type names and enum names.
+- Name files with camelCase (for example, ebsVolumes.tsx or storage.tsb)

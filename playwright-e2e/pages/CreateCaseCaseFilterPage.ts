@@ -59,24 +59,27 @@ export class SmokeCreateCase {
     await this.page
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
-      .click({ timeout: 65000 });
+      .click();
     await this.addApplicationTitle.isVisible;
 
     // This click timeout is here allow for ExUI loading spinner to finish
-    await this.viewHistory.click({ timeout: 75000 });
+    await this.viewHistory.click();
   }
 
   async CheckCaseIsCreated(caseName) {
     await this.page.getByRole("link", { name: "Case list" }).click();
-    await this.page.getByLabel("Jurisdiction").selectOption("0: Object");
-    await this.page.getByLabel("Case type").selectOption("1: Object");
-    await this.page.getByLabel("State").selectOption("0: null");
-    await this.page.getByLabel("Apply filter").click({ timeout: 75000 });
-    // This click timeout is here allow for ExUI loading spinner to finish
-    await this.page.getByLabel("State").click({ timeout: 75000 });
+    await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
+    await this.page
+      .getByLabel("Case type")
+      .selectOption("Public Law Applications");
+    await this.page.getByLabel("State").selectOption("Any");
+    await this.page.getByLabel("Apply filter").click();
+    await this.page.getByLabel("Day").click();
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
-    await this.page.getByLabel("Apply filter").click({ timeout: 75000 });
-    await expect(this.page.getByText(caseName)).toBeVisible({ timeout: 75000 });
+    await this.page.getByLabel("Apply filter").click();
+    await this.page.getByLabel("Day").click();
+    await expect(this.page.getByText(caseName)).toBeVisible();
+    await this.page.getByText(caseName).click();
   }
 }
