@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
-import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -377,10 +376,6 @@ public class ListGatekeepingHearingController extends CallbackController {
 
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, true));
-                    }
-
-                    if (needTemporaryHearingJudgeAllocated(caseData, hearingBooking)) {
-                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
                     }
                 });
         }

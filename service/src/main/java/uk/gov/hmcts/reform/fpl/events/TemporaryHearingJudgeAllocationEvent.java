@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Getter
+@Deprecated(since = "DFPL-1862")
 @RequiredArgsConstructor
 public class TemporaryHearingJudgeAllocationEvent {
     private final CaseData caseData;
