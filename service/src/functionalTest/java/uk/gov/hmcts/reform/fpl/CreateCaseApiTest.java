@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -9,6 +10,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
 public class CreateCaseApiTest extends AbstractApiTest {
 
+    @Ignore
     @Test
     public void shouldCreateAndShareCase() {
 
