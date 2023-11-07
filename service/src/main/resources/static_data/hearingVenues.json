@@ -4024,6 +4024,16 @@
     }
   },
   {
+    "hearingVenueId": 438,
+    "venue": "Fleetwood Family Hearing Centre",
+    "address": {
+      "AddressLine1": "Fleetwood Annex",
+      "AddressLine2": "Fleetwood Family Hearing Centre",
+      "PostTown": "The Esplanade Fleetwood",
+      "PostCode": "FY7 6AT"
+    }
+  },
+  {
     "hearingVenueId": -1,
     "venue": "High Court Family Division",
     "address": {
