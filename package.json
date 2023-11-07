@@ -39,8 +39,8 @@
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "test:local": "./bin/runtestlocal.sh",
     "prepare": "husky install",
-    "yarn-update": "yarn set version 4.0.1",
-    "install-dependencies": "/usr/bin/yarn install --cache-folder ./yarn-cache --silent",
+    "yarn-update": "yarn set version 3.x",
+    "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint"
   },
   "peerDependencies": {
@@ -52,6 +52,6 @@
   "resolutions": {
     "yargs-parser": "^20.2.9"
   },
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@3.6.4",
   "license": "MIT"
 }
