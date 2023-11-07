@@ -39,7 +39,7 @@
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "test:local": "./bin/runtestlocal.sh",
     "prepare": "husky install",
-    "yarn-update": "yarn set version 4.x",
+    "yarn-update": "yarn set version 4.0.1",
     "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint"
   },
