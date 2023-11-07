@@ -4,8 +4,8 @@ const config = require('../config');
 const moment = require('moment');
 const apiHelper = require('../helpers/api_helper.js');
 
-const loginPage = require('../pages/login.page');
-const caseListPage = require('../pages/caseList.page');
+//const loginPage = require('../pages/login.page');
+//const caseListPage = require('../pages/caseList.page');
 const eventSummaryPage = require('../pages/eventSummary.page');
 const openApplicationEventPage = require('../pages/events/openApplicationEvent.page');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
@@ -13,8 +13,8 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
 const baseUrl = config.baseUrl;
-const signedInSelector = 'exui-header';
-const signedOutSelector = '#global-header';
+//const signedInSelector = 'exui-header';
+//const signedOutSelector = '#global-header';
 const maxRetries = 10;
 let currentUser = {};
 
@@ -31,22 +31,22 @@ module.exports = {
       currentUser = {}; // reset in case the login fails
 
       //await this.retryUntilExists(async () => {
-        //To mitigate situation when idam response with blank page
-        await this.goToPage(baseUrl, user);
-        I.grabCurrentUrl();
+      //To mitigate situation when idam response with blank page
+      await this.goToPage(baseUrl, user);
+      I.grabCurrentUrl();
 
-        // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-        //   await this.refreshPage();
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // if (await this.hasSelector(signedInSelector)) {
-        //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        // I.grabCurrentUrl();
+      // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
+      //   await this.refreshPage();
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // if (await this.hasSelector(signedInSelector)) {
+      //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+      // I.grabCurrentUrl();
 
       //}, signedInSelector, false, 10);
       //await this.rejectCookies();
