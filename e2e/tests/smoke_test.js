@@ -1,9 +1,9 @@
 const config = require('../config');
 const moment = require('moment');
-const caseListPage = require("../pages/caseList.page");
+//const caseListPage = require('../pages/caseList.page');
 const output = require('codeceptjs').output;
 
-Feature('Smoke tests @smoke-tests');
+Feature('Smoke tests @smoke-tests @fixed');
 
 Scenario('Sign in as local authority and create a case', async ({I, caseListPage}) => {
   output.print('Smoke test triggered');
