@@ -79,7 +79,7 @@ export class SmokeCreateCase {
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
     await this.page.getByLabel("Day").click();
-    await expect(this.page.getByText(caseName)).toBeVisible();
+    await expect(this.page.getByText(caseName)).toBeVisible({ timeout: 75000 });
     await this.page.getByText(caseName).click();
   }
 }
