@@ -40,7 +40,7 @@
     "test:local": "./bin/runtestlocal.sh",
     "prepare": "husky install",
     "yarn-update": "yarn set version 4.0.1",
-    "install-dependencies": "/usr/bin/yarn install --silent",
+    "install-dependencies": "/usr/bin/yarn install --cache-folder ./yarn-cache --silent",
     "lint-ui-tests": "/usr/bin/yarn lint"
   },
   "peerDependencies": {
