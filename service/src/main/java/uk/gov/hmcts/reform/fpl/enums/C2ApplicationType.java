@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum C2ApplicationType {
     WITH_NOTICE("With notice"),
-    WITHOUT_NOTICE("Without notice");
+    WITHOUT_NOTICE("By consent");
 
     private final String label;
 }
