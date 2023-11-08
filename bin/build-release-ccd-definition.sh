@@ -10,9 +10,9 @@ if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "
 fi
 
 if [[ ${environment} == "prod" ]]; then
-  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json,*-shuttered.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json,*-shuttered.json,*-local.json"
 else
-  excludedFilenamePatterns="-e UserProfile.json,*-prod.json,*-shuttered.json"
+  excludedFilenamePatterns="-e UserProfile.json,*-prod.json,*-shuttered.json,*-local.json"
 fi
 
 root_dir=$(realpath $(dirname ${0})/..)
@@ -26,4 +26,4 @@ mkdir -p ${build_dir}
 export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-${environment}.service.core-compute-${environment}.internal
 export CCD_DEF_AAC_URL=http://aac-manage-case-assignment-${environment}.service.core-compute-${environment}.internal
 
-${root_dir}/fpla-docker/bin/utils/fpl-process-definition.sh ${config_dir} ${release_definition_output_file} "${excludedFilenamePatterns}"
+${root_dir}/bin/fpl-process-definition.sh ${config_dir} ${release_definition_output_file} "${excludedFilenamePatterns}"

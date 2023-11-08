@@ -10,4 +10,5 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 public class SendNoticeOfHearing {
     private final CaseData caseData;
     private final HearingBooking selectedHearing;
+    private final boolean isGateKeepingHearing;
 }

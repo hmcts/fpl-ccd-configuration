@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.HEARING_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.HEARING_LEGAL_ADVISER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -32,6 +37,9 @@ public class CaseAccessService {
     private final AuthTokenGenerator authTokenGenerator;
     private final SystemUserService systemUserService;
     private final OrganisationService organisationService;
+
+    private final List<String> excludedInternalWACaseRoles = List.of(ALLOCATED_JUDGE.getRoleName(),
+        HEARING_JUDGE.getRoleName(), ALLOCATED_LEGAL_ADVISER.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName());
 
     //TO-DO remove once FPLA-2946 migration is done
     public void grantCaseRoleToUsers(Long caseId, Set<String> userIds, CaseRole caseRole) {
@@ -48,8 +56,14 @@ public class CaseAccessService {
         Set<String> users = getLocalAuthorityUsers(caseId, localAuthority, caseRole);
         users.add(creatorId);
 
-        grantCaseAccess(caseId, users, caseRole);
-        log.info("Users {} granted {} to case {}", users, caseRole, caseId);
+        try {
+            grantCaseAccess(caseId, users, caseRole);
+            log.info("Users {} granted {} to case {}", users, caseRole, caseId);
+        } catch (GrantCaseAccessException ex) {
+            // default back to just the default user
+            grantCaseRoleToUser(caseId, creatorId, caseRole);
+            log.info("ONLY Creator {} granted access {} to case {}", creatorId, caseRole, caseId);
+        }
     }
 
     public void revokeCaseRoleFromUser(Long caseId, String userId, CaseRole caseRole) {
@@ -76,6 +90,7 @@ public class CaseAccessService {
 
         return userRolesResource.getCaseAssignedUserRoles().stream()
             .map(CaseAssignedUserRole::getCaseRole)
+            .filter(role -> !excludedInternalWACaseRoles.contains(role))
             .map(CaseRole::from)
             .collect(Collectors.toSet());
     }

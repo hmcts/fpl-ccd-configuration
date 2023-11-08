@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProvide
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -66,6 +67,7 @@ class RegisteredRepresentativeSolicitorContentProviderTest extends AbstractEmail
         when(caseData.getId()).thenReturn(CASE_REFERENCE);
         when(caseData.getCaseName()).thenReturn(CASE_NAME);
         when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getApplicantName()).thenReturn(Optional.of(LOCAL_AUTHORITY_NAME));
         when(caseData.getAllChildren()).thenReturn(children);
 
         when(helper.getEldestChildLastName(children)).thenReturn("Tim Jones");

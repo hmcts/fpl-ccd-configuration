@@ -28,6 +28,8 @@ java:
     PARENTAL_RESPONSIBILITY_FATHER_KEYWORD: ParentalResponsibChg
     PARENTAL_RESPONSIBILITY_FEMALE_KEYWORD: ParentalResponsibility
     DECLARATION_OF_PARENTAGE: Private
+    RD_STAFF_API_ENABLED: true
+    RD_JUDICIAL_API_ENABLED: true
   keyVaults:
     fpl:
       secrets:
@@ -88,9 +90,9 @@ xui-webapp:
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 500m
-    devmemoryRequests: 512Mi
+    devmemoryRequests: 1Gi
     devcpuLimits: 1
-    devmemoryLimits: 1Gi
+    devmemoryLimits: 4Gi
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10
@@ -224,6 +226,10 @@ ccd:
   postgresql:
     persistence:
       enabled: false
+    image:
+        registry: hmctspublic.azurecr.io
+        repository: imported/bitnami/postgresql
+        tag: '11.16.0'
     postgresConfig:
       maxConnections: "300"
 

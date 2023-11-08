@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.PlacementNoticeAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.PlacementApplicationCafcassData;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.Set.of;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.PLACEMENT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.nullifyTemporaryFields;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
@@ -276,11 +279,21 @@ public class PlacementEventsHandler {
             notificationService.sendEmail(PLACEMENT_NOTICE_UPLOADED_TEMPLATE, parentSolicitor.getEmail(), notifyData,
                 caseData.getId());
         } else if (!respondent.isDeceasedOrNFA()) {
-            log.info("Send letter to respondent ({}) about {} child placement notice",
-                respondent.getParty().getFullName(), placement.getChildName());
+            log.info("Send letter, application and supporting documents to "
+                            + "respondent ({}) about {} child placement notice",
+                    respondent.getParty().getFullName(), placement.getChildName());
+
+            List<DocumentReference> placementNoticeAndSupportingDocuments =
+                    unwrapElements(placement.getSupportingDocuments())
+                    .stream()
+                    .map(PlacementSupportingDocument::getDocument)
+                    .collect(Collectors.toList());
+
+            placementNoticeAndSupportingDocuments.addAll(
+                    List.of(placement.getPlacementNotice(), placement.getApplication()));
 
             sendDocumentService.sendDocuments(
-                caseData, List.of(placement.getPlacementNotice()), List.of(respondent.getParty()));
+                    caseData, placementNoticeAndSupportingDocuments, List.of(respondent.getParty()));
         }
 
     }

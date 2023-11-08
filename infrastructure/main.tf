@@ -2,11 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.65.0"
+      version = "3.78.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "2.40.0"
+      version = "2.45.0"
     }
   }
 }
@@ -54,9 +54,6 @@ module "key-vault" {
   resource_group_name     = azurerm_resource_group.rg.name
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
-
-  #aks migration
-  managed_identity_object_id = var.managed_identity_object_id
   create_managed_identity    = true
 }
 

@@ -183,6 +183,11 @@ public class CaseData extends CaseDataParent {
     private String courtField;
     private String dfjArea;
 
+    private final JudicialUser judicialUser;
+    private final JudicialUser judicialUserHearingJudge;
+    private final YesNo enterManually;
+    private final YesNo enterManuallyHearingJudge;
+
     public List<Element<Court>> getPastCourtList() {
         return defaultIfNull(pastCourtList, new ArrayList<>());
     }
@@ -259,6 +264,18 @@ public class CaseData extends CaseDataParent {
     @NotNull(message = "You need to enter the allocated judge.",
         groups = {SealedSDOGroup.class, HearingBookingDetailsGroup.class})
     private final Judge allocatedJudge;
+
+    @Temp
+    private final Judge tempAllocatedJudge;
+
+    // Temporary hearing judge field + legal advisor
+    @Temp
+    private final Judge hearingJudge;
+    @Temp
+    private final String legalAdvisorName;
+    @Temp
+    private final YesNo useAllocatedJudge;
+
     @NotNull(message = "Add the hearing urgency details")
     @Valid
     private final Hearing hearing;
@@ -965,7 +982,8 @@ public class CaseData extends CaseDataParent {
     private final List<Element<HearingOrder>> ordersToBeSent;
 
     @JsonUnwrapped
-    private final ReviewDraftOrdersData reviewDraftOrdersData;
+    @Builder.Default
+    private final ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
@@ -1174,7 +1192,9 @@ public class CaseData extends CaseDataParent {
     private final LocalAuthoritiesEventData localAuthoritiesEventData = LocalAuthoritiesEventData.builder().build();
 
     @JsonUnwrapped
-    private final CaseProgressionReportEventData caseProgressionReportEventData;
+    @Builder.Default
+    private final CaseProgressionReportEventData caseProgressionReportEventData = CaseProgressionReportEventData
+        .builder().build();
 
     @JsonUnwrapped
     @Builder.Default
@@ -1297,5 +1317,14 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     public String getCaseLaOrRelatingLa() {
         return isEmpty(caseLocalAuthority) ? relatingLA : caseLocalAuthority;
+    }
+
+    @JsonIgnore
+    public Optional<String> getApplicantName() {
+        if (!isEmpty(getLocalAuthorities())) {
+            return Optional.of(getLocalAuthorities().get(0).getValue().getName());
+        } else {
+            return Optional.empty();
+        }
     }
 }

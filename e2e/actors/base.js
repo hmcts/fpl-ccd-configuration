@@ -25,31 +25,31 @@ const { I } = inject();
 module.exports = {
   async signIn(user) {
     console.log('base signIn');
-    if (!(this.isPuppeteer() &&  (currentUser === user))) {
+    if (!(currentUser === user)) {
       console.log(`Logging in as ${user.email}`);
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
-      await this.retryUntilExists(async () => {
+      //await this.retryUntilExists(async () => {
         //To mitigate situation when idam response with blank page
-        await this.goToPage(baseUrl);
+        await this.goToPage(baseUrl, user);
         I.grabCurrentUrl();
 
-        if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-          await this.refreshPage();
-          I.grabCurrentUrl();
-        }
+        // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
+        //   await this.refreshPage();
+        //   I.grabCurrentUrl();
+        // }
+        //
+        // if (await this.hasSelector(signedInSelector)) {
+        //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+        //   I.grabCurrentUrl();
+        // }
+        //
+        // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+        // I.grabCurrentUrl();
 
-        if (await this.hasSelector(signedInSelector)) {
-          await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-          I.grabCurrentUrl();
-        }
-
-        await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        I.grabCurrentUrl();
-
-      }, signedInSelector, false, 10);
-      await this.rejectCookies();
+      //}, signedInSelector, false, 10);
+      //await this.rejectCookies();
       I.grabCurrentUrl();
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
@@ -60,29 +60,24 @@ module.exports = {
     I.grabCurrentUrl();
   },
 
-  async goToPage(url) {
+  async goToPage(url, user) {
     this.amOnPage(url);
-    await this.logWithHmctsAccount();
+    await this.logWithHmctsAccount(user);
   },
 
-  async logWithHmctsAccount() {
-    const hmctsLoginIn = 'div.win-scroll';
-
-    if (await this.hasSelector(hmctsLoginIn)) {
-      if (!config.hmctsUser.email || !config.hmctsUser.password) {
-        throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
-      }
-      await within(hmctsLoginIn, () => {
-        this.fillField('//input[@type="email"]', config.hmctsUser.email);
-        this.wait(0.2);
-        this.click('Next');
-        this.wait(0.2);
-        this.fillField('//input[@type="password"]', config.hmctsUser.password);
-        this.wait(0.2);
-        this.click('Sign in');
-        this.click('Yes');
-      });
+  async logWithHmctsAccount(user) {
+    //const hmctsLoginIn = 'div.win-scroll';
+    if (!user.email || !user.password) {
+      throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
+   // await within(hmctsLoginIn, () => {
+      this.waitForElement('//input[@type="text"]', 20);
+      this.fillField('//input[@type="text"]', user.email);
+      this.wait(0.2);
+      this.fillField('//input[@type="password"]', user.password);
+      this.wait(0.5);
+      this.click('Sign in');
+   // });
   },
 
   async rejectCookies() {
@@ -106,8 +101,21 @@ module.exports = {
     return caseId;
   },
 
+  async createCaseSmokeTest(user, caseName, outsourcingLA) {
+    await this.waitForSelector('ccd-search-result');
+    await this.waitForSelector('a[href="/cases/case-filter"]');
+    await this.retryUntilExists(() => this.click('a[href="/cases/case-filter"]'), openApplicationEventPage.fields.jurisdiction, true, 10);
+
+    await openApplicationEventPage.populateForm(caseName, outsourcingLA);
+    I.click('Submit');
+    this.waitForElement('.alert-message', 90);
+    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
+    output.print(`Case created #${caseId}`);
+    return caseId;
+  },
+
   async completeEvent(button, changeDetails, confirmationPage = false, selector = '.mat-tab-list') {
-    await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+    await this.retryUntilExists(() => this.click('submit'), '.check-your-answers');
     if (changeDetails != null) {
       await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
     }
@@ -188,11 +196,13 @@ module.exports = {
   },
 
   seeCaseInSearchResult(caseId) {
-    this.seeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    caseId = normalizeCaseId(caseId);
+    this.seeElement(`a[href$='${caseId}']`);
   },
 
   dontSeeCaseInSearchResult(caseId) {
-    this.dontSeeElement(caseListPage.locateCase(normalizeCaseId(caseId)));
+    caseId = normalizeCaseId(caseId);
+    this.dontSeeElement(`a[href$='${caseId}']`);
   },
 
   seeEndStateForEvent(eventName, state) {
@@ -201,21 +211,31 @@ module.exports = {
   },
 
   async navigateToCaseDetails(caseId) {
-    const currentUrl = await this.grabCurrentUrl();
-    if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
-      await this.retryUntilExists(async () => {
-        await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, '#next-step');
-    }
+    this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
+    I.wait(0.5);
+    //await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
+    // const currentUrl = await this.grabCurrentUrl();
+    // if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
+    //   await this.retryUntilExists(async () => {
+    //
+    //   }, '#next-step');
+    // }
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
+    await I.goToPage(config.baseUrl);
+    await I.goToPage(config.baseUrl, config.hmctsUser);
+
     await this.signIn(user);
+    I.wait(10);
     await this.navigateToCaseDetails(caseId);
   },
 
-  navigateToCaseList() {
-    caseListPage.navigate();
+  navigateToCaseList(caseIdAndName, caseListPage) {
+    caseListPage.searchForCasesWithName(caseIdAndName.caseName);
+    I.wait(90);
+    I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseIdAndName.caseId}')]`, 100);
+    I.seeCaseInSearchResult(caseIdAndName.caseId);
   },
 
   async fillDate(date, sectionId = 'form') {
@@ -311,13 +331,10 @@ module.exports = {
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
-    await apiHelper.populateWithData(caseId, data);
-    if (this.isPuppeteer()) {
-      await this.refreshPage();
-    }
+    let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
+    await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
-
-    return caseId;
+    return {caseId, caseName};
   },
 
   async submitNewCase(user, name) {
@@ -357,7 +374,7 @@ module.exports = {
     this.click('Previous');
   },
 
-  uiFormatted(id) { return id.match(/.{1,4}/g).join('-');},
+  uiFormatted(id) { return '#' + id.match(/.{1,4}/g).join('-');},
 
   async getActiveElementIndex() {
     return await this.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
@@ -378,7 +395,7 @@ module.exports = {
   async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
     const originalUrl = await this.grabCurrentUrl();
     // override this for now
-    maxNumberOfTries = 1;
+    //maxNumberOfTries = 1;
 
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);

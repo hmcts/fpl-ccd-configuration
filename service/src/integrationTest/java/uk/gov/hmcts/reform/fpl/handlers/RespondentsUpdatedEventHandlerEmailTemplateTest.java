@@ -97,10 +97,10 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         underTest.notifyRegisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110A application, FPL case test, Jones")
+            .hasSubject("New application, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
-                .line(String.format("%s%s has made the following C110A application on the Family"
+                .line(String.format("%s%s has made the following application on the Family"
                     + " Public Law (FPL) digital service:", expectedSalutation, LOCAL_AUTHORITY_NAME))
                 .line()
                 .callout(String.format(" %s, %s", CASE_NAME, CASE_ID))
@@ -154,10 +154,10 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
         underTest.notifyUnregisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("New C110a application involving your client, FPL case test, Jones")
+            .hasSubject("New application involving your client, FPL case test, Jones")
             .hasBody(emailContent()
                 .start()
-                .line(LOCAL_AUTHORITY_NAME + " has made a new C110a application on the Family Public Law digital "
+                .line(LOCAL_AUTHORITY_NAME + " has made a new application on the Family Public Law digital "
                     + "service.")
                 .line()
                 .line("They’ve given your details as the legal representative for Emma Jones.")
@@ -176,7 +176,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
                 .line()
                 .line("You'll need:")
                 .list("reference number 1234-5678-9012-3456",
-                    "the name of the local authority that made the application",
+                    "the name of the applicant that made the application",
                     "your client's first and last names")
                 .line()
                 .line("You’ll then be able to:")

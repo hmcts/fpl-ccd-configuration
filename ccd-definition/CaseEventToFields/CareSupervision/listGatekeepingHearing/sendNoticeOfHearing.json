@@ -9,7 +9,7 @@
     "PageID": "ListGatekeepingHearingSendNoticeOfHearing",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 8,
-    "FieldShowCondition": "allocatedJudge=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "judicialUser=\"DO_NOT_SHOW\"",
     "PageShowCondition": "languageRequirement=\"Yes\""
   },
   {

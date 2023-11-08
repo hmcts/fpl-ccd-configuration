@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -43,6 +45,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -60,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_UPLO
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -73,6 +78,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     private static final Long CASE_ID = 12345L;
@@ -116,6 +122,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
     @MockBean
     private DocumentConversionService documentConversionService;
+
+    @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
 
     @BeforeEach
     void init() {
@@ -177,13 +186,12 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(expectedCaseUpdateRequest));
 
         checkUntil(() -> {
-
             verify(notificationClient).sendEmail(
                 PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE,
                 DEFAULT_ADMIN_EMAIL,
@@ -235,7 +243,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         verify(paymentApi).createCreditAccountPayment(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedPaymentRequest);
 
-        verify(concurrencyHelper).submitEvent(
+        verify(concurrencyHelper, timeout(ASYNC_MAX_TIMEOUT)).submitEvent(
             any(),
             eq(CASE_ID),
             eq(expectedCaseUpdateRequest));
@@ -274,11 +282,11 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .placements(wrapElements(placement))
                 .build())
             .build();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+        doAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(i.getArgument(1))
             .token("token")
-            .build());
+            .build()).when(concurrencyHelper).startEvent(any(), any(String.class));
 
         postSubmittedEvent(caseData);
 

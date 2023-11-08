@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,6 +26,7 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
     private final CaseConverter caseConverter;
 
     @EventListener
+    @Async
     public void handleCaseDataChange(final AfterSubmissionCaseDataUpdated event) {
         coreCaseDataService.performPostSubmitCallback(event.getCaseData().getId(),
             "internal-update-case-summary",

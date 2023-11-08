@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
@@ -99,9 +99,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
     private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
     private static final DocumentReference orderDocumentC21 = testDocumentReference("c21.pdf");
@@ -115,9 +112,6 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
-
-    @MockBean
-    private CoreCaseDataService coreCaseDataService;
 
     @MockBean
     private SendLetterService sendLetters;
@@ -180,54 +174,54 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                    eq(LOCAL_AUTHORITY_1_INBOX),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(LOCAL_AUTHORITY_1_INBOX),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                    eq(IntegrationTestConstants.CAFCASS_EMAIL),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(IntegrationTestConstants.CAFCASS_EMAIL),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                    eq("robert@example.com"),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq("robert@example.com"),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                    eq("charlie@example.com"),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq("charlie@example.com"),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
-                    eq(COURT_1.getEmail()),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(COURT_1.getEmail()),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
             verify(cafcassNotificationService).sendEmail(
-                    isA(CaseData.class),
-                    documArgumentCaptor.capture(),
-                    same(ORDER),
-                    orderCafcassDataArgumentCaptor.capture()
+                isA(CaseData.class),
+                documArgumentCaptor.capture(),
+                same(ORDER),
+                orderCafcassDataArgumentCaptor.capture()
             );
 
             assertThat(documArgumentCaptor.getValue())
-                    .containsAll(
-                            Set.of(
-                                    orderDocumentCmo
-                            ));
+                .containsAll(
+                    Set.of(
+                        orderDocumentCmo
+                    ));
             assertThat(orderCafcassDataArgumentCaptor.getValue()
-                    .getDocumentName())
-                    .isEqualTo("cmo.pdf");
+                .getDocumentName())
+                .isEqualTo("cmo.pdf");
         });
         verifyNoMoreNotificationsSent();
     }
@@ -281,10 +275,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
                 eq(notificationReference(CASE_ID))
             );
             verify(cafcassNotificationService, never()).sendEmail(
-                    any(),
-                    any(),
-                    any(),
-                    any()
+                any(),
+                any(),
+                any(),
+                any()
             );
         });
         verifyNoMoreNotificationsSent();
@@ -375,10 +369,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
                 FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
             verify(cafcassNotificationService, never()).sendEmail(
-                    any(),
-                    any(),
-                    any(),
-                    any()
+                any(),
+                any(),
+                any(),
+                any()
             );
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);
@@ -406,58 +400,58 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                    eq(LOCAL_AUTHORITY_1_INBOX),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                    eq(IntegrationTestConstants.CAFCASS_EMAIL),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(IntegrationTestConstants.CAFCASS_EMAIL),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                    eq("robert@example.com"),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq("robert@example.com"),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                    eq("charlie@example.com"),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq("charlie@example.com"),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                    eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                    eq(COURT_1.getEmail()),
-                    anyMap(),
-                    eq(notificationReference(CASE_ID))
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(COURT_1.getEmail()),
+                anyMap(),
+                eq(notificationReference(CASE_ID))
             );
 
             verify(sendLetters).send(
-                    cmo.getOrder(),
-                    recipientsWithOthers,
-                    CASE_ID,
-                    FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
+                cmo.getOrder(),
+                recipientsWithOthers,
+                CASE_ID,
+                FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
 
             verify(sendLetters).send(
-                    c21.getOrder(),
-                    recipientsWithOthers,
-                    CASE_ID,
-                    FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
+                c21.getOrder(),
+                recipientsWithOthers,
+                CASE_ID,
+                FAMILY_MAN_CASE_NUMBER, Language.ENGLISH
             );
             verify(cafcassNotificationService, times(2)).sendEmail(
-                    isA(CaseData.class),
-                    documArgumentCaptor.capture(),
-                    same(ORDER),
-                    orderCafcassDataArgumentCaptor.capture()
+                isA(CaseData.class),
+                documArgumentCaptor.capture(),
+                same(ORDER),
+                orderCafcassDataArgumentCaptor.capture()
             );
 
             Set<DocumentReference> documentReferences = documArgumentCaptor.getAllValues().stream()
@@ -467,8 +461,8 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
             assertThat(documentReferences)
                 .containsAll(
                     Set.of(
-                            orderDocumentCmo,
-                            orderDocumentC21
+                        orderDocumentCmo,
+                        orderDocumentC21
                     )
                 );
 
@@ -506,25 +500,25 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         verifyEmailSentToTranslation(2);
         verify(cafcassNotificationService, times(2)).sendEmail(
-                isA(CaseData.class),
-                documArgumentCaptor.capture(),
-                same(ORDER),
-                orderCafcassDataArgumentCaptor.capture()
+            isA(CaseData.class),
+            documArgumentCaptor.capture(),
+            same(ORDER),
+            orderCafcassDataArgumentCaptor.capture()
         );
 
         Set<DocumentReference> documentReferences = documArgumentCaptor.getAllValues().stream()
-                .flatMap(Set::stream)
-                .collect(toSet());
+            .flatMap(Set::stream)
+            .collect(toSet());
 
         assertThat(documentReferences)
-                .containsAll(
-                        Set.of(
-                                orderDocumentCmo,
-                                orderDocumentC21
-                        ));
+            .containsAll(
+                Set.of(
+                    orderDocumentCmo,
+                    orderDocumentC21
+                ));
         assertThat(orderCafcassDataArgumentCaptor.getAllValues())
-                .extracting("documentName")
-                .contains("Agreed CMO discussed at hearing", "C21 test order");
+            .extracting("documentName")
+            .contains("Agreed CMO discussed at hearing", "C21 test order");
         verifyNoMoreNotificationsSentToTraslation();
     }
 

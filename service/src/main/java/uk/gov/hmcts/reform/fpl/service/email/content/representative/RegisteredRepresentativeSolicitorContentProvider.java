@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -35,10 +36,14 @@ public class RegisteredRepresentativeSolicitorContentProvider {
     public <R extends WithSolicitor> RegisteredRepresentativeSolicitorTemplate buildContent(
         CaseData caseData, RespondentSolicitor solicitor, List<R> representables) {
 
+        Optional<String> applicantName = caseData.getApplicantName();
+
         return RegisteredRepresentativeSolicitorTemplate.builder()
             .salutation(getSalutation(solicitor))
             .clientFullName(clientNames(representables))
-            .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            // use the name of the first applicant as entered on the case data, falling back to the caseLA/relatingLA
+            .localAuthority(applicantName.orElse(
+                localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa())))
             .ccdNumber(caseData.getId().toString())
             .caseName(caseData.getCaseName())
             .manageOrgLink(MANAGE_ORG_URL)
