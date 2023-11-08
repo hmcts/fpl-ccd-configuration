@@ -296,6 +296,7 @@ class RoleAssignmentServiceTest {
                 .validAt(now)
                 .attributes(Map.of("caseId", List.of("12345")))
                 .actorId(List.of("idamId"))
+                .roleName(List.of("role-A"))
                 .build()));
 
             verify(amApi).deleteRoleAssignment(eq("token"), eq("auth"), eq("role-1"));
