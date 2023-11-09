@@ -292,8 +292,8 @@ ccd:
       keyVaults:
         am:
           secrets:
-            - role-assignment-service-LD-SDK-KEY
-
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
 aac-manage-case-assignment:
   enabled: true
   java:
