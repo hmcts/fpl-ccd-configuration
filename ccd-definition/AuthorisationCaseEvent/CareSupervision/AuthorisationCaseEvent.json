@@ -1602,7 +1602,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-superuser"
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CRUD"
       }
@@ -1616,7 +1617,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-superuser"
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "CRUD"
       }
