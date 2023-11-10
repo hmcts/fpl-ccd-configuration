@@ -231,7 +231,7 @@ public class CafcassNotificationService {
 
             String subject = String.join(SUBJECT_DELIMITER,
                     oldestChildsLastName,
-                    caseData.getFamilyManCaseNumber(),
+                    Optional.ofNullable(caseData.getFamilyManCaseNumber()).orElse(""),
                     String.valueOf(caseData.getId()),
                     cafcassDocumentMappingType,
                     additionalInfo);
