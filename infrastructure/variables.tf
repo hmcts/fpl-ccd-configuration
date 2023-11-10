@@ -1,3 +1,6 @@
+# "subscription" only used by cnp-module-postgres, remove with "fpl-scheduler-db" in main.tf
+variable "subscription" {}
+
 variable "product" {
   type = string
 }
@@ -7,6 +10,11 @@ variable "component" {
 }
 
 variable "location" {
+  type    = string
+  default = "UK South"
+}
+
+variable "location_db" {
   type    = string
   default = "UK South"
 }
