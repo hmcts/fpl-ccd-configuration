@@ -275,7 +275,7 @@ class JudicialServiceTest {
 
     @Test
     void shouldCheckJudgeExistsWhenPresentInJrd() {
-        when(judicialApi.findUsers(any(), any(), anyInt(), any()))
+        when(judicialApi.findUsers(any(), any(), anyInt(), any(), any()))
             .thenReturn(List.of(JudicialUserProfile.builder().build()));
         boolean exists = underTest.checkJudgeExists("1234");
 
@@ -284,7 +284,7 @@ class JudicialServiceTest {
 
     @Test
     void shouldCheckJudgeDoesntExistWhenNotPresentInJrd() {
-        when(judicialApi.findUsers(any(), any(), anyInt(), any()))
+        when(judicialApi.findUsers(any(), any(), anyInt(), any(), any()))
             .thenReturn(List.of());
         boolean exists = underTest.checkJudgeExists("1234");
 
