@@ -71,6 +71,9 @@ class JudicialServiceTest {
     @Mock
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
+    @Mock
+    private ElinksService elinksService;
+
     @Captor
     private ArgumentCaptor<List<RoleAssignment>> rolesCaptor;
 
@@ -144,6 +147,8 @@ class JudicialServiceTest {
                 .thenReturn(Optional.empty());
             when(legalAdviserUsersConfiguration.getLegalAdviserUUID(JUDGE_3.getJudgeEmailAddress()))
                 .thenReturn(Optional.of(JUDGE_3_ID));
+
+            when(elinksService.getElinksAcceptHeader()).thenReturn("application/json");
         }
 
         @Test
