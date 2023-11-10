@@ -763,7 +763,7 @@ class CafcassNotificationServiceTest {
     }
 
     @Test
-    void shouldKeepExtraDelimiterWhenFamilyManNumberIsNotPressented() {
+    void shouldKeepExtraDelimiterWhenFamilyManNumberDoesNotExist() {
         when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(true);
         when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
         when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
@@ -788,7 +788,7 @@ class CafcassNotificationServiceTest {
         verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
         EmailData data = emailDataArgumentCaptor.getValue();
         assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
-        assertThat(data.getSubject()).isEqualTo("William||12345|REPORTING TO COURT");
+        assertThat(data.getSubject()).isEqualTo("William| |12345|REPORTING TO COURT");
         assertThat(data.getAttachments()).containsExactly(
             document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
         );
