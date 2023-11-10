@@ -12,7 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
@@ -58,6 +62,7 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+        caseDetailsMap.remove("draftOrderNeedsReviewUploaded"); // cleanup transient field
 
         return respond(caseDetailsMap);
     }
@@ -105,6 +110,10 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
+
+        // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
+        caseDetails.getData().put("draftOrderNeedsReviewUploaded",
+            eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
