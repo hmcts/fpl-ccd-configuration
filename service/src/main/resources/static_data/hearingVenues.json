@@ -4028,8 +4028,7 @@
     "venue": "Fleetwood Family Hearing Centre",
     "address": {
       "AddressLine1": "Fleetwood Annex",
-      "AddressLine2": "Fleetwood Family Hearing Centre",
-      "AddressLine3": "The Esplanade",
+      "AddressLine2": "Fleetwood Family Hearing Centre, The Esplanade",
       "PostTown": "Fleetwood",
       "PostCode": "FY7 6AT"
     }
