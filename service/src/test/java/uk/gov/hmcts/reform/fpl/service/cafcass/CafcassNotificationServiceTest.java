@@ -762,6 +762,43 @@ class CafcassNotificationServiceTest {
                                 largeDocMessage));
     }
 
+    @Test
+    void shouldKeepExtraDelimiterWhenFamilyManNumberDoesNotExist() {
+        when(featureToggleService.isCafcassSubjectCategorised()).thenReturn(true);
+        when(configuration.getRecipientForNewDocument()).thenReturn(RECIPIENT_EMAIL);
+        when(documentDownloadService.downloadDocument(DOCUMENT_BINARY_URL)).thenReturn(
+            DOCUMENT_CONTENT);
+
+        CaseData caseWithoutFamilyManNumber = caseData.toBuilder().familyManCaseNumber(null).build();
+
+        underTest.sendEmail(caseWithoutFamilyManNumber,
+            of(getDocumentReference().toBuilder()
+                .type("Child's Guardian Reports")
+                .build()
+            ),
+            NEW_DOCUMENT,
+            NewDocumentData.builder()
+                .documentTypes("• Application statement")
+                .emailSubjectInfo("Further documents for main application")
+                .build()
+        );
+
+        verify(documentDownloadService).downloadDocument(DOCUMENT_BINARY_URL);
+
+        verify(emailService).sendEmail(eq(SENDER_EMAIL), emailDataArgumentCaptor.capture());
+        EmailData data = emailDataArgumentCaptor.getValue();
+        assertThat(data.getRecipient()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(data.getSubject()).isEqualTo("William| |12345|REPORTING TO COURT");
+        assertThat(data.getAttachments()).containsExactly(
+            document("application/pdf",  DOCUMENT_CONTENT, DOCUMENT_FILENAME)
+        );
+        assertThat(data.getMessage()).isEqualTo(
+            String.join(" ",
+                "Types of documents attached:\n\n"
+                + "• Application statement")
+        );
+    }
+
     private DocumentReference getDocumentReference() {
         return DocumentReference.builder().binaryUrl(DOCUMENT_BINARY_URL)
                 .url(DOCUMENT_URL)
