@@ -18,14 +18,12 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class HearingCourtBundle {
     private String hearing;
     private List<Element<CourtBundle>> courtBundle;
-    @Deprecated
     private List<Element<CourtBundle>> courtBundleNC;
 
     public List<Element<CourtBundle>> getCourtBundle() {
         return defaultIfNull(this.courtBundle, new ArrayList<>());
     }
 
-    @Deprecated
     public List<Element<CourtBundle>> getCourtBundleNC() {
         return defaultIfNull(this.courtBundleNC, new ArrayList<>());
     }

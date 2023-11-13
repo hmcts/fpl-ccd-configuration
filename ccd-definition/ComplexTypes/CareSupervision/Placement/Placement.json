@@ -41,7 +41,7 @@
     "FieldType": "Document",
     "ElementLabel": "Application document",
     "SecurityClassification": "Public",
-    "CategoryID": "placementApplicationsAndResponses"
+    "FieldShowCondition": "isSubmitted = \"NO\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -50,7 +50,7 @@
     "FieldType": "Document",
     "ElementLabel": "Application document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "isSubmitted = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "isSubmitted = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,15 +68,6 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "PlacementConfidentialDocument",
     "ElementLabel": "Confidential document",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Placement",
-    "ListElementCode": "placementNoticeDocumentsRemoved",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "PlacementNoticeDocument",
-    "ElementLabel": "Notice of placement response (Removed)",
     "SecurityClassification": "Public"
   },
   {
@@ -104,7 +95,6 @@
     "ListElementCode": "placementNotice",
     "FieldType": "Document",
     "ElementLabel": "Notice of hearing for placement",
-    "SecurityClassification": "Public",
-    "CategoryID": "placementApplicationsAndResponses"
+    "SecurityClassification": "Public"
   }
 ]

@@ -2,13 +2,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "componentLauncher",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "taskList",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
@@ -23,84 +16,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantWitnessStmtList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantWitnessStmtListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "guardianEvidenceList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "guardianEvidenceListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "expertReportList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "expertReportListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "lettersOfInstructionList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "lettersOfInstructionListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "drugAndAlcoholReportList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "drugAndAlcoholReportListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "noticeOfActingOrIssueList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "noticeOfActingOrIssueListLA",
+    "CaseFieldID": "furtherEvidenceDocumentsNC",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
   },
@@ -109,7 +25,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsLA",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -121,14 +37,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocListLA",
+    "CaseFieldID": "correspondenceDocumentsNC",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
   },
@@ -137,7 +46,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLA",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -695,21 +604,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListRemoved",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "U"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleListV2",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListLA",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
   },
@@ -760,14 +655,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "standardDirectionOrder",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "RU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "urgentDirectionsOrder",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "RU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -907,7 +802,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderCollection",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "RU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1166,7 +1061,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftUploadedCMOs",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1430,6 +1325,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocuments",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
@@ -1437,16 +1339,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respStmtList",
+    "CaseFieldID": "respondentStatements",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respStmtListLA",
+    "CaseFieldID": "correspondenceDocuments",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2004,6 +1906,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsWithConfidentialAddress",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "removableOrderList",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
@@ -2070,278 +1979,5 @@
     "CaseFieldID": "correspondenceDocumentsSolicitor",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseSummaryList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseSummaryListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "parentAssessmentList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "parentAssessmentListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "famAndViabilityList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "famAndViabilityListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantOtherDocList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantOtherDocListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "meetingNoteList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "meetingNoteListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "contactNoteList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "contactNoteListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "judgementList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "judgementListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "transcriptList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "transcriptListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respWitnessStmtList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respWitnessStmtListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "previousProceedingList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "previousProceedingListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "skeletonArgumentList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "skeletonArgumentListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "policeDisclosureList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "policeDisclosureListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "medicalRecordList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "medicalRecordListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "carePlanList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "carePlanListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsFiledOnIssueList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsFiledOnIssueListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "thresholdList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "thresholdListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtChildList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtChildListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtRespList",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "posStmtRespListLA",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicationDocuments",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
   }
 ]
