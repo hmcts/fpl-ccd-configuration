@@ -276,7 +276,7 @@ ccd:
         value: http://${SERVICE_NAME}-es-master:9200
     secrets:
       - name: DB_PWD
-        secretRef: postgres
+        secretRef: "postgres"
         key: PASSWORD
         disabled: false
     livenessProbe:
@@ -361,7 +361,7 @@ xui-mo-webapp:
 
 postgresql:
   enabled: true
-  flexibleserver: fpl-preview
+  flexibleserver: "fpl-preview"
   setup:
     databases:
     - name: "pr-${CHANGE_ID}-data-store"
