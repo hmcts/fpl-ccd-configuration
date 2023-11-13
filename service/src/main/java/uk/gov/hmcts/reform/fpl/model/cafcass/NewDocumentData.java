@@ -10,5 +10,4 @@ import lombok.Data;
 public class NewDocumentData implements CafcassData {
     private String emailSubjectInfo;
     private String documentTypes;
-    private String hearingDetails;
 }

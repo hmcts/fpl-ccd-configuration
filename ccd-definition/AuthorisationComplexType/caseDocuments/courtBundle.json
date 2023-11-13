@@ -7,38 +7,51 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
-          "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-systemupdate"
-        ],
-        "CRUD": "RU"
-      },
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
-          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
-          "[EPSMANAGING]",
-          "[LABARRISTER]",
-          "[LAMANAGING]",
-          "[LASHARED]",
           "[LASOLICITOR]",
-          "caseworker-publiclaw-superuser"
+          "[LASHARED]",
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CRUD"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
       }
     ]
   },
@@ -50,38 +63,57 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
-          "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-systemupdate"
-        ],
-        "CRUD": "RU"
-      },
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
-          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
-          "[EPSMANAGING]",
-          "[LABARRISTER]",
-          "[LAMANAGING]",
-          "[LASHARED]",
           "[LASOLICITOR]",
-          "caseworker-publiclaw-superuser"
+          "[LASHARED]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CRUD"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
       }
     ]
   },
@@ -93,174 +125,49 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-systemupdate",
           "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
-          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
-          "[EPSMANAGING]",
-          "[LABARRISTER]",
-          "[LAMANAGING]",
-          "[LASHARED]",
-          "[LASOLICITOR]",
-          "caseworker-publiclaw-superuser"
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]"
         ],
-        "CRUD": "U",
-        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListCTSC",
-    "ListElementCode": "hearing",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "RU"
+        "CRUD": "R"
       },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "CRUD"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListCTSC",
-    "ListElementCode": "courtBundle",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "RU"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "CRUD"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListCTSC",
-    "ListElementCode": "courtBundleNC",
-    "AccessControl": [
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "U",
-        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListLA",
-    "ListElementCode": "hearing",
-    "AccessControl": [
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "RU"
-      },
-      {
-        "UserRoles": [
           "[LASOLICITOR]",
           "[LASHARED]",
-          "[LABARRISTER]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "CRUD"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListLA",
-    "ListElementCode": "courtBundle",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "RU"
-      },
-      {
-        "UserRoles": [
-          "[LASOLICITOR]",
-          "[LASHARED]",
-          "[LABARRISTER]",
-          "[EPSMANAGING]",
-          "[LAMANAGING]",
-          "caseworker-publiclaw-superuser"
-        ],
-        "CRUD": "CRUD"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtBundleListLA",
-    "ListElementCode": "courtBundleNC",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[LASOLICITOR]",
-          "[LASHARED]",
-          "[LABARRISTER]",
-          "[EPSMANAGING]",
-          "[LAMANAGING]",
-          "caseworker-publiclaw-superuser"
+          "[LABARRISTER]"
         ],
         "CRUD": "U",
         "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"

@@ -605,8 +605,7 @@
     "Label": "Application Form",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID": "originalApplications"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -615,8 +614,7 @@
     "Label": "Application Supplement",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID": "originalApplications"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -625,8 +623,7 @@
     "Label": "Translated document",
     "FieldType": "Document",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "CategoryID": "originalApplications"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1871,6 +1868,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicationDocuments",
+    "Label": "Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicationDocumentsToFollowReason",
     "Label": "Documents to follow",
     "FieldType": "TextArea",
@@ -2364,15 +2371,6 @@
     "ID": "caseManagementCategory",
     "Label": " ",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public",
-    "Searchable": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasBeenCFVMigrated",
-    "Label": "Has been migrated in the CFV migration",
-    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "Y"
   }

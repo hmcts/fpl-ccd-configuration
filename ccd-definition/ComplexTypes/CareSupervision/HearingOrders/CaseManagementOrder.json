@@ -24,8 +24,7 @@
     "FieldType": "Document",
     "ElementLabel": "Order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx",
-    "CategoryID": "orders"
+    "RegularExpression": ".doc,.docx"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,8 +32,7 @@
     "ListElementCode": "translatedOrder",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public",
-    "CategoryID": "orders"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -127,7 +125,7 @@
     "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "supportingDocs",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CmoSupportingEvidenceBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Case summary or supporting documents",
     "SecurityClassification": "Public"
   },
