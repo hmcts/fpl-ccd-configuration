@@ -206,16 +206,24 @@ abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallba
 
     protected static SupportingEvidenceBundle buildEvidenceBundle(
         boolean confidential, boolean isUploadedByHMCTS) {
-        SupportingEvidenceBundle.SupportingEvidenceBundleBuilder builder
-            = SupportingEvidenceBundle.builder()
-            .name("dummy document")
-            .uploadedBy(isUploadedByHMCTS ? "HMCTS" : "user who uploaded")
-            .dateTimeUploaded(LocalDateTime.now())
-            .document(TestDataHelper.testDocumentReference())
-            .type(FurtherEvidenceType.GUARDIAN_REPORTS);
-
+        SupportingEvidenceBundle.SupportingEvidenceBundleBuilder builder = null;
         if (confidential) {
-            builder.confidential(List.of(CONFIDENTIAL_MARKER));
+            builder
+                = SupportingEvidenceBundle.builder()
+                .name("dummy document")
+                .uploadedBy(isUploadedByHMCTS ? "HMCTS" : "user who uploaded")
+                .dateTimeUploaded(LocalDateTime.now())
+                .document(TestDataHelper.testDocumentReference())
+                .type(FurtherEvidenceType.GUARDIAN_REPORTS)
+                .confidential(List.of(CONFIDENTIAL_MARKER));
+        } else {
+            builder
+                = SupportingEvidenceBundle.builder()
+                .name("dummy document")
+                .uploadedBy(isUploadedByHMCTS ? "HMCTS" : "user who uploaded")
+                .dateTimeUploaded(LocalDateTime.now())
+                .document(TestDataHelper.testDocumentReference())
+                .type(FurtherEvidenceType.GUARDIAN_REPORTS);
         }
 
         return builder.build();
