@@ -193,6 +193,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
                 .courtBundle(courtBundle)
+                .courtBundleNC(courtBundle)
                 .build()
         );
         assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).first()

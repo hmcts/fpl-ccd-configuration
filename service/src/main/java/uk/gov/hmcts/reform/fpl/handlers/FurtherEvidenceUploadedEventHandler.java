@@ -94,7 +94,6 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasExtension;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Deprecated
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

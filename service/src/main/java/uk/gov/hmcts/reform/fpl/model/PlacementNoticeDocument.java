@@ -1,16 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PlacementNoticeDocument implements WithDocument {
+public class PlacementNoticeDocument {
 
     private RecipientType type;
     private DocumentReference response;
@@ -30,19 +25,6 @@ public class PlacementNoticeDocument implements WithDocument {
     private String recipientName;
     private UUID respondentId;
     private List<String> documentAcknowledge;
-    private DocumentUploaderType uploaderType;
-    private List<CaseRole> uploaderCaseRoles;
-    private String removalReason;
-    private LanguageTranslationRequirement translationRequirements;
-
-    @JsonIgnore
-    public DocumentReference getDocument() {
-        return response;
-    }
-
-    public String getMarkAsConfidential() {
-        return null;
-    }
 
     @Getter
     @RequiredArgsConstructor

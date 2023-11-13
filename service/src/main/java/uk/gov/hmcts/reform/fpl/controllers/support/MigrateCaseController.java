@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -24,14 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -55,12 +51,9 @@ public class MigrateCaseController extends CallbackController {
     private final AuthTokenGenerator authToken;
 
     private final MigrateCaseService migrateCaseService;
-    private final MigrateCFVService migrateCFVService;
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-CFV", this::runCFV,
-        "DFPL-CFV-Rollback", this::runCFVrollback,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1813", this::run1813,
@@ -70,59 +63,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1883", this::run1883,
         "DFPL-1850", this::run1850
     );
-
-    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
-        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
-            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                && ((Collection) entrySet.getValue()).isEmpty())) {
-                caseDetails.getData().remove(entrySet.getKey());
-            } else {
-                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
-            }
-        }
-    }
-
-    private void runCFV(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV");
-        Map<String, Object> changes = new LinkedHashMap<>();
-        changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
-        changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
-        changes.putAll(migrateCFVService.migrateCourtBundle(caseData));
-        changes.putAll(migrateCFVService.migrateCorrespondenceDocuments(caseData));
-        changes.putAll(migrateCFVService.migrateExpertReports(caseData));
-        changes.putAll(migrateCFVService.migrateGuardianReports(caseData));
-        changes.putAll(migrateCFVService.migrateNoticeOfActingOrIssue(caseData));
-        changes.putAll(migrateCFVService.migratePositionStatementRespondent(caseData));
-        changes.putAll(migrateCFVService.migratePositionStatementChild(caseData));
-        changes.putAll(migrateCFVService.migrateRespondentStatement(caseData));
-        changes.putAll(migrateCFVService.migrateSkeletonArgumentList(caseData));
-        changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
-        changes.put("hasBeenCFVMigrated", YesNo.YES);
-        pushChangesToCaseDetails(caseDetails, changes);
-    }
-
-    private void runCFVrollback(CaseDetails caseDetails) {
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
-
-        Map<String, Object> changes = new LinkedHashMap<>();
-        changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
-        changes.putAll(migrateCFVService.rollbackApplicationDocuments());
-        changes.putAll(migrateCFVService.rollbackCaseSummaryMigration(caseDetails));
-        changes.putAll(migrateCFVService.rollbackCourtBundleMigration(caseDetails));
-        changes.putAll(migrateCFVService.rollbackCorrespondenceDocuments());
-        changes.putAll(migrateCFVService.rollbackExpertReports());
-        changes.putAll(migrateCFVService.rollbackGuardianReports());
-        changes.putAll(migrateCFVService.rollbackNoticeOfActingOrIssue());
-        changes.putAll(migrateCFVService.rollbackRespondentStatement());
-        changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
-        changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
-        changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
-        changes.put("hasBeenCFVMigrated", null);
-        pushChangesToCaseDetails(caseDetails, changes);
-    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
