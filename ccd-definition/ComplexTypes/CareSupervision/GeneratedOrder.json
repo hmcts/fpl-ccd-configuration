@@ -58,8 +58,7 @@
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
     "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
-    "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object",
-    "CategoryID": "orders"
+    "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -67,8 +66,7 @@
     "ListElementCode": "translatedDocument",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public",
-    "CategoryID": "orders"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -275,7 +273,6 @@
     "FieldType": "Document",
     "ElementLabel": "Notification document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "notificationDocument!=\"\"",
-    "CategoryID": "orders"
+    "FieldShowCondition": "notificationDocument!=\"\""
   }
 ]

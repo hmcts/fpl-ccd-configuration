@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-@Deprecated
 @Getter
 @RequiredArgsConstructor
 public class FurtherEvidenceUploadedEvent {

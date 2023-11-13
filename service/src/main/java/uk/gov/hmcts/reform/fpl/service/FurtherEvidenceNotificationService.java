@@ -53,40 +53,10 @@ public class FurtherEvidenceNotificationService {
         return localAuthorityRecipients.getRecipients(recipientsRequest);
     }
 
-    public Set<String> getDesignatedLocalAuthorityRecipientsOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .secondaryLocalAuthorityExcluded(true)
-            .legalRepresentativesExcluded(true)
-            .build();
-
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
-    }
-
     public Set<String> getSecondaryLocalAuthorityRecipients(CaseData caseData) {
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
             .designatedLocalAuthorityExcluded(true)
-            .build();
-
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
-    }
-
-    public Set<String> getSecondaryLocalAuthorityRecipientsOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .designatedLocalAuthorityExcluded(true)
-            .legalRepresentativesExcluded(true)
-            .build();
-
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
-    }
-
-    public Set<String> getLegalRepresentativeOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .designatedLocalAuthorityExcluded(true)
-            .secondaryLocalAuthorityExcluded(true)
             .build();
 
         return localAuthorityRecipients.getRecipients(recipientsRequest);
