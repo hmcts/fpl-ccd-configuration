@@ -483,12 +483,4 @@ public class ManageHearingsController extends CallbackController {
         return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
     }
 
-    private boolean isNewOrReListedHearing(CaseData caseData) {
-        return caseData.getHearingOption() == null
-            || NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
-    }
-
-    private boolean isTemporaryHearingJudge(HearingBooking hearingBooking) {
-        return (hearingBooking.getHearingJudgeLabel() != null);
-    }
 }

@@ -421,10 +421,4 @@ public class ListGatekeepingHearingController extends CallbackController {
             });
     }
 
-    private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
-        return nonNull(hearingBooking.getHearingJudgeLabel())
-            && (isNull(caseData.getHearingOption())
-            || NEW_HEARING.equals(caseData.getHearingOption())
-            || RE_LIST_NOW.equals(caseData.getHearingReListOption()));
-    }
 }
