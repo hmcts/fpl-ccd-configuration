@@ -169,7 +169,7 @@ public class UploadDraftOrdersData {
             return YesNo.YES;
         }
         // if we've got a CMO draft order - these are only approved if they're agreed CMOs
-        if (isNotEmpty(cmoUploadType) && cmoUploadType.equals(AGREED)) {
+        if (isNotEmpty(cmoUploadType) && AGREED.equals(cmoUploadType)) {
             return YesNo.YES;
         }
         return YesNo.NO;
