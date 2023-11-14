@@ -814,9 +814,8 @@ public class MigrateCaseService {
         return Map.of("localAuthorities", localAuthoritiesList);
     }
 
-    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
-                                                                               String orgName) {
-        orgName = organisationService.findOrganisation(orgId)
+    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
+        String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseThrow();
 

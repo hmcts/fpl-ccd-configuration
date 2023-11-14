@@ -232,7 +232,7 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData,
-            orgId, orgName));
+            orgId));
     }
 
     private void run1810(CaseDetails caseDetails) {
