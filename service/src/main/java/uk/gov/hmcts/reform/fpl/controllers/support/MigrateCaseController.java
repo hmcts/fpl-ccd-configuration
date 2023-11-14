@@ -223,7 +223,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1887(CaseDetails caseDetails) {
         var migrationId = "DFPL-1887";
-        var possibleCaseIds = List.of(1684922324530563L);
+        var possibleCaseIds = List.of(1699979033505404L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         var orgId = "BDWCNNQ";
