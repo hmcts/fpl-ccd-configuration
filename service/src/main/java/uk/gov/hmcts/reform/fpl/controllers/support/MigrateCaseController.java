@@ -273,7 +273,7 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1855(CaseDetails caseDetails) {
         var migrationId = "DFPL-1855";
-        caseDetails.getData().putAll(migrateCaseService.fixMiddlesboroughEpimmsIDTypo(caseDetails, migrationId));
+        caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
     }
 
 }

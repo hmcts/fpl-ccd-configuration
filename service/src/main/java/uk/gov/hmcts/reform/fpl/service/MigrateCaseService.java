@@ -818,7 +818,7 @@ public class MigrateCaseService {
         return caseConverter.convert(caseDetails);
     }
 
-    public Map<String, Object> fixMiddlesboroughEpimmsIDTypo(CaseDetails caseDetails, String migrationId) {
+    public Map<String, Object> fixIncorrectCaseManagementLocation(CaseDetails caseDetails, String migrationId) {
         CaseData caseData = getCaseData(caseDetails);
 
         Court court = caseData.getCourt();

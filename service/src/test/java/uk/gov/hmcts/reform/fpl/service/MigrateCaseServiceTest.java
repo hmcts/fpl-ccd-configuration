@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
@@ -114,6 +115,57 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Mock
+    private CaseConverter caseConverter;
+
+    @Nested
+    class FixIncorrectCaseManagementLocation {
+
+        private final long caseId = 1L;
+
+        @Test
+        public void shouldFixIncorrectCaseManagementLocation() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("270").build()).build());
+
+            assertThat(underTest.fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .extracting("caseManagementLocation")
+                .isInstanceOf(CaseLocation.class)
+                .hasFieldOrPropertyWithValue("region", "3")
+                .hasFieldOrPropertyWithValue("baseLocation", "195537");
+        }
+
+        @Test
+        public void shouldThrowExceptionIfTargetCourtDoesNotMatch() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("999").build()).build());
+
+            assertThatThrownBy(() -> underTest
+                .fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Case data does not contain the target court: 270",
+                    MIGRATION_ID, caseId));
+        }
+
+        @Test
+        public void shouldThrowExceptionIfCaseHavingCorrectCaseManagmentLocation() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of("caseManagementLocation",
+                Map.of("baseLocation", "195537", "region", "3"))).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("270").build()).build());
+
+            assertThatThrownBy(() -> underTest
+                .fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, `caseManagementLocation` is correct.",
+                    MIGRATION_ID, caseId));
+        }
     }
 
     @Nested
