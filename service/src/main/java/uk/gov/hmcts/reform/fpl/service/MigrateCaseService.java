@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.i18n.qual.LocalizableKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -62,6 +61,7 @@ public class MigrateCaseService {
     private static final String CORRECT_COURT_NAME = "Family Court Sitting at West London";
     private static final String ORDER_TYPE = "orderType";
     public final MigrateRelatingLAService migrateRelatingLAService;
+    public final OrganisationService organisationService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -816,6 +816,10 @@ public class MigrateCaseService {
 
     public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
                                                                                String orgName) {
+        orgName = organisationService.findOrganisation(orgId)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .orElseThrow();
+
         Organisation newOrganisation = Organisation.builder()
             .organisationID(orgId)
             .organisationName(orgName)
