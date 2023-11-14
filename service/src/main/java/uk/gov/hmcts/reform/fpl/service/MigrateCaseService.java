@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.i18n.qual.LocalizableKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -793,7 +796,7 @@ public class MigrateCaseService {
         caseDetails.getData().remove("changeOrganisationRequestField");
     }
 
-    public Map<String, Object> removeElementFromLocalAuthorities(CaseData caseData,
+    public Map<String, List<Element<LocalAuthority>>> removeElementFromLocalAuthorities(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedLocalAuthorityId) {
         Long caseId = caseData.getId();
@@ -809,5 +812,18 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("localAuthorities", localAuthoritiesList);
+    }
+
+    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
+                                                                               String orgName) {
+        Organisation newOrganisation = Organisation.builder()
+            .organisationID(orgId)
+            .organisationName(orgName)
+            .build();
+
+        var applicantCaseRole = caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole();
+
+        return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(applicantCaseRole).build());
     }
 }

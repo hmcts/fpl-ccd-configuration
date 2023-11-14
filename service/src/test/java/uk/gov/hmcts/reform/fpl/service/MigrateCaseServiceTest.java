@@ -17,28 +17,10 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -114,6 +96,47 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Nested
+    class UpdateThirdPartyStandaloneApplicant {
+
+        private final String previousOrgId = "ABCDEFG";
+        private final String previousOrgName = "Previous Organisation Name";
+
+        private final String newOrgId = "HIJKLMN";
+        private final String newOrgName = "New Organisation Name";
+
+        private final String caseRole = "[SOLICITORA]";
+
+        private final Organisation previousOrganisation = Organisation.builder()
+            .organisationID(previousOrgId)
+            .organisationName(previousOrgName)
+            .build();
+
+        private final Organisation newOrganisation = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        @Test
+        void updateOutsourcingPolicy() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(previousOrganisation)
+                    .orgPolicyCaseAssignedRole(caseRole)
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                newOrgName);
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
     }
 
     @Nested
@@ -1956,7 +1979,7 @@ class MigrateCaseServiceTest {
                 .localAuthorities(List.of(localAuthority1, localAuthority2, localAuthorityToBeRemoved))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+            Map<String, List<Element<LocalAuthority>>> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
                 localAuthorityToBeRemoved.getId());
 
             assertThat(updatedFields).extracting("localAuthorities").asList()
@@ -1970,7 +1993,7 @@ class MigrateCaseServiceTest {
                 .localAuthorities(List.of(localAuthorityToBeRemoved))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+            Map<String, List<Element<LocalAuthority>>> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
                 localAuthorityToBeRemoved.getId());
 
             assertThat(updatedFields).extracting("localAuthorities").asList().isEmpty();

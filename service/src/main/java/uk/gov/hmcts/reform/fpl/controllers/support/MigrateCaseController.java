@@ -61,7 +61,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
         "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-1850", this::run1850,
+        "DFPL-1887", this::run1887
     );
 
     @PostMapping("/about-to-submit")
@@ -218,6 +219,20 @@ public class MigrateCaseController extends CallbackController {
 
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
+    }
+
+    private void run1887(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1887";
+        var possibleCaseIds = List.of(1684922324530563L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        var orgId = "BDWCNNQ";
+        var orgName = ""; // can we avoid having to add this?
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData,
+            orgId, orgName));
     }
 
     private void run1810(CaseDetails caseDetails) {
