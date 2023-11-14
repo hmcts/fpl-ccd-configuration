@@ -87,6 +87,9 @@ class MigrateCaseServiceTest {
     @Mock
     private MigrateRelatingLAService migrateRelatingLAService;
 
+    @Mock
+    private OrganisationService organisationService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -139,6 +142,10 @@ class MigrateCaseServiceTest {
 
         @Test
         void updateOutsourcingPolicy() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                        .name(newOrgName)
+                    .build()));
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .outsourcingPolicy(OrganisationPolicy.builder()
