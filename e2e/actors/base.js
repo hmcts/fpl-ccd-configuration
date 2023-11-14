@@ -4,8 +4,8 @@ const config = require('../config');
 const moment = require('moment');
 const apiHelper = require('../helpers/api_helper.js');
 
-const loginPage = require('../pages/login.page');
-const caseListPage = require('../pages/caseList.page');
+//const loginPage = require('../pages/login.page');
+//const caseListPage = require('../pages/caseList.page');
 const eventSummaryPage = require('../pages/eventSummary.page');
 const openApplicationEventPage = require('../pages/events/openApplicationEvent.page');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
@@ -13,8 +13,8 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
 const baseUrl = config.baseUrl;
-const signedInSelector = 'exui-header';
-const signedOutSelector = '#global-header';
+//const signedInSelector = 'exui-header';
+//const signedOutSelector = '#global-header';
 const maxRetries = 10;
 let currentUser = {};
 
@@ -31,22 +31,22 @@ module.exports = {
       currentUser = {}; // reset in case the login fails
 
       //await this.retryUntilExists(async () => {
-        //To mitigate situation when idam response with blank page
-        await this.goToPage(baseUrl, user);
-        I.grabCurrentUrl();
+      //To mitigate situation when idam response with blank page
+      await this.goToPage(baseUrl, user);
+      I.grabCurrentUrl();
 
-        // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-        //   await this.refreshPage();
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // if (await this.hasSelector(signedInSelector)) {
-        //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        // I.grabCurrentUrl();
+      // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
+      //   await this.refreshPage();
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // if (await this.hasSelector(signedInSelector)) {
+      //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+      // I.grabCurrentUrl();
 
       //}, signedInSelector, false, 10);
       //await this.rejectCookies();
@@ -70,14 +70,14 @@ module.exports = {
     if (!user.email || !user.password) {
       throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
-   // await within(hmctsLoginIn, () => {
-      this.waitForElement('//input[@type="text"]', 20);
-      this.fillField('//input[@type="text"]', user.email);
-      this.wait(0.2);
-      this.fillField('//input[@type="password"]', user.password);
-      this.wait(0.5);
-      this.click('Sign in');
-   // });
+    // await within(hmctsLoginIn, () => {
+    this.waitForElement('//input[@type="text"]', 20);
+    this.fillField('//input[@type="text"]', user.email);
+    this.wait(0.2);
+    this.fillField('//input[@type="password"]', user.password);
+    this.wait(0.5);
+    this.click('Sign in');
+    // });
   },
 
   async rejectCookies() {
