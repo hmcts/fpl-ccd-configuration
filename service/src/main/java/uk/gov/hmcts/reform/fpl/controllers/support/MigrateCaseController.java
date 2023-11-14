@@ -227,7 +227,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         var orgId = "BDWCNNQ";
-        var orgName = ""; // can we avoid having to add this?
 
         CaseData caseData = getCaseData(caseDetails);
 
