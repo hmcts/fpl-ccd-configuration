@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fpl.service.ElinksService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -43,7 +43,7 @@ class JudicialUsersConfigurationTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private ElinksService elinksService;
+    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     void beforeEach() {
@@ -54,7 +54,7 @@ class JudicialUsersConfigurationTest {
     @Test
     void shouldGetJudgeUUIDIfInMapping() {
         JudicialUsersConfiguration config = new JudicialUsersConfiguration(jrdApi, systemUserService,
-            authTokenGenerator, elinksService, true);
+            authTokenGenerator, featureToggleService, true);
 
         Optional<String> uuid = config.getJudgeUUID("email@test.com");
         assertThat(uuid.isPresent()).isTrue();
@@ -64,7 +64,7 @@ class JudicialUsersConfigurationTest {
     @Test
     void shouldGetAllJudges() {
         JudicialUsersConfiguration config = new JudicialUsersConfiguration(jrdApi, systemUserService,
-            authTokenGenerator, elinksService, true);
+            authTokenGenerator, featureToggleService, true);
 
         Map<String, String> judges = config.getAllJudges();
         assertThat(judges).isEqualTo(Map.of("email@test.com", "12345"));

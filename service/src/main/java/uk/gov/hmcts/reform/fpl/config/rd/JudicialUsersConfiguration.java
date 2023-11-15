@@ -9,7 +9,7 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fpl.service.ElinksService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
@@ -32,7 +32,7 @@ public class JudicialUsersConfiguration {
     private final SystemUserService systemUserService;
     private final AuthTokenGenerator authTokenGenerator;
     private final JudicialApi judicialApi;
-    private final ElinksService elinksService;
+    private final FeatureToggleService featureToggleService;
 
     private final int judicialPageSize = 10000;
 
@@ -40,12 +40,12 @@ public class JudicialUsersConfiguration {
     public JudicialUsersConfiguration(@Autowired JudicialApi judicialApi,
                                       @Autowired SystemUserService systemUserService,
                                       @Autowired AuthTokenGenerator authTokenGenerator,
-                                      @Autowired ElinksService elinksService,
+                                      @Autowired FeatureToggleService featureToggleService,
                                       @Value("${rd_judicial.api.enabled:false}") boolean jrdEnabled) {
         this.judicialApi = judicialApi;
         this.systemUserService = systemUserService;
         this.authTokenGenerator = authTokenGenerator;
-        this.elinksService = elinksService;
+        this.featureToggleService = featureToggleService;
         log.info("Attempting to gather all judges.");
         if (jrdEnabled) {
             try {
@@ -70,7 +70,7 @@ public class JudicialUsersConfiguration {
 
         List<JudicialUserProfile> users = judicialApi.findUsers(systemUserToken, authTokenGenerator.generate(),
             judicialPageSize,
-            elinksService.getElinksAcceptHeader(),
+            featureToggleService.getElinksHeader(),
             JudicialUserRequest.builder()
                 .ccdServiceName("PUBLICLAW")
                 .build());

@@ -62,7 +62,7 @@ public class JudicialService {
     private final ValidateEmailService validateEmailService;
     private final JudicialUsersConfiguration judicialUsersConfiguration;
     private final LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
-    private final ElinksService elinksService;
+    private final FeatureToggleService featureToggleService;
 
     /**
      * Delete a set of allocated-[users] on a specific case.
@@ -170,7 +170,7 @@ public class JudicialService {
         List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
             authTokenGenerator.generate(),
             JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
+            featureToggleService.getElinksHeader(),
             JudicialUserRequest.fromPersonalCode(personalCode));
 
         return !judges.isEmpty();
@@ -209,7 +209,7 @@ public class JudicialService {
         List<JudicialUserProfile> judges = judicialApi.findUsers(systemUserToken,
             authTokenGenerator.generate(),
             JUDICIAL_PAGE_SIZE,
-            elinksService.getElinksAcceptHeader(),
+            featureToggleService.getElinksHeader(),
             JudicialUserRequest.fromPersonalCode(personalCode));
 
         if (judges.isEmpty()) {

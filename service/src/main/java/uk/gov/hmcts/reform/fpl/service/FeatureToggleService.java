@@ -85,8 +85,8 @@ public class FeatureToggleService {
         return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
     }
 
-    public boolean isElinksEnabled() {
-        return ldClient.boolVariation("elinks-enabled", createLDUser(), false);
+    public String getElinksHeader() {
+        return ldClient.stringVariation("elinks-flag", createLDUser(), "");
     }
 
     private LDUser createLDUser() {
