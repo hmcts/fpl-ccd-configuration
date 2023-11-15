@@ -222,11 +222,11 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1887(CaseDetails caseDetails) {
-        //String migrationId = "DFPL-1887";
-        //List<Long> possibleCaseIds = List.of(1699979033505404L);
-        //migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        var migrationId = "DFPL-1887";
+        var possibleCaseIds = List.of(1684922324530563L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        String orgId = "OHTS6A4";
+        String orgId = "BDWCNNQ";
 
         CaseData caseData = getCaseData(caseDetails);
 
