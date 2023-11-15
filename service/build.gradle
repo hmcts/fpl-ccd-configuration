@@ -285,10 +285,10 @@ def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '3.0.0',
-  log4j           : '2.20.0',
+  log4j           : '2.21.1',
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
-  serenity        : '2.4.5',
+  serenity        : '2.6.0',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
   lombok          : '1.18.30',
@@ -322,6 +322,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+  implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.3'
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
@@ -331,7 +332,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.0.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -387,6 +388,7 @@ dependencies {
 
   // Fortify client for Fortify scans
   testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+
 
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity

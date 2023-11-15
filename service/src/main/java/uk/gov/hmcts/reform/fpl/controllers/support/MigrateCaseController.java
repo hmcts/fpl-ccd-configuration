@@ -58,7 +58,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810
+        "DFPL-1810", this::run1810,
+        "DFPL-1837", this::run1837,
+        "DFPL-1883", this::run1883,
+        "DFPL-1850", this::run1850
     );
 
     @PostMapping("/about-to-submit")
@@ -225,7 +228,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
             "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
     }
-  
+
     private void run1802(CaseDetails caseDetails) {
         var migrationId = "DFPL-1802";
         var possibleCaseIds = List.of(1683295453455055L);
@@ -237,6 +240,33 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run1813(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
+    private void run1837(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1837";
+        var possibleCaseIds = List.of(1649154482198017L);
+        var expectedHearingId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
+        var expectedDocId = UUID.fromString("982dc7f7-11a7-4eb6-b1ab-7778d20dcf27");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
+            migrationId, expectedHearingId, expectedDocId));
+    }
+
+    private void run1883(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1883";
+        var possibleCaseIds = List.of(1686737004191900L);
+        var expectedPositionStatementId = UUID.fromString("b96b56e4-0bdd-41a4-b272-8bf2d9c349af");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
+            migrationId, expectedPositionStatementId));
+    }
+
+    private void run1850(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 

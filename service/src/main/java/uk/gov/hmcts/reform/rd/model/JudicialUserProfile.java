@@ -87,7 +87,7 @@ public class JudicialUserProfile {
                 }
             }
             log.info("Unknown title for judge, {}", getFullName());
-            return "Unknown";
+            return "Judge";
         }
         return this.title;
     }
