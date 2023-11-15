@@ -151,7 +151,7 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    postgresHostname: "fpl-preview.postgres.database.azure.com"
+    postgresHostname: "family-public-law-preview.postgres.database.azure.com"
     postgresSecret: postgres
     databaseNamePrefix: "pr-${CHANGE_ID}-"
 
@@ -261,9 +261,9 @@ ccd:
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     extraEnvs:
       - name: DATA_STORE_URL
-        value: jdbc:postgresql://fpl-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
       - name: DB_URL
-        value: jdbc:postgresql://fpl-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
       - name: DB_USER
         value: hmcts
       - name: DB_PWD
@@ -358,7 +358,7 @@ xui-mo-webapp:
 
 postgresql:
   enabled: true
-  flexibleserver: "fpl-preview"
+  flexibleserver: family-public-law-preview
   setup:
     databases:
     - name: "pr-${CHANGE_ID}-data-store"
