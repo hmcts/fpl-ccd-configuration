@@ -75,7 +75,7 @@ public class CoreCaseDataService {
     }
 
     @Recover void recover(Exception e, String caseId) {
-        log.error("All 3 retries failed to create event on ccd for case id: {}", caseId);
+        log.error("All 3 retries failed to create event on ccd for case {}", caseId);
     }
 
     /**
