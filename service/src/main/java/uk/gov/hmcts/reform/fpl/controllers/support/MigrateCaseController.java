@@ -61,14 +61,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-CFV", this::runCFV,
         "DFPL-CFV-Rollback", this::runCFVrollback,
-        "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
-        "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-CFV-dry", this::dryRunCFV
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -82,11 +75,11 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void runCFV(CaseDetails caseDetails) {
+    private Map<String, Object> prepareChangesForCFVMigration(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV");
-        Map<String, Object> changes = new LinkedHashMap<>();
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (java.lang.String) caseDetails.getData()
+            .get("hasBeenCFVMigrated"), "DFPL-CFV");
+        Map<java.lang.String, java.lang.Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
         changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
         changes.putAll(migrateCFVService.migrateCourtBundle(caseData));
@@ -94,12 +87,28 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCFVService.migrateExpertReports(caseData));
         changes.putAll(migrateCFVService.migrateGuardianReports(caseData));
         changes.putAll(migrateCFVService.migrateNoticeOfActingOrIssue(caseData));
+        changes.putAll(migrateCFVService.migrateArchivedDocuments(caseData));
         changes.putAll(migrateCFVService.migratePositionStatementRespondent(caseData));
         changes.putAll(migrateCFVService.migratePositionStatementChild(caseData));
         changes.putAll(migrateCFVService.migrateRespondentStatement(caseData));
         changes.putAll(migrateCFVService.migrateSkeletonArgumentList(caseData));
         changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
         changes.put("hasBeenCFVMigrated", YesNo.YES);
+        return changes;
+    }
+
+    private void dryRunCFV(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        caseData.getHearingFurtherEvidenceDocuments().stream()
+            .map( hfed -> hfed.getValue().getSupportingEvidenceBundle().size());
+
+
+        Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
+        //
+    }
+
+    private void runCFV(CaseDetails caseDetails) {
+        Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
         pushChangesToCaseDetails(caseDetails, changes);
     }
 

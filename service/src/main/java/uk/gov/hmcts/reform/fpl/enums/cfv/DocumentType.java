@@ -184,7 +184,11 @@ public enum DocumentType {
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false, false,
         null,
-        null, 300, null);
+        null, 300, null),
+    ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),
+        true, true, true, true,
+    defaultWithDocumentBuilder(),
+        null, 999, DEFAULT_NOTIFICATION_CONFIG);
 
     @Getter
     private String description;

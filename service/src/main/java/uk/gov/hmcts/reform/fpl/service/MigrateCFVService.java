@@ -106,6 +106,10 @@ public class MigrateCFVService {
     }
 
     private static Predicate<Element<SupportingEvidenceBundle>> matchFurtherEvidenceType(FurtherEvidenceType type) {
+        if (type == null) {
+            return e -> Optional.ofNullable(e.getValue()).orElse(SupportingEvidenceBundle.builder().type(null).build())
+                .getType() == null;
+        }
         return e -> type.equals(e.getValue().getType());
     }
 
@@ -370,6 +374,11 @@ public class MigrateCFVService {
     public Map<String, Object> migrateGuardianReports(CaseData caseData) {
         FurtherEvidenceType furtherEvidenceType = GUARDIAN_REPORTS;
         return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "guardianEvidenceList");
+    }
+
+    public Map<String, Object> migrateArchivedDocuments(CaseData caseData) {
+        FurtherEvidenceType furtherEvidenceType = null;
+        return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "archivedDocumentsList");
     }
 
     // Expert Reports
