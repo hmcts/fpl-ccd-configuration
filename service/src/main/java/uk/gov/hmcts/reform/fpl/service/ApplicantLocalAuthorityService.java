@@ -315,7 +315,7 @@ public class ApplicantLocalAuthorityService {
     }
 
     public boolean isOrgIdInPolicy(String orgId, OrganisationPolicy policy) {
-        if (!isEmpty(policy) && !isEmpty(policy.getOrganisation())) {
+        if (isNotEmpty(orgId) && isNotEmpty(policy) && isNotEmpty(policy.getOrganisation())) {
             return orgId.equals(policy.getOrganisation().getOrganisationID());
         }
         return false;
