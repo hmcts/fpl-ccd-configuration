@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageRoleType.CTSC;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
@@ -56,5 +57,15 @@ class ReplyToMessageJudgeControllerAboutToStartTest extends AbstractCallbackTest
         );
 
         assertThat(judicialMessageDynamicList).isEqualTo(expectedJudicialMessageDynamicList);
+    }
+
+    @Test
+    void shouldClearLatestRoleSent() {
+        CaseData caseData = CaseData.builder()
+            .latestRoleSent(CTSC)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+        assertThat(response.getData().get("latestRoleSent")).isNull();
     }
 }
