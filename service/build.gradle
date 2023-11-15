@@ -333,6 +333,8 @@ dependencies {
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.0.0'
+  implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.0.0'
+
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
