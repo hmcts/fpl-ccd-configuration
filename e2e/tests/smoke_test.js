@@ -15,6 +15,6 @@ Scenario('Sign in as local authority and create a case', async ({I, caseListPage
   caseListPage.searchForCasesWithName(caseName);
   I.grabCurrentUrl();
   I.waitForElement(`//ccd-search-result/table/tbody//tr//td//a[contains(@href,'/cases/case-details/${caseId}')]`, 90);
-  I.grabCurrentUrl();
+    I.grabCurrentUrl();
   I.seeCaseInSearchResult(caseId);
 });

@@ -52,7 +52,7 @@ module.exports = {
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
-    I.wait(10);
+    //I.wait(10);
     I.click('Apply');
     I.runAccessibilityTest().then(() => {});
   },
