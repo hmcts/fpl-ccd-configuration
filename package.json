@@ -31,6 +31,8 @@
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
+    "clean": "node-gyp clean && rm -f fsevents.node",
+    "build": "node-gyp clean && rm -f fsevents.node && node-gyp rebuild && node-gyp clean",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky|@nightlyOnly))' --reporter mocha-multi --verbose",
     "test:functional-nightly1": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests))' --reporter mocha-multi --verbose",
