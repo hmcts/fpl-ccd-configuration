@@ -26,7 +26,7 @@ public interface JudicialApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestHeader("page_size") int pageSize,
-        @RequestHeader(ACCEPT) String accept,
+        @RequestHeader(value = ACCEPT, required = false) String accept,
         @RequestBody JudicialUserRequest request
     );
 

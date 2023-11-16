@@ -13,6 +13,6 @@ public class ElinksService {
     public String getElinksAcceptHeader() {
         return featureToggleService.isElinksEnabled()
             ? "application/vnd.jrd.api+json;Version=2.0"
-            : "application/vnd.jrd.api+json";
+            : null;
     }
 }
