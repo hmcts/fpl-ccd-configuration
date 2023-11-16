@@ -332,7 +332,7 @@ class JudicialServiceTest {
     }
 
     @Test
-    void shouldDeleteSpecificRole() {
+    void shouldDeleteSpecificHearingRole() {
         HearingBooking hearing = HearingBooking.builder()
             .startDate(LocalDateTime.now())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -345,7 +345,8 @@ class JudicialServiceTest {
 
         underTest.deleteSpecificHearingRole(12345L, hearing);
 
-        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(eq(12345L), any(), eq("idam"));
+        verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(eq(12345L), any(), eq("idam"),
+            eq(List.of("hearing-judge", "hearing-legal-adviser")));
     }
 
 }
