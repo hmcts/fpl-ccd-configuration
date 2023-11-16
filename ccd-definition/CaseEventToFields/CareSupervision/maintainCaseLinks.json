@@ -2,26 +2,26 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "maintainCaseLink",
+    "CaseEventID": "maintainCaseLinks",
     "CaseFieldID": "caseLinks",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
-    "PageID": "maintainCaseLink",
+    "PageID": "maintainCaseLinks",
     "PageLabel": "Manage case links",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "LinkedCasesComponentLauncher=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Yes"
+    "RetainHiddenValue": "Y"
   },
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "maintainCaseLink",
+    "CaseEventID": "maintainCaseLinks",
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "DisplayContextParameter" : "#ARGUMENT(UPDATE,LinkedCases)",
-    "PageID": "maintainCaseLink",
+    "PageID": "maintainCaseLinks",
     "PageLabel": "Manage case links",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "N"

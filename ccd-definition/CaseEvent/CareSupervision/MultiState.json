@@ -1120,18 +1120,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "createCaseLink",
     "Name": "Link cases",
-    "Description": "Link cases",
+    "Description": "Create Case Link",
     "DisplayOrder": 40,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N"
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Create Case Link"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "maintainCaseLink",
+    "ID": "maintainCaseLinks",
     "Name": "Manage case links",
     "Description": "Manage case links",
     "DisplayOrder": 41,
@@ -1139,6 +1141,8 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
-    "ShowEventNotes": "N"
+    "ShowEventNotes": "N",
+    "Publish": "Y",
+    "EndButtonLabel": "Manage Case Links"
   }
 ]
