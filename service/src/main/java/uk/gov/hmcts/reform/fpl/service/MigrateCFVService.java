@@ -377,8 +377,7 @@ public class MigrateCFVService {
     }
 
     public Map<String, Object> migrateArchivedDocuments(CaseData caseData) {
-        FurtherEvidenceType furtherEvidenceType = null;
-        return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "archivedDocumentsList");
+        return migrateFurtherEvidenceDocuments(caseData, null, "archivedDocumentsList");
     }
 
     // Expert Reports
@@ -717,4 +716,87 @@ public class MigrateCFVService {
         ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
         return ret;
     }
+
+    public int calculateNumberOfHearingFurtherEvidenceDocuments(CaseData caseData) {
+        return caseData.getHearingFurtherEvidenceDocuments().stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+            .mapToInt(Collection::size)
+            .sum();
+    }
+
+    public int calculateNumberOfFurtherEvidenceDocuments(CaseData caseData) {
+        return List.of(Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()),
+                Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()),
+                Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()))
+            .stream().mapToInt(Collection::size).sum();
+    }
+
+    public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        // validate FurtherEvidenceDocument and HearingFurtherEvidenceDocument
+        int expectedSize = calculateNumberOfHearingFurtherEvidenceDocuments(caseData)
+            + calculateNumberOfFurtherEvidenceDocuments(caseData);
+        int acutalSize = List.of(
+                "noticeOfActingOrIssueList",
+                "noticeOfActingOrIssueListLA",
+                "noticeOfActingOrIssueListCTSC",
+                "guardianEvidenceList",
+                "guardianEvidenceListLA",
+                "guardianEvidenceListCTSC",
+                "applicantWitnessStmtList",
+                "applicantWitnessStmtListLA",
+                "applicantWitnessStmtListCTSC",
+                "expertReportList",
+                "expertReportListLA",
+                "expertReportListCTSC",
+                "drugAndAlcoholReportList",
+                "drugAndAlcoholReportListLA",
+                "drugAndAlcoholReportListCTSC",
+                "archivedDocumentsList",
+                "archivedDocumentsListLA",
+                "archivedDocumentsListCTSC"
+            ).stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated document (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocumentsLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocuments'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocumentsSolicitor'), 0)
+    //                 AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsListCTSC'), 0)
+    //                 AS newCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'hearingFurtherEvidenceDocuments')
+    //               AS ncElements ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference, data) T
+    // WHERE oldCount <> newCount
 }

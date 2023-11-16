@@ -97,18 +97,18 @@ public class MigrateCaseController extends CallbackController {
         return changes;
     }
 
+
+
     private void dryRunCFV(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        caseData.getHearingFurtherEvidenceDocuments().stream()
-            .map( hfed -> hfed.getValue().getSupportingEvidenceBundle().size());
-
-
         Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
-        //
+        migrateCFVService.validateMigratedNumberOfDocuments("DFPL-CFV-dry", caseData, changes);
     }
 
     private void runCFV(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
+        migrateCFVService.validateMigratedNumberOfDocuments("DFPL-CFV", caseData, changes);
         pushChangesToCaseDetails(caseDetails, changes);
     }
 
