@@ -108,8 +108,8 @@ module.exports = {
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     I.click('Submit');
-    this.waitForElement('.alert-message', 90);
-    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
+    this.waitForElement("markdown[class='markdown'] h2 strong", 90);
+    const caseId = normalizeCaseId(await this.grabTextFrom("markdown[class='markdown'] h2 strong"));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
