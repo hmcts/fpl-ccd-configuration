@@ -19,9 +19,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOType.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 
 @Value
@@ -158,5 +160,18 @@ public class UploadDraftOrdersData {
         }
 
         return null;
+    }
+
+    @JsonIgnore
+    public YesNo hasDraftOrderBeenUploadedThatNeedsApproval() {
+        // if we've got a C21 draft order - these are always approved
+        if (isNotEmpty(hearingOrderDraftKind) && hearingOrderDraftKind.contains(C21)) {
+            return YesNo.YES;
+        }
+        // if we've got a CMO draft order - these are only approved if they're agreed CMOs
+        if (isNotEmpty(cmoUploadType) && AGREED.equals(cmoUploadType)) {
+            return YesNo.YES;
+        }
+        return YesNo.NO;
     }
 }
