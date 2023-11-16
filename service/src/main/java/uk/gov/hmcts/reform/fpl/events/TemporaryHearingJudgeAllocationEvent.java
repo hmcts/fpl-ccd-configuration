@@ -5,7 +5,11 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
+/**
+ * @deprecated (since DFPL-1862, this notification is no longer necessary)
+ */
 @Getter
+@Deprecated(since = "DFPL-1862")
 @RequiredArgsConstructor
 public class TemporaryHearingJudgeAllocationEvent {
     private final CaseData caseData;
