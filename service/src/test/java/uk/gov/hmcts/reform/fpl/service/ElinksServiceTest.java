@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -27,7 +28,7 @@ class ElinksServiceTest {
         when(featureToggleService.isElinksEnabled()).thenReturn(false);
         ElinksService elinksService = new ElinksService(featureToggleService);
 
-        assertEquals("application/vnd.jrd.api+json", elinksService.getElinksAcceptHeader());
+        assertNull(elinksService.getElinksAcceptHeader());
     }
 
 }
