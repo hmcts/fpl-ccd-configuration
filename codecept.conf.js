@@ -46,9 +46,9 @@ exports.config = {
   helpers: {
     Playwright: {
       show: process.env.SHOW_BROWSER_WINDOW || true,
-      waitForTimeout: config.WaitForTimeout,
-      waitForAction: config.WaitForAction,
-      timeout: config.WaitForTimeout,
+      //waitForTimeout: config.WaitForTimeout,
+      //waitForAction: config.WaitForAction,
+      timeout: 60000,
       retries: 5,
       waitForNavigation: 'load',
       ignoreHTTPSErrors: true,

@@ -73,9 +73,9 @@ module.exports = {
    // await within(hmctsLoginIn, () => {
       this.waitForElement('//input[@type="text"]', 20);
       this.fillField('//input[@type="text"]', user.email);
-      this.wait(0.2);
+      //this.wait(0.2);
       this.fillField('//input[@type="password"]', user.password);
-      this.wait(0.5);
+      //this.wait(0.5);
       this.click('Sign in');
    // });
   },
@@ -109,7 +109,7 @@ module.exports = {
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     I.click('Submit');
     this.waitForElement("markdown[class='markdown'] h2 strong", 90);
-    const caseId = normalizeCaseId(await this.grabTextFrom("markdown[class='markdown'] h2 strong"));
+        const caseId = normalizeCaseId(await this.grabTextFrom("markdown[class='markdown'] h2 strong"));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
