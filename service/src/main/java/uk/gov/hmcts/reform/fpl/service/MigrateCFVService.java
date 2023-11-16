@@ -400,7 +400,6 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> migrateExpertReports(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS, "expertReportList").entrySet().stream();
 
         Map<String, Object> mergedMap = new HashMap<>(migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS,
             "expertReportList"));
