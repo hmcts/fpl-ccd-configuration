@@ -1,6 +1,13 @@
 const defaultPassword = 'Password12';
+const smokePassword = 'Password1234';
 
 module.exports = {
+  newSwanseaLocalAuthorityUserOne: {
+    email: 'Local-Authority-Swansea-0001@AAT.com',
+    password: process.env.LA_USER_PASSWORD || smokePassword,
+    // forename: 'kurt@swansea.gov.uk',
+    // surname: '(local-authority)',
+  },
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
