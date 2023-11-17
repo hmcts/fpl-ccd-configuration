@@ -2,7 +2,7 @@ const config = require('../config.js');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 let caseIdAndName;
-Feature('Access segregation @fixed');
+Feature('Access segregation @not-fixed');
 
 async function setupScenario(I) {
   if (!caseIdAndName) { caseIdAndName = await I.submitNewCaseWithData(mandatorySubmissionFields); }
