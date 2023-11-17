@@ -126,6 +126,39 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
+    class DfplCFVDry {
+        final String migrationId = "DFPL-CFV-dry";
+
+        @Test
+        void shouldInvokeAllMigrationsAndNotFlushingAnyChanges() {
+            final CaseData caseData = CaseData.builder()
+                .id(nextLong())
+                .build();
+
+            CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
+            doNothing()
+                .when(migrateCFVService).doHasCFVMigratedCheck(anyLong(), any(), eq(migrationId), eq(true));
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            verify(migrateCFVService).validateMigratedNumberOfDocuments(eq(migrationId), any(), any());
+            verify(migrateCFVService).migratePositionStatementChild(any());
+            verify(migrateCFVService).migratePositionStatementRespondent(any());
+            verify(migrateCFVService).migrateNoticeOfActingOrIssue(any());
+            verify(migrateCFVService).migrateGuardianReports(any());
+            verify(migrateCFVService).migrateExpertReports(any());
+            verify(migrateCFVService).migrateApplicantWitnessStatements(any());
+            verify(migrateCFVService).migrateRespondentStatement(any());
+            verify(migrateCFVService).migrateSkeletonArgumentList(any());
+            verify(migrateCFVService).migrateApplicationDocuments(any());
+            verify(migrateCFVService).migrateCorrespondenceDocuments(any());
+            verify(migrateCFVService).moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(any());
+            verify(migrateCFVService).migrateCourtBundle(any());
+            verify(migrateCFVService).migrateArchivedDocuments(any());
+            assertThat(response.getData()).extracting("hasBeenCFVMigrated").isNull();
+        }
+    }
+
+    @Nested
     class DfplCFVRollback {
         final String migrationId = "DFPL-CFV-Rollback";
 
@@ -140,7 +173,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             doNothing()
                 .when(migrateCFVService).doHasCFVMigratedCheck(anyLong(), any(), eq(migrationId), eq(true));
-            postAboutToSubmitEvent(caseDetails);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
             verify(migrateCFVService).rollbackPositionStatementChild(any());
             verify(migrateCFVService).rollbackPositionStatementRespondent(any());
@@ -155,6 +188,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(migrateCFVService).rollbackCaseSummaryMigration(any());
             verify(migrateCFVService).rollbackCourtBundleMigration(any());
             verify(migrateCFVService).rollbackArchivedDocumentsList();
+            assertThat(response.getData()).extracting("hasBeenCFVMigrated").isNull();
         }
 
         @Test

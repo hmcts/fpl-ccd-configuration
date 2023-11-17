@@ -75,10 +75,10 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private Map<String, Object> prepareChangesForCFVMigration(CaseDetails caseDetails) {
+    private Map<String, Object> prepareChangesForCFVMigration(String migrationId, CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (java.lang.String) caseDetails.getData()
-            .get("hasBeenCFVMigrated"), "DFPL-CFV");
+            .get("hasBeenCFVMigrated"), migrationId);
         Map<java.lang.String, java.lang.Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
         changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
@@ -98,15 +98,17 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void dryRunCFV(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV-dry";
         CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
-        migrateCFVService.validateMigratedNumberOfDocuments("DFPL-CFV-dry", caseData, changes);
+        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
+        migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
     }
 
     private void runCFV(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV";
         CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> changes = prepareChangesForCFVMigration(caseDetails);
-        migrateCFVService.validateMigratedNumberOfDocuments("DFPL-CFV", caseData, changes);
+        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
+        migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
         pushChangesToCaseDetails(caseDetails, changes);
     }
 
