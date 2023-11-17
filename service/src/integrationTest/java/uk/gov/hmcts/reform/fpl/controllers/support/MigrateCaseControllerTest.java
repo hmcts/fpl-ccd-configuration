@@ -203,6 +203,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(migrateCFVService, times(0)).rollbackCorrespondenceDocuments();
             verify(migrateCFVService, times(0)).rollbackCaseSummaryMigration(any());
             verify(migrateCFVService, times(0)).rollbackCourtBundleMigration(any());
+            verify(migrateCFVService, times(0)).rollbackArchivedDocumentsList();
         }
     }
 }
