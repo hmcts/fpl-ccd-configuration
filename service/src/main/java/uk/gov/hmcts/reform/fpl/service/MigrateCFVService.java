@@ -880,9 +880,40 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount;
 
+    public void validateMigratedRespondentStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = caseData.getRespondentStatements().stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+            .mapToInt(Collection::size)
+            .sum();
+        int acutalSize = List.of("respStmtList", "respStmtListLA", "respStmtListCTSC").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated respondent statements (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) as oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'respStmtList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'respStmtListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'respStmtListCTSC'), 0)                               AS newCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'respondentStatements') AS ncElements ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference, data) T
+    // WHERE oldCount <> newCount
+
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
         validateFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
         validateMigratedPositionStatement(migrationId, caseData, changes);
+        validateMigratedRespondentStatement(migrationId, caseData, changes);
     }
 }
