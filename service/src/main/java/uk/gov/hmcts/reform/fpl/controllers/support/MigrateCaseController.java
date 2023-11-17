@@ -127,6 +127,7 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
         changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
         changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
+        changes.putAll(migrateCFVService.rollbackArchivedDocumentsList());
         changes.put("hasBeenCFVMigrated", null);
         pushChangesToCaseDetails(caseDetails, changes);
     }

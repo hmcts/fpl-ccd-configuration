@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -380,6 +381,14 @@ public class MigrateCFVService {
         return migrateFurtherEvidenceDocuments(caseData, null, "archivedDocumentsList");
     }
 
+    public Map<String, Object> rollbackArchivedDocumentsList() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("archivedDocumentsList", List.of());
+        ret.put("archivedDocumentsListLA", List.of());
+        ret.put("archivedDocumentsListCTSC", List.of());
+        return ret;
+    }
+
     // Expert Reports
 
     public Map<String, Object> rollbackExpertReports() {
@@ -717,24 +726,23 @@ public class MigrateCFVService {
         return ret;
     }
 
-    public int calculateNumberOfHearingFurtherEvidenceDocuments(CaseData caseData) {
+    public int calculateExpectedNumberOfHearingFurtherEvidenceDocuments(CaseData caseData) {
         return caseData.getHearingFurtherEvidenceDocuments().stream()
             .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
             .mapToInt(Collection::size)
             .sum();
     }
 
-    public int calculateNumberOfFurtherEvidenceDocuments(CaseData caseData) {
+    public int calculateExpectedNumberOfFurtherEvidenceDocuments(CaseData caseData) {
         return List.of(Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()),
                 Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()),
                 Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()))
             .stream().mapToInt(Collection::size).sum();
     }
 
-    public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
-        // validate FurtherEvidenceDocument and HearingFurtherEvidenceDocument
-        int expectedSize = calculateNumberOfHearingFurtherEvidenceDocuments(caseData)
-            + calculateNumberOfFurtherEvidenceDocuments(caseData);
+    public void validateFurtherEvidenceDocument(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = calculateExpectedNumberOfHearingFurtherEvidenceDocuments(caseData)
+            + calculateExpectedNumberOfFurtherEvidenceDocuments(caseData);
         int acutalSize = List.of(
                 "noticeOfActingOrIssueList",
                 "noticeOfActingOrIssueListLA",
@@ -760,7 +768,8 @@ public class MigrateCFVService {
             .mapToInt(Collection::size).sum();
         if (expectedSize != acutalSize) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Unexpected number of migrated document (%s/%s)",
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)",
                 migrationId, caseData.getId(), expectedSize, acutalSize));
         }
     }
@@ -799,4 +808,36 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
     //      GROUP BY reference, data) T
     // WHERE oldCount <> newCount
+
+    public void validateMigratedCaseSummary(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().caseSummaryList(List.of()).build())
+            .getCaseSummaryList().size();
+        int acutalSize = List.of("caseSummaryList", "caseSummaryListLA").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "CaseSummary (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryListBackup'), 0) AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryList'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    //WHERE oldCount <> newCount
+
+    public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        validateFurtherEvidenceDocument(migrationId, caseData, changes);
+        validateMigratedCaseSummary(migrationId, caseData, changes);
+    }
 }
