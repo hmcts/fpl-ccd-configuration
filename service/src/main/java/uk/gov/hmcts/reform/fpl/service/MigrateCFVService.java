@@ -942,11 +942,47 @@ public class MigrateCFVService {
     //     ) T
     // WHERE oldCount <> newCount
 
+    public void validateMigratedApplicationDocuments(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
+        int expectedSize = caseData.getApplicationDocuments().size();
+        int acutalSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+                "documentsFiledOnIssueListCTSC",
+                "carePlanList", "carePlanListLA", "carePlanListCTSC",
+                "thresholdList", "thresholdListLA", "thresholdListCTSC")
+            .stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated application documents"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             jsonb_array_length(data -> 'applicationDocuments')           AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'documentsFiledOnIssueList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'documentsFiledOnIssueListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
+
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
         validateFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
         validateMigratedPositionStatement(migrationId, caseData, changes);
         validateMigratedRespondentStatement(migrationId, caseData, changes);
         validateMigratedCorrespondenceDocuments(migrationId, caseData, changes);
+        validateMigratedApplicationDocuments(migrationId, caseData, changes);
     }
 }
