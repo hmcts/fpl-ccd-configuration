@@ -1,3 +1,5 @@
+variable "subscription" {}
+
 variable "product" {
   type = string
 }
@@ -7,6 +9,11 @@ variable "component" {
 }
 
 variable "location" {
+  type    = string
+  default = "UK South"
+}
+
+variable "location_db" {
   type    = string
   default = "UK South"
 }

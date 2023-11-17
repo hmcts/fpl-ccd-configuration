@@ -250,9 +250,9 @@ scheduler:
   datasourceConf:
     name: schedulerDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:6432}/${SCHEDULER_DB_NAME:fpl_scheduler}?gssEncMode=disable
-    username: ${SCHEDULER_DB_USER:fpl_scheduler_user}
-    password: ${SCHEDULER_DB_PASSWORD:fpl_scheduler}
+    url: jdbc:postgresql://${SCHEDULER_DB_HOST:localhost}:${SCHEDULER_DB_PORT:6432}/${SCHEDULER_DB_NAME:postgres}?gssEncMode=disable
+    username: ${SCHEDULER_DB_USER:postgres}
+    password: ${SCHEDULER_DB_PASSWORD:postgres}
   quartzConf:
     org.quartz:
       scheduler:
@@ -268,7 +268,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Updates the summary tab'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
-      cron: ${UPDATE_SUMMARY_TAB_CRON:0 45 14 ? * * *} # might be a longer running job
+      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * * *} # might be a longer running job
     - name: 'Undelivered emails'
       enabled: false
       cronGroup: "NIGHTLY_CRON"
