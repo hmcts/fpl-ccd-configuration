@@ -99,6 +99,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .when(migrateCFVService).doHasCFVMigratedCheck(anyLong(), any(), eq(migrationId), eq(true));
             postAboutToSubmitEvent(caseDetails);
 
+            verify(migrateCFVService).validateMigratedNumberOfDocuments(eq(migrationId), any(), any());
             verify(migrateCFVService).migratePositionStatementChild(any());
             verify(migrateCFVService).migratePositionStatementRespondent(any());
             verify(migrateCFVService).migrateNoticeOfActingOrIssue(any());
@@ -128,6 +129,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getRootCause()
                 .isInstanceOf(AssertionError.class);
 
+            verify(migrateCFVService, times(0)).validateMigratedNumberOfDocuments(eq(migrationId), any(), any());
             verify(migrateCFVService, times(0)).migratePositionStatementChild(any());
             verify(migrateCFVService, times(0)).migratePositionStatementRespondent(any());
             verify(migrateCFVService, times(0)).migrateNoticeOfActingOrIssue(any());
