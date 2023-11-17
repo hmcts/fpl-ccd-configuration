@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import java.util.NoSuchElementException;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -97,7 +99,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
             doNothing()
                 .when(migrateCFVService).doHasCFVMigratedCheck(anyLong(), any(), eq(migrationId), eq(true));
-            postAboutToSubmitEvent(caseDetails);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
             verify(migrateCFVService).validateMigratedNumberOfDocuments(eq(migrationId), any(), any());
             verify(migrateCFVService).migratePositionStatementChild(any());
@@ -113,6 +115,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(migrateCFVService).moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(any());
             verify(migrateCFVService).migrateCourtBundle(any());
             verify(migrateCFVService).migrateArchivedDocuments(any());
+            assertThat(response.getData()).extracting("hasBeenCFVMigrated").isEqualTo("YES");
         }
 
         @Test
