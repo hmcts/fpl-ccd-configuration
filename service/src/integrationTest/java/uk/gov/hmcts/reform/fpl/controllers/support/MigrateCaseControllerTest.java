@@ -9,15 +9,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
-import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
-import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.NoSuchElementException;
 
@@ -43,25 +37,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     private static final String INVALID_MIGRATION_ID = "invalid id";
 
     @MockBean
-    private TaskListService taskListService;
-
-    @MockBean
-    private TaskListRenderer taskListRenderer;
-
-    @MockBean
-    private CaseSubmissionChecker caseSubmissionChecker;
-
-    @MockBean
     private MigrateCFVService migrateCFVService;
-
-    @MockBean
-    private JudicialUsersConfiguration judicialUsersConfiguration;
-
-    @MockBean
-    private JudicialService judicialService;
-
-    @MockBean
-    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
 
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
