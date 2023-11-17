@@ -910,10 +910,43 @@ public class MigrateCFVService {
     //      GROUP BY reference, data) T
     // WHERE oldCount <> newCount
 
+    public void validateMigratedCorrespondenceDocuments(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
+        int expectedSize = caseData.getCorrespondenceDocuments().size()
+            + caseData.getCorrespondenceDocumentsLA().size()
+            + caseData.getCorrespondenceDocumentsSolicitor().size();
+        int acutalSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
+            .stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated correspondence documents"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocuments'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocumentsSolicitor'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocumentsLA'), 0) AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //     ) T
+    // WHERE oldCount <> newCount
+
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
         validateFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
         validateMigratedPositionStatement(migrationId, caseData, changes);
         validateMigratedRespondentStatement(migrationId, caseData, changes);
+        validateMigratedCorrespondenceDocuments(migrationId, caseData, changes);
     }
 }
