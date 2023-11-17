@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 /**
+ * Event to notify the judge that they have been allocated as the hearing judge.
  * @deprecated (since DFPL-1862, this notification is no longer necessary)
  */
 @Getter
