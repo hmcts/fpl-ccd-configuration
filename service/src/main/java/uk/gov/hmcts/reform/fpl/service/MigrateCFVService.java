@@ -834,10 +834,55 @@ public class MigrateCFVService {
     //      where jurisdiction = 'PUBLICLAW'
     //        and case_type_id = 'CARE_SUPERVISION_EPO'
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
-    //WHERE oldCount <> newCount
+    // WHERE oldCount <> newCount
+
+    public void validateMigratedPositionStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().positionStatementRespondentListV2(List.of()).build())
+            .getPositionStatementRespondentListV2().size()
+            + Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().positionStatementChildListV2(List.of()).build())
+            .getPositionStatementChildListV2().size();
+        int acutalSize = List.of("posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC",
+                "posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != acutalSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "PositionStatement(Child/Respondent) (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, acutalSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'positionStatementRespondentListV2'), 0)   AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
+    //
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'positionStatementChildListV2'), 0)   AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
 
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
         validateFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
+        validateMigratedPositionStatement(migrationId, caseData, changes);
     }
 }
