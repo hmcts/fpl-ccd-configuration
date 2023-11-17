@@ -1120,7 +1120,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "createCaseLink",
     "Name": "Link cases",
-    "Description": "Create Case Link",
+    "Description": "Link cases",
     "DisplayOrder": 40,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
