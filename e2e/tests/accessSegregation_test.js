@@ -2,7 +2,7 @@ const config = require('../config.js');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
 let caseIdAndName;
-Feature('Access segregation @not-fixed');
+Feature('Access segregation @fixed');
 
 async function setupScenario(I) {
   if (!caseIdAndName) { caseIdAndName = await I.submitNewCaseWithData(mandatorySubmissionFields); }
@@ -10,7 +10,7 @@ async function setupScenario(I) {
 
 Scenario('Different user in the same local authority can see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.goToPage(config.baseUrl, config.swanseaLocalAuthorityUserTwo);
+  await I.goToPage(config.baseUrl, config.newSwanseaLocalAuthorityUserTwo);
   I.wait(30);
   I.navigateToCaseList(caseIdAndName, caseListPage);
 
@@ -18,7 +18,7 @@ Scenario('Different user in the same local authority can see case created', asyn
 
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.goToPage(config.baseUrl, config.hillingdonLocalAuthorityUserOne);
+  await I.goToPage(config.baseUrl, config.newHillingdonLocalAuthorityUserOne);
   caseListPage.verifyCaseIsNotAccessibleSearchByCaseName(caseIdAndName);
 });
 
