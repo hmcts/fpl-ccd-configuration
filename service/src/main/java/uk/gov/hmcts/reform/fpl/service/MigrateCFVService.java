@@ -743,7 +743,7 @@ public class MigrateCFVService {
     public void validateFurtherEvidenceDocument(String migrationId, CaseData caseData, Map<String, Object> changes) {
         int expectedSize = calculateExpectedNumberOfHearingFurtherEvidenceDocuments(caseData)
             + calculateExpectedNumberOfFurtherEvidenceDocuments(caseData);
-        int acutalSize = List.of(
+        int actualSize = List.of(
                 "noticeOfActingOrIssueList",
                 "noticeOfActingOrIssueListLA",
                 "noticeOfActingOrIssueListCTSC",
@@ -766,11 +766,11 @@ public class MigrateCFVService {
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
                     + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)",
-                migrationId, caseData.getId(), expectedSize, acutalSize));
+                migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -813,15 +813,15 @@ public class MigrateCFVService {
         int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().caseSummaryList(List.of()).build())
             .getCaseSummaryList().size();
-        int acutalSize = List.of("caseSummaryList", "caseSummaryListLA").stream()
+        int actualSize = List.of("caseSummaryList", "caseSummaryListLA").stream()
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
                     + "CaseSummary (%s/%s)",
-                migrationId, caseData.getId(), expectedSize, acutalSize));
+                migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -843,16 +843,16 @@ public class MigrateCFVService {
             + Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().positionStatementChildListV2(List.of()).build())
             .getPositionStatementChildListV2().size();
-        int acutalSize = List.of("posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC",
+        int actualSize = List.of("posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC",
                 "posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC").stream()
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
                     + "PositionStatement(Child/Respondent) (%s/%s)",
-                migrationId, caseData.getId(), expectedSize, acutalSize));
+                migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -885,14 +885,14 @@ public class MigrateCFVService {
             .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
             .mapToInt(Collection::size)
             .sum();
-        int acutalSize = List.of("respStmtList", "respStmtListLA", "respStmtListCTSC").stream()
+        int actualSize = List.of("respStmtList", "respStmtListLA", "respStmtListCTSC").stream()
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated respondent statements (%s/%s)",
-                migrationId, caseData.getId(), expectedSize, acutalSize));
+                migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -915,15 +915,15 @@ public class MigrateCFVService {
         int expectedSize = caseData.getCorrespondenceDocuments().size()
             + caseData.getCorrespondenceDocumentsLA().size()
             + caseData.getCorrespondenceDocumentsSolicitor().size();
-        int acutalSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
+        int actualSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
             .stream()
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated correspondence documents"
-                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, acutalSize));
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -945,7 +945,7 @@ public class MigrateCFVService {
     public void validateMigratedApplicationDocuments(String migrationId, CaseData caseData,
                                                         Map<String, Object> changes) {
         int expectedSize = caseData.getApplicationDocuments().size();
-        int acutalSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+        int actualSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
                 "documentsFiledOnIssueListCTSC",
                 "carePlanList", "carePlanListLA", "carePlanListCTSC",
                 "thresholdList", "thresholdListLA", "thresholdListCTSC")
@@ -953,10 +953,10 @@ public class MigrateCFVService {
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
             .mapToInt(Collection::size).sum();
-        if (expectedSize != acutalSize) {
+        if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated application documents"
-                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, acutalSize));
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
         }
     }
 
@@ -977,6 +977,45 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount;
 
+    public void validateMigratedCourtBundle(String migrationId, CaseData caseData,
+                                            Map<String, Object> changes) {
+        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().courtBundleListV2(List.of()).build())
+            .getCourtBundleListV2()
+            .stream().map(a -> a.getValue().getCourtBundle())
+            .mapToInt(Collection::size).sum();
+        int actualSize = List.of("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC")
+            .stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated court bundles"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(SUM(jsonb_array_length(backupElements -> 'value' -> 'courtBundle')), 0) AS oldCourtBundleCount,
+    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'courtBundle')), 0) +
+    //             COALESCE(SUM(jsonb_array_length(laElements -> 'value' -> 'courtBundle')), 0) +
+    //             COALESCE(SUM(jsonb_array_length(ctscElements -> 'value' -> 'courtBundle')), 0)
+    //                                                                                 AS migratedCourtBundleCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListV2') AS ncElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListLA') AS laElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListCTSC') AS ctscElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListV2Backup') AS backupElements
+    //                         ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference
+    //     ) T
+    // WHERE oldCourtBundleCount <> migratedCourtBundleCount
+
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
         validateFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
@@ -984,5 +1023,6 @@ public class MigrateCFVService {
         validateMigratedRespondentStatement(migrationId, caseData, changes);
         validateMigratedCorrespondenceDocuments(migrationId, caseData, changes);
         validateMigratedApplicationDocuments(migrationId, caseData, changes);
+        validateMigratedCourtBundle(migrationId, caseData, changes);
     }
 }
