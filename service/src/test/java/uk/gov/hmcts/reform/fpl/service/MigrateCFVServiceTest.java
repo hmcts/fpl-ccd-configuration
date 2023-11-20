@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -43,6 +44,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
@@ -1881,6 +1883,297 @@ class MigrateCFVServiceTest {
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "No", MIGRATION_ID, true));
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, null, MIGRATION_ID, true));
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "", MIGRATION_ID, true));
+        }
+    }
+
+    @Nested
+    class ValidationFurtherEvidenceDocumentTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "noticeOfActingOrIssueList",
+            "noticeOfActingOrIssueListLA",
+            "noticeOfActingOrIssueListCTSC",
+            "guardianEvidenceList",
+            "guardianEvidenceListLA",
+            "guardianEvidenceListCTSC",
+            "applicantWitnessStmtList",
+            "applicantWitnessStmtListLA",
+            "applicantWitnessStmtListCTSC",
+            "expertReportList",
+            "expertReportListLA",
+            "expertReportListCTSC",
+            "drugAndAlcoholReportList",
+            "drugAndAlcoholReportListLA",
+            "drugAndAlcoholReportListCTSC",
+            "archivedDocumentsList",
+            "archivedDocumentsListLA",
+            "archivedDocumentsListCTSC"
+        })
+        public void shouldNotThrowExceptionWhenValidatingSingleFurtherEvidenceDocument(String migratedProperty) {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingFurtherEvidenceDocumentsNotUploadedByCTSC() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .type(GUARDIAN_REPORTS)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc1, doc3))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
+                "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingFurtherEvidenceDocumentsWithoutDocumentType() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc3))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc3))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData,
+                Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                    "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)", MIGRATION_ID, 1L, 3, 2));
+        }
+    }
+
+    @Nested
+    class ValidationHearingFurtherEvidenceDocumentTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "noticeOfActingOrIssueList",
+            "noticeOfActingOrIssueListLA",
+            "noticeOfActingOrIssueListCTSC",
+            "guardianEvidenceList",
+            "guardianEvidenceListLA",
+            "guardianEvidenceListCTSC",
+            "applicantWitnessStmtList",
+            "applicantWitnessStmtListLA",
+            "applicantWitnessStmtListCTSC",
+            "expertReportList",
+            "expertReportListLA",
+            "expertReportListCTSC",
+            "drugAndAlcoholReportList",
+            "drugAndAlcoholReportListLA",
+            "drugAndAlcoholReportListCTSC",
+            "archivedDocumentsList",
+            "archivedDocumentsListLA",
+            "archivedDocumentsListCTSC"
+        })
+        public void shouldNotThrowExceptionWhenValidatingSingleHearingFurtherEvidenceDocument(String migratedProperty) {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingHearingFurtherEvidenceDocumentsNotUploadedByCTSC() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .type(GUARDIAN_REPORTS)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
+                "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingHearingFurtherEvidenceDocumentsWithoutDocumentType() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData,
+                Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                    "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)", MIGRATION_ID, 1L, 3, 2));
         }
     }
 }
