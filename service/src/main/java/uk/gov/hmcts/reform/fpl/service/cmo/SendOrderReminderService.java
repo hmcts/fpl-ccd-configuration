@@ -25,20 +25,17 @@ public class SendOrderReminderService {
         return caseData.getAllNonCancelledHearings().stream()
             .filter(booking -> booking.getValue().getEndDate().isBefore(now())
                 && !booking.getValue().hasCMOAssociation()
-                && !checkSealedCMOExistsForHearing(caseData, booking.getId()))
+                && !checkSealedCMOExistsForHearing(caseData, booking))
             .map(Element::getValue)
             .sorted(Comparator.comparing(HearingBooking::getStartDate))
             .collect(Collectors.toList());
     }
 
-    public boolean checkSealedCMOExistsForHearing(CaseData caseData, UUID hearingId) {
-        Optional<Element<HearingBooking>> booking = ElementUtils
-            .findElement(hearingId, caseData.getAllNonCancelledHearings());
-
+    public boolean checkSealedCMOExistsForHearing(CaseData caseData, Element<HearingBooking> booking) {
         // either it have a new style UUID hearing ID or an old style string hearing label (fallback)
         return caseData.getSealedCMOs().stream()
-            .anyMatch(el -> hearingId.equals(el.getValue().getHearingId())
-                || (booking.isPresent() && isNotEmpty(el.getValue().getHearing())
-                    && el.getValue().getHearing().equals(booking.get().getValue().toLabel())));
+            .anyMatch(el -> booking.getId().equals(el.getValue().getHearingId())
+                || (isNotEmpty(el.getValue().getHearing())
+                    && el.getValue().getHearing().equals(booking.getValue().toLabel())));
     }
 }

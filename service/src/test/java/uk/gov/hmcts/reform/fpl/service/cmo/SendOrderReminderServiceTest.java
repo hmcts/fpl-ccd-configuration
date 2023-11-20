@@ -115,4 +115,28 @@ class SendOrderReminderServiceTest {
         assertThat(actual).isEqualTo(List.of());
     }
 
+    @Test
+    void shouldNotFindOrderWithNoHearingLabelOrUuid() {
+        LocalDateTime startDate = now().minusDays(5);
+        Element<HearingBooking> hearingBooking = element(HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusHours(1))
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(hearingBooking))
+            .sealedCMOs(List.of(
+                element(HearingOrder.builder()
+                    .order(testDocumentReference())
+                    .build())
+            ))
+            .build();
+
+        List<HearingBooking> actual = underTest.getPastHearingBookingsWithoutCMOs(caseData);
+
+        assertThat(actual).isEqualTo(List.of(hearingBooking.getValue()));
+    }
+
 }
