@@ -6,13 +6,16 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -29,7 +32,13 @@ public class SendOrderReminderService {
     }
 
     public boolean checkSealedCMOExistsForHearing(CaseData caseData, UUID hearingId) {
+        Optional<Element<HearingBooking>> booking = ElementUtils
+            .findElement(hearingId, caseData.getAllNonCancelledHearings());
+
+        // either it have a new style UUID hearing ID or an old style string hearing label (fallback)
         return caseData.getSealedCMOs().stream()
-            .anyMatch(el -> hearingId.equals(el.getValue().getHearingId()));
+            .anyMatch(el -> hearingId.equals(el.getValue().getHearingId())
+                || (booking.isPresent() && isNotEmpty(el.getValue().getHearing())
+                    && el.getValue().getHearing().equals(booking.get().getValue().toLabel())));
     }
 }

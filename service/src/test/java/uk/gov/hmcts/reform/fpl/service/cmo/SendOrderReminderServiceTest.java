@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class SendOrderReminderServiceTest {
 
@@ -59,6 +61,58 @@ class SendOrderReminderServiceTest {
         assertThat(actual).isEqualTo(caseData.getHearingDetails().stream()
             .map(Element::getValue)
             .collect(Collectors.toList()));
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNoHearingsMissingSealedCMOs() {
+        LocalDateTime startDate = now().minusDays(5);
+        Element<HearingBooking> hearingBooking = element(UUID.randomUUID(), HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusHours(1))
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(hearingBooking))
+            .sealedCMOs(List.of(
+                element(HearingOrder.builder()
+                    .hearingId(hearingBooking.getId())
+                    .order(testDocumentReference())
+                    .build())
+            ))
+            .build();
+
+        List<HearingBooking> actual = underTest.getPastHearingBookingsWithoutCMOs(caseData);
+
+        assertThat(actual).isEqualTo(emptyList());
+    }
+
+    @Test
+    void shouldNotShowOnListIfOldStyleLabelMatches() {
+        LocalDateTime startDate = now().minusDays(5);
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(startDate)
+            .endDate(startDate.plusHours(1))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .hearingDetails(List.of(
+                element(hearingBooking)
+            ))
+            .sealedCMOs(List.of(
+                element(HearingOrder.builder()
+                    .hearing(hearingBooking.toLabel())
+                    .order(testDocumentReference())
+                    .build())
+            ))
+            .build();
+
+        List<HearingBooking> actual = underTest.getPastHearingBookingsWithoutCMOs(caseData);
+
+        assertThat(actual).isEqualTo(List.of());
     }
 
 }
