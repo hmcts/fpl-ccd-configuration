@@ -42,7 +42,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "gatekeepingOrderSealDecision",
     "PageFieldDisplayOrder": 4,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "READONLY",
     "PageID": "ListHearingOrSendToAdmin",
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1,

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -52,5 +53,13 @@ class HandleHearingModificationRolesEventHandlerTest {
 
         verify(judicialService).deleteSpecificHearingRole(12345L, newCancelledBooking);
         verifyNoMoreInteractions(judicialService);
+    }
+
+    @Test
+    void shouldNotThrowExceptionIfNullList() {
+        assertDoesNotThrow(() -> underTest.handleCancelledHearingRoles(new HandleHearingModificationRolesEvent(
+            CaseData.builder().id(12345L).cancelledHearingDetails(null).build(),
+            CaseData.builder().id(12345L).cancelledHearingDetails(null).build()
+        )));
     }
 }
