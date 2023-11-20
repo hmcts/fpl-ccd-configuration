@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -34,13 +33,11 @@ public class DraftOrdersReviewDataBuilder {
                 data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
                 data.put("draftCMOExists", "Y");
-                data.put("reviewCMODecision", ReviewDecision.builder().build());
             } else {
                 draftOrdersTitles.add(String.format("C21 Order%s", ordersBundle.getHearingId() != null
                     ? " - " + ordersBundle.getHearingName() : EMPTY));
                 data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
                 data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
-                data.put("reviewDecision" + counter, ReviewDecision.builder().build());
                 counter++;
             }
         }
