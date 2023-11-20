@@ -772,6 +772,7 @@ class MigrateCFVServiceTest {
             UUID doc7Id = UUID.randomUUID();
             UUID doc8Id = UUID.randomUUID();
             UUID doc9Id = UUID.randomUUID();
+            UUID doc10Id = UUID.randomUUID();
 
             DocumentReference document1 = DocumentReference.builder().build();
             DocumentReference document2 = DocumentReference.builder().build();
@@ -782,6 +783,7 @@ class MigrateCFVServiceTest {
             DocumentReference document7 = DocumentReference.builder().build();
             DocumentReference document8 = DocumentReference.builder().build();
             DocumentReference document9 = DocumentReference.builder().build();
+            DocumentReference document10 = DocumentReference.builder().build();
 
             SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
                 .type(APPLICANT_STATEMENT)
@@ -824,13 +826,18 @@ class MigrateCFVServiceTest {
                 .expertReportType(TOXICOLOGY_REPORT)
                 .document(document9)
                 .build();
+            SupportingEvidenceBundle seb10 = SupportingEvidenceBundle.builder()
+                .type(null)
+                .document(document10)
+                .build();
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, seb1),
                     element(doc2Id, seb2),
                     element(doc7Id, seb7),
-                    element(doc9Id, seb9)))
+                    element(doc9Id, seb9),
+                    element(doc10Id, seb10)))
                 .furtherEvidenceDocuments(List.of(element(doc3Id, seb3),
                     element(doc4Id, seb4),
                     element(doc6Id, seb6),
@@ -842,6 +849,7 @@ class MigrateCFVServiceTest {
             updatedFields.putAll(underTest.migrateGuardianReports(caseData));
             updatedFields.putAll(underTest.migrateExpertReports(caseData));
             updatedFields.putAll(underTest.migrateNoticeOfActingOrIssue(caseData));
+            updatedFields.putAll(underTest.migrateArchivedDocuments(caseData));
 
             assertThat(updatedFields).extracting("applicantWitnessStmtList").asList()
                 .contains(element(doc2Id, ManagedDocument.builder().document(document2).build()),
@@ -878,6 +886,13 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("drugAndAlcoholReportListLA").asList()
                 .isEmpty();
             assertThat(updatedFields).extracting("drugAndAlcoholReportListCTSC").asList()
+                .isEmpty();
+
+            assertThat(updatedFields).extracting("archivedDocumentsList").asList()
+                .contains(element(doc10Id, ManagedDocument.builder().document(document10).build()));
+            assertThat(updatedFields).extracting("archivedDocumentsListLA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .isEmpty();
         }
 
@@ -921,6 +936,13 @@ class MigrateCFVServiceTest {
             assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListLA")
                 .isEqualTo(List.of());
             assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListCTSC")
+                .isEqualTo(List.of());
+
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsListCTSC")
                 .isEqualTo(List.of());
         }
 
