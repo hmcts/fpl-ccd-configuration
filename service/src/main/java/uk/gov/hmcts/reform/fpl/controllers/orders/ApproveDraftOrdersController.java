@@ -56,9 +56,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        for (String reviewDecisionField : reviewDecisionFields()) {
-            caseDetails.getData().put(reviewDecisionField, null);
-        }
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
         caseDetails.getData().putAll(approveDraftOrdersService.populateDraftOrdersData(caseData));
 
