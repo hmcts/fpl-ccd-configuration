@@ -880,7 +880,8 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount;
 
-    public void validateMigratedRespondentStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
+    public void validateMigratedRespondentStatement(String migrationId, CaseData caseData,
+                                                    Map<String, Object> changes) {
         int expectedSize = caseData.getRespondentStatements().stream()
             .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
             .mapToInt(Collection::size)
@@ -898,10 +899,10 @@ public class MigrateCFVService {
 
     // SELECT *
     // FROM (SELECT reference,
-    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) as oldCount,
-    //             COALESCE(jsonb_array_length(data -> 'respStmtList'), 0) +
-    //             COALESCE(jsonb_array_length(data -> 'respStmtListLA'), 0) +
-    //             COALESCE(jsonb_array_length(data -> 'respStmtListCTSC'), 0)                               AS newCount
+    //            COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) as oldCount,
+    //            COALESCE(jsonb_array_length(data -> 'respStmtList'), 0) +
+    //            COALESCE(jsonb_array_length(data -> 'respStmtListLA'), 0) +
+    //            COALESCE(jsonb_array_length(data -> 'respStmtListCTSC'), 0)                               AS newCount
     //      FROM case_data cd
     //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'respondentStatements') AS ncElements ON TRUE
     //      where jurisdiction = 'PUBLICLAW'
@@ -998,11 +999,11 @@ public class MigrateCFVService {
 
     // SELECT *
     // FROM (SELECT reference,
-    //             COALESCE(SUM(jsonb_array_length(backupElements -> 'value' -> 'courtBundle')), 0) AS oldCourtBundleCount,
-    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'courtBundle')), 0) +
-    //             COALESCE(SUM(jsonb_array_length(laElements -> 'value' -> 'courtBundle')), 0) +
-    //             COALESCE(SUM(jsonb_array_length(ctscElements -> 'value' -> 'courtBundle')), 0)
-    //                                                                                 AS migratedCourtBundleCount
+    //          COALESCE(SUM(jsonb_array_length(backupElements -> 'value' -> 'courtBundle')), 0) AS oldCourtBundleCount,
+    //          COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'courtBundle')), 0) +
+    //          COALESCE(SUM(jsonb_array_length(laElements -> 'value' -> 'courtBundle')), 0) +
+    //          COALESCE(SUM(jsonb_array_length(ctscElements -> 'value' -> 'courtBundle')), 0)
+    //                                                                              AS migratedCourtBundleCount
     //      FROM case_data cd
     //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListV2') AS ncElements ON TRUE
     //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListLA') AS laElements ON TRUE
