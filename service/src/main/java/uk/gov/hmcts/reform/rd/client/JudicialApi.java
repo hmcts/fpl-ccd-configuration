@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.util.List;
 
+import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
 
@@ -25,6 +26,7 @@ public interface JudicialApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestHeader("page_size") int pageSize,
+        @RequestHeader(value = ACCEPT, required = false) String accept,
         @RequestBody JudicialUserRequest request
     );
 
