@@ -2275,4 +2275,96 @@ class MigrateCFVServiceTest {
                     + "CaseSummary (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
+
+    @Nested
+    class ValidatePositionStatementMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedPositionStatementResp(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().positionStatementRespondentListV2(
+                    List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(PositionStatementRespondent.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedPositionStatementChild(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().positionStatementChildListV2(
+                    List.of(element(PositionStatementChild.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(PositionStatementChild.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultiplePositionStatements() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(
+                        element(PositionStatementChild.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .positionStatementRespondentListV2(List.of(
+                        element(PositionStatementRespondent.builder().document(DocumentReference.builder().build())
+                            .build())
+                    ))
+                    .build()
+                ).build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+                "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())),
+                "posStmtChildList", List.of(element(PositionStatementChild.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(
+                        element(PositionStatementChild.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .build()
+                ).build();
+            
+            assertThatThrownBy(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData,
+                Map.of(
+                    "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())),
+                    "posStmtChildList", List.of(element(PositionStatementChild.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "PositionStatement(Child/Respondent) (%s/%s)", MIGRATION_ID, 1L, 1, 2));
+        }
+    }
 }
