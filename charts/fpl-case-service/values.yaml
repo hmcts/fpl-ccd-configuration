@@ -84,8 +84,10 @@ java:
         - name: app-insights-connection-string
           alias: app-insights-connection-string
         - scheduler-db-password
+        - scheduler-db-password-v15
         - rcj-family-high-court-inbox
         - court-to-court-admin-mapping
+        - update-summary-tab-cron
   applicationPort: 4000
 
 ccd-case-document-am-api:

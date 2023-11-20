@@ -41,7 +41,7 @@ class AllocatedJudgeControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
-        given(jrdApi.findUsers(any(), any(), anyInt(), any())).willReturn(List.of(JudicialUserProfile.builder()
+        given(jrdApi.findUsers(any(), any(), anyInt(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
             .build()));
         CaseData caseData = CaseData.builder()
             .enterManually(YesNo.NO)

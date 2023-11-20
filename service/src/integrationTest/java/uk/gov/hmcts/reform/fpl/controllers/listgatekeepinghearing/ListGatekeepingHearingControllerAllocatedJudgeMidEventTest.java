@@ -45,7 +45,7 @@ class ListGatekeepingHearingControllerAllocatedJudgeMidEventTest extends Abstrac
 
     @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
-        given(jrdApi.findUsers(any(), any(), anyInt(), any())).willReturn(List.of(JudicialUserProfile.builder()
+        given(jrdApi.findUsers(any(), any(), anyInt(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
             .fullName("His Honour Judge John Smith")
             .build()));
         CaseData caseData = CaseData.builder()
