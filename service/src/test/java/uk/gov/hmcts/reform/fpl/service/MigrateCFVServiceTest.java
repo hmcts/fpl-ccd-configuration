@@ -1909,7 +1909,7 @@ class MigrateCFVServiceTest {
     }
 
     @Nested
-    class ValidationFurtherEvidenceDocumentTest {
+    class ValidateFurtherEvidenceDocumentMigrationTest {
 
         @ParameterizedTest
         @ValueSource(strings = {
@@ -1932,7 +1932,8 @@ class MigrateCFVServiceTest {
             "archivedDocumentsListLA",
             "archivedDocumentsListCTSC"
         })
-        public void shouldNotThrowExceptionWhenValidatingSingleFurtherEvidenceDocument(String migratedProperty) {
+        public void shouldNotThrowExceptionWhenValidatingMigratedSingleFurtherEvidenceDocument(
+            String migratedProperty) {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("solicitor@solicitor1.uk")
@@ -1950,7 +1951,7 @@ class MigrateCFVServiceTest {
         }
 
         @Test
-        public void shouldNotThrowExceptionWhenValidatingFurtherEvidenceDocumentsNotUploadedByCTSC() {
+        public void shouldNotThrowExceptionWhenValidatingMigratedFurtherEvidenceDocumentsNotUploadedByCTSC() {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("solicitor@solicitor1.uk")
@@ -1983,7 +1984,7 @@ class MigrateCFVServiceTest {
         }
 
         @Test
-        public void shouldNotThrowExceptionWhenValidatingFurtherEvidenceDocumentsWithoutDocumentType() {
+        public void shouldNotThrowExceptionWhenValidatingMigratedFurtherEvidenceDocumentsWithoutDocumentType() {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("HMCTS")
@@ -2053,7 +2054,7 @@ class MigrateCFVServiceTest {
     }
 
     @Nested
-    class ValidationHearingFurtherEvidenceDocumentTest {
+    class ValidateHearingFurtherEvidenceDocumentMigrationTest {
 
         @ParameterizedTest
         @ValueSource(strings = {
@@ -2076,7 +2077,8 @@ class MigrateCFVServiceTest {
             "archivedDocumentsListLA",
             "archivedDocumentsListCTSC"
         })
-        public void shouldNotThrowExceptionWhenValidatingSingleHearingFurtherEvidenceDocument(String migratedProperty) {
+        public void shouldNotThrowExceptionWhenValidatingMigratedSingleHearingFurtherEvidenceDocument(
+            String migratedProperty) {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("solicitor@solicitor1.uk")
@@ -2096,7 +2098,7 @@ class MigrateCFVServiceTest {
         }
 
         @Test
-        public void shouldNotThrowExceptionWhenValidatingHearingFurtherEvidenceDocumentsNotUploadedByCTSC() {
+        public void shouldNotThrowExceptionWhenValidatingMigratedHearingFurtherEvidenceDocumentsNotUploadedByCTSC() {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("solicitor@solicitor1.uk")
@@ -2130,7 +2132,7 @@ class MigrateCFVServiceTest {
         }
 
         @Test
-        public void shouldNotThrowExceptionWhenValidatingHearingFurtherEvidenceDocumentsWithoutDocumentType() {
+        public void shouldNotThrowExceptionWhenValidatingMigratedHearingFurtherEvidenceDocumentsWithoutDocumentType() {
             Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
                 .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
                 .uploadedBy("HMCTS")
@@ -2196,6 +2198,81 @@ class MigrateCFVServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
                     + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)", MIGRATION_ID, 1L, 3, 2));
+        }
+    }
+
+    @Nested
+    class ValidateCaseSummaryMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"caseSummaryList", "caseSummaryListLA"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCaseSummary(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(element(CaseSummary.builder()
+                        .document(DocumentReference.builder().build())
+                        .hasConfidentialAddress("YES")
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(CaseSummary.builder()
+                    .hasConfidentialAddress("YES")
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCaseSummaries() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .hasConfidentialAddress("YES")
+                            .build()),
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()))).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData, Map.of(
+                "caseSummaryList", List.of(element(CaseSummary.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "caseSummaryListLA", List.of(element(CaseSummary.builder()
+                    .hasConfidentialAddress("YES")
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .hasConfidentialAddress("YES")
+                            .build()),
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()))).build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData,
+                Map.of("caseSummaryList", List.of(element(CaseSummary.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "CaseSummary (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
 }
