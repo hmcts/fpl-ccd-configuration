@@ -1,10 +1,10 @@
 const defaultPassword = 'Password12';
-const smokePassword = 'Password1234';
+const newPassword = 'Password1234';
 
 module.exports = {
   newSwanseaLocalAuthorityUserOne: {
     email: 'Local-Authority-Swansea-0001@AAT.com',
-    password: process.env.LA_USER_PASSWORD || smokePassword,
+    password: process.env.LA_USER_PASSWORD || newPassword,
     // forename: 'kurt@swansea.gov.uk',
     // surname: '(local-authority)',
   },
@@ -14,11 +14,19 @@ module.exports = {
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
+  newSwanseaLocalAuthorityUserTwo: {
+    email: 'Local-Authority-Swansea-0002@AAT.com',
+    password: process.env.LA_USER_PASSWORD || newPassword
+  },
   swanseaLocalAuthorityUserTwo: {
     email: 'damian@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'damian@swansea.gov.uk',
     surname: '(local-authority)',
+  },
+  newHillingdonLocalAuthorityUserOne: {
+    email: 'Local-Authority-Hillingdon-0001@AAT.com',
+    password: process.env.LA_USER_PASSWORD || newPassword
   },
   hillingdonLocalAuthorityUserOne: {
     email: 'sam@hillingdon.gov.uk',
