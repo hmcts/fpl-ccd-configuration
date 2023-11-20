@@ -42,3 +42,4 @@ spring:
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         app-insights-connection-string: azure.application-insights.appinsights.connection_string
         scheduler-db-password: SCHEDULER_DB_PASSWORD
+        update-summary-tab-cron: UPDATE_SUMMARY_TAB_CRON
