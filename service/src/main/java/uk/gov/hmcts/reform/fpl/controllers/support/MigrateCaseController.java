@@ -55,14 +55,10 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
-        "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
+        "DFPL-AM-Rollback", this::runAmRollback
         "DFPL-1850", this::run1850,
-        "DFPL-1887", this::run1887
+        "DFPL-1887", this::run1887,
+        "DFPL-1905", this::run1905
     );
 
     @PostMapping("/about-to-submit")
@@ -285,4 +281,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
+    private void run1905(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
 }
