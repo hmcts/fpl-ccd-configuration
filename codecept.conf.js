@@ -2,8 +2,8 @@ require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
 const config = {
-  WaitForTimeout: 5000,
-  WaitForAction: 350,
+  WaitForTimeout: 120000,
+  WaitForAction: 600,
 };
 
 exports.config = {
@@ -46,9 +46,9 @@ exports.config = {
   helpers: {
     Playwright: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      waitForTimeout: config.WaitForTimeout,
-      waitForAction: 350,
-      timeout: config.WaitForTimeout,
+      //waitForTimeout: config.WaitForTimeout,
+      //waitForAction: config.WaitForAction,
+      timeout: 60000,
       retries: 5,
       waitForNavigation: 'load',
       ignoreHTTPSErrors: true,

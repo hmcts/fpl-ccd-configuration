@@ -58,6 +58,20 @@ class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHeari
     }
 
     @Test
+    void shouldNotThrowAnExceptionIfUseAllocatedJudgeIsNull() {
+        CaseData caseData = CaseData.builder()
+            .useAllocatedJudge(null)
+            .enterManuallyHearingJudge(YesNo.YES)
+            .hearingJudge(Judge.builder()
+                .judgeEmailAddress("email@example.com")
+                .build())
+            .build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "validate-judge-email");
+
+        assertThat(callbackResponse.getErrors()).isNullOrEmpty();
+    }
+
+    @Test
     void shouldNotReturnAValidationErrorWhenJudgePersonalCodeAdded() {
         given(jrdApi.findUsers(any(), any(), anyInt(), any(), any())).willReturn(List.of(JudicialUserProfile.builder()
                 .fullName("His Honour Judge John Smith")

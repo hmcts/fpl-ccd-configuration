@@ -8,7 +8,7 @@ const supplements = require('../fixtures/supplements.js');
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const api = require('../helpers/api_helper');
-const caseListPage = require("../pages/caseList.page");
+//const caseListPage = require('../pages/caseList.page');
 
 let caseId;
 
