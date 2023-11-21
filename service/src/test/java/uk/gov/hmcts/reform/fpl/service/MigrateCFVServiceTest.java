@@ -2367,4 +2367,79 @@ class MigrateCFVServiceTest {
                     + "PositionStatement(Child/Respondent) (%s/%s)", MIGRATION_ID, 1L, 1, 2));
         }
     }
+
+    @Nested
+    class ValidateRespondentStatementMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"respStmtList", "respStmtListLA", "respStmtListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedRespondentStatement(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleRespondentStatements() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()),
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData, Map.of(
+                "respStmtList", List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "respStmtListLA", List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()),
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData,
+                Map.of(
+                    "respStmtListLA", List.of(element(RespondentStatementV2.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "respondent statements (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
 }
