@@ -78,9 +78,9 @@ public class MigrateCaseController extends CallbackController {
 
     private Map<String, Object> prepareChangesForCFVMigration(String migrationId, CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (java.lang.String) caseDetails.getData()
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
             .get("hasBeenCFVMigrated"), migrationId);
-        Map<java.lang.String, java.lang.Object> changes = new LinkedHashMap<>();
+        Map<String, Object> changes = new LinkedHashMap<>();
         changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
         changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
         changes.putAll(migrateCFVService.migrateCourtBundle(caseData));
