@@ -282,7 +282,7 @@ public class MigrateCFVService {
         } else {
             if (ObjectUtils.isEmpty(hasBeenCFVMigrated) || YesNo.NO.equals(YesNo.fromString(hasBeenCFVMigrated))) {
                 throw new AssertionError(format(
-                    "Migration {id = %s, case reference = %s}, case has already been migrated",
+                    "Migration {id = %s, case reference = %s}, case has not been migrated",
                     migrationId, caseId
                 ));
             }
