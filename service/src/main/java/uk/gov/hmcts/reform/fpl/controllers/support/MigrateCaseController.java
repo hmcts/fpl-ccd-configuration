@@ -61,7 +61,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-CFV", this::runCFV,
         "DFPL-CFV-Rollback", this::runCFVrollback,
-        "DFPL-CFV-dry", this::dryRunCFV
+        "DFPL-CFV-dry", this::dryRunCFV,
+        "DFPL-1905", this::run1905
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -336,7 +337,7 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedPositionStatementId));
     }
 
-    private void run1850(CaseDetails caseDetails) {
+    private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
