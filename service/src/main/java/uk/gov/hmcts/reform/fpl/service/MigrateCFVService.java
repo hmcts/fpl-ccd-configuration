@@ -945,7 +945,7 @@ public class MigrateCFVService {
 
     public void validateMigratedApplicationDocuments(String migrationId, CaseData caseData,
                                                         Map<String, Object> changes) {
-        int expectedSize = caseData.getApplicationDocuments().size();
+        int expectedSize = Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).size();
         int actualSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
                 "documentsFiledOnIssueListCTSC",
                 "carePlanList", "carePlanListLA", "carePlanListCTSC",
@@ -978,6 +978,23 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount;
 
+    @SuppressWarnings("unchecked")
+    private static int sumCourtBundleSizes(Map<String, Object> map, String[] keys) {
+        int total = 0;
+
+        for (String key : keys) {
+            List<Element<HearingCourtBundle>> hearingCourtBundles = (List<Element<HearingCourtBundle>>) map.get(key);
+
+            if (hearingCourtBundles != null) {
+                for (Element<HearingCourtBundle> hearingCourtBundle : hearingCourtBundles) {
+                    total += hearingCourtBundle.getValue().getCourtBundle().size();
+                }
+            }
+        }
+
+        return total;
+    }
+
     public void validateMigratedCourtBundle(String migrationId, CaseData caseData,
                                             Map<String, Object> changes) {
         int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
@@ -985,11 +1002,9 @@ public class MigrateCFVService {
             .getCourtBundleListV2()
             .stream().map(a -> a.getValue().getCourtBundle())
             .mapToInt(Collection::size).sum();
-        int actualSize = List.of("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC")
-            .stream()
-            .map(key -> (Collection) changes.get(key))
-            .filter(collection -> collection != null)
-            .mapToInt(Collection::size).sum();
+
+        String[] keysToSum = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"};
+        int actualSize = sumCourtBundleSizes(changes, keysToSum);
         if (expectedSize != actualSize) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, Unexpected number of migrated court bundles"

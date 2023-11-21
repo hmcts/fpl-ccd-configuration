@@ -1413,7 +1413,7 @@ class MigrateCFVServiceTest {
             UUID hearingId = UUID.randomUUID();
 
             Element<HearingCourtBundle> courtBundleOne = element(hearingId, HearingCourtBundle.builder()
-                    .courtBundle(List.of(buildCourtBundle())).build());
+                .courtBundle(List.of(buildCourtBundle())).build());
 
             Element<HearingCourtBundle> courtBundleTwo = element(hearingId, HearingCourtBundle.builder()
                 .courtBundle(List.of(buildCourtBundle())).build());
@@ -2642,6 +2642,137 @@ class MigrateCFVServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
                     + "application documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
+
+    @Nested
+    class ValidateCourtBundleMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "courtBundleListV2":
+                case "courtBundleListLA":
+                case "courtBundleListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .hearingDocuments(HearingDocuments.builder()
+                            .courtBundleListV2(List.of(
+                                element(HearingCourtBundle.builder()
+                                    .courtBundle(List.of(element(CourtBundle.builder()
+                                        .document(DocumentReference.builder().build())
+                                        .build())))
+                                    .build())
+                            ))
+                            .build())
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCourtBundle(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(CourtBundle.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())))
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCourtBundles(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+                migratedProperty,  List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleHearingCourtBundles(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build()),
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+                migratedProperty,  List.of(
+                    element(HearingCourtBundle.builder().courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    )).build()),
+                    element(HearingCourtBundle.builder().courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    )).build())
+                )
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData,
+                Map.of(
+                    "courtBundleListV2",List.of(element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                        ))
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "court bundles (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
 }
