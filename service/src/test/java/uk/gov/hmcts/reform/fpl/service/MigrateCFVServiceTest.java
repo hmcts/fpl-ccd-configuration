@@ -2531,4 +2531,117 @@ class MigrateCFVServiceTest {
                     + "correspondence documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
+
+    @Nested
+    class ValidateApplicationDocumentMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "documentsFiledOnIssueList":
+                case "documentsFiledOnIssueListLA":
+                case "documentsFiledOnIssueListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(CHECKLIST_DOCUMENT)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "carePlanList":
+                case "carePlanListLA":
+                case "carePlanListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(CARE_PLAN)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "thresholdList":
+                case "thresholdListLA":
+                case "thresholdListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(THRESHOLD)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+            "documentsFiledOnIssueListCTSC",
+            "carePlanList", "carePlanListLA", "carePlanListCTSC",
+            "thresholdList", "thresholdListLA", "thresholdListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedApplicationDocument(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleApplicationDocuments() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(
+                    element(ApplicationDocument.builder()
+                        .documentType(THRESHOLD)
+                        .document(DocumentReference.builder().build())
+                        .build()),
+                    element(ApplicationDocument.builder()
+                        .documentType(SWET)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                ))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData, Map.of(
+                "carePlanList", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "thresholdListLA", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(
+                    element(ApplicationDocument.builder()
+                        .documentType(THRESHOLD)
+                        .document(DocumentReference.builder().build())
+                        .build()),
+                    element(ApplicationDocument.builder()
+                        .documentType(SWET)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "carePlanList", List.of(element(ManagedDocument.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "application documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
 }
