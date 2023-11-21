@@ -817,9 +817,17 @@ public class MigrateCaseService {
                                                                     int endIndex) {
         Long caseId = caseData.getId();
         String thresholdDetails = caseData.getGrounds().getThresholdDetails();
-        String textToRemove = caseData.getGrounds().getThresholdDetails().substring(startIndex, endIndex);
+        String textToRemove;
 
-        if (thresholdDetails.isEmpty() || thresholdDetails.length() == 0) {
+        try {
+            textToRemove = caseData.getGrounds().getThresholdDetails().substring(startIndex, endIndex);
+        } catch (StringIndexOutOfBoundsException ex) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details is shorter than provided index",
+                migrationId, caseId));
+        }
+
+        if (textToRemove.isEmpty()) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, threshold details does not contain provided text",
                 migrationId, caseId));

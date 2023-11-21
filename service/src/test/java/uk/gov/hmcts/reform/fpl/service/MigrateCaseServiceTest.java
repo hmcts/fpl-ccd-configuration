@@ -2022,5 +2022,27 @@ class MigrateCaseServiceTest {
 
             assertThat(updatedGrounds).extracting("thresholdDetails").isEqualTo(expectedThresholdDetails);
         }
+
+        @Test
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit(){
+            var thresholdDetailsStartIndex = 380;
+            var thresholdDetailsEndIndex = 389;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " threshold details is shorter than provided index",
+                    MIGRATION_ID, 1));
+        }
     }
 }
