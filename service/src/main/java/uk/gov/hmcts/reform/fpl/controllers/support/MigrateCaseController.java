@@ -340,5 +340,4 @@ public class MigrateCaseController extends CallbackController {
     private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
-
 }
