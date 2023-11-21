@@ -1945,7 +1945,7 @@ class MigrateCFVServiceTest {
                 .furtherEvidenceDocuments(List.of(doc1))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(ManageDocument.builder().build()))
             )));
         }
@@ -1976,7 +1976,7 @@ class MigrateCFVServiceTest {
                 .furtherEvidenceDocumentsSolicitor(List.of(doc1, doc3))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
                 "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
                 "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
@@ -2010,7 +2010,7 @@ class MigrateCFVServiceTest {
                 .furtherEvidenceDocumentsSolicitor(List.of(doc3))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
                 "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
                 "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
@@ -2044,7 +2044,7 @@ class MigrateCFVServiceTest {
                 .furtherEvidenceDocumentsSolicitor(List.of(doc3))
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
                     "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
                 .isInstanceOf(AssertionError.class)
@@ -2092,7 +2092,7 @@ class MigrateCFVServiceTest {
                     .build())))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(ManageDocument.builder().build()))
             )));
         }
@@ -2124,7 +2124,7 @@ class MigrateCFVServiceTest {
                     .build())))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
                 "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
                 "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
@@ -2158,7 +2158,7 @@ class MigrateCFVServiceTest {
                     .build())))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
                 "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
                 "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
@@ -2192,7 +2192,7 @@ class MigrateCFVServiceTest {
                     .build())))
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateFurtherEvidenceDocument(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
                     "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
                 .isInstanceOf(AssertionError.class)
@@ -2217,7 +2217,7 @@ class MigrateCFVServiceTest {
                 ).build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(CaseSummary.builder()
                     .hasConfidentialAddress("YES")
                     .document(DocumentReference.builder().build())
@@ -2240,7 +2240,7 @@ class MigrateCFVServiceTest {
                             .build()))).build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "caseSummaryList", List.of(element(CaseSummary.builder()
                     .document(DocumentReference.builder().build())
                     .build())),
@@ -2266,7 +2266,7 @@ class MigrateCFVServiceTest {
                             .build()))).build())
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateMigratedCaseSummary(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of("caseSummaryList", List.of(element(CaseSummary.builder()
                         .document(DocumentReference.builder().build())
                         .build())))))
@@ -2291,7 +2291,7 @@ class MigrateCFVServiceTest {
                 ).build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(PositionStatementRespondent.builder()
                     .document(DocumentReference.builder().build())
                     .build()))
@@ -2310,7 +2310,7 @@ class MigrateCFVServiceTest {
                 ).build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(PositionStatementChild.builder()
                     .document(DocumentReference.builder().build())
                     .build()))
@@ -2332,7 +2332,7 @@ class MigrateCFVServiceTest {
                     .build()
                 ).build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
                         .document(DocumentReference.builder().build())
                         .build())),
@@ -2353,7 +2353,7 @@ class MigrateCFVServiceTest {
                     .build()
                 ).build();
             
-            assertThatThrownBy(() -> underTest.validateMigratedPositionStatement(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
                         .document(DocumentReference.builder().build())
@@ -2384,7 +2384,7 @@ class MigrateCFVServiceTest {
                     )).build())))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(RespondentStatementV2.builder()
                     .document(DocumentReference.builder().build())
                     .build()))
@@ -2406,7 +2406,7 @@ class MigrateCFVServiceTest {
                     )).build())))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "respStmtList", List.of(element(RespondentStatementV2.builder()
                     .document(DocumentReference.builder().build())
                     .build())),
@@ -2431,7 +2431,7 @@ class MigrateCFVServiceTest {
                     )).build())))
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateMigratedRespondentStatement(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "respStmtListLA", List.of(element(RespondentStatementV2.builder()
                         .document(DocumentReference.builder().build())
@@ -2483,7 +2483,7 @@ class MigrateCFVServiceTest {
         @ValueSource(strings = {"correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC"})
         public void shouldNotThrowExceptionWhenValidatingSingleMigratedCorrespondenceDocument(String migratedProperty) {
             CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
-            assertDoesNotThrow(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(ManagedDocument.builder()
                     .document(DocumentReference.builder().build())
                     .build()))
@@ -2500,7 +2500,7 @@ class MigrateCFVServiceTest {
                 ))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "correspondenceDocList", List.of(element(ManagedDocument.builder()
                     .document(DocumentReference.builder().build())
                     .build())),
@@ -2520,7 +2520,7 @@ class MigrateCFVServiceTest {
                 ))
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "correspondenceDocListCTSC", List.of(element(ManagedDocument.builder()
                         .document(DocumentReference.builder().build())
@@ -2584,7 +2584,7 @@ class MigrateCFVServiceTest {
             "thresholdList", "thresholdListLA", "thresholdListCTSC"})
         public void shouldNotThrowExceptionWhenValidatingSingleMigratedApplicationDocument(String migratedProperty) {
             CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
-            assertDoesNotThrow(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(ManagedDocument.builder()
                     .document(DocumentReference.builder().build())
                     .build()))
@@ -2607,7 +2607,7 @@ class MigrateCFVServiceTest {
                 ))
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 "carePlanList", List.of(element(ManagedDocument.builder()
                     .document(DocumentReference.builder().build())
                     .build())),
@@ -2633,7 +2633,7 @@ class MigrateCFVServiceTest {
                 ))
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateMigratedApplicationDocuments(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "carePlanList", List.of(element(ManagedDocument.builder()
                         .document(DocumentReference.builder().build())
@@ -2677,7 +2677,7 @@ class MigrateCFVServiceTest {
         @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
         public void shouldNotThrowExceptionWhenValidatingSingleMigratedCourtBundle(String migratedProperty) {
             CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
-            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty, List.of(element(HearingCourtBundle.builder()
                     .courtBundle(List.of(element(CourtBundle.builder()
                         .document(DocumentReference.builder().build())
@@ -2703,7 +2703,7 @@ class MigrateCFVServiceTest {
                     .build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty,  List.of(element(HearingCourtBundle.builder()
                     .courtBundle(List.of(
                         element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
@@ -2734,7 +2734,7 @@ class MigrateCFVServiceTest {
                     .build())
                 .build();
 
-            assertDoesNotThrow(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData, Map.of(
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
                 migratedProperty,  List.of(
                     element(HearingCourtBundle.builder().courtBundle(List.of(
                         element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
@@ -2762,7 +2762,7 @@ class MigrateCFVServiceTest {
                     .build())
                 .build();
 
-            assertThatThrownBy(() -> underTest.validateMigratedCourtBundle(MIGRATION_ID, caseData,
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "courtBundleListV2",List.of(element(HearingCourtBundle.builder()
                         .courtBundle(List.of(

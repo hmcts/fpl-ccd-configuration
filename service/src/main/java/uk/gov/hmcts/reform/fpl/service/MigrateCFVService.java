@@ -740,7 +740,8 @@ public class MigrateCFVService {
             .stream().mapToInt(Collection::size).sum();
     }
 
-    public void validateFurtherEvidenceDocument(String migrationId, CaseData caseData, Map<String, Object> changes) {
+    public void validateMigratedFurtherEvidenceDocument(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
         int expectedSize = calculateExpectedNumberOfHearingFurtherEvidenceDocuments(caseData)
             + calculateExpectedNumberOfFurtherEvidenceDocuments(caseData);
         int actualSize = List.of(
@@ -1033,7 +1034,7 @@ public class MigrateCFVService {
     // WHERE oldCourtBundleCount <> migratedCourtBundleCount
 
     public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
-        validateFurtherEvidenceDocument(migrationId, caseData, changes);
+        validateMigratedFurtherEvidenceDocument(migrationId, caseData, changes);
         validateMigratedCaseSummary(migrationId, caseData, changes);
         validateMigratedPositionStatement(migrationId, caseData, changes);
         validateMigratedRespondentStatement(migrationId, caseData, changes);
