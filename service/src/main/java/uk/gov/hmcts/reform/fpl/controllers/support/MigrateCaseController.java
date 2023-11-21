@@ -230,8 +230,9 @@ public class MigrateCaseController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData,
-            orgId));
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+            migrationId, "f2ee2c01-7cab-4ff0-aa28-fd980a7da15a"));
     }
 
     private void run1810(CaseDetails caseDetails) {

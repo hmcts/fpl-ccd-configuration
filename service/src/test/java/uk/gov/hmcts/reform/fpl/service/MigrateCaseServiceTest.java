@@ -18,12 +18,14 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -160,6 +162,50 @@ class MigrateCaseServiceTest {
                 .organisation(newOrganisation)
                 .orgPolicyCaseAssignedRole(caseRole)
                 .build());
+        }
+
+        @Test
+        void removeApplicantEmailAndStopNotifyingTheirColleagues() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                    .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+            Element<LocalAuthority> localAuthority2 = element(LocalAuthority.builder()
+                .email("localAuthority2@email.com")
+                .colleagues(List.of(colleague3))
+                .build());
+
+            Element<LocalAuthority> expectedlocalAuthority1 = element(localAuthority1.getId(),
+                localAuthority1.getValue().toBuilder()
+                    .email(null)
+                    .colleagues(List.of(
+                        element(colleague1.getId(),
+                            colleague1.getValue().toBuilder().notificationRecipient(YesNo.NO.getValue()).build()),
+                        element(colleague2.getId(), colleague2.getValue())))
+                    .build());
+
+            Element<LocalAuthority> expectedlocalAuthority2 = element(localAuthority2.getId(),
+                localAuthority2.getValue().toBuilder()
+                    .colleagues(List.of(element(colleague3.getId(), colleague3.getValue().toBuilder().build())))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2))
+                .build();
+
+            Map<String, Object> result = underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                MIGRATION_ID, localAuthority1.getId().toString());
+
+            assertThat(result.get("localAuthorities"))
+                .isEqualTo(List.of(expectedlocalAuthority1, expectedlocalAuthority2));
         }
     }
 

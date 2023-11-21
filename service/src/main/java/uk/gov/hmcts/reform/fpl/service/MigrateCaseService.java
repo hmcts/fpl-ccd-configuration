@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -828,5 +829,25 @@ public class MigrateCaseService {
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+    }
+
+    public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
+                                                                                    String migrationId,
+                                                                                    String applicantUuid) {
+        UUID targetApplicantUuid = UUID.fromString(applicantUuid);
+
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        LocalAuthority targetApplicant = ElementUtils.findElement(targetApplicantUuid, localAuthorities)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
+                migrationId, caseData.getId()))
+            ).getValue();
+
+        targetApplicant.setEmail(null);
+        targetApplicant.getColleagues().stream().map(Element::getValue).forEach(colleague ->
+            colleague.setNotificationRecipient(YesNo.NO.getValue())
+        );
+
+        return Map.of("localAuthorities", localAuthorities);
     }
 }
