@@ -56,12 +56,12 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
         "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-1850", this::run1850,
+        "DFPL-1899", this::run1899
     );
 
     @PostMapping("/about-to-submit")
@@ -239,10 +239,6 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
     }
 
-    private void run1813(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
     private void run1837(CaseDetails caseDetails) {
         var migrationId = "DFPL-1837";
         var possibleCaseIds = List.of(1649154482198017L);
@@ -270,4 +266,15 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
+    private void run1899(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1899";
+        var possibleCaseIds = List.of(1698314232873794L);
+        var thresholdDetailsStartIndex = 348;
+        var thresholdDetailsEndIndex = 452;
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(caseData,
+            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
+    }
 }

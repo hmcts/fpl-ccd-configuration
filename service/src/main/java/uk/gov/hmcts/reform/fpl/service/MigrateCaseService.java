@@ -810,4 +810,23 @@ public class MigrateCaseService {
         }
         return Map.of("localAuthorities", localAuthoritiesList);
     }
+
+    public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
+                                                                    String migrationId,
+                                                                    int startIndex,
+                                                                    int endIndex) {
+        Long caseId = caseData.getId();
+        String thresholdDetails = caseData.getGrounds().getThresholdDetails();
+        String textToRemove = caseData.getGrounds().getThresholdDetails().substring(startIndex, endIndex);
+
+        if (thresholdDetails.isEmpty() || thresholdDetails.length() == 0) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details does not contain provided text",
+                migrationId, caseId));
+        }
+
+        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+
+        return Map.of("thresholdDetails", thresholdDetails);
+    }
 }
