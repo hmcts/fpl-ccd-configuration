@@ -2442,4 +2442,93 @@ class MigrateCFVServiceTest {
                     + "respondent statements (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
+
+    @Nested
+    class ValidateCorrespondenceDocumentMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "correspondenceDocList":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocumentsSolicitor(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "correspondenceDocListLA":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocumentsLA(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "correspondenceDocListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocuments(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCorrespondenceDocument(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCorrespondenceDocuments() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build()),
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData, Map.of(
+                "correspondenceDocList", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "correspondenceDocListLA", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build()),
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedCorrespondenceDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "correspondenceDocListCTSC", List.of(element(ManagedDocument.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "correspondence documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
 }

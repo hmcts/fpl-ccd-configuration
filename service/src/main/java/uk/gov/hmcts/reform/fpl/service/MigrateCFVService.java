@@ -913,9 +913,9 @@ public class MigrateCFVService {
 
     public void validateMigratedCorrespondenceDocuments(String migrationId, CaseData caseData,
                                                         Map<String, Object> changes) {
-        int expectedSize = caseData.getCorrespondenceDocuments().size()
-            + caseData.getCorrespondenceDocumentsLA().size()
-            + caseData.getCorrespondenceDocumentsSolicitor().size();
+        int expectedSize = Optional.ofNullable(caseData.getCorrespondenceDocuments()).orElse(List.of()).size()
+            + Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()).orElse(List.of()).size()
+            + Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()).orElse(List.of()).size();
         int actualSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
             .stream()
             .map(key -> (Collection) changes.get(key))
