@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -1988,6 +1989,88 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
                     MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveRespondentStatementSupportingEvidenceDocument {
+        private final Element<SupportingEvidenceBundle> supportingEvidence1 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> supportingEvidence2 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> supportingEvidenceToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+
+        @Test
+        void shouldRemoveRespondentStatementEvidenceDocument() {
+            final UUID statementUUID = UUID.randomUUID();
+
+            final Element<RespondentStatement> respondentStatement =
+                element(statementUUID, RespondentStatement.builder()
+                    .supportingEvidenceBundle(
+                        List.of(supportingEvidence1, supportingEvidence2, supportingEvidenceToBeRemoved))
+                    .build());
+
+            final Element<RespondentStatement> expectedRespondentStatement =
+                element(statementUUID, RespondentStatement.builder()
+                    .supportingEvidenceBundle(
+                        List.of(supportingEvidence1, supportingEvidence2))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatement))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeRespondentStatementDocument(caseData, MIGRATION_ID,
+                respondentStatement.getId(), supportingEvidenceToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("respondentStatements").isEqualTo(List.of(expectedRespondentStatement));
+        }
+
+        @Test
+        void shouldThrowExceptionIfRespondentStatementDoesNotExist() {
+            final UUID expectedId = UUID.randomUUID();
+            final UUID actualId = UUID.randomUUID();
+            final Element<RespondentStatement> respondentStatement =
+                element(actualId, RespondentStatement.builder()
+                    .supportingEvidenceBundle(
+                        List.of(supportingEvidence1, supportingEvidence2, supportingEvidenceToBeRemoved))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatement))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentStatementDocument(caseData, MIGRATION_ID,
+                expectedId, supportingEvidenceToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, respondent statement not found",
+                    MIGRATION_ID, 1, caseData.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfSupportingEvidenceDoesNotExist() {
+            final UUID actualId = UUID.randomUUID();
+            final UUID statementUUID = UUID.randomUUID();
+            final Element<RespondentStatement> respondentStatement =
+                element(statementUUID, RespondentStatement.builder()
+                    .supportingEvidenceBundle(
+                        List.of(supportingEvidence1, supportingEvidence2, supportingEvidenceToBeRemoved))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatement))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentStatementDocument(caseData, MIGRATION_ID,
+                statementUUID, actualId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "supporting evidence bundle not found in respondent statement",
+                    MIGRATION_ID, 1, caseData.getId()));
         }
     }
 }

@@ -61,7 +61,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
         "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-1904", this::run1904
     );
 
     @PostMapping("/about-to-submit")
@@ -266,8 +266,19 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedPositionStatementId));
     }
 
-    private void run1850(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    private void run1904(CaseDetails caseDetails) {
+        var possibleDocumentId = UUID.fromString("8b8ab082-dc6d-470d-86d2-3698a31383fe");
+        var possibleStatementId = UUID.fromString("0790139e-8c94-48f0-92c6-a6a7329b9987");
+        var migrationId = "DFPL-1904";
+        var possibleCaseId = 1694076115048042L;
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.doCaseIdCheck(caseData.getId(), possibleCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeRespondentStatementDocument(caseData,
+            migrationId, possibleStatementId, possibleDocumentId));
+
+
+
     }
 
 }

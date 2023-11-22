@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.ScannedDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -246,7 +249,7 @@ public class MigrateCaseService {
     }
 
     public Map<String, Object> removeHearingBooking(CaseData caseData, final String migrationId,
-                                                     final UUID hearingIdToBeRemoved) {
+                                                    final UUID hearingIdToBeRemoved) {
         final Long caseId = caseData.getId();
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
@@ -279,7 +282,7 @@ public class MigrateCaseService {
                 );
             } else {
                 Map<String, Object> ret = new HashMap<>(Map.of(
-                        "hearingDetails", hearingDetails
+                    "hearingDetails", hearingDetails
                 ));
                 ret.put("selectedHearingId", null);
                 return ret;
@@ -335,14 +338,14 @@ public class MigrateCaseService {
             .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s},"
-                + " GateKeeping order - Urgent directions order document with Id %s not found",
+                    + " GateKeeping order - Urgent directions order document with Id %s not found",
                 migrationId, caseData.getId(), documentId));
         }
     }
 
     public Map<String, Object> removeApplicationDocument(CaseData caseData,
-                                                                 String migrationId,
-                                                                 UUID expectedApplicationDocumentId) {
+                                                         String migrationId,
+                                                         UUID expectedApplicationDocumentId) {
         Long caseId = caseData.getId();
         List<Element<ApplicationDocument>> applicationDocuments =
             caseData.getApplicationDocuments().stream()
@@ -446,7 +449,7 @@ public class MigrateCaseService {
         List<Element<Placement>> nonConfidentialNoticesPlacementsToKeep = caseData.getPlacementEventData()
             .getPlacementsNonConfidential(true);
 
-        Map<String, Object> ret =  new HashMap<String, Object>();
+        Map<String, Object> ret = new HashMap<String, Object>();
         ret.put(PLACEMENT, placementsToKeep.isEmpty() ? null : placementsToKeep);
         ret.put(PLACEMENT_NON_CONFIDENTIAL, nonConfidentialPlacementsToKeep.isEmpty() ? null :
             nonConfidentialPlacementsToKeep);
@@ -498,12 +501,12 @@ public class MigrateCaseService {
 
     public Map<String, Object> removeJudicialMessage(CaseData caseData, String migrationId, String messageId) {
         return Map.of("judicialMessages",
-                removeJudicialMessageFormList(caseData.getJudicialMessages(), messageId, migrationId,
-                    caseData.getId()));
+            removeJudicialMessageFormList(caseData.getJudicialMessages(), messageId, migrationId,
+                caseData.getId()));
     }
 
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
-                                                              String messageId, String migrationId, Long caseId) {
+                                                                         String messageId, String migrationId, Long caseId) {
         if (messages == null) {
             throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
                 migrationId, caseId));
@@ -548,7 +551,7 @@ public class MigrateCaseService {
     }
 
     public Map<String, Object> removeNoticeOfProceedingsBundle(CaseData caseData, String noticeOfProceedingsBundleId,
-                                                      String migrationId) {
+                                                               String migrationId) {
         Long caseId = caseData.getId();
         List<Element<DocumentBundle>> noticeOfProceedingsBundle = caseData.getNoticeOfProceedingsBundle();
 
@@ -741,7 +744,7 @@ public class MigrateCaseService {
         }
 
         return Map.of("correspondenceDocuments", newCorrespondenceDocuments,
-                    "correspondenceDocumentsNC", newCorrespondenceDocumentsNC);
+            "correspondenceDocumentsNC", newCorrespondenceDocumentsNC);
     }
 
     public Map<String, Object> addRelatingLA(String migrationId, Long caseId) {
@@ -809,5 +812,41 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("localAuthorities", localAuthoritiesList);
+    }
+
+    public Map<String, Object> removeRespondentStatementDocument(CaseData caseData,
+                                                                 String migrationId,
+                                                                 UUID expectedStatementId,
+                                                                 UUID expectedDocumentId) {
+
+        Element<RespondentStatement> elementToBeUpdated =
+            caseData.getRespondentStatements().stream()
+                .filter(el -> expectedStatementId.equals(el.getId()))
+                .findFirst().orElseThrow(() -> new AssertionError(format(
+                    "Migration {id = %s, case reference = %s}, respondent statement not found",
+                    migrationId, caseData.getId())));
+
+        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle =
+            elementToBeUpdated.getValue().getSupportingEvidenceBundle()
+                .stream().filter(el -> !expectedDocumentId.equals(el.getId())).toList();
+
+        if (newSupportingEvidenceBundle.size() != elementToBeUpdated.getValue().getSupportingEvidenceBundle()
+            .size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, "
+                + "supporting evidence bundle not found in respondent statement",
+                migrationId, caseData.getId()));
+        }
+
+        elementToBeUpdated.getValue().setSupportingEvidenceBundle(newSupportingEvidenceBundle);
+
+        List<Element<RespondentStatement>> newRespondentStatements =
+            caseData.getRespondentStatements().stream()
+                .filter(el -> !expectedStatementId.equals(el.getId()))
+                .collect(toList());
+
+        newRespondentStatements.add(elementToBeUpdated);
+
+        return Map.of("respondentStatements", newRespondentStatements);
     }
 }
