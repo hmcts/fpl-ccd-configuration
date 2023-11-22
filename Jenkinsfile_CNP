@@ -17,7 +17,6 @@ def serviceSecrets = [
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD')
   ]
 ]
 
