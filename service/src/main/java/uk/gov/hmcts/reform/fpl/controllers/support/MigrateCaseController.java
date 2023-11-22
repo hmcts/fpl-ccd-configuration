@@ -277,9 +277,6 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheck(caseData.getId(), possibleCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeRespondentStatementDocument(caseData,
             migrationId, possibleStatementId, possibleDocumentId));
-
-
-
     }
 
     private void run1905(CaseDetails caseDetails) {
