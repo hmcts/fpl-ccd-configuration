@@ -38,7 +38,7 @@ class ManageLegalCounselControllerTest extends AbstractCallbackTest {
     private LegalCounsellor legalCounsellor;
 
     ManageLegalCounselControllerTest() {
-        super("manage-legal-counsel");
+        super("manage-counsel");
     }
 
     @BeforeEach
