@@ -3,7 +3,7 @@ const e2ePw = process.env.E2E_TEST_PASSWORD;
 
 module.exports = {
   newSwanseaLocalAuthorityUserOne: {
-    email: 'Local-Authority-Swansea-0001@AAT.com',
+    email: 'local-authority-swansea-0001@maildrop.cc',
     password: process.env.LA_USER_PASSWORD || e2ePw,
     // forename: 'kurt@swansea.gov.uk',
     // surname: '(local-authority)',

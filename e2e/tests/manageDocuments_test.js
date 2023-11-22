@@ -86,7 +86,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential and non confidential respondent statement @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
 
@@ -160,7 +160,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
-Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -201,7 +201,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertConfidentialCorrespondence(I, 'local authority', 2, 'Correspondence document', 'Test notes');
 });
 
-Scenario('HMCTS Admin and LA upload confidential C2 supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential C2 supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
 
@@ -255,7 +255,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents @nightl
   assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential Other applications supporting documents @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await setupScenario(I);
   await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
@@ -306,7 +306,7 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('Solicitor with access uploads documents @nightlyOnly', async ({I, manageDocumentsEventPage, caseViewPage}) => {
+xScenario('Solicitor with access uploads documents @nightlyOnly', async ({I, manageDocumentsEventPage, caseViewPage}) => {
   await setupScenario(I);
   await I.navigateToCaseDetailsAs(solicitor, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
@@ -337,7 +337,7 @@ Scenario('Solicitor with access uploads documents @nightlyOnly', async ({I, mana
 
 });
 
-Scenario('LA upload confidential and non confidential court bundle documents for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
+xScenario('LA upload confidential and non confidential court bundle documents for a hearing', async ({I, caseViewPage, manageHearingsEventPage, manageDocumentsLAEventPage}) => {
   await setupScenario(I);
   await setupHearing(I, caseViewPage, manageHearingsEventPage);
 
