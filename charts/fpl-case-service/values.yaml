@@ -39,8 +39,8 @@ java:
     DOCMOSIS_TORNADO_URL: https://docmosis.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
-    SCHEDULER_DB_HOST: fpl-case-service-{{ .Values.global.environment }}.postgres.database.azure.com
+    SCHEDULER_DB_USER: fpl_scheduler_user
+    SCHEDULER_DB_HOST: fpl-case-service-postgresql-v15-flexible-server-{{ .Values.global.environment }}.postgres.database.azure.com
     SCHEDULER_DB_PORT: 5432
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
     CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
