@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEve
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Slf4j
 @Component
@@ -24,7 +25,7 @@ public class HandleHearingModificationRolesEventHandler {
         // failure
 
         try {
-            event.getCaseData().getCancelledHearingDetails()
+            nullSafeList(event.getCaseData().getCancelledHearingDetails())
                 .forEach(hearing -> {
                     if (findElement(hearing.getId(), event.getCaseDataBefore().getCancelledHearingDetails())
                         .isEmpty()) {

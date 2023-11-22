@@ -62,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1837", this::run1837,
         "DFPL-1883", this::run1883,
         "DFPL-1850", this::run1850,
-        "DFPL-1855", this::run1855
+        "DFPL-1855", this::run1855,
+        "DFPL-1905", this::run1905
     );
 
     @PostMapping("/about-to-submit")
@@ -276,4 +277,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
     }
 
+    private void run1905(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
 }
