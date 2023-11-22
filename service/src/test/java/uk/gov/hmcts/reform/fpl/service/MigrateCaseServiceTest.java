@@ -2025,7 +2025,8 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedFields = underTest.removeRespondentStatementDocument(caseData, MIGRATION_ID,
                 respondentStatement.getId(), supportingEvidenceToBeRemoved.getId());
 
-            assertThat(updatedFields).extracting("respondentStatements").isEqualTo(List.of(expectedRespondentStatement));
+            assertThat(updatedFields).extracting("respondentStatements")
+                .isEqualTo(List.of(expectedRespondentStatement));
         }
 
         @Test
