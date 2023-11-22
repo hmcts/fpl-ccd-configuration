@@ -34,7 +34,7 @@ def integrationTestSecrets = [
 ]
 
 def e2eTestSecrets = [
-  'fpl-${env}': [
+  'fpl-aat': [
     secret('e2e-test-password', 'E2E_TEST_PASSWORD')
   ]
 ]
