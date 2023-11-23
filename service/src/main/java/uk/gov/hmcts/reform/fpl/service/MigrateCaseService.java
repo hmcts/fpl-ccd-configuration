@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -60,6 +63,7 @@ public class MigrateCaseService {
     private static final String CORRECT_COURT_NAME = "Family Court Sitting at West London";
     private static final String ORDER_TYPE = "orderType";
     public final MigrateRelatingLAService migrateRelatingLAService;
+    public final OrganisationService organisationService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -794,7 +798,7 @@ public class MigrateCaseService {
         caseDetails.getData().remove("changeOrganisationRequestField");
     }
 
-    public Map<String, Object> removeElementFromLocalAuthorities(CaseData caseData,
+    public Map<String, List<Element<LocalAuthority>>> removeElementFromLocalAuthorities(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedLocalAuthorityId) {
         Long caseId = caseData.getId();
@@ -848,4 +852,39 @@ public class MigrateCaseService {
             .build());
     }
 
+    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
+        String orgName = organisationService.findOrganisation(orgId)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .orElseThrow();
+
+        Organisation newOrganisation = Organisation.builder()
+            .organisationID(orgId)
+            .organisationName(orgName)
+            .build();
+
+        var applicantCaseRole = caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole();
+
+        return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
+            .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+    }
+
+    public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,
+                                                                                    String migrationId,
+                                                                                    String applicantUuid) {
+        UUID targetApplicantUuid = UUID.fromString(applicantUuid);
+
+        List<Element<LocalAuthority>> localAuthorities = caseData.getLocalAuthorities();
+        LocalAuthority targetApplicant = ElementUtils.findElement(targetApplicantUuid, localAuthorities)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
+                migrationId, caseData.getId()))
+            ).getValue();
+
+        targetApplicant.setEmail(null);
+        targetApplicant.getColleagues().stream().map(Element::getValue).forEach(colleague ->
+            colleague.setNotificationRecipient(YesNo.NO.getValue())
+        );
+
+        return Map.of("localAuthorities", localAuthorities);
+    }
 }
