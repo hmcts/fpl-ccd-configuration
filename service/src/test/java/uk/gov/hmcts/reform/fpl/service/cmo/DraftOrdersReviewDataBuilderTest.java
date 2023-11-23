@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -67,7 +70,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrdersTitlesInBundle","CMO",
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
-            "cmoDraftOrderDocument", DOCUMENT_REFERENCE
+            "cmoDraftOrderDocument", DOCUMENT_REFERENCE,
+            "reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -86,7 +90,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrdersTitlesInBundle","CMO for Hearing name",
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
-            "cmoDraftOrderDocument", DOCUMENT_REFERENCE
+            "cmoDraftOrderDocument", DOCUMENT_REFERENCE,
+            "reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -104,7 +109,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftCMOExists", "N",
             "draftBlankOrdersCount", "1",
             "draftOrder1Document", DOCUMENT_REFERENCE,
-            "draftOrder1Title", BLANK_ORDER_TITLE_1
+            "draftOrder1Title", BLANK_ORDER_TITLE_1,
+            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -124,7 +130,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftCMOExists", "N",
             "draftBlankOrdersCount", "1",
             "draftOrder1Document", DOCUMENT_REFERENCE,
-            "draftOrder1Title", BLANK_ORDER_TITLE_1
+            "draftOrder1Title", BLANK_ORDER_TITLE_1,
+            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -145,7 +152,9 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder1Document", DOCUMENT_REFERENCE,
             "draftOrder1Title", BLANK_ORDER_TITLE_1,
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
-            "draftOrder2Title", BLANK_ORDER_TITLE_2
+            "draftOrder2Title", BLANK_ORDER_TITLE_2,
+            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build(),
+            "reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -160,7 +169,8 @@ class DraftOrdersReviewDataBuilderTest {
             .orders(orders)
             .build());
 
-        assertThat(actual).isEqualTo(Map.of(
+        Map<String, Object> expected = new HashMap<>();
+        expected.putAll(Map.of(
             "draftOrdersTitlesInBundle","CMO\nC21 Order\nC21 Order",
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
@@ -171,6 +181,11 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
             "draftOrder2Title", BLANK_ORDER_TITLE_2
         ));
+        expected.put("reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -186,7 +201,8 @@ class DraftOrdersReviewDataBuilderTest {
             .orders(orders)
             .build());
 
-        assertThat(actual).isEqualTo(Map.of(
+        Map<String, Object> expected = new HashMap<>();
+        expected.putAll(Map.of(
             "draftOrdersTitlesInBundle","CMO for Hearing name\nC21 Order - Hearing name\nC21 Order - Hearing name",
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
@@ -197,6 +213,11 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
             "draftOrder2Title", BLANK_ORDER_TITLE_2
         ));
+        expected.put("reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+
+        assertThat(actual).isEqualTo(expected);
     }
 
     private Element<HearingOrder> anOrder(HearingOrderType c21, CMOStatus sendToJudge, String blankOrderTitle2,
