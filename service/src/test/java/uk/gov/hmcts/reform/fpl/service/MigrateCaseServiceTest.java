@@ -207,6 +207,31 @@ class MigrateCaseServiceTest {
             assertThat(result.get("localAuthorities"))
                 .isEqualTo(List.of(expectedlocalAuthority1, expectedlocalAuthority2));
         }
+
+        @Test
+        void throwExceptionIfApplicantNotFound() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1))
+                .build();
+
+            assertThrows(AssertionError.class, () -> {
+                    underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                        MIGRATION_ID, UUID.randomUUID().toString());
+            });
+        }
     }
 
     @Nested
