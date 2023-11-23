@@ -29,12 +29,7 @@ AppPipelineConfig pipelineConf;
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
-  ]
-]
-
-def e2eTestSecrets = [
-  'fpl-aat': [
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
     secret('e2e-test-password', 'E2E_TEST_PASSWORD')
   ]
 ]
@@ -57,7 +52,6 @@ def setupSecretsForIntegrationTests(pipelineConf) {
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
-      env.E2E_TEST_PASSWORD = "${E2E_TEST_PASSWORD}"
     }
   }
 }
@@ -83,7 +77,7 @@ withNightlyPipeline(type, product, component) {
   env.SECURITY_RULES = params.SECURITY_RULES
   env.ORG_ID = params.ORG_ID
 
-  loadVaultSecrets(integrationTestSecrets + e2eTestSecrets)
+  loadVaultSecrets(integrationTestSecrets)
 
   //enableMutationTest()
   enableFullFunctionalTest(240)
