@@ -19,7 +19,7 @@ import java.util.List;
 
 @Api
 @RestController
-@RequestMapping("/callback/manage-counsel")
+@RequestMapping("/callback/manage-legal-counsel")
 @RequiredArgsConstructor
 public class ManageLegalCounselController extends CallbackController {
 

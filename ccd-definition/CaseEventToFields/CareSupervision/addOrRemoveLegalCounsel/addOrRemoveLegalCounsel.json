@@ -18,7 +18,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "addOrRemoveLegalCounselDetails",
     "PageDisplayOrder": 2,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-counsel/mid-event",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-legal-counsel/mid-event",
     "ShowSummaryChangeOption": "Y"
   }
 ]

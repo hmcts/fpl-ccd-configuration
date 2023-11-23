@@ -58,7 +58,7 @@ class ManageLegalCounselControllerSubmittedTest extends AbstractCallbackTest {
     private ArgumentCaptor<Map<String, Object>> emailVariablesCaptor;
 
     ManageLegalCounselControllerSubmittedTest() {
-        super("manage-counsel");
+        super("manage-legal-counsel");
     }
 
     @BeforeEach
