@@ -1119,7 +1119,7 @@ class ManageHearingsServiceTest {
         @Test
         void shouldUpdateExistingHearing() {
             Element<HearingBooking> hearing1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
-            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+            Element<HearingBooking> hearing2 = element(hearing(time.now().plusDays(5), time.now().plusDays(6)));
             Element<HearingBooking> updatedHearing = element(hearing1.getId(),
                 hearing(time.now().plusDays(4), time.now().plusDays(5)));
 
@@ -1129,7 +1129,7 @@ class ManageHearingsServiceTest {
 
             service.addOrUpdate(updatedHearing, caseData);
 
-            assertThat(caseData.getHearingDetails()).containsExactly(updatedHearing, hearing2);
+            assertThat(caseData.getHearingDetails()).containsExactly(hearing2, updatedHearing);
         }
 
         @Test
@@ -1145,9 +1145,45 @@ class ManageHearingsServiceTest {
             service.addOrUpdate(newHearing, caseData);
 
             assertThat(caseData.getHearingDetails())
-                .containsExactly(hearing1, hearing2, newHearing);
+                .containsExactly(newHearing, hearing2, hearing1);
         }
 
+        @Test
+        void shouldSortByHearingStartDateWhenSameHearingDayExist() {
+            LocalDateTime timeNow = time.now();
+            Element<HearingBooking> hearing1 = element(hearing(timeNow.plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearing2 = element(hearing(timeNow.plusDays(2), time.now().plusDays(3)));
+            Element<HearingBooking> hearing3 = element(hearing(timeNow.plusDays(3), time.now().plusDays(4)));
+            Element<HearingBooking> newHearing = element(hearing(timeNow.plusDays(3), time.now().plusDays(4)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearing2, hearing3, hearing1))
+                .build();
+
+            service.addOrUpdate(newHearing, caseData);
+
+            assertThat(caseData.getHearingDetails())
+                .containsExactly(hearing3, newHearing, hearing2, hearing1);
+        }
+
+        @Test
+        void shouldSortByHearingStartDateWhenExistingHearingAreAlreadySorted() {
+            LocalDateTime timeNow = time.now();
+            Element<HearingBooking> hearing1 = element(hearing(timeNow.plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearing2 = element(hearing(timeNow.plusHours(1), time.now().plusDays(4)));
+            Element<HearingBooking> hearing3 = element(hearing(timeNow.plusDays(2), time.now().plusDays(3)));
+            Element<HearingBooking> hearing4 = element(hearing(timeNow.plusDays(4), time.now().plusDays(5)));
+            Element<HearingBooking> newHearing = element(hearing(timeNow.plusDays(4), time.now().plusDays(5)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearing4, newHearing, hearing3, hearing1, hearing2))
+                .build();
+
+            service.addOrUpdate(newHearing, caseData);
+
+            assertThat(caseData.getHearingDetails())
+                .containsExactly(hearing4, newHearing, hearing3, hearing1, hearing2);
+        }
     }
 
     @Nested
