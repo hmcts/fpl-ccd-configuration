@@ -228,8 +228,8 @@ class MigrateCaseServiceTest {
                 .build();
 
             AssertionError actualException = assertThrows(AssertionError.class, () -> {
-                    underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-                        MIGRATION_ID, UUID.randomUUID().toString());
+                underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                    MIGRATION_ID, UUID.randomUUID().toString());
             });
             assertThat(actualException.getMessage()).isEqualTo(format(
                 "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
