@@ -223,10 +223,10 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    await I.goToPage(config.baseUrl);
-    await I.goToPage(config.baseUrl, config.hmctsUser);
+    //await I.goToPage(config.baseUrl);
+    await this.goToPage(config.baseUrl, config.hmctsUser);
 
-    await this.signIn(user);
+    //await this.signIn(user);
     I.wait(10);
     await this.navigateToCaseDetails(caseId);
   },
@@ -331,14 +331,14 @@ module.exports = {
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.newSwanseaLocalAuthorityUserOne);
-    let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
+    let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM:SS')})`;
     await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
     return {caseId, caseName};
   },
 
   async submitNewCase(user, name) {
-    const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
+    const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM:SS')})`;
     const creator = user || config.newSwanseaLocalAuthorityUserOne;
     const caseData = await apiHelper.createCase(creator, caseName);
     const caseId = caseData.id;

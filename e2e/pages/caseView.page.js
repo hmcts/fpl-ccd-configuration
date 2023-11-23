@@ -50,19 +50,22 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
-    await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-        await I.scrollToElement(this.actionsDropdown);
-        I.selectOption(this.actionsDropdown, actionSelected);
-        I.click(this.goButton);
-      } else {
-        const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl || !newUrl.includes('http')){
-          output.print('Page refresh');
-          I.refreshPage();
-        }
-      }
-    }, 'ccd-case-event-trigger', false);
+    I.waitForElement('next-step', 60);
+    I.selectOption('next-step', actionSelected)
+    I.click(this.goButton);
+    // await this.retryUntilExists(async () => {
+    //   if(await this.waitForSelector(this.actionsDropdown, 30) != null) {
+    //     await this.scrollToElement(this.actionsDropdown);
+    //     I.selectOption(this.actionsDropdown, actionSelected);
+    //     I.click(this.goButton);
+    //   } else {
+    //     const newUrl = await I.grabCurrentUrl();
+    //     if(newUrl === currentUrl || !newUrl.includes('http')){
+    //       output.print('Page refresh');
+    //       I.refreshPage();
+    //     }
+    //   }
+    // }, 'ccd-case-event-trigger', false);
   },
 
   async checkActionsAreAvailable(actions) {
