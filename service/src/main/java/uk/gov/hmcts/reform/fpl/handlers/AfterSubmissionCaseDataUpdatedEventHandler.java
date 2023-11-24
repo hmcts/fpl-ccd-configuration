@@ -32,6 +32,8 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
             "internal-update-case-summary",
             caseDetails -> {
                 CaseData currentCaseData = caseConverter.convert(caseDetails);
+                // Transient field set purely for caseFlag summary fields needs to be copied over
+                currentCaseData.setCaseFlagValueUpdated(event.getCaseData().getCaseFlagValueUpdated());
                 return caseSummaryService.generateSummaryFields(currentCaseData);
             }
         );
