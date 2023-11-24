@@ -846,7 +846,9 @@ public class MigrateCaseService {
                 "Migration {id = %s, case reference = %s}, `caseManagementLocation` is correct.",
                 migrationId, caseData.getId()));
         }
-        return Map.of("caseManagementLocation", CaseLocation.builder()
+
+        return Map.of("court", court.toBuilder().epimmsId(correctBaseLocation).build(),
+            "caseManagementLocation", CaseLocation.builder()
             .baseLocation(correctBaseLocation)
             .region(correctRegion)
             .build());

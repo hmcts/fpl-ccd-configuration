@@ -137,10 +137,18 @@ class MigrateCaseServiceTest {
                 .court(Court.builder().code("270").build()).build());
 
             assertThat(underTest.fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
-                .extracting("caseManagementLocation")
-                .isInstanceOf(CaseLocation.class)
-                .hasFieldOrPropertyWithValue("region", "3")
-                .hasFieldOrPropertyWithValue("baseLocation", "195537");
+                .extracting("caseManagementLocation", "court")
+                .satisfies(tuple -> {
+                    assertThat(tuple.get(0))
+                        .isInstanceOf(CaseLocation.class)
+                        .hasFieldOrPropertyWithValue("region", "3")
+                        .hasFieldOrPropertyWithValue("baseLocation", "195537");
+
+                    // Add assertions for 'court' if needed
+                    assertThat(tuple.get(1))
+                        .isInstanceOf(Court.class)
+                        .hasFieldOrPropertyWithValue("epimmsId", "195537");
+                });
         }
 
         @Test
