@@ -59,7 +59,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
         "DFPL-1899", this::run1899,
         "DFPL-1887", this::run1887,
         "DFPL-1905", this::run1905
@@ -277,7 +276,7 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(caseData,
             migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
     }
-  
+
     private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
