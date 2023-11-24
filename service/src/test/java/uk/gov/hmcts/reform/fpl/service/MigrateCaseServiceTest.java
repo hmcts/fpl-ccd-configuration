@@ -2044,5 +2044,27 @@ class MigrateCaseServiceTest {
                         + " threshold details is shorter than provided index",
                     MIGRATION_ID, 1));
         }
+
+        @Test
+        void shouldThrowExceptionIfBlankText(){
+            var thresholdDetailsStartIndex = 8;
+            var thresholdDetailsEndIndex = 9;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails("\nBETWEEN\n\n            ")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "threshold details does not contain provided text",
+                    MIGRATION_ID, 1));
+        }
     }
 }

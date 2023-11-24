@@ -827,7 +827,7 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
 
-        if (textToRemove.isEmpty()) {
+        if (textToRemove.strip().isEmpty()) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, threshold details does not contain provided text",
                 migrationId, caseId));
