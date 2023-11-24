@@ -189,7 +189,7 @@ exports.config = {
       'mochawesome': {
         stdout: '-',
         options: {
-          reportDir: process.env.REPORT_DIR || 'test-results/functional/',
+          reportDir: process.env.REPORT_DIR || 'test-results/functional',
           inlineAssets: true,
           json: false,
         },
