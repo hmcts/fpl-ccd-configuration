@@ -57,7 +57,7 @@ Scenario(
     caseViewPage.selectTab(caseViewPage.tabs.summary);
     await I.seeTagInTab("Potentially violent person");
 
-    // Needs improvement: Automated testing currently interrupts page loading
+    // Defect raised DFPL-1928, below fields are not showing in UI
     // I.seeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
     // I.seeInTab('Email', 'hmcts-admin@example.com');
     // I.seeInTab('Assessment Form', 'mockFile.docx');
@@ -77,7 +77,7 @@ Scenario(
 
     await I.dontSeeTagInTab("Potentially violent person");
 
-    // Needs improvement: Automated testing currently interrupts page loading
+    // Defect raised DFPL-1928, below fields are not showing in UI
     // I.dontSeeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
     // I.dontSeeInTab('Email', 'HMCTS');
     // I.dontSeeInTab('Assessment Form', 'mockFile.docx');
