@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
@@ -2176,6 +2177,82 @@ class MigrateCaseServiceTest {
                     .baseLocation("816875")
                     .region("5")
                     .build());
+        }
+    }
+
+    @Nested
+    class RemoveStringFromThresholdDetails {
+        private final String testThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\nFREDRICK (FRED) FREDERSON AND BOB BINS \n(By their Children’s Guardian)"
+            + "\n3rd-5th Respondents\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        private final String expectedThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        @Test
+        void shouldRemoveSpecificStringFromThresholdDetails() {
+            var thresholdDetailsStartIndex = 167;
+            var thresholdDetailsEndIndex = 259;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+
+            assertThat(updatedGrounds).extracting("thresholdDetails").isEqualTo(expectedThresholdDetails);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit() {
+            var thresholdDetailsStartIndex = 380;
+            var thresholdDetailsEndIndex = 389;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " threshold details is shorter than provided index",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBlankText() {
+            var thresholdDetailsStartIndex = 8;
+            var thresholdDetailsEndIndex = 9;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails("\nBETWEEN\n\n            ")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "threshold details does not contain provided text",
+                    MIGRATION_ID, 1));
         }
     }
 }
