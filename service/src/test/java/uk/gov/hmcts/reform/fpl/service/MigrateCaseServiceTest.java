@@ -2178,6 +2178,28 @@ class MigrateCaseServiceTest {
                     .region("5")
                     .build());
         }
+
+        @Test
+        void shouldThrowExceptionIfNoCourtFound() {
+            when(courtLookUpService.getCourtByCode("167")).thenReturn(Optional.empty());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("incorrectLocation")
+                    .region("incorrectRegion")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.setCaseManagementLocation(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration, case reference = 1},"
+                    + " could not find correct caseManagementLocation");
+        }
     }
 
     @Nested
