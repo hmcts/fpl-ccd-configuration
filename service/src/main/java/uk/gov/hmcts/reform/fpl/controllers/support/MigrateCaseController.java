@@ -56,12 +56,9 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
-        "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-1850", this::run1850,
+        "DFPL-1887", this::run1887,
+        "DFPL-1905", this::run1905
     );
 
     @PostMapping("/about-to-submit")
@@ -220,6 +217,20 @@ public class MigrateCaseController extends CallbackController {
         migrateRoles(newCaseData);
     }
 
+    private void run1887(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1887";
+        var possibleCaseIds = List.of(1684922324530563L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        String orgId = "BDWCNNQ";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+            migrationId, "f2ee2c01-7cab-4ff0-aa28-fd980a7da15a"));
+    }
+
     private void run1810(CaseDetails caseDetails) {
         var migrationId = "DFPL-1810";
         var possibleCaseIds = List.of(1652188944970682L);
@@ -270,4 +281,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
+    private void run1905(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
 }

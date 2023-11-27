@@ -40,6 +40,9 @@ public class ReplyToMessageJudgeController extends CallbackController {
 
         caseDetailsMap.putAll(replyToMessageJudgeService.initialiseCaseFields(caseData));
 
+        // We need to remove this field, as we might be closing the message, not replying
+        caseDetailsMap.remove("latestRoleSent");
+
         return respond(caseDetailsMap);
     }
 
