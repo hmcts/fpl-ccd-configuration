@@ -58,7 +58,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1850", this::run1850,
         "DFPL-1887", this::run1887,
-        "DFPL-1905", this::run1905
+        "DFPL-1905", this::run1905,
+        "DFPL-1930", this::run1930
     );
 
     @PostMapping("/about-to-submit")
@@ -283,5 +284,10 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
+    private void run1930(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, "DFPL-1930"));
     }
 }
