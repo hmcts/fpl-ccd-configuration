@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -106,7 +108,8 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
         CaseData responseData = extractCaseData(callbackResponse);
 
-        assertThat(callbackResponse.getData()).doesNotContainKeys(ReviewDraftOrdersData.reviewDecisionFields());
+        assertThat(responseData.getReviewCMODecision())
+            .isEqualTo(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedReviewDraftOrdersData);
     }

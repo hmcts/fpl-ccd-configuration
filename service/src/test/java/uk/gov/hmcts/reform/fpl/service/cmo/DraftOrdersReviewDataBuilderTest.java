@@ -165,10 +165,6 @@ class DraftOrdersReviewDataBuilderTest {
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE_1));
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_2, DOCUMENT_REFERENCE_2));
 
-        Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
-            .orders(orders)
-            .build());
-
         Map<String, Object> expected = new HashMap<>();
         expected.putAll(Map.of(
             "draftOrdersTitlesInBundle","CMO\nC21 Order\nC21 Order",
@@ -185,6 +181,10 @@ class DraftOrdersReviewDataBuilderTest {
         expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
         expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
 
+        Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
+            .orders(orders)
+            .build());
+
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -194,12 +194,6 @@ class DraftOrdersReviewDataBuilderTest {
         orders.add(anOrder(HearingOrderType.DRAFT_CMO, CMOStatus.SEND_TO_JUDGE, CMO_TITLE, DOCUMENT_REFERENCE));
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE_1));
         orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_2, DOCUMENT_REFERENCE_2));
-
-        Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
-            .hearingId(UUID.randomUUID())
-            .hearingName(HEARING_NAME)
-            .orders(orders)
-            .build());
 
         Map<String, Object> expected = new HashMap<>();
         expected.putAll(Map.of(
@@ -216,6 +210,12 @@ class DraftOrdersReviewDataBuilderTest {
         expected.put("reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
         expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
         expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+
+        Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
+            .hearingId(UUID.randomUUID())
+            .hearingName(HEARING_NAME)
+            .orders(orders)
+            .build());
 
         assertThat(actual).isEqualTo(expected);
     }
