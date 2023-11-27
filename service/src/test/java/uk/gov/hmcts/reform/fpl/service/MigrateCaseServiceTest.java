@@ -2145,7 +2145,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit(){
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit() {
             var thresholdDetailsStartIndex = 380;
             var thresholdDetailsEndIndex = 389;
 
@@ -2167,7 +2167,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionIfBlankText(){
+        void shouldThrowExceptionIfBlankText() {
             var thresholdDetailsStartIndex = 8;
             var thresholdDetailsEndIndex = 9;
 
