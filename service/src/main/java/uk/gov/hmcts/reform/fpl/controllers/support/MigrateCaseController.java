@@ -56,12 +56,12 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
         "DFPL-1802", this::run1802,
         "DFPL-1810", this::run1810,
         "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-1899", this::run1899,
+        "DFPL-1887", this::run1887,
+        "DFPL-1905", this::run1905
     );
 
     @PostMapping("/about-to-submit")
@@ -220,6 +220,20 @@ public class MigrateCaseController extends CallbackController {
         migrateRoles(newCaseData);
     }
 
+    private void run1887(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1887";
+        var possibleCaseIds = List.of(1684922324530563L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        String orgId = "BDWCNNQ";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+            migrationId, "f2ee2c01-7cab-4ff0-aa28-fd980a7da15a"));
+    }
+
     private void run1810(CaseDetails caseDetails) {
         var migrationId = "DFPL-1810";
         var possibleCaseIds = List.of(1652188944970682L);
@@ -239,10 +253,6 @@ public class MigrateCaseController extends CallbackController {
             UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
     }
 
-    private void run1813(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
     private void run1837(CaseDetails caseDetails) {
         var migrationId = "DFPL-1837";
         var possibleCaseIds = List.of(1649154482198017L);
@@ -255,19 +265,19 @@ public class MigrateCaseController extends CallbackController {
             migrationId, expectedHearingId, expectedDocId));
     }
 
-    private void run1883(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1883";
-        var possibleCaseIds = List.of(1686737004191900L);
-        var expectedPositionStatementId = UUID.fromString("b96b56e4-0bdd-41a4-b272-8bf2d9c349af");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1899(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1899";
+        var possibleCaseIds = List.of(1698314232873794L);
+        var thresholdDetailsStartIndex = 348;
+        var thresholdDetailsEndIndex = 452;
 
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
-            migrationId, expectedPositionStatementId));
+        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(caseData,
+            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
     }
 
-    private void run1850(CaseDetails caseDetails) {
+    private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
-
 }

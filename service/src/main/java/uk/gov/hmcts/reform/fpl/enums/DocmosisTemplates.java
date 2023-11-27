@@ -28,7 +28,7 @@ public enum DocmosisTemplates {
     A70("FL-PLW-GOR-ENG-00763V2.doc", null, "placement_order_a70"),
     A81("FL-PLW-GOR-ENG-00728.doc", null, "placement_order_a81"),
     A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206"),
-    A92("FL-PLW-HNO-ENG-00814.doc", null, "notice_of_hearing_placement"),
+    A92("FL-PLW-HNO-ENG-notice-of-placement.doc", null, "notice_of_hearing_placement"),
     HIGH_COURT_SEAL("FL-PLW-ASS-ENG-HIGH-COURT-SEAL.docx", null, "high_court_seal");
 
     private final String template;
