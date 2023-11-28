@@ -2883,5 +2883,12 @@
     "CaseFieldID": "manageOrdersCostOrders",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "27/11/2023",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "judicialMessages",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
   }
 ]
