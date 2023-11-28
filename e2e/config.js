@@ -130,7 +130,7 @@ module.exports = {
     manageLegalRepresentatives: 'Add counsel/external solicitor',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
-    messageJudge: 'Send and reply to messages',
+    messageJudge: 'Send messages',
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
     selectCourt: 'Select court to issue',

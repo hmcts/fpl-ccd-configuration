@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const mandatoryWithAdditionalApplicationsBundle = require('../fixtures/caseData/mandatoryWithAdditionalApplicationsBundle.json');
-
+const judgeMessageData = require('../fixtures/caseData/caseWithJudgeMessage.json');
 let caseId;
 const message = 'Some note';
 const reply = 'This is a reply';
@@ -13,18 +13,25 @@ async function setupScenario(I) {
   if (!caseId) { caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle); }
 }
 
-Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('HMCTS admin messages the judge  @local   @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  pause();
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId.caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  await I.waitForText('Send messages');
   messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToAdditionalApplication();
   await messageJudgeOrLegalAdviserEventPage.selectAdditionalApplication();
+  //add sender
+  await messageJudgeOrLegalAdviserEventPage.selectSenderType();
+  // add new select whom to send message
+  await messageJudgeOrLegalAdviserEventPage.selectRecipientType();
   messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
   messageJudgeOrLegalAdviserEventPage.enterSubject('Subject 1');
   messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
   await I.goToNextPage();
   messageJudgeOrLegalAdviserEventPage.enterMessage(message);
-  await I.completeEvent('Save and continue');
+  //await I.goToNextPage();
+  await I.submitEventWithCYA('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
   await I.selectTab(caseViewPage.tabs.judicialMessages);
 
@@ -40,19 +47,22 @@ Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPag
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('Judge replies to HMCTS admin @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
-  await setupScenario(I);
+Scenario('Judge replies to HMCTS admin  @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  // await setupScenario(I);
+  caseId = await I.submitNewCaseWithData(judgeMessageData);
+  // console.log(caseId);
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
-  messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
+  await caseViewPage.goToNewActions(config.applicationActions.replyJudge);
+  //messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
   await messageJudgeOrLegalAdviserEventPage.selectJudicialMessage();
   await I.goToNextPage();
   messageJudgeOrLegalAdviserEventPage.selectReplyingToJudicialMessage();
   messageJudgeOrLegalAdviserEventPage.enterMessageReply(reply);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-
+  //await I.completeEvent('Save and continue');
+  I.completeEvent(config.applicationActions.messageJudge);
+  I.selectTab(caseViewPage.tabs.judicialMessages);
+  I.waitForText('Judicial messages',2);
   I.seeInTab(['Message 1', 'From'], config.judicaryUser.email);
   I.seeInTab(['Message 1', 'Sent to'], config.ctscEmail);
   I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
@@ -65,8 +75,8 @@ Scenario('Judge replies to HMCTS admin @nightlyOnly', async ({I, caseViewPage, m
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('HMCTS admin closes the message @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
-  await setupScenario(I);
+Scenario('HMCTS admin closes the message  @nightlyOnly', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  // await setupScenario(I);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();

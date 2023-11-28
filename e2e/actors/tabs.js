@@ -217,18 +217,21 @@ module.exports = {
 
   async selectTab(tab){
     const tabSelector = getTabSelector(tab);
-
-    const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');
-
-    for(let i=0; i<numberOfElements; i++){
-      if((await this.canClick(tabSelector))){
-        break;
-      }
-      console.log(`Scrolling to tab '${tab}'`);
-      this.click('.mat-tab-header-pagination-after');
-    }
-
-    return this.click(tabSelector);
+    //Not need with codeceptjs playwright , click function find the element if not visible
+    //
+    // const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');
+    // console.log("/nnumber of tab:" + numberOfElements);
+    //
+    // for(let i=0; i<numberOfElements; i++){
+    //  if((await this.canClick(tabSelector))){
+    //     break;
+    //   }
+    //   console.log(`Scrolling to tab '${tab}'`);
+    //   this.click('.mat-tab-header-pagination-after');
+    // }
+    // To search for the locator if not in visiblity
+    this.click(tabSelector);
+    this.click(tabSelector);
   },
 
   async dontSeeTab(tab){
