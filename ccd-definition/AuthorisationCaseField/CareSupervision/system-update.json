@@ -2885,7 +2885,7 @@
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": "27/11/2023",
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "judicialMessages",
     "UserRole": "caseworker-publiclaw-systemupdate",
