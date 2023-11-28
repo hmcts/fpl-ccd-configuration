@@ -1506,6 +1506,18 @@ class MigrateCaseServiceTest {
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
                             + mesageToBeRemoved.getId() + " not found");
         }
+
+        @Test
+        void shouldRemoveClosedJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closedJudicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeClosedJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("closedJudicialMessages").asList().containsExactly(message1, message2);
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

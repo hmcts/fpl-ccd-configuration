@@ -506,6 +506,13 @@ public class MigrateCaseService {
                     caseData.getId()));
     }
 
+    public Map<String, Object> removeClosedJudicialMessage(CaseData caseData, String migrationId, String messageId) {
+        UUID targetMessageId = UUID.fromString(messageId);
+        return Map.of("closedJudicialMessages",
+            removeJudicialMessageFormList(caseData.getClosedJudicialMessages(), messageId, migrationId,
+                caseData.getId()));
+    }
+
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
                                                               String messageId, String migrationId, Long caseId) {
         if (messages == null) {
