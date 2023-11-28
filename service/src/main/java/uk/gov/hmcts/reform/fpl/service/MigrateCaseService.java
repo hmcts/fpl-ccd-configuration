@@ -815,6 +815,33 @@ public class MigrateCaseService {
         return Map.of("localAuthorities", localAuthoritiesList);
     }
 
+    public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
+                                                                    String migrationId,
+                                                                    int startIndex,
+                                                                    int endIndex) {
+        Long caseId = caseData.getId();
+        String thresholdDetails = caseData.getGrounds().getThresholdDetails();
+        String textToRemove;
+
+        try {
+            textToRemove = caseData.getGrounds().getThresholdDetails().substring(startIndex, endIndex);
+        } catch (StringIndexOutOfBoundsException ex) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details is shorter than provided index",
+                migrationId, caseId));
+        }
+
+        if (textToRemove.strip().isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details does not contain provided text",
+                migrationId, caseId));
+        }
+
+        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+
+        return Map.of("thresholdDetails", thresholdDetails);
+    }
+  
     public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
