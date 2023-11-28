@@ -113,6 +113,15 @@ module.exports = {
     output.print(`Case created #${caseId}`);
     return caseId;
   },
+  //new function to CYA page and submit event
+  async submitEventWithCYA(button)
+  {
+    await this.click('Continue');
+    await this.waitForText('Check your answers');
+    await this.click(button);
+
+  },
+
 
   async completeEvent(button, changeDetails, confirmationPage = false, selector = '.mat-tab-list') {
     await this.retryUntilExists(() => this.click('submit'), '.check-your-answers');
@@ -223,8 +232,8 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    await I.goToPage(config.baseUrl);
-    await I.goToPage(config.baseUrl, config.hmctsUser);
+    // await I.goToPage(config.baseUrl);
+    // await I.goToPage(config.baseUrl, config.hmctsUser);
 
     await this.signIn(user);
     I.wait(10);
