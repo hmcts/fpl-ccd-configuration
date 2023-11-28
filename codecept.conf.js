@@ -186,10 +186,10 @@ exports.config = {
           mochaFile: process.env.REPORT_FILE || 'test-results/functional/result.xml',
         },
       },
-      'mochawesome': {
+      mochawesome: {
         stdout: '-',
         options: {
-          reportDir: process.env.REPORT_DIR || 'test-results/functional',
+          reportDir: './output',
           inlineAssets: true,
           json: false,
         },
