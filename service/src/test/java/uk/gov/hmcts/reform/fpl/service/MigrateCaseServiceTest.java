@@ -2141,8 +2141,14 @@ class MigrateCaseServiceTest {
             var thresholdDetailsStartIndex = 167;
             var thresholdDetailsEndIndex = 259;
 
+            final Grounds expectedGrounds = Grounds.builder()
+                .thresholdDetails(expectedThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
             final Grounds grounds = Grounds.builder()
                 .thresholdDetails(testThresholdDetails)
+                .thresholdReason(List.of("noCare"))
                 .build();
 
             CaseData caseData = CaseData.builder()
@@ -2153,7 +2159,7 @@ class MigrateCaseServiceTest {
             Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
                 thresholdDetailsStartIndex, thresholdDetailsEndIndex);
 
-            assertThat(updatedGrounds).extracting("thresholdDetails").isEqualTo(expectedThresholdDetails);
+            assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
         }
 
         @Test
