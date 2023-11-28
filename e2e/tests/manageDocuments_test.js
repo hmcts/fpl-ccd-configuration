@@ -24,10 +24,10 @@ Feature('Manage documents');
 async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-    await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
-    await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
+    await api.grantCaseAccess(caseId.caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
+    await api.grantCaseAccess(caseId.caseId, config.privateSolicitorOne, '[SOLICITORA]');
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId.caseId);
 }
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
