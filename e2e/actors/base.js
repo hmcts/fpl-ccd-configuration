@@ -115,7 +115,7 @@ module.exports = {
   },
 
   async completeEvent(button, changeDetails, confirmationPage = false, selector = '.mat-tab-list') {
-    await this.retryUntilExists(() => this.click('submit'), '.check-your-answers');
+    //await this.retryUntilExists(() => this.click('Submit'), '.check-your-answers');
     if (changeDetails != null) {
       await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
     }
@@ -396,7 +396,7 @@ module.exports = {
     const originalUrl = await this.grabCurrentUrl();
     // override this for now
     //maxNumberOfTries = 1;
-
+    pause();
     for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
       output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
       if (tryNumber > 1 && await this.hasSelector(locator)) {

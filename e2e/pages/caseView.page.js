@@ -50,19 +50,26 @@ module.exports = {
 
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
-    await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-        await I.scrollToElement(this.actionsDropdown);
-        I.selectOption(this.actionsDropdown, actionSelected);
-        I.click(this.goButton);
-      } else {
-        const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl || !newUrl.includes('http')){
-          output.print('Page refresh');
-          I.refreshPage();
-        }
-      }
-    }, 'ccd-case-event-trigger', false);
+
+    I.click("#next-step");
+    I.selectOption('#next-step', actionSelected);
+    //I.fillField("#next-step", "6: Object");
+    I.click(this.goButton);
+
+    // await I.retryUntilExists(async () => {
+    //
+    //   await I.waitForElement('next-step', 30);
+    //   //await I.scrollToElement('next-step');
+    //   I.selectOption('next-step', actionSelected);
+    //   I.click(this.goButton);
+    //   // } else {
+    //   //   const newUrl = await I.grabCurrentUrl();
+    //   //   if(newUrl === currentUrl || !newUrl.includes('http')){
+    //   //     output.print('Page refresh');
+    //   //     I.refreshPage();
+    //   //   }
+    //   //}
+    // }, 'ccd-event-trigger');
   },
 
   async checkActionsAreAvailable(actions) {

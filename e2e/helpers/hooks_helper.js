@@ -35,10 +35,9 @@ module.exports = class HooksHelpers extends Helper {
   //}
 
   _afterStep(step) {
-    const helper = this.getHelper();
-    if (step.name === 'attachFile') {
-      output.debug('Waiting for file to finish "Uploading..."');
-      return helper.waitForInvisible('//*[contains(text(), "Uploading...")]', 20);
-    }
+    // if (step.name === 'attachFile') {
+    //   output.debug('Waiting for file to finish "Uploading..."');
+    //   return I.waitForInvisible('//*[contains(text(), "Uploading...")]', 20);
+    // }
   }
 };
