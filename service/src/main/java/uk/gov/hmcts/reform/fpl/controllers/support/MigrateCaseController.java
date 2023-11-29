@@ -62,7 +62,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1837", this::run1837,
         "DFPL-1899", this::run1899,
         "DFPL-1887", this::run1887,
-        "DFPL-1905", this::run1905
+        "DFPL-1915", this::run1915,
+        "DFPL-1905", this::run1905,
+        "DFPL-1898", this::run1898
     );
 
     @PostMapping("/about-to-submit")
@@ -285,5 +287,29 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1905(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
+    private void run1915(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1915";
+        var possibleCaseIds = List.of(1671617151971048L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            "03aa4e2e-03dc-48f6-9c0c-8b2136b68c6f"));
+
+        caseDetails.getData().putAll(migrateCaseService.removeClosedJudicialMessage(caseData, migrationId,
+            "c5da68b1-f67b-4442-8bfe-227b7b21f02e"));
+    }
+
+    private void run1898(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1898";
+        var possibleCaseIds = List.of(1698163422633306L);
+        var noticeOfProceedingsBundleId = UUID.fromString("b2bd4359-91a2-44fc-a7a5-ba8b8da27a25");
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeNoticeOfProceedingsBundle(caseData,
+            String.valueOf(noticeOfProceedingsBundleId), migrationId));
     }
 }
