@@ -90,7 +90,7 @@ withNightlyPipeline(type, product, component) {
     setupSecretsForIntegrationTests(pipelineConf)
   }
 
-  after('mutationTest') {
+  afterAlways('mutationTest') {
     archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
