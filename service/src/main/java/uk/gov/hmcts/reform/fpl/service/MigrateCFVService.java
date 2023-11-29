@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -103,6 +104,30 @@ public class MigrateCFVService {
     }
 
     private static Function<Element<SupportingEvidenceBundle>, Element<ManagedDocument>> toManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<CaseSummary>, Element<ManagedDocument>> caseSummaryToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<PositionStatementChild>, Element<ManagedDocument>>
+        positionStatementChildToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<PositionStatementRespondent>, Element<ManagedDocument>>
+        positionStatementRespondentToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<ApplicationDocument>, Element<ManagedDocument>>
+        applicationDocumentToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<CourtBundle>, Element<ManagedDocument>>
+        courtBundleToManagedDocumentElement() {
         return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
     }
 
@@ -726,18 +751,41 @@ public class MigrateCFVService {
         return ret;
     }
 
+    private List<List<Element<SupportingEvidenceBundle>>> getHearingFurtherEvidenceDocumentsToBeMigrated(
+        CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle()).toList();
+    }
+
     public int calculateExpectedNumberOfHearingFurtherEvidenceDocuments(CaseData caseData) {
-        return caseData.getHearingFurtherEvidenceDocuments().stream()
-            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+        return getHearingFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
             .mapToInt(Collection::size)
             .sum();
     }
 
-    public int calculateExpectedNumberOfFurtherEvidenceDocuments(CaseData caseData) {
+    public Map<String, Object> migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getHearingFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    private List<List<Element<SupportingEvidenceBundle>>> getFurtherEvidenceDocumentsToBeMigrated(
+        CaseData caseData) {
         return List.of(Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()),
-                Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()),
-                Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()))
-            .stream().mapToInt(Collection::size).sum();
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()),
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()));
+    }
+
+    public int calculateExpectedNumberOfFurtherEvidenceDocuments(CaseData caseData) {
+        return getFurtherEvidenceDocumentsToBeMigrated(caseData).stream().mapToInt(Collection::size).sum();
+    }
+
+    public Map<String, Object> migrateFurtherEvidenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
     }
 
     public void validateMigratedFurtherEvidenceDocument(String migrationId, CaseData caseData,
@@ -810,10 +858,20 @@ public class MigrateCFVService {
     //      GROUP BY reference, data) T
     // WHERE oldCount <> newCount
 
-    public void validateMigratedCaseSummary(String migrationId, CaseData caseData, Map<String, Object> changes) {
-        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+    private List<Element<CaseSummary>> getCaseSummariesToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().caseSummaryList(List.of()).build())
-            .getCaseSummaryList().size();
+            .getCaseSummaryList();
+    }
+
+    public Map<String, Object> migrateCaseSummaryToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCaseSummariesToBeMigrated(caseData).stream()
+            .map(caseSummaryToManagedDocumentElement()).collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedCaseSummary(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = getCaseSummariesToBeMigrated(caseData).size();
         int actualSize = List.of("caseSummaryList", "caseSummaryListLA").stream()
             .map(key -> (Collection) changes.get(key))
             .filter(collection -> collection != null)
@@ -837,13 +895,29 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount
 
-    public void validateMigratedPositionStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
-        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+    private List<Element<PositionStatementRespondent>> getPositionStatementRespondentToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().positionStatementRespondentListV2(List.of()).build())
-            .getPositionStatementRespondentListV2().size()
-            + Optional.ofNullable(caseData.getHearingDocuments())
+            .getPositionStatementRespondentListV2();
+    }
+
+    private List<Element<PositionStatementChild>> getPositionStatementChildToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().positionStatementChildListV2(List.of()).build())
-            .getPositionStatementChildListV2().size();
+            .getPositionStatementChildListV2();
+    }
+
+    public Map<String, Object> migratePositionStatementToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getPositionStatementRespondentToBeMigrated(caseData).stream()
+            .map(positionStatementRespondentToManagedDocumentElement()).collect(toList());
+        ret.addAll(getPositionStatementChildToBeMigrated(caseData).stream()
+            .map(positionStatementChildToManagedDocumentElement()).collect(toList()));
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedPositionStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = getPositionStatementRespondentToBeMigrated(caseData).size()
+            + getPositionStatementChildToBeMigrated(caseData).size();
         int actualSize = List.of("posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC",
                 "posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC").stream()
             .map(key -> (Collection) changes.get(key))
@@ -881,10 +955,22 @@ public class MigrateCFVService {
     //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
     // WHERE oldCount <> newCount;
 
+    private List<List<Element<SupportingEvidenceBundle>>> getRespondentStatementsToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getRespondentStatements()).orElse(List.of()).stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+            .toList();
+    }
+
+    public Map<String, Object> migrateRespondentStatementToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getRespondentStatementsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
     public void validateMigratedRespondentStatement(String migrationId, CaseData caseData,
                                                     Map<String, Object> changes) {
-        int expectedSize = caseData.getRespondentStatements().stream()
-            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+        int expectedSize = getRespondentStatementsToBeMigrated(caseData).stream()
             .mapToInt(Collection::size)
             .sum();
         int actualSize = List.of("respStmtList", "respStmtListLA", "respStmtListCTSC").stream()
@@ -912,11 +998,25 @@ public class MigrateCFVService {
     //      GROUP BY reference, data) T
     // WHERE oldCount <> newCount
 
+    @SuppressWarnings("unchecked")
+    private List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsToBeMigrated(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> all = Optional.ofNullable(caseData.getCorrespondenceDocuments())
+            .orElse(new ArrayList());
+        all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()).orElse(List.of()));
+        all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()).orElse(List.of()));
+        return all;
+    }
+
+    public Map<String, Object> migrateCorrespondenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCorrespondenceDocumentsToBeMigrated(caseData).stream()
+            .map(toManagedDocumentElement())
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
     public void validateMigratedCorrespondenceDocuments(String migrationId, CaseData caseData,
                                                         Map<String, Object> changes) {
-        int expectedSize = Optional.ofNullable(caseData.getCorrespondenceDocuments()).orElse(List.of()).size()
-            + Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()).orElse(List.of()).size()
-            + Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()).orElse(List.of()).size();
+        int expectedSize = getCorrespondenceDocumentsToBeMigrated(caseData).size();
         int actualSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
             .stream()
             .map(key -> (Collection) changes.get(key))
@@ -944,9 +1044,21 @@ public class MigrateCFVService {
     //     ) T
     // WHERE oldCount <> newCount
 
+    @SuppressWarnings("unchecked")
+    private List<Element<ApplicationDocument>> getApplicationDocumentsToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of());
+    }
+
+    public Map<String, Object> migrateApplicationDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getApplicationDocumentsToBeMigrated(caseData).stream()
+            .map(applicationDocumentToManagedDocumentElement())
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
     public void validateMigratedApplicationDocuments(String migrationId, CaseData caseData,
                                                         Map<String, Object> changes) {
-        int expectedSize = Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).size();
+        int expectedSize = getApplicationDocumentsToBeMigrated(caseData).size();
         int actualSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
                 "documentsFiledOnIssueListCTSC",
                 "carePlanList", "carePlanListLA", "carePlanListCTSC",
@@ -996,12 +1108,23 @@ public class MigrateCFVService {
         return total;
     }
 
-    public void validateMigratedCourtBundle(String migrationId, CaseData caseData,
-                                            Map<String, Object> changes) {
-        int expectedSize = Optional.ofNullable(caseData.getHearingDocuments())
+    private List<List<Element<CourtBundle>>> getCourtBundlesToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
             .orElse(HearingDocuments.builder().courtBundleListV2(List.of()).build())
             .getCourtBundleListV2()
-            .stream().map(a -> a.getValue().getCourtBundle())
+            .stream().map(a -> a.getValue().getCourtBundle()).toList();
+    }
+
+    public Map<String, Object> migrateCourtBundlesToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCourtBundlesToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(courtBundleToManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedCourtBundle(String migrationId, CaseData caseData,
+                                            Map<String, Object> changes) {
+        int expectedSize = getCourtBundlesToBeMigrated(caseData).stream()
             .mapToInt(Collection::size).sum();
 
         String[] keysToSum = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"};
