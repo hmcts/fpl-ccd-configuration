@@ -1011,6 +1011,7 @@ public class MigrateCFVService {
         List<Element<ManagedDocument>> ret = getCorrespondenceDocumentsToBeMigrated(caseData).stream()
             .map(toManagedDocumentElement())
             .collect(toList());
+
         return Map.of("archivedDocumentsListCTSC", ret);
     }
 
@@ -1119,6 +1120,7 @@ public class MigrateCFVService {
         List<Element<ManagedDocument>> ret = getCourtBundlesToBeMigrated(caseData).stream()
             .flatMap(c -> c.stream().map(courtBundleToManagedDocumentElement()))
             .collect(toList());
+
         return Map.of("archivedDocumentsListCTSC", ret);
     }
 
