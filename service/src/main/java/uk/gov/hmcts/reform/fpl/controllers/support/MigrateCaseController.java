@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -36,7 +37,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-CFV", this::runCFV,
-        "DFPL-CFV-Rollback", this::runCFVrollback,
+        "DFPL-CFV-Rollback", this::runCfvRollback,
+        "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1905", this::run1905
     );
@@ -50,6 +52,35 @@ public class MigrateCaseController extends CallbackController {
                 caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
+        newChanges.entrySet().forEach(entry -> {
+            if (target.containsKey(entry.getKey())) {
+                ((List) target.get(entry.getKey())).addAll((List) entry.getValue());
+            } else {
+                target.put(entry.getKey(), entry.getValue());
+            }
+        });
+    }
+
+    private Map<String, Object> prepareChangesForMigratingAllToArchivedDocuments(String migrationId,
+                                                                                 CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+            .get("hasBeenCFVMigrated"), migrationId);
+        Map<String, Object> changes = new LinkedHashMap<>();
+        mergeChanges(changes, migrateCFVService.migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateFurtherEvidenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCaseSummaryToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migratePositionStatementToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateRespondentStatementToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCorrespondenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateApplicationDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCourtBundlesToArchivedDocuments(caseData));
+        changes.put("hasBeenCFVMigrated", YesNo.YES);
+        return changes;
     }
 
     private Map<String, Object> prepareChangesForCFVMigration(String migrationId, CaseDetails caseDetails) {
@@ -85,11 +116,23 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-CFV";
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
-        migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
+        try {
+            migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
+        } catch (AssertionError ex) {
+            changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId, caseDetails);
+        }
         pushChangesToCaseDetails(caseDetails, changes);
     }
 
-    private void runCFVrollback(CaseDetails caseDetails) {
+    private void runCfvFailure(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV-failure";
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId,
+            caseDetails);
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
+
+    private void runCfvRollback(CaseDetails caseDetails) {
         migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
                 .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
 
