@@ -25,22 +25,6 @@ services:
     networks:
       - default
       - ccd-network
-
-  collector:
-    image: auviknetworks/collector:latest
-    container_name: "fpl-service-auvik"
-    hostname: "servicenow.eu1.my.auvik.com"
-    environment:
-      AUVIK_USERNAME: "dawud.rahman@justice.gov.uk"
-      AUVIK_API_KEY: "e1e3cccd-9f52-4d31-86e3-2dc551d3b780"
-      AUVIK_DOMAIN_PREFIX: "servicenow"
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - './config/:/config/'
-      - './etc/auvik/:/etc/auvik/'
-      - './logs/:/usr/share/agent/logs/'
-    restart: unless-stopped
 networks:
   ccd-network:
       external: true
