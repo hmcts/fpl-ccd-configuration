@@ -24,10 +24,10 @@ Feature('Manage documents');
 async function setupScenario(I) {
   if (!caseId) {
     caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-    await api.grantCaseAccess(caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
-    await api.grantCaseAccess(caseId, config.privateSolicitorOne, '[SOLICITORA]');
+    await api.grantCaseAccess(caseId.caseId, config.hillingdonLocalAuthorityUserOne, '[SOLICITOR]');
+    await api.grantCaseAccess(caseId.caseId, config.privateSolicitorOne, '[SOLICITORA]');
   }
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId.caseId);
 }
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential further evidence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -39,12 +39,14 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   manageDocumentsEventPage.selectAnyOtherDocument();
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
+  await I.click("#supportingEvidenceDocumentsTemp_0_documentAcknowledge-ACK_RELATED_TO_CASE");
   await I.addAnotherElementToCollection();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1], true);
-  await I.completeEvent('Save and continue');
+  await I.click("#supportingEvidenceDocumentsTemp_1_documentAcknowledge-ACK_RELATED_TO_CASE");
+  await I.completeEvent('Continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId.caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectFurtherEvidence();
@@ -52,8 +54,10 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await manageDocumentsLAEventPage.selectAnyOtherDocument();
   await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2], true);
+  await I.click("#supportingEvidenceDocumentsTemp_0_documentAcknowledge-ACK_RELATED_TO_CASE");
   await I.addAnotherElementToCollection();
   await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3], true);
+  await I.click("#supportingEvidenceDocumentsTemp_1_documentAcknowledge-ACK_RELATED_TO_CASE");
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 

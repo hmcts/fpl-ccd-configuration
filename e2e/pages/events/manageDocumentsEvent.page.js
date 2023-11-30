@@ -29,6 +29,7 @@ module.exports = {
   },
 
   selectFurtherEvidence() {
+    I.waitForElement(this.fields.documentType.furtherEvidence, 10);
     I.click(this.fields.documentType.furtherEvidence);
   },
 
@@ -88,6 +89,7 @@ module.exports = {
 
   uploadDocument(document, index = 0) {
     I.attachFile(this.fields.supportingDocuments(index).document, document);
+    I.waitForInvisible('//*[contains(text(), "Uploading...")]', 20)
   },
 
   async selectFurtherEvidenceType(type, index = 0) {
