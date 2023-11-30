@@ -125,7 +125,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void runCfvFailure(CaseDetails caseDetails) {
-        var migrationId = "DFPL-CFV-failure";
+        var migrationId = "DFPL-CFV-Failure";
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId,
             caseDetails);
