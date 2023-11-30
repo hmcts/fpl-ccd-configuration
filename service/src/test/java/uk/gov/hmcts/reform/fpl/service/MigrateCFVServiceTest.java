@@ -1576,9 +1576,9 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateFurtherEvidenceDocumentsToArchivedDocuments(caseData);
 
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").isNull();
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").isNull();
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).isNull();
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "LA");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type));
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
@@ -1608,9 +1608,9 @@ class MigrateCFVServiceTest {
             Map<String, Object> updatedFields = underTest
                 .migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(caseData);
 
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").isNull();
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").isNull();
-            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).isNull();
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "LA");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type));
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
         }
@@ -1635,9 +1635,9 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateCaseSummaryToArchivedDocuments(caseData);
 
-            assertThat(updatedFields).extracting("caseSummaryListBackup").isNull();
-            assertThat(updatedFields).extracting("caseSummaryList").isNull();
-            assertThat(updatedFields).extracting("caseSummaryListLA").isNull();
+            assertThat(updatedFields).doesNotContainKey("caseSummaryListBackup");
+            assertThat(updatedFields).doesNotContainKey("caseSummaryList");
+            assertThat(updatedFields).doesNotContainKey("caseSummaryListLA");
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .contains(element(caseSummaryId, ManagedDocument.builder().document(document1).build()));
         }
@@ -1671,10 +1671,10 @@ class MigrateCFVServiceTest {
                 .build();
 
             Map<String, Object> updatedFields = underTest.migratePositionStatementToArchivedDocuments(caseData);
-            assertThat(updatedFields).extracting("posStmtRespListLA").isNull();
-            assertThat(updatedFields).extracting("posStmtRespList").isNull();
-            assertThat(updatedFields).extracting("posStmtChildListLA").isNull();
-            assertThat(updatedFields).extracting("posStmtChildList").isNull();
+            assertThat(updatedFields).doesNotContainKey("posStmtRespListLA");
+            assertThat(updatedFields).doesNotContainKey("posStmtRespList");
+            assertThat(updatedFields).doesNotContainKey("posStmtChildListLA");
+            assertThat(updatedFields).doesNotContainKey("posStmtChildList");
 
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .containsExactlyInAnyOrder(
@@ -1682,6 +1682,45 @@ class MigrateCFVServiceTest {
                     element(psrTwoId, ManagedDocument.builder().document(document2).build()),
                     element(psrThreeId, ManagedDocument.builder().document(document3).build()),
                     element(psrFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateRespondentStatementToArchivedDocuments() {
+            UUID respondentOneId = UUID.randomUUID();
+
+            UUID psrOneId = randomUUID();
+
+            UUID psrTwoId = randomUUID();
+            UUID psrThreeId = randomUUID();
+            UUID psrFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .hasConfidentialAddress("Yes")
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(psrOneId, sebOne)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatementToArchivedDocuments(caseData);
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
+            assertThat(updatedFields).doesNotContainKey("respStmtList");
+            assertThat(updatedFields).doesNotContainKey("respStmtListLA");
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(psrOneId, ManagedDocument.builder().document(document1).build()));
         }
     }
 
