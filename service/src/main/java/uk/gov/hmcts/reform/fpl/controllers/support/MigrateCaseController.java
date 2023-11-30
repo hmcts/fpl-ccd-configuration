@@ -55,67 +55,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1887(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1887";
-        var possibleCaseIds = List.of(1684922324530563L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        String orgId = "BDWCNNQ";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "f2ee2c01-7cab-4ff0-aa28-fd980a7da15a"));
-    }
-
-    private void run1810(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1810";
-        var possibleCaseIds = List.of(1652188944970682L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
-            "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
-    }
-
-    private void run1802(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1802";
-        var possibleCaseIds = List.of(1683295453455055L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeElementFromLocalAuthorities(caseData, migrationId,
-            UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
-    }
-
-    private void run1837(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1837";
-        var possibleCaseIds = List.of(1649154482198017L);
-        var expectedHearingId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
-        var expectedDocId = UUID.fromString("982dc7f7-11a7-4eb6-b1ab-7778d20dcf27");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
-            migrationId, expectedHearingId, expectedDocId));
-    }
-
-    private void run1899(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1899";
-        var possibleCaseIds = List.of(1698314232873794L);
-        var thresholdDetailsStartIndex = 348;
-        var thresholdDetailsEndIndex = 452;
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(caseData,
-            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
-    }
-
-    private void run1905(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
     private void run1921(CaseDetails caseDetails) {
         var migrationId = "DFPL-1921";
         var possibleCaseIds = List.of(1689599455058930L);
@@ -124,27 +63,5 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(caseData, migrationId,
             UUID.fromString("37ab2651-b3f6-40e2-b880-275a6dba51cd")));
-    }
-
-    private void run1926(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1926";
-        var possibleCaseIds = List.of(1697544135507922L);
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            "f070750b-adf1-473a-a13e-39d3d2df4115"));
-    }
-
-    private void run1898(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1898";
-        var possibleCaseIds = List.of(1698163422633306L);
-        var noticeOfProceedingsBundleId = UUID.fromString("b2bd4359-91a2-44fc-a7a5-ba8b8da27a25");
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeNoticeOfProceedingsBundle(caseData,
-            String.valueOf(noticeOfProceedingsBundleId), migrationId));
     }
 }
