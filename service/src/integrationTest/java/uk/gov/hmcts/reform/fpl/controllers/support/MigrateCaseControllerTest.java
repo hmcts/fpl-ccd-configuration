@@ -92,6 +92,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(migrateCFVService).migrateCourtBundle(any());
             verify(migrateCFVService).migrateArchivedDocuments(any());
             assertThat(response.getData()).extracting("hasBeenCFVMigrated").isEqualTo("YES");
+
+            verify(migrateCFVService, times(0)).migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCaseSummaryToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migratePositionStatementToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateRespondentStatementToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCorrespondenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateApplicationDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCourtBundlesToArchivedDocuments(any());
         }
 
         @Test
@@ -122,6 +131,53 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             verify(migrateCFVService, times(0)).moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(any());
             verify(migrateCFVService, times(0)).migrateCourtBundle(any());
             verify(migrateCFVService, times(0)).migrateArchivedDocuments(any());
+
+            verify(migrateCFVService, times(0)).migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCaseSummaryToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migratePositionStatementToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateRespondentStatementToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCorrespondenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateApplicationDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService, times(0)).migrateCourtBundlesToArchivedDocuments(any());
+        }
+
+        @Test
+        void shouldInvokeMigrationIfValidationFailure() {
+            final CaseData caseData = CaseData.builder()
+                .id(nextLong())
+                .build();
+
+            CaseDetails caseDetails = buildCaseDetails(caseData, migrationId);
+            doNothing()
+                .when(migrateCFVService).doHasCFVMigratedCheck(anyLong(), any(), eq(migrationId), eq(true));
+            doThrow(new AssertionError("TEST")).when(migrateCFVService)
+                .validateMigratedNumberOfDocuments(any(), any(), any());
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            verify(migrateCFVService).migratePositionStatementChild(any());
+            verify(migrateCFVService).migratePositionStatementRespondent(any());
+            verify(migrateCFVService).migrateNoticeOfActingOrIssue(any());
+            verify(migrateCFVService).migrateGuardianReports(any());
+            verify(migrateCFVService).migrateExpertReports(any());
+            verify(migrateCFVService).migrateApplicantWitnessStatements(any());
+            verify(migrateCFVService).migrateRespondentStatement(any());
+            verify(migrateCFVService).migrateSkeletonArgumentList(any());
+            verify(migrateCFVService).migrateApplicationDocuments(any());
+            verify(migrateCFVService).migrateCorrespondenceDocuments(any());
+            verify(migrateCFVService).moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(any());
+            verify(migrateCFVService).migrateCourtBundle(any());
+            verify(migrateCFVService).migrateArchivedDocuments(any());
+            assertThat(response.getData()).extracting("hasBeenCFVMigrated").isEqualTo("YES");
+
+            verify(migrateCFVService).migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService).migrateFurtherEvidenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService).migrateCaseSummaryToArchivedDocuments(any());
+            verify(migrateCFVService).migratePositionStatementToArchivedDocuments(any());
+            verify(migrateCFVService).migrateRespondentStatementToArchivedDocuments(any());
+            verify(migrateCFVService).migrateCorrespondenceDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService).migrateApplicationDocumentsToArchivedDocuments(any());
+            verify(migrateCFVService).migrateCourtBundlesToArchivedDocuments(any());
         }
     }
 
