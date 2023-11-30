@@ -5,8 +5,8 @@ module.exports = {
   newSwanseaLocalAuthorityUserOne: {
     email: 'local-authority-swansea-0001@maildrop.cc',
     password: process.env.LA_USER_PASSWORD || e2ePw,
-    // forename: 'kurt@swansea.gov.uk',
-    // surname: '(local-authority)',
+    forename: 'Local',
+    surname: 'Authority',
   },
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
@@ -15,8 +15,10 @@ module.exports = {
     surname: '(local-authority)',
   },
   newSwanseaLocalAuthorityUserTwo: {
-    email: 'Local-Authority-Swansea-0002@AAT.com',
-    password: process.env.LA_USER_PASSWORD || e2ePw
+    email: 'local-authority-swansea-0002@maildrop.cc',
+    password: process.env.LA_USER_PASSWORD || e2ePw,
+    forename: 'Local',
+    surname: 'Authority',
   },
   swanseaLocalAuthorityUserTwo: {
     email: 'damian@swansea.gov.uk',
@@ -26,7 +28,7 @@ module.exports = {
   },
   newHillingdonLocalAuthorityUserOne: {
     email: 'Local-Authority-Hillingdon-0001@AAT.com',
-    password: process.env.LA_USER_PASSWORD || e2ePw
+    password: process.env.LA_USER_PASSWORD || e2ePw,
   },
   hillingdonLocalAuthorityUserOne: {
     email: 'sam@hillingdon.gov.uk',
