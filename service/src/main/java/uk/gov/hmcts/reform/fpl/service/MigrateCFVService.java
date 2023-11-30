@@ -1000,8 +1000,8 @@ public class MigrateCFVService {
 
     @SuppressWarnings("unchecked")
     private List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsToBeMigrated(CaseData caseData) {
-        List<Element<SupportingEvidenceBundle>> all = Optional.ofNullable(caseData.getCorrespondenceDocuments())
-            .orElse(new ArrayList());
+        List<Element<SupportingEvidenceBundle>> all = new ArrayList(Optional.ofNullable(caseData.getCorrespondenceDocuments())
+            .orElse(List.of()));
         all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()).orElse(List.of()));
         all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()).orElse(List.of()));
         return all;

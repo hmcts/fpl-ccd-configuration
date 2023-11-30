@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
@@ -1272,6 +1275,7 @@ class MigrateCFVServiceTest {
                         .build()));
         }
 
+        @Test
         void shouldMoveSingleCaseSummaryWithConfidentialAddressToCaseSummaryListLA() {
             Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
                 .hasConfidentialAddress(YesNo.YES.getValue())
@@ -1521,6 +1525,163 @@ class MigrateCFVServiceTest {
             assertThat(underTest.rollbackCourtBundleMigration(caseDetails))
                 .extracting("courtBundleListV2").asList()
                 .contains(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
+        }
+
+        public static Stream<Arguments> migrateToArchivedDocumentsParam() {
+            Stream.Builder<Arguments> builder = Stream.builder();
+            for (int i = 0; i < 3; i++) { // document uploaded by
+                builder.add(Arguments.of(i, APPLICANT_STATEMENT));
+                builder.add(Arguments.of(i, GUARDIAN_REPORTS));
+                builder.add(Arguments.of(i, OTHER_REPORTS));
+                builder.add(Arguments.of(i, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE));
+            }
+            return builder.build();
+        }
+
+        @ParameterizedTest
+        @MethodSource("migrateToArchivedDocumentsParam")
+        void shouldMigrateFurtherEvidenceDocumentsToArchivedDocuments(int documentUploadedBy,
+                                                                      FurtherEvidenceType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = null;
+            switch (documentUploadedBy) {
+                case 0:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                case 1:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                case 2:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                default:
+                    break;
+            }
+
+            Map<String, Object> updatedFields = underTest.migrateFurtherEvidenceDocumentsToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").isNull();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").isNull();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).isNull();
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateHearingFurtherEvidenceDocumentsToArchivedDocuments(FurtherEvidenceType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest
+                .migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "LA").isNull();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC").isNull();
+            assertThat(updatedFields).extracting(furtherEvidenceTypeToFieldNameMap.get(type)).isNull();
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateCaseSummaryToArchivedDocuments() {
+            UUID caseSummaryId = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().build();
+
+            Element<CaseSummary> caseSummaryListElement = element(caseSummaryId, CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .document(document1)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCaseSummaryToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).extracting("caseSummaryListBackup").isNull();
+            assertThat(updatedFields).extracting("caseSummaryList").isNull();
+            assertThat(updatedFields).extracting("caseSummaryListLA").isNull();
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(caseSummaryId, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigratePositionStatementToArchivedDocuments() {
+            UUID psrOneId = randomUUID();
+            UUID psrTwoId = randomUUID();
+            UUID psrThreeId = randomUUID();
+            UUID psrFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+
+            Element<PositionStatementRespondent> positionStatementOne = element(psrOneId,
+                PositionStatementRespondent.builder().document(document1).build());
+            Element<PositionStatementRespondent> positionStatementTwo = element(psrTwoId,
+                PositionStatementRespondent.builder().document(document2).build());
+            Element<PositionStatementChild> positionStatementThree = element(psrThreeId,
+                PositionStatementChild.builder().document(document3).build());
+            Element<PositionStatementChild> positionStatementFour = element(psrFourId,
+                PositionStatementChild.builder().document(document4).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(List.of(positionStatementOne, positionStatementTwo))
+                    .positionStatementChildListV2(List.of(positionStatementThree, positionStatementFour))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementToArchivedDocuments(caseData);
+            assertThat(updatedFields).extracting("posStmtRespListLA").isNull();
+            assertThat(updatedFields).extracting("posStmtRespList").isNull();
+            assertThat(updatedFields).extracting("posStmtChildListLA").isNull();
+            assertThat(updatedFields).extracting("posStmtChildList").isNull();
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(psrOneId, ManagedDocument.builder().document(document1).build()),
+                    element(psrTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(psrThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(psrFourId, ManagedDocument.builder().document(document4).build()));
         }
     }
 
