@@ -64,4 +64,5 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(caseData, migrationId,
             UUID.fromString("37ab2651-b3f6-40e2-b880-275a6dba51cd")));
     }
+
 }
