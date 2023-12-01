@@ -55,12 +55,12 @@ class EPOEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.plusDays(8).plusSeconds(1))
+                .manageOrdersEndDateTime(approvalDate.plusYears(1).plusSeconds(1))
                 .build())
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of("Emergency protection orders cannot last longer than 8 days"));
+            List.of("Emergency protection orders cannot last longer than 1 year"));
     }
 
     @Test
