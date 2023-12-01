@@ -57,11 +57,10 @@ Scenario(
     caseViewPage.selectTab(caseViewPage.tabs.summary);
     await I.seeTagInTab("Potentially violent person");
 
-    // Defect raised DFPL-1928, below fields are not showing in UI
-    // I.seeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
-    // I.seeInTab('Email', 'hmcts-admin@example.com');
-    // I.seeInTab('Assessment Form', 'mockFile.docx');
-    // I.seeInTab('Additional notes', 'Additional case flag notes');
+    I.seeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
+    I.seeInTab('Email', 'hmcts-admin@example.com');
+    I.seeInTab('Assessment Form', 'mockFile.docx');
+    I.seeInTab('Additional notes', 'Additional case flag notes');
 
     // Remove case flag
     caseViewPage.selectTab(caseViewPage.tabs.summary);
@@ -77,10 +76,9 @@ Scenario(
 
     await I.dontSeeTagInTab("Potentially violent person");
 
-    // Defect raised DFPL-1928, below fields are not showing in UI
-    // I.dontSeeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
-    // I.dontSeeInTab('Email', 'HMCTS');
-    // I.dontSeeInTab('Assessment Form', 'mockFile.docx');
-    // I.dontSeeInTab('Additional notes', 'Additional case flag notes');
+    I.dontSeeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
+    I.dontSeeInTab('Email', 'HMCTS');
+    I.dontSeeInTab('Assessment Form', 'mockFile.docx');
+    I.dontSeeInTab('Additional notes', 'Additional case flag notes');
   },
 );
