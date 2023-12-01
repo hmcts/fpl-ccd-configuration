@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
