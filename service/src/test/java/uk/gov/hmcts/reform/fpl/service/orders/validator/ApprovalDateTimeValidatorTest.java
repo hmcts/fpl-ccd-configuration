@@ -6,18 +6,18 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 
 class ApprovalDateTimeValidatorTest {
 
-    private static final String MESSAGE = "Approval date cannot be in the future";
-
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    private final ApprovalDateTimeValidator underTest = new ApprovalDateTimeValidator(time);
+    private final ApprovalDateTimeValidator underTest = new ApprovalDateTimeValidator();
 
     @Test
     void accept() {
@@ -47,13 +47,14 @@ class ApprovalDateTimeValidatorTest {
     }
 
     @Test
-    void validateFuture() {
+    void validateNotInRange() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().plusHours(1))
+                .manageOrdersApprovalDateTime(time.now().plusYears(1))
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(
+            List.of(END_DATE_RANGE_MESSAGE));
     }
 }

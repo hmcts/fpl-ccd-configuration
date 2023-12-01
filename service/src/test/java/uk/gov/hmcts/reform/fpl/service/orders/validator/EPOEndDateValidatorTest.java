@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 
 class EPOEndDateValidatorTest {
 
@@ -60,7 +61,7 @@ class EPOEndDateValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of("Emergency protection orders cannot last longer than 1 year"));
+            List.of(END_DATE_RANGE_MESSAGE));
     }
 
     @Test
