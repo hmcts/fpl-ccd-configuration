@@ -79,15 +79,15 @@ class MigrateCFVServiceTest {
     @InjectMocks
     private MigrateCFVService underTest;
 
+    private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToFieldNameMap = Map.of(
+        APPLICANT_STATEMENT, "applicantWitnessStmtList",
+        GUARDIAN_REPORTS, "guardianEvidenceList",
+        OTHER_REPORTS, "expertReportList",
+        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE, "noticeOfActingOrIssueList"
+    );
+
     @Nested
     class CaseFileViewMigrations {
-
-        private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToFieldNameMap = Map.of(
-            APPLICANT_STATEMENT, "applicantWitnessStmtList",
-            GUARDIAN_REPORTS, "guardianEvidenceList",
-            OTHER_REPORTS, "expertReportList",
-            NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE, "noticeOfActingOrIssueList"
-        );
 
         private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToMigrateMethodMap = Map.of(
             APPLICANT_STATEMENT, "migrateApplicantWitnessStatements",
@@ -1526,7 +1526,10 @@ class MigrateCFVServiceTest {
                 .extracting("courtBundleListV2").asList()
                 .contains(nonConfidentialBundle, confidentialBundleLA, confidentialBundleCTSC);
         }
+    }
 
+    @Nested
+    class MigrateToArchivedDocuments {
         public static Stream<Arguments> migrateToArchivedDocumentsParam() {
             Stream.Builder<Arguments> builder = Stream.builder();
             for (int i = 0; i < 3; i++) { // document uploaded by
@@ -1644,22 +1647,22 @@ class MigrateCFVServiceTest {
 
         @Test
         void shouldMigratePositionStatementToArchivedDocuments() {
-            UUID psrOneId = randomUUID();
-            UUID psrTwoId = randomUUID();
-            UUID psrThreeId = randomUUID();
-            UUID psrFourId = randomUUID();
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
             DocumentReference document1 = DocumentReference.builder().build();
             DocumentReference document2 = DocumentReference.builder().build();
             DocumentReference document3 = DocumentReference.builder().build();
             DocumentReference document4 = DocumentReference.builder().build();
 
-            Element<PositionStatementRespondent> positionStatementOne = element(psrOneId,
+            Element<PositionStatementRespondent> positionStatementOne = element(docOneId,
                 PositionStatementRespondent.builder().document(document1).build());
-            Element<PositionStatementRespondent> positionStatementTwo = element(psrTwoId,
+            Element<PositionStatementRespondent> positionStatementTwo = element(docTwoId,
                 PositionStatementRespondent.builder().document(document2).build());
-            Element<PositionStatementChild> positionStatementThree = element(psrThreeId,
+            Element<PositionStatementChild> positionStatementThree = element(docThreeId,
                 PositionStatementChild.builder().document(document3).build());
-            Element<PositionStatementChild> positionStatementFour = element(psrFourId,
+            Element<PositionStatementChild> positionStatementFour = element(docFourId,
                 PositionStatementChild.builder().document(document4).build());
 
             CaseData caseData = CaseData.builder()
@@ -1678,10 +1681,10 @@ class MigrateCFVServiceTest {
 
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .containsExactlyInAnyOrder(
-                    element(psrOneId, ManagedDocument.builder().document(document1).build()),
-                    element(psrTwoId, ManagedDocument.builder().document(document2).build()),
-                    element(psrThreeId, ManagedDocument.builder().document(document3).build()),
-                    element(psrFourId, ManagedDocument.builder().document(document4).build()));
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
         }
 
         @Test
@@ -1689,14 +1692,7 @@ class MigrateCFVServiceTest {
             UUID respondentOneId = UUID.randomUUID();
 
             UUID psrOneId = randomUUID();
-
-            UUID psrTwoId = randomUUID();
-            UUID psrThreeId = randomUUID();
-            UUID psrFourId = randomUUID();
             DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
 
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
@@ -1721,6 +1717,134 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .containsExactlyInAnyOrder(
                     element(psrOneId, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateCorrespondenceToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+
+            Element<SupportingEvidenceBundle> docOne = element(docOneId,
+                SupportingEvidenceBundle.builder().document(document1).build());
+            Element<SupportingEvidenceBundle> docTwo = element(docTwoId,
+                SupportingEvidenceBundle.builder().document(document1).build());
+            Element<SupportingEvidenceBundle> docThree = element(docThreeId,
+                SupportingEvidenceBundle.builder().document(document1).build());
+            Element<SupportingEvidenceBundle> docFour = element(docFourId,
+                SupportingEvidenceBundle.builder().document(document1).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(docOne))
+                .correspondenceDocumentsLA(List.of(docTwo, docFour))
+                .correspondenceDocumentsSolicitor(List.of(docThree))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCorrespondenceDocumentsToArchivedDocuments(caseData);
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocList");
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocListLA");
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocListCTSC");
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateApplicationDocumentsToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+
+            Element<ApplicationDocument> docOne = element(docOneId,
+                ApplicationDocument.builder().document(document1).build());
+            Element<ApplicationDocument> docTwo = element(docTwoId,
+                ApplicationDocument.builder().document(document1).build());
+            Element<ApplicationDocument> docThree = element(docThreeId,
+                ApplicationDocument.builder().document(document1).build());
+            Element<ApplicationDocument> docFour = element(docFourId,
+                ApplicationDocument.builder().document(document1).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(docOne, docTwo, docThree, docFour))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicationDocumentsToArchivedDocuments(caseData);
+            List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+                "documentsFiledOnIssueListCTSC",
+                "carePlanList", "carePlanListLA", "carePlanListCTSC",
+                "thresholdList", "thresholdListLA", "thresholdListCTSC").stream().forEach(
+                f -> assertThat(updatedFields).doesNotContainKey(f)
+            );
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateCourtBundlesToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document3 = DocumentReference.builder().build();
+            DocumentReference document4 = DocumentReference.builder().build();
+
+            Element<HearingCourtBundle> docOne = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docOneId, CourtBundle.builder().document(document1).build()))
+                ).build());
+            Element<HearingCourtBundle> docTwo = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docTwoId, CourtBundle.builder().document(document2).build()))
+                ).build());
+            Element<HearingCourtBundle> docThree = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docThreeId, CourtBundle.builder().document(document3).build()))
+                ).build());
+            Element<HearingCourtBundle> docFour = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docFourId, CourtBundle.builder().document(document4).build()))
+                ).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(docOne, docTwo, docThree, docFour))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCourtBundlesToArchivedDocuments(caseData);
+            List.of("courtBundleListV2Backup", "courtBundleListV2", "courtBundleListLA", "courtBundleListLA").stream()
+                .forEach(f -> assertThat(updatedFields).doesNotContainKey(f));
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
         }
     }
 
