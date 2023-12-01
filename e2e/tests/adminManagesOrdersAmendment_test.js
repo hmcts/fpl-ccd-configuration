@@ -36,7 +36,8 @@ const orders = {
 
 let caseId;
 
-Feature('HMCTS Admin amends orders');
+let title = 'Admin Manages Orders Amendment';
+Feature(title);
 
 async function setupScenario(I, data = caseData) {
   if (!caseId || 'CLOSED' === data.state) {
@@ -45,7 +46,7 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('Amend generated order in general case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@charles Amend generated order in general case @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
@@ -58,14 +59,14 @@ Scenario('Amend standard directions order @nightlyOnly', async ({ I, caseViewPag
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Amend urgent hearing order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Amend urgent hearing order @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend case management order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Amend case management order @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);

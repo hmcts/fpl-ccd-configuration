@@ -45,7 +45,7 @@ exports.config = {
   },
   helpers: {
     Playwright: {
-      show: process.env.SHOW_BROWSER_WINDOW || false,
+      show: process.env.SHOW_BROWSER_WINDOW || true,
       //waitForTimeout: config.WaitForTimeout,
       //waitForAction: config.WaitForAction,
       timeout: 60000,
@@ -160,7 +160,7 @@ exports.config = {
   plugins: {
 
     pauseOnFail: {
-      enabled: false
+      enabled: true
     },
     retryFailedStep: {
       enabled: true,

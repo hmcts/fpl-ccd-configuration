@@ -31,7 +31,8 @@ module.exports = {
     furtherEvidence: 'Documents',
     refusedOrders: 'Refused Orders',
   },
-  actionsDropdown: '.ccd-dropdown',
+  //actionsDropdown: '.ccd-dropdown',
+  actionsDropdown: '#next-step',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
   tasksErrorsTitle: 'Why can\'t I submit my application?',
@@ -49,22 +50,41 @@ module.exports = {
   },
 
   async goToNewActions(actionSelected) {
+  //  const currentUrl = await I.grabCurrentUrl();
+  //   await I.retryUntilExists(async () => {
+  //    if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
+  //      await I.scrollToElement(this.actionsDropdown);
+  //       I.selectOption(this.actionsDropdown, actionSelected);
+  //       I.click(this.goButton);
+  //     } else {
+  //       const newUrl = await I.grabCurrentUrl();
+  //       if(newUrl === currentUrl || !newUrl.includes('http')){
+  //         output.print('Page refresh');
+  //         I.refreshPage();
+  //       }
+  //     }
+  //   }, 'ccd-case-event-trigger', false);
+  // },
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-        await I.scrollToElement(this.actionsDropdown);
-        I.selectOption(this.actionsDropdown, actionSelected);
-        I.click(this.goButton);
-      } else {
-        const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl || !newUrl.includes('http')){
-          output.print('Page refresh');
-          I.refreshPage();
-        }
-      }
-    }, 'ccd-case-event-trigger', false);
+      I.selectOption(this.actionsDropdown, actionSelected);
+      I.click(this.goButton);
+      // commented as it has multiple check for element next step
+      // if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
+      //   console.log("inside if");
+      //   //await I.scrollToElement(this.actionsDropdown);
+      //   I.selectOption(this.actionsDropdown, actionSelected);
+      //   I.click(this.goButton);
+      // } else {
+      //   console.log("\ninside else");
+      //   const newUrl = await I.grabCurrentUrl();
+      //   if(newUrl === currentUrl || !newUrl.includes('http')){
+      //     output.print('Page refresh');
+      //     I.refreshPage();
+      //   }
+      // }
+    }, '#next-step', false);
   },
-
   async checkActionsAreAvailable(actions) {
     I.waitForElement(this.actionsDropdown, 10);
     await within(this.actionsDropdown, () => {

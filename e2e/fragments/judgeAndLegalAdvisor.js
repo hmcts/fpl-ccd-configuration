@@ -3,7 +3,7 @@ const {I} = inject();
 module.exports = {
   fields: {
     judgeTitleRadioGroup: {
-      groupName: 'judgeAndLegalAdvisor_judgeTitle',
+      groupName: 'hearingJudge_judgeTitle',
       herHonourJudge: 'Her Honour Judge',
       hisHonourJudge: 'His Honour Judge',
       districtJudge: 'District Judge',
@@ -13,22 +13,33 @@ module.exports = {
       other: 'Other',
     },
     useAllocatedJudge: {
-      groupName: 'judgeAndLegalAdvisor_useAllocatedJudge',
-      yes: 'Yes',
-      no: 'No',
+      groupName: 'useAllocatedJudge_radio',
+      yes: 'useAllocatedJudge_Yes',
+      no: 'useAllocatedJudge_No',
+    },
+    uselegaladviser: {
+      groupName: 'enterManuallyHearingJudge_radio',
+      yes: 'enterManuallyHearingJudge_Yes',
+      no: 'enterManuallyHearingJudge_No',
     },
     otherTitle: 'judgeAndLegalAdvisor_otherTitle',
-    judgeLastName: 'judgeAndLegalAdvisor_judgeLastName',
-    judgeEmailAddress: 'judgeAndLegalAdvisor_judgeEmailAddress',
-    legalAdvisorName: 'judgeAndLegalAdvisor_legalAdvisorName',
+    judgeLastName: 'hearingJudge_judgeLastName',
+    judgeEmailAddress: 'hearingJudge_judgeEmailAddress',
+    legalAdvisorName: 'legalAdvisorName',
   },
 
   useAllocatedJudge(complexTypeAppender = '') {
-    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}_Yes`);
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.yes}`);
   },
 
   useAlternateJudge(complexTypeAppender = '') {
-    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.groupName}_No`);
+    I.click(`#${complexTypeAppender}${this.fields.useAllocatedJudge.no}`);
+  }, useLegaladviser(complexTypeAppender = '') {
+    I.click(`#${complexTypeAppender}${this.fields.uselegaladviser.yes}`);
+  },
+
+  useAlternatelegaladviser(complexTypeAppender = '') {
+    I.click(`#${complexTypeAppender}${this.fields.uselegaladviser.no}`);
   },
 
   selectJudgeTitle(complexTypeAppender = '', title = this.fields.judgeTitleRadioGroup.herHonourJudge, otherTitle = '') {

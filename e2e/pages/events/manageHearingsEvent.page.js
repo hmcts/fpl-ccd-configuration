@@ -141,8 +141,9 @@ module.exports = {
 
   enterJudgeDetails(hearingDetails) {
     // occasionally this page would take a while to load so waiting until the use allocated judge field is visible
-    I.waitForVisible(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 120);
+    I.waitForElement(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 120);
     judgeAndLegalAdvisor.useAlternateJudge();
+    judgeAndLegalAdvisor.useLegaladviser();
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
@@ -196,7 +197,8 @@ module.exports = {
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
 
-  async grabPreHearingAttendance(){
+  async grabPreHearingAttendance() {
+    await I.waitForElement(this.fields.preAttendanceDetails,120);
     return await I.grabValueFrom(this.fields.preAttendanceDetails);
   },
 
