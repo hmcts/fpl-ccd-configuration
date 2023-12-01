@@ -10,13 +10,13 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.ApprovalDateTimeValidator.APPROVAL_DATE_RANGE_MESSAGE;
 
 class ApprovalDateTimeValidatorTest {
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    private final ApprovalDateTimeValidator underTest = new ApprovalDateTimeValidator();
+    private final ApprovalDateTimeValidator underTest = new ApprovalDateTimeValidator(time);
 
     @Test
     void accept() {
@@ -54,6 +54,6 @@ class ApprovalDateTimeValidatorTest {
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of(END_DATE_RANGE_MESSAGE));
+            List.of(APPROVAL_DATE_RANGE_MESSAGE));
     }
 }
