@@ -383,11 +383,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         final LocalDateTime approvalDate = LocalDateTime.now().minusDays(5);
 
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(8).plusSeconds(1))).build();
+            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(365).plusSeconds(1))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).containsOnly("Emergency protection orders cannot last longer than 8 days");
+        assertThat(response.getErrors())
+            .containsOnly("Emergency protection orders cannot last longer than 1 year");
     }
 
     @Test
