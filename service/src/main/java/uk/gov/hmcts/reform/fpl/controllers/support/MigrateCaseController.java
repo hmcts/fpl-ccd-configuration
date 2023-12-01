@@ -39,8 +39,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV", this::runCFV,
         "DFPL-CFV-Rollback", this::runCfvRollback,
         "DFPL-CFV-Failure", this::runCfvFailure,
-        "DFPL-CFV-dry", this::dryRunCFV,
-        "DFPL-1905", this::run1905
+        "DFPL-CFV-dry", this::dryRunCFV
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -172,9 +171,5 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run1905(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 }
