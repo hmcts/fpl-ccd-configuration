@@ -1788,9 +1788,8 @@ class MigrateCFVServiceTest {
             List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
                 "documentsFiledOnIssueListCTSC",
                 "carePlanList", "carePlanListLA", "carePlanListCTSC",
-                "thresholdList", "thresholdListLA", "thresholdListCTSC").stream().forEach(
-                f -> assertThat(updatedFields).doesNotContainKey(f)
-            );
+                "thresholdList", "thresholdListLA", "thresholdListCTSC").stream().forEach(f -> assertThat(updatedFields)
+                    .doesNotContainKey(f));
 
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .containsExactlyInAnyOrder(
