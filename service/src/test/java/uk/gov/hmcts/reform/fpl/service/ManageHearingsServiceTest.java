@@ -355,6 +355,34 @@ class ManageHearingsServiceTest {
     }
 
     @Nested
+    class ClearPopulatedHearingFields {
+
+        @Test
+        void shouldResetPopulatedHearingCaseFields() {
+            assertThat(service.clearPopulatedHearingFields())
+                .containsEntry("hearingTypeDetails", null)
+                .containsEntry("hearingType", null)
+                .containsEntry("hearingTypeReason", null)
+                .containsEntry("hearingStartDate", null)
+                .containsEntry("hearingEndDate", null)
+                .containsEntry("judgeAndLegalAdvisor", null)
+                .containsEntry("hearingAttendance", List.of())
+                .containsEntry("hearingAttendanceDetails", null)
+                .containsEntry("preHearingAttendanceDetails", null)
+                .containsEntry("sendNoticeOfHearingTranslationRequirements", null)
+                .containsEntry("hearingDuration", null)
+                .containsEntry("hearingDays", null)
+                .containsEntry("hearingMinutes", null)
+                .containsEntry("hearingHours", null)
+                .containsEntry("hearingEndDateTime", null)
+                .containsEntry("previousHearingVenue", null)
+                .containsEntry("hearingVenue", null)
+                .containsEntry("hearingVenueCustom", null);
+        }
+
+    }
+
+    @Nested
     class NewHearingInitiation {
 
         @Test
