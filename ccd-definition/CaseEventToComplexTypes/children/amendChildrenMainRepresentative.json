@@ -31,8 +31,17 @@
     "ID": "AmendChildren",
     "CaseEventID": "amendChildren",
     "CaseFieldID": "childrenMainRepresentative",
-    "ListElementCode": "organisation",
+    "ListElementCode": "telephoneNumber.telephoneNumber",
     "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "ListElementCode": "organisation",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
