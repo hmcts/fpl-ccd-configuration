@@ -108,6 +108,16 @@ public class ManageHearingsService {
     private static final String HEARING_END_DATE_TIME = "hearingEndDateTime";
     public static final String PRE_HEARING_ATTENDANCE_DETAILS_KEY = "preHearingAttendanceDetails";
     public static final String PREVIOUS_HEARING_VENUE_KEY = "previousHearingVenue";
+    public static final String HEARING_ATTENDANCE = "hearingAttendance";
+    public static final String HEARING_ATTENDANCE_DETAILS = "hearingAttendanceDetails";
+    public static final String HEARING_TYPE = "hearingType";
+    public static final String HEARING_TYPE_DETAILS = "hearingTypeDetails";
+    public static final String HEARING_TYPE_REASON = "hearingTypeReason";
+    public static final String HEARING_VENUE = "hearingVenue";
+    public static final String HEARING_VENUE_CUSTOM = "hearingVenueCustom";
+    public static final String JUDGE_AND_LEGAL_ADVISOR = "judgeAndLegalAdvisor";
+    public static final String SEND_NOTICE_OF_HEARING_TRANSLATION_REQUIREMENTS
+        = "sendNoticeOfHearingTranslationRequirements";
 
     private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -215,6 +225,29 @@ public class ManageHearingsService {
         return reListedBooking.getId();
     }
 
+    public Map<String, Object> clearPopulatedHearingFields() {
+        Map<String, Object> data = new HashMap<>();
+        data.put(HEARING_TYPE_DETAILS, null);
+        data.put(HEARING_TYPE, null);
+        data.put(HEARING_TYPE_REASON, null);
+        data.put(HEARING_START_DATE, null);
+        data.put(HEARING_END_DATE, null);
+        data.put(JUDGE_AND_LEGAL_ADVISOR, null);
+        data.put(HEARING_ATTENDANCE, List.of());
+        data.put(HEARING_ATTENDANCE_DETAILS, null);
+        data.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, null);
+        data.put(SEND_NOTICE_OF_HEARING_TRANSLATION_REQUIREMENTS, null);
+        data.put(HEARING_DURATION, null);
+        data.put(HEARING_DAYS, null);
+        data.put(HEARING_HOURS, null);
+        data.put(HEARING_MINUTES, null);
+        data.put(HEARING_END_DATE_TIME, null);
+        data.put(PREVIOUS_HEARING_VENUE_KEY, null);
+        data.put(HEARING_VENUE, null);
+        data.put(HEARING_VENUE_CUSTOM, null);
+        return data;
+    }
+
     public Map<String, Object> initiateNewHearing(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
@@ -259,18 +292,18 @@ public class ManageHearingsService {
         }
 
         if (OTHER.equals(hearingBooking.getType())) {
-            caseFields.put("hearingTypeDetails", hearingBooking.getTypeDetails());
+            caseFields.put(HEARING_TYPE_DETAILS, hearingBooking.getTypeDetails());
         }
 
-        caseFields.put("hearingType", hearingBooking.getType());
-        caseFields.put("hearingTypeReason", hearingBooking.getTypeReason());
+        caseFields.put(HEARING_TYPE, hearingBooking.getType());
+        caseFields.put(HEARING_TYPE_REASON, hearingBooking.getTypeReason());
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
         caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
-        caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
-        caseFields.put("hearingAttendance", hearingBooking.getAttendance());
-        caseFields.put("hearingAttendanceDetails", hearingBooking.getAttendanceDetails());
+        caseFields.put(JUDGE_AND_LEGAL_ADVISOR, judgeAndLegalAdvisor);
+        caseFields.put(HEARING_ATTENDANCE, hearingBooking.getAttendance());
+        caseFields.put(HEARING_ATTENDANCE_DETAILS, hearingBooking.getAttendanceDetails());
         caseFields.put(PRE_HEARING_ATTENDANCE_DETAILS_KEY, hearingBooking.getPreAttendanceDetails());
-        caseFields.put("sendNoticeOfHearingTranslationRequirements", hearingBooking.getTranslationRequirements());
+        caseFields.put(SEND_NOTICE_OF_HEARING_TRANSLATION_REQUIREMENTS, hearingBooking.getTranslationRequirements());
 
         if (YES.getValue().equals(hearingBooking.getEndDateDerived())) {
             if (hearingBooking.getHearingDays() != null) {
@@ -291,8 +324,8 @@ public class ManageHearingsService {
             caseFields.put(PREVIOUS_HEARING_VENUE_KEY, hearingBooking.getPreviousHearingVenue());
         }
 
-        caseFields.put("hearingVenue", hearingBooking.getVenue());
-        caseFields.put("hearingVenueCustom", hearingBooking.getVenueCustomAddress());
+        caseFields.put(HEARING_VENUE, hearingBooking.getVenue());
+        caseFields.put(HEARING_VENUE_CUSTOM, hearingBooking.getVenueCustomAddress());
 
         return caseFields;
     }
@@ -376,16 +409,16 @@ public class ManageHearingsService {
 
     public Set<String> caseFieldsToBeRemoved() {
         return Set.of(
-            "hearingType",
-            "hearingTypeDetails",
-            "hearingTypeReason",
-            "hearingVenue",
-            "hearingVenueCustom",
+            HEARING_TYPE,
+            HEARING_TYPE_DETAILS,
+            HEARING_TYPE_REASON,
+            HEARING_VENUE,
+            HEARING_VENUE_CUSTOM,
             HEARING_START_DATE,
             HEARING_END_DATE,
             "sendNoticeOfHearing",
-            "sendNoticeOfHearingTranslationRequirements",
-            "judgeAndLegalAdvisor",
+            SEND_NOTICE_OF_HEARING_TRANSLATION_REQUIREMENTS,
+            JUDGE_AND_LEGAL_ADVISOR,
             "noticeOfHearingNotes",
             PREVIOUS_HEARING_VENUE_KEY,
             "firstHearingFlag",
@@ -411,8 +444,8 @@ public class ManageHearingsService {
             START_DATE_FLAG,
             END_DATE_FLAG,
             "hasSession",
-            "hearingAttendance",
-            "hearingAttendanceDetails",
+            HEARING_ATTENDANCE,
+            HEARING_ATTENDANCE_DETAILS,
             PRE_HEARING_ATTENDANCE_DETAILS_KEY,
             "hearingOption",
             "hasOthers",
