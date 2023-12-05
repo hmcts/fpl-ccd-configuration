@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.BEFORE_APPROVAL_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 
 class EPOEndDateValidatorTest {
@@ -77,4 +78,17 @@ class EPOEndDateValidatorTest {
         Assertions.assertThat(underTest.validate(caseData)).isEmpty();
     }
 
+    @Test
+    void validateEPOEndDateWhenDateBeforeApproval() {
+        final LocalDateTime approvalDate = time.now().plusDays(10);
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(approvalDate)
+                .manageOrdersEndDateTime(approvalDate.minusDays(1).minusSeconds(1))
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(
+            List.of(BEFORE_APPROVAL_MESSAGE));
+    }
 }

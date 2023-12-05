@@ -22,6 +22,7 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
 
     private static final String INVALID_TIME_MESSAGE = "Enter a valid time";
     private static final String FUTURE_DATE_MESSAGE = "Enter an end date in the future";
+    public static final String BEFORE_APPROVAL_MESSAGE = "Enter a date after the approval date";
     public static final String END_DATE_RANGE_MESSAGE = "Emergency protection orders cannot last longer than 1 year";
     private static final Duration EPO_END_DATE_RANGE = Duration.of(365, ChronoUnit.DAYS);
 
@@ -42,6 +43,10 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
         final LocalDateTime rangeEnd = epoApprovalTime.plus(EPO_END_DATE_RANGE);
         if (errors.isEmpty() && epoEndTime.isAfter(rangeEnd)) {
             return List.of(END_DATE_RANGE_MESSAGE);
+        }
+
+        if (errors.isEmpty() && epoEndTime.isBefore(epoApprovalTime)) {
+            return List.of(BEFORE_APPROVAL_MESSAGE);
         }
 
         return errors;
