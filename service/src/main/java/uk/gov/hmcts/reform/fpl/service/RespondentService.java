@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -124,6 +126,17 @@ public class RespondentService {
             .map(Respondent::getSolicitor)
             .map(RespondentSolicitor::getEmail)
             .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getRespondentSolicitorTelephones(List<Respondent> respondents) {
+        return respondents
+            .stream()
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getTelephoneNumber)
+            .filter(Objects::nonNull)
+            .map(Telephone::getTelephoneNumber)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.toList());
     }
 
