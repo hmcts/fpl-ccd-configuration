@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
@@ -258,20 +259,33 @@ class RespondentServiceTest {
     }
 
     private Respondent buildRespondent(String legalRepresentation, String email) {
+        return buildRespondent(legalRepresentation, email, null);
+    }
+
+    private Respondent buildRespondent(String legalRepresentation, String email, String telephoneNumber) {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Test respondent")
                 .build())
             .legalRepresentation(legalRepresentation)
-            .solicitor(buildRespondentSolicitor(email))
+            .solicitor(buildRespondentSolicitor(email, telephoneNumber))
             .build();
     }
 
-    private RespondentSolicitor buildRespondentSolicitor(String email) {
-        return RespondentSolicitor.builder()
-            .firstName("Test respondent solicitor")
-            .email(email)
-            .build();
+    private RespondentSolicitor buildRespondentSolicitor(String email, String telephoneNumber) {
+        if (isBlank(telephoneNumber)) {
+            return RespondentSolicitor.builder()
+                .firstName("Test respondent solicitor")
+                .email(email)
+                .telephoneNumber(Telephone.builder().build())
+                .build();
+        } else {
+            return RespondentSolicitor.builder()
+                .firstName("Test respondent solicitor")
+                .email(email)
+                .telephoneNumber(Telephone.builder().telephoneNumber(telephoneNumber).build())
+                .build();
+        }
     }
 
     @Nested
@@ -639,6 +653,16 @@ class RespondentServiceTest {
                 .build())
             .build();
         assertThat(service.transformOtherToRespondent(other)).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldGetRespondentSolicitorTelephones() {
+        List<Respondent> respondents = List.of(buildRespondent(YES.getValue(), "email-1@test.com", null),
+            buildRespondent(YES.getValue(), "email-2@test.com", "1234 567 890"));
+
+        List<String> respondentSolicitorTelephones = service.getRespondentSolicitorTelephones(respondents);
+
+        assertThat(respondentSolicitorTelephones).containsExactlyInAnyOrder("1234 567 890");
     }
 
 }
