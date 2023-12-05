@@ -106,7 +106,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -140,7 +140,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateLinkedHearingAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -177,7 +177,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -213,7 +213,7 @@ class MigrateCFVServiceTest {
             throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -251,7 +251,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -285,7 +285,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -321,7 +321,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -356,7 +356,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialHearingAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -393,7 +393,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentsUploadedBySolicitor(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -428,7 +428,7 @@ class MigrateCFVServiceTest {
             throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -474,7 +474,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -502,7 +502,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -533,7 +533,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -562,7 +562,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -594,7 +594,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -622,7 +622,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -652,7 +652,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -681,7 +681,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -712,7 +712,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportUploadedBySolicitor(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -740,7 +740,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportUploadedBySolicitor(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -777,16 +777,16 @@ class MigrateCFVServiceTest {
             UUID doc9Id = UUID.randomUUID();
             UUID doc10Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
-            DocumentReference document5 = DocumentReference.builder().build();
-            DocumentReference document6 = DocumentReference.builder().build();
-            DocumentReference document7 = DocumentReference.builder().build();
-            DocumentReference document8 = DocumentReference.builder().build();
-            DocumentReference document9 = DocumentReference.builder().build();
-            DocumentReference document10 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+            DocumentReference document5 = DocumentReference.builder().filename("mno").build();
+            DocumentReference document6 = DocumentReference.builder().filename("pqr").build();
+            DocumentReference document7 = DocumentReference.builder().filename("stu").build();
+            DocumentReference document8 = DocumentReference.builder().filename("vwx").build();
+            DocumentReference document9 = DocumentReference.builder().filename("yza").build();
+            DocumentReference document10 = DocumentReference.builder().filename("bcd").build();
 
             SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
                 .type(APPLICANT_STATEMENT)
@@ -1043,7 +1043,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .build();
@@ -1080,12 +1080,12 @@ class MigrateCFVServiceTest {
             UUID doc1Id = UUID.randomUUID();
             UUID doc2Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .build();
 
-            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
             SupportingEvidenceBundle sebTwo = SupportingEvidenceBundle.builder()
                 .document(document2)
                 .build();
@@ -1129,7 +1129,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .confidential(List.of("CONFIDENTIAL"))
@@ -1166,7 +1166,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .hasConfidentialAddress("Yes")
@@ -1203,7 +1203,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .confidential(List.of("CONFIDENTIAL"))
@@ -1242,7 +1242,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .hasConfidentialAddress("Yes")
@@ -1547,7 +1547,7 @@ class MigrateCFVServiceTest {
                                                                       FurtherEvidenceType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -1595,7 +1595,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingFurtherEvidenceDocumentsToArchivedDocuments(FurtherEvidenceType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -1622,7 +1622,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateCaseSummaryToArchivedDocuments() {
             UUID caseSummaryId = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
 
             Element<CaseSummary> caseSummaryListElement = element(caseSummaryId, CaseSummary.builder()
                 .hasConfidentialAddress(YesNo.YES.getValue())
@@ -1651,10 +1651,10 @@ class MigrateCFVServiceTest {
             UUID docTwoId = randomUUID();
             UUID docThreeId = randomUUID();
             UUID docFourId = randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
 
             Element<PositionStatementRespondent> positionStatementOne = element(docOneId,
                 PositionStatementRespondent.builder().document(document1).build());
@@ -1692,7 +1692,7 @@ class MigrateCFVServiceTest {
             UUID respondentOneId = UUID.randomUUID();
 
             UUID psrOneId = randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
 
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
@@ -1725,19 +1725,19 @@ class MigrateCFVServiceTest {
             UUID docTwoId = randomUUID();
             UUID docThreeId = randomUUID();
             UUID docFourId = randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
 
             Element<SupportingEvidenceBundle> docOne = element(docOneId,
                 SupportingEvidenceBundle.builder().document(document1).build());
             Element<SupportingEvidenceBundle> docTwo = element(docTwoId,
-                SupportingEvidenceBundle.builder().document(document1).build());
+                SupportingEvidenceBundle.builder().document(document2).build());
             Element<SupportingEvidenceBundle> docThree = element(docThreeId,
-                SupportingEvidenceBundle.builder().document(document1).build());
+                SupportingEvidenceBundle.builder().document(document3).build());
             Element<SupportingEvidenceBundle> docFour = element(docFourId,
-                SupportingEvidenceBundle.builder().document(document1).build());
+                SupportingEvidenceBundle.builder().document(document4).build());
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -1765,19 +1765,19 @@ class MigrateCFVServiceTest {
             UUID docTwoId = randomUUID();
             UUID docThreeId = randomUUID();
             UUID docFourId = randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
 
             Element<ApplicationDocument> docOne = element(docOneId,
                 ApplicationDocument.builder().document(document1).build());
             Element<ApplicationDocument> docTwo = element(docTwoId,
-                ApplicationDocument.builder().document(document1).build());
+                ApplicationDocument.builder().document(document2).build());
             Element<ApplicationDocument> docThree = element(docThreeId,
-                ApplicationDocument.builder().document(document1).build());
+                ApplicationDocument.builder().document(document3).build());
             Element<ApplicationDocument> docFour = element(docFourId,
-                ApplicationDocument.builder().document(document1).build());
+                ApplicationDocument.builder().document(document4).build());
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
@@ -1792,11 +1792,11 @@ class MigrateCFVServiceTest {
                     .doesNotContainKey(f));
 
             assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
-                .containsExactlyInAnyOrder(
-                    element(docOneId, ManagedDocument.builder().document(document1).build()),
-                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
-                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
-                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+                    .containsExactlyInAnyOrder(
+                        element(docOneId, ManagedDocument.builder().document(document1).build()),
+                        element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                        element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                        element(docFourId, ManagedDocument.builder().document(document4).build()));
         }
 
         @Test
@@ -1805,10 +1805,10 @@ class MigrateCFVServiceTest {
             UUID docTwoId = randomUUID();
             UUID docThreeId = randomUUID();
             UUID docFourId = randomUUID();
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
 
             Element<HearingCourtBundle> docOne = element(
                 HearingCourtBundle.builder().courtBundle(
@@ -1882,7 +1882,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(type)
                 .document(document1)
@@ -1913,7 +1913,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(type)
                 .document(document1)
@@ -1950,17 +1950,17 @@ class MigrateCFVServiceTest {
             UUID doc10Id = UUID.randomUUID();
             UUID doc11Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
-            DocumentReference document5 = DocumentReference.builder().build();
-            DocumentReference document6 = DocumentReference.builder().build();
-            DocumentReference document7 = DocumentReference.builder().build();
-            DocumentReference document8 = DocumentReference.builder().build();
-            DocumentReference document9 = DocumentReference.builder().build();
-            DocumentReference document10 = DocumentReference.builder().build();
-            DocumentReference document11 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+            DocumentReference document5 = DocumentReference.builder().filename("mno").build();
+            DocumentReference document6 = DocumentReference.builder().filename("pqr").build();
+            DocumentReference document7 = DocumentReference.builder().filename("stu").build();
+            DocumentReference document8 = DocumentReference.builder().filename("vwx").build();
+            DocumentReference document9 = DocumentReference.builder().filename("yza").build();
+            DocumentReference document10 = DocumentReference.builder().filename("bcd").build();
+            DocumentReference document11 = DocumentReference.builder().filename("fgh").build();
 
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(THRESHOLD)
