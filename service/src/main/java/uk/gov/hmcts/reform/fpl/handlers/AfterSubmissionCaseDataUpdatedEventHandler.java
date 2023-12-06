@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
@@ -30,13 +31,15 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
     public void handleCaseDataChange(final AfterSubmissionCaseDataUpdated event) {
         coreCaseDataService.performPostSubmitCallback(event.getCaseData().getId(),
             "internal-update-case-summary",
-            caseDetails -> {
-                CaseData currentCaseData = caseConverter.convert(caseDetails);
-                // Transient field set purely for caseFlag summary fields needs to be copied over
-                currentCaseData.setCaseFlagValueUpdated(event.getCaseData().getCaseFlagValueUpdated());
-                return caseSummaryService.generateSummaryFields(currentCaseData);
-            }
+            caseDetails -> caseSummaryChangeFunction(caseDetails, event)
         );
+    }
+
+    Map<String, Object> caseSummaryChangeFunction(CaseDetails caseDetails, AfterSubmissionCaseDataUpdated event) {
+        CaseData currentCaseData = caseConverter.convert(caseDetails);
+        // Transient field set purely for caseFlag summary fields needs to be copied over
+        currentCaseData.setCaseFlagValueUpdated(event.getCaseData().getCaseFlagValueUpdated());
+        return caseSummaryService.generateSummaryFields(currentCaseData);
     }
 
     private SyntheticCaseSummary originalSyntheticCaseSummary(AfterSubmissionCaseDataUpdated event) {
