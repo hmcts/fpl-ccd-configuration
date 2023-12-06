@@ -155,6 +155,9 @@ class OrdersSoughtCheckerTest {
                 .directions("Yes")
                 .directionDetails("")
                 .build(),
+            completedOrder()
+                .court(null)
+                .build(),
 
             completedEPO()
                 .epoType(null)
