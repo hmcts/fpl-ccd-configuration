@@ -46,7 +46,7 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('@charles Amend generated order in general case @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@nightlyOnly Amend generated order in general case @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
@@ -66,7 +66,7 @@ Scenario('Amend urgent hearing order @charles', async ({ I, caseViewPage, manage
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('Amend case management order @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Amend case management order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.caseManagementOrder);
   assertAmendment(I, caseViewPage, orders.caseManagementOrder);
