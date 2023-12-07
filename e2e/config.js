@@ -131,6 +131,7 @@ module.exports = {
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send messages',
+    replyMessage: 'Reply to messages',
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
     selectCourt: 'Select court to issue',
