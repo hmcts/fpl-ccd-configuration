@@ -222,6 +222,7 @@ module.exports = {
   async navigateToCaseDetails(caseId) {
     this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
     I.wait(0.5);
+    I.waitForText('CCD ID');
     //await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
     // const currentUrl = await this.grabCurrentUrl();
     // if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {

@@ -215,6 +215,13 @@ module.exports = {
       .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
+  selectTabFunction(tab){
+    const tabSelector = getTabSelector(tab);
+    this.click(tabSelector);
+    this.click(tabSelector);
+
+  },
+
   async selectTab(tab){
     const tabSelector = getTabSelector(tab);
     //Not need with codeceptjs playwright , click function find the element if not visible
