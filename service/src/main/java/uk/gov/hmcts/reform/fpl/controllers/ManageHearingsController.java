@@ -130,6 +130,7 @@ public class ManageHearingsController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
+        caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
@@ -272,8 +273,6 @@ public class ManageHearingsController extends CallbackController {
         return respond(caseDetails);
     }
 
-
-
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -327,7 +326,7 @@ public class ManageHearingsController extends CallbackController {
         final CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getUseAllocatedJudge().equals(NO)) {
+        if (isEmpty(caseData.getUseAllocatedJudge()) || caseData.getUseAllocatedJudge().equals(NO)) {
             // validate + add to caseDetails the judgeAndLegalAdvisor field
             List<String> possibleErrors = judicialService.validateHearingJudgeEmail(caseDetails, caseData);
             if (possibleErrors.size() > 0) {

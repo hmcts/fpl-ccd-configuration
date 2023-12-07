@@ -22,7 +22,8 @@
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "allocatedJudgeLabel!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -34,7 +35,7 @@
     "PageDisplayOrder": 7,
     "DisplayContext": "OPTIONAL",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\""
+    "FieldShowCondition": "useAllocatedJudge =\"No\" OR allocatedJudgeLabel=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -46,7 +47,7 @@
     "PageDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "useAllocatedJudge =\"No\""
+    "FieldShowCondition": "useAllocatedJudge =\"No\" OR allocatedJudgeLabel=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,7 +82,8 @@
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "DisplayContext": "OPTIONAL",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "enterManuallyHearingJudge =\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
