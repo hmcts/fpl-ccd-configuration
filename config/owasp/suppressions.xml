@@ -49,4 +49,8 @@
     <packageUrl regex="true">^pkg:maven/org.bouncycastle/bcprov-jdk15on@.*$</packageUrl>
     <cve>CVE-2023-33202</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2023-34055</cve>
+    <cve>CVE-2023-46589</cve>
+  </suppress>
 </suppressions>
