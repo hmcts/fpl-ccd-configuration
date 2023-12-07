@@ -160,7 +160,7 @@ exports.config = {
   plugins: {
 
     pauseOnFail: {
-      enabled: true
+      enabled: false
     },
     retryFailedStep: {
       enabled: true,
