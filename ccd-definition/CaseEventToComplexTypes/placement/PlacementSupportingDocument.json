@@ -14,6 +14,17 @@
     "ID": "PlacementSupportingDocument",
     "CaseEventID": "placement",
     "CaseFieldID": "placement",
+    "ListElementCode": "placementSupportingDocuments.otherDocTypeName",
+    "EventElementLabel": "Custom document type",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition":  "placement.placementSupportingDocuments.type=\"OTHER_DOCUMENT_TYPE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementSupportingDocument",
+    "CaseEventID": "placement",
+    "CaseFieldID": "placement",
     "ListElementCode": "placementSupportingDocuments.document",
     "EventElementLabel": "Document",
     "SecurityClassification": "Public",
