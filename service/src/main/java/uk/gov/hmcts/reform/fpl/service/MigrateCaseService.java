@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -508,6 +509,13 @@ public class MigrateCaseService {
                     caseData.getId()));
     }
 
+    public Map<String, Object> removeClosedJudicialMessage(CaseData caseData, String migrationId, String messageId) {
+        UUID targetMessageId = UUID.fromString(messageId);
+        return Map.of("closedJudicialMessages",
+            removeJudicialMessageFormList(caseData.getClosedJudicialMessages(), messageId, migrationId,
+                caseData.getId()));
+    }
+
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
                                                               String messageId, String migrationId, Long caseId) {
         if (messages == null) {
@@ -840,10 +848,11 @@ public class MigrateCaseService {
         }
 
         thresholdDetails = thresholdDetails.replace(textToRemove, "");
+        Grounds updatedGrounds = caseData.getGrounds().toBuilder().thresholdDetails(thresholdDetails).build();
 
-        return Map.of("thresholdDetails", thresholdDetails);
+        return Map.of("grounds", updatedGrounds);
     }
-  
+
     public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
