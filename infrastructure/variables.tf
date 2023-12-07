@@ -1,5 +1,3 @@
-variable "subscription" {}
-
 variable "product" {
   type = string
 }
@@ -9,11 +7,6 @@ variable "component" {
 }
 
 variable "location" {
-  type    = string
-  default = "UK South"
-}
-
-variable "location_db" {
   type    = string
   default = "UK South"
 }
@@ -55,3 +48,13 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
+
+variable "fpl_scheduler_db_name_v15" {
+  default = "fpl_scheduler"
+}
+
+variable "pgsql_admin_username" {
+  default = "fpl_scheduler_user"
+}
+
+variable "aks_subscription_id" {} # provided by the Jenkins library

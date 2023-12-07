@@ -10,7 +10,7 @@ async function setupScenario(I) {
 
 Scenario('Different user in the same local authority can see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.goToPage(config.baseUrl, config.swanseaLocalAuthorityUserTwo);
+  await I.goToPage(config.baseUrl, config.newSwanseaLocalAuthorityUserTwo);
   I.wait(30);
   I.navigateToCaseList(caseIdAndName, caseListPage);
 

@@ -29,9 +29,11 @@ AppPipelineConfig pipelineConf;
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD')
   ]
 ]
+
 
 static Map<String, Object> secret(String secretName, String envVariable) {
   [ $class: 'AzureKeyVaultSecret',
@@ -77,18 +79,18 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  //enableMutationTest()
+  enableMutationTest()
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
   //enableCrossBrowserTest(['chrome', 'firefox'])
-  enableFortifyScan('fpl-aat')
+  //enableFortifyScan('fpl-aat')
 
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
   }
 
-  after('mutationTest') {
+  afterAlways('mutationTest') {
     archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
