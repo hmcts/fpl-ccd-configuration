@@ -46,7 +46,7 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('@nightlyOnly Amend generated order in general case @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@nightlyOnly Amend generated order in general case @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
