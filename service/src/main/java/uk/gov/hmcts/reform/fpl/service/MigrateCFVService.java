@@ -8,10 +8,12 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -105,7 +107,35 @@ public class MigrateCFVService {
         return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
     }
 
+    private static Function<Element<CaseSummary>, Element<ManagedDocument>> caseSummaryToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<PositionStatementChild>, Element<ManagedDocument>>
+        positionStatementChildToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<PositionStatementRespondent>, Element<ManagedDocument>>
+        positionStatementRespondentToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<ApplicationDocument>, Element<ManagedDocument>>
+        applicationDocumentToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
+    private static Function<Element<CourtBundle>, Element<ManagedDocument>>
+        courtBundleToManagedDocumentElement() {
+        return seb -> element(seb.getId(), ManagedDocument.builder().document(seb.getValue().getDocument()).build());
+    }
+
     private static Predicate<Element<SupportingEvidenceBundle>> matchFurtherEvidenceType(FurtherEvidenceType type) {
+        if (type == null) {
+            return e -> Optional.ofNullable(e.getValue()).orElse(SupportingEvidenceBundle.builder().type(null).build())
+                .getType() == null;
+        }
         return e -> type.equals(e.getValue().getType());
     }
 
@@ -277,7 +307,7 @@ public class MigrateCFVService {
         } else {
             if (ObjectUtils.isEmpty(hasBeenCFVMigrated) || YesNo.NO.equals(YesNo.fromString(hasBeenCFVMigrated))) {
                 throw new AssertionError(format(
-                    "Migration {id = %s, case reference = %s}, case has already been migrated",
+                    "Migration {id = %s, case reference = %s}, case has not been migrated",
                     migrationId, caseId
                 ));
             }
@@ -372,6 +402,18 @@ public class MigrateCFVService {
         return migrateFurtherEvidenceDocuments(caseData, furtherEvidenceType, "guardianEvidenceList");
     }
 
+    public Map<String, Object> migrateArchivedDocuments(CaseData caseData) {
+        return migrateFurtherEvidenceDocuments(caseData, null, "archivedDocumentsList");
+    }
+
+    public Map<String, Object> rollbackArchivedDocumentsList() {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("archivedDocumentsList", List.of());
+        ret.put("archivedDocumentsListLA", List.of());
+        ret.put("archivedDocumentsListCTSC", List.of());
+        return ret;
+    }
+
     // Expert Reports
 
     public Map<String, Object> rollbackExpertReports() {
@@ -391,7 +433,6 @@ public class MigrateCFVService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> migrateExpertReports(CaseData caseData) {
         Map<String, Object> ret = new HashMap<>();
-        migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS, "expertReportList").entrySet().stream();
 
         Map<String, Object> mergedMap = new HashMap<>(migrateFurtherEvidenceDocuments(caseData, OTHER_REPORTS,
             "expertReportList"));
@@ -708,5 +749,422 @@ public class MigrateCFVService {
         ret.put("courtBundleListLA", hearingCourtBundleListLA);
         ret.put("courtBundleListCTSC", hearingCourtBundleListCTSC);
         return ret;
+    }
+
+    private List<List<Element<SupportingEvidenceBundle>>> getHearingFurtherEvidenceDocumentsToBeMigrated(
+        CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingFurtherEvidenceDocuments()).orElse(List.of()).stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle()).toList();
+    }
+
+    public int calculateExpectedNumberOfHearingFurtherEvidenceDocuments(CaseData caseData) {
+        return getHearingFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
+            .mapToInt(Collection::size)
+            .sum();
+    }
+
+    public Map<String, Object> migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getHearingFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    private List<List<Element<SupportingEvidenceBundle>>> getFurtherEvidenceDocumentsToBeMigrated(
+        CaseData caseData) {
+        return List.of(Optional.ofNullable(caseData.getFurtherEvidenceDocuments()).orElse(List.of()),
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsLA()).orElse(List.of()),
+            Optional.ofNullable(caseData.getFurtherEvidenceDocumentsSolicitor()).orElse(List.of()));
+    }
+
+    public int calculateExpectedNumberOfFurtherEvidenceDocuments(CaseData caseData) {
+        return getFurtherEvidenceDocumentsToBeMigrated(caseData).stream().mapToInt(Collection::size).sum();
+    }
+
+    public Map<String, Object> migrateFurtherEvidenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getFurtherEvidenceDocumentsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedFurtherEvidenceDocument(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
+        int expectedSize = calculateExpectedNumberOfHearingFurtherEvidenceDocuments(caseData)
+            + calculateExpectedNumberOfFurtherEvidenceDocuments(caseData);
+        int actualSize = List.of(
+                "noticeOfActingOrIssueList",
+                "noticeOfActingOrIssueListLA",
+                "noticeOfActingOrIssueListCTSC",
+                "guardianEvidenceList",
+                "guardianEvidenceListLA",
+                "guardianEvidenceListCTSC",
+                "applicantWitnessStmtList",
+                "applicantWitnessStmtListLA",
+                "applicantWitnessStmtListCTSC",
+                "expertReportList",
+                "expertReportListLA",
+                "expertReportListCTSC",
+                "drugAndAlcoholReportList",
+                "drugAndAlcoholReportListLA",
+                "drugAndAlcoholReportListCTSC",
+                "archivedDocumentsList",
+                "archivedDocumentsListLA",
+                "archivedDocumentsListCTSC"
+            ).stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocumentsLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocuments'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'furtherEvidenceDocumentsSolicitor'), 0)
+    //                 AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'noticeOfActingOrIssueListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'guardianEvidenceListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'applicantWitnessStmtListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'expertReportListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'drugAndAlcoholReportListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'archivedDocumentsListCTSC'), 0)
+    //                 AS newCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'hearingFurtherEvidenceDocuments')
+    //               AS ncElements ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference, data) T
+    // WHERE oldCount <> newCount
+
+    private List<Element<CaseSummary>> getCaseSummariesToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().caseSummaryList(List.of()).build())
+            .getCaseSummaryList();
+    }
+
+    public Map<String, Object> migrateCaseSummaryToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCaseSummariesToBeMigrated(caseData).stream()
+            .map(caseSummaryToManagedDocumentElement()).collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedCaseSummary(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = getCaseSummariesToBeMigrated(caseData).size();
+        int actualSize = List.of("caseSummaryList", "caseSummaryListLA").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "CaseSummary (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryListBackup'), 0) AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'caseSummaryList'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount
+
+    private List<Element<PositionStatementRespondent>> getPositionStatementRespondentToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().positionStatementRespondentListV2(List.of()).build())
+            .getPositionStatementRespondentListV2();
+    }
+
+    private List<Element<PositionStatementChild>> getPositionStatementChildToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().positionStatementChildListV2(List.of()).build())
+            .getPositionStatementChildListV2();
+    }
+
+    public Map<String, Object> migratePositionStatementToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getPositionStatementRespondentToBeMigrated(caseData).stream()
+            .map(positionStatementRespondentToManagedDocumentElement()).collect(toList());
+        ret.addAll(getPositionStatementChildToBeMigrated(caseData).stream()
+            .map(positionStatementChildToManagedDocumentElement()).collect(toList()));
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedPositionStatement(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        int expectedSize = getPositionStatementRespondentToBeMigrated(caseData).size()
+            + getPositionStatementChildToBeMigrated(caseData).size();
+        int actualSize = List.of("posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC",
+                "posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "PositionStatement(Child/Respondent) (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'positionStatementRespondentListV2'), 0)   AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtRespListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
+    //
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'positionStatementChildListV2'), 0)   AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'posStmtChildListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
+
+    private List<List<Element<SupportingEvidenceBundle>>> getRespondentStatementsToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getRespondentStatements()).orElse(List.of()).stream()
+            .map(hfed -> hfed.getValue().getSupportingEvidenceBundle())
+            .toList();
+    }
+
+    public Map<String, Object> migrateRespondentStatementToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getRespondentStatementsToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(toManagedDocumentElement()))
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedRespondentStatement(String migrationId, CaseData caseData,
+                                                    Map<String, Object> changes) {
+        int expectedSize = getRespondentStatementsToBeMigrated(caseData).stream()
+            .mapToInt(Collection::size)
+            .sum();
+        int actualSize = List.of("respStmtList", "respStmtListLA", "respStmtListCTSC").stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated respondent statements (%s/%s)",
+                migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //            COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'supportingEvidenceBundle')), 0) as oldCount,
+    //            COALESCE(jsonb_array_length(data -> 'respStmtList'), 0) +
+    //            COALESCE(jsonb_array_length(data -> 'respStmtListLA'), 0) +
+    //            COALESCE(jsonb_array_length(data -> 'respStmtListCTSC'), 0)                               AS newCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'respondentStatements') AS ncElements ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference, data) T
+    // WHERE oldCount <> newCount
+
+    @SuppressWarnings("unchecked")
+    private List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsToBeMigrated(CaseData caseData) {
+        List<Element<SupportingEvidenceBundle>> all = new ArrayList(Optional.ofNullable(caseData
+            .getCorrespondenceDocuments()).orElse(List.of()));
+        all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsLA()).orElse(List.of()));
+        all.addAll(Optional.ofNullable(caseData.getCorrespondenceDocumentsSolicitor()).orElse(List.of()));
+        return all;
+    }
+
+    public Map<String, Object> migrateCorrespondenceDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCorrespondenceDocumentsToBeMigrated(caseData).stream()
+            .map(toManagedDocumentElement())
+            .collect(toList());
+
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedCorrespondenceDocuments(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
+        int expectedSize = getCorrespondenceDocumentsToBeMigrated(caseData).size();
+        int actualSize = List.of("correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC")
+            .stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated correspondence documents"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocuments'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocumentsSolicitor'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocumentsLA'), 0) AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'correspondenceDocListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //     ) T
+    // WHERE oldCount <> newCount
+
+    @SuppressWarnings("unchecked")
+    private List<Element<ApplicationDocument>> getApplicationDocumentsToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of());
+    }
+
+    public Map<String, Object> migrateApplicationDocumentsToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getApplicationDocumentsToBeMigrated(caseData).stream()
+            .map(applicationDocumentToManagedDocumentElement())
+            .collect(toList());
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedApplicationDocuments(String migrationId, CaseData caseData,
+                                                        Map<String, Object> changes) {
+        int expectedSize = getApplicationDocumentsToBeMigrated(caseData).size();
+        int actualSize = List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+                "documentsFiledOnIssueListCTSC",
+                "carePlanList", "carePlanListLA", "carePlanListCTSC",
+                "thresholdList", "thresholdListLA", "thresholdListCTSC")
+            .stream()
+            .map(key -> (Collection) changes.get(key))
+            .filter(collection -> collection != null)
+            .mapToInt(Collection::size).sum();
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated application documents"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //             jsonb_array_length(data -> 'applicationDocuments')           AS oldCount,
+    //             COALESCE(jsonb_array_length(data -> 'documentsFiledOnIssueList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'documentsFiledOnIssueListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'carePlanListCTSC'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdList'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdListLA'), 0) +
+    //             COALESCE(jsonb_array_length(data -> 'thresholdListCTSC'), 0) AS newCount
+    //      FROM case_data cd
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"') T
+    // WHERE oldCount <> newCount;
+
+    @SuppressWarnings("unchecked")
+    private static int sumCourtBundleSizes(Map<String, Object> map, String[] keys) {
+        int total = 0;
+
+        for (String key : keys) {
+            List<Element<HearingCourtBundle>> hearingCourtBundles = (List<Element<HearingCourtBundle>>) map.get(key);
+
+            if (hearingCourtBundles != null) {
+                for (Element<HearingCourtBundle> hearingCourtBundle : hearingCourtBundles) {
+                    total += hearingCourtBundle.getValue().getCourtBundle().size();
+                }
+            }
+        }
+
+        return total;
+    }
+
+    private List<List<Element<CourtBundle>>> getCourtBundlesToBeMigrated(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDocuments())
+            .orElse(HearingDocuments.builder().courtBundleListV2(List.of()).build())
+            .getCourtBundleListV2()
+            .stream().map(a -> a.getValue().getCourtBundle()).toList();
+    }
+
+    public Map<String, Object> migrateCourtBundlesToArchivedDocuments(CaseData caseData) {
+        List<Element<ManagedDocument>> ret = getCourtBundlesToBeMigrated(caseData).stream()
+            .flatMap(c -> c.stream().map(courtBundleToManagedDocumentElement()))
+            .collect(toList());
+
+        return Map.of("archivedDocumentsListCTSC", ret);
+    }
+
+    public void validateMigratedCourtBundle(String migrationId, CaseData caseData,
+                                            Map<String, Object> changes) {
+        int expectedSize = getCourtBundlesToBeMigrated(caseData).stream()
+            .mapToInt(Collection::size).sum();
+
+        String[] keysToSum = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"};
+        int actualSize = sumCourtBundleSizes(changes, keysToSum);
+        if (expectedSize != actualSize) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Unexpected number of migrated court bundles"
+                    + " (%s/%s)", migrationId, caseData.getId(), expectedSize, actualSize));
+        }
+    }
+
+    // SELECT *
+    // FROM (SELECT reference,
+    //          COALESCE(SUM(jsonb_array_length(backupElements -> 'value' -> 'courtBundle')), 0) AS oldCourtBundleCount,
+    //          COALESCE(SUM(jsonb_array_length(ncElements -> 'value' -> 'courtBundle')), 0) +
+    //          COALESCE(SUM(jsonb_array_length(laElements -> 'value' -> 'courtBundle')), 0) +
+    //          COALESCE(SUM(jsonb_array_length(ctscElements -> 'value' -> 'courtBundle')), 0)
+    //                                                                              AS migratedCourtBundleCount
+    //      FROM case_data cd
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListV2') AS ncElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListLA') AS laElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListCTSC') AS ctscElements ON TRUE
+    //               LEFT JOIN LATERAL jsonb_array_elements(data -> 'courtBundleListV2Backup') AS backupElements
+    //                         ON TRUE
+    //      where jurisdiction = 'PUBLICLAW'
+    //        and case_type_id = 'CARE_SUPERVISION_EPO'
+    //        and (data -> 'hasBeenCFVMigrated')::text = '"YES"'
+    //      GROUP BY reference
+    //     ) T
+    // WHERE oldCourtBundleCount <> migratedCourtBundleCount
+
+    public void validateMigratedNumberOfDocuments(String migrationId, CaseData caseData, Map<String, Object> changes) {
+        validateMigratedFurtherEvidenceDocument(migrationId, caseData, changes);
+        validateMigratedCaseSummary(migrationId, caseData, changes);
+        validateMigratedPositionStatement(migrationId, caseData, changes);
+        validateMigratedRespondentStatement(migrationId, caseData, changes);
+        validateMigratedCorrespondenceDocuments(migrationId, caseData, changes);
+        validateMigratedApplicationDocuments(migrationId, caseData, changes);
+        validateMigratedCourtBundle(migrationId, caseData, changes);
     }
 }

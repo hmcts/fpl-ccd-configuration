@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -38,11 +41,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
@@ -74,15 +79,15 @@ class MigrateCFVServiceTest {
     @InjectMocks
     private MigrateCFVService underTest;
 
+    private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToFieldNameMap = Map.of(
+        APPLICANT_STATEMENT, "applicantWitnessStmtList",
+        GUARDIAN_REPORTS, "guardianEvidenceList",
+        OTHER_REPORTS, "expertReportList",
+        NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE, "noticeOfActingOrIssueList"
+    );
+
     @Nested
     class CaseFileViewMigrations {
-
-        private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToFieldNameMap = Map.of(
-            APPLICANT_STATEMENT, "applicantWitnessStmtList",
-            GUARDIAN_REPORTS, "guardianEvidenceList",
-            OTHER_REPORTS, "expertReportList",
-            NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE, "noticeOfActingOrIssueList"
-        );
 
         private final Map<FurtherEvidenceType, String> furtherEvidenceTypeToMigrateMethodMap = Map.of(
             APPLICANT_STATEMENT, "migrateApplicantWitnessStatements",
@@ -101,7 +106,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -135,7 +140,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateLinkedHearingAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -172,7 +177,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialAnyOtherDocumentsUploadedByCTSC(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -208,7 +213,7 @@ class MigrateCFVServiceTest {
             throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -246,7 +251,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -280,7 +285,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingAnyOtherDocumentUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -316,7 +321,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -351,7 +356,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialHearingAnyOtherDocumentsUploadedByLA(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -388,7 +393,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateAnyOtherDocumentsUploadedBySolicitor(FurtherEvidenceType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -423,7 +428,7 @@ class MigrateCFVServiceTest {
             throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(type)
                 .document(document1)
@@ -469,7 +474,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -497,7 +502,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -528,7 +533,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -557,7 +562,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingConfidentialExpertReportUploadedByCTSC(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -589,7 +594,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -617,7 +622,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -647,7 +652,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -676,7 +681,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingConfidentialExpertReportsUploadedByLA(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -707,7 +712,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateExpertReportUploadedBySolicitor(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -735,7 +740,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateHearingExpertReportUploadedBySolicitor(ExpertReportType type) {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .type(EXPERT_REPORTS)
                 .expertReportType(type)
@@ -770,16 +775,18 @@ class MigrateCFVServiceTest {
             UUID doc7Id = UUID.randomUUID();
             UUID doc8Id = UUID.randomUUID();
             UUID doc9Id = UUID.randomUUID();
+            UUID doc10Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
-            DocumentReference document5 = DocumentReference.builder().build();
-            DocumentReference document6 = DocumentReference.builder().build();
-            DocumentReference document7 = DocumentReference.builder().build();
-            DocumentReference document8 = DocumentReference.builder().build();
-            DocumentReference document9 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+            DocumentReference document5 = DocumentReference.builder().filename("mno").build();
+            DocumentReference document6 = DocumentReference.builder().filename("pqr").build();
+            DocumentReference document7 = DocumentReference.builder().filename("stu").build();
+            DocumentReference document8 = DocumentReference.builder().filename("vwx").build();
+            DocumentReference document9 = DocumentReference.builder().filename("yza").build();
+            DocumentReference document10 = DocumentReference.builder().filename("bcd").build();
 
             SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
                 .type(APPLICANT_STATEMENT)
@@ -822,13 +829,18 @@ class MigrateCFVServiceTest {
                 .expertReportType(TOXICOLOGY_REPORT)
                 .document(document9)
                 .build();
+            SupportingEvidenceBundle seb10 = SupportingEvidenceBundle.builder()
+                .type(null)
+                .document(document10)
+                .build();
 
             CaseData caseData = CaseData.builder()
                 .id(1L)
                 .furtherEvidenceDocumentsLA(List.of(element(doc1Id, seb1),
                     element(doc2Id, seb2),
                     element(doc7Id, seb7),
-                    element(doc9Id, seb9)))
+                    element(doc9Id, seb9),
+                    element(doc10Id, seb10)))
                 .furtherEvidenceDocuments(List.of(element(doc3Id, seb3),
                     element(doc4Id, seb4),
                     element(doc6Id, seb6),
@@ -840,6 +852,7 @@ class MigrateCFVServiceTest {
             updatedFields.putAll(underTest.migrateGuardianReports(caseData));
             updatedFields.putAll(underTest.migrateExpertReports(caseData));
             updatedFields.putAll(underTest.migrateNoticeOfActingOrIssue(caseData));
+            updatedFields.putAll(underTest.migrateArchivedDocuments(caseData));
 
             assertThat(updatedFields).extracting("applicantWitnessStmtList").asList()
                 .contains(element(doc2Id, ManagedDocument.builder().document(document2).build()),
@@ -876,6 +889,13 @@ class MigrateCFVServiceTest {
             assertThat(updatedFields).extracting("drugAndAlcoholReportListLA").asList()
                 .isEmpty();
             assertThat(updatedFields).extracting("drugAndAlcoholReportListCTSC").asList()
+                .isEmpty();
+
+            assertThat(updatedFields).extracting("archivedDocumentsList").asList()
+                .contains(element(doc10Id, ManagedDocument.builder().document(document10).build()));
+            assertThat(updatedFields).extracting("archivedDocumentsListLA").asList()
+                .isEmpty();
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
                 .isEmpty();
         }
 
@@ -919,6 +939,13 @@ class MigrateCFVServiceTest {
             assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListLA")
                 .isEqualTo(List.of());
             assertThat(underTest.rollbackNoticeOfActingOrIssue()).extracting("noticeOfActingOrIssueListCTSC")
+                .isEqualTo(List.of());
+
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsList")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsListLA")
+                .isEqualTo(List.of());
+            assertThat(underTest.rollbackArchivedDocumentsList()).extracting("archivedDocumentsListCTSC")
                 .isEqualTo(List.of());
         }
 
@@ -1016,7 +1043,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .build();
@@ -1053,12 +1080,12 @@ class MigrateCFVServiceTest {
             UUID doc1Id = UUID.randomUUID();
             UUID doc2Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .build();
 
-            DocumentReference document2 = DocumentReference.builder().build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
             SupportingEvidenceBundle sebTwo = SupportingEvidenceBundle.builder()
                 .document(document2)
                 .build();
@@ -1102,7 +1129,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .confidential(List.of("CONFIDENTIAL"))
@@ -1139,7 +1166,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .hasConfidentialAddress("Yes")
@@ -1176,7 +1203,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .confidential(List.of("CONFIDENTIAL"))
@@ -1215,7 +1242,7 @@ class MigrateCFVServiceTest {
 
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
                 .document(document1)
                 .hasConfidentialAddress("Yes")
@@ -1248,6 +1275,7 @@ class MigrateCFVServiceTest {
                         .build()));
         }
 
+        @Test
         void shouldMoveSingleCaseSummaryWithConfidentialAddressToCaseSummaryListLA() {
             Element<CaseSummary> caseSummaryListElement = element(UUID.randomUUID(), CaseSummary.builder()
                 .hasConfidentialAddress(YesNo.YES.getValue())
@@ -1389,7 +1417,7 @@ class MigrateCFVServiceTest {
             UUID hearingId = UUID.randomUUID();
 
             Element<HearingCourtBundle> courtBundleOne = element(hearingId, HearingCourtBundle.builder()
-                    .courtBundle(List.of(buildCourtBundle())).build());
+                .courtBundle(List.of(buildCourtBundle())).build());
 
             Element<HearingCourtBundle> courtBundleTwo = element(hearingId, HearingCourtBundle.builder()
                 .courtBundle(List.of(buildCourtBundle())).build());
@@ -1501,6 +1529,325 @@ class MigrateCFVServiceTest {
     }
 
     @Nested
+    class MigrateToArchivedDocuments {
+        public static Stream<Arguments> migrateToArchivedDocumentsParam() {
+            Stream.Builder<Arguments> builder = Stream.builder();
+            for (int i = 0; i < 3; i++) { // document uploaded by
+                builder.add(Arguments.of(i, APPLICANT_STATEMENT));
+                builder.add(Arguments.of(i, GUARDIAN_REPORTS));
+                builder.add(Arguments.of(i, OTHER_REPORTS));
+                builder.add(Arguments.of(i, NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE));
+            }
+            return builder.build();
+        }
+
+        @ParameterizedTest
+        @MethodSource("migrateToArchivedDocumentsParam")
+        void shouldMigrateFurtherEvidenceDocumentsToArchivedDocuments(int documentUploadedBy,
+                                                                      FurtherEvidenceType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = null;
+            switch (documentUploadedBy) {
+                case 0:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocuments(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                case 1:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocumentsLA(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                case 2:
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .furtherEvidenceDocumentsSolicitor(List.of(element(doc1Id, sebOne)))
+                        .build();
+                    break;
+                default:
+                    break;
+            }
+
+            Map<String, Object> updatedFields = underTest.migrateFurtherEvidenceDocumentsToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "LA");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type));
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = FurtherEvidenceType.class, names = {
+            "APPLICANT_STATEMENT",
+            "GUARDIAN_REPORTS",
+            "OTHER_REPORTS",
+            "NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE"})
+        void shouldMigrateHearingFurtherEvidenceDocumentsToArchivedDocuments(FurtherEvidenceType type) {
+            UUID doc1Id = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .type(type)
+                .document(document1)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(randomUUID(), HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(doc1Id, sebOne)))
+                    .build())))
+                .build();
+
+            Map<String, Object> updatedFields = underTest
+                .migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "LA");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type) + "CTSC");
+            assertThat(updatedFields).doesNotContainKey(furtherEvidenceTypeToFieldNameMap.get(type));
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(doc1Id, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateCaseSummaryToArchivedDocuments() {
+            UUID caseSummaryId = UUID.randomUUID();
+
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+
+            Element<CaseSummary> caseSummaryListElement = element(caseSummaryId, CaseSummary.builder()
+                .hasConfidentialAddress(YesNo.YES.getValue())
+                .document(document1)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .caseSummaryList(List.of(caseSummaryListElement))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCaseSummaryToArchivedDocuments(caseData);
+
+            assertThat(updatedFields).doesNotContainKey("caseSummaryListBackup");
+            assertThat(updatedFields).doesNotContainKey("caseSummaryList");
+            assertThat(updatedFields).doesNotContainKey("caseSummaryListLA");
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .contains(element(caseSummaryId, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigratePositionStatementToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+
+            Element<PositionStatementRespondent> positionStatementOne = element(docOneId,
+                PositionStatementRespondent.builder().document(document1).build());
+            Element<PositionStatementRespondent> positionStatementTwo = element(docTwoId,
+                PositionStatementRespondent.builder().document(document2).build());
+            Element<PositionStatementChild> positionStatementThree = element(docThreeId,
+                PositionStatementChild.builder().document(document3).build());
+            Element<PositionStatementChild> positionStatementFour = element(docFourId,
+                PositionStatementChild.builder().document(document4).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementRespondentListV2(List.of(positionStatementOne, positionStatementTwo))
+                    .positionStatementChildListV2(List.of(positionStatementThree, positionStatementFour))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migratePositionStatementToArchivedDocuments(caseData);
+            assertThat(updatedFields).doesNotContainKey("posStmtRespListLA");
+            assertThat(updatedFields).doesNotContainKey("posStmtRespList");
+            assertThat(updatedFields).doesNotContainKey("posStmtChildListLA");
+            assertThat(updatedFields).doesNotContainKey("posStmtChildList");
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateRespondentStatementToArchivedDocuments() {
+            UUID respondentOneId = UUID.randomUUID();
+
+            UUID psrOneId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+
+            SupportingEvidenceBundle sebOne = SupportingEvidenceBundle.builder()
+                .document(document1)
+                .hasConfidentialAddress("Yes")
+                .build();
+
+            Element<RespondentStatement> respondentStatementOne = element(randomUUID(),
+                RespondentStatement.builder().respondentId(respondentOneId).respondentName("NAME 1")
+                    .supportingEvidenceBundle(List.of(element(psrOneId, sebOne)))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(respondentStatementOne))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateRespondentStatementToArchivedDocuments(caseData);
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
+            assertThat(updatedFields).doesNotContainKey("respStmtList");
+            assertThat(updatedFields).doesNotContainKey("respStmtListLA");
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(psrOneId, ManagedDocument.builder().document(document1).build()));
+        }
+
+        @Test
+        void shouldMigrateCorrespondenceToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+
+            Element<SupportingEvidenceBundle> docOne = element(docOneId,
+                SupportingEvidenceBundle.builder().document(document1).build());
+            Element<SupportingEvidenceBundle> docTwo = element(docTwoId,
+                SupportingEvidenceBundle.builder().document(document2).build());
+            Element<SupportingEvidenceBundle> docThree = element(docThreeId,
+                SupportingEvidenceBundle.builder().document(document3).build());
+            Element<SupportingEvidenceBundle> docFour = element(docFourId,
+                SupportingEvidenceBundle.builder().document(document4).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(docOne))
+                .correspondenceDocumentsLA(List.of(docTwo, docFour))
+                .correspondenceDocumentsSolicitor(List.of(docThree))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCorrespondenceDocumentsToArchivedDocuments(caseData);
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocList");
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocListLA");
+            assertThat(updatedFields).doesNotContainKey("correspondenceDocListCTSC");
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateApplicationDocumentsToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+
+            Element<ApplicationDocument> docOne = element(docOneId,
+                ApplicationDocument.builder().document(document1).build());
+            Element<ApplicationDocument> docTwo = element(docTwoId,
+                ApplicationDocument.builder().document(document2).build());
+            Element<ApplicationDocument> docThree = element(docThreeId,
+                ApplicationDocument.builder().document(document3).build());
+            Element<ApplicationDocument> docFour = element(docFourId,
+                ApplicationDocument.builder().document(document4).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(docOne, docTwo, docThree, docFour))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateApplicationDocumentsToArchivedDocuments(caseData);
+            List.of("documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+                "documentsFiledOnIssueListCTSC",
+                "carePlanList", "carePlanListLA", "carePlanListCTSC",
+                "thresholdList", "thresholdListLA", "thresholdListCTSC").stream().forEach(f -> assertThat(updatedFields)
+                    .doesNotContainKey(f));
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                    .containsExactlyInAnyOrder(
+                        element(docOneId, ManagedDocument.builder().document(document1).build()),
+                        element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                        element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                        element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+
+        @Test
+        void shouldMigrateCourtBundlesToArchivedDocuments() {
+            UUID docOneId = randomUUID();
+            UUID docTwoId = randomUUID();
+            UUID docThreeId = randomUUID();
+            UUID docFourId = randomUUID();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+
+            Element<HearingCourtBundle> docOne = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docOneId, CourtBundle.builder().document(document1).build()))
+                ).build());
+            Element<HearingCourtBundle> docTwo = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docTwoId, CourtBundle.builder().document(document2).build()))
+                ).build());
+            Element<HearingCourtBundle> docThree = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docThreeId, CourtBundle.builder().document(document3).build()))
+                ).build());
+            Element<HearingCourtBundle> docFour = element(
+                HearingCourtBundle.builder().courtBundle(
+                    List.of(element(docFourId, CourtBundle.builder().document(document4).build()))
+                ).build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(docOne, docTwo, docThree, docFour))
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.migrateCourtBundlesToArchivedDocuments(caseData);
+            List.of("courtBundleListV2Backup", "courtBundleListV2", "courtBundleListLA", "courtBundleListLA").stream()
+                .forEach(f -> assertThat(updatedFields).doesNotContainKey(f));
+
+            assertThat(updatedFields).extracting("archivedDocumentsListCTSC").asList()
+                .containsExactlyInAnyOrder(
+                    element(docOneId, ManagedDocument.builder().document(document1).build()),
+                    element(docTwoId, ManagedDocument.builder().document(document2).build()),
+                    element(docThreeId, ManagedDocument.builder().document(document3).build()),
+                    element(docFourId, ManagedDocument.builder().document(document4).build()));
+        }
+    }
+
+    @Nested
     class MigrateApplicationDocuments {
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
             THRESHOLD, "thresholdList",
@@ -1535,7 +1882,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(type)
                 .document(document1)
@@ -1566,7 +1913,7 @@ class MigrateCFVServiceTest {
         void shouldMigrateConfidentialApplicationDocumentUploaded(ApplicationDocumentType type) throws Exception {
             UUID doc1Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(type)
                 .document(document1)
@@ -1603,17 +1950,17 @@ class MigrateCFVServiceTest {
             UUID doc10Id = UUID.randomUUID();
             UUID doc11Id = UUID.randomUUID();
 
-            DocumentReference document1 = DocumentReference.builder().build();
-            DocumentReference document2 = DocumentReference.builder().build();
-            DocumentReference document3 = DocumentReference.builder().build();
-            DocumentReference document4 = DocumentReference.builder().build();
-            DocumentReference document5 = DocumentReference.builder().build();
-            DocumentReference document6 = DocumentReference.builder().build();
-            DocumentReference document7 = DocumentReference.builder().build();
-            DocumentReference document8 = DocumentReference.builder().build();
-            DocumentReference document9 = DocumentReference.builder().build();
-            DocumentReference document10 = DocumentReference.builder().build();
-            DocumentReference document11 = DocumentReference.builder().build();
+            DocumentReference document1 = DocumentReference.builder().filename("abc").build();
+            DocumentReference document2 = DocumentReference.builder().filename("def").build();
+            DocumentReference document3 = DocumentReference.builder().filename("ghi").build();
+            DocumentReference document4 = DocumentReference.builder().filename("jkl").build();
+            DocumentReference document5 = DocumentReference.builder().filename("mno").build();
+            DocumentReference document6 = DocumentReference.builder().filename("pqr").build();
+            DocumentReference document7 = DocumentReference.builder().filename("stu").build();
+            DocumentReference document8 = DocumentReference.builder().filename("vwx").build();
+            DocumentReference document9 = DocumentReference.builder().filename("yza").build();
+            DocumentReference document10 = DocumentReference.builder().filename("bcd").build();
+            DocumentReference document11 = DocumentReference.builder().filename("fgh").build();
 
             ApplicationDocument ad1 = ApplicationDocument.builder()
                 .documentType(THRESHOLD)
@@ -1881,6 +2228,874 @@ class MigrateCFVServiceTest {
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "No", MIGRATION_ID, true));
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, null, MIGRATION_ID, true));
             assertThrows(AssertionError.class, () -> underTest.doHasCFVMigratedCheck(1L, "", MIGRATION_ID, true));
+        }
+    }
+
+    @Nested
+    class ValidateFurtherEvidenceDocumentMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "noticeOfActingOrIssueList",
+            "noticeOfActingOrIssueListLA",
+            "noticeOfActingOrIssueListCTSC",
+            "guardianEvidenceList",
+            "guardianEvidenceListLA",
+            "guardianEvidenceListCTSC",
+            "applicantWitnessStmtList",
+            "applicantWitnessStmtListLA",
+            "applicantWitnessStmtListCTSC",
+            "expertReportList",
+            "expertReportListLA",
+            "expertReportListCTSC",
+            "drugAndAlcoholReportList",
+            "drugAndAlcoholReportListLA",
+            "drugAndAlcoholReportListCTSC",
+            "archivedDocumentsList",
+            "archivedDocumentsListLA",
+            "archivedDocumentsListCTSC"
+        })
+        public void shouldNotThrowExceptionWhenValidatingMigratedSingleFurtherEvidenceDocument(
+            String migratedProperty) {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedFurtherEvidenceDocumentsNotUploadedByCTSC() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .type(GUARDIAN_REPORTS)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc1, doc3))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
+                "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedFurtherEvidenceDocumentsWithoutDocumentType() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc3))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .furtherEvidenceDocuments(List.of(doc1))
+                .furtherEvidenceDocumentsLA(List.of(doc2))
+                .furtherEvidenceDocumentsSolicitor(List.of(doc3))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                    "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)", MIGRATION_ID, 1L, 3, 2));
+        }
+    }
+
+    @Nested
+    class ValidateHearingFurtherEvidenceDocumentMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "noticeOfActingOrIssueList",
+            "noticeOfActingOrIssueListLA",
+            "noticeOfActingOrIssueListCTSC",
+            "guardianEvidenceList",
+            "guardianEvidenceListLA",
+            "guardianEvidenceListCTSC",
+            "applicantWitnessStmtList",
+            "applicantWitnessStmtListLA",
+            "applicantWitnessStmtListCTSC",
+            "expertReportList",
+            "expertReportListLA",
+            "expertReportListCTSC",
+            "drugAndAlcoholReportList",
+            "drugAndAlcoholReportListLA",
+            "drugAndAlcoholReportListCTSC",
+            "archivedDocumentsList",
+            "archivedDocumentsListLA",
+            "archivedDocumentsListCTSC"
+        })
+        public void shouldNotThrowExceptionWhenValidatingMigratedSingleHearingFurtherEvidenceDocument(
+            String migratedProperty) {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedHearingFurtherEvidenceDocumentsNotUploadedByCTSC() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .type(GUARDIAN_REPORTS)
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueList", List.of(element(ManageDocument.builder().build())),
+                "guardianEvidenceList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedHearingFurtherEvidenceDocumentsWithoutDocumentType() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                "archivedDocumentsList", List.of(element(ManageDocument.builder().build())),
+                "applicantWitnessStmtList", List.of(element(ManageDocument.builder().build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder()
+                .type(NOTICE_OF_ACTING_OR_NOTICE_OF_ISSUE)
+                .uploadedBy("HMCTS")
+                .document(DocumentReference.builder().build())
+                .confidential(List.of("CONFIDENTIAL"))
+                .build());
+
+            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder()
+                .uploadedBy("kurt@swansea.gov.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder()
+                .type(APPLICANT_STATEMENT)
+                .uploadedBy("solicitor@solicitor1.uk")
+                .document(DocumentReference.builder().build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingFurtherEvidenceDocuments(List.of(element(HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(List.of(doc1, doc2, doc3))
+                    .build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of("noticeOfActingOrIssueListCTSC", List.of(element(ManageDocument.builder().build())),
+                    "archivedDocumentsList", List.of(element(ManageDocument.builder().build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "FurtherEvidenceDocument/HearingFurtherEvidenceDocument (%s/%s)", MIGRATION_ID, 1L, 3, 2));
+        }
+    }
+
+    @Nested
+    class ValidateCaseSummaryMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"caseSummaryList", "caseSummaryListLA"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCaseSummary(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(element(CaseSummary.builder()
+                        .document(DocumentReference.builder().build())
+                        .hasConfidentialAddress("YES")
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(CaseSummary.builder()
+                    .hasConfidentialAddress("YES")
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCaseSummaries() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .hasConfidentialAddress("YES")
+                            .build()),
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()))).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "caseSummaryList", List.of(element(CaseSummary.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "caseSummaryListLA", List.of(element(CaseSummary.builder()
+                    .hasConfidentialAddress("YES")
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().caseSummaryList(
+                    List.of(
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .hasConfidentialAddress("YES")
+                            .build()),
+                        element(CaseSummary.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()))).build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of("caseSummaryList", List.of(element(CaseSummary.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())))))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "CaseSummary (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
+
+    @Nested
+    class ValidatePositionStatementMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"posStmtRespList", "posStmtRespListLA", "posStmtRespListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedPositionStatementResp(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().positionStatementRespondentListV2(
+                    List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(PositionStatementRespondent.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"posStmtChildList", "posStmtChildListLA", "posStmtChildListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedPositionStatementChild(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder().positionStatementChildListV2(
+                    List.of(element(PositionStatementChild.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                ).build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(PositionStatementChild.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultiplePositionStatements() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(
+                        element(PositionStatementChild.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .positionStatementRespondentListV2(List.of(
+                        element(PositionStatementRespondent.builder().document(DocumentReference.builder().build())
+                            .build())
+                    ))
+                    .build()
+                ).build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())),
+                "posStmtChildList", List.of(element(PositionStatementChild.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .positionStatementChildListV2(List.of(
+                        element(PositionStatementChild.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .build()
+                ).build();
+            
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())),
+                    "posStmtChildList", List.of(element(PositionStatementChild.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "PositionStatement(Child/Respondent) (%s/%s)", MIGRATION_ID, 1L, 1, 2));
+        }
+    }
+
+    @Nested
+    class ValidateRespondentStatementMigrationTest {
+
+        @ParameterizedTest
+        @ValueSource(strings = {"respStmtList", "respStmtListLA", "respStmtListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedRespondentStatement(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleRespondentStatements() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()),
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "respStmtList", List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "respStmtListLA", List.of(element(RespondentStatementV2.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondentStatements(List.of(element(RespondentStatement.builder()
+                    .supportingEvidenceBundle(List.of(
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build()),
+                        element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    )).build())))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "respStmtListLA", List.of(element(RespondentStatementV2.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "respondent statements (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
+
+    @Nested
+    class ValidateCorrespondenceDocumentMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "correspondenceDocList":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocumentsSolicitor(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "correspondenceDocListLA":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocumentsLA(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "correspondenceDocListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .correspondenceDocuments(List.of(element(SupportingEvidenceBundle.builder()
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"correspondenceDocList", "correspondenceDocListLA", "correspondenceDocListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCorrespondenceDocument(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCorrespondenceDocuments() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build()),
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "correspondenceDocList", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "correspondenceDocListLA", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build()),
+                    element(SupportingEvidenceBundle.builder().document(DocumentReference.builder().build()).build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "correspondenceDocListCTSC", List.of(element(ManagedDocument.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "correspondence documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
+
+    @Nested
+    class ValidateApplicationDocumentMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "documentsFiledOnIssueList":
+                case "documentsFiledOnIssueListLA":
+                case "documentsFiledOnIssueListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(CHECKLIST_DOCUMENT)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "carePlanList":
+                case "carePlanListLA":
+                case "carePlanListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(CARE_PLAN)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                case "thresholdList":
+                case "thresholdListLA":
+                case "thresholdListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .applicationDocuments(List.of(element(ApplicationDocument.builder()
+                            .documentType(THRESHOLD)
+                            .document(DocumentReference.builder().build())
+                            .build())))
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"documentsFiledOnIssueList", "documentsFiledOnIssueListLA",
+            "documentsFiledOnIssueListCTSC",
+            "carePlanList", "carePlanListLA", "carePlanListCTSC",
+            "thresholdList", "thresholdListLA", "thresholdListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedApplicationDocument(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleApplicationDocuments() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(
+                    element(ApplicationDocument.builder()
+                        .documentType(THRESHOLD)
+                        .document(DocumentReference.builder().build())
+                        .build()),
+                    element(ApplicationDocument.builder()
+                        .documentType(SWET)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                ))
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                "carePlanList", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build())),
+                "thresholdListLA", List.of(element(ManagedDocument.builder()
+                    .document(DocumentReference.builder().build())
+                    .build()))
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .applicationDocuments(List.of(
+                    element(ApplicationDocument.builder()
+                        .documentType(THRESHOLD)
+                        .document(DocumentReference.builder().build())
+                        .build()),
+                    element(ApplicationDocument.builder()
+                        .documentType(SWET)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                ))
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "carePlanList", List.of(element(ManagedDocument.builder()
+                        .document(DocumentReference.builder().build())
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "application documents (%s/%s)", MIGRATION_ID, 1L, 2, 1));
+        }
+    }
+
+    @Nested
+    class ValidateCourtBundleMigrationTest {
+
+        private CaseData resolveCaseDataByMigratedProperty(String migratedProperty) {
+            CaseData caseData = null;
+            switch (migratedProperty) {
+                case "courtBundleListV2":
+                case "courtBundleListLA":
+                case "courtBundleListCTSC":
+                    caseData = CaseData.builder()
+                        .id(1L)
+                        .hearingDocuments(HearingDocuments.builder()
+                            .courtBundleListV2(List.of(
+                                element(HearingCourtBundle.builder()
+                                    .courtBundle(List.of(element(CourtBundle.builder()
+                                        .document(DocumentReference.builder().build())
+                                        .build())))
+                                    .build())
+                            ))
+                            .build())
+                        .build();
+                    break;
+                default:
+                    throw new IllegalArgumentException("unable to resolve migrated property");
+            }
+            return caseData;
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingSingleMigratedCourtBundle(String migratedProperty) {
+            CaseData caseData = resolveCaseDataByMigratedProperty(migratedProperty);
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty, List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(element(CourtBundle.builder()
+                        .document(DocumentReference.builder().build())
+                        .build())))
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleCourtBundles(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty,  List.of(element(HearingCourtBundle.builder()
+                    .courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    ))
+                    .build()))
+            )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC"})
+        public void shouldNotThrowExceptionWhenValidatingMigratedMultipleHearingCourtBundles(String migratedProperty) {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build()),
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertDoesNotThrow(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData, Map.of(
+                migratedProperty,  List.of(
+                    element(HearingCourtBundle.builder().courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    )).build()),
+                    element(HearingCourtBundle.builder().courtBundle(List.of(
+                        element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                    )).build())
+                )
+            )));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenExpectedMigratedDocumentCountDoesNotMatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .hearingDocuments(HearingDocuments.builder()
+                    .courtBundleListV2(List.of(
+                        element(HearingCourtBundle.builder()
+                            .courtBundle(List.of(
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build()),
+                                element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                            ))
+                            .build())
+                    ))
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
+                Map.of(
+                    "courtBundleListV2",List.of(element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder().document(DocumentReference.builder().build()).build())
+                        ))
+                        .build()))
+                )))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, Unexpected number of migrated "
+                    + "court bundles (%s/%s)", MIGRATION_ID, 1L, 2, 1));
         }
     }
 }
