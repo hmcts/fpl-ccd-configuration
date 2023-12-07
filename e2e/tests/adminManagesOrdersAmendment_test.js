@@ -59,7 +59,7 @@ Scenario('Amend standard directions order @nightlyOnly', async ({ I, caseViewPag
   assertAmendment(I, caseViewPage, orders.standardDirectionOrder);
 });
 
-Scenario('Amend urgent hearing order @charles', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('Amend urgent hearing order @nightlyOnly', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.urgentHearingOrder);
   assertAmendment(I, caseViewPage, orders.urgentHearingOrder);
