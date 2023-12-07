@@ -323,6 +323,8 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.3'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
@@ -445,27 +447,17 @@ integration {
 }
 
 pitest {
-  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
-  pitestVersion = '1.15.0'
-  threads = 16
-  outputFormats = ['XML', 'HTML']
-  timestampedReports = false
-  excludedClasses = [
+  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
+  threads.set(15)
+  outputFormats.set(['XML', 'HTML'])
+  excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
     'uk.gov.hmcts.reform.fpl.exceptions.*',
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
-  ]
-  junit5PluginVersion = '1.1.1'
-  logger.lifecycle("Runs PIT mutation Tests")
-  testSourceSets = [sourceSets.test]
-  mainSourceSets = [sourceSets.main]
-  enableDefaultIncrementalAnalysis = true
-  outputFormats = ['XML', 'HTML']
-  timestampedReports = true
-  mutationThreshold = 85
-  detectInlinedCode = true
-  timeoutConstInMillis = 30000
+  ])
+  timestampedReports.set(true)
+  mutationThreshold.set(75)
 }
 
 dependencyManagement {

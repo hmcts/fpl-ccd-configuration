@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
@@ -46,6 +47,8 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(NEW_HEARING)
             .hearingDetails(List.of(pastHearing1, pastHearing2, futureHearing))
+            .hearingAttendance(List.of(HearingAttendance.IN_PERSON))
+            .hearingMinutes(1)
             .build();
 
         CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
@@ -54,6 +57,8 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
             .build());
         assertThat(updatedCaseData.getHasPreviousHearingVenue()).isEqualTo("Yes");
+        assertThat(updatedCaseData.getHearingAttendance()).isEmpty();
+        assertThat(updatedCaseData.getHearingMinutes()).isNull();
     }
 
     @Test
