@@ -328,7 +328,7 @@ module.exports = {
   },
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
-    const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    const caseId = await this.submitNewCase(config.newSwanseaLocalAuthorityUserOne);
     let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
     await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
