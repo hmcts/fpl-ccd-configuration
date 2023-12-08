@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
   "engines": {
-    "node": ">=16.13"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.0",
@@ -24,7 +24,9 @@
     "mochawesome": "^6.3.1",
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
-    "webdriverio": "8.16.15"
+    "node-gyp": "^9.4.0",
+    "playwright": "^1.23.2",
+    "webdriverio": "8.20.4"
   },
   "scripts": {
     "lint": "eslint e2e",
@@ -36,10 +38,9 @@
     "test:crossbrowser-e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep '@skip' ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi --verbose",
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "test:local": "./bin/runtestlocal.sh",
-    "test:singleTest": "NODE_TLS_REJECT_UNAUTHORIZED=0 codeceptjs run-multiple parallel --verbose --grep '@charles' "    ,
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
-    "install-dependencies": "/usr/bin/yarn install --immutable --silent",
+    "install-dependencies": "/usr/bin/yarn install --silent",
     "lint-ui-tests": "/usr/bin/yarn lint"
   },
   "peerDependencies": {
@@ -48,9 +49,9 @@
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1"
   },
+  "resolutions": {
+    "yargs-parser": "^20.2.9"
+  },
   "packageManager": "yarn@3.6.4",
-  "license": "MIT",
-  "dependencies": {
-    "playwright": "^1.39.0"
-  }
+  "license": "MIT"
 }
