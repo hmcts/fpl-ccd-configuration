@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
@@ -48,8 +50,12 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
 
         String eldestChildLastName = helper.getEldestChildLastName(caseData.getAllChildren());
 
+        Optional<String> localAuthority = caseData.getLocalAuthorities().stream().findFirst()
+            .map(Element::getValue)
+            .map(LocalAuthority::getName);
+
         return NewApplicationCafcassData.builder()
-            .localAuthourity(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .localAuthourity(localAuthority.orElse("An applicant"))
             .ordersAndDirections(ordersAndDirections)
             .timeFramePresent(timeFrame.isPresent())
             .timeFrameValue(timeFrame.map(StringUtils::uncapitalize).orElse(""))
