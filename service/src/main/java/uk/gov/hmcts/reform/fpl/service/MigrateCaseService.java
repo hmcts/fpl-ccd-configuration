@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -506,6 +507,13 @@ public class MigrateCaseService {
                     caseData.getId()));
     }
 
+    public Map<String, Object> removeClosedJudicialMessage(CaseData caseData, String migrationId, String messageId) {
+        UUID targetMessageId = UUID.fromString(messageId);
+        return Map.of("closedJudicialMessages",
+            removeJudicialMessageFormList(caseData.getClosedJudicialMessages(), messageId, migrationId,
+                caseData.getId()));
+    }
+
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
                                                               String messageId, String migrationId, Long caseId) {
         if (messages == null) {
@@ -813,6 +821,34 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("localAuthorities", localAuthoritiesList);
+    }
+
+    public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
+                                                                    String migrationId,
+                                                                    int startIndex,
+                                                                    int endIndex) {
+        Long caseId = caseData.getId();
+        String thresholdDetails = caseData.getGrounds().getThresholdDetails();
+        String textToRemove;
+
+        try {
+            textToRemove = caseData.getGrounds().getThresholdDetails().substring(startIndex, endIndex);
+        } catch (StringIndexOutOfBoundsException ex) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details is shorter than provided index",
+                migrationId, caseId));
+        }
+
+        if (textToRemove.strip().isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, threshold details does not contain provided text",
+                migrationId, caseId));
+        }
+
+        thresholdDetails = thresholdDetails.replace(textToRemove, "");
+        Grounds updatedGrounds = caseData.getGrounds().toBuilder().thresholdDetails(thresholdDetails).build();
+
+        return Map.of("grounds", updatedGrounds);
     }
 
     public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
