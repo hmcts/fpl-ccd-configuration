@@ -10,10 +10,9 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.ApprovalDateTimeValidator.APPROVAL_DATE_RANGE_MESSAGE;
 
 class ApprovalDateTimeValidatorTest {
-
-    private static final String MESSAGE = "Approval date cannot be in the future";
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
@@ -47,13 +46,14 @@ class ApprovalDateTimeValidatorTest {
     }
 
     @Test
-    void validateFuture() {
+    void validateNotInRange() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().plusHours(1))
+                .manageOrdersApprovalDateTime(time.now().plusYears(1))
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(
+            List.of(APPROVAL_DATE_RANGE_MESSAGE));
     }
 }
