@@ -17,6 +17,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -111,6 +112,7 @@ public class TaskListService {
         if (!caseData.isC1Application()) {
             events.add(INTERNATIONAL_ELEMENT);
             events.add(LANGUAGE_REQUIREMENTS);
+            events.add(C1_WITH_SUPPLEMENT);
         }
 
         return events;
