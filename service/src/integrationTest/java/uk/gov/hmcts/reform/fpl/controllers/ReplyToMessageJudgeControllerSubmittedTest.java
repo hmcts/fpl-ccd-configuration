@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -20,17 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(ReplyToMessageJudgeController.class)
@@ -91,11 +84,6 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .urgency("High")
                     .build())))
             .build();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
 
         postSubmittedEvent(asCaseDetails(caseData));
 
@@ -110,9 +98,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
-            eq(CASE_ID),
-            eq(caseSummary()));
+        verifyNoInteractions(concurrencyHelper);
     }
 
     @Test
@@ -153,32 +139,11 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .build())))
             .closedJudicialMessages(List.of(element(SELECTED_DYNAMIC_LIST_ITEM_ID, latestJudicialMessage)))
             .build();
-        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .eventId(i.getArgument(1))
-            .token("token")
-            .build());
 
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
-            eq(CASE_ID),
-            eq(caseSummary()));
+        verifyNoInteractions(concurrencyHelper);
     }
 
-    private Map<String, Object> caseSummary() {
-        return caseConverter.toMap(
-            SyntheticCaseSummary.builder()
-                .caseSummaryHasUnresolvedMessages("Yes")
-                .caseSummaryFirstRespondentLastName(LAST_NAME)
-                .caseSummaryCourtName(COURT_NAME)
-                .caseSummaryNumberOfChildren(1)
-                .caseSummaryLanguageRequirement("No")
-                .caseSummaryLALanguageRequirement("No")
-                .caseSummaryHighCourtCase("No")
-                .caseSummaryLAHighCourtCase("No")
-                .caseSummaryLATabHidden("Yes")
-                .build());
-    }
 }
