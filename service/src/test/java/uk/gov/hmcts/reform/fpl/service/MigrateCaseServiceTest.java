@@ -18,14 +18,17 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
@@ -87,6 +90,9 @@ class MigrateCaseServiceTest {
     @Mock
     private MigrateRelatingLAService migrateRelatingLAService;
 
+    @Mock
+    private OrganisationService organisationService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -114,6 +120,122 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Nested
+    class UpdateThirdPartyStandaloneApplicant {
+
+        private final String previousOrgId = "ABCDEFG";
+        private final String previousOrgName = "Previous Organisation Name";
+
+        private final String newOrgId = "HIJKLMN";
+        private final String newOrgName = "New Organisation Name";
+
+        private final String caseRole = "[SOLICITORA]";
+
+        private final Organisation previousOrganisation = Organisation.builder()
+            .organisationID(previousOrgId)
+            .organisationName(previousOrgName)
+            .build();
+
+        private final Organisation newOrganisation = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        @Test
+        void updateOutsourcingPolicy() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                        .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(previousOrganisation)
+                    .orgPolicyCaseAssignedRole(caseRole)
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void removeApplicantEmailAndStopNotifyingTheirColleagues() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                    .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+            Element<LocalAuthority> localAuthority2 = element(LocalAuthority.builder()
+                .email("localAuthority2@email.com")
+                .colleagues(List.of(colleague3))
+                .build());
+
+            Element<LocalAuthority> expectedlocalAuthority1 = element(localAuthority1.getId(),
+                localAuthority1.getValue().toBuilder()
+                    .email(null)
+                    .colleagues(List.of(
+                        element(colleague1.getId(),
+                            colleague1.getValue().toBuilder().notificationRecipient(YesNo.NO.getValue()).build()),
+                        element(colleague2.getId(), colleague2.getValue())))
+                    .build());
+
+            Element<LocalAuthority> expectedlocalAuthority2 = element(localAuthority2.getId(),
+                localAuthority2.getValue().toBuilder()
+                    .colleagues(List.of(element(colleague3.getId(), colleague3.getValue().toBuilder().build())))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2))
+                .build();
+
+            Map<String, Object> result = underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                MIGRATION_ID, localAuthority1.getId().toString());
+
+            assertThat(result.get("localAuthorities"))
+                .isEqualTo(List.of(expectedlocalAuthority1, expectedlocalAuthority2));
+        }
+
+        @Test
+        void throwExceptionIfApplicantNotFound() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1))
+                .build();
+
+            AssertionError actualException = assertThrows(AssertionError.class, () -> {
+                underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                    MIGRATION_ID, UUID.randomUUID().toString());
+            });
+            assertThat(actualException.getMessage()).isEqualTo(format(
+                "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
+                MIGRATION_ID, caseData.getId()));
+        }
     }
 
     @Nested
@@ -1384,6 +1506,18 @@ class MigrateCaseServiceTest {
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
                             + mesageToBeRemoved.getId() + " not found");
         }
+
+        @Test
+        void shouldRemoveClosedJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closedJudicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeClosedJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("closedJudicialMessages").asList().containsExactly(message1, message2);
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -1956,8 +2090,8 @@ class MigrateCaseServiceTest {
                 .localAuthorities(List.of(localAuthority1, localAuthority2, localAuthorityToBeRemoved))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
-                localAuthorityToBeRemoved.getId());
+            Map<String, List<Element<LocalAuthority>>> updatedFields =
+                underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID, localAuthorityToBeRemoved.getId());
 
             assertThat(updatedFields).extracting("localAuthorities").asList()
                 .containsExactly(localAuthority1, localAuthority2);
@@ -1970,8 +2104,8 @@ class MigrateCaseServiceTest {
                 .localAuthorities(List.of(localAuthorityToBeRemoved))
                 .build();
 
-            Map<String, Object> updatedFields = underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
-                localAuthorityToBeRemoved.getId());
+            Map<String, List<Element<LocalAuthority>>> updatedFields =
+                underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID, localAuthorityToBeRemoved.getId());
 
             assertThat(updatedFields).extracting("localAuthorities").asList().isEmpty();
         }
@@ -1988,6 +2122,88 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
                     MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveStringFromThresholdDetails {
+        private final String testThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\nFREDRICK (FRED) FREDERSON AND BOB BINS \n(By their Children’s Guardian)"
+            + "\n3rd-5th Respondents\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        private final String expectedThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        @Test
+        void shouldRemoveSpecificStringFromThresholdDetails() {
+            var thresholdDetailsStartIndex = 167;
+            var thresholdDetailsEndIndex = 259;
+
+            final Grounds expectedGrounds = Grounds.builder()
+                .thresholdDetails(expectedThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+
+            assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit() {
+            var thresholdDetailsStartIndex = 380;
+            var thresholdDetailsEndIndex = 389;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " threshold details is shorter than provided index",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBlankText() {
+            var thresholdDetailsStartIndex = 8;
+            var thresholdDetailsEndIndex = 9;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails("\nBETWEEN\n\n            ")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "threshold details does not contain provided text",
+                    MIGRATION_ID, 1));
         }
     }
 }
