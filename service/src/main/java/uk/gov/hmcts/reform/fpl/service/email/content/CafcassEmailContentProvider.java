@@ -50,9 +50,7 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
 
         String eldestChildLastName = helper.getEldestChildLastName(caseData.getAllChildren());
 
-        Optional<String> applicantName = caseData.getLocalAuthorities().stream().findFirst()
-            .map(Element::getValue)
-            .map(LocalAuthority::getName);
+        Optional<String> applicantName = caseData.getApplicantName();
 
         return NewApplicationCafcassData.builder()
             .localAuthourity(applicantName.orElse("An applicant"))
