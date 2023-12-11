@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.78.0"
+      version = "3.84.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -102,28 +102,8 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
 
 }
 
-module "fpl-scheduler-db" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}-${var.component}"
-  location           = var.location_db
-  env                = var.env
-  database_name      = "fpl_scheduler"
-  postgresql_user    = "fpl_scheduler"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
   name      = "${var.product}-support-email"
-  key_vault_id = module.key-vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "scheduler-db-password" {
-  name      = "scheduler-db-password"
-  value     = module.fpl-scheduler-db.postgresql_password
   key_vault_id = module.key-vault.key_vault_id
 }
 

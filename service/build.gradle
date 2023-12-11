@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.855'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.949'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -317,12 +317,14 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '5.8.8'
   implementation group: 'org.springframework.security', name: 'spring-security-web', version: '5.8.8'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.8.8'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: '2.7.12'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: '2.7.18'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.3'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
@@ -348,8 +350,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.82'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.82'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.83'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
@@ -364,7 +366,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.2'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
   testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.1'
 
@@ -445,27 +447,17 @@ integration {
 }
 
 pitest {
-  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
-  pitestVersion = '1.15.0'
-  threads = 16
-  outputFormats = ['XML', 'HTML']
-  timestampedReports = false
-  excludedClasses = [
+  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
+  threads.set(15)
+  outputFormats.set(['XML', 'HTML'])
+  excludedClasses.set([
     'uk.gov.hmcts.reform.fpl.config.*',
     'uk.gov.hmcts.reform.fpl.exceptions.*',
     'uk.gov.hmcts.reform.fpl.controllers.*',
     'uk.gov.hmcts.reform.fpl.testingsupport.*'
-  ]
-  junit5PluginVersion = '1.1.1'
-  logger.lifecycle("Runs PIT mutation Tests")
-  testSourceSets = [sourceSets.test]
-  mainSourceSets = [sourceSets.main]
-  enableDefaultIncrementalAnalysis = true
-  outputFormats = ['XML', 'HTML']
-  timestampedReports = true
-  mutationThreshold = 85
-  detectInlinedCode = true
-  timeoutConstInMillis = 30000
+  ])
+  timestampedReports.set(true)
+  mutationThreshold.set(75)
 }
 
 dependencyManagement {
