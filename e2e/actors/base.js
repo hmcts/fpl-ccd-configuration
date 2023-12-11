@@ -341,7 +341,7 @@ module.exports = {
   },
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
-    const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    const caseId = await this.submitNewCase(config.newSwanseaLocalAuthorityUserOne);
     let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
     await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
@@ -350,7 +350,7 @@ module.exports = {
 
   async submitNewCase(user, name) {
     const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
-    const creator = user || config.swanseaLocalAuthorityUserOne;
+    const creator = user || config.newSwanseaLocalAuthorityUserOne;
     const caseData = await apiHelper.createCase(creator, caseName);
     const caseId = caseData.id;
     output.print(`Case #${caseId} has been created`);
