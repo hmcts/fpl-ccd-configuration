@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlacementConfidentialDocument {
     private Type type;
+    private String otherDocTypeName;
     private DocumentReference document;
     private String description;
     private List<String> documentAcknowledge;
@@ -26,7 +27,7 @@ public class PlacementConfidentialDocument {
     public enum Type {
         ANNEX_B("Annex B"),
         GUARDIANS_REPORT("Guardian's report"),
-        OTHER_CONFIDENTIAL_DOCUMENTS("Other confidential documents");
+        OTHER_CONFIDENTIAL_DOCUMENTS("Other confidential documents (please specify below)");
 
         private final String name;
     }
