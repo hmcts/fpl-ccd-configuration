@@ -140,6 +140,8 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "NO");
         }
 
+        data.put("c1Application", YesNo.from(caseData.isC1Application()).getValue());
+
         if (caseData.getOrders() != null) {
             String courtCode = caseData.getOrders().getCourt();
             Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
