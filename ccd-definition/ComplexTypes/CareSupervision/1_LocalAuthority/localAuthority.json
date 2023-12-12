@@ -48,6 +48,7 @@
     "ListElementCode": "legalTeamManager",
     "FieldType": "Text",
     "ElementLabel": "Legal team manager's name and last name",
+    "HintText": "The statement of truth will be signed in this person's name",
     "SecurityClassification": "Public"
   },
   {

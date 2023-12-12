@@ -50,6 +50,10 @@ public class RespondentValidator {
             respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
         List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
         errors.addAll(validateEmailService.validate(emails, "Representative"));
+        List<String> telephoneNumbers = respondentService.getRespondentSolicitorTelephones(respondentsWithLegalRep);
+        if (telephoneNumbers.size() != respondentsWithLegalRep.size()) {
+            errors.addAll(List.of("Telephone number of legal representative is required."));
+        }
 
         if (caseData.getState() != OPEN) {
             errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore, hideRespondentIndex));

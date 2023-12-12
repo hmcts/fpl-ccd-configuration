@@ -223,12 +223,9 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    // PT - REMOVE IF NOT NEEDED | await I.goToPage(config.baseUrl);
-    await I.goToPage(config.baseUrl, config.hmctsUser);
-
-    // PT - REMOVE IF NOT NEEDED | await this.signIn(user);
-    // PT - REMOVE IF NOT NEEDED | I.wait(10);
-
+    await I.goToPage(config.baseUrl, user);
+    await this.signIn(user);
+    I.wait(10);
     await this.navigateToCaseDetails(caseId);
   },
 

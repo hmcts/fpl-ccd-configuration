@@ -26,7 +26,28 @@ async function setupScenario(I, caseViewPage) {
 }
 
 Scenario('@prabha Create C32A care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
-  await setupScenario(I, caseViewPage);
+
+  let caseId = await I.submitNewCaseWithData(caseData);
+  await I.amOnPage(config.baseUrl);
+
+  I.waitForElement('//input[@type="text"]', 20);
+  I.fillField('//input[@type="text"]', config.hmctsAdminUser.email);
+  //this.wait(0.2);
+  I.fillField('//input[@type="password"]', config.hmctsAdminUser.password);
+  //this.wait(0.5);
+  I.click('Sign in');
+
+  console.log('signed in');
+
+  I.amOnPage(`${config.baseUrl}/cases/case-details/${caseId}`);
+  I.wait(0.5);
+
+  let currentUrl = await I.grabCurrentUrl();
+  console.log(`Expecting case-details url.  On ${currentUrl}`);
+  // isn't right.  Still on https://manage-case.aat.platform.hmcts.net/
+
+
+  // await setupScenario(I, caseViewPage);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32);
