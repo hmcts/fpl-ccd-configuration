@@ -5,10 +5,12 @@ module.exports = {
   newSwanseaLocalAuthorityUserOne: {
     email: 'local-authority-swansea-0001@maildrop.cc',
 
+
     password:  e2ePw,
     forename: 'Local',
     surname: 'Authority',
   }, 
+
 
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',

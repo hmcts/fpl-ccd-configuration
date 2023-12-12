@@ -57,11 +57,11 @@ Scenario(
     caseViewPage.selectTab(caseViewPage.tabs.summary);
     await I.seeTagInTab("Potentially violent person");
 
-    // Needs improvement: Automated testing currently interrupts page loading
-    // I.seeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
-    // I.seeInTab('Email', 'hmcts-admin@example.com');
-    // I.seeInTab('Assessment Form', 'mockFile.docx');
-    // I.seeInTab('Additional notes', 'Additional case flag notes');
+
+    I.see('CTSC Admin', '#case-viewer-field-read--caseSummaryFlagAddedByFullName');
+    I.see('fpl-ctsc-admin@justice.gov.uk', '#case-viewer-field-read--caseSummaryFlagAddedByEmail');
+    I.see('mockFile.docx', '#case-viewer-field-read--caseSummaryFlagAssessmentForm');
+    I.see('Additional case flag notes', '#case-viewer-field-read--caseSummaryCaseFlagNotes');
 
     // Remove case flag
     caseViewPage.selectTab(caseViewPage.tabs.summary);
@@ -77,10 +77,10 @@ Scenario(
 
     await I.dontSeeTagInTab("Potentially violent person");
 
-    // Needs improvement: Automated testing currently interrupts page loading
-    // I.dontSeeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
-    // I.dontSeeInTab('Email', 'HMCTS');
-    // I.dontSeeInTab('Assessment Form', 'mockFile.docx');
-    // I.dontSeeInTab('Additional notes', 'Additional case flag notes');
+    I.dontSeeInTab('Flag added by', 'hmcts-admin@example.com (hmcts-admin)');
+    I.dontSeeInTab('Email', 'HMCTS');
+    I.dontSeeInTab('Assessment Form', 'mockFile.docx');
+    I.dontSeeInTab('Additional notes', 'Additional case flag notes');
+
   },
 );
