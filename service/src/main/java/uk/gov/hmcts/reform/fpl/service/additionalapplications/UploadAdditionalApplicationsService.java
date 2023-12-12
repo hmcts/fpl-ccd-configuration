@@ -124,7 +124,7 @@ public class UploadAdditionalApplicationsService {
             .collect(Collectors.toSet());
 
         final BiConsumer<OrganisationPolicy, String> addBundleToList = (policy, fieldName) -> {
-            if (caseRoles.contains(policy.getOrgPolicyCaseAssignedRole())) {
+            if (policy != null && caseRoles.contains(policy.getOrgPolicyCaseAssignedRole())) {
                 try {
                     AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
                         .invoke(builder, c2Bundle);
@@ -135,18 +135,19 @@ public class UploadAdditionalApplicationsService {
         };
 
         final TriConsumer<Object, String, String> addBundleByPolicy = (policyData, getterName, bundleField) -> {
-            Arrays.stream(policyData.getClass().getMethods())
-                .filter(method -> method.getName().startsWith(getterName))
-                .forEach(method -> {
-                    try {
-                        OrganisationPolicy policy = (OrganisationPolicy) method.invoke(policyData);
-                        String bundleFieldName = bundleField +
-                                                 method.getName().replace(getterName, "");
-                        addBundleToList.accept(policy, bundleFieldName);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        log.error("mis-configured?", e);
-                    }
-                });
+            if (policyData != null) {
+                Arrays.stream(policyData.getClass().getMethods())
+                    .filter(method -> method.getName().startsWith(getterName))
+                    .forEach(method -> {
+                        try {
+                            OrganisationPolicy policy = (OrganisationPolicy) method.invoke(policyData);
+                            String bundleFieldName = bundleField + method.getName().replace(getterName, "");
+                            addBundleToList.accept(policy, bundleFieldName);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            log.error("mis-configured?", e);
+                        }
+                    });
+            }
         };
 
         addBundleByPolicy.accept(caseData.getRespondentPolicyData(), "getRespondentPolicy",
