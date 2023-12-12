@@ -5,6 +5,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
@@ -24,6 +26,15 @@ public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator 
             .caseSummaryFlagAddedByFullName(generateUploadedFullName(caseData))
             .caseSummaryFlagAddedByEmail(generateUploadedByEmail(caseData))
             .build();
+    }
+
+    public Map<String, Object> generateFields(CaseData caseData) {
+        return Map.of(
+            "caseSummaryFlagAssessmentForm", caseData.getRedDotAssessmentForm(),
+            "caseSummaryCaseFlagNotes", caseData.getCaseFlagNotes(),
+            "caseSummaryFlagAddedByFullName", generateUploadedFullName(caseData),
+            "caseSummaryFlagAddedByEmail", generateUploadedByEmail(caseData)
+        );
     }
 
     private String generateUploadedByEmail(CaseData caseData) {

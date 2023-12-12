@@ -130,6 +130,7 @@ public class ManageHearingsController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
+        caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
@@ -271,8 +272,6 @@ public class ManageHearingsController extends CallbackController {
 
         return respond(caseDetails);
     }
-
-
 
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
