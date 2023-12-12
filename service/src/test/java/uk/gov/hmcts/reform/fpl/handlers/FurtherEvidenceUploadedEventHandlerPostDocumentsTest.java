@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +20,9 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CourtBundleData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 
 import java.util.ArrayList;
@@ -76,9 +79,18 @@ class FurtherEvidenceUploadedEventHandlerPostDocumentsTest {
     @Captor
     private ArgumentCaptor<CourtBundleData> courtBundleCaptor;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isNewDocumentUploadNotificationEnabled()).thenReturn(true);
+    }
 
     @Test
     void shouldSendDocumentByPostWhenPDFUploadedByRespSolicitor() {

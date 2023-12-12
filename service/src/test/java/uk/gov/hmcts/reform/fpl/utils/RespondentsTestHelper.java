@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,6 +56,7 @@ public class RespondentsTestHelper {
             .solicitor(RespondentSolicitor.builder()
                 .email(solicitorEmail)
                 .organisation(TEST_ORGANISATION)
+                .telephoneNumber(Telephone.builder().telephoneNumber("1234 567 897").build())
                 .build())
             .build();
     }

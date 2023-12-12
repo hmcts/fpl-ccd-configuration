@@ -28,8 +28,8 @@ function stringify(value) {
 
 module.exports = class HooksHelpers extends Helper {
   async _failed(test) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    let logs = await helper.grabBrowserLogs();
+    //const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    let logs = undefined; //await helper.grabBrowserLogs();
     if (logs !== undefined) {
       logs = logs.map(log => {
         return {
@@ -44,10 +44,10 @@ module.exports = class HooksHelpers extends Helper {
       }
     }
 
-    const source = await helper.grabSource();
+    const source = 'undefined'; //await helper.grabSource();
     fs.writeFileSync(`${buildOutputFileName(test)}.browser.html`, source);
 
-    const url = await helper.grabCurrentUrl();
+    const url = 'undefined'; //await helper.grabCurrentUrl();
     fs.writeFileSync(`${buildOutputFileName(test)}.browser.url`, url);
   }
 };

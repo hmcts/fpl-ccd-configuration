@@ -122,8 +122,8 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent("fixtures/caseOtherOrderType.json");
 
         assertThat(response.getData().get("court")).isNotNull();
-        assertThat(response.getData().get("dfjArea")).isEqualTo("LIVERPOOL");
-        assertThat(response.getData().get("liverpoolDFJCourt")).isEqualTo("22");
+        assertThat(response.getData().get("dfjArea")).isEqualTo("WEST_LONDON");
+        assertThat(response.getData().get("westLondonDFJCourt")).isEqualTo("117");
     }
 
     @Test

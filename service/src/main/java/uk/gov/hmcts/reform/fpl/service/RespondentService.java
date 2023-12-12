@@ -1,17 +1,20 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
@@ -37,6 +40,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -77,7 +81,7 @@ public class RespondentService {
 
     //If user entered details that were subsequently hidden after change of mind, remove them
     public List<Element<Respondent>> removeHiddenFields(List<Element<Respondent>> respondents) {
-        respondents.forEach(respondentElement -> {
+        return respondents.stream().map(respondentElement -> {
             Respondent respondent = respondentElement.getValue();
 
             if (NO.getValue().equals(respondent.getLegalRepresentation())) {
@@ -90,9 +94,21 @@ public class RespondentService {
                     respondent.getSolicitor().setRegionalOfficeAddress(null);
                 }
             }
-        });
 
-        return respondents;
+            // Clear address not know reason if address is known
+            RespondentParty party = respondent.getParty();
+            if (party != null && YES.getValue().equals(party.getAddressKnow())
+                && isNotEmpty(party.getAddressNotKnowReason())) {
+                return element(respondentElement.getId(),
+                    respondent.toBuilder().party(party.toBuilder().addressNotKnowReason(null).build()).build());
+            } else if (party != null && NO.getValue().equals(party.getAddressKnow())
+                && party.getAddress() != null && isNotEmpty(party.getAddress().getAddressLine1())) {
+                return element(respondentElement.getId(),
+                    respondent.toBuilder().party(party.toBuilder().address(Address.builder().build()).build()).build());
+            } else {
+                return respondentElement;
+            }
+        }).toList();
     }
 
     public List<Respondent> getRespondentsWithLegalRepresentation(List<Element<Respondent>> respondents) {
@@ -110,6 +126,17 @@ public class RespondentService {
             .map(Respondent::getSolicitor)
             .map(RespondentSolicitor::getEmail)
             .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getRespondentSolicitorTelephones(List<Respondent> respondents) {
+        return respondents
+            .stream()
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getTelephoneNumber)
+            .filter(Objects::nonNull)
+            .map(Telephone::getTelephoneNumber)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.toList());
     }
 

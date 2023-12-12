@@ -76,9 +76,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersCafcassRegion",
             "manageOrdersCafcassOfficesEngland",
             "manageOrdersCafcassOfficesWales",
-            "othersSelector",
-            "others_label",
-            "sendOrderToAllOthers",
             "manageOrdersParentResponsible",
             "manageOrdersIsChildRepresented",
             "manageOrdersReasonForSecureAccommodation",
@@ -98,6 +95,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersBirthCertificateRegistrationDistrict",
             "manageOrdersBirthCertificateRegistrationSubDistrict",
             "manageOrdersBirthCertificateRegistrationCounty",
+            "manageOrdersPlacementOrderOtherDetails",
             "manageOrdersLeaName",
             "manageOrdersEndDateWithEducationAge",
             "manageOrdersPlacedUnderOrder",
@@ -132,7 +130,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersHearingParty1",
             "manageOrdersHearingParty2",
             "manageOrdersPersonWhoseParenthoodIs",
-            "manageOrdersParentageAction"
+            "manageOrdersParentageAction",
+            "manageOrdersParagraphs",
+            "manageOrdersCostOrders",
+            "manageOrdersPreamblesText"
         );
     }
 }

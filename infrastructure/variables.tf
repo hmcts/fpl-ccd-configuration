@@ -1,5 +1,3 @@
-variable "subscription" {}
-
 variable "product" {
   type = string
 }
@@ -9,11 +7,6 @@ variable "component" {
 }
 
 variable "location" {
-  type    = string
-  default = "UK South"
-}
-
-variable "location_db" {
   type    = string
   default = "UK South"
 }
@@ -32,10 +25,6 @@ variable "tenant_id" {
 
 variable "jenkins_AAD_objectId" {
   description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
-}
-
-variable "managed_identity_object_id" {
-  default = ""
 }
 
 variable "appinsights_location" {
@@ -59,3 +48,13 @@ variable "docmosis_vault" {
 variable "enable_alerts" {
   default = false
 }
+
+variable "fpl_scheduler_db_name_v15" {
+  default = "fpl_scheduler"
+}
+
+variable "pgsql_admin_username" {
+  default = "fpl_scheduler_user"
+}
+
+variable "aks_subscription_id" {} # provided by the Jenkins library

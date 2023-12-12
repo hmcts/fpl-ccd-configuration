@@ -11,9 +11,6 @@ properties([
       description: 'The URL of idam api'),
     string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
       description: 'The organisation id of Swansea local authority'),
-    string(name: 'SECURITY_RULES',
-      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
-      description: 'The security rules to use'),
     string(name: 'FUNCTIONAL_TESTS_WORKERS',
       defaultValue: '8',
       description: 'Number of workers running functional tests'),
@@ -32,9 +29,11 @@ AppPipelineConfig pipelineConf;
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD')
   ]
 ]
+
 
 static Map<String, Object> secret(String secretName, String envVariable) {
   [ $class: 'AzureKeyVaultSecret',
@@ -80,22 +79,21 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableSecurityScan()
-  //enableMutationTest()
+  enableMutationTest()
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
-  enableCrossBrowserTest(['chrome', 'firefox'])
-  enableFortifyScan()
+  //enableCrossBrowserTest(['chrome', 'firefox'])
+  enableFortifyScan('fpl-aat')
 
 
-  //before('mutationTest') {
-  //  setupSecretsForIntegrationTests(pipelineConf)
-  //}
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
 
-  //after('mutationTest') {
-  //  archiveExtraFilesForIntegrationTests()
-  //  teardownSecretsForIntegrationTests()
-  //}
+  afterAlways('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
+    teardownSecretsForIntegrationTests()
+  }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
@@ -119,7 +117,7 @@ withNightlyPipeline(type, product, component) {
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }

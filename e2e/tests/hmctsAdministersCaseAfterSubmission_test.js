@@ -8,6 +8,7 @@ const supplements = require('../fixtures/supplements.js');
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const api = require('../helpers/api_helper');
+//const caseListPage = require('../pages/caseList.page');
 
 let caseId;
 
@@ -271,7 +272,7 @@ xScenario('HMCTS admin creates notice of proceedings documents with allocated ju
 
 Scenario('HMCTS admin handles supplementary evidence @nightlyOnly', async ({I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage}) => {
   await setupScenario(I);
-  I.navigateToCaseList();
+  caseListPage.navigate();
   await caseListPage.searchForCasesWithHandledEvidences(caseId);
   I.dontSeeCaseInSearchResult(caseId);
 
@@ -281,8 +282,8 @@ Scenario('HMCTS admin handles supplementary evidence @nightlyOnly', async ({I, c
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
-  I.navigateToCaseList();
-  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(caseId), caseListPage.locateCase(caseId), false);
+  caseListPage.navigate();
+  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(caseId), `a[href$='${caseId}']`, false);
   I.seeCaseInSearchResult(caseId);
 }).retry(1); //Async case update in prev test
 

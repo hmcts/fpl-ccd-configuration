@@ -17,66 +17,66 @@ The FPL Service (as any other HMCTS Reform services) uses three sources of confi
 
 ### Custom configuration parameters:
 
-|Property name|Configuration place|Description|
-|---|---|---|
-|fees-register.api.url|ENV|URL of the Fees Register service, used for obtaining fee of applications|
-|fees-register.parameters|application.yaml|Mapping of FPL's possible Fees to required parameters by Fee Register. Configuration stored in class *FeesConfig*|
-|payment.site_id|application.yaml|Identifier required when communicating with Payment service to determine payments coming from FPL |
-|payment.api.url|ENV|URL of service providing PBA payments functionality|
-|bankHolidays.api.url|application.yaml|URL of the service which can return this years Bank Holidays|
-|ld.sdk_key|SECRET|Launch Darkly API key for feature toggles|
-|ld.user_key|ENV|Optional parameter which is send to LD to enable per env toggles|
-|SCHEDULER_ENABLED|ENV|(Optional) Determines if Quartz scheduler should be used. Enabled by default (disabled in local profile).|
-|SCHEDULER_DB_HOST|ENV|(Optional) Host for Scheduler DB, default is `localhost`|
-|SCHEDULER_DB_PORT|ENV|(Optional) Port for Scheduler DB, default is `5050`|
-|SCHEDULER_DB_NAME|ENV|(Optional) Name for Scheduler DB, default is `fpl_scheduler`|
-|SCHEDULER_DB_USER|ENV|(Optional) Username for Scheduler DB, default is `fpl_scheduler`|
-|SCHEDULER_DB_PASSWORD|SECRET|(Optional) Password for scheduler db, default (for local) is `fpl_scheduler`|
-|idam.s2s-auth.microservice|application.yaml|Name of FPL service when communicating with other Reform services.|
-|idam.s2s-auth.url|ENV|URL of Service responsible for Service to Service authentication (s2s token provider)|
-|idam.s2s-auth.totp_secret|SECRET|One time password code secret required when communicating with s2s service|
-|idam.api.url|ENV|URL to IDAM service used to authenticate requests and obtain further user details.|
-|idam.client.id|ENV|Client identifier used for OAuth2 login via IDAM.|
-|idam.client.redirect_uri|ENV|Redirect URI used for OAuth2 login via IDAM.|
-|idam.client.secret|SECRET|Secret portion of OAuth 2 flow.|
-|auth.idam.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with IDAM |
-|auth.provider.service.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with s2s auth service|
-|spring.security.enabled|ENV|Indicates if spring security should be enabled|
-|spring.security.oauth2.resourceserver.jwt.issuer-uri|ENV|Expected IDAM issuer-uri|
-|spring.security.oauth2.resourceserver.jwt.jwk-set-uri|ENV|Expected IDAM jwk-set-uri|
-|core_case_data.api.url|ENV|CCD Data store API URL|
-|docmosis.tornado.url|ENV|Docmosis Tornado (document generation service) URL|
-|docmosis.tornado.key|SECRET|Docmosis Tornado (document generation service) API key|
-|document_management.url|ENV|URL for service responsible for storing documents|
-|notify.api_key|SECRET|Gov notify API Key for sending emails|
-|rd_professional.api.url|ENV|URL for Professional Reference Data service|
-|send-letter.url|ENV|URL for service delivering Bulk Print functionality|
-|send-grid.host|ENV|SendGrid host|
-|send-grid.port|ENV|SendGrid port|
-|send-grid.api_key|SECRET|SendGrid API key|
-|ccd.ui.base.url|ENV|URL for CCD Web UI, used in notifications|
-|fpl.local_authority_email_to_code.mapping|SECRET|Explained below.|
-|fpl.local_authority_code_to_name.mapping|SECRET|Explained below.|
-|fpl.local_authority_code_to_hmcts_court.mapping|SECRET|Explained below.|
-|fpl.local_authority_code_to_cafcass.mapping|SECRET|Explained below.|
-|fpl.local_authority_code_to_shared_inbox.mapping|SECRET|Explained below.|
-|fpl.local_authority_code_to_org_id.mapping|SECRET|Explained below.|
-|fpl.eps_to_local_authorities.mapping|SECRET|Explained below.|
-|fpl.mla_to_local_authorities.mapping|SECRET|Explained below.|
-|fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when the system cannot determine where the LA notification should be delivered|
-|fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
-|fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
-|fpl.ctsc_inbox|SECRET|CTSC mail inbox|
-|fpl.rcj_family_high_court_inbox|SECRET|High Court admin mail inbox|
-|fpl.translation_team_inbox|SECRET|Translation team mail inbox|
-|fpl.translation_team_inbox|SECRET|Translation team mail inbox|
-|translation.notification.sender|SECRET|Translation sender mail inbox|
-|translation.notification.recipient|SECRET|Translation recipient team mail inbox|
-|robotics.notification.sender|SECRET|FROM field when sending emails to robotics|
-|robotics.notification.recipient|SECRET|Robotics mailbox address|
-|feature.toggle.robotics.case-number.notification.enabled|ENV|Determines if JSON file should be send to robotics when Family Man case number is added to the case'|
-|feature.toggle.robotics.support.api.enabled|ENV|Enables API to retrigger robotics notification for particular case|
-|appinsights.instrumentationkey|SECRET|Key used to connect to Azure AppInsights|
+|Property name|Configuration place| Description                                                                                                       |
+|---|---|-------------------------------------------------------------------------------------------------------------------|
+|fees-register.api.url|ENV| URL of the Fees Register service, used for obtaining fee of applications                                          |
+|fees-register.parameters|application.yaml| Mapping of FPL's possible Fees to required parameters by Fee Register. Configuration stored in class *FeesConfig* |
+|payment.site_id|application.yaml| Identifier required when communicating with Payment service to determine payments coming from FPL                 |
+|payment.api.url|ENV| URL of service providing PBA payments functionality                                                               |
+|bankHolidays.api.url|application.yaml| URL of the service which can return this years Bank Holidays                                                      |
+|ld.sdk_key|SECRET| Launch Darkly API key for feature toggles                                                                         |
+|ld.user_key|ENV| Optional parameter which is send to LD to enable per env toggles                                                  |
+|SCHEDULER_ENABLED|ENV| (Optional) Determines if Quartz scheduler should be used. Enabled by default (disabled in local profile).         |
+|SCHEDULER_DB_HOST|ENV| (Optional) Host for Scheduler DB, default is `localhost`                                                          |
+|SCHEDULER_DB_PORT|ENV| (Optional) Port for Scheduler DB, default is `6432`                                                               |
+|SCHEDULER_DB_NAME|ENV| (Optional) Name for Scheduler DB, default is `fpl_scheduler`                                                      |
+|SCHEDULER_DB_USER|ENV| (Optional) Username for Scheduler DB, default is `fpl_scheduler_user`                                             |
+|SCHEDULER_DB_PASSWORD|SECRET| (Optional) Password for scheduler db, default (for local) is `fpl_scheduler`                                      |
+|idam.s2s-auth.microservice|application.yaml| Name of FPL service when communicating with other Reform services.                                                |
+|idam.s2s-auth.url|ENV| URL of Service responsible for Service to Service authentication (s2s token provider)                             |
+|idam.s2s-auth.totp_secret|SECRET| One time password code secret required when communicating with s2s service                                        |
+|idam.api.url|ENV| URL to IDAM service used to authenticate requests and obtain further user details.                                |
+|idam.client.id|ENV| Client identifier used for OAuth2 login via IDAM.                                                                 |
+|idam.client.redirect_uri|ENV| Redirect URI used for OAuth2 login via IDAM.                                                                      |
+|idam.client.secret|SECRET| Secret portion of OAuth 2 flow.                                                                                   |
+|auth.idam.client.baseUrl|ENV| Configuration required by auth-checker-library to communicate with IDAM                                           |
+|auth.provider.service.client.baseUrl|ENV| Configuration required by auth-checker-library to communicate with s2s auth service                               |
+|spring.security.enabled|ENV| Indicates if spring security should be enabled                                                                    |
+|spring.security.oauth2.resourceserver.jwt.issuer-uri|ENV| Expected IDAM issuer-uri                                                                                          |
+|spring.security.oauth2.resourceserver.jwt.jwk-set-uri|ENV| Expected IDAM jwk-set-uri                                                                                         |
+|core_case_data.api.url|ENV| CCD Data store API URL                                                                                            |
+|docmosis.tornado.url|ENV| Docmosis Tornado (document generation service) URL                                                                |
+|docmosis.tornado.key|SECRET| Docmosis Tornado (document generation service) API key                                                            |
+|document_management.url|ENV| URL for service responsible for storing documents                                                                 |
+|notify.api_key|SECRET| Gov notify API Key for sending emails                                                                             |
+|rd_professional.api.url|ENV| URL for Professional Reference Data service                                                                       |
+|send-letter.url|ENV| URL for service delivering Bulk Print functionality                                                               |
+|send-grid.host|ENV| SendGrid host                                                                                                     |
+|send-grid.port|ENV| SendGrid port                                                                                                     |
+|send-grid.api_key|SECRET| SendGrid API key                                                                                                  |
+|ccd.ui.base.url|ENV| URL for CCD Web UI, used in notifications                                                                         |
+|fpl.local_authority_email_to_code.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_code_to_name.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_code_to_hmcts_court.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_code_to_cafcass.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_code_to_shared_inbox.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_code_to_org_id.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.eps_to_local_authorities.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.mla_to_local_authorities.mapping|SECRET| Explained below.                                                                                                  |
+|fpl.local_authority_fallback_inbox|SECRET| Fallback notification inbox when the system cannot determine where the LA notification should be delivered        |
+|fpl.system_update.username|SECRET| System user username, used for automated state transitions and data modifications                                 |
+|fpl.system_update.password|SECRET| System user password, used for automated state transitions and data modifications                                 |
+|fpl.ctsc_inbox|SECRET| CTSC mail inbox                                                                                                   |
+|fpl.rcj_family_high_court_inbox|SECRET| High Court admin mail inbox                                                                                       |
+|fpl.translation_team_inbox|SECRET| Translation team mail inbox                                                                                       |
+|fpl.translation_team_inbox|SECRET| Translation team mail inbox                                                                                       |
+|translation.notification.sender|SECRET| Translation sender mail inbox                                                                                     |
+|translation.notification.recipient|SECRET| Translation recipient team mail inbox                                                                             |
+|robotics.notification.sender|SECRET| FROM field when sending emails to robotics                                                                        |
+|robotics.notification.recipient|SECRET| Robotics mailbox address                                                                                          |
+|feature.toggle.robotics.case-number.notification.enabled|ENV| Determines if JSON file should be send to robotics when Family Man case number is added to the case'              |
+|feature.toggle.robotics.support.api.enabled|ENV| Enables API to retrigger robotics notification for particular case                                                |
+|appinsights.instrumentationkey|SECRET| Key used to connect to Azure AppInsights                                                                          |
 
 Notes:
 * When using env variables '.', '-' are replaced with '_', i.e. `idam.s2s-auth.url` is configured as ENV var: IDAM_S2S_AUTH_URL

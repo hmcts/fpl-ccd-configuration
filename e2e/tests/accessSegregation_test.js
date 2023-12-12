@@ -1,51 +1,53 @@
 const config = require('../config.js');
+const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 
-let caseId;
-
-Feature('Access segregation');
+let caseIdAndName;
+Feature('Access segregation @fixed');
 
 async function setupScenario(I) {
-  if (!caseId) { caseId = await I.submitNewCaseWithData(); }
+  if (!caseIdAndName) { caseIdAndName = await I.submitNewCaseWithData(mandatorySubmissionFields); }
 }
 
-Scenario('Different user in the same local authority can see case created', async ({I}) => {
+Scenario('Different user in the same local authority can see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserTwo, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.newSwanseaLocalAuthorityUserTwo);
+  I.wait(30);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
+
 });
 
 Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.signIn(config.hillingdonLocalAuthorityUserTwo);
-  caseListPage.verifyCaseIsNotAccessible(caseId);
+  await I.goToPage(config.baseUrl, config.hillingdonLocalAuthorityUserOne);
+  caseListPage.verifyCaseIsNotAccessibleSearchByCaseName(caseIdAndName);
 });
 
-Scenario('HMCTS admin user can see the case', async ({I}) => {
+Scenario('HMCTS admin user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.hmctsAdminUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-Scenario('CAFCASS user can see the case', async ({I}) => {
+Scenario('CAFCASS user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.cafcassUser, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.cafcassUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-Scenario('Gatekeeper user can see the case', async ({I}) => {
+Scenario('Gatekeeper user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.gateKeeperUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-Scenario('Judiciary user can see the case', async ({I}) => {
+Scenario('Judiciary user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.judicaryUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });
 
-Scenario('Magistrate user can see the case', async ({I}) => {
+Scenario('Magistrate user can see the case', async ({I, caseListPage}) => {
   await setupScenario(I);
-  await I.navigateToCaseDetailsAs(config.magistrateUser, caseId);
-  I.see(I.uiFormatted(caseId));
+  await I.goToPage(config.baseUrl, config.magistrateUser);
+  I.navigateToCaseList(caseIdAndName, caseListPage);
 });

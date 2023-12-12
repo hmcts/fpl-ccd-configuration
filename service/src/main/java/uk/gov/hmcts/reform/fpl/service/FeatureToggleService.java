@@ -31,6 +31,11 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
+    public boolean isRestrictedFromPrimaryApplicantEmails(String caseId) {
+        return ldClient.boolVariation("restrict-primary-applicant-emails",
+            createLDUser(Map.of("caseId", LDValue.of(caseId))), false);
+    }
+
     public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {
         return ldClient.boolVariation("restrict-case-submission",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -78,6 +83,10 @@ public class FeatureToggleService {
 
     public boolean isSecureDocstoreEnabled() {
         return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+    }
+
+    public boolean isElinksEnabled() {
+        return ldClient.boolVariation("elinks-enabled", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

@@ -772,13 +772,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "NTH",
-    "ListElement": "Northamptonshire County Council",
-    "DisplayOrder": 265
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AuthorityFixedList",
     "ListElementCode": "NHB",
     "ListElement": "Northumberland County Council",
     "DisplayOrder": 267
@@ -985,6 +978,13 @@
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
     "DisplayOrder": 350
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOS",
+    "ListElement": "Southend on Sea City Council",
+    "DisplayOrder": 351
   },
   {
     "LiveFrom": "01/01/2017",

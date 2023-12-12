@@ -6,6 +6,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Value
 @Builder
@@ -34,6 +35,7 @@ public class SyntheticCaseSummary {
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;
     LocalDate caseSummaryNextHearingDate;
+    LocalDateTime caseSummaryNextHearingDateTime;
     String caseSummaryNextHearingJudge;
     String caseSummaryNextHearingEmailAddress;
     DocumentReference caseSummaryNextHearingCMO;

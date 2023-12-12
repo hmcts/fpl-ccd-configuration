@@ -13,22 +13,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -37,14 +42,18 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -81,6 +90,9 @@ class MigrateCaseServiceTest {
     @Mock
     private MigrateRelatingLAService migrateRelatingLAService;
 
+    @Mock
+    private OrganisationService organisationService;
+
     @InjectMocks
     private MigrateCaseService underTest;
 
@@ -108,6 +120,122 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Nested
+    class UpdateThirdPartyStandaloneApplicant {
+
+        private final String previousOrgId = "ABCDEFG";
+        private final String previousOrgName = "Previous Organisation Name";
+
+        private final String newOrgId = "HIJKLMN";
+        private final String newOrgName = "New Organisation Name";
+
+        private final String caseRole = "[SOLICITORA]";
+
+        private final Organisation previousOrganisation = Organisation.builder()
+            .organisationID(previousOrgId)
+            .organisationName(previousOrgName)
+            .build();
+
+        private final Organisation newOrganisation = Organisation.builder()
+            .organisationID(newOrgId)
+            .organisationName(newOrgName)
+            .build();
+
+        @Test
+        void updateOutsourcingPolicy() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                        .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(previousOrganisation)
+                    .orgPolicyCaseAssignedRole(caseRole)
+                    .build())
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void removeApplicantEmailAndStopNotifyingTheirColleagues() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                    .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+            Element<LocalAuthority> localAuthority2 = element(LocalAuthority.builder()
+                .email("localAuthority2@email.com")
+                .colleagues(List.of(colleague3))
+                .build());
+
+            Element<LocalAuthority> expectedlocalAuthority1 = element(localAuthority1.getId(),
+                localAuthority1.getValue().toBuilder()
+                    .email(null)
+                    .colleagues(List.of(
+                        element(colleague1.getId(),
+                            colleague1.getValue().toBuilder().notificationRecipient(YesNo.NO.getValue()).build()),
+                        element(colleague2.getId(), colleague2.getValue())))
+                    .build());
+
+            Element<LocalAuthority> expectedlocalAuthority2 = element(localAuthority2.getId(),
+                localAuthority2.getValue().toBuilder()
+                    .colleagues(List.of(element(colleague3.getId(), colleague3.getValue().toBuilder().build())))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2))
+                .build();
+
+            Map<String, Object> result = underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                MIGRATION_ID, localAuthority1.getId().toString());
+
+            assertThat(result.get("localAuthorities"))
+                .isEqualTo(List.of(expectedlocalAuthority1, expectedlocalAuthority2));
+        }
+
+        @Test
+        void throwExceptionIfApplicantNotFound() {
+            Element<Colleague> colleague1 = element(Colleague.builder().email("colleague1@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague2 = element(Colleague.builder().email("colleague2@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+            Element<Colleague> colleague3 = element(Colleague.builder().email("colleague3@email.com")
+                .notificationRecipient(YesNo.YES.getValue()).build());
+
+            Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder()
+                .email("localAuthority1@email.com")
+                .colleagues(List.of(colleague1, colleague2))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1))
+                .build();
+
+            AssertionError actualException = assertThrows(AssertionError.class, () -> {
+                underTest.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+                    MIGRATION_ID, UUID.randomUUID().toString());
+            });
+            assertThat(actualException.getMessage()).isEqualTo(format(
+                "Migration {id = %s, case reference = %s}, invalid local authorities (applicant)",
+                MIGRATION_ID, caseData.getId()));
+        }
     }
 
     @Nested
@@ -1040,17 +1168,14 @@ class MigrateCaseServiceTest {
 
         @Test
         void shouldOnlyRemoveSelectPlacement() {
+            var placementRemaining = element(placementToRemain, Placement.builder()
+                            .build());
+
             List<Element<Placement>> placements = List.of(
                 element(placementToRemove, Placement.builder()
-                    .build()),
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+                    .build()), placementRemaining);
 
-            List<Element<Placement>> placementsRemaining = List.of(
-                element(placementToRemain, Placement.builder()
-                    .build())
-            );
+            List<Element<Placement>> placementsRemaining = List.of(placementRemaining);
 
             CaseData caseData = CaseData.builder()
                 .placementEventData(PlacementEventData.builder()
@@ -1381,6 +1506,18 @@ class MigrateCaseServiceTest {
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
                             + mesageToBeRemoved.getId() + " not found");
         }
+
+        @Test
+        void shouldRemoveClosedJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closedJudicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeClosedJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("closedJudicialMessages").asList().containsExactly(message1, message2);
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -1436,6 +1573,60 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, skeleton argument %s not found",
                     MIGRATION_ID, 1, skeletonArgumentToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveNoticeOfProceedingsBundle {
+        private final Element<DocumentBundle> noticeOfProceedings1 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedings2 =
+            element(DocumentBundle.builder().build());
+        private final Element<DocumentBundle> noticeOfProceedingsToBeRemoved =
+            element(DocumentBundle.builder().build());
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2,
+                    noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList()
+                .containsExactly(noticeOfProceedings1, noticeOfProceedings2);
+        }
+
+        @Test
+        void shouldRemoveNoticeOfProceedingsBundleIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedingsToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("noticeOfProceedingsBundle").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .noticeOfProceedingsBundle(List.of(noticeOfProceedings1, noticeOfProceedings2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeNoticeOfProceedingsBundle(caseData,
+                noticeOfProceedingsToBeRemoved.getId().toString(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " notice of proceedings bundle %s not found",
+                    MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
         }
     }
 
@@ -1702,6 +1893,80 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class RemoveCorrespondenceDocument {
+        private final Element<SupportingEvidenceBundle> correspondenceDocument1 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocument2 =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocumentToBeRemoved =
+            element(SupportingEvidenceBundle.builder().build());
+        private final Element<SupportingEvidenceBundle> correspondenceDocumentConfidential =
+            element(SupportingEvidenceBundle.builder().hasConfidentialAddress("Yes").build());
+
+        @Test
+        void shouldRemoveCorrespondenceDocument() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(
+                    List.of(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
+        }
+
+        @Test
+        void shouldRemoveCorrespondenceDocumentIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocumentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList().isEmpty();
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfCorrespondenceDocumentNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, correspondence document not found",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldNotPutConfidentialDocsInNc() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2,
+                    correspondenceDocumentToBeRemoved, correspondenceDocumentConfidential))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
+                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentConfidential);
+            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
+                .containsExactly(correspondenceDocument1, correspondenceDocument2);
+        }
+    }
+
+    @Nested
     class MigrateRelatingLA {
 
         CaseData caseData = CaseData.builder()
@@ -1726,5 +1991,219 @@ class MigrateCaseServiceTest {
             assertThat(updatedFields).extracting("relatingLA").isEqualTo("ABC");
         }
 
+    }
+
+    @Nested
+    class RemoveSealedCMO {
+        private final Element<HearingOrder> sealedCmo1 = ElementUtils.element(HearingOrder.builder().build());
+        private final Element<HearingOrder> sealedCmo2 = ElementUtils.element(HearingOrder.builder().build());
+        private final List<Element<HearingOrder>> sealedCmos = List.of(sealedCmo1, sealedCmo2);
+        private final List<Element<HearingOrder>> orderToBeSent = List.of(sealedCmo1, sealedCmo2);
+
+        @Test
+        void shouldRemoveSealedCMO() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(orderToBeSent)
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(),
+                true);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isEqualTo(expectedList);
+        }
+
+        @Test
+        void shouldRemoveSealedCMOIfNoOrdersToBeSent() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .build();
+
+            Map<String, Object> updatedFields =
+                underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false);
+
+            List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
+
+            assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
+            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
+        }
+
+        @Test
+        void shouldThrowExceptionIfCMONotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), false))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Sealed CMO not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderToBeSentNotFound() {
+            CaseData caseData = CaseData.builder().id(1L)
+                .sealedCMOs(sealedCmos)
+                .ordersToBeSent(List.of(sealedCmo2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSealedCMO(caseData, MIGRATION_ID, sealedCmo1.getId(), true))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Order to be sent not found, %s",
+                    MIGRATION_ID, "1", sealedCmo1.getId()));
+        }
+    }
+
+    @Nested
+    class ClearChangeOrganisationRequest {
+
+        @Test
+        void shouldClearChangeOrganisationRequestFields() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>(Map.of("changeOrganisationRequestField", ChangeOrganisationRequest.builder()
+                    .caseRoleId(DynamicList.builder()
+                        .value(DynamicListElement.builder().code("TEST").build())
+                        .build())
+                    .build())))
+                .build();
+            underTest.clearChangeOrganisationRequest(caseDetails);
+            assertThat(caseDetails.getData().get("changeOrganisationRequestField")).isNull();
+        }
+
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveLocalAuthority {
+        private final Element<LocalAuthority> localAuthority1 = element(LocalAuthority.builder().build());
+        private final Element<LocalAuthority> localAuthority2 = element(LocalAuthority.builder().build());
+        private final Element<LocalAuthority> localAuthorityToBeRemoved =
+            element(LocalAuthority.builder().build());
+
+        @Test
+        void shouldRemoveLocalAuthority() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2, localAuthorityToBeRemoved))
+                .build();
+
+            Map<String, List<Element<LocalAuthority>>> updatedFields =
+                underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID, localAuthorityToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("localAuthorities").asList()
+                .containsExactly(localAuthority1, localAuthority2);
+        }
+
+        @Test
+        void shouldRemoveLocalAuthorityIfOnlyOneExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthorityToBeRemoved))
+                .build();
+
+            Map<String, List<Element<LocalAuthority>>> updatedFields =
+                underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID, localAuthorityToBeRemoved.getId());
+
+            assertThat(updatedFields).extracting("localAuthorities").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfLocalAuthorityNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorities(List.of(localAuthority1, localAuthority2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeElementFromLocalAuthorities(caseData, MIGRATION_ID,
+                localAuthorityToBeRemoved.getId()))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
+                    MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveStringFromThresholdDetails {
+        private final String testThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\nFREDRICK (FRED) FREDERSON AND BOB BINS \n(By their Children’s Guardian)"
+            + "\n3rd-5th Respondents\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        private final String expectedThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        @Test
+        void shouldRemoveSpecificStringFromThresholdDetails() {
+            var thresholdDetailsStartIndex = 167;
+            var thresholdDetailsEndIndex = 259;
+
+            final Grounds expectedGrounds = Grounds.builder()
+                .thresholdDetails(expectedThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+
+            assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit() {
+            var thresholdDetailsStartIndex = 380;
+            var thresholdDetailsEndIndex = 389;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " threshold details is shorter than provided index",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBlankText() {
+            var thresholdDetailsStartIndex = 8;
+            var thresholdDetailsEndIndex = 9;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails("\nBETWEEN\n\n            ")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "threshold details does not contain provided text",
+                    MIGRATION_ID, 1));
+        }
     }
 }

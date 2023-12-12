@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderOperation.CREATE;
+import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -94,7 +96,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("orderJurisdiction", "NO"),
         Map.entry("selectSingleChild", "NO"),
         Map.entry("dischargeOfCareDetails", "NO"),
-        Map.entry("whichOthers", "YES"),
+        Map.entry("whichOthers", "NO"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
         Map.entry("approvalDateTime", "NO"),
@@ -116,6 +118,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("parentResponsible", "NO"),
         Map.entry("childPlacementApplications", "NO"),
         Map.entry("childPlacementQuestions", "NO"),
+        Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
         Map.entry("declarationOfParentage", "NO"),
         Map.entry("manageOrdersChildAssessment", "NO"),
         Map.entry("manageOrdersEducationSupervision", "NO"),
@@ -136,10 +139,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         .build();
 
     private static final Child CHILD_1 = Child.builder()
-        .party(ChildParty.builder().firstName("first1").lastName("last1").build())
+        .party(ChildParty.builder().firstName("first1").lastName("last1").gender(ChildGender.BOY).build())
         .build();
     private static final Child CHILD_2 = Child.builder()
-        .party(ChildParty.builder().firstName("first2").lastName("last2").build())
+        .party(ChildParty.builder().firstName("first2").lastName("last2").gender(ChildGender.OTHER).build())
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
@@ -381,11 +384,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         final LocalDateTime approvalDate = LocalDateTime.now().minusDays(5);
 
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(8).plusSeconds(1))).build();
+            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(365).plusSeconds(1))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).containsOnly("Emergency protection orders cannot last longer than 8 days");
+        assertThat(response.getErrors()).containsOnly(END_DATE_RANGE_MESSAGE);
     }
 
     @Test
@@ -547,7 +550,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderJurisdiction", "NO"),
             Map.entry("selectSingleChild", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
-            Map.entry("whichOthers", "YES"),
+            Map.entry("whichOthers", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -571,6 +574,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
             Map.entry("declarationOfParentage", "NO"),
             Map.entry("manageOrdersChildAssessment", "NO"),
             Map.entry("manageOrdersEducationSupervision", "NO"),
@@ -608,7 +612,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("orderJurisdiction", "NO"),
             Map.entry("selectSingleChild", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
-            Map.entry("whichOthers", "YES"),
+            Map.entry("whichOthers", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -632,6 +636,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("parentResponsible", "NO"),
             Map.entry("childPlacementApplications", "NO"),
             Map.entry("childPlacementQuestions", "NO"),
+            Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
             Map.entry("manageOrdersChildAssessment", "NO"),
             Map.entry("declarationOfParentage", "NO"),
             Map.entry("manageOrdersEducationSupervision", "NO"),

@@ -1,6 +1,11 @@
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
+const config = {
+  WaitForTimeout: 120000,
+  WaitForAction: 600,
+};
+
 exports.config = {
   output: './output',
   multiple: {
@@ -39,18 +44,33 @@ exports.config = {
     },
   },
   helpers: {
-    Puppeteer: {
+    Playwright: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      restart: false,
-      keepCookies: true,
-      keepBrowserState: true,
-      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
+      //waitForTimeout: config.WaitForTimeout,
+      //waitForAction: config.WaitForAction,
+      timeout: 60000,
+      retries: 5,
+      waitForNavigation: 'load',
+      ignoreHTTPSErrors: true,
+      bypassCSP: true,
       chrome: {
-        ignoreHTTPSErrors: true,
-        args: process.env.DISABLE_WEB_SECURITY === 'true' ? [`--disable-web-security`,] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
+        'ignoreHTTPSErrors': true,
+        'ignore-certificate-errors': true,
+        'defaultViewport': {
+          'width': 1280,
+          'height': 960
+        },
+        args: [
+          // '--headless',
+          '--disable-gpu',
+          '--no-sandbox',
+          '--allow-running-insecure-content',
+          '--ignore-certificate-errors',
+          // '--proxy-server=proxyout.reform.hmcts.net:8080',
+          // '--proxy-bypass-list=*beta*LB.reform.hmcts.net',
+          '--window-size=1440,1400'
+        ]
       },
-      windowSize: '1280x960',
     },
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
@@ -138,7 +158,10 @@ exports.config = {
     manageLocalAuthoritiesEventPage: './e2e/pages/events/manageLocalAuthorities.page.js',
   },
   plugins: {
-    pauseOnFail: {},
+
+    pauseOnFail: {
+      enabled: false
+    },
     retryFailedStep: {
       enabled: true,
     },
@@ -163,10 +186,10 @@ exports.config = {
           mochaFile: process.env.REPORT_FILE || 'test-results/functional/result.xml',
         },
       },
-      'mochawesome': {
+      mochawesome: {
         stdout: '-',
         options: {
-          reportDir: process.env.REPORT_DIR || 'test-results/functional',
+          reportDir: './output',
           inlineAssets: true,
           json: false,
         },

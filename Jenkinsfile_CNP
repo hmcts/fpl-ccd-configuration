@@ -92,7 +92,7 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
       ccdDefinitionFilePath = "${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
       sh """
         eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
-        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+        ./ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     } else {
       ccdDefinitionFilePath = useShutteredCaseDef == '1'
@@ -101,7 +101,7 @@ def uploadCoreCaseDataDefinitions(env, useShutteredCaseDef) {
 
       sh """
         eval \$(./variables/load-${env}-environment-variables.sh)
-        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+        ./ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     }
   }
@@ -159,12 +159,14 @@ withPipeline(type, product, component) {
   onMaster() {
     env.ENV = 'aat'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
-                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
+                   AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
+    ])
   }
   onPR() {
     env.ENV = 'preview'
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
-                  AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK])
+                   AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
+    ])
   }
   onDemo {
     env.ENV = 'demo'
@@ -197,7 +199,7 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./fpla-docker/bin/add-roles.sh
+      ./bin/add-ccd-user-roles.sh
     """
 
     archiveCoreCaseDataDefinitions('preview')
@@ -281,7 +283,7 @@ withPipeline(type, product, component) {
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
-  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
-  def branchesToSync = ['ithc']
+  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
+  def branchesToSync = ['perftest','ithc']
   syncBranchesWithMaster(branchesToSync)
 }

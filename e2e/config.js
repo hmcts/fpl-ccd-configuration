@@ -1,17 +1,32 @@
 const defaultPassword = 'Password12';
+const e2ePw = process.env.E2E_TEST_PASSWORD;
 
 module.exports = {
+  newSwanseaLocalAuthorityUserOne: {
+    email: 'local-authority-swansea-0001@maildrop.cc',
+    password: process.env.LA_USER_PASSWORD || e2ePw,
+    forename: 'Local',
+    surname: 'Authority',
+  }, 
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
+  newSwanseaLocalAuthorityUserTwo: {
+    email: 'Local-Authority-Swansea-0002@AAT.com',
+    password: process.env.LA_USER_PASSWORD || e2ePw
+  },
   swanseaLocalAuthorityUserTwo: {
     email: 'damian@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'damian@swansea.gov.uk',
     surname: '(local-authority)',
+  },
+  newHillingdonLocalAuthorityUserOne: {
+    email: 'Local-Authority-Hillingdon-0001@AAT.com',
+    password: process.env.LA_USER_PASSWORD || e2ePw
   },
   hillingdonLocalAuthorityUserOne: {
     email: 'sam@hillingdon.gov.uk',
@@ -44,11 +59,11 @@ module.exports = {
     surname: '(local-authority-barrister)',
   },
   hmctsAdminUser: {
-    email: 'hmcts-admin@example.com',
+    email: 'fpl-ctsc-admin@justice.gov.uk',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
   hmctsSuperUser: {
-    email: 'hmcts-superuser@mailnesia.com',
+    email: 'fpl-ctsc-team-leader@justice.gov.uk',
     password: process.env.SUPER_USER_PASSWORD || defaultPassword,
   },
   cafcassUser: {
@@ -76,8 +91,8 @@ module.exports = {
     password: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   },
   hmctsUser: {
-    email: process.env.HMCTS_USER_USERNAME,
-    password: process.env.HMCTS_USER_PASSWORD,
+    email: process.env.HMCTS_USER_USERNAME || 'kurt@swansea.gov.uk',
+    password: process.env.HMCTS_USER_PASSWORD || defaultPassword,
   },
   privateSolicitorOne: {
     email: 'solicitor1@solicitors.uk',
@@ -88,9 +103,9 @@ module.exports = {
     password: process.env.LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
-  baseUrl: process.env.URL || 'http://localhost:3000',
-  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4013',
-  idamApiUrl: process.env.IDAM_API_URL || 'https://idam-api.aat.platform.hmcts.net',
+  baseUrl: process.env.URL || 'https://manage-case.aat.platform.hmcts.net',
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://fpl-case-service-aat.service.core-compute-aat.internal',
+  idamApiUrl: 'https://idam-api.aat.platform.hmcts.net',
   swanseaOrgId: process.env.SWANSEA_ORG_ID || 'ORGSA',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
