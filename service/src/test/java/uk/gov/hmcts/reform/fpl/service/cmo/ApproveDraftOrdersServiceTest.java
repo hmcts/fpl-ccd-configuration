@@ -61,6 +61,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -610,8 +611,9 @@ class ApproveDraftOrdersServiceTest {
         assertThat(data).containsAllEntriesOf(expectedData);
     }
 
-    @Test
-    void shouldNotUpdateDataWhenBlankOrderIsNotReviewed() {
+    @ParameterizedTest
+    @MethodSource("populateNullAndEmptyReviewDecisionValues")
+    void shouldNotUpdateDataWhenBlankOrderIsNotReviewed(ReviewDecision reviewDecision) {
         Element<HearingOrder> draftOrder1 = buildBlankOrder("test order1", hearing1);
 
         Element<HearingOrdersBundle> ordersBundleElement =
@@ -623,7 +625,7 @@ class ApproveDraftOrdersServiceTest {
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(newArrayList(draftOrder1))
             .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(null).build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
             .orderCollection(newArrayList())
             .ordersToBeSent(emptyList())
             .build();
@@ -796,7 +798,8 @@ class ApproveDraftOrdersServiceTest {
     }
 
     private static Stream<ReviewDecision> populateNullAndEmptyReviewDecisionValues() {
-        return Stream.of(null, ReviewDecision.builder().build());
+        return Stream.of(null, ReviewDecision.builder().build(),
+            ReviewDecision.builder().decision(REVIEW_LATER).build());
     }
 
     private HearingOrder expectedSealedCMO(List<Element<Other>> selectedOthers, String othersNotified) {
