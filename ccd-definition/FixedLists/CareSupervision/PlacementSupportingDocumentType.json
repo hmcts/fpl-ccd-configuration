@@ -61,5 +61,12 @@
     "ListElementCode": "FINAL_REPORTS_RELATING_TO_SIBLINGS",
     "ListElement": "Final reports relating to full, half or step siblings",
     "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementSupportingDocumentType",
+    "ListElementCode": "OTHER_DOCUMENT_TYPE",
+    "ListElement": "Other document type (please specify below)",
+    "DisplayOrder": 10
   }
 ]
