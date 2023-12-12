@@ -344,7 +344,7 @@ module.exports = {
     const caseId = await this.submitNewCase(config.newSwanseaLocalAuthorityUserOne);
     let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
     await apiHelper.populateWithData(caseId, data, caseName);
-    output.print(`Case #${caseId} has been populated with data`);
+    // output.print(`Case #${caseId} has been populated with data`);
     return {caseId, caseName};
   },
 
@@ -353,7 +353,7 @@ module.exports = {
     const creator = user || config.newSwanseaLocalAuthorityUserOne;
     const caseData = await apiHelper.createCase(creator, caseName);
     const caseId = caseData.id;
-    output.print(`Case #${caseId} has been created`);
+    // output.print(`Case #${caseId} has been created`);
 
     return caseId;
   },
