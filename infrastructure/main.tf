@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.78.0"
+      version = "3.84.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -13,6 +13,13 @@ terraform {
 
 provider "azurerm" {
   features {}
+}
+
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.aks_subscription_id
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -57,28 +64,46 @@ module "key-vault" {
   create_managed_identity    = true
 }
 
-module "fpl-scheduler-db" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}-${var.component}"
-  location           = var.location_db
+module "fpl-scheduler-postgres-v15-flexible-server" {
+
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+
+  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
   env                = var.env
-  database_name      = "fpl_scheduler"
-  postgresql_user    = "fpl_scheduler"
-  postgresql_version = "11"
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
+  pgsql_admin_username = var.pgsql_admin_username
+
+  product            = var.product
+  component          = var.component
+  business_area      = "cft"
+
+  subnet_suffix = "expanded"
+
+  pgsql_databases = [
+    {
+      name : var.fpl_scheduler_db_name_v15
+    }
+  ]
+
+  pgsql_version      = "15"
+
+  pgsql_server_configuration = [
+    {
+      name  = "azure.extensions"
+      value = "plpgsql,pg_stat_statements,pg_buffercache"
+    }
+  ]
+
   common_tags        = var.common_tags
-  subscription       = var.subscription
+
+  admin_user_object_id = var.jenkins_AAD_objectId
+
 }
 
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
   name      = "${var.product}-support-email"
-  key_vault_id = module.key-vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "scheduler-db-password" {
-  name      = "scheduler-db-password"
-  value     = module.fpl-scheduler-db.postgresql_password
   key_vault_id = module.key-vault.key_vault_id
 }
 
@@ -107,4 +132,20 @@ resource "azurerm_key_vault_secret" "idam-owner-password" {
   name         = "idam-owner-password"
   value        = data.azurerm_key_vault_secret.system-update-user-password.value
   key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "scheduler-db-password-v15" {
+  name         = "scheduler-db-password-v15"
+  value        = module.fpl-scheduler-postgres-v15-flexible-server.password
+  key_vault_id = module.key-vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "update-summary-tab-cron" {
+  name         = "update-summary-tab-cron"
+  value        = "0 0 3 ? * * *"
+  key_vault_id = module.key-vault.key_vault_id
+  # After secret is created, manual changes to value aren't reverted
+  lifecycle {
+    ignore_changes = [ value ]
+  }
 }

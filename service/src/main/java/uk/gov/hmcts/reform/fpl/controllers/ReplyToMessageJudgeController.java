@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -40,6 +39,9 @@ public class ReplyToMessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(replyToMessageJudgeService.initialiseCaseFields(caseData));
+
+        // We need to remove this field, as we might be closing the message, not replying
+        caseDetailsMap.remove("latestRoleSent");
 
         return respond(caseDetailsMap);
     }
@@ -94,9 +96,6 @@ public class ReplyToMessageJudgeController extends CallbackController {
         if (OPEN.equals(judicialMessage.getStatus())) {
             publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
         }
-
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
-            getCaseDataBefore(callbackRequest)));
 
     }
 }
