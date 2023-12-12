@@ -36,11 +36,13 @@ Scenario('@prabha Create C32A care order (with pre filled hearing details)', asy
   I.fillField('//input[@type="password"]', config.hmctsAdminUser.password);
   //this.wait(0.5);
   I.click('Sign in');
+  I.waitForText('Case list', 10);
 
   console.log('signed in');
 
   I.amOnPage(`${config.baseUrl}/cases/case-details/${caseId}`);
-  I.wait(0.5);
+  I.waitForText(`CCD ID: #${caseId}`, 10);
+
 
   let currentUrl = await I.grabCurrentUrl();
   console.log(`Expecting case-details url.  On ${currentUrl}`);
