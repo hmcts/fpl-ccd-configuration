@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -24,13 +28,17 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -45,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTI
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
@@ -52,7 +61,7 @@ public class UploadAdditionalApplicationsService {
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
 
     private final Time time;
-    private final UserService user;
+    private final UserService userService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
 
@@ -88,9 +97,14 @@ public class UploadAdditionalApplicationsService {
 
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
-            additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
-                caseData, applicantName, respondentsInCase, uploadedBy, now
-            ));
+            C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
+                caseData, applicantName, respondentsInCase, uploadedBy, now);
+            if (YesNo.YES.equals(caseData.getIsC2Confidential())) {
+                additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
+                buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
+            } else {
+                additionalApplicationsBundleBuilder.c2DocumentBundle(c2DocumentBundle);
+            }
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
@@ -100,6 +114,46 @@ public class UploadAdditionalApplicationsService {
         }
 
         return additionalApplicationsBundleBuilder.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
+                                      AdditionalApplicationsBundleBuilder builder) {
+        final Set<String> caseRoles = userService.getCaseRoles(caseData.getId()).stream()
+            .map(CaseRole::formattedName)
+            .collect(Collectors.toSet());
+
+        final BiConsumer<OrganisationPolicy, String> addBundleToList = (policy, fieldName) -> {
+            if (caseRoles.contains(policy.getOrgPolicyCaseAssignedRole())) {
+                try {
+                    AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
+                        .invoke(builder, c2Bundle);
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    log.error("mis-configured?", e);
+                }
+            }
+        };
+
+        final TriConsumer<Object, String, String> addBundleByPolicy = (policyData, getterName, bundleField) -> {
+            Arrays.stream(policyData.getClass().getMethods())
+                .filter(method -> method.getName().startsWith(getterName))
+                .forEach(method -> {
+                    try {
+                        OrganisationPolicy policy = (OrganisationPolicy) method.invoke(policyData);
+                        String bundleFieldName = bundleField +
+                                                 method.getName().replace(getterName, "");
+                        addBundleToList.accept(policy, bundleFieldName);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        log.error("mis-configured?", e);
+                    }
+                });
+        };
+
+        addBundleByPolicy.accept(caseData.getRespondentPolicyData(), "getRespondentPolicy",
+            "c2DocumentBundleResp");
+        addBundleByPolicy.accept(caseData.getChildPolicyData(), "getChildPolicy",
+            "c2DocumentBundleChild");
+        addBundleToList.accept(caseData.getLocalAuthorityPolicy(), "c2DocumentBundleLA");
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> bundles) {
@@ -195,6 +249,13 @@ public class UploadAdditionalApplicationsService {
                 ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
                 : List.of())
             .build();
+    }
+
+    public void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
+                                            AdditionalApplicationsBundleBuilder builder) {
+        C2DocumentBundle convertedC2 = convertC2Bundle(bundle);
+        builder.c2DocumentBundleConfidential(convertedC2);
+        buildC2BundleByPolicy(caseData, convertedC2, builder);
     }
 
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(

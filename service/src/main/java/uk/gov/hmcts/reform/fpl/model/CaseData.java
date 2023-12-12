@@ -473,6 +473,7 @@ public class CaseData extends CaseDataParent {
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final C2ApplicationType c2Type;
+    private final YesNo isC2Confidential;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 

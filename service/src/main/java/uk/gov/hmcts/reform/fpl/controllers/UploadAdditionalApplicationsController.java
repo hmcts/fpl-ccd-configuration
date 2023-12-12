@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -70,6 +71,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
+    private static final String IS_C2_CONFIDENTIAL = "isC2Confidential";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -80,6 +82,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -206,7 +209,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE);
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
+            IS_C2_CONFIDENTIAL);
 
         return respond(caseDetails);
     }
@@ -234,6 +238,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     bundleBuilder.c2DocumentBundle(
                         uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
                     );
+                }
+                if (!isEmpty(lastBundle.getC2DocumentBundleConfidential())) {
+                    uploadAdditionalApplicationsService.convertConfidentialC2Bundle(caseDataCurrent,
+                        lastBundle.getC2DocumentBundleConfidential(), bundleBuilder);
                 }
 
                 // If we have a other application, do conversion if needed
