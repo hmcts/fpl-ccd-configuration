@@ -402,5 +402,13 @@
     "ListElementCode": "legalCounsellors",
     "DisplayContext": "READONLY",
     "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "ID": "ChangeOtherToRespondent",
+    "CaseEventID": "changeOtherToRespondent",
+    "CaseFieldID": "transformedRespondent",
+    "ListElementCode": "solicitor.telephoneNumber.telephoneNumber",
+    "EventElementLabel": "*Telephone Number",
+    "DisplayContext": "OPTIONAL"
   }
 ]
