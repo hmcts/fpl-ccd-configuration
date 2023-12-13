@@ -234,11 +234,7 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    // await I.goToPage(config.baseUrl);
-    // await I.goToPage(config.baseUrl, config.hmctsUser);
-
-    await this.signIn(user);
-    I.wait(10);
+     await I.goToPage(config.baseUrl, user);
     await this.navigateToCaseDetails(caseId);
   },
 
