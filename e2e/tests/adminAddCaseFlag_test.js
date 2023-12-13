@@ -9,7 +9,7 @@ const selectors = {
   nextStepDropdown: "#next-step",
 };
 
-Feature("Add Case Flag ");
+Feature("Add Case Flag @fixed ");
 
 async function setupScenario(I) {
   // Step 1: Submit a new case and extract the caseId
