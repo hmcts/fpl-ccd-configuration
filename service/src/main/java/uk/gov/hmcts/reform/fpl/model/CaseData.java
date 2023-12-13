@@ -278,13 +278,12 @@ public class CaseData extends CaseDataParent {
     @Temp
     private final YesNo useAllocatedJudge;
 
-    protected final SubmittedC1WithSupplementBundle submittedC1WithSupplement;
-
     @NotNull(message = "Add the hearing urgency details")
     @Valid
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
+    private final SubmittedC1WithSupplementBundle submittedC1WithSupplement;
 
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
