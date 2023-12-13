@@ -129,7 +129,7 @@ public class UploadAdditionalApplicationsService {
                     AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
                         .invoke(builder, c2Bundle);
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    log.error("mis-configured?", e);
+                    throw new RuntimeException(e);
                 }
             }
         };
@@ -144,7 +144,7 @@ public class UploadAdditionalApplicationsService {
                             String bundleFieldName = bundleField + method.getName().replace(getterName, "");
                             addBundleToList.accept(policy, bundleFieldName);
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            log.error("mis-configured?", e);
+                            throw new RuntimeException(e);
                         }
                     });
             }

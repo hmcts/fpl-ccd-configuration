@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static java.util.UUID.randomUUID;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -140,6 +141,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+    @Captor
+    ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -584,6 +587,37 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             any(),
             any(),
             any()));
+    }
+
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldConvertC2ConfidentialBundle() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        C2DocumentBundle c2 = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
+            .build();
+
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object> builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("sendToCtsc", NO)
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+                .c2DocumentBundleConfidential(c2)
+                .build()))
+            .build());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
+            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
+        changeFunctionCaptor.getValue().apply(caseDetails);
+        verify(uploadAdditionalApplicationsService).convertConfidentialC2Bundle(any(), eq(c2), any());
     }
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
