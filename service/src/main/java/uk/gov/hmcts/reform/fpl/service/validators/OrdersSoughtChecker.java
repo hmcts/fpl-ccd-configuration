@@ -48,7 +48,7 @@ public class OrdersSoughtChecker extends PropertiesChecker {
     public boolean isCompleted(CaseData caseData) {
         final Orders orders = caseData.getOrders();
 
-        if (orders == null || anyEmpty(orders.getOrderType(), orders.getDirections())) {
+        if (orders == null || anyEmpty(orders.getOrderType(), orders.getDirections(), orders.getCourt())) {
             return false;
         }
 
