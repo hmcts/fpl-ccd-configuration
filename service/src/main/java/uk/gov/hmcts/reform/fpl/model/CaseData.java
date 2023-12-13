@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
@@ -276,6 +277,8 @@ public class CaseData extends CaseDataParent {
     private final String legalAdvisorName;
     @Temp
     private final YesNo useAllocatedJudge;
+
+    protected final SubmittedC1WithSupplementBundle submittedC1WithSupplement;
 
     @NotNull(message = "Add the hearing urgency details")
     @Valid
