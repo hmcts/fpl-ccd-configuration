@@ -3,7 +3,13 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
@@ -13,12 +19,14 @@ import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class AfterSubmissionCaseDataUpdatedEventHandlerTest {
 
     private static final long CASE_DATA_ID = 23L;
@@ -42,6 +50,9 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
     private final CaseSummaryService caseSummaryService = mock(CaseSummaryService.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
     private final CaseConverter caseConverter = mock(CaseConverter.class);
+
+    @Captor
+    private ArgumentCaptor<CaseData> caseDataArgumentCaptor;
 
     AfterSubmissionCaseDataUpdatedEventHandler underTest = new AfterSubmissionCaseDataUpdatedEventHandler(
         coreCaseDataService,
@@ -112,5 +123,21 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
             .build());
 
         verify(coreCaseDataService).performPostSubmitCallback(eq(CASE_DATA_ID), eq(EVENT), any());
+    }
+
+    @Test
+    void shouldPopulateTransientField() {
+        // normal case data without the transient field is put into the function
+        when(caseConverter.convert(any())).thenReturn(CASE_DATA_WITH_SUMMARY.toBuilder().build());
+
+        // Event caseData has the transient field set (from callback logic)
+        underTest.caseSummaryChangeFunction(CaseDetails.builder().data(Map.of()).build(),
+            AfterSubmissionCaseDataUpdated.builder().caseData(CaseData.builder()
+                    .caseFlagValueUpdated(YesNo.YES)
+                .build()).build());
+
+        // verify that we generate the summary fields WITH the transient field set as expected
+        verify(caseSummaryService).generateSummaryFields(caseDataArgumentCaptor.capture());
+        assertThat(caseDataArgumentCaptor.getValue().getCaseFlagValueUpdated()).isEqualTo(YesNo.YES);
     }
 }
