@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @Component
@@ -35,7 +34,7 @@ public class CaseSummaryCaseFlagGenerator implements CaseSummaryFieldsGenerator 
         map.put("caseSummaryFlagAssessmentForm", caseData.getRedDotAssessmentForm());
         map.put("caseSummaryCaseFlagNotes", caseData.getCaseFlagNotes());
         map.put("caseSummaryFlagAddedByFullName", generateUploadedFullName(caseData));
-        map.put( "caseSummaryFlagAddedByEmail", generateUploadedByEmail(caseData));
+        map.put("caseSummaryFlagAddedByEmail", generateUploadedByEmail(caseData));
         return map;
     }
 
