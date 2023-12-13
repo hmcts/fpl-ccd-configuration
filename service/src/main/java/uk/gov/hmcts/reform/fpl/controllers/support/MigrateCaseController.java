@@ -34,7 +34,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1921", this::run1921,
         "DFPL-1940", this::run1940,
-        "DFPL-1954", this::run1954
+        "DFPL-1954", this::run1954,
+        "DFPL-1948", this::run1948
     );
 
     @PostMapping("/about-to-submit")
@@ -90,5 +91,19 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
         caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
             migrationId, "3cb2d4b1-d0cb-46d7-99e1-913cb15bfa0e"));
+    }
+
+    private void run1948(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1948";
+        var possibleCaseIds = List.of(1681814563345287L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        String orgId = "P71FQC0";
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
+        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
+            migrationId, "d7beca42-edbd-42db-a922-bcbec58b8306"));
     }
 }
