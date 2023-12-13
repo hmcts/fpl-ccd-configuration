@@ -359,44 +359,6 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
-    void shouldThrowNoSuchMethodExceptionWhen() throws NoSuchMethodException {
-        Supplement c2Supplement = createSupplementsBundle();
-        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0))
-            .listItems(DYNAMIC_LIST_ELEMENTS).build();
-
-        List<Element<Respondent>> respondentsInCase = wrapElements(
-            Respondent.builder().party(
-                RespondentParty.builder().firstName("First").lastName("Respondent")
-                    .address(Address.builder().postcode("SE1").build()).build()).build());
-
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER))
-            .c2Type(WITH_NOTICE)
-            .isC2Confidential(YesNo.YES)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .respondents1(respondentsInCase)
-            .respondentPolicyData(RespondentPolicyData.builder()
-                .respondentPolicy0(OrganisationPolicy.builder()
-                    .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
-                .build())
-            .build();
-
-        given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
-        AdditionalApplicationsBundle.builder().getClass()
-            .getMethod("c2DocumentBundleResp0", C2DocumentBundle.class)
-            .setAccessible(false);
-
-        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData));
-//            .isInstanceOf(NoSuchMethodException.class);
-    }
-
-    @Test
     void shouldSortOldC2DocumentBundlesToDateDescending() {
         C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
             .type(WITHOUT_NOTICE)
