@@ -602,7 +602,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
             .build();
 
-        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object> builder()
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .put("sendToCtsc", NO)
             .put("additionalApplicationType", List.of(C2_ORDER))
