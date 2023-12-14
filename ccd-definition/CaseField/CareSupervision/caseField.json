@@ -621,15 +621,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "submittedC1WithSupplement",
-    "Label": "C1 with supplement (Original application)",
-    "FieldType": "SubmittedC1WithSupplement",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "translatedSubmittedForm",
     "Label": "Translated document",
     "FieldType": "Document",
@@ -2241,15 +2232,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c1Application",
-    "Label": " ",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "refuseContactWithChildOrderType",
     "Label": " ",
     "FieldType": "YesOrNo",
@@ -2431,6 +2413,24 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "ArchivedDocument",
     "Label": "Archived migrated data",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submittedC1WithSupplement",
+    "Label": "C1 with supplement (Original application)",
+    "FieldType": "SubmittedC1WithSupplement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c1Application",
+    "Label": " ",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
