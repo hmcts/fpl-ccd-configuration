@@ -88,6 +88,10 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
+<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterC1WithSupplement'>C1 with Supplement</a>
+
+<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
+
 <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
