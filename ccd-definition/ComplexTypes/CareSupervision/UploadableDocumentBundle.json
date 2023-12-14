@@ -1,0 +1,67 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "documentTypeDynamicList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Document type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "placementList",
+    "FieldType": "DynamicList",
+    "ElementLabel": "Which placement application?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "placementNoticeRecipientType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PlacementNoticeRecipientType",
+    "ElementLabel": "Recipient type",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "confidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this document confidential?",
+    "HintText": "A document is confidential if it has names, addresses or any other information that could identify a person or their whereabouts that should not be disclosed to all parties",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "NoConfidentialAddressConfirmation",
+    "ElementLabel": "There is a confidential address on this case. Check the document and confirm it doesn't contain a confidential address.",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
