@@ -382,6 +382,12 @@ public class ManageHearingsService {
         } else {
             caseData.addHearingBooking(hearingBooking);
         }
+
+        caseData.setHearingDetails(caseData.getHearingDetails().stream()
+            .sorted((hearing1, hearing2) ->
+                hearing2.getValue().getStartDate().compareTo(hearing1.getValue().getStartDate()))
+            .collect(toList())
+        );
     }
 
     public Object getHearingsDynamicList(CaseData caseData) {

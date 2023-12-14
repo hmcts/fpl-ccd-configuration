@@ -155,6 +155,9 @@ class OrdersSoughtCheckerTest {
                 .directions("Yes")
                 .directionDetails("")
                 .build(),
+            completedOrder()
+                .court(null)
+                .build(),
 
             completedEPO()
                 .epoType(null)
@@ -204,10 +207,12 @@ class OrdersSoughtCheckerTest {
     private static Stream<Arguments> completeOrders() {
         return Stream.of(
             Orders.builder()
+                .court("777")
                 .orderType(singletonList(CARE_ORDER))
                 .directions("No")
                 .build(),
             Orders.builder()
+                .court("777")
                 .orderType(singletonList(CARE_ORDER))
                 .directions("Yes")
                 .directionDetails("Test")
@@ -223,6 +228,7 @@ class OrdersSoughtCheckerTest {
 
     private static Orders.OrdersBuilder completedOrder() {
         return Orders.builder()
+            .court("777")
             .orderType(singletonList(CARE_ORDER))
             .directions("Yes")
             .directionDetails("Test");
@@ -230,6 +236,7 @@ class OrdersSoughtCheckerTest {
 
     private static Orders.OrdersBuilder completedEPO() {
         return Orders.builder()
+            .court("777")
             .orderType(List.of(EMERGENCY_PROTECTION_ORDER, OrderType.OTHER))
             .otherOrder("Test")
             .epoType(REMOVE_TO_ACCOMMODATION)
@@ -244,6 +251,7 @@ class OrdersSoughtCheckerTest {
 
     private static Orders.OrdersBuilder completedSAO() {
         return Orders.builder()
+            .court("777")
             .orderType(List.of(SECURE_ACCOMMODATION_ORDER))
             .secureAccommodationOrderSection(SecureAccommodationOrderSection.ENGLAND)
             .directions("Yes")

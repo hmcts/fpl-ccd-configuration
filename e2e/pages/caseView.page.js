@@ -1,5 +1,6 @@
 const { I } = inject();
 const assert = require('assert');
+// eslint-disable-next-line no-unused-vars
 const output = require('codeceptjs').output;
 
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
     furtherEvidence: 'Documents',
     refusedOrders: 'Refused Orders',
   },
-  actionsDropdown: '.ccd-dropdown',
+  actionsDropdown: '#next-step',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
   tasksErrorsTitle: 'Why can\'t I submit my application?',
@@ -49,20 +50,13 @@ module.exports = {
   },
 
   async goToNewActions(actionSelected) {
+    // eslint-disable-next-line no-unused-vars
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-        await I.scrollToElement(this.actionsDropdown);
-        I.selectOption(this.actionsDropdown, actionSelected);
-        I.click(this.goButton);
-      } else {
-        const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl || !newUrl.includes('http')){
-          output.print('Page refresh');
-          I.refreshPage();
-        }
-      }
-    }, 'ccd-case-event-trigger', false);
+      I.selectOption(this.actionsDropdown, actionSelected);
+      I.click(this.goButton);
+  
+    }, '#next-step', false);
   },
 
   async checkActionsAreAvailable(actions) {
