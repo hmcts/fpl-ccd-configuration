@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CASE_SUMMARY_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
@@ -127,18 +128,18 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICANTS_DOCUMENTS, 170, DEFAULT_NOTIFICATION_CONFIG),
-    AA_PRAENT_APPLICATIONS("Applications", null,
+    AA_PARENT_APPLICATIONS("Applications", null,
         false, false, false, false,
         null,
         null, 180, null),
     C1_APPLICATION_DOCUMENTS("└─ C1 application supporting documents", standardResolver("c1ApplicationDocList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PRAENT_APPLICATIONS, 190, DEFAULT_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICATIONS, 190, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     C2_APPLICATION_DOCUMENTS("└─ C2 application supporting documents", standardResolver("c2ApplicationDocList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PRAENT_APPLICATIONS, 200, DEFAULT_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICATIONS, 200, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
         false, false, false, false,
         null,
