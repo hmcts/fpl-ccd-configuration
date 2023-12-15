@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "supportingDocs",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Case summary or supporting documents",
+    "SecurityClassification": "Public"
+  }
+]
