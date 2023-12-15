@@ -128,6 +128,11 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> archivedDocumentsListCTSC;
     protected final List<Element<ManagedDocument>> archivedDocumentsListRemoved;
 
+    protected final List<Element<ManagedDocument>> c2ApplicationDocList;
+    protected final List<Element<ManagedDocument>> c2ApplicationDocListLA;
+    protected final List<Element<ManagedDocument>> c2ApplicationDocListCTSC;
+    protected final List<Element<ManagedDocument>> c2ApplicationDocListRemoved;
+
     @NotNull(message = "Add the grounds for the application", groups = SecureAccommodationGroup.class)
     @Valid
     protected final GroundsForSecureAccommodationOrder groundsForSecureAccommodationOrder;
