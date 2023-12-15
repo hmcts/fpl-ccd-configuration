@@ -1,0 +1,216 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "SecurityClassification": "Public",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "dateTimeReceived",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time received",
+    "HintText": "For example, 31 3 2016  2 30 00",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "orders"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "confidentialWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "confidential",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ConfidentialDocument",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "confidentialWarningLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "confidentialTabLabel",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential CONTAINS \"CONFIDENTIAL\"",
+    "Searchable": "N",
+    "Comment": "Used to identify documents as confidential in tab view only. Does not display in event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FurtherEvidenceType",
+    "ElementLabel": "Choose a further evidence document type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "expertReportType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ExpertReportList",
+    "ElementLabel": "Choose an expert report type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"EXPERT_REPORTS\"",
+    "Searchable": "N",
+    "Comment": "Only shown + populated if this is an expert report"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "uploadedBySolicitor",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Document contains a confidential address?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CmoSupportingEvidenceBundle",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  }
+]

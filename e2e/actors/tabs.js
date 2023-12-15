@@ -215,6 +215,15 @@ module.exports = {
       .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
+  selectTabFunction(tab){
+    const tabSelector = getTabSelector(tab);
+    this.waitForText('CCD ID');
+    this.focus(tabSelector);
+    this.click(tabSelector);
+    this.click(tabSelector);
+
+  },
+
   async selectTab(tab){
     const tabSelector = getTabSelector(tab);
 
