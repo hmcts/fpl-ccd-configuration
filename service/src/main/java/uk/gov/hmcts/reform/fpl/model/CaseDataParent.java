@@ -128,6 +128,11 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> archivedDocumentsListCTSC;
     protected final List<Element<ManagedDocument>> archivedDocumentsListRemoved;
 
+
+    protected final List<Element<ManagedDocument>> c1ApplicationDocList;
+    protected final List<Element<ManagedDocument>> c1ApplicationDocListLA;
+    protected final List<Element<ManagedDocument>> c1ApplicationDocListCTSC;
+    protected final List<Element<ManagedDocument>> c1ApplicationDocListRemoved;
     protected final List<Element<ManagedDocument>> c2ApplicationDocList;
     protected final List<Element<ManagedDocument>> c2ApplicationDocListLA;
     protected final List<Element<ManagedDocument>> c2ApplicationDocListCTSC;
