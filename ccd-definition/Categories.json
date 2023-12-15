@@ -9,6 +9,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "bundleConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "bundle",
+    "DisplayOrder": "10"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "caseSummary",
     "CategoryLabel": "Case Summary",
     "DisplayOrder": "2"
