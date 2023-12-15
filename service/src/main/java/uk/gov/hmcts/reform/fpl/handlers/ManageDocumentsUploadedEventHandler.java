@@ -245,13 +245,9 @@ public class ManageDocumentsUploadedEventHandler {
 
         // fall back inbox
         if (designatedLA.isEmpty() && secondaryLA.isEmpty() && legalRepresentative.isEmpty()) {
+            log.info("Add fall back inbox to recipient list");
             Set<String> fallbackInbox = furtherEvidenceNotificationService.getFallbackInbox();
-            if (fallbackInbox.isEmpty()) {
-                log.info("No fallback inbox found");
-            } else {
-                log.info("Add fall back inbox to recipient list");
-                resultMap.put(fallbackInbox, (config) -> ConfidentialLevel.CTSC);
-            }
+            resultMap.put(fallbackInbox, (config) -> ConfidentialLevel.CTSC);
         }
 
         // cafcass representative
