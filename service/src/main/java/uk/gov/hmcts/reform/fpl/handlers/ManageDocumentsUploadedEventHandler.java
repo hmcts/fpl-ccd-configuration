@@ -243,6 +243,17 @@ public class ManageDocumentsUploadedEventHandler {
                 DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative);
         }
 
+        // fall back inbox
+        if (designatedLA.isEmpty() && secondaryLA.isEmpty() && legalRepresentative.isEmpty()) {
+            Set<String> fallbackInbox = furtherEvidenceNotificationService.getFallbackInbox();
+            if (fallbackInbox.isEmpty()) {
+                log.info("No fallback inbox found");
+            } else {
+                log.info("Add fall back inbox to recipient list");
+                resultMap.put(fallbackInbox, (config) -> ConfidentialLevel.CTSC);
+            }
+        }
+
         // cafcass representative
         Set<String> cafcassRepresentative = furtherEvidenceNotificationService.getCafcassRepresentativeEmails(caseData);
         if (cafcassRepresentative.isEmpty()) {

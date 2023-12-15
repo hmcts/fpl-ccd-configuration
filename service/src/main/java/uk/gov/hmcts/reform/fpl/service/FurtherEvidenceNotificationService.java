@@ -54,13 +54,7 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getDesignatedLocalAuthorityRecipientsOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .secondaryLocalAuthorityExcluded(true)
-            .legalRepresentativesExcluded(true)
-            .build();
-
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
+        return new HashSet<>(localAuthorityRecipients.getDesignatedLocalAuthorityContacts(caseData));
     }
 
     public Set<String> getSecondaryLocalAuthorityRecipients(CaseData caseData) {
@@ -73,23 +67,15 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getSecondaryLocalAuthorityRecipientsOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .designatedLocalAuthorityExcluded(true)
-            .legalRepresentativesExcluded(true)
-            .build();
-
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
+        return new HashSet<>(localAuthorityRecipients.getSecondaryLocalAuthorityContacts(caseData));
     }
 
     public Set<String> getLegalRepresentativeOnly(CaseData caseData) {
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .designatedLocalAuthorityExcluded(true)
-            .secondaryLocalAuthorityExcluded(true)
-            .build();
+        return new HashSet<>(localAuthorityRecipients.getLegalRepresentatives(caseData));
+    }
 
-        return localAuthorityRecipients.getRecipients(recipientsRequest);
+    public Set<String> getFallbackInbox() {
+        return new HashSet<>(localAuthorityRecipients.getFallbackInbox());
     }
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {
