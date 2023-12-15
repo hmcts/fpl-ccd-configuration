@@ -155,7 +155,7 @@ public class SecureDocStoreHelper {
             }
         }
 
-        if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
+        if (featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
             return oldDmStoreApproach.call();
         }
         throw new UnsupportedOperationException();
