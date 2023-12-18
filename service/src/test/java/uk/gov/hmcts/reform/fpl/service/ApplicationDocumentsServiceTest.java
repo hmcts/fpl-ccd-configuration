@@ -224,7 +224,7 @@ class ApplicationDocumentsServiceTest {
     }
 
     @Nested
-    class MigrateApplicationDocuments {
+    class SynchroniseToNewFields {
         private final Map<ApplicationDocumentType, String> applicationDocumentTypeFieldNameMap = Map.of(
             THRESHOLD, "thresholdList",
             SWET, "documentsFiledOnIssueList",
