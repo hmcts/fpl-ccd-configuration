@@ -65,6 +65,11 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         null, 30, POSITION_STATEMENT_NOTIFICATION_CONFIG),
+    // POSITION_STATEMENTS_CHILD - For removal of migrated documents only, no new uploads moving forwards
+    POSITION_STATEMENTS_CHILD("Position Statements (Child)", standardResolver("hearingDocuments.posStmtChildList"),
+        true, true, true, true,
+        defaultWithDocumentBuilder(),
+        null, 35, POSITION_STATEMENT_NOTIFICATION_CONFIG),
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
