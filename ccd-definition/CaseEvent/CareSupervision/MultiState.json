@@ -1141,7 +1141,7 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "Y",
+    "ShowSummary": "N",
     "ShowEventNotes": "N",
     "Publish": "Y",
     "EndButtonLabel": "Create Case Link"
@@ -1156,9 +1156,9 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "Y",
+    "ShowSummary": "N",
     "ShowEventNotes": "N",
     "Publish": "Y",
-    "EndButtonLabel": "Manage Case Links"
+    "EndButtonLabel": "Remove Case Links"
   }
 ]
