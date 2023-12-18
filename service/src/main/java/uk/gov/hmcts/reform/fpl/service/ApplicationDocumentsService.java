@@ -78,12 +78,18 @@ public class ApplicationDocumentsService {
 
     public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments) {
+        return updateApplicationDocuments(currentDocuments, previousDocuments, "temporaryApplicationDocuments");
+    }
+
+    public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
+                                                          List<Element<ApplicationDocument>> previousDocuments,
+                                                          String populatedField) {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
             currentDocuments, previousDocuments);
 
         Map<String, Object> data = new HashMap<>();
 
-        data.put("temporaryApplicationDocuments", updatedDocuments);
+        data.put(populatedField, updatedDocuments);
         data.putAll(synchroniseToNewFields(new ArrayList<>(updatedDocuments)));
 
         return data;
