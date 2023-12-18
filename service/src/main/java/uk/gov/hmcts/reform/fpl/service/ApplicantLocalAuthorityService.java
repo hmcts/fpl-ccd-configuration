@@ -313,4 +313,17 @@ public class ApplicantLocalAuthorityService {
 
         return userOrganisation;
     }
+
+    public boolean isOrgIdInPolicy(String orgId, OrganisationPolicy policy) {
+        if (isNotEmpty(orgId) && isNotEmpty(policy) && isNotEmpty(policy.getOrganisation())) {
+            return orgId.equals(policy.getOrganisation().getOrganisationID());
+        }
+        return false;
+    }
+
+    public boolean isApplicantOrOnBehalfOfOrgId(String orgId, CaseData caseData) {
+        return isOrgIdInPolicy(orgId, caseData.getLocalAuthorityPolicy())
+            || isOrgIdInPolicy(orgId, caseData.getOutsourcingPolicy())
+            || isOrgIdInPolicy(orgId, caseData.getSharedLocalAuthorityPolicy());
+    }
 }

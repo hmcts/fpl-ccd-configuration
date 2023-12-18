@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -94,6 +95,19 @@ class CaseSummaryCaseFlagGeneratorTest {
         );
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldNoThrowNullPointerExceptionIfMissingOptionalFields() {
+        CaseData caseData = CaseData.builder()
+            .redDotAssessmentForm(RED_DOT_ASSESSMENT_FORM)
+            .caseFlagValueUpdated(YES)
+            .build();
+
+        when(userService.getUserName()).thenReturn(FULLNAME);
+        when(userService.getUserEmail()).thenReturn(USER_EMAIL);
+
+        assertDoesNotThrow(() -> (underTest.generateFields(caseData)));
     }
 
 }
