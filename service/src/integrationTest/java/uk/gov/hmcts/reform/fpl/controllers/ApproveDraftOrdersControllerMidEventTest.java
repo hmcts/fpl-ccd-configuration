@@ -6,8 +6,10 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
+import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -75,6 +77,7 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
             .draftOrder1Title(draftOrder1.getValue().getTitle())
             .draftOrder1Document(draftOrder1.getValue().getOrder())
             .draftBlankOrdersCount("1")
+            .reviewDecision1(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build())
             .build();
 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedPageData);
@@ -111,6 +114,7 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
             .draftOrder1Title(draftOrder2.getValue().getTitle())
             .draftOrder1Document(draftOrder2.getValue().getOrder())
             .draftBlankOrdersCount("1")
+            .reviewDecision1(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build())
             .build();
 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedPageData);
