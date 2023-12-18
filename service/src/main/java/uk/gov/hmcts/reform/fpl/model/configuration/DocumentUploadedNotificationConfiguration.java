@@ -113,6 +113,12 @@ public class DocumentUploadedNotificationConfiguration {
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
             .build();
 
+    public static final DocumentUploadedNotificationConfiguration ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG =
+        DocumentUploadedNotificationConfiguration.builder()
+            .sendToCafcassEngland(ConfidentialLevel.LA)
+            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
+            .build();
+
     public static final DocumentUploadedNotificationConfiguration NOTICE_OF_ACTING_OR_ISSUE_NOTIFICATION_CONFIG =
         NO_CAFCASS_NOTIFICATION_CONFIG.toBuilder()
             .sendToCafcassRepresentative(null)
