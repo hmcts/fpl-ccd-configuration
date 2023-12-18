@@ -42,6 +42,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
+        "DFPL-1934", this::run1934,
+        "DFPL-log", this::runLogMigration,
         "DFPL-1855", this::run1855
     );
 
@@ -190,5 +192,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
             String.valueOf(expectedMessageId)));
+    }
+
+    private void run1934(CaseDetails caseDetails) {
+        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
+    private void runLogMigration(CaseDetails caseDetails) {
+        log.info("Dummy migration for case {}", caseDetails.getId());
     }
 }
