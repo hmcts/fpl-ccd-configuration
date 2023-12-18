@@ -87,7 +87,7 @@ class ApplicationDocumentsServiceTest {
         Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(documents, previousDocuments);
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
         ApplicationDocument expectedDocument = buildExpectedDocument(caseData.getApplicationDocuments(), HMCTS_USER,
             time.now());
 
@@ -113,7 +113,7 @@ class ApplicationDocumentsServiceTest {
             previousDocuments);
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
         ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, HMCTS_USER, time.now());
 
         assertThat(actualDocument).isEqualTo(expectedDocument);
@@ -143,7 +143,7 @@ class ApplicationDocumentsServiceTest {
 
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(actualCaseData.getApplicationDocuments()).isEqualTo(List.of(
+        assertThat(actualCaseData.getTemporaryApplicationDocuments()).isEqualTo(List.of(
             element(previousDocumentId, pastDocument.toBuilder()
                 .uploadedBy(HMCTS_USER)
                 .dateTimeUploaded(time.now())
@@ -167,7 +167,7 @@ class ApplicationDocumentsServiceTest {
             previousDocuments);
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
-        ApplicationDocument actualDocument = actualCaseData.getApplicationDocuments().get(0).getValue();
+        ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
         ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, LA_USER, PAST_DATE);
 
         assertThat(actualDocument).isEqualTo(expectedDocument);
@@ -191,7 +191,7 @@ class ApplicationDocumentsServiceTest {
             previousDocuments);
         CaseData caseData = mapper.convertValue(map, CaseData.class);
 
-        assertThat(caseData.getApplicationDocuments().get(0).getValue()).isEqualTo(firstDocument);
+        assertThat(caseData.getTemporaryApplicationDocuments().get(0).getValue()).isEqualTo(firstDocument);
     }
 
     private ApplicationDocument buildApplicationDocument(LocalDateTime time) {

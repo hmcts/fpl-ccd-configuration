@@ -83,7 +83,7 @@ public class ApplicationDocumentsService {
 
         Map<String, Object> data = new HashMap<>();
 
-        data.put("applicationDocuments", updatedDocuments);
+        data.put("temporaryApplicationDocuments", updatedDocuments);
         data.putAll(synchroniseToNewFields(new ArrayList<>(updatedDocuments)));
 
         return data;
