@@ -41,7 +41,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCfvRollback,
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
-        "DFPL-1921", this::run1921,
         "DFPL-1940", this::run1940,
         "DFPL-1855", this::run1855
     );
