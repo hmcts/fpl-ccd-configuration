@@ -2419,6 +2419,86 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c1ApplicationDocList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1ApplicationDocument",
+    "Label": "C1 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c1ApplicationDocListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1ApplicationDocument",
+    "Label": "C1 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c1ApplicationDocListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1ApplicationDocument",
+    "Label": "C1 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c1ApplicationDocListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1ApplicationDocument",
+    "Label": "C1 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationDocList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C2ApplicationDocument",
+    "Label": "C2 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationDocListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C2ApplicationDocument",
+    "Label": "C2 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationDocListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C2ApplicationDocument",
+    "Label": "C2 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2ApplicationDocListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C2ApplicationDocument",
+    "Label": "C2 Application Document",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedC1WithSupplement",
     "Label": "C1 with supplement (Original application)",
     "FieldType": "SubmittedC1WithSupplement",
