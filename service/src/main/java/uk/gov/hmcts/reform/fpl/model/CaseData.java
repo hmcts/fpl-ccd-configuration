@@ -1109,6 +1109,8 @@ public class CaseData extends CaseDataParent {
 
     @Deprecated(since = "DFPL-1438")
     private final List<Element<ApplicationDocument>> applicationDocuments;
+    // It will be used in "upload-documents" event (when the case is in Open state)
+    private final List<Element<ApplicationDocument>> temporaryApplicationDocuments;
     private final String applicationDocumentsToFollowReason;
 
     @JsonUnwrapped
