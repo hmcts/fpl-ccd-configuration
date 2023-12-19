@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
@@ -35,15 +36,6 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CHECKLIST_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.GENOGRAM;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_CHRONOLOGY;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
@@ -56,7 +48,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCFVService {
+
+    private final ApplicationDocumentsService applicationDocumentsService;
 
     private static Element<RespondentStatementV2> toRespondentStatementV2(
         UUID respondentId, String respondentName, Element<SupportingEvidenceBundle> sebElement) {
@@ -567,42 +562,9 @@ public class MigrateCFVService {
         return ret;
     }
 
-    private Map<String, Object> migrateApplicationDocuments(CaseData caseData,
-                                                            List<ApplicationDocumentType> applicationDocumentTypes,
-                                                            String newFieldName) {
-        final List<Element<ManagedDocument>> newDocListLA =
-            Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).stream()
-                .filter(fed -> applicationDocumentTypes.contains(fed.getValue().getDocumentType()))
-                .filter(fed -> fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList());
-
-        final List<Element<ManagedDocument>> newDocList =
-            Optional.ofNullable(caseData.getApplicationDocuments()).orElse(List.of()).stream()
-                .filter(fed -> applicationDocumentTypes.contains(fed.getValue().getDocumentType()))
-                .filter(fed -> !fed.getValue().isConfidentialDocument())
-                .map(fed -> element(fed.getId(), ManagedDocument.builder()
-                    .document(fed.getValue().getDocument())
-                    .build()))
-                .collect(toList());
-
-        Map<String, Object> ret = new HashMap<>();
-        ret.put(newFieldName, newDocList);
-        ret.put(newFieldName + "LA", newDocListLA);
-        return ret;
-    }
-
     @SuppressWarnings("unchecked")
     public Map<String, Object> migrateApplicationDocuments(CaseData caseData) {
-        Map<String, Object> ret = new HashMap<>();
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(SWET, SOCIAL_WORK_CHRONOLOGY, SOCIAL_WORK_STATEMENT,
-                GENOGRAM, CHECKLIST_DOCUMENT, BIRTH_CERTIFICATE, OTHER),
-            "documentsFiledOnIssueList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(CARE_PLAN), "carePlanList"));
-        ret.putAll(migrateApplicationDocuments(caseData, List.of(THRESHOLD), "thresholdList"));
-        return ret;
+        return applicationDocumentsService.synchroniseToNewFields(caseData.getApplicationDocuments());
     }
 
     // Correspondence
