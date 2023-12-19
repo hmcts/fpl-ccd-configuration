@@ -4,10 +4,31 @@
     "ID": "EnterC1WithSupplement",
     "CaseEventID": "enterC1WithSupplement",
     "CaseFieldID": "submittedC1WithSupplement",
+    "ListElementCode": "isDocumentUploaded",
+    "FieldDisplayOrder": "0",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "submittedC1WithSupplement.isDocumentUploaded=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterC1WithSupplement",
+    "CaseEventID": "enterC1WithSupplement",
+    "CaseFieldID": "submittedC1WithSupplement",
+    "ListElementCode": "clearSubmittedC1WithSupplement",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.isDocumentUploaded=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterC1WithSupplement",
+    "CaseEventID": "enterC1WithSupplement",
+    "CaseFieldID": "submittedC1WithSupplement",
     "ListElementCode": "document",
     "EventElementLabel": "Upload application",
     "FieldDisplayOrder": "1",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +39,7 @@
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +50,7 @@
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -39,7 +60,8 @@
     "ListElementCode": "documentAcknowledge",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to this case"
+    "EventElementLabel": "Tick to confirm this document is related to this case",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +71,8 @@
     "ListElementCode": "urgencyTimeFrameType",
     "EventElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldDisplayOrder": "6",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -59,7 +82,8 @@
     "EventElementLabel": "Supplements",
     "ListElementCode": "supplementsBundle",
     "FieldDisplayOrder": "7",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +92,8 @@
     "CaseFieldID": "submittedC1WithSupplement",
     "ListElementCode": "supplementsBundle.name",
     "FieldDisplayOrder": "8",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -77,7 +102,8 @@
     "CaseFieldID": "submittedC1WithSupplement",
     "ListElementCode": "supplementsBundle.notes",
     "FieldDisplayOrder": "10",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -87,7 +113,8 @@
     "EventElementLabel": "Upload document",
     "ListElementCode": "supplementsBundle.document",
     "FieldDisplayOrder": "11",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -98,7 +125,7 @@
     "FieldDisplayOrder": "12",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -109,7 +136,7 @@
     "FieldDisplayOrder": "12",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,7 +146,8 @@
     "ListElementCode": "supplementsBundle.documentAcknowledge",
     "FieldDisplayOrder": "13",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to this case"
+    "EventElementLabel": "Tick to confirm this document is related to this case",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -129,7 +157,8 @@
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
     "FieldDisplayOrder": "14",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -139,7 +168,8 @@
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
     "FieldDisplayOrder": "15",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -148,7 +178,8 @@
     "CaseFieldID": "submittedC1WithSupplement",
     "ListElementCode": "supportingEvidenceBundle.notes",
     "FieldDisplayOrder": "16",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -157,7 +188,7 @@
     "CaseFieldID": "submittedC1WithSupplement",
     "ListElementCode": "supportingEvidenceBundle.dateTimeReceived",
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\""
+    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -167,7 +198,8 @@
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
     "FieldDisplayOrder": "17",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -178,7 +210,7 @@
     "FieldDisplayOrder": "18",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -189,7 +221,7 @@
     "FieldDisplayOrder": "18",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
-    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
+    "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\" AND submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -199,6 +231,7 @@
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
     "FieldDisplayOrder": "19",
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Tick to confirm this document is related to this case"
+    "EventElementLabel": "Tick to confirm this document is related to this case",
+    "FieldShowCondition": "submittedC1WithSupplement.clearSubmittedC1WithSupplement!=\"YES\""
   }
 ]

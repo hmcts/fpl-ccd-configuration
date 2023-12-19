@@ -2,6 +2,28 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SubmittedC1WithSupplement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ListElementCode": "isDocumentUploaded",
+    "ElementLabel": "Is Document Uploaded?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "YesOrNoFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ListElementCode": "clearSubmittedC1WithSupplement",
+    "ElementLabel": "Remove this C1 with supplement application.",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "YesOrNoFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",

@@ -9,7 +9,6 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/populate-data/mid-event"
+    "ShowSummaryChangeOption": "Y"
   }
 ]
