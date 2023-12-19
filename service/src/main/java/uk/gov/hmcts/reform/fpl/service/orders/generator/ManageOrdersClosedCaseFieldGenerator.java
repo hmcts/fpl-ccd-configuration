@@ -39,7 +39,8 @@ public class ManageOrdersClosedCaseFieldGenerator {
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());
         if (shouldCloseCase && isFinalOrder) {
             data.put("state", CLOSED);
-            data.put("closeCaseTabField", CloseCase.builder().date(manageOrdersEventData.getManageOrdersApprovalDate()).build());
+            data.put("closeCaseTabField", CloseCase.builder().date(manageOrdersEventData.getManageOrdersApprovalDate())
+                .build());
         }
 
         return data;
