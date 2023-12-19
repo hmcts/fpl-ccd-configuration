@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -23,7 +24,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.*;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
