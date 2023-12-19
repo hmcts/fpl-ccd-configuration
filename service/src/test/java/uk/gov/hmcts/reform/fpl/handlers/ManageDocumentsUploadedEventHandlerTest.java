@@ -73,6 +73,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     private static final String LA_USER_EMAIL = "la@examaple.com";
     private static final String LA2_USER_EMAIL = "la2@examaple.com";
     private static final String LEGAL_REPRESENTATIVE_EMAIL = "leagalRep@examaple.com";
+    private static final String FALL_BACK_INBOX_EMAIL = "fallback@examaple.com";
     private static final String CAFCASS_REPRESENTATIVE_EMAIL = "cafcass@examaple.com";
     private static final String REP_SOLICITOR_1_EMAIL = "rep_solicitor1@example.com";
     private static final String REP_SOLICITOR_2_EMAIL = "rep_solicitor2@example.com";
@@ -85,6 +86,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     private static final Set<String> DESIGNATED_LA_RECIPIENTS = Set.of(LA_USER_EMAIL);
     private static final Set<String> SECONDARY_LA_RECIPIENTS = Set.of(LA2_USER_EMAIL);
     private static final Set<String> LEGAL_REPRESENTATIVE_RECIPIENTS = Set.of(LEGAL_REPRESENTATIVE_EMAIL);
+    private static final Set<String> FALL_BACK_INBOX_RECIPIENTS = Set.of(FALL_BACK_INBOX_EMAIL);
     private static final Set<String> CAFCASS_REPRESENTATIVE_RECIPIENTS = Set.of(CAFCASS_REPRESENTATIVE_EMAIL);
     private static final Set<String> REP_SOLICITOR_RECIPIENTS = Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL,
         REP_SOLICITOR_3_EMAIL);
@@ -118,6 +120,17 @@ public class ManageDocumentsUploadedEventHandlerTest {
             SECONDARY_LA_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToSecondaryLA,
             LEGAL_REPRESENTATIVE_RECIPIENTS,
             DocumentUploadedNotificationConfiguration::getSendToLegalRepresentative,
+            CAFCASS_REPRESENTATIVE_RECIPIENTS,
+            DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative,
+            REP_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor,
+            CHILD_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToChildSolicitor,
+            CAFCASS_WELSH_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToCafcassWelsh
+        );
+
+    private static final Map<Set<String>, Function<DocumentUploadedNotificationConfiguration, ConfidentialLevel>>
+        RECIPIENT_CONFIG_MAPPING_FALLBACK =
+        Map.of(
+            FALL_BACK_INBOX_RECIPIENTS, (config) -> ConfidentialLevel.CTSC,
             CAFCASS_REPRESENTATIVE_RECIPIENTS,
             DocumentUploadedNotificationConfiguration::getSendToCafcassRepresentative,
             REP_SOLICITOR_RECIPIENTS, DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor,
@@ -161,6 +174,8 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
         when(furtherEvidenceNotificationService.getLegalRepresentativeOnly(any()))
             .thenReturn(LEGAL_REPRESENTATIVE_RECIPIENTS);
+
+        when(furtherEvidenceNotificationService.getFallbackInbox()).thenReturn(FALL_BACK_INBOX_RECIPIENTS);
 
         when(furtherEvidenceNotificationService.getCafcassRepresentativeEmails(any()))
             .thenReturn(CAFCASS_REPRESENTATIVE_RECIPIENTS);
@@ -234,6 +249,65 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
         if (config != null) {
             RECIPIENT_CONFIG_MAPPING.forEach((recipients, getConfigFunc) -> {
+                ConfidentialLevel levelConfig = getConfigFunc.apply(config);
+                if (levelConfig != null && levelAllowed.contains(levelConfig)) {
+                    verify(furtherEvidenceNotificationService).sendNotification(any(),
+                        eq(recipients), eq(senderName), eq(documentNames));
+                }
+            });
+        }
+
+        verifyNoMoreInteractions(furtherEvidenceNotificationService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("allDocumentsTypeParameters")
+    void shouldSendNotificationToFallbackInboxWhenLARecipientNotFound(DocumentType documentType,
+                                                                      ConfidentialLevel confidentialLevel)
+        throws Exception {
+        when(furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipientsOnly(any())).thenReturn(Set.of());
+        when(furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(any())).thenReturn(Set.of());
+        when(furtherEvidenceNotificationService.getLegalRepresentativeOnly(any())).thenReturn(Set.of());
+
+        CaseData caseDataBefore = commonCaseBuilder().build();
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
+            List.of(confidentialLevel));
+
+        ManageDocumentsUploadedEvent eventData =
+            manageDocumentService.buildManageDocumentsUploadedEvent(caseData, caseDataBefore);
+
+        underTest.sendDocumentsUploadedNotification(eventData);
+
+
+        Map<DocumentType, List<Element<NotifyDocumentUploaded>>> expectedNewDocuments;
+        Set<ConfidentialLevel> levelAllowed;
+
+        if (ConfidentialLevel.NON_CONFIDENTIAL.equals(confidentialLevel)) {
+            expectedNewDocuments = eventData.getNewDocuments();
+            levelAllowed = NON_CONFIDENTIAL_ALLOWED;
+        } else if (ConfidentialLevel.LA.equals(confidentialLevel)) {
+            expectedNewDocuments = eventData.getNewDocumentsLA();
+            levelAllowed = LA_ALLOWED;
+        } else {
+            expectedNewDocuments = eventData.getNewDocumentsCTSC();
+            levelAllowed = CTSC_ALLOWED;
+        }
+
+        List<Element<NotifyDocumentUploaded>> documents = expectedNewDocuments.get(documentType);
+        List<String> documentNames = unwrapElements(documents).stream()
+            .map(NotifyDocumentUploaded::getNameForNotification)
+            .collect(toList());
+
+        String senderName = eventData.getInitiatedBy().getFullName();
+
+
+        verifyFurtherEvidenceNotificationServiceGetRecipients();
+        verify(furtherEvidenceNotificationService).getFallbackInbox();
+
+        DocumentUploadedNotificationConfiguration config = documentType.getNotificationConfiguration();
+
+        if (config != null) {
+            RECIPIENT_CONFIG_MAPPING_FALLBACK.forEach((recipients, getConfigFunc) -> {
                 ConfidentialLevel levelConfig = getConfigFunc.apply(config);
                 if (levelConfig != null && levelAllowed.contains(levelConfig)) {
                     verify(furtherEvidenceNotificationService).sendNotification(any(),
