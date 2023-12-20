@@ -1,22 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { SignInPage } from "../pages/SignInPage";
-import { swanseaLocalAuthorityUserOne } from "../resources/userCredentials";
+import { swanseaLocalAuthorityUserOne } from "../../resources/userCredentials";
 import { SmokeCreateCase } from "../pages/CreateCaseCaseFilterPage";
+//import { AxeFixture } from "../resources/config/axe-test.ts"
+import AxeBuilder from '@axe-core/playwright';
 
-test("Smoke Test Get performance metrics @smoke-playwright-perfTest", async ({
-  page,
-}) => {
-  // 1. Sign in as local-authority user
+test("Smoke Test @smoke-playwrightonly", async ({ page }) => {
+  // 1. Sign in as local-authority user 
   const signInPage = new SignInPage(page);
   const smokeCreateCase = new SmokeCreateCase(page);
-
-  //Create a new connection to an existing CDP session to enable performance Metrics
-  const session = await page.context().newCDPSession(page);
-
-  //To tell the CDPsession to record performance metrics.
-  await session.send("Performance.enable");
-
+  
   await signInPage.visit();
+
   await signInPage.login(
     swanseaLocalAuthorityUserOne.email,
     swanseaLocalAuthorityUserOne.password,
@@ -30,7 +25,8 @@ test("Smoke Test Get performance metrics @smoke-playwright-perfTest", async ({
   await smokeCreateCase.SubmitCase(smokeCreateCase.generatedCaseName);
   await smokeCreateCase.CheckCaseIsCreated(smokeCreateCase.generatedCaseName);
 
-  console.log("=============CDP Performance Metrics===============");
-  let performanceMetrics = await session.send("Performance.getMetrics");
-  console.log(performanceMetrics.metrics);
+  const accessibilityScanResults = await new AxeBuilder({ page })
+  .withTags(['wcag2a', 'wcag2aa', 'wcag2aaa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice', 'experimental'])
+  .analyze();
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

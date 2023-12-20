@@ -12,14 +12,13 @@ For all options take a look at https://playwright.dev/docs/running-tests
 ## 📁 Structure
 
 ```sh
- |- playwright-e2e
- |  |- pages # Where to keep page classes with respective locators and methods.
- |  |- resources # Contains any addtional resources required by the tests, such as images, videos, or audio files.
- |  |   |- config # Configuration file/s for the automation framework, such as settings, test data parameters etc.
- |  |   |- reports # Output reports of test runs, including logs, screenshots and metrics.
- |  |   |- testdata # Test data in various formats such as JSON, XML or CSV.
- |- tests # Here is where you can do your magic. 🧙‍♂️
- |- utils # Sets of pages for our applications.
+|- playwright-e2e
+|- tests # Here is where you can do your magic. 🧙‍♂️
+|  |- pages # Where to keep page classes with respective locators and methods.
+|  |- resources # Contains any addtional resources required by the tests, such as images, videos, or audio files.
+|  |  |- config # Configuration file/s for the automation framework, such as settings, test data parameters etc.
+|  |  |- reports # Output reports of test runs, including logs, screenshots and metrics.
+|  |  |- testdata # Test data in various formats such as JSON, XML or CSV.
 
  playwright.config.ts # This sits outside playwright-e2e folder, but is the config file for playwright only tests.
 ```

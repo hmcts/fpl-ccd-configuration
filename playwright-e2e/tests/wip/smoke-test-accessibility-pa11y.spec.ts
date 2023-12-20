@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { SignInPage } from "../pages/SignInPage";
-import { swanseaLocalAuthorityUserOne } from "../resources/userCredentials";
+import { swanseaLocalAuthorityUserOne } from "../../resources/userCredentials";
 import { SmokeCreateCase } from "../pages/CreateCaseCaseFilterPage";
 //import { AxeFixture } from "../resources/config/axe-test.ts"
 import AxeBuilder from '@axe-core/playwright';

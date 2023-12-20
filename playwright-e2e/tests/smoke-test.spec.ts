@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { SignInPage } from "../pages/SignInPage";
-import { swanseaLocalAuthorityUserOne } from "../resources/userCredentials";
+import { SignInPage } from "../tests/pages/sign-in";
+import { swanseaLocalAuthorityUserOne } from "../tests/resources/config/userCredentials";
 
-test("Smoke Test @smoke-pwonly", async ({ page }) => {
+test("Smoke Test @smoke-test", async ({ page }) => {
   const signInPage = new SignInPage(page);
   await signInPage.visit();
   await signInPage.login(
