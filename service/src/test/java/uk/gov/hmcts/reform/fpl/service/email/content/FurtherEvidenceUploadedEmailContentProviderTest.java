@@ -26,7 +26,7 @@ class FurtherEvidenceUploadedEmailContentProviderTest extends AbstractEmailConte
     private static final HearingBooking HEARING_BOOKING = HearingBooking.builder().startDate((HEARING_DATE)).build();
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CALLOUT_WITH_HEARING = RESPONDENT_LAST_NAME + ", 12345, hearing 2 Dec 2021";
-    private static final String CALLOUT_WITHOUT_HEARING = RESPONDENT_LAST_NAME  ;
+    private static final String CALLOUT_WITHOUT_HEARING = RESPONDENT_LAST_NAME;
     private static final Long CASE_ID = 12345L;
     private static final String SENDER = "SENDER";
     private static final String SOME_NAME = "SOME NAME";
