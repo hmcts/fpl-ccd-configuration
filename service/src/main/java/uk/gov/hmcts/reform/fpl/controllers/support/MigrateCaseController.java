@@ -204,7 +204,7 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-        private void run1959(CaseDetails caseDetails) {
+    private void run1959(CaseDetails caseDetails) {
         var migrationId = "DFPL-1959";
         var possibleCaseIds = List.of(1701964866232462L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
