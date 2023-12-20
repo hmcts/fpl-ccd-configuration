@@ -96,12 +96,6 @@ public class DocumentUploadedNotificationConfiguration {
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.SKELETON_ARGUMENT)
             .build();
 
-
-    public static final DocumentUploadedNotificationConfiguration THRESHOLD_NOTIFICATION_CONFIG =
-        NO_TRANSLATION_NOTIFICATION_CONFIG.toBuilder()
-            .sendToCafcassWelsh(ConfidentialLevel.LA)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG =
         DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .sendToChildSolicitor(null)

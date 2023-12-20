@@ -30,10 +30,10 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotifi
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_ORDER_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_CAFCASS_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_TRANSLATION_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.POSITION_STATEMENT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.SKELETON_ARGUMENT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.THRESHOLD_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
@@ -69,7 +69,7 @@ public enum DocumentType {
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        null, 40, THRESHOLD_NOTIFICATION_CONFIG),
+        null, 40, NO_TRANSLATION_NOTIFICATION_CONFIG),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false, false,
         (bundle) -> SkeletonArgument.builder()
