@@ -45,8 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-1855", this::run1855,
-        "DFPL-1954", this::run1954,
-        "DFPL-1948", this::run1948
+        "DFPL-1948", this::run1948,
+        "DFPL-1959", this::run1959
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -204,18 +204,17 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run1954(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1954";
-        var possibleCaseIds = List.of(1680510780369230L);
+        private void run1959(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1959";
+        var possibleCaseIds = List.of(1701964866232462L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        String orgId = "2Z69Q0U";
+        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
 
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "3cb2d4b1-d0cb-46d7-99e1-913cb15bfa0e"));
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run1948(CaseDetails caseDetails) {
