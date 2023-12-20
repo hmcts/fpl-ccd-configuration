@@ -25,6 +25,9 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+
 @Api
 @Slf4j
 @RestController
@@ -41,12 +44,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Rollback", this::runCfvRollback,
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
-        "DFPL-1940", this::run1940,
-        "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1855", this::run1855,
         "DFPL-1954", this::run1954,
-        "DFPL-1948", this::run1948
+        "DFPL-1948", this::run1948,
+        "DFPL-1991", this::run1991
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -230,5 +231,14 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
         caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
             migrationId, "d7beca42-edbd-42db-a922-bcbec58b8306"));
+    }
+
+    public void run1991(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        // Check existence of `hasBeenCFVMigrated` to ensure the cases are the new cases after release
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+            .get("hasBeenCFVMigrated"), "DFPL-1991");
+        caseDetails.getData().putAll(migrateCFVService.migrateMissingApplicationDocuments(caseData,
+            DESIGNATED_LOCAL_AUTHORITY, List.of(LASOLICITOR)));
     }
 }

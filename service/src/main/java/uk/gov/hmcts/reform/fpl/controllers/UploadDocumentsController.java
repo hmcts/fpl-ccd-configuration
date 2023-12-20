@@ -49,7 +49,7 @@ public class UploadDocumentsController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
-        caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
+        caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(caseData,
             currentDocuments, previousDocuments));
 
         caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));

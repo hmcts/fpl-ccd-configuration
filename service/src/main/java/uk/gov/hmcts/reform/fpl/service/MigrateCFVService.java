@@ -2,13 +2,16 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.ExpertReportType;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1129,4 +1133,71 @@ public class MigrateCFVService {
         validateMigratedApplicationDocuments(migrationId, caseData, changes);
         validateMigratedCourtBundle(migrationId, caseData, changes);
     }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> migrateMissingApplicationDocuments(CaseData caseData,
+                                                                  DocumentUploaderType defaultUploaderType,
+                                                                  List<CaseRole> defaultUploaderCaseRoles) {
+        List<Element<ApplicationDocument>> missingApplicationDocuments = new ArrayList<>();
+
+        caseData.getApplicationDocuments().stream().forEach(ea -> {
+            final UUID targetId = ea.getId();
+
+            List<List<Element<ManagedDocument>>> listOfLists = new ArrayList<>();
+
+            listOfLists.add(Optional.ofNullable(caseData.getCarePlanList()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getCarePlanListLA()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getCarePlanListCTSC()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getCarePlanListRemoved()).orElse(List.of()));
+
+            listOfLists.add(Optional.ofNullable(caseData.getThresholdList()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getThresholdListLA()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getThresholdListCTSC()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getThresholdListRemoved()).orElse(List.of()));
+
+            listOfLists.add(Optional.ofNullable(caseData.getDocumentsFiledOnIssueList()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getDocumentsFiledOnIssueListLA()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getDocumentsFiledOnIssueListCTSC()).orElse(List.of()));
+            listOfLists.add(Optional.ofNullable(caseData.getDocumentsFiledOnIssueListRemoved()).orElse(List.of()));
+
+            List<Element<ManagedDocument>> concatenatedList = listOfLists.stream()
+                .flatMap(List::stream)
+                .collect(toList());
+
+            if (ElementUtils.findElement(targetId, concatenatedList).isEmpty()) {
+                String filename = ea.getValue().getDocument().getFilename();
+                // check filename as documents may be manually uploaded by Sara
+                if (!concatenatedList.stream().map(e -> e.getValue().getDocument().getFilename()).collect(toList())
+                    .contains(filename)) {
+                    if (ea.getValue().getUploaderType() == null) {
+                        ea.getValue().setUploaderType(defaultUploaderType);
+                    }
+                    if (ea.getValue().getUploaderCaseRoles() == null || ea.getValue()
+                        .getUploaderCaseRoles().isEmpty()) {
+                        ea.getValue().setUploaderCaseRoles(defaultUploaderCaseRoles);
+                    }
+                    missingApplicationDocuments.add(ea);
+                }
+            }
+        });
+
+        Map<String, Object> ret = new HashMap<>();
+        Map<String, Object> result = applicationDocumentsService.synchroniseToNewFields(missingApplicationDocuments);
+        result.keySet().stream().forEach(key -> {
+            try {
+                List<Element<ManagedDocument>> list = (List<Element<ManagedDocument>>) BeanUtils
+                    .getPropertyDescriptor(CaseData.class, key).getReadMethod().invoke(caseData);
+                if (list == null || list.isEmpty()) {
+                    ret.put(key, result.get(key));
+                } else {
+                    list.addAll((List<Element<ManagedDocument>>) result.get(key));
+                    ret.put(key, list);
+                }
+            } catch (Exception ex) {
+                throw new AssertionError("Fail to retrieve property value from caseData: " + key);
+            }
+        });
+        return ret;
+    }
+
 }
