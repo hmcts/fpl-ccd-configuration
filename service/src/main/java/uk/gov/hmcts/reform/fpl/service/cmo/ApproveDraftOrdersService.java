@@ -31,6 +31,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -174,7 +175,8 @@ public class ApproveDraftOrdersService {
 
         if (cmo != null) {
             ReviewDecision cmoReviewDecision = caseData.getReviewCMODecision();
-            if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null) {
+            if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null
+                && !REVIEW_LATER.equals(cmoReviewDecision.getDecision())) {
 
                 Element<HearingOrder> reviewedOrder;
 
@@ -247,7 +249,8 @@ public class ApproveDraftOrdersService {
             Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
             ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
 
-            if (reviewDecision != null && reviewDecision.getDecision() != null) {
+            if (reviewDecision != null && reviewDecision.getDecision() != null
+                && !REVIEW_LATER.equals(reviewDecision.getDecision())) {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {

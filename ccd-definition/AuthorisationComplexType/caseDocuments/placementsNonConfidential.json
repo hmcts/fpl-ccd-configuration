@@ -1,0 +1,362 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementChildId",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementChildName",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "isSubmitted",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementUploadDateTime",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementApplication",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementApplicationCopy",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "U"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementSupportingDocuments",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementConfidentialDocuments",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementNoticeDocuments",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementNoticeDocumentsRemoved",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "U"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementRespondentsToNotify",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "placementsNonConfidential",
+    "ListElementCode": "placementNotice",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[BARRISTER]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+        ],
+        "CRUD": "RU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-courtadmin",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "caseworker-publiclaw-superuser",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CUD"
+      }
+    ]
+  }
+]
