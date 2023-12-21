@@ -2266,4 +2266,26 @@ class MigrateCaseServiceTest {
                     MIGRATION_ID, 1));
         }
     }
+
+    @Nested
+    class ClearHearingOption {
+        @Test
+        void shouldClearHearingOption() {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hearingOption", "EDIT_HEARING");
+            CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+            underTest.clearHearingOption(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("hearingOption").isNull();
+        }
+
+        @Test
+        void shouldDoNothingIfNoHearingOption() {
+            HashMap<String, Object> data = new HashMap<>();
+            CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+            assertThat(caseDetails.getData()).isEmpty();
+        }
+    }
 }

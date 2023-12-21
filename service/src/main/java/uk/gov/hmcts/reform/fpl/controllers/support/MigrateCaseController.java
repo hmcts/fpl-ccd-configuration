@@ -44,7 +44,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1855", this::run1855
+        "DFPL-1855", this::run1855,
+        "DFPL-1956", this::run1956
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -182,7 +183,7 @@ public class MigrateCaseController extends CallbackController {
         var migrationId = "DFPL-1855";
         caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
     }
-  
+
     private void run1940(CaseDetails caseDetails) {
         var migrationId = "DFPL-1940";
         var possibleCaseIds = List.of(1697791879605293L);
@@ -196,6 +197,10 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1934(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    }
+
+    private void run1956(CaseDetails caseDetails) {
+        migrateCaseService.clearHearingOption(caseDetails);
     }
 
     private void runLogMigration(CaseDetails caseDetails) {
