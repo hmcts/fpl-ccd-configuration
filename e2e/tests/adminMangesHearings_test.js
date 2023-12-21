@@ -16,7 +16,7 @@ let hearingEndDate;
 let correctedHearingStartDate;
 let correctedHearingEndDate;
 
-Feature('Hearing administration');
+Feature('Hearing administration @fixed');
 
 async function setupScenario(I) {
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
