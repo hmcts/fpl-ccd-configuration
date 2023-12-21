@@ -32,6 +32,7 @@ module.exports = {
     furtherEvidence: 'Documents',
     refusedOrders: 'Refused Orders',
   },
+
   actionsDropdown: '#next-step',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
@@ -50,15 +51,14 @@ module.exports = {
   },
 
   async goToNewActions(actionSelected) {
-    // eslint-disable-next-line no-unused-vars
+
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
       I.selectOption(this.actionsDropdown, actionSelected);
       I.click(this.goButton);
-  
+
     }, '#next-step', false);
   },
-
   async checkActionsAreAvailable(actions) {
     I.waitForElement(this.actionsDropdown, 10);
     await within(this.actionsDropdown, () => {

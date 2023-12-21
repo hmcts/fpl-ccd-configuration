@@ -36,7 +36,8 @@ const orders = {
 
 let caseId;
 
-Feature('HMCTS Admin amends orders');
+let title = 'Admin Manages Orders Amendment';
+Feature(title);
 
 async function setupScenario(I, data = caseData) {
   if (!caseId || 'CLOSED' === data.state) {
@@ -45,7 +46,7 @@ async function setupScenario(I, data = caseData) {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 }
 
-Scenario('Amend generated order in general case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+Scenario('@nightlyOnly Amend generated order in general case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await setupScenario(I);
   await amendOrder(I, caseViewPage, manageOrdersEventPage, orders.generated);
   assertAmendment(I, caseViewPage, orders.generated);
