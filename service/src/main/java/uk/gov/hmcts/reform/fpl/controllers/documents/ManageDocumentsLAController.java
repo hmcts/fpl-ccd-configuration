@@ -230,7 +230,8 @@ public class ManageDocumentsLAController extends CallbackController {
                     //Application documents
 
                     caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
-                        caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
+                        caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments(),
+                        "applicationDocuments"
                     ));
                     //Hearing related evidence
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
