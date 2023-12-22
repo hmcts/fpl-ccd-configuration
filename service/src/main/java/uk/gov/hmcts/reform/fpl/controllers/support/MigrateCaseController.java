@@ -40,10 +40,6 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCFVService migrateCFVService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-CFV", this::runCFV,
-        "DFPL-CFV-Rollback", this::runCfvRollback,
-        "DFPL-CFV-Failure", this::runCfvFailure,
-        "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-log", this::runLogMigration,
         "DFPL-1954", this::run1954,
         "DFPL-1948", this::run1948,
