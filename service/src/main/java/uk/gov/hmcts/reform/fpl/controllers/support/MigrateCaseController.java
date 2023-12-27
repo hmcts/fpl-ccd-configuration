@@ -232,9 +232,6 @@ public class MigrateCaseController extends CallbackController {
 
     public void run1991(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        // Check existence of `hasBeenCFVMigrated` to ensure the cases are the new cases after release
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-            .get("hasBeenCFVMigrated"), "DFPL-1991");
         caseDetails.getData().putAll(migrateCFVService.migrateMissingApplicationDocuments(caseData,
             DESIGNATED_LOCAL_AUTHORITY, List.of(LASOLICITOR)));
     }
