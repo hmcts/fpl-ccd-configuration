@@ -166,7 +166,7 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
             "fixtures/caseCareAndStandaloneOrderTypeWithSubmittedC1WithSupplement.json");
         assertThat(response.getData().get("submittedC1WithSupplement")).isNull();
     }
-    
+
     @Test
     void shouldNotRemoveSubmittedC1WithSupplementIfC1Application() {
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
