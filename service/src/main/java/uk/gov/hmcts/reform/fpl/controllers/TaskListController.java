@@ -9,15 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -35,41 +30,6 @@ public class TaskListController extends CallbackController {
         final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
         caseDetails.putIfNotEmpty("caseNameHmctsInternal", caseData.getCaseName());
-
-        return respond(caseDetails);
-    }
-
-    @PostMapping("/enter-c1-with-supplement/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleEnterC1WithSupplementAboutToStart(
-        @RequestBody CallbackRequest callbackRequest) {
-        final CaseData caseData = getCaseData(callbackRequest);
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        if (caseData.getSubmittedC1WithSupplement() != null) {
-            caseDetails.getData().put("submittedC1WithSupplement", caseData.getSubmittedC1WithSupplement());
-        }
-
-        return respond(caseDetails);
-    }
-
-    @PostMapping("/enter-c1-with-supplement/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleEnterC1WithSupplementAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
-        final CaseData caseData = getCaseData(callbackRequest);
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        if (YesNo.YES.getValue().equalsIgnoreCase(Optional.ofNullable(caseData.getSubmittedC1WithSupplement())
-            .orElse(SubmittedC1WithSupplementBundle.builder().clearSubmittedC1WithSupplement(YesNo.NO.getValue())
-                .build())
-            .getClearSubmittedC1WithSupplement())) {
-            caseDetails.getData().remove("submittedC1WithSupplement");
-        } else if (caseData.getSubmittedC1WithSupplement() != null) {
-            caseData.getSubmittedC1WithSupplement().getSupportingEvidenceBundle().forEach(seb -> {
-                seb.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
-                seb.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
-            });
-            caseDetails.getData().put("submittedC1WithSupplement", caseData.getSubmittedC1WithSupplement());
-        }
 
         return respond(caseDetails);
     }
