@@ -60,4 +60,40 @@ class C1WithSupplementCheckerTest {
             assertThat(isCompleted).isTrue();
         }
     }
+
+    @Nested
+    class IsStarted {
+
+        @Test
+        void shouldReturnFalse() {
+            final CaseData caseData = CaseData.builder()
+                .caseName("Test")
+                .build();
+
+            assertThat(c1WithSupplementChecker.isStarted(caseData)).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrue() {
+            final CaseData caseData = CaseData.builder()
+                .caseName("Test")
+                .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
+                    .document(DocumentReference.builder().filename("ABC.docx").build())
+                    .build())
+                .build();
+
+            assertThat(c1WithSupplementChecker.isStarted(caseData)).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfDocumentIsNull() {
+            final CaseData caseData = CaseData.builder()
+                .caseName("Test")
+                .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
+                    .build())
+                .build();
+
+            assertThat(c1WithSupplementChecker.isStarted(caseData)).isFalse();
+        }
+    }
 }
