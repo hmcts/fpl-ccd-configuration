@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TaskListController extends CallbackController {
 
-    @Autowired
     private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/about-to-submit")
