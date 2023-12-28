@@ -21,12 +21,12 @@ public class SubmittedC1WithSupplementBundle  {
     private final String clearSubmittedC1WithSupplement;
     private final String isDocumentUploaded;
 
-    public String getClearSubmittedC1WithSupplement() {
-        if (clearSubmittedC1WithSupplement != null) {
-            return this.clearSubmittedC1WithSupplement;
-        }
-        return YesNo.from(document == null).getValue().toUpperCase();
-    }
+//    public String getClearSubmittedC1WithSupplement() {
+//        if (clearSubmittedC1WithSupplement != null) {
+//            return this.clearSubmittedC1WithSupplement;
+//        }
+//        return YesNo.from(document == null).getValue().toUpperCase();
+//    }
 
     public String getIsDocumentUploaded() {
         return YesNo.from(document != null).getValue().toUpperCase();
