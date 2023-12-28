@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -26,6 +27,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequestMapping("/callback/update-task-list")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TaskListController extends CallbackController {
+
+    @Autowired
+    private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
@@ -62,6 +66,10 @@ public class TaskListController extends CallbackController {
             .getClearSubmittedC1WithSupplement())) {
             caseDetails.getData().remove("submittedC1WithSupplement");
         } else if (caseData.getSubmittedC1WithSupplement() != null) {
+            caseData.getSubmittedC1WithSupplement().getSupportingEvidenceBundle().forEach(seb -> {
+                seb.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
+                seb.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
+            });
             caseDetails.getData().put("submittedC1WithSupplement", caseData.getSubmittedC1WithSupplement());
         }
 

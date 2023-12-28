@@ -174,6 +174,10 @@ public class OrdersNeededController extends CallbackController {
             data.put("orders", data.get("ordersSolicitor"));
         }
 
+        if (caseData.isC1Application()) {
+            data.remove("submittedC1WithSupplement");
+        }
+
         return respond(caseDetails);
     }
 

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
@@ -112,7 +113,9 @@ public class TaskListService {
         if (!caseData.isC1Application()) {
             events.add(INTERNATIONAL_ELEMENT);
             events.add(LANGUAGE_REQUIREMENTS);
-            events.add(C1_WITH_SUPPLEMENT);
+            if (isNotEmpty(caseData.getOrders()) && isNotEmpty(caseData.getOrders().getOrderType())) {
+                events.add(C1_WITH_SUPPLEMENT);
+            }
         }
 
         return events;

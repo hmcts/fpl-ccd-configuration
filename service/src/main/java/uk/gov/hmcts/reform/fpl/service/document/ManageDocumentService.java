@@ -200,8 +200,12 @@ public class ManageDocumentService {
         }
     }
 
+    public List<CaseRole> getUploaderCaseRoles(CaseData caseData) {
+        return new ArrayList<>(userService.getCaseRoles(caseData.getId()));
+    }
+
     public DocumentUploaderType getUploaderType(CaseData caseData) {
-        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+        final List<CaseRole> caseRoles = getUploaderCaseRoles(caseData);
         if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
             return SOLICITOR;
         }
@@ -390,7 +394,7 @@ public class ManageDocumentService {
             .type(recipientType)
             .response(e.getValue().getDocument())
             .uploaderType(uploaderType)
-            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .uploaderCaseRoles(getUploaderCaseRoles(caseData))
             .translationRequirements(e.getValue().getTranslationRequirements())
             .build()));
         caseData.setPlacementNoticeResponses(placementNoticeResponses);
@@ -440,7 +444,7 @@ public class ManageDocumentService {
         }
         UploadBundle bundle = UploadBundle.builder().document(e.getValue().getDocument())
             .uploaderType(uploaderType)
-            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .uploaderCaseRoles(getUploaderCaseRoles(caseData))
             .translationRequirement(e.getValue().getTranslationRequirements())
             .confidential(confidential)
             .build();
