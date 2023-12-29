@@ -25,6 +25,8 @@ public class EnterC1WithSupplementController extends CallbackController {
 
     private final ManageDocumentService manageDocumentService;
 
+    private static final String SUBMITTED_C1_WITH_SUPPLEMENT_KEY = "submittedC1WithSupplement";
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
         @RequestBody CallbackRequest callbackRequest) {
@@ -32,7 +34,7 @@ public class EnterC1WithSupplementController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         if (caseData.getSubmittedC1WithSupplement() != null) {
-            caseDetails.getData().put("submittedC1WithSupplement", caseData.getSubmittedC1WithSupplement());
+            caseDetails.getData().put(SUBMITTED_C1_WITH_SUPPLEMENT_KEY, caseData.getSubmittedC1WithSupplement());
         }
 
         return respond(caseDetails);
@@ -48,13 +50,13 @@ public class EnterC1WithSupplementController extends CallbackController {
             .orElse(SubmittedC1WithSupplementBundle.builder().clearSubmittedC1WithSupplement(YesNo.NO.getValue())
                 .build())
             .getClearSubmittedC1WithSupplement())) {
-            caseDetails.getData().remove("submittedC1WithSupplement");
+            caseDetails.getData().remove(SUBMITTED_C1_WITH_SUPPLEMENT_KEY);
         } else if (caseData.getSubmittedC1WithSupplement() != null) {
             caseData.getSubmittedC1WithSupplement().getSupportingEvidenceBundle().forEach(seb -> {
                 seb.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
                 seb.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
             });
-            caseDetails.getData().put("submittedC1WithSupplement", caseData.getSubmittedC1WithSupplement());
+            caseDetails.getData().put(SUBMITTED_C1_WITH_SUPPLEMENT_KEY, caseData.getSubmittedC1WithSupplement());
         }
 
         return respond(caseDetails);
