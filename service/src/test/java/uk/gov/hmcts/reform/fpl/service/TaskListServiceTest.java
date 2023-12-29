@@ -247,8 +247,7 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            assertThat(actualTasks).isNotEmpty();
-            assertThat(actualTasks).contains(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+            assertThat(actualTasks).isNotEmpty().contains(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
         }
     }
 
