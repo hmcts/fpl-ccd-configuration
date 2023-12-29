@@ -27,7 +27,7 @@ class EnterC1WithSupplementControllerAboutToStartTest extends AbstractCallbackTe
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldPopulateIsDocumentUploaded() {
+    void shouldPopulateIsDocumentUploadedAndClearSubmittedC1WithSupplement() {
         Map<String, Object> caseDetails =  postAboutToStartEvent(CaseData.builder()
             .id(10L)
             .state(State.OPEN)
@@ -41,11 +41,13 @@ class EnterC1WithSupplementControllerAboutToStartTest extends AbstractCallbackTe
         Map<String, Object> submittedC1WithSupplement = (Map<String, Object>) caseDetails
             .get("submittedC1WithSupplement");
         assertThat(submittedC1WithSupplement).extracting("isDocumentUploaded").isEqualTo("YES");
+        assertThat(submittedC1WithSupplement).extracting("clearSubmittedC1WithSupplement")
+            .isEqualTo("NO");
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldPopulateIsDocumentUploadedWithoutDocument() {
+    void shouldPopulateIsDocumentUploadedAndClearSubmittedC1WithSupplementWithoutDocument() {
         Map<String, Object> caseDetails =  postAboutToStartEvent(CaseData.builder()
             .id(10L)
             .state(State.OPEN)
@@ -58,5 +60,6 @@ class EnterC1WithSupplementControllerAboutToStartTest extends AbstractCallbackTe
         Map<String, Object> submittedC1WithSupplement = (Map<String, Object>) caseDetails
             .get("submittedC1WithSupplement");
         assertThat(submittedC1WithSupplement).extracting("isDocumentUploaded").isEqualTo("NO");
+        assertThat(submittedC1WithSupplement).extracting("clearSubmittedC1WithSupplement").isNull();
     }
 }
