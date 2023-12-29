@@ -35,6 +35,17 @@ class C1WithSupplementCheckerTest {
     class IsCompleted {
 
         @Test
+        void shouldReturnEmptyErrorsAndNonCompletedStateIfSubmittedC1WithSupplementIsNull() {
+            final CaseData caseData = CaseData.builder()
+                .submittedC1WithSupplement(null)
+                .build();
+
+            final boolean isCompleted = c1WithSupplementChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isFalse();
+        }
+
+        @Test
         void shouldReturnEmptyErrorsAndNonCompletedState() {
             final CaseData caseData = CaseData.builder()
                 .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
