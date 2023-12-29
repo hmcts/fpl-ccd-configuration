@@ -33,11 +33,7 @@ public class C1WithSupplementChecker implements EventChecker {
     @Override
     public boolean isCompleted(CaseData caseData) {
         final SubmittedC1WithSupplementBundle submittedC1WithSupplement = caseData.getSubmittedC1WithSupplement();
-        if (submittedC1WithSupplement == null || anyEmpty(
-            submittedC1WithSupplement.getDocument())) {
-            return false;
-        }
-        return true;
+        return !(submittedC1WithSupplement == null || anyEmpty(submittedC1WithSupplement.getDocument()));
     }
 
     @Override
