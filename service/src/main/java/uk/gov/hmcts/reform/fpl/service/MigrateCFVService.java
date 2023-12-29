@@ -1134,7 +1134,6 @@ public class MigrateCFVService {
         validateMigratedCourtBundle(migrationId, caseData, changes);
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> migrateMissingApplicationDocuments(CaseData caseData,
                                                                   DocumentUploaderType defaultUploaderType,
                                                                   List<CaseRole> defaultUploaderCaseRoles) {
@@ -1162,18 +1161,17 @@ public class MigrateCFVService {
 
             List<Element<ManagedDocument>> concatenatedList = listOfLists.stream()
                 .flatMap(List::stream)
-                .collect(toList());
+                .toList();
 
             if (ElementUtils.findElement(targetId, concatenatedList).isEmpty()) {
                 String filename = ea.getValue().getDocument().getFilename();
                 // check filename as documents may be manually uploaded by Sara
-                if (!concatenatedList.stream().map(e -> e.getValue().getDocument().getFilename()).collect(toList())
+                if (!concatenatedList.stream().map(e -> e.getValue().getDocument().getFilename()).toList()
                     .contains(filename)) {
                     if (ea.getValue().getUploaderType() == null) {
                         ea.getValue().setUploaderType(defaultUploaderType);
                     }
-                    if (ea.getValue().getUploaderCaseRoles() == null || ea.getValue()
-                        .getUploaderCaseRoles().isEmpty()) {
+                    if (Optional.ofNullable(ea.getValue().getUploaderCaseRoles()).orElse(List.of()).isEmpty()) {
                         ea.getValue().setUploaderCaseRoles(defaultUploaderCaseRoles);
                     }
                     missingApplicationDocuments.add(ea);
@@ -1183,21 +1181,26 @@ public class MigrateCFVService {
 
         Map<String, Object> ret = new HashMap<>();
         Map<String, Object> result = applicationDocumentsService.synchroniseToNewFields(missingApplicationDocuments);
-        result.keySet().stream().forEach(key -> {
+        appendToExistingCollections(ret, caseData, result);
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void appendToExistingCollections(Map<String, Object> ret, CaseData caseData, Map<String, Object> missing) {
+        missing.keySet().stream().forEach(key -> {
             try {
                 List<Element<ManagedDocument>> list = (List<Element<ManagedDocument>>) BeanUtils
                     .getPropertyDescriptor(CaseData.class, key).getReadMethod().invoke(caseData);
                 if (list == null || list.isEmpty()) {
-                    ret.put(key, result.get(key));
+                    ret.put(key, missing.get(key));
                 } else {
-                    list.addAll((List<Element<ManagedDocument>>) result.get(key));
+                    list.addAll((List<Element<ManagedDocument>>) missing.get(key));
                     ret.put(key, list);
                 }
             } catch (Exception ex) {
                 throw new AssertionError("Fail to retrieve property value from caseData: " + key);
             }
         });
-        return ret;
     }
 
 }
