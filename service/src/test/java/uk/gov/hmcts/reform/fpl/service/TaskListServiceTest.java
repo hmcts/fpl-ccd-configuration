@@ -209,8 +209,7 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            assertThat(actualTasks).isNotEmpty();
-            assertThat(actualTasks).doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
         }
 
         @Test
@@ -222,8 +221,7 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            assertThat(actualTasks).isNotEmpty();
-            assertThat(actualTasks).doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
         }
 
         @Test
@@ -235,8 +233,7 @@ class TaskListServiceTest {
             when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
 
             final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
-            assertThat(actualTasks).isNotEmpty();
-            assertThat(actualTasks).doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
         }
 
         @Test
