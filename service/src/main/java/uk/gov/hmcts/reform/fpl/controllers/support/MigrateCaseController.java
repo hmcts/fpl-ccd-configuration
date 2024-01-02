@@ -45,8 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-1855", this::run1855,
-        "DFPL-1954", this::run1954,
-        "DFPL-1948", this::run1948
+        "DFPL-1957", this::run1957,
+        "DFPL-1993", this::run1993
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -204,31 +204,29 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run1954(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1954";
-        var possibleCaseIds = List.of(1680510780369230L);
+    private void run1957(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1957";
+        var possibleCaseIds = List.of(1680274206281046L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        String orgId = "2Z69Q0U";
-
         CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "3cb2d4b1-d0cb-46d7-99e1-913cb15bfa0e"));
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData, migrationId, false,
+            UUID.fromString("6a41564d-575c-4d88-a15a-d5fb5541a4d1"),
+            UUID.fromString("f97c1f3f-5326-4ddb-bff4-e5438d0787f7"),
+            UUID.fromString("9289e73e-91d9-4a0b-92f7-26d50b822be7"),
+            UUID.fromString("4e506d22-e42e-456d-a7b5-398ad854ac7d")));
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementRespondent(caseData, migrationId, false,
+            UUID.fromString("d3f2f35a-e655-497a-8307-7560f968e702"),
+            UUID.fromString("90bccc3a-fdff-40ba-9d44-65128e7ae402"),
+            UUID.fromString("5bccccd3-5557-4544-8860-29719ebcd6f8"),
+            UUID.fromString("78e65b7a-4703-4d85-9be9-9f73d71e9c71")));
     }
 
-    private void run1948(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1948";
-        var possibleCaseIds = List.of(1681814563345287L);
+    private void run1993(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1993";
+        var possibleCaseIds = List.of(1698315138943987L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        String orgId = "P71FQC0";
-
         CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "d7beca42-edbd-42db-a922-bcbec58b8306"));
+        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData, migrationId, false,
+            UUID.fromString("5572d526-7045-4fd6-86a6-136656dc4ef4")));
     }
 }
