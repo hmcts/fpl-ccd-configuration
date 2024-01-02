@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -38,12 +39,14 @@ public class UploadDocumentsController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("temporaryApplicationDocuments", List.of(ElementUtils.element(
-            ApplicationDocument.builder()
-                .allowMarkDocumentConfidential(YesNo.from(manageDocumentService
-                    .allowMarkDocumentConfidential(caseData)).getValue().toUpperCase())
-                .build()
-        )));
+        if (Optional.ofNullable(caseData.getTemporaryApplicationDocuments()).orElse(List.of()).isEmpty()) {
+            caseDetails.getData().put("temporaryApplicationDocuments", List.of(ElementUtils.element(
+                ApplicationDocument.builder()
+                    .allowMarkDocumentConfidential(YesNo.from(manageDocumentService
+                        .allowMarkDocumentConfidential(caseData)).getValue().toUpperCase())
+                    .build()
+            )));
+        }
         return respond(caseDetails);
     }
 
