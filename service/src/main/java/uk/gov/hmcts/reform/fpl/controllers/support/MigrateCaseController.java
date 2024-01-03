@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final MigrateCFVService migrateCFVService;
 
@@ -44,9 +45,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1855", this::run1855,
         "DFPL-1954", this::run1954,
-        "DFPL-1948", this::run1948
+        "DFPL-1948", this::run1948,
+        "DFPL-2002", this::run2002
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -180,11 +181,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1855(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1855";
-        caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
-    }
-  
     private void run1940(CaseDetails caseDetails) {
         var migrationId = "DFPL-1940";
         var possibleCaseIds = List.of(1697791879605293L);
@@ -230,5 +226,12 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
         caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
             migrationId, "d7beca42-edbd-42db-a922-bcbec58b8306"));
+    }
+
+    private void run2002(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2002";
+        var possibleCaseIds = List.of(1691663560940238L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 }
