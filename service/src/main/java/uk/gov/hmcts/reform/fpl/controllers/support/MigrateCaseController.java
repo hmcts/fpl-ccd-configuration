@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
