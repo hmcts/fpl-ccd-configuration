@@ -66,6 +66,14 @@ public enum DocumentType {
         false, false, false, false,
         defaultWithDocumentBuilder(),
         null, 30, POSITION_STATEMENT_NOTIFICATION_CONFIG),
+    POSITION_STATEMENTS_CHILD("Position Statements (Child)", standardResolver("hearingDocuments.posStmtChildList"),
+        true, true, true, true,
+        null,
+        null, 31, null), // dummy
+    POSITION_STATEMENTS_RESPONDENT("Position Statements (Respondent)", standardResolver("hearingDocuments.posStmtRespList"),
+        true, true, true, true,
+        null,
+        null, 32, null), // dummy
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
