@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum PlacementNoticeRecipientType {
 
     LOCAL_AUTHORITY("Local authority"),
-    RESPONDENTS("Respondents (Parents)"),
+    RESPONDENT("Respondents (Parents)"),
     CAFCASS("Cafcass");
 
     private final String name;

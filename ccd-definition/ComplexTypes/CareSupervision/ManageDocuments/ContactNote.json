@@ -1,0 +1,54 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "contactNotes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ContactNote",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public"
+  }
+]
