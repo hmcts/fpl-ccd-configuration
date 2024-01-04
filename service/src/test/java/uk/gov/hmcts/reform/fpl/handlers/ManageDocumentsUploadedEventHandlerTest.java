@@ -45,7 +45,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -539,17 +538,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     private static Stream<Arguments> allUploadableDocumentsTypeParameters() {
-        List<Arguments> streamList = new ArrayList<>();
-
-        for (DocumentType docType : DocumentType.values()) {
-            if (isNotEmpty(docType.getBaseFieldNameResolver()) && docType.isUploadable()) {
-                for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                    streamList.add(Arguments.of(docType, level));
-                }
-            }
-        }
-
-        return streamList.stream();
+        return ManageDocumentsUploadedEventTestData.allUploadableDocumentsTypeParameters();
     }
 
     private static Stream<Arguments> allHearingDocumentsTypeParameters() {
