@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -473,66 +474,125 @@ class MigrateCaseServiceTest {
     class RemovePositionStatementChild {
 
         private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID doc2IdToRemove = UUID.randomUUID();
         private final UUID docIdToKeep = UUID.randomUUID();
 
         private final Element<PositionStatementChild> docToRemove = element(docIdToRemove,
-            PositionStatementChild.builder()
-                .build());
+            PositionStatementChild.builder().build());
+        private final Element<PositionStatementChild> doc2ToRemove = element(doc2IdToRemove,
+            PositionStatementChild.builder().build());
 
         private final Element<PositionStatementChild> docToKeep = element(docIdToKeep,
-            PositionStatementChild.builder()
-                .build());
+            PositionStatementChild.builder().build());
 
-        @Test
-        void shouldClearPositionStatementChildWithNoDocumentsPostMigration() {
-            List<Element<PositionStatementChild>> positionStatementChilds = new ArrayList<>();
-            positionStatementChilds.add(docToRemove);
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(List.of(docToRemove))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementChildByUUID(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(List.of(docToRemove)).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(List.of(docToRemove)).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
-            assertThat(fields.get("positionStatementChildListV2")).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "" : "LA"))).isNull();
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementChildByUUIDs(boolean isInLaList) {
+            List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "" : "LA"))).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
         @SuppressWarnings("unchecked")
-        void shouldLeaveOtherDocsIntact() {
+        void shouldLeaveOtherDocsIntact(boolean isInLaList) {
             List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
             positionStatements.add(docToKeep);
             positionStatements.add(docToRemove);
 
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(positionStatements)
-                    .build())
-                .build();
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
             List<Element<PositionStatementChild>> resultsPositionStatements =
-                (List<Element<PositionStatementChild>>) fields.get("positionStatementChildListV2");
+                (List<Element<PositionStatementChild>>) fields.get("posStmtChildList" + (isInLaList ? "LA" : ""));
 
             assertThat(resultsPositionStatements).hasSize(1);
             assertThat(resultsPositionStatements).containsExactly(docToKeep);
         }
 
-        @Test
-        void shouldThrowExceptionIfNoDocumentFound() {
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(List.of(element(PositionStatementChild.builder().build())))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntactWhenRemovingMultipleTargets(boolean isInLaList) {
+            List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            List<Element<PositionStatementChild>> resultsPositionStatements =
+                (List<Element<PositionStatementChild>>) fields.get("posStmtChildList" + (isInLaList ? "LA" : ""));
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldThrowExceptionIfDocumentNotFound(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtChildListLA(List.of(element(PositionStatementChild.builder().build()))).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtChildList(List.of(element(PositionStatementChild.builder().build()))).build());
+            }
+            CaseData caseData = builder.build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementChild(caseData, MIGRATION_ID,
-                    docIdToRemove));
+                underTest.removePositionStatementChild(caseData, MIGRATION_ID, false, docIdToRemove));
         }
     }
 
@@ -540,65 +600,125 @@ class MigrateCaseServiceTest {
     class RemovePositionStatementRespondent {
 
         private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID doc2IdToRemove = UUID.randomUUID();
         private final UUID docIdToKeep = UUID.randomUUID();
 
         private final Element<PositionStatementRespondent> docToRemove = element(docIdToRemove,
-            PositionStatementRespondent.builder()
-                .build());
+            PositionStatementRespondent.builder().build());
+        private final Element<PositionStatementRespondent> doc2ToRemove = element(doc2IdToRemove,
+            PositionStatementRespondent.builder().build());
 
         private final Element<PositionStatementRespondent> docToKeep = element(docIdToKeep,
-            PositionStatementRespondent.builder()
-                .build());
+            PositionStatementRespondent.builder().build());
 
-        @Test
-        void shouldClearPositionStatementRespondentWithNoDocumentsPostMigration() {
-            List<Element<PositionStatementRespondent>> positionStatementRespondents = new ArrayList<>();
-            positionStatementRespondents.add(docToRemove);
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(List.of(docToRemove))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementRespondentByUUID(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(List.of(docToRemove)).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(List.of(docToRemove)).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
-            assertThat(fields.get("positionStatementRespondentListV2")).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "" : "LA"))).isNull();
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementRespondentByUUIDs(boolean isInLaList) {
+            List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "" : "LA"))).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
         @SuppressWarnings("unchecked")
-        void shouldLeaveOtherDocsIntact() {
+        void shouldLeaveOtherDocsIntact(boolean isInLaList) {
             List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
             positionStatements.add(docToKeep);
             positionStatements.add(docToRemove);
 
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(positionStatements)
-                    .build())
-                .build();
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
             List<Element<PositionStatementRespondent>> resultsPositionStatements =
-                (List<Element<PositionStatementRespondent>>) fields.get("positionStatementRespondentListV2");
+                (List<Element<PositionStatementRespondent>>) fields.get("posStmtRespList" + (isInLaList ? "LA" : ""));
 
             assertThat(resultsPositionStatements).hasSize(1);
             assertThat(resultsPositionStatements).containsExactly(docToKeep);
         }
 
-        @Test
-        void shouldThrowExceptionIfNoDocumentFound() {
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(List.of(element(PositionStatementRespondent.builder().build())))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntactWhenRemovingMultipleTargets(boolean isInLaList) {
+            List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            List<Element<PositionStatementRespondent>> resultsPositionStatements =
+                (List<Element<PositionStatementRespondent>>) fields.get("posStmtRespList" + (isInLaList ? "LA" : ""));
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldThrowExceptionIfDocumentNotFound(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtRespListLA(List.of(element(PositionStatementRespondent.builder().build()))).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtRespList(List.of(element(PositionStatementRespondent.builder().build()))).build());
+            }
+            CaseData caseData = builder.build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, docIdToRemove));
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, false, docIdToRemove));
         }
     }
 
