@@ -348,7 +348,7 @@ public class MigrateCaseService {
     }
 
     public void verifyStandardDirectionOrderExists(CaseData caseData, String migrationId, UUID documentId) {
-        if (caseData.getStandardDirectionOrder() == null || isEmpty(caseData.getStandardDirectionOrder())) {
+        if (isEmpty(caseData.getStandardDirectionOrder())) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, GateKeeping order - Standard direction order not found",
                 migrationId, caseData.getId()));
