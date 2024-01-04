@@ -232,6 +232,9 @@ public enum DocumentType {
     private final DocumentUploadedNotificationConfiguration notificationConfiguration;
 
     public boolean isUploadable() {
+        if (isHiddenFromSolicitorUpload() || isHiddenFromLAUpload() || isHiddenFromLAUpload()) {
+            return false;
+        }
         return nonNull(baseFieldNameResolver) || PLACEMENT_RESPONSES == this;
     }
 

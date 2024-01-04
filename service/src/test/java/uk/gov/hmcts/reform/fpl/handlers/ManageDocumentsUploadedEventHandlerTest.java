@@ -206,7 +206,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allDocumentsTypeParameters")
+    @MethodSource("allUploadableDocumentsTypeParameters")
     void shouldSendNotificationBasedOnConfigurationWhenDocumentsUploaded(DocumentType documentType,
                                                                          ConfidentialLevel confidentialLevel)
         throws Exception {
@@ -261,7 +261,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allDocumentsTypeParameters")
+    @MethodSource("allUploadableDocumentsTypeParameters")
     void shouldSendNotificationToFallbackInboxWhenLARecipientNotFound(DocumentType documentType,
                                                                       ConfidentialLevel confidentialLevel)
         throws Exception {
@@ -320,7 +320,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allDocumentsTypeParameters")
+    @MethodSource("allUploadableDocumentsTypeParameters")
     void shouldSendDocumentToCafcassWhenDocumentUploaded(DocumentType documentType,
                                                          ConfidentialLevel confidentialLevel)
         throws Exception {
@@ -387,7 +387,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allDocumentsTypeParameters")
+    @MethodSource("allUploadableDocumentsTypeParameters")
     void shouldNotifyTranslationTeamWhenDocumentUploaded(DocumentType documentType,
                                                          ConfidentialLevel confidentialLevel)
         throws Exception {
@@ -455,7 +455,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("allDocumentsTypeParameters")
+    @MethodSource("allUploadableDocumentsTypeParameters")
     void shouldSendByPostWhenSolicitorUploadedPdfDocument(DocumentType documentType,
                                                           ConfidentialLevel confidentialLevel)
         throws Exception {
@@ -538,11 +538,11 @@ public class ManageDocumentsUploadedEventHandlerTest {
         verifyNoInteractions(sendDocumentService);
     }
 
-    private static Stream<Arguments> allDocumentsTypeParameters() {
+    private static Stream<Arguments> allUploadableDocumentsTypeParameters() {
         List<Arguments> streamList = new ArrayList<>();
 
         for (DocumentType docType : DocumentType.values()) {
-            if (isNotEmpty(docType.getBaseFieldNameResolver())) {
+            if (isNotEmpty(docType.getBaseFieldNameResolver()) && docType.isUploadable()) {
                 for (ConfidentialLevel level : ConfidentialLevel.values()) {
                     streamList.add(Arguments.of(docType, level));
                 }

@@ -4700,7 +4700,7 @@ class ManageDocumentServiceTest {
     @Nested
     class BuildManageDocumentsUploadedEventTest {
         @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
+        @MethodSource("allUploadableDocumentsTypeParameters")
         void shouldBuildManageDocumentsUploadedEvent(DocumentType documentType, ConfidentialLevel confidentialLevel)
             throws Exception {
 
@@ -4748,7 +4748,7 @@ class ManageDocumentServiceTest {
             assertEquals(expectedNewDocumentsCTSC, eventData.getNewDocumentsCTSC());
         }
 
-        private static Stream<Arguments> allDocumentsTypeParameters() {
+        private static Stream<Arguments> allUploadableDocumentsTypeParameters() {
             List<Arguments> streamList = new ArrayList<>();
 
             for (DocumentType docType : DocumentType.values()) {
