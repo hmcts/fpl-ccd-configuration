@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -66,6 +67,7 @@ public class UploadAdditionalApplicationsService {
 
     private final Time time;
     private final UserService userService;
+    private final ManageDocumentService manageDocumentService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
     private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
@@ -190,7 +192,7 @@ public class UploadAdditionalApplicationsService {
                                                    LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
-        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryC2Document.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
 
@@ -219,7 +221,7 @@ public class UploadAdditionalApplicationsService {
                                                                  LocalDateTime uploadedTime) {
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
-        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(caseData,
             temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy, uploadedTime
         );
 
@@ -265,13 +267,16 @@ public class UploadAdditionalApplicationsService {
         buildC2BundleByPolicy(caseData, convertedC2, builder);
     }
 
-    private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
+    private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(CaseData caseData,
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
 
         supportingEvidenceBundle.forEach(supportingEvidence -> {
             supportingEvidence.getValue().setDateTimeUploaded(uploadedDateTime);
             supportingEvidence.getValue().setUploadedBy(uploadedBy);
+            supportingEvidence.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
+            supportingEvidence.getValue().setUploaderCaseRoles(new ArrayList<>(userService
+                .getCaseRoles(caseData.getId())));
         });
 
         return supportingEvidenceBundle;

@@ -57,6 +57,7 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ConfidentialBundleHelper;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 
 import java.beans.PropertyDescriptor;
@@ -73,6 +74,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,6 +94,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.BARRISTER;
@@ -238,6 +243,219 @@ public class ManageDocumentService {
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
         return List.of(HMCTS).contains(getUploaderType(caseData));
     }
+    
+    private Element<? extends WithDocument> handleRemovePlacementResponse(CaseData caseData,
+                                                                          UUID documentElementId,
+                                                                          Map<String, Object> output) {
+        Element<Placement> placement = caseData.getPlacementEventData().getPlacements().stream()
+            .filter(placementElement -> placementElement.getValue().getNoticeDocuments().stream()
+                .anyMatch(nd -> documentElementId.equals(nd.getId())))
+            .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate placement"));
+
+        Element<PlacementNoticeDocument> target = placement.getValue().getNoticeDocuments().stream()
+            .filter(nd -> documentElementId.equals(nd.getId()))
+            .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate notice documents"));
+
+        placement.getValue().getNoticeDocuments().remove(target);
+
+        List<Element<PlacementNoticeDocument>> noticeDocumentsRemoved = placement.getValue()
+            .getNoticeDocumentsRemoved() == null ? new ArrayList<>() : placement.getValue()
+            .getNoticeDocumentsRemoved();
+        noticeDocumentsRemoved.add(target);
+        placement.getValue().setNoticeDocumentsRemoved(noticeDocumentsRemoved);
+
+        output.put("placements", caseData.getPlacementEventData().getPlacements());
+        output.put("placementsNonConfidential", caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true));
+        output.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
+            .getPlacementsNonConfidential(true));
+
+        return target;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Element<? extends WithDocument>> handleRemoveCourtBundle(CaseData caseData,
+                                                                          UUID documentElementId,
+                                                                          Map<String, Object> output,
+                                                                          String fieldName,
+                                                                          List<Element<?>> listOfRemovedElement) {
+        List<Element> listOfElement = null;
+        HearingDocuments hearingDocuments = caseData.getHearingDocuments();
+        switch (fieldName) {
+            case "hearingDocuments.courtBundleListV2":
+                listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListV2());
+                break;
+            case "hearingDocuments.courtBundleListLA":
+                listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListLA());
+                break;
+            case "hearingDocuments.courtBundleListCTSC":
+                listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListCTSC());
+                break;
+            default:
+                throw new IllegalStateException("unrecognised field name: " + fieldName);
+        }
+
+        Element<HearingCourtBundle> hcbElement =
+            Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
+                    Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
+                        hearingDocuments.getCourtBundleListLA().stream()))
+                .filter(loe -> loe.getValue().getCourtBundle().stream().anyMatch(
+                    cb -> documentElementId.equals(cb.getId())
+                )).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
+
+        Element<CourtBundle> targetElement = hcbElement.getValue().getCourtBundle().stream()
+            .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
+                throw new IllegalStateException("Fail to locate the target document");
+            });
+        final Element<CourtBundle> targetElementNC = hcbElement.getValue().getCourtBundleNC().stream()
+            .filter(i -> documentElementId.equals(i.getId())).findFirst().orElse(null);
+        List<Element<? extends WithDocument>> targetElements = new ArrayList<>();
+
+        if (hcbElement.getValue().getCourtBundle().size() == 1
+            && hcbElement.getValue().getCourtBundleNC().size() <= 1) {
+            // multiple court bundles(nc) keep hcbElement, otherwise remove it
+            listOfElement.remove(hcbElement);
+        }
+        hcbElement.getValue().getCourtBundle().remove(targetElement);
+        targetElements.add(targetElement);
+        if (targetElementNC != null) {
+            hcbElement.getValue().getCourtBundleNC().remove(targetElementNC);
+            targetElements.add(targetElementNC);
+        }
+
+        final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
+            .anyMatch(e -> e.getId().equals(hcbElement.getId()));
+
+        @SuppressWarnings("unchecked")
+        Element<HearingCourtBundle> hcbFromRemovedList = ((List<Element<HearingCourtBundle>>) (List<?>)
+            listOfRemovedElement).stream()
+            .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
+            .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
+                .courtBundle(new ArrayList<>())
+                .courtBundleNC(new ArrayList<>())
+                .build()));
+        hcbFromRemovedList.getValue().getCourtBundle().add(targetElement);
+        if (targetElementNC != null) {
+            hcbFromRemovedList.getValue().getCourtBundleNC().add(targetElementNC);
+        }
+        if (isNewHearingCourtBundleInRemovedList) {
+            listOfRemovedElement.add(hcbFromRemovedList);
+        }
+
+        output.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
+        output.put(DocumentType.toJsonFieldName(COURT_BUNDLE.getFieldNameOfRemovedList()), listOfRemovedElement);
+        return targetElements;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Element<? extends WithDocument>
+        handleC1OrC2SupportingDocumentsInAdditionalApplications(CaseData caseData, UUID documentElementId,
+                                                                Map<String, Object> output) {
+        Element<AdditionalApplicationsBundle> targetBundle = (Element<AdditionalApplicationsBundle>)
+            Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
+                .orElse(List.of()).stream()
+                .map(adb -> {
+                    Function<ApplicationsBundle, Boolean> checkEvidenceBundle = bundle ->
+                        bundle != null && bundle.getSupportingEvidenceBundle().stream()
+                            .anyMatch(e -> documentElementId.equals(e.getId()));
+
+                    if (checkEvidenceBundle.apply(adb.getValue().getC2DocumentBundle())) {
+                        return Optional.ofNullable(adb);
+                    }
+                    if (checkEvidenceBundle.apply(adb.getValue().getC2DocumentBundleConfidential())) {
+                        return Optional.ofNullable(adb);
+                    }
+                    if (checkEvidenceBundle.apply(adb.getValue().getOtherApplicationsBundle())) {
+                        return Optional.ofNullable(adb);
+                    }
+                    return Optional.empty();
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst()
+                .orElse(null);
+
+        Element<SupportingEvidenceBundle> ret = null;
+        if (targetBundle != null) {
+            if (targetBundle.getValue().getC2DocumentBundle() != null) {
+                ret = ElementUtils.findElement(documentElementId, targetBundle.getValue().getC2DocumentBundle()
+                        .getSupportingEvidenceBundle())
+                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                List<Element<SupportingEvidenceBundle>> newList = targetBundle.getValue().getC2DocumentBundle()
+                    .getSupportingEvidenceBundle().stream()
+                    .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
+                    .toList();
+                targetBundle.setValue(targetBundle.getValue().toBuilder()
+                    .c2DocumentBundle(targetBundle.getValue().getC2DocumentBundle().toBuilder()
+                        .supportingEvidenceBundle(newList)
+                        .build())
+                    .build());
+            } else if (targetBundle.getValue().getC2DocumentBundleConfidential() != null) {
+                Function<Element<AdditionalApplicationsBundle>, C2DocumentBundle> c2DocumentAccessor = (tb) ->
+                    tb.getValue().getC2DocumentBundleConfidential();
+                BiFunction<Element<AdditionalApplicationsBundle>, List<Element<SupportingEvidenceBundle>>,
+                    AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder>
+                    elementC2DocumentBundleBuilderFunction = (tb, newList) ->
+                    tb.getValue().toBuilder()
+                        .c2DocumentBundleConfidential(targetBundle.getValue().getC2DocumentBundleConfidential()
+                            .toBuilder()
+                            .supportingEvidenceBundle(newList)
+                            .build());
+
+                ret = ElementUtils.findElement(documentElementId, c2DocumentAccessor.apply(targetBundle)
+                        .getSupportingEvidenceBundle())
+                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                List<Element<SupportingEvidenceBundle>> newList = c2DocumentAccessor.apply(targetBundle)
+                    .getSupportingEvidenceBundle().stream()
+                    .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
+                    .toList();
+                targetBundle.setValue(elementC2DocumentBundleBuilderFunction.apply(targetBundle, newList).build());
+            } else if (targetBundle.getValue().getOtherApplicationsBundle() != null) {
+                ret = ElementUtils.findElement(documentElementId, targetBundle.getValue().getOtherApplicationsBundle()
+                        .getSupportingEvidenceBundle())
+                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                List<Element<SupportingEvidenceBundle>> newList = targetBundle.getValue().getOtherApplicationsBundle()
+                    .getSupportingEvidenceBundle().stream()
+                    .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
+                    .toList();
+                targetBundle.setValue(targetBundle.getValue().toBuilder()
+                    .otherApplicationsBundle(targetBundle.getValue().getOtherApplicationsBundle().toBuilder()
+                        .supportingEvidenceBundle(newList)
+                        .build())
+                    .build());
+            } else {
+                throw new AssertionError("should not reach this line.");
+            }
+        }
+        output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+        // TODO move to removedList;
+
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Element<? extends WithDocument> handleRemoveGeneralDocumentType(CaseData caseData, UUID documentElementId,
+                                                                            Map<String, Object> output,
+                                                                            String fieldName,
+                                                                            List<Element<?>> listOfRemovedElement) {
+        if (List.of(C1_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.name()).contains(fieldName)) {
+            return handleC1OrC2SupportingDocumentsInAdditionalApplications(caseData, documentElementId, output);
+        } else {
+            List<Element<?>> listOfElement = readFromFieldName(caseData, fieldName);
+            Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
+                .orElseThrow(() -> {
+                    throw new IllegalStateException("Fail to locate the target document");
+                });
+            listOfElement.remove(target);
+            listOfRemovedElement.add(target); // Putting it to removed list for backing
+
+            output.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
+            output.put(DocumentType.toJsonFieldName(DocumentType.fromFieldName(fieldName).getFieldNameOfRemovedList()),
+                listOfRemovedElement);
+            return target;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> removeDocuments(CaseData caseData) {
@@ -256,116 +474,28 @@ public class ManageDocumentService {
         String fieldName = split[0];
         DocumentType documentType = DocumentType.fromFieldName(fieldName);
         UUID documentElementId = UUID.fromString(split[1]);
+        List<Element<? extends WithDocument>> targetElements = new ArrayList<>();
 
-        final Map<String, Object> ret = new HashMap<>();
+        final Map<String, Object> output = new HashMap<>();
         if (documentType == PLACEMENT_RESPONSES) {
-            Element<Placement> placement = caseData.getPlacementEventData().getPlacements().stream()
-                .filter(placementElement -> placementElement.getValue().getNoticeDocuments().stream()
-                    .anyMatch(nd -> documentElementId.equals(nd.getId())))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate placement"));
-
-            Element<PlacementNoticeDocument> target = placement.getValue().getNoticeDocuments().stream()
-                .filter(nd -> documentElementId.equals(nd.getId()))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("Fail to locate notice documents"));
-            target.getValue().setRemovalReason(removalReason);
-
-            placement.getValue().getNoticeDocuments().remove(target);
-
-            List<Element<PlacementNoticeDocument>> noticeDocumentsRemoved = placement.getValue()
-                .getNoticeDocumentsRemoved() == null ? new ArrayList<>() : placement.getValue()
-                .getNoticeDocumentsRemoved();
-            noticeDocumentsRemoved.add(target);
-            placement.getValue().setNoticeDocumentsRemoved(noticeDocumentsRemoved);
-
-            ret.put("placements", caseData.getPlacementEventData().getPlacements());
-            ret.put("placementsNonConfidential", caseData.getPlacementEventData()
-                .getPlacementsNonConfidential(true));
-            ret.put("placementsNonConfidentialNotices", caseData.getPlacementEventData()
-                .getPlacementsNonConfidential(true));
+            targetElements.add(handleRemovePlacementResponse(caseData, documentElementId, output));
         } else {
             // getting list of removed element
-            List<Element> listOfRemovedElement =
-                this.readFromFieldName(caseData, documentType.getFieldNameOfRemovedList());
+            List<Element<?>> listOfRemovedElement = readFromFieldName(caseData,
+                documentType.getFieldNameOfRemovedList());
             if (listOfRemovedElement == null) {
                 listOfRemovedElement = new ArrayList<>();
             }
-
-            List<Element> listOfElement = this.readFromFieldName(caseData, fieldName);
-
             if (documentType == COURT_BUNDLE) {
-                HearingDocuments hearingDocuments = caseData.getHearingDocuments();
-                switch (fieldName) {
-                    case "hearingDocuments.courtBundleListV2":
-                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListV2());
-                        break;
-                    case "hearingDocuments.courtBundleListLA":
-                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListLA());
-                        break;
-                    case "hearingDocuments.courtBundleListCTSC":
-                        listOfElement = new ArrayList<>(hearingDocuments.getCourtBundleListCTSC());
-                        break;
-                    default:
-                        throw new IllegalStateException("unrecognised field name: " + fieldName);
-                }
-
-                Element<HearingCourtBundle> hcbElement =
-                    Stream.concat(hearingDocuments.getCourtBundleListCTSC().stream(),
-                            Stream.concat(hearingDocuments.getCourtBundleListV2().stream(),
-                                hearingDocuments.getCourtBundleListLA().stream()))
-                        .filter(loe -> loe.getValue().getCourtBundle().stream().anyMatch(
-                            cb -> documentElementId.equals(cb.getId())
-                        )).findFirst()
-                        .orElseThrow(() -> new IllegalStateException("Fail to find the target hearing court bundle"));
-
-                Element<CourtBundle> target = hcbElement.getValue().getCourtBundle().stream()
-                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
-                        throw new IllegalStateException("Fail to locate the target document");
-                    });
-                Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
-                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElse(null);
-
-                if (hcbElement.getValue().getCourtBundle().size() == 1
-                    && hcbElement.getValue().getCourtBundleNC().size() <= 1) {
-                    // multiple court bundles(nc) keep hcbElement, otherwise remove it
-                    listOfElement.remove(hcbElement);
-                }
-                hcbElement.getValue().getCourtBundle().remove(target);
-                if (targetNC != null) {
-                    hcbElement.getValue().getCourtBundleNC().remove(targetNC);
-                }
-
-                final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
-                    .anyMatch(e -> e.getId().equals(hcbElement.getId()));
-                Element<HearingCourtBundle> hcbFromRemovedList = listOfRemovedElement.stream()
-                    .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
-                    .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
-                        .courtBundle(new ArrayList<>())
-                        .courtBundleNC(new ArrayList<>())
-                        .build()));
-                target.getValue().setRemovalReason(removalReason); // Setting the removal reason
-                hcbFromRemovedList.getValue().getCourtBundle().add(target);
-                if (targetNC != null) {
-                    targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
-                    hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
-                }
-                if (isNewHearingCourtBundleInRemovedList) {
-                    listOfRemovedElement.add(hcbFromRemovedList);
-                }
+                targetElements.addAll(handleRemoveCourtBundle(caseData, documentElementId, output, fieldName,
+                    listOfRemovedElement));
             } else {
-                Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
-                    .orElseThrow(() -> {
-                        throw new IllegalStateException("Fail to locate the target document");
-                    });
-
-                listOfElement.remove(target);
-                ((WithDocument) target.getValue()).setRemovalReason(removalReason); // Setting the removal reason
-                listOfRemovedElement.add(target); // Putting it to removed list for backing up
+                targetElements.add(handleRemoveGeneralDocumentType(caseData, documentElementId, output, fieldName,
+                    listOfRemovedElement));
             }
-
-            ret.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
-            ret.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()), listOfRemovedElement);
         }
-        return ret;
+        targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
+        return output;
     }
 
     @SuppressWarnings("unchecked")
@@ -497,7 +627,7 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element> readFromFieldName(CaseData caseData, String fieldName) {
+    private List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 1) {
             try {
@@ -505,7 +635,7 @@ public class ManageDocumentService {
                 if (pd == null) {
                     throw new IllegalStateException("Fail to find the property descriptor of " + fieldName);
                 }
-                return (List<Element>) pd.getReadMethod().invoke(caseData);
+                return (List<Element<?>>) pd.getReadMethod().invoke(caseData);
             } catch (IllegalStateException ex) {
                 throw ex;
             } catch (Exception ex) {
@@ -513,13 +643,13 @@ public class ManageDocumentService {
             }
         } else if (splitFieldName.length == 2 && splitFieldName[0].equals("hearingDocuments")) {
             String actualFieldName = splitFieldName[1];
-            List<Element> listOfElement = null;
+            List<Element<?>> listOfElement = null;
             try {
                 PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(HearingDocuments.class, actualFieldName);
                 if (pd == null) {
                     throw new IllegalStateException("Fail to find the property descriptor of " + actualFieldName);
                 }
-                listOfElement = (List<Element>) pd.getReadMethod().invoke(caseData.getHearingDocuments());
+                listOfElement = (List<Element<?>>) pd.getReadMethod().invoke(caseData.getHearingDocuments());
             } catch (IllegalStateException ex) {
                 throw ex;
             } catch (Exception ex) {
@@ -538,30 +668,59 @@ public class ManageDocumentService {
         return new ArrayList<>();
     }
 
-    private Map<String, List<Element>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
-                                                                     ConfidentialLevel level) {
-        Map<String, List<Element>> ret = new LinkedHashMap<String, List<Element>>();
+    private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
+                                                                        ConfidentialLevel level) {
+        Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
         if (documentType.getBaseFieldNameResolver() != null) {
             String fieldName = documentType.getBaseFieldNameResolver().apply(level);
-            List<Element> listOfElement = readFromFieldName(caseData, fieldName);
+            List<Element<?>> listOfElement = readFromFieldName(caseData, fieldName);
             if (listOfElement != null) {
                 ret.put(fieldName, listOfElement);
+            }
+        }
+        if (List.of(C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS).contains(documentType)) {
+            boolean isC1DocumentType = C1_APPLICATION_DOCUMENTS.equals(documentType);
+            Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).forEach(
+                app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(Optional.ofNullable(
+                        isC1DocumentType ? app.getValue().getOtherApplicationsBundle()
+                            : app.getValue().getC2DocumentBundle()).orElse(
+                        isC1DocumentType ? OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build()
+                            : C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build())
+                    .getSupportingEvidenceBundle()));
+            if (!isC1DocumentType) { // add cC2 document
+                if (level == ConfidentialLevel.CTSC) {
+                    Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
+                        .filter(a -> a.getValue().getC2DocumentBundleConfidential() != null)
+                        .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
+                            app.getValue().getC2DocumentBundleConfidential().getSupportingEvidenceBundle()));
+                }
+                if (level == ConfidentialLevel.LA) {
+                    Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
+                        .filter(a -> a.getValue().getC2DocumentBundleLA() != null)
+                        .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
+                            app.getValue().getC2DocumentBundleLA().getSupportingEvidenceBundle()));
+                }
+                if (level == ConfidentialLevel.NON_CONFIDENTIAL) {
+                    // TODO for c2DocumentBundleResp0 to 9
+                    // TODO for c2DocumentBundleChild0 to 14
+                }
             }
         }
         return ret;
     }
 
     private List<Pair<String, String>> toListOfPair(CaseData caseData,
-                                                    Map<String, List<Element>> fieldNameToListOfElement) {
-        final DocumentUploaderType uploaderType = getUploaderType(caseData);
+                                                    Map<String, List<Element<?>>> fieldNameToListOfElement) {
+        final DocumentUploaderType currentUploaderType = getUploaderType(caseData);
         final List<Pair<String, String>> ret = new ArrayList<>();
-        for (Map.Entry<String, List<Element>> entrySet : fieldNameToListOfElement.entrySet()) {
+        for (Map.Entry<String, List<Element<?>>> entrySet : fieldNameToListOfElement.entrySet()) {
             String fieldName = entrySet.getKey();
             for (Element e : entrySet.getValue()) {
                 WithDocument wd = ((WithDocument) e.getValue());
                 DocumentReference document = wd.getDocument();
 
-                if (uploaderType != HMCTS && uploaderType != CAFCASS) {
+                // checks CaseRoles
+                if (currentUploaderType != HMCTS && currentUploaderType != CAFCASS) {
                     List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
                         ? new ArrayList<>() : wd.getUploaderCaseRoles();
                     final Set<CaseRole> currentUploaderCaseRoles = Optional
@@ -573,10 +732,10 @@ public class ManageDocumentService {
                         continue;
                     }
                 }
-                if (uploaderType == CAFCASS) {
-                    if (!uploaderType.equals(wd.getUploaderType())) {
-                        continue;
-                    }
+
+                // Check currentUploaderType if it is CAFCASS
+                if (currentUploaderType == CAFCASS && !CAFCASS.equals(wd.getUploaderType())) {
+                    continue;
                 }
                 ret.add(Pair.of(fieldName + DOCUMENT_TO_BE_REMOVED_SEPARATOR + e.getId(), document.getFilename()));
             }
@@ -588,10 +747,11 @@ public class ManageDocumentService {
         return buildAvailableDocumentsToBeRemoved(caseData, null);
     }
 
+    // Return all documents when documentType is null
     public DynamicList buildAvailableDocumentsToBeRemoved(CaseData caseData, DocumentType documentType) {
         DocumentUploaderType currentUserType = getUploaderType(caseData);
 
-        Map<String, List<Element>> fieldNameToListOfElementMap = new LinkedHashMap<>();
+        Map<String, List<Element<?>>> fieldNameToListOfElementMap = new LinkedHashMap<>();
         for (DocumentType dt : documentType != null ? List.of(documentType) : Arrays.stream(DocumentType.values())
             .filter(DocumentType::isUploadable)
             .sorted(Comparator.comparing(DocumentType::getDisplayOrder))
@@ -622,6 +782,7 @@ public class ManageDocumentService {
         return dynamicListService.asDynamicList(toListOfPair(caseData, fieldNameToListOfElementMap));
     }
 
+    // For HMCTS admin's journey
     public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
         Map<String, Object> map = caseConverter.toMap(caseData);
 
@@ -634,13 +795,38 @@ public class ManageDocumentService {
             .collect(toSet());
 
         Set<DocumentType> finalDocumentTypes = new HashSet<>(availableDocumentTypes);
+        // add parent folders
         finalDocumentTypes.addAll(availableDocumentTypes.stream().map(d -> d.getParentFolder())
             .filter(Objects::nonNull)
             .toList());
 
+        // placement response
         List<Element<Placement>> placements = caseData.getPlacementEventData().getPlacements();
         if (placements.stream().flatMap(pe -> pe.getValue().getNoticeDocuments().stream()).findAny().isPresent()) {
             finalDocumentTypes.add(PLACEMENT_RESPONSES);
+        }
+
+        // TODO Check submittedC1WithSupplement?!
+        // C1 application documents
+        if (!Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).isEmpty()) {
+            if (!caseData.getAdditionalApplicationsBundle().stream()
+                .flatMap(a -> Optional.ofNullable(a.getValue().getOtherApplicationsBundle())
+                    .orElse(OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build())
+                    .getSupportingEvidenceBundle().stream())
+                .toList().isEmpty()) {
+                finalDocumentTypes.add(C1_APPLICATION_DOCUMENTS);
+            }
+        }
+        // C2 application documents
+        if (!Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).isEmpty()) {
+            if (!caseData.getAdditionalApplicationsBundle().stream()
+                .flatMap(a -> Optional.ofNullable(a.getValue().getC2DocumentBundle())
+                    .orElse(Optional.ofNullable(a.getValue().getC2DocumentBundleConfidential())
+                        .orElse(C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build()))
+                    .getSupportingEvidenceBundle().stream())
+                .toList().isEmpty()) {
+                finalDocumentTypes.add(C2_APPLICATION_DOCUMENTS);
+            }
         }
 
         final List<Pair<String, String>> documentTypes = finalDocumentTypes.stream()
