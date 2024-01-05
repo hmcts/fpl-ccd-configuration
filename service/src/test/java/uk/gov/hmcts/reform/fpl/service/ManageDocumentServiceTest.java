@@ -2707,7 +2707,7 @@ class ManageDocumentServiceTest {
 
     private static Stream<Arguments> buildDocumentTypeDynamicListArgs() {
         List<Arguments> args = new ArrayList<>();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 7; i++) {
             for (int b = 0; b < 2; b++) {
                 List<Pair<String, String>> expected = List.of(
                     toPair(DocumentType.COURT_BUNDLE),
@@ -2875,6 +2875,10 @@ class ManageDocumentServiceTest {
             case 4:
             case 5:
                 return List.of();
+            case 6:
+                return List.of(CaseRole.BARRISTER);
+            case 7:
+                return List.of(CaseRole.CAFCASSSOLICITOR);
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
         }
