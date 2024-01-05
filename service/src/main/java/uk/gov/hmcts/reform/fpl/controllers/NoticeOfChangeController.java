@@ -59,16 +59,6 @@ public class NoticeOfChangeController extends CallbackController {
         return caseAssignmentService.applyDecision(caseDetails);
     }
 
-    @PostMapping("/about-to-submit")
-    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-
-        // clean up after the NoC decision
-        caseDetails.getData().remove("changeOrganisationRequestField");
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
@@ -108,5 +98,15 @@ public class NoticeOfChangeController extends CallbackController {
             log.error(aacResponse.getErrors().stream().collect(Collectors.joining(", ")));
         }
         return aacResponse;
+    }
+
+    @PostMapping("/update-respondents/about-to-submit")
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        // clean up after the NoC decision
+        caseDetails.getData().remove("changeOrganisationRequestField");
+
+        return respond(caseDetails);
     }
 }
