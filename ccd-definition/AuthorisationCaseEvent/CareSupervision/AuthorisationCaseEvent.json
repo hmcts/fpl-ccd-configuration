@@ -717,21 +717,23 @@
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
-          "[EPSMANAGING]",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-superuser",
+          "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
           "[LASHARED]",
           "[LASOLICITOR]",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-superuser",
           "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
           "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
           "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
           "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]"
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
+          "[BARRISTER]",
+          "[CAFCASSSOLICITOR]"
         ],
         "CRUD": "CR"
       }
