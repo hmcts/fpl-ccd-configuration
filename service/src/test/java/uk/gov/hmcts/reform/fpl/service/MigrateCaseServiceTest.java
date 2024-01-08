@@ -6,7 +6,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -29,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -57,12 +54,10 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +73,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -883,47 +881,6 @@ class MigrateCaseServiceTest {
             assertDoesNotThrow(() ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
                     "test.pdf"));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class RemoveGatekeepingOrderStandardDirectionOrder {
-
-        private final long caseId = 1L;
-        private final String fileName = "Test Filname.pdf";
-
-        @Test
-        void shouldThrowExceptionIfStandardDirectionOrderIsNullOrEmpty() {
-            UUID documentId = UUID.randomUUID();
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .build();
-
-            assertThrows(AssertionError.class, () -> underTest
-                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, documentId));
-        }
-
-        @Test
-        void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
-            UUID document1Id = UUID.randomUUID();
-            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
-                + UUID.randomUUID();
-            DocumentReference documentReference = DocumentReference.builder()
-                .url(document2Url)
-                .filename("Test Document")
-                .build();
-
-            CaseData caseData = CaseData.builder()
-                .id(caseId)
-                .standardDirectionOrder(
-                    StandardDirectionOrder.builder()
-                        .orderDoc(documentReference)
-                        .build())
-                .build();
-
-            assertThrows(AssertionError.class, () -> underTest
-                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
         }
     }
 
@@ -2434,344 +2391,191 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class MigrateCaseClosedDateToLatestFinalOrderApprovalDate {
-        private static final LocalDateTime LATEST_APPROVAL_DATE_TIME = LocalDateTime.now();
-        private static final LocalDate LATEST_APPROVAL_DATE = LATEST_APPROVAL_DATE_TIME.toLocalDate();
-        private static final LocalDate ORIGINAL_CLOSE_CASE_DATE = LATEST_APPROVAL_DATE.minusYears(1);
-        private static final CloseCase CLOSE_CASE_TAB_FIELD = CloseCase.builder()
-            .date(ORIGINAL_CLOSE_CASE_DATE).build();
-
-        @ParameterizedTest
-        @EnumSource(value = State.class, names = {"OPEN", "SUBMITTED", "GATEKEEPING", "GATEKEEPING_LISTING",
-            "CASE_MANAGEMENT", "DELETED", "RETURNED"})
-        void shouldThrowExceptionIfCaseNotClosed(State state) {
-            CaseData caseData = CaseData.builder().id(1L).state(state).build();
-
-            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
-                MIGRATION_ID))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s} Case is not closed yet",
-                    MIGRATION_ID, 1));
-        }
+    class MigratingHearingDetails {
+        private final UUID otherHearingBookingId = UUID.randomUUID();
 
         @Test
-        void shouldThrowExceptionIfOrderCollectionIsNull() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).build();
-
-            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
-                MIGRATION_ID))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
-                    MIGRATION_ID, 1));
-        }
-
-        @Test
-        void shouldThrowExceptionIfOrderCollectionIsEmpty() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).orderCollection(List.of()).build();
-
-            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
-                MIGRATION_ID))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
-                    MIGRATION_ID, 1));
-        }
-
-        @Test
-        void shouldThrowExceptionIfFinalOrderNotFound() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
-                        .markedFinal(YesNo.NO.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Blank order (C21)")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Discharge of care order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Supervision order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim testing order")
-                        .markedFinal(YesNo.YES.getValue())
-                        .build())
-                    )
-                ).build();
-
-            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
-                MIGRATION_ID))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s} No final order found",
-                    MIGRATION_ID, 1));
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {"Final Emergency protection order",
-            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
-            "Final Discharge of care order", "Final Supervision order", "Final testing order"})
-        void shouldUpdateCloseDateIfOldVersionOfOrderFound(String orderType) {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .type(orderType)
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {"Final Emergency protection order",
-            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
-            "Final Discharge of care order", "Final Supervision order", "Final testing order", "Just an order"})
-        void shouldUpdateCloseDateIfNewVersionOfFinalOrderFound(String orderType) {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .type(orderType)
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldUpdateCloseDateAsApprovalDateIfApprovalDateTimeIsNull() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE)
-                        .approvalDateTime(null)
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldUpdateCloseDateAsApprovalDateTimeIfApprovalDateIsNull() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(null)
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldUpdateCloseDateIfApprovalDateIsTheLatestDate() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE)
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldUpdateCloseDateIfApprovalDateTimeIsTheLatestDate() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(1))
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()))
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldUpdateCloseDateAsLatestApprovalDateIfMultipleFinalOrderExist() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
-                .orderCollection(List.of(
-                    // not final order
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.NO.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE)
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Interim Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()),
-
-                    // no approval date
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(null)
-                        .approvalDateTime(null)
-                        .build()),
-
-                    // approved final orders
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .build()),
-                    element(GeneratedOrder.builder()
-                        .type("Final Care order")
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
-                        .build())
-                    )
-                ).build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE.minusDays(1), ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldOnlyUpdateCloseDateAndKeepDeprecatedFieldUnchanged() {
-            CloseCase closeCase = CLOSE_CASE_TAB_FIELD.toBuilder()
-                .details("details")
-                .fullReason("fullReason")
-                .partialReason("partialReason")
-                .showFullReason("showFullReason")
-                .build();
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(closeCase)
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDate(null)
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build()))
-                ).build();
-
-            Map<String, Object> actual =
-                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
-
-            assertThat(actual)
-                .isEqualTo(Map.of("closeCaseTabField", closeCase.toBuilder()
-                    .date(LATEST_APPROVAL_DATE)
-                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
-                    .build()));
-        }
-
-        @Test
-        void shouldRollbackCloseCaseTabFieldMigration() {
-            CaseData caseData = CaseData.builder()
-                .id(1L).state(State.CLOSED)
-                .closeCaseTabField(CloseCase.builder()
-                    .date(LATEST_APPROVAL_DATE)
-                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
-                    .build())
-                .build();
-
-            Map<String, Object> actual = underTest.rollbackCloseCaseTabFieldMigration(caseData, MIGRATION_ID);
-
-            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
-                .date(ORIGINAL_CLOSE_CASE_DATE)
+        void shouldSetTypeToFurtherCaseManagementWhenTypeDetailsMatchFurtherCaseManagementJudgmentOfHearing() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
                 .build()));
-        }
 
-        @Test
-        void shouldNotUpdateBackupFieldIfNotEmpty() {
-            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
-                .closeCaseTabField(CloseCase.builder()
-                    .date(LATEST_APPROVAL_DATE)
-                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
-                    .build())
-                .orderCollection(List.of(
-                    element(GeneratedOrder.builder()
-                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
-                        .markedFinal(YesNo.YES.getValue())
-                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
-                        .build())))
-                .build();
-
-            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
-        }
-
-        @Test
-        void shouldThrowExceptionIfCloseCaseTabFieldNotFound() {
-            CaseData caseData = CaseData.builder().id(1L).build();
-
-            assertThatThrownBy(() -> underTest.rollbackCloseCaseTabFieldMigration(caseData,
-                MIGRATION_ID))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s} closeCaseField is null",
-                    MIGRATION_ID, 1));
-        }
-
-        @Test
-        void shouldClearCloseCaseTabBackupField() {
             CaseData caseData = CaseData.builder()
-                .id(1L)
-                .closeCaseTabField(CloseCase.builder()
-                    .date(LATEST_APPROVAL_DATE)
-                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
-                    .build())
+                .hearingDetails(bookings)
                 .build();
 
-            Map<String, Object> actual = underTest.clearCloseCaseTabBackupField(caseData);
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
 
-            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
-                .date(LATEST_APPROVAL_DATE).build()));
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
         }
 
-        private void assertCloseCaseDate(CaseData caseData, LocalDate expectedCloseDate, LocalDate expectedBackupDate) {
-            Map<String, Object> actual =
-                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
 
-            assertThat(actual)
-                .isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
-                    .date(expectedCloseDate)
-                    .dateBackup(expectedBackupDate)
-                    .build()));
+        @Test
+        void shouldReturnEmptyMapWhenNoHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder()
+                .build();
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+            assertThat(updates).isEmpty();
+        }
+
+
+        @Test
+        void shouldSetTypeToAccelaratedDichargeOfCareWhenTypeDetailsMatchFullHearingAndAccelaratedDichargeOfCare() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("Threshold Discharge")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(ACCELERATED_DISCHARGE_OF_CARE)
+                .typeDetails("Threshold Discharge")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldSetTypeToNullWhenTypeDetailsDontMatch() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(null)
+                .typeDetails("TEST")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+    }
+
+    @Nested
+    class RollbackHearingDetails {
+        private final UUID otherHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldSetTypeToOtherWhenTypeIsFurtherCaseManagement() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldReturnEmptyMapWhenNoHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder()
+                .build();
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+            assertThat(updates).isEmpty();
+        }
+
+        @Test
+        void shouldSetTypeToOtherWhenTypeIsNull() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(null)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("directions Judgment")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldNotUpdateHearingTypeToOtherWhenTypeIsFutherCaseManagmentTypeDetailsIsNull() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails(null)
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails(null)
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldNotUpdateHearingTypeToOtherWhenTypeIsFutherCaseManagmentTypeDetailsIsEmpty() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("")
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
         }
     }
 }

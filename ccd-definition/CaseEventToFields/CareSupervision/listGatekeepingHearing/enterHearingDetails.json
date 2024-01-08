@@ -63,18 +63,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "listGatekeepingHearing",
-    "CaseFieldID": "hearingTypeDetails",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
-    "PageID": "ListGatekeepingHearingEnterHearingDetails",
-    "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 5,
-    "FieldShowCondition": "hearingType=\"OTHER\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "listGatekeepingHearing",
     "CaseFieldID": "hearingTypeReason",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
