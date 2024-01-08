@@ -352,10 +352,15 @@ public class PlacementService {
         final PlacementEventData placementData = caseData.getPlacementEventData();
         final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
 
-        final UUID childId = placementData.getPlacement().getChildId();
+        Element<Placement> updatedPlacement = placementData.getPlacements().stream()
+            .filter(el -> !placementDataBefore.getPlacements().contains(el))
+            .findFirst()
+            .orElseThrow();
 
-        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
-        final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, childId);
+        final Placement placement = updatedPlacement.getValue();
+        final Optional<Placement> placementBefore = findElement(updatedPlacement.getId(),
+            placementDataBefore.getPlacements())
+            .map(Element::getValue);
 
         if (placementBefore.isEmpty()) {
             events.add(new PlacementApplicationSubmitted(caseData, placement));
@@ -477,18 +482,11 @@ public class PlacementService {
             DocumentReference sealedApplication = sealingService.sealDocument(applicationToBeSealed,
                 caseData.getCourt(), SealType.ENGLISH);
 
+            // Seal the application
             placementToBeSealed.setApplication(sealedApplication);
-
-            // seal the current placement if it is the same placement
-            if (placementData.getPlacement() != null && placementData.getPlacement().getApplication() != null
-                && placementData.getPlacement().getApplication().getBinaryUrl()
-                .equals(applicationToBeSealed.getBinaryUrl())) {
-                placementData.getPlacement().setApplication(sealedApplication);
-            }
 
             return PlacementEventData.builder()
                 .placements(placementData.getPlacements())
-                .placement(placementData.getPlacement())
                 .build();
         }
 

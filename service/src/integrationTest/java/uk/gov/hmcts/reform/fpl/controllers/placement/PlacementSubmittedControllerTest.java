@@ -149,7 +149,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .placementPayment(PBAPayment.builder()
                 .pbaNumber(PBA_NUMBER)
                 .build())
-            .placement(placement)
             .placements(wrapElements(placement))
             .build();
 
@@ -216,7 +215,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .placementPayment(PBAPayment.builder()
                 .pbaNumber(PBA_NUMBER)
                 .build())
-            .placement(placement)
             .placements(wrapElements(placement))
             .build();
 
@@ -376,7 +374,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .id(1L)
                 .children1(List.of(child1, child2))
                 .placementEventData(PlacementEventData.builder()
-                    .placement(placement)
                     .placements(List.of(element(applicationUUID, placement)))
                     .placementIdToBeSealed(applicationUUID)
                     .placementPaymentRequired(NO)
@@ -394,7 +391,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
             final Map<String, Object> expectedCaseChanges = new HashMap<>();
             expectedCaseChanges.put("placements", List.of(element(applicationUUID, sealedPlacement)));
-            expectedCaseChanges.put("placement", sealedPlacement);
 
             verify(concurrencyHelper).submitEvent(any(), eq(1L), eq(expectedCaseChanges));
         }
@@ -425,7 +421,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         expectedCaseChanges.put("placementLastPaymentTime", now());
         expectedCaseChanges.put("placementPaymentRequired", null);
         expectedCaseChanges.put("placementPayment", null);
-        expectedCaseChanges.put("placement", null);
 
         return expectedCaseChanges;
     }

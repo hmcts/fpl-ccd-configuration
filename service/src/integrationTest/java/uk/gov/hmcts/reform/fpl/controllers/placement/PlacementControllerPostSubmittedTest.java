@@ -31,7 +31,6 @@ public class PlacementControllerPostSubmittedTest extends AbstractCallbackTest {
                 .id(1234123412341234L)
                 .state(CASE_MANAGEMENT.getLabel())
                 .data(ofEntries(
-                        entry("placement", Placement.builder().childId(UUID.randomUUID()).build()),
                         entry("placementIdToBeSealed", "")))
                 .build();
 

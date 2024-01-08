@@ -1125,7 +1125,6 @@ class PlacementServiceTest {
                 .court(court)
                 .placementEventData(PlacementEventData.builder()
                     .placements(List.of(element(uuid, currentPlacement)))
-                    .placement(currentPlacement)
                     .placementIdToBeSealed(uuid)
                     .build())
                 .build();
@@ -1134,7 +1133,6 @@ class PlacementServiceTest {
 
             final Placement expectedPlacement = Placement.builder().application(sealedApplication).build();
 
-            assertThat(sealedResult.getPlacement()).isEqualTo(expectedPlacement);
             assertThat(sealedResult.getPlacements()).isEqualTo(List.of(element(uuid, expectedPlacement)));
         }
     }
