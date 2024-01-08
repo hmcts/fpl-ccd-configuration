@@ -5,6 +5,8 @@ const lodash = require('lodash');
 const config = {
   WaitForTimeout: 120000,
   WaitForAction: 600,
+  WaitForTimeout: 120000,
+  WaitForAction: 600,
 };
 
 exports.config = {
@@ -188,8 +190,10 @@ exports.config = {
         },
       },
       mochawesome: {
+      mochawesome: {
         stdout: '-',
         options: {
+          reportDir: './output',
           reportDir: './output',
           inlineAssets: true,
           json: false,

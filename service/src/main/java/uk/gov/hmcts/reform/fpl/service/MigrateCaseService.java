@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -823,44 +822,6 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("localAuthorities", localAuthoritiesList);
-    }
-
-    private final CaseConverter caseConverter;
-
-    protected CaseData getCaseData(CaseDetails caseDetails) {
-        return caseConverter.convert(caseDetails);
-    }
-
-    public Map<String, Object> fixIncorrectCaseManagementLocation(CaseDetails caseDetails, String migrationId) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        Court court = caseData.getCourt();
-        final String targetCourt = "270"; // Middlesborough
-        boolean isTargetCourtCode = isNotEmpty(court) && targetCourt.equals(court.getCode());
-        final String correctBaseLocation = "195537";
-        final String correctRegion = "3";
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> caseManagementLocation = (Map<String, Object>) caseDetails.getData()
-            .get("caseManagementLocation");
-        if (!isTargetCourtCode) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, Case data does not contain the target court: %s",
-                migrationId, caseData.getId(), targetCourt));
-        }
-        if (isNotEmpty(caseManagementLocation)
-            && correctBaseLocation.equals(caseManagementLocation.get("baseLocation"))
-            && correctRegion.equals(caseManagementLocation.get("region"))) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, `caseManagementLocation` is correct.",
-                migrationId, caseData.getId()));
-        }
-
-        return Map.of("court", court.toBuilder().epimmsId(correctBaseLocation).build(),
-            "caseManagementLocation", CaseLocation.builder()
-            .baseLocation(correctBaseLocation)
-            .region(correctRegion)
-            .build());
     }
 
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,

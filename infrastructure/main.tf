@@ -77,14 +77,14 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  name                 = "${var.product}-${var.component}-postgresql-v15-flexible-server"
-  env                  = var.env
+  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
+  env                = var.env
   pgsql_admin_username = var.pgsql_admin_username
 
-  product       = var.product
-  component     = var.component
-  business_area = "cft"
+  product            = var.product
+  component          = var.component
+  business_area      = "cft"
 
   subnet_suffix = "expanded"
 
@@ -94,7 +94,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  pgsql_version = "15"
+  pgsql_version      = "15"
 
   pgsql_server_configuration = [
     {
@@ -103,14 +103,14 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  common_tags = var.common_tags
+  common_tags        = var.common_tags
 
   admin_user_object_id = var.jenkins_AAD_objectId
 
 }
 
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
-  name         = "${var.product}-support-email"
+  name      = "${var.product}-support-email"
   key_vault_id = module.key-vault.key_vault_id
 }
 
@@ -153,6 +153,6 @@ resource "azurerm_key_vault_secret" "update-summary-tab-cron" {
   key_vault_id = module.key-vault.key_vault_id
   # After secret is created, manual changes to value aren't reverted
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [ value ]
   }
 }

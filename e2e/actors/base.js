@@ -70,15 +70,14 @@ module.exports = {
     if (!user.email || !user.password) {
       throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
-    // await within(hmctsLoginIn, () => {
-    this.waitForElement('//input[@type="text"]', 20);
-    this.fillField('//input[@type="text"]', user.email);
-    //this.wait(0.2);
-    this.fillField('//input[@type="password"]', user.password);
-    //this.wait(0.5);
-    this.click('Sign in');
-    // });
-    this.waitForText('Case list');
+   // await within(hmctsLoginIn, () => {
+      this.waitForElement('//input[@type="text"]', 20);
+      this.fillField('//input[@type="text"]', user.email);
+      //this.wait(0.2);
+      this.fillField('//input[@type="password"]', user.password);
+      //this.wait(0.5);
+      this.click('Sign in');
+   // });
   },
 
   async rejectCookies() {
@@ -109,8 +108,8 @@ module.exports = {
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     I.click('Submit');
-    this.waitForElement('markdown[class=\'markdown\'] h2 strong', 90);
-    const caseId = normalizeCaseId(await this.grabTextFrom('markdown[class=\'markdown\'] h2 strong'));
+    this.waitForElement("markdown[class='markdown'] h2 strong", 90);
+        const caseId = normalizeCaseId(await this.grabTextFrom("markdown[class='markdown'] h2 strong"));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
@@ -222,8 +221,7 @@ module.exports = {
 
   async navigateToCaseDetails(caseId) {
     this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
-    // I.wait(0.5);
-    I.waitForText('CCD ID');
+    I.wait(0.5);
     //await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
     // const currentUrl = await this.grabCurrentUrl();
     // if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
@@ -234,7 +232,11 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-     await I.goToPage(config.baseUrl, user);
+    await I.goToPage(config.baseUrl);
+    await I.goToPage(config.baseUrl, config.hmctsUser);
+
+    await this.signIn(user);
+    I.wait(10);
     await this.navigateToCaseDetails(caseId);
   },
 

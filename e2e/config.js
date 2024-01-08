@@ -1,5 +1,6 @@
 const defaultPassword = 'Password12';
 const e2ePw = process.env.E2E_TEST_PASSWORD;
+const e2ePw = process.env.E2E_TEST_PASSWORD;
 
 module.exports = {
   newSwanseaLocalAuthorityUserOne: {
@@ -62,9 +63,11 @@ module.exports = {
   },
   hmctsAdminUser: {
     email: 'fpl-ctsc-admin@justice.gov.uk',
+    email: 'fpl-ctsc-admin@justice.gov.uk',
     password: process.env.CA_USER_PASSWORD || defaultPassword,
   },
   hmctsSuperUser: {
+    email: 'fpl-ctsc-team-leader@justice.gov.uk',
     email: 'fpl-ctsc-team-leader@justice.gov.uk',
     password: process.env.SUPER_USER_PASSWORD || defaultPassword,
   },
@@ -105,6 +108,9 @@ module.exports = {
     password: process.env.LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  baseUrl: process.env.URL || 'https://manage-case.aat.platform.hmcts.net',
+  fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://fpl-case-service-aat.service.core-compute-aat.internal',
+  idamApiUrl: 'https://idam-api.aat.platform.hmcts.net',
   baseUrl: process.env.URL || 'https://manage-case.aat.platform.hmcts.net',
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://fpl-case-service-aat.service.core-compute-aat.internal',
   idamApiUrl: 'https://idam-api.aat.platform.hmcts.net',
