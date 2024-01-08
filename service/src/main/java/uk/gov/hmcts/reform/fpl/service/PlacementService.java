@@ -70,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -352,15 +353,13 @@ public class PlacementService {
         final PlacementEventData placementData = caseData.getPlacementEventData();
         final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
 
-        Element<Placement> updatedPlacement = placementData.getPlacements().stream()
-            .filter(el -> !placementDataBefore.getPlacements().contains(el))
+        Element<Placement> updatedPlacement = nullSafeList(placementData.getPlacements()).stream()
+            .filter(el -> !nullSafeList(placementDataBefore.getPlacements()).contains(el))
             .findFirst()
             .orElseThrow();
 
         final Placement placement = updatedPlacement.getValue();
-        final Optional<Placement> placementBefore = findElement(updatedPlacement.getId(),
-            placementDataBefore.getPlacements())
-            .map(Element::getValue);
+        final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, placement.getChildId());
 
         if (placementBefore.isEmpty()) {
             events.add(new PlacementApplicationSubmitted(caseData, placement));
