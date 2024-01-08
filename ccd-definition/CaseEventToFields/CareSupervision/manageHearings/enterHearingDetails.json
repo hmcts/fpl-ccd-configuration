@@ -30,11 +30,10 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "hearingTypeDetails",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "PageID": "EnterHearingDetails",
     "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 5,
-    "FieldShowCondition": "hearingType=\"OTHER\""
+    "PageDisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",

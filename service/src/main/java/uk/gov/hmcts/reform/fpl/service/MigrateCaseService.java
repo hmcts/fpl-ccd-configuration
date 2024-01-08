@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -36,19 +37,26 @@ import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FAMILY_DRUG_ALCOHOL_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
@@ -66,6 +74,57 @@ public class MigrateCaseService {
     private static final String ORDER_TYPE = "orderType";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
+
+    private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
+
+
+    private static Map<String, HearingType> initialiseHearingMapping() {
+        Map<String, HearingType> hearingMapping = new LinkedHashMap<>();
+        hearingMapping.put("EPO", EMERGENCY_PROTECTION_ORDER);
+        hearingMapping.put("EMERGENCY", EMERGENCY_PROTECTION_ORDER);
+        hearingMapping.put("ICO", INTERIM_CARE_ORDER);
+        hearingMapping.put("INTERIM", INTERIM_CARE_ORDER);
+        hearingMapping.put("REMOVAL", INTERIM_CARE_ORDER);
+        hearingMapping.put("CASE MANAGEMENT", CASE_MANAGEMENT);
+        hearingMapping.put("PCMH", CASE_MANAGEMENT);
+        hearingMapping.put("FIRST HEARING", CASE_MANAGEMENT);
+        hearingMapping.put("DISCHARGE", ACCELERATED_DISCHARGE_OF_CARE);
+        hearingMapping.put("C2", FURTHER_CASE_MANAGEMENT);
+        hearingMapping.put("DIRECTIONS", FURTHER_CASE_MANAGEMENT);
+        hearingMapping.put("PTR", FURTHER_CASE_MANAGEMENT);
+        hearingMapping.put("C1", FURTHER_CASE_MANAGEMENT);
+        hearingMapping.put("APPLICATION", FURTHER_CASE_MANAGEMENT);
+        hearingMapping.put("FACT", FACT_FINDING);
+        hearingMapping.put("ISSUE", ISSUE_RESOLUTION);
+        hearingMapping.put("IRH", ISSUE_RESOLUTION);
+        hearingMapping.put("EFH", ISSUE_RESOLUTION);
+        hearingMapping.put("EARLY FINAL", ISSUE_RESOLUTION);
+        hearingMapping.put("JUDGMENT", JUDGMENT_AFTER_HEARING);
+        hearingMapping.put("CONTESTED", FINAL);
+        hearingMapping.put("WELFARE", FINAL);
+        hearingMapping.put("THRESHOLD", FINAL);
+        hearingMapping.put("FINAL", FINAL);
+        hearingMapping.put("FDAC", FAMILY_DRUG_ALCOHOL_COURT);
+        hearingMapping.put("PSMC", FAMILY_DRUG_ALCOHOL_COURT);
+        hearingMapping.put("NON-LAWYER", FAMILY_DRUG_ALCOHOL_COURT);
+        hearingMapping.put("EXIT", FAMILY_DRUG_ALCOHOL_COURT);
+        hearingMapping.put("PLACEMENT", PLACEMENT_HEARING);
+        return hearingMapping;
+    }
+
+    private static final List<HearingType> MIGRATED_HEARING_TYPES = List.of(
+        EMERGENCY_PROTECTION_ORDER,
+        INTERIM_CARE_ORDER,
+        CASE_MANAGEMENT,
+        ACCELERATED_DISCHARGE_OF_CARE,
+        FURTHER_CASE_MANAGEMENT,
+        FACT_FINDING,
+        ISSUE_RESOLUTION,
+        JUDGMENT_AFTER_HEARING,
+        FINAL,
+        FAMILY_DRUG_ALCOHOL_COURT,
+        PLACEMENT_HEARING
+    );
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -925,5 +984,47 @@ public class MigrateCaseService {
         );
 
         return Map.of("localAuthorities", localAuthorities);
+    }
+
+    public Map<String, Object> migrateHearingType(CaseData caseData) {
+        if (nonNull(caseData.getHearingDetails())) {
+            List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+            for (Element<HearingBooking> hearings: hearingDetails) {
+                HearingBooking hearingBooking = hearings.getValue();
+                if (OTHER.equals(hearingBooking.getType())) {
+                    Optional<HearingType> hearingType = evaluateType(hearingBooking.getTypeDetails());
+                    if (hearingType.isPresent()) {
+                        hearingBooking.setType(hearingType.get());
+                    } else {
+                        hearingBooking.setType(null);
+                    }
+                }
+            }
+            return Map.of("hearingDetails", hearingDetails);
+        }
+        return emptyMap();
+    }
+
+    private Optional<HearingType> evaluateType(String typeDetails) {
+        return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
+            .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
+            .map(Map.Entry::getValue)
+            .findFirst();
+    }
+
+    public Map<String, Object> rollbackHearingType(CaseData caseData) {
+        if (nonNull(caseData.getHearingDetails())) {
+            List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+            for (Element<HearingBooking> hearings: hearingDetails) {
+                HearingBooking hearingBooking = hearings.getValue();
+                if ((Objects.isNull(hearingBooking.getType())
+                    || MIGRATED_HEARING_TYPES.contains(hearingBooking.getType()))
+                    && org.apache.commons.lang3.ObjectUtils.isNotEmpty(hearingBooking.getTypeDetails())) {
+                    hearingBooking.setType(OTHER);
+                }
+            }
+            return Map.of("hearingDetails", hearingDetails);
+        }
+        return emptyMap();
     }
 }

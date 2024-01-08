@@ -38,15 +38,13 @@ public class MigrateCaseController extends CallbackController {
     private final MigrateCFVService migrateCFVService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-CFV", this::runCFV,
-        "DFPL-CFV-Rollback", this::runCfvRollback,
-        "DFPL-CFV-Failure", this::runCfvFailure,
-        "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-1957", this::run1957,
-        "DFPL-1993", this::run1993
+        "DFPL-1993", this::run1993,
+        "DFPL-1233", this::run1233,
+        "DFPL-1233Rollback", this::run1233Rollback
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -109,55 +107,6 @@ public class MigrateCaseController extends CallbackController {
         changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
         changes.put("hasBeenCFVMigrated", YesNo.YES);
         return changes;
-    }
-
-    private void dryRunCFV(CaseDetails caseDetails) {
-        var migrationId = "DFPL-CFV-dry";
-        CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
-        migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
-    }
-
-    private void runCFV(CaseDetails caseDetails) {
-        var migrationId = "DFPL-CFV";
-        CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
-        try {
-            migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
-        } catch (AssertionError ex) {
-            changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId, caseDetails);
-        }
-        pushChangesToCaseDetails(caseDetails, changes);
-    }
-
-    private void runCfvFailure(CaseDetails caseDetails) {
-        var migrationId = "DFPL-CFV-Failure";
-        CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId,
-            caseDetails);
-        pushChangesToCaseDetails(caseDetails, changes);
-    }
-
-    private void runCfvRollback(CaseDetails caseDetails) {
-        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
-                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
-
-        Map<String, Object> changes = new LinkedHashMap<>();
-        changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
-        changes.putAll(migrateCFVService.rollbackApplicationDocuments());
-        changes.putAll(migrateCFVService.rollbackCaseSummaryMigration(caseDetails));
-        changes.putAll(migrateCFVService.rollbackCourtBundleMigration(caseDetails));
-        changes.putAll(migrateCFVService.rollbackCorrespondenceDocuments());
-        changes.putAll(migrateCFVService.rollbackExpertReports());
-        changes.putAll(migrateCFVService.rollbackGuardianReports());
-        changes.putAll(migrateCFVService.rollbackNoticeOfActingOrIssue());
-        changes.putAll(migrateCFVService.rollbackRespondentStatement());
-        changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
-        changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
-        changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
-        changes.putAll(migrateCFVService.rollbackArchivedDocumentsList());
-        changes.put("hasBeenCFVMigrated", null);
-        pushChangesToCaseDetails(caseDetails, changes);
     }
 
     @PostMapping("/about-to-submit")
@@ -223,5 +172,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData, migrationId, false,
             UUID.fromString("5572d526-7045-4fd6-86a6-136656dc4ef4")));
+    }
+
+    private void run1233Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run1233(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }
