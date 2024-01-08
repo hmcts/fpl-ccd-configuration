@@ -10,5 +10,4 @@ test("Smoke Test @smoke-test", async ({ page }) => {
     newSwanseaLocalAuthorityUserOne.password,
   );
   await signInPage.isSignedIn();
-
 });
