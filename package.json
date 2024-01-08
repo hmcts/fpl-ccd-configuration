@@ -8,7 +8,8 @@
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
-    "@playwright/test": "^1.36.2",
+    "@playwright/test": "^1.40.1",
+    "@types/node": "^20.10.7",
     "codeceptjs": "3.5.10",
     "dateformat": "^4.6.3",
     "debug": "4.3.4",
