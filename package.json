@@ -26,7 +26,6 @@
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
-    "playwright": "^1.23.2",
     "webdriverio": "8.26.3"
   },
   "scripts": {
