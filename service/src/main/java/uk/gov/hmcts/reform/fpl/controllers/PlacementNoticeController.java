@@ -99,6 +99,7 @@ public class PlacementNoticeController extends CallbackController {
         caseDetails.getData().put("placementsNonConfidentialNotices",
                 eventData.getPlacementsNonConfidentialWithNotices(true));
 
+        caseDetails.getData().remove("placement"); // clear @TempNullify temp field
         removeTemporaryFields(caseDetails, PlacementEventData.class);
 
         return respond(caseDetails);
