@@ -348,6 +348,8 @@ cafcass:
       newApplication: APPLICATION
       placementApplication: APPLICATION
       policeDisclosure: POLICE INFORMATION
+      c1ApplicationDocuments: COURT PAPER
+      c2ApplicationDocuments: COURT PAPER
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
