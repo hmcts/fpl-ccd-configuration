@@ -63,3 +63,4 @@ infrastructure/.terraform/
 /blob-report/
 /playwright/.cache/
 tests-examples/demo-todo-app.spec.ts
+playwright-e2e/local-config/config.js
