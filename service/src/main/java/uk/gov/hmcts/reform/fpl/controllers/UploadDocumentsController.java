@@ -37,8 +37,8 @@ public class UploadDocumentsController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
         List<String> errors = new ArrayList<>();
 
-        List<Element<ApplicationDocument>> currentDocuments = caseData.getApplicationDocuments();
-        List<Element<ApplicationDocument>> previousDocuments = caseDataBefore.getApplicationDocuments();
+        List<Element<ApplicationDocument>> currentDocuments = caseData.getTemporaryApplicationDocuments();
+        List<Element<ApplicationDocument>> previousDocuments = caseDataBefore.getTemporaryApplicationDocuments();
 
         if (currentDocuments == null) {
             errors.add("We encountered a problem storing the data, please try again and re-enter all information. "

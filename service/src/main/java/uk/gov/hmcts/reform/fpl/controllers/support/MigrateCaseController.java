@@ -8,36 +8,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.am.model.RoleAssignment;
-import uk.gov.hmcts.reform.am.model.RoleCategory;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.JudicialUser;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
+import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
 
 @Api
 @Slf4j
@@ -46,24 +33,132 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADV
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-    private final CoreCaseDataApiV2 coreCaseDataApi;
-    private final RequestData requestData;
-    private final AuthTokenGenerator authToken;
-
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
-    private final JudicialService judicialService;
+    private final MigrateCFVService migrateCFVService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
-        "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850,
-        "DFPL-1905", this::run1905
+        "DFPL-CFV", this::runCFV,
+        "DFPL-CFV-Rollback", this::runCfvRollback,
+        "DFPL-CFV-Failure", this::runCfvFailure,
+        "DFPL-CFV-dry", this::dryRunCFV,
+        "DFPL-1940", this::run1940,
+        "DFPL-1934", this::run1934,
+        "DFPL-log", this::runLogMigration,
+        "DFPL-2013", this::run2013,
+        "DFPl-1964", this::run1964
     );
+
+    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
+        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
+            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
+                && ((Collection) entrySet.getValue()).isEmpty())) {
+                caseDetails.getData().remove(entrySet.getKey());
+            } else {
+                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
+        newChanges.entrySet().forEach(entry -> {
+            if (target.containsKey(entry.getKey())) {
+                ((List) target.get(entry.getKey())).addAll((List) entry.getValue());
+            } else {
+                target.put(entry.getKey(), entry.getValue());
+            }
+        });
+    }
+
+    private Map<String, Object> prepareChangesForMigratingAllToArchivedDocuments(String migrationId,
+                                                                                 CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+            .get("hasBeenCFVMigrated"), migrationId);
+        Map<String, Object> changes = new LinkedHashMap<>();
+        mergeChanges(changes, migrateCFVService.migrateHearingFurtherEvidenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateFurtherEvidenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCaseSummaryToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migratePositionStatementToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateRespondentStatementToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCorrespondenceDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateApplicationDocumentsToArchivedDocuments(caseData));
+        mergeChanges(changes, migrateCFVService.migrateCourtBundlesToArchivedDocuments(caseData));
+        changes.put("hasBeenCFVMigrated", YesNo.YES);
+        return changes;
+    }
+
+    private Map<String, Object> prepareChangesForCFVMigration(String migrationId, CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+            .get("hasBeenCFVMigrated"), migrationId);
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCFVService.migrateApplicantWitnessStatements(caseData));
+        changes.putAll(migrateCFVService.migrateApplicationDocuments(caseData));
+        changes.putAll(migrateCFVService.migrateCourtBundle(caseData));
+        changes.putAll(migrateCFVService.migrateCorrespondenceDocuments(caseData));
+        changes.putAll(migrateCFVService.migrateExpertReports(caseData));
+        changes.putAll(migrateCFVService.migrateGuardianReports(caseData));
+        changes.putAll(migrateCFVService.migrateNoticeOfActingOrIssue(caseData));
+        changes.putAll(migrateCFVService.migrateArchivedDocuments(caseData));
+        changes.putAll(migrateCFVService.migratePositionStatementRespondent(caseData));
+        changes.putAll(migrateCFVService.migratePositionStatementChild(caseData));
+        changes.putAll(migrateCFVService.migrateRespondentStatement(caseData));
+        changes.putAll(migrateCFVService.migrateSkeletonArgumentList(caseData));
+        changes.putAll(migrateCFVService.moveCaseSummaryWithConfidentialAddressToCaseSummaryListLA(caseData));
+        changes.put("hasBeenCFVMigrated", YesNo.YES);
+        return changes;
+    }
+
+    private void dryRunCFV(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV-dry";
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
+        migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
+    }
+
+    private void runCFV(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV";
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> changes = prepareChangesForCFVMigration(migrationId, caseDetails);
+        try {
+            migrateCFVService.validateMigratedNumberOfDocuments(migrationId, caseData, changes);
+        } catch (AssertionError ex) {
+            changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId, caseDetails);
+        }
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
+
+    private void runCfvFailure(CaseDetails caseDetails) {
+        var migrationId = "DFPL-CFV-Failure";
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> changes = prepareChangesForMigratingAllToArchivedDocuments(migrationId,
+            caseDetails);
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
+
+    private void runCfvRollback(CaseDetails caseDetails) {
+        migrateCFVService.doHasCFVMigratedCheck(caseDetails.getId(), (String) caseDetails.getData()
+                .get("hasBeenCFVMigrated"), "DFPL-CFV-Rollback", true);
+
+        Map<String, Object> changes = new LinkedHashMap<>();
+        changes.putAll(migrateCFVService.rollbackApplicantWitnessStatements());
+        changes.putAll(migrateCFVService.rollbackApplicationDocuments());
+        changes.putAll(migrateCFVService.rollbackCaseSummaryMigration(caseDetails));
+        changes.putAll(migrateCFVService.rollbackCourtBundleMigration(caseDetails));
+        changes.putAll(migrateCFVService.rollbackCorrespondenceDocuments());
+        changes.putAll(migrateCFVService.rollbackExpertReports());
+        changes.putAll(migrateCFVService.rollbackGuardianReports());
+        changes.putAll(migrateCFVService.rollbackNoticeOfActingOrIssue());
+        changes.putAll(migrateCFVService.rollbackRespondentStatement());
+        changes.putAll(migrateCFVService.rollbackPositionStatementChild(caseDetails));
+        changes.putAll(migrateCFVService.rollbackPositionStatementRespondent(caseDetails));
+        changes.putAll(migrateCFVService.rollbackSkeletonArgumentList(caseDetails));
+        changes.putAll(migrateCFVService.rollbackArchivedDocumentsList());
+        changes.put("hasBeenCFVMigrated", null);
+        pushChangesToCaseDetails(caseDetails, changes);
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -85,193 +180,45 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void migrateRoles(CaseData caseData) {
-        List<RoleAssignment> rolesToAssign = new ArrayList<>();
+    private void run1940(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1940";
+        var possibleCaseIds = List.of(1697791879605293L);
+        var expectedMessageId = UUID.fromString("29b3eab8-1e62-4aa2-86d1-17874d27933e");
 
-        // If we have an allocated judge with an IDAM ID (added in about-to-submit step from mapping)
-        Optional<Judge> allocatedJudge = judicialService.getAllocatedJudge(caseData);
-        if (allocatedJudge.isPresent()
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser())
-            && !isEmpty(allocatedJudge.get().getJudgeJudicialUser().getIdamId())) {
-
-            Optional<RoleCategory> userRoleCategory = judicialService
-                .getUserRoleCategory(allocatedJudge.get().getJudgeEmailAddress());
-
-            if (userRoleCategory.isPresent()) {
-                // attempt to assign allocated-[role]
-                boolean isLegalAdviser = userRoleCategory.get().equals(RoleCategory.LEGAL_OPERATIONS);
-
-                rolesToAssign.add(RoleAssignmentUtils.buildRoleAssignment(
-                    caseData.getId(),
-                    allocatedJudge.get().getJudgeJudicialUser().getIdamId(),
-                    isLegalAdviser ? ALLOCATED_LEGAL_ADVISER.getRoleName() : ALLOCATED_JUDGE.getRoleName(),
-                    userRoleCategory.get(),
-                    ZonedDateTime.now(),
-                    null // no end date
-                ));
-            }
-        } else {
-            log.error("Could not assign allocated-judge on case {}, no UUID found on the case", caseData.getId());
-        }
-
-        // get hearing judge roles to add (if any)
-        rolesToAssign.addAll(judicialService.getHearingJudgeRolesForMigration(caseData));
-
-        log.info("Attempting to create {} roles on case {}", rolesToAssign.size(), caseData.getId());
-        judicialService.migrateJudgeRoles(rolesToAssign);
-    }
-
-    private void runAmRollback(CaseDetails caseDetails) {
-        var migrationId = "DFPL-AM-Rollback";
-        CaseData caseData = getCaseData(caseDetails);
-
-        Judge allocatedJudge = caseData.getAllocatedJudge();
-        if (!isEmpty(allocatedJudge)) {
-            caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
-                .judgeEnterManually(null)
-                .judgeJudicialUser(null)
-                .build());
-        }
-
-        List<Element<HearingBooking>> hearingsWithIdamIdsStripped = caseData.getAllNonCancelledHearings()
-            .stream().map(hearing -> {
-                HearingBooking booking = hearing.getValue();
-
-                booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                        .judgeEnterManually(null)
-                        .judgeJudicialUser(null)
-                    .build());
-                hearing.setValue(booking);
-                return hearing;
-            }).toList();
-
-        if (caseData.getAllNonCancelledHearings().size() > 0) {
-            caseDetails.getData().put("hearingDetails", hearingsWithIdamIdsStripped);
-        }
-        caseDetails.getData().remove("hasBeenAMMigrated");
-
-        // delete all roles on the case - if this fails we WANT the migration to stop, as it has not been rolled back
-        judicialService.deleteAllRolesOnCase(caseData.getId());
-    }
-
-    private void runAM(CaseDetails caseDetails) {
-        var migrationId = "DFPL-AM";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        // 1. cleanup from past migration
-        judicialService.deleteAllRolesOnCase(caseData.getId());
-
-        // 2. Add UUIDs for judges + legal advisers
-        Judge allocatedJudge = caseData.getAllocatedJudge();
-        if (!isEmpty(allocatedJudge) && !isEmpty(allocatedJudge.getJudgeEmailAddress())) {
-            String email = allocatedJudge.getJudgeEmailAddress();
-            Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
-            // add the UUID to the allocated judge and save on the case
-
-            if (uuid.isEmpty()) {
-                log.info("Could not find judge UUID, caseId={}, allocatedJudge, ejudiciary={}, judgeTitle={}",
-                    caseData.getId(), email.toLowerCase().endsWith("@ejudiciary.net"), allocatedJudge.getJudgeTitle());
-            }
-
-            uuid.ifPresent(s -> caseDetails.getData().put("allocatedJudge", allocatedJudge.toBuilder()
-                .judgeJudicialUser(JudicialUser.builder()
-                    .idamId(s)
-                    .build())
-                .build()));
-        }
-
-        List<Element<HearingBooking>> hearings = caseData.getAllNonCancelledHearings();
-        List<Element<HearingBooking>> modified = hearings.stream()
-            .map(el -> {
-                HearingBooking val = el.getValue();
-                if (!isEmpty(val.getJudgeAndLegalAdvisor())
-                    && !isEmpty(val.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
-
-                    String email = val.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-                    Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
-                    if (uuid.isPresent()) {
-                        el.setValue(val.toBuilder()
-                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                    .judgeJudicialUser(JudicialUser.builder()
-                                        .idamId(uuid.get())
-                                        .build())
-                                    .build())
-                            .build());
-                        return el;
-                    } else {
-                        log.info("Could not find judge UUID, caseId={}, hearingId={}, ejudiciary={}, judgeTitle={}",
-                            caseData.getId(), el.getId(), email.toLowerCase().endsWith("@ejudiciary.net"),
-                            val.getJudgeAndLegalAdvisor().getJudgeTitle());
-                    }
-                }
-                return el;
-            }).toList();
-
-        if (hearings.size() > 0) {
-            // don't add an empty array if there weren't any hearings beforehand
-            caseDetails.getData().put("hearingDetails", modified);
-        }
-        caseDetails.getData().put("hasBeenAMMigrated", "Yes");
-
-        // Convert our newly annotated case details payload to a case data object
-        CaseData newCaseData = getCaseData(caseDetails);
-
-        // 3. Attempt to assign the new roles in AM
-        migrateRoles(newCaseData);
-    }
-
-    private void run1810(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1810";
-        var possibleCaseIds = List.of(1652188944970682L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
-            "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
-    }
-
-    private void run1802(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1802";
-        var possibleCaseIds = List.of(1683295453455055L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeElementFromLocalAuthorities(caseData, migrationId,
-            UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            String.valueOf(expectedMessageId)));
     }
 
-    private void run1813(CaseDetails caseDetails) {
+    private void run1934(CaseDetails caseDetails) {
         migrateCaseService.clearChangeOrganisationRequest(caseDetails);
     }
 
-    private void run1837(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1837";
-        var possibleCaseIds = List.of(1649154482198017L);
-        var expectedHearingId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
-        var expectedDocId = UUID.fromString("982dc7f7-11a7-4eb6-b1ab-7778d20dcf27");
+    private void runLogMigration(CaseDetails caseDetails) {
+        log.info("Dummy migration for case {}", caseDetails.getId());
+    }
+
+    private void run2013(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2013";
+        var possibleCaseIds = List.of(1663684413688109L);
+        var expectedMessageId = UUID.fromString("c90aa5af-d2c9-472a-a885-62bde43b7092");
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            String.valueOf(expectedMessageId)));
+    }
+
+    private void run1964(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1964";
+        var possibleCaseIds = List.of(1699884822944766L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
-            migrationId, expectedHearingId, expectedDocId));
-    }
+        UUID expectedCMOId = UUID.fromString("7c62b934-4ab1-47e0-a152-b5512807ec09");
 
-    private void run1883(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1883";
-        var possibleCaseIds = List.of(1686737004191900L);
-        var expectedPositionStatementId = UUID.fromString("b96b56e4-0bdd-41a4-b272-8bf2d9c349af");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
-            migrationId, expectedPositionStatementId));
-    }
-
-    private void run1850(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
-    private void run1905(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId,
+            expectedCMOId,true));
     }
 }

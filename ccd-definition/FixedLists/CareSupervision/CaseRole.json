@@ -1,0 +1,206 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CREATOR",
+    "ListElement": "Creator"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "LASOLICITOR",
+    "ListElement": "LA Solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "EPSMANAGING",
+    "ListElement": "EPS Managing"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "LAMANAGING",
+    "ListElement": "LA Managing"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "LASHARED",
+    "ListElement": "LA Shared"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITOR",
+    "ListElement": "Solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORA",
+    "ListElement": "Solicitor A"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORB",
+    "ListElement": "Solicitor B"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORC",
+    "ListElement": "Solicitor C"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORD",
+    "ListElement": "Solicitor D"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORE",
+    "ListElement": "Solicitor E"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORF",
+    "ListElement": "Solicitor F"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORG",
+    "ListElement": "Solicitor G"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORH",
+    "ListElement": "Solicitor H"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORI",
+    "ListElement": "Solicitor I"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "SOLICITORJ",
+    "ListElement": "Solicitor J"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "LABARRISTER",
+    "ListElement": "La Barrister"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "BARRISTER",
+    "ListElement": "Barrister"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CAFCASSSOLICITOR",
+    "ListElement": "Cafcass Solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORA",
+    "ListElement": "Child Solicitor A"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORB",
+    "ListElement": "Child Solicitor B"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORC",
+    "ListElement": "Child Solicitor C"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORD",
+    "ListElement": "Child Solicitor D"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORE",
+    "ListElement": "Child Solicitor E"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORF",
+    "ListElement": "Child Solicitor F"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORG",
+    "ListElement": "Child Solicitor G"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORH",
+    "ListElement": "Child Solicitor H"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORI",
+    "ListElement": "Child Solicitor I"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORJ",
+    "ListElement": "Child Solicitor J"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORK",
+    "ListElement": "Child Solicitor K"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORL",
+    "ListElement": "Child Solicitor L"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORM",
+    "ListElement": "Child Solicitor M"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORN",
+    "ListElement": "Child Solicitor N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseRole",
+    "ListElementCode": "CHILDSOLICITORO",
+    "ListElement": "Child Solicitor O"
+  }
+]
