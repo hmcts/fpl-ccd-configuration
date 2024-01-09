@@ -1324,7 +1324,6 @@ class PlacementServiceTest {
             assertThat(updated).isEqualTo(element(placementId, newPlacement));
         }
 
-
     }
 
     @SafeVarargs
