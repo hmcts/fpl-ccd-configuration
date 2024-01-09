@@ -112,7 +112,6 @@ public class BundleViewAggregator {
             MEDICAL_RECORDS, COURT_CORRESPONDENCE, NOTICE_OF_ACTING_OR_ISSUE
         };
 
-        // TODO PLACEMNT_RESPONSE
         List<DocumentView> ret = new ArrayList<>();
         Arrays.stream(documentTypes).forEach(dt -> {
             List<Element> elements =
