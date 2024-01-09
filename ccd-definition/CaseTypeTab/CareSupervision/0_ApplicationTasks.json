@@ -14,8 +14,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Tasks",
-    "TabLabel": "Start application",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "taskList",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "taskList = \"DO_NOT_SHOW\"",

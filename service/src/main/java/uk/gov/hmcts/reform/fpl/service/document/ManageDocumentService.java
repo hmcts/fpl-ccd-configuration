@@ -103,6 +103,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -1548,5 +1549,9 @@ public class ManageDocumentService {
             .newDocumentsLA(newDocumentsLA)
             .newDocumentsCTSC(newDocumentsCTSC)
             .build();
+    }
+
+    public List<Element> retrieveDocuments(CaseData caseData, DocumentType documentType, ConfidentialLevel level) {
+        return new ArrayList<>(nullSafeList(readFromFieldName(caseData, documentType.getFieldName(level))));
     }
 }

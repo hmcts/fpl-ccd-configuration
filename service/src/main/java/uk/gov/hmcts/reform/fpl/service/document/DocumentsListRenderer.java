@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,6 +68,14 @@ class DocumentsListRenderer {
         return collapsible(bundle.getName(), s);
     }
 
+    public String renderDocumentViews(List<DocumentView> documentViews) {
+        String s = documentViews.stream()
+            .sorted(Comparator.comparing(DocumentView::getTitle))
+            .map(this::renderDocument)
+            .collect(joining(""));
+        return s;
+    }
+
     private String renderDocument(DocumentView documentView) {
 
         List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
@@ -81,6 +90,10 @@ class DocumentsListRenderer {
 
         if (isNotEmpty(documentView.getUploadedBy())) {
             documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
+        }
+
+        if (isNotEmpty(documentView.getUploaderType())) {
+            documentFields.add(Pair.of("Uploader Type", documentView.getUploaderType()));
         }
 
         if (isNotEmpty(documentView.getUploadedAt())) {
@@ -101,6 +114,8 @@ class DocumentsListRenderer {
 
         if (documentView.isConfidential()) {
             documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
+            documentFields.add(Pair.of("Confidential Level", documentView.isConfidentialToHmcts()
+                ? "Restrict to HMCTS staff" : "Restrict to the LA, Cafcass and HMCTS staff"));
         }
 
         if (isNotEmpty(documentView.getDocument())) {

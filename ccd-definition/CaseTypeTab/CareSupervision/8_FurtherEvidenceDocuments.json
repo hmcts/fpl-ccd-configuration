@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
+    "TabDisplayOrder": 8,
     "CaseFieldID": "submittedForm",
     "TabShowCondition": "showFurtherEvidenceTab=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 10
@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "translatedSubmittedForm",
     "TabFieldDisplayOrder": 20
   },
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "supplementDocument",
     "TabFieldDisplayOrder": 21
   },
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "submittedFormNeedTranslation",
     "FieldShowCondition": "submittedForm=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 30
@@ -46,8 +40,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "submittedFormSentForTranslationLabel",
     "FieldShowCondition": "submittedFormNeedTranslation=\"YES\" AND translatedSubmittedForm!=\"*\"",
     "TabFieldDisplayOrder": 40
@@ -57,8 +49,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 50
   },
@@ -67,8 +57,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 60,
     "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
@@ -78,8 +66,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 70
   },
@@ -88,8 +74,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "manageDocumentsSolicitorLink",
     "TabFieldDisplayOrder": 80
   },
@@ -98,8 +82,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewLA",
     "TabFieldDisplayOrder": 90,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
@@ -109,8 +91,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewHMCTS",
     "TabFieldDisplayOrder": 100,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
@@ -120,8 +100,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewNC",
     "TabFieldDisplayOrder": 110,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
@@ -131,8 +109,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageLA",
     "TabFieldDisplayOrder": 120
   },
@@ -141,8 +117,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageHMCTS",
     "TabFieldDisplayOrder": 130
   },
@@ -151,8 +125,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageNC",
     "TabFieldDisplayOrder": 140
   },
@@ -161,8 +133,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "showFurtherEvidenceTab",
     "TabFieldDisplayOrder": 150,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
@@ -172,8 +142,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "hiddenApplicationForm",
     "TabFieldDisplayOrder": 300
   }

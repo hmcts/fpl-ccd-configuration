@@ -16,8 +16,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "ordersAndDirectionsSubHeadingLabel",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 2
@@ -27,8 +25,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 3
   },
@@ -37,8 +33,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "ordersAndDirectionsLink",
     "FieldShowCondition": "orders!=\"\"",
     "TabFieldDisplayOrder": 4
@@ -48,8 +42,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingUrgencySubHeadingLabel",
     "FieldShowCondition": "hearing!=\"\"",
     "TabFieldDisplayOrder": 5
@@ -59,8 +51,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "hearing",
     "TabFieldDisplayOrder": 6
   },
@@ -69,8 +59,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingUrgencyLink",
     "FieldShowCondition": "hearing!=\"\"",
     "TabFieldDisplayOrder": 7
@@ -80,8 +68,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForTheApplicationHeadingLabel",
     "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\" OR risks!=\"\" OR factorsParenting!=\"\" OR proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 8
@@ -91,8 +77,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaSubHeadingLabel",
     "FieldShowCondition": "grounds!=\"\" OR groundsForEPO!=\"\" OR groundsForSecureAccommodationOrder!=\"\"",
     "TabFieldDisplayOrder": 9
@@ -102,8 +86,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "grounds",
     "FieldShowCondition": "orders.orderType CONTAINS \"CARE_ORDER\" OR orders.orderType CONTAINS \"INTERIM_CARE_ORDER\" OR orders.orderType CONTAINS \"SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"INTERIM_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\" OR orders.orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\" OR orders.orderType CONTAINS \"OTHER\"",
     "TabFieldDisplayOrder": 10
@@ -113,8 +95,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForChildAssessmentOrder",
     "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_ASSESSMENT_ORDER\"",
     "TabFieldDisplayOrder": 10
@@ -124,8 +104,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForRefuseContactWithChild",
     "FieldShowCondition": "orders.orderType CONTAINS \"REFUSE_CONTACT_WITH_CHILD\"",
     "TabFieldDisplayOrder": 10
@@ -135,8 +113,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForContactWithChild",
     "FieldShowCondition": "orders.orderType CONTAINS \"CONTACT_WITH_CHILD_IN_CARE\"",
     "TabFieldDisplayOrder": 10
@@ -146,8 +122,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForEducationSupervisionOrder",
     "FieldShowCondition": "orders.orderType CONTAINS \"EDUCATION_SUPERVISION_ORDER\"",
     "TabFieldDisplayOrder": 10
@@ -157,8 +131,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForChildRecoveryOrder",
     "FieldShowCondition": "orders.orderType CONTAINS \"CHILD_RECOVERY_ORDER\"",
     "TabFieldDisplayOrder": 10
@@ -168,8 +140,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 11
   },
@@ -178,8 +148,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "groundsForSecureAccommodationOrder",
     "TabFieldDisplayOrder": 12
   },
@@ -188,8 +156,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "thresholdCriteriaLink",
     "FieldShowCondition": "grounds!=\"\"",
     "TabFieldDisplayOrder": 13
@@ -199,8 +165,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToTheChildrenSubHeadingLabel",
     "FieldShowCondition": "risks!=\"\"",
     "TabFieldDisplayOrder": 14
@@ -210,8 +174,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 15
   },
@@ -220,8 +182,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "riskAndHarmToChildrenLink",
     "FieldShowCondition": "risks!=\"\"",
     "TabFieldDisplayOrder": 16
@@ -231,8 +191,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingSubHeadingLabel",
     "FieldShowCondition": "factorsParenting!=\"\"",
     "TabFieldDisplayOrder": 17
@@ -242,8 +200,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 18
   },
@@ -252,8 +208,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "factorsAffectingParentingLink",
     "FieldShowCondition": "factorsParenting!=\"\"",
     "TabFieldDisplayOrder": 19
@@ -263,8 +217,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationGroundsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\" OR internationalElement!=\"\"",
     "TabFieldDisplayOrder": 20
@@ -274,8 +226,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsSubHeadingLabel",
     "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 21
@@ -285,8 +235,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 22
   },
@@ -295,8 +243,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "otherProceedingsLink",
     "FieldShowCondition": "proceeding!=\"\"",
     "TabFieldDisplayOrder": 23
@@ -306,8 +252,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementSubHeadingLabel",
     "FieldShowCondition": "internationalElement!=\"\"",
     "TabFieldDisplayOrder": 24
@@ -317,8 +261,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 25
   },
@@ -327,8 +269,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "internationalElementLink",
     "FieldShowCondition": "internationalElement!=\"\"",
     "TabFieldDisplayOrder": 26
@@ -338,8 +278,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "documentsLink",
     "FieldShowCondition": "applicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 27
@@ -349,8 +287,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "supportingDocumentsHeadingLabel",
     "FieldShowCondition": "applicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 28
@@ -360,8 +296,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "applicationDocuments",
     "TabFieldDisplayOrder": 29,
     "FieldShowCondition": "applicationDocuments !=\"\""
@@ -371,8 +305,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "TabFieldDisplayOrder": 30,
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\""
@@ -382,8 +314,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "informationAboutThePartiesHeadingLabel",
     "FieldShowCondition": "children1!=\"\" OR respondents1!=\"\" OR others!=\"\" OR applicants!=\"\" OR solicitor!=\"\" OR localAuthorities!=\"\"",
     "TabFieldDisplayOrder": 37
@@ -393,8 +323,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "organisationDetailsSubHeadingLabel",
     "FieldShowCondition": "applicants!=\"\" OR solicitor!=\"\" OR localAuthorities!=\"\"",
     "TabFieldDisplayOrder": 38
@@ -404,8 +332,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "applicants",
     "FieldShowCondition": "localAuthorities != \"*\"",
     "TabFieldDisplayOrder": 39
@@ -415,8 +341,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "solicitor",
     "FieldShowCondition": "localAuthorities != \"*\"",
     "TabFieldDisplayOrder": 40
@@ -426,8 +350,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "localAuthorities",
     "TabFieldDisplayOrder": 41
   },
@@ -436,8 +358,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "localAuthorityDetailsLink",
     "FieldShowCondition": "localAuthorities!=\"\"",
     "TabFieldDisplayOrder": 42
@@ -447,8 +367,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "childDetailsSubHeadingLabel",
     "FieldShowCondition": "children1!=\"\"",
     "TabFieldDisplayOrder": 43
@@ -458,8 +376,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "children1",
     "TabFieldDisplayOrder": 44
   },
@@ -468,8 +384,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "childrenLink",
     "FieldShowCondition": "children1!=\"\"",
     "TabFieldDisplayOrder": 45
@@ -479,8 +393,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "respondentsSubHeadingLabel",
     "FieldShowCondition": "respondents1!=\"\"",
     "TabFieldDisplayOrder": 46
@@ -490,8 +402,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 47
   },
@@ -500,8 +410,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "respondentsLink",
     "FieldShowCondition": "respondents1!=\"\"",
     "TabFieldDisplayOrder": 48
@@ -511,8 +419,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationPartiesSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 49
@@ -522,8 +428,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "othersSubHeadingLabel",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 50
@@ -533,8 +437,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 51
   },
@@ -543,8 +445,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "othersLink",
     "FieldShowCondition": "others!=\"\"",
     "TabFieldDisplayOrder": 52
@@ -554,8 +454,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "courtRequirementsHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\"",
     "TabFieldDisplayOrder": 53
@@ -565,8 +463,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposalSubHeadingLabel",
     "FieldShowCondition": "allocationProposal!=\"\" OR hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 54
@@ -576,8 +472,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 55
   },
@@ -586,8 +480,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "allocationProposalLink",
     "FieldShowCondition": "allocationProposal!=\"\"",
     "TabFieldDisplayOrder": 56
@@ -597,8 +489,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 57
@@ -608,8 +498,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 58
@@ -619,8 +507,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "hearingPreferences",
     "TabFieldDisplayOrder": 59
   },
@@ -629,8 +515,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ViewApplicationTab",
-    "TabLabel": "View application",
-    "TabDisplayOrder": 1,
     "CaseFieldID": "facilitiesOrServicesNeededLink",
     "FieldShowCondition": "hearingPreferences!=\"\"",
     "TabFieldDisplayOrder": 60

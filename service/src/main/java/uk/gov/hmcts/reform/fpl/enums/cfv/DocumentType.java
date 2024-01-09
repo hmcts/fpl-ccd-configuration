@@ -209,7 +209,7 @@ public enum DocumentType {
         null, 330, null),
     ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),
         true, true, true,
-    defaultWithDocumentBuilder(),
+        defaultWithDocumentBuilder(),
         null, 999, DEFAULT_NOTIFICATION_CONFIG);
 
     @Getter
@@ -239,7 +239,11 @@ public enum DocumentType {
     }
 
     public String getFieldName(DocumentUploaderType uploaderType, boolean confidential) {
-        return getBaseFieldNameResolver().apply(getConfidentialLevel(uploaderType, confidential));
+        return getFieldName(getConfidentialLevel(uploaderType, confidential));
+    }
+
+    public String getFieldName(ConfidentialLevel level) {
+        return getBaseFieldNameResolver().apply(level);
     }
 
     public String getFieldNameOfRemovedList() {

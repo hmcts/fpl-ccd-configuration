@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLanguageRequirement",
     "FieldShowCondition": "caseSummaryTabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 1
@@ -26,8 +24,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryWelshFlag",
     "FieldShowCondition": "caseSummaryLanguageRequirement = \"Yes\"",
     "TabFieldDisplayOrder": 2
@@ -37,8 +33,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseFlagAdded",
     "FieldShowCondition": "caseFlagAdded=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 3,
@@ -49,8 +43,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "addCaseFlagEventLink",
     "TabFieldDisplayOrder": 4
   },
@@ -59,8 +51,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFlagAddedTag",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": 5
@@ -70,8 +60,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFlagAddedByFullName",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": 6
@@ -81,8 +69,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFlagAddedByEmail",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": 7
@@ -92,8 +78,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFlagAssessmentForm",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": 8
@@ -103,8 +87,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryCaseFlagNotes",
     "FieldShowCondition": "caseFlagAdded=\"Yes\"",
     "TabFieldDisplayOrder": 9
@@ -114,8 +96,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryOrdersRequested",
     "TabFieldDisplayOrder": 10
   },
@@ -124,8 +104,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryDateOfIssue",
     "TabFieldDisplayOrder": 20
   },
@@ -134,8 +112,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "deadline26week",
     "TabFieldDisplayOrder": 30
   },
@@ -144,8 +120,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseCompletionDate",
     "TabFieldDisplayOrder": 31
   },
@@ -154,8 +128,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryExtensionDetails",
     "TabFieldDisplayOrder": 32
   },
@@ -164,8 +136,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "extensionComments",
     "FieldShowCondition": "extensionComments=\"*\"",
     "TabFieldDisplayOrder": 33
@@ -175,8 +145,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "extend26WeekTimelineLink",
     "TabFieldDisplayOrder": 40
   },
@@ -185,8 +153,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryAllocatedJudgeName",
     "FieldShowCondition": "caseSummaryAllocatedJudgeName = \"*\"",
     "TabFieldDisplayOrder": 50
@@ -196,8 +162,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryAllocatedJudgeEmail",
     "FieldShowCondition": "caseSummaryAllocatedJudgeEmail = \"*\"",
     "TabFieldDisplayOrder": 51
@@ -207,8 +171,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHasUnresolvedMessages",
     "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 60
@@ -218,8 +180,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryUnresolvedMessagesHeading",
     "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
     "TabFieldDisplayOrder": 60
@@ -229,8 +189,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryUnresolvedMessagesLabel",
     "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
     "TabFieldDisplayOrder": 70
@@ -240,8 +198,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "messageJudgeLegalAdviserLink",
     "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
     "TabFieldDisplayOrder": 80
@@ -251,8 +207,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHighCourtCase",
     "FieldShowCondition": "caseSummaryTabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 81
@@ -262,8 +216,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHighCourtCaseFlag",
     "FieldShowCondition": "caseSummaryHighCourtCase = \"Yes\"",
     "TabFieldDisplayOrder": 82
@@ -273,8 +225,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryCourtName",
     "FieldShowCondition": "caseSummaryCourtName = \"*\"",
     "TabFieldDisplayOrder": 85
@@ -284,8 +234,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPreviousCourtName",
     "FieldShowCondition": "caseSummaryPreviousCourtName = \"*\"",
     "TabFieldDisplayOrder": 86
@@ -295,8 +243,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHasNextHearing",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 90
@@ -306,8 +252,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingHeading",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
     "TabFieldDisplayOrder": 91
@@ -317,8 +261,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingType",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
     "TabFieldDisplayOrder": 92
@@ -328,8 +270,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingDate",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
     "TabFieldDisplayOrder": 93
@@ -339,8 +279,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingJudge",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\" AND caseSummaryNextHearingJudge = \"*\"",
     "TabFieldDisplayOrder": 94
@@ -350,8 +288,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingEmailAddress",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\" AND caseSummaryNextHearingEmailAddress = \"*\"",
     "TabFieldDisplayOrder": 94
@@ -361,8 +297,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNextHearingCMO",
     "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\" AND caseSummaryNextHearingCMO = \"*\"",
     "TabFieldDisplayOrder": 96
@@ -372,8 +306,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHasPreviousHearing",
     "FieldShowCondition": "caseSummaryHasPreviousHearing = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 100
@@ -383,8 +315,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPreviousHearingHeading",
     "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
     "TabFieldDisplayOrder": 101
@@ -394,8 +324,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPreviousHearingType",
     "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
     "TabFieldDisplayOrder": 102
@@ -405,8 +333,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPreviousHearingDate",
     "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
     "TabFieldDisplayOrder": 103
@@ -416,8 +342,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPreviousHearingCMO",
     "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\" AND caseSummaryPreviousHearingCMO = \"*\"",
     "TabFieldDisplayOrder": 104
@@ -427,8 +351,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryHasFinalHearing",
     "FieldShowCondition": "caseSummaryHasFinalHearing = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 110
@@ -438,8 +360,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNominatedFinalHearingHeading",
     "FieldShowCondition": "caseSummaryHasFinalHearing = \"Yes\"",
     "TabFieldDisplayOrder": 111
@@ -449,8 +369,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFinalHearingDate",
     "FieldShowCondition": "caseSummaryHasFinalHearing = \"Yes\"",
     "TabFieldDisplayOrder": 112
@@ -460,8 +378,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryPeopleInTheCaseHeading",
     "TabFieldDisplayOrder": 120
   },
@@ -470,8 +386,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryNumberOfChildren",
     "TabFieldDisplayOrder": 121
   },
@@ -480,8 +394,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLASolicitorName",
     "TabFieldDisplayOrder": 122
   },
@@ -490,8 +402,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLASolicitorEmail",
     "TabFieldDisplayOrder": 123
   },
@@ -500,8 +410,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFirstRespondentLastName",
     "TabFieldDisplayOrder": 124
   },
@@ -510,8 +418,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryFirstRespondentLegalRep",
     "FieldShowCondition": "caseSummaryFirstRespondentLegalRep = \"*\"",
     "TabFieldDisplayOrder": 125
@@ -521,8 +427,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryCafcassGuardian",
     "FieldShowCondition": "caseSummaryCafcassGuardian = \"*\"",
     "TabFieldDisplayOrder": 126
@@ -532,8 +436,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Summary",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "closeCaseTabField",
     "TabFieldDisplayOrder": 340
   }

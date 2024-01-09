@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLATabHidden",
     "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 2
@@ -26,8 +24,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLALanguageRequirement",
     "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 3
@@ -37,8 +33,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAWelshFlag",
     "FieldShowCondition": "caseSummaryLALanguageRequirement = \"Yes\"",
     "TabFieldDisplayOrder": 4
@@ -48,8 +42,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAHighCourtCase",
     "FieldShowCondition": "caseSummaryLATabHeading = \"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 5
@@ -59,8 +51,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "SummaryLA",
-    "TabLabel": "Summary",
-    "TabDisplayOrder": 0,
     "CaseFieldID": "caseSummaryLAHighCourtCaseFlag",
     "FieldShowCondition": "caseSummaryLAHighCourtCase = \"Yes\"",
     "TabFieldDisplayOrder": 6

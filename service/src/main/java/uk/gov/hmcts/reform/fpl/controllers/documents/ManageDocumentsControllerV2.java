@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadableDocumentBundle;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class ManageDocumentsControllerV2 extends CallbackController {
 
     private final ManageDocumentService manageDocumentService;
+    private final DocumentListService documentListService;
 
     @PostMapping("/manage-document-type-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleManageDocumentTypeSelected(
@@ -150,6 +152,9 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         removeTemporaryFields(caseDetailsMap, temporaryFields());
         removeTemporaryFields(caseDetailsMap, ManageDocumentsLAController.TEMPORARY_FIELDS);
         removeTemporaryFields(caseDetailsMap, ManageDocumentsController.TEMPORARY_FIELDS);
+
+        caseDetailsMap.putAll(documentListService
+            .getConfidentialDocumentView(getCaseData(CaseDetails.builder().data(caseDetailsMap).build())));
 
         return respond(caseDetailsMap);
     }

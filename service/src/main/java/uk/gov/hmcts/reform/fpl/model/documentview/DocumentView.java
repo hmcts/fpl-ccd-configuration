@@ -18,6 +18,7 @@ public class DocumentView {
     private String documentName;
     private String fileName;
     private boolean confidential;
+    private boolean confidentialToHmcts;
     private DocumentReference document;
     private String title;
     private boolean includeSWETField;
@@ -26,5 +27,6 @@ public class DocumentView {
     private boolean sentForTranslation;
     private DocumentReference translatedDocument;
     private String expertReportType;
+    private String uploaderType;
 
 }

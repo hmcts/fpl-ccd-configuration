@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.aggregator.BundleViewAggregator;
 
@@ -35,6 +36,13 @@ public class DocumentListService {
         return data;
     }
 
+    public Map<String, Object> getConfidentialDocumentView(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("documentViewLA", renderConfidentialDocumentBundleViews(caseData, DocumentViewType.LA));
+        data.put("documentViewHMCTS", renderConfidentialDocumentBundleViews(caseData, DocumentViewType.HMCTS));
+        return data;
+    }
+
     private boolean hasAnyDocumentRendered(Map<String, Object> data) {
         return data.values()
             .stream()
@@ -47,6 +55,14 @@ public class DocumentListService {
             return documentsListRenderer.render(bundles);
         }
 
+        return null;
+    }
+
+    private String renderConfidentialDocumentBundleViews(CaseData caseData, DocumentViewType view) {
+        List<DocumentView> bundles = bundleViewAggregator.getConfidentialDocumentBundleViews(caseData, view);
+        if (isNotEmpty(bundles)) {
+            return documentsListRenderer.renderDocumentViews(bundles);
+        }
         return null;
     }
 
