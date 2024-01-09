@@ -347,18 +347,12 @@ public class PlacementService {
 
 
     public List<Object> getEvents(CaseData caseData, CaseData caseDataBefore) {
-
         final List<Object> events = new ArrayList<>();
 
-        final PlacementEventData placementData = caseData.getPlacementEventData();
-        final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
-
-        Element<Placement> updatedPlacement = nullSafeList(placementData.getPlacements()).stream()
-            .filter(el -> !nullSafeList(placementDataBefore.getPlacements()).contains(el))
-            .findFirst()
-            .orElseThrow();
-
+        Element<Placement> updatedPlacement = getUpdatedPlacement(caseData, caseDataBefore);
         final Placement placement = updatedPlacement.getValue();
+
+        final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
         final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, placement.getChildId());
 
         if (placementBefore.isEmpty()) {
@@ -379,13 +373,20 @@ public class PlacementService {
         return events;
     }
 
-    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData) {
+    public Element<Placement> getUpdatedPlacement(CaseData caseData, CaseData caseDataBefore) {
         final PlacementEventData placementData = caseData.getPlacementEventData();
+        final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
 
-        final UUID childId = placementData.getPlacement().getChildId();
-        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
+        return nullSafeList(placementData.getPlacements()).stream()
+            .filter(el -> !nullSafeList(placementDataBefore.getPlacements()).contains(el))
+            .findFirst()
+            .orElseThrow();
+    }
 
-        return new PlacementNoticeAdded(caseData, placement);
+    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData, CaseData caseDataBefore) {
+        Element<Placement> updatedPlacement = getUpdatedPlacement(caseData, caseDataBefore);
+
+        return new PlacementNoticeAdded(caseData, updatedPlacement.getValue());
     }
 
     private boolean isPaymentRequired(PlacementEventData eventData) {

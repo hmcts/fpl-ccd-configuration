@@ -1246,6 +1246,87 @@ class PlacementServiceTest {
         }
     }
 
+    @Nested
+    class GetUpdatedPlacement {
+
+        @Test
+        void shouldGetUpdatedPlacementWhenTotallyNew() {
+            Element<Placement> newPlacement = element(UUID.randomUUID(), Placement.builder()
+                .childId(UUID.randomUUID()).build());
+            CaseData caseDataBefore = CaseData.builder().build();
+            CaseData caseData = caseDataBefore.toBuilder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(newPlacement))
+                    .build())
+                .build();
+
+            Element<Placement> updated = underTest.getUpdatedPlacement(caseData, caseDataBefore);
+
+            assertThat(updated).isEqualTo(newPlacement);
+        }
+
+        @Test
+        void shouldGetUpdatedPlacementWhenUpdatingApplication() {
+            UUID placementId = UUID.randomUUID();
+            UUID childId = UUID.randomUUID();
+            Element<Placement> oldPlacement = element(placementId, Placement.builder()
+                .childId(childId)
+                .application(testDocumentReference())
+                .build());
+            Element<Placement> newPlacement = element(placementId, Placement.builder()
+                .childId(childId)
+                .application(testDocumentReference()) // new doc ref = replaced document
+                .build());
+
+            CaseData caseDataBefore = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(oldPlacement))
+                    .build())
+                .build();
+            CaseData caseData = caseDataBefore.toBuilder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(newPlacement))
+                    .build())
+                .build();
+
+            Element<Placement> updated = underTest.getUpdatedPlacement(caseData, caseDataBefore);
+
+            assertThat(updated).isEqualTo(newPlacement);
+        }
+
+        @Test
+        void shouldGetUpdatedPlacementWhenAddingPlacementNotice() {
+            UUID placementId = UUID.randomUUID();
+            UUID childId = UUID.randomUUID();
+            Placement oldPlacement = Placement.builder()
+                .childId(childId)
+                .application(testDocumentReference())
+                .build();
+
+            Placement newPlacement = oldPlacement.toBuilder()
+                .placementNotice(testDocumentReference())
+                .build();
+
+            CaseData caseDataBefore = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(placementId, oldPlacement)))
+                    .build())
+                .build();
+
+            CaseData caseData = caseDataBefore.toBuilder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(placementId, newPlacement)))
+                    .build())
+                .build();
+
+            Element<Placement> updated = underTest.getUpdatedPlacement(caseData, caseDataBefore);
+
+            assertThat(updated).isEqualTo(element(placementId, newPlacement));
+        }
+
+
+    }
+
     @SafeVarargs
     private DynamicList childrenDynamicList(Element<Child>... children) {
 
