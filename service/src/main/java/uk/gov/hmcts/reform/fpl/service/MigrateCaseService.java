@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,40 +151,40 @@ public class MigrateCaseService {
         return Map.of("documentsSentToParties", resultDocumentsSentToParties);
     }
 
-    public Map<String, Object> removePositionStatementChild(CaseData caseData,
-                                                            String migrationId,
-                                                            UUID expectedPositionStatementId) {
+    public Map<String, Object> removePositionStatementChild(CaseData caseData, String migrationId, boolean isInLaList,
+                                                            UUID... expectedIds) {
+        List<Element<PositionStatementChild>> targetList = isInLaList
+            ? caseData.getHearingDocuments().getPosStmtChildListLA()
+            : caseData.getHearingDocuments().getPosStmtChildList();
         Long caseId = caseData.getId();
-        List<Element<PositionStatementChild>> positionStatementChildListResult =
-            caseData.getHearingDocuments().getPositionStatementChildListV2().stream()
-                .filter(el -> !el.getId().equals(expectedPositionStatementId))
+        List<Element<PositionStatementChild>> newList = targetList.stream()
+                .filter(el -> !Arrays.asList(expectedIds).contains(el.getId()))
                 .toList();
 
-        if (positionStatementChildListResult.size() != caseData.getHearingDocuments()
-            .getPositionStatementChildListV2().size() - 1) {
+        if (newList.size() != targetList.size() - expectedIds.length) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, invalid position statement child",
                 migrationId, caseId));
         }
-        return Map.of("positionStatementChildListV2", positionStatementChildListResult);
+        return Map.of("posStmtChildList" + (isInLaList ? "LA" : ""), newList);
     }
 
-    public Map<String, Object> removePositionStatementRespondent(CaseData caseData,
-                                                                 String migrationId,
-                                                                 UUID expectedPositionStatementId) {
+    public Map<String, Object> removePositionStatementRespondent(CaseData caseData, String migrationId,
+                                                                 boolean isInLaList, UUID... expectedIds) {
+        List<Element<PositionStatementRespondent>> targetList = isInLaList
+            ? caseData.getHearingDocuments().getPosStmtRespListLA()
+            : caseData.getHearingDocuments().getPosStmtRespList();
         Long caseId = caseData.getId();
-        List<Element<PositionStatementRespondent>> positionStatementRespondentListResult =
-            caseData.getHearingDocuments().getPositionStatementRespondentListV2().stream()
-                .filter(el -> !el.getId().equals(expectedPositionStatementId))
-                .toList();
+        List<Element<PositionStatementRespondent>> newList = targetList.stream()
+            .filter(el -> !Arrays.asList(expectedIds).contains(el.getId()))
+            .toList();
 
-        if (positionStatementRespondentListResult.size() != caseData.getHearingDocuments()
-            .getPositionStatementRespondentListV2().size() - 1) {
+        if (newList.size() != targetList.size() - expectedIds.length) {
             throw new AssertionError(format(
                 "Migration {id = %s, case reference = %s}, invalid position statement respondent",
                 migrationId, caseId));
         }
-        return Map.of("positionStatementRespondentListV2", positionStatementRespondentListResult);
+        return Map.of("posStmtRespList" + (isInLaList ? "LA" : ""), newList);
     }
 
     public Map<String, Object> updateIncorrectCourtCodes(CaseData caseData) {
@@ -821,6 +823,44 @@ public class MigrateCaseService {
                 migrationId, caseId));
         }
         return Map.of("localAuthorities", localAuthoritiesList);
+    }
+
+    private final CaseConverter caseConverter;
+
+    protected CaseData getCaseData(CaseDetails caseDetails) {
+        return caseConverter.convert(caseDetails);
+    }
+
+    public Map<String, Object> fixIncorrectCaseManagementLocation(CaseDetails caseDetails, String migrationId) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        Court court = caseData.getCourt();
+        final String targetCourt = "270"; // Middlesborough
+        boolean isTargetCourtCode = isNotEmpty(court) && targetCourt.equals(court.getCode());
+        final String correctBaseLocation = "195537";
+        final String correctRegion = "3";
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> caseManagementLocation = (Map<String, Object>) caseDetails.getData()
+            .get("caseManagementLocation");
+        if (!isTargetCourtCode) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Case data does not contain the target court: %s",
+                migrationId, caseData.getId(), targetCourt));
+        }
+        if (isNotEmpty(caseManagementLocation)
+            && correctBaseLocation.equals(caseManagementLocation.get("baseLocation"))
+            && correctRegion.equals(caseManagementLocation.get("region"))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, `caseManagementLocation` is correct.",
+                migrationId, caseData.getId()));
+        }
+
+        return Map.of("court", court.toBuilder().epimmsId(correctBaseLocation).build(),
+            "caseManagementLocation", CaseLocation.builder()
+            .baseLocation(correctBaseLocation)
+            .region(correctRegion)
+            .build());
     }
 
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
