@@ -116,9 +116,8 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
-    archiveArtifacts allowEmptyArchive: true, artifacts: '**/*'
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
