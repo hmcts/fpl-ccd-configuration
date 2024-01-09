@@ -86,9 +86,9 @@ withNightlyPipeline(type, product, component) {
   // enableFortifyScan('fpl-aat')
 
 
-  before('mutationTest') {
-    setupSecretsForIntegrationTests(pipelineConf)
-  }
+  // before('mutationTest') {
+  //   setupSecretsForIntegrationTests(pipelineConf)
+  // }
 
   // afterAlways('mutationTest') {
   //   archiveExtraFilesForIntegrationTests()
