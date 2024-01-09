@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { UrlConfig } from "../utils/urls";
+import { UrlConfig } from "../settings/urls";
 
 export class SignInPage {
   readonly page: Page;

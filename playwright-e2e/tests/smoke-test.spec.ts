@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { SignInPage } from "../playwright-e2e/pages/sign-in";
-import { newSwanseaLocalAuthorityUserOne } from "../playwright-e2e/utils/userCredentials";
+import { SignInPage } from "../pages/sign-in";
+import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 
 test("Smoke Test @smoke-test", async ({ page }) => {
   const signInPage = new SignInPage(page);
