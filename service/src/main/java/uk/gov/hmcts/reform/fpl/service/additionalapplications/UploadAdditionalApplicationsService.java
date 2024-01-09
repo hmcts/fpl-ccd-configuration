@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -54,6 +56,7 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final UserService user;
     private final DocumentUploadHelper documentUploadHelper;
+    private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
@@ -179,20 +182,20 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle) {
+    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
+            .document(getDocumentToStore(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                  : List.of())
             .build();
     }
 
-    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle) {
+    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
+            .document(getDocumentToStore(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                 : List.of())
             .build();
     }
@@ -209,12 +212,16 @@ public class UploadAdditionalApplicationsService {
         return supportingEvidenceBundle;
     }
 
-    private List<Element<Supplement>> getSupplementsBundleConverted(List<Element<Supplement>> supplementsBundle) {
+    private List<Element<Supplement>> getSupplementsBundleConverted(List<Element<Supplement>> supplementsBundle,
+                                                                    CaseData caseData) {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                caseData.getCourt(), SealType.ENGLISH);
+
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(getDocumentToStore(incomingSupplement.getDocument()))
+                .document(sealedDocument)
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
@@ -237,8 +244,10 @@ public class UploadAdditionalApplicationsService {
 
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
-        return documentConversionService.convertToPdf(originalDoc);
+    private DocumentReference getDocumentToStore(DocumentReference originalDoc, CaseData caseData) {
+        return user.isHmctsUser() ?
+            documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH)
+            : documentConversionService.convertToPdf(originalDoc);
     }
 
     private boolean onlyApplyingForC2(CaseData caseData) {

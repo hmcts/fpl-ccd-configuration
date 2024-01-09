@@ -28,7 +28,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -49,6 +51,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -86,6 +89,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
     private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
+    private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT = testDocumentReference("Sealed_SupplementFile.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -96,6 +100,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
+    private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);;
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -106,8 +111,9 @@ class UploadAdditionalApplicationsServiceTest {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService);
+            time, user, uploadHelper, documentSealingService, conversionService);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
@@ -457,6 +463,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     @Nested
     class PostSubmitProcessing {
+        private static final CaseData CASE_DATA = CaseData.builder().court(COURT_1).build();
 
         @Test
         void shouldSetSupplementsToEmptyListIfNonePresent() {
@@ -464,7 +471,7 @@ class UploadAdditionalApplicationsServiceTest {
                 .document(DOCUMENT)
                 .supplementsBundle(List.of())
                 .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
             assertThat(converted.getSupplementsBundle()).isEmpty();
             assertThat(converted.getSupplementsBundle()).isNotNull();
@@ -478,10 +485,10 @@ class UploadAdditionalApplicationsServiceTest {
                     .document(SUPPLEMENT_DOCUMENT)
                     .build()))
                 .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
@@ -492,10 +499,10 @@ class UploadAdditionalApplicationsServiceTest {
                     .document(SUPPLEMENT_DOCUMENT)
                     .build()))
                 .build();
-            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
 
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
     }
 
