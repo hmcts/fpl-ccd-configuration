@@ -23,7 +23,7 @@ public class RenderDocumentsController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        caseDetails.getData().putAll(documentListService.getConfidentialDocumentView(getCaseData(caseDetails)));
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
     }
 }
