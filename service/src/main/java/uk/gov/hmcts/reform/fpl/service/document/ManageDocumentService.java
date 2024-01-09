@@ -208,6 +208,9 @@ public class ManageDocumentService {
         if (caseRoles.contains(CaseRole.BARRISTER)) {
             return BARRISTER;
         }
+        if (caseRoles.contains(CaseRole.CAFCASSSOLICITOR)) {
+            return CAFCASS;
+        }
         if (userService.isHmctsUser()) {
             return HMCTS;
         }
@@ -469,6 +472,7 @@ public class ManageDocumentService {
         switch (uploaderType) {
             case SOLICITOR:
             case CAFCASS:
+            case BARRISTER:
                 return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
