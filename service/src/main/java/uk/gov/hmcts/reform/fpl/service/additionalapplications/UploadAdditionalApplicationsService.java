@@ -245,8 +245,8 @@ public class UploadAdditionalApplicationsService {
     }
 
     private DocumentReference getDocumentToStore(DocumentReference originalDoc, CaseData caseData) {
-        return user.isHmctsUser() ?
-            documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH)
+        return user.isHmctsUser()
+            ? documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH)
             : documentConversionService.convertToPdf(originalDoc);
     }
 
