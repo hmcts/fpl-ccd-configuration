@@ -89,7 +89,8 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
     private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
-    private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT = testDocumentReference("Sealed_SupplementFile.pdf");
+    private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT =
+        testDocumentReference("Sealed_SupplementFile.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -100,7 +101,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
-    private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);;
+    private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -111,7 +112,8 @@ class UploadAdditionalApplicationsServiceTest {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
-        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH))
+            .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
             time, user, uploadHelper, documentSealingService, conversionService);
         given(user.isHmctsUser()).willReturn(true);
