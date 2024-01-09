@@ -25,7 +25,7 @@ To execute the 'smoke-test.spec.ts' individually from the Terminal, use the comm
 
 ## 🔐 Configuring Default Password
 
-Create file 'config.js' under folder local-config.
+Create file 'config.js' under folder playwright-e2e/local-config.
 
 // config.js
 `export const DefaultPassword = "your_default_password_here";`
