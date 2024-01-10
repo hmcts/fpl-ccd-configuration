@@ -24,7 +24,6 @@ export default defineConfig({
     ["html", { outputFolder: "../fpl-ccd-configuration/output/" }],
     ["list"],
   ],
-
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

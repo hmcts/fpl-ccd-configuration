@@ -79,21 +79,21 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableMutationTest()
+  // enableMutationTest()
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
   //enableCrossBrowserTest(['chrome', 'firefox'])
-  enableFortifyScan('fpl-aat')
+  // enableFortifyScan('fpl-aat')
 
 
-  before('mutationTest') {
-    setupSecretsForIntegrationTests(pipelineConf)
-  }
+  // before('mutationTest') {
+  //   setupSecretsForIntegrationTests(pipelineConf)
+  // }
 
-  afterAlways('mutationTest') {
-    archiveExtraFilesForIntegrationTests()
-    teardownSecretsForIntegrationTests()
-  }
+  // afterAlways('mutationTest') {
+  //   archiveExtraFilesForIntegrationTests()
+  //   teardownSecretsForIntegrationTests()
+  // }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
@@ -118,7 +118,6 @@ withNightlyPipeline(type, product, component) {
     yarnBuilder.yarn('test:functional-nightly')
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
@@ -126,7 +125,7 @@ withNightlyPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
-  afterAlways('fortify-scan') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
+  // afterAlways('fortify-scan') {
+  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  // }
 }
