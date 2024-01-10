@@ -45,7 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1947", this::run1947
+        "DFPL-1947", this::run1947,
+        "DFPL-1959", this::run1959
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -209,5 +210,18 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, documentId);
         caseDetails.getData().remove("standardDirectionOrder");
+    }
+
+    private void run1959(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1959";
+        var possibleCaseIds = List.of(1701964866232462L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }
