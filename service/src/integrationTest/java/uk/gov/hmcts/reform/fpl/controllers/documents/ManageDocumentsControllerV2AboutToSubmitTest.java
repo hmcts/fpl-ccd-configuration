@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -42,6 +43,9 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
 
     @MockBean
     private ManageDocumentService manageDocumentService;
+
+    @MockBean
+    private DocumentListService documentListService;
 
     ManageDocumentsControllerV2AboutToSubmitTest() {
         super("manage-documentsv2");
@@ -168,9 +172,17 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
             .document(TestDataHelper.testDocumentReference()).build());
         when(manageDocumentService.uploadDocuments(any()))
             .thenReturn(Map.of("parentAssessmentList", List.of(expectedElement)));
+        when(documentListService.getConfidentialDocumentView(any()))
+            .thenReturn(Map.of(
+                "confidentialDocumentViewLA", "confidentialDocumentViewLA",
+                "confidentialDocumentViewCTSC", "confidentialDocumentViewCTSC"));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         assertThat((List) response.getData().get("parentAssessmentList")).isNotEmpty();
+        assertThat((String) response.getData().get("confidentialDocumentViewLA"))
+            .isEqualTo("confidentialDocumentViewLA");
+        assertThat((String) response.getData().get("confidentialDocumentViewCTSC"))
+            .isEqualTo("confidentialDocumentViewCTSC");
 
         CaseData extractedCaseData = extractCaseData(response);
         assertThat(extractedCaseData.getParentAssessmentList()).contains(expectedElement);
@@ -209,9 +221,17 @@ class ManageDocumentsControllerV2AboutToSubmitTest extends AbstractCallbackTest 
             .document(TestDataHelper.testDocumentReference()).build());
         when(manageDocumentService.removeDocuments(any()))
             .thenReturn(Map.of("parentAssessmentListRemoved", List.of(expectedElement)));
+        when(documentListService.getConfidentialDocumentView(any()))
+            .thenReturn(Map.of(
+                "confidentialDocumentViewLA", "confidentialDocumentViewLA",
+                "confidentialDocumentViewCTSC", "confidentialDocumentViewCTSC"));
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
         assertThat((List) response.getData().get("parentAssessmentListRemoved")).isNotEmpty();
+        assertThat((String) response.getData().get("confidentialDocumentViewLA"))
+            .isEqualTo("confidentialDocumentViewLA");
+        assertThat((String) response.getData().get("confidentialDocumentViewCTSC"))
+            .isEqualTo("confidentialDocumentViewCTSC");
 
         CaseData extractedCaseData = extractCaseData(response);
         assertThat(extractedCaseData.getParentAssessmentListRemoved()).contains(expectedElement);
