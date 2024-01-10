@@ -483,7 +483,7 @@ class UploadAdditionalApplicationsServiceTest {
         }
 
         @Test
-        void shouldSealC2DocumentIfHmctsUser() {
+        void shouldSealC2Document() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
@@ -495,11 +495,11 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
-        void shouldSealOtherDocumentIfHmctsUser() {
+        void shouldSealOtherDocumentIf() {
             OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
@@ -511,41 +511,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
-        }
-
-        @Test
-        void shouldConvertC2DocumentToPdfIfNotHmctsUser() {
-            given(user.isHmctsUser()).willReturn(false);
-            C2DocumentBundle bundle = C2DocumentBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
-
-            assertThat(converted.getDocument())
-                .isEqualTo(CONVERTED_DOCUMENT);
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
-        }
-
-        @Test
-        void shouldConvertOtherDocumentToPdfIfNotUser() {
-            given(user.isHmctsUser()).willReturn(false);
-            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
-
-            assertThat(converted.getDocument())
-                .isEqualTo(CONVERTED_DOCUMENT);
-            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
     }
 

@@ -184,7 +184,7 @@ public class UploadAdditionalApplicationsService {
 
     public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument(), caseData))
+            .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
                 ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                  : List.of())
@@ -193,7 +193,7 @@ public class UploadAdditionalApplicationsService {
 
     public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument(), caseData))
+            .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
                 ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                 : List.of())
@@ -217,11 +217,8 @@ public class UploadAdditionalApplicationsService {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
-            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
-                caseData.getCourt(), SealType.ENGLISH);
-
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(sealedDocument)
+                .document(documentConversionService.convertToPdf(incomingSupplement.getDocument()))
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
@@ -244,10 +241,8 @@ public class UploadAdditionalApplicationsService {
 
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc, CaseData caseData) {
-        return user.isHmctsUser()
-            ? documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH)
-            : documentConversionService.convertToPdf(originalDoc);
+    private DocumentReference sealDocument(DocumentReference originalDoc, CaseData caseData) {
+        return documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH);
     }
 
     private boolean onlyApplyingForC2(CaseData caseData) {
