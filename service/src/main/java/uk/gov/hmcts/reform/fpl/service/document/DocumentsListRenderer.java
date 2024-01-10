@@ -68,7 +68,7 @@ class DocumentsListRenderer {
         return collapsible(bundle.getName(), s);
     }
 
-    public String renderDocumentViews(List<DocumentView> documentViews) {
+    public String renderConfidentialDocumentViews(List<DocumentView> documentViews) {
         String s = documentViews.stream()
             .sorted(Comparator.comparing(DocumentView::getTitle))
             .map(this::renderDocument)
@@ -87,6 +87,10 @@ class DocumentsListRenderer {
 
     private List<Pair<String, String>> getFieldsBasedOnDocumentType(DocumentView documentView) {
         List<Pair<String, String>> documentFields = new ArrayList<>();
+
+        if (isNotEmpty(documentView.getDocumentType())) {
+            documentFields.add(Pair.of("Document Type", documentView.getDocumentType()));
+        }
 
         if (isNotEmpty(documentView.getUploadedBy())) {
             documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
@@ -114,8 +118,10 @@ class DocumentsListRenderer {
 
         if (documentView.isConfidential()) {
             documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
-            documentFields.add(Pair.of("Confidential Level", documentView.isConfidentialToHmcts()
-                ? "Restrict to HMCTS staff" : "Restrict to the LA, Cafcass and HMCTS staff"));
+        }
+
+        if (isNotEmpty(documentView.getConfidentialLevel())) {
+            documentFields.add(Pair.of("Confidential Level", documentView.getConfidentialLevel()));
         }
 
         if (isNotEmpty(documentView.getDocument())) {

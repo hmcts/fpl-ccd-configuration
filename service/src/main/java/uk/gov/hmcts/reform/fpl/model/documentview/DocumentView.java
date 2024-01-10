@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class DocumentView {
+    private String documentType;
     private String uploadedBy;
     private String uploadedAt;
     private String type;
@@ -18,7 +19,7 @@ public class DocumentView {
     private String documentName;
     private String fileName;
     private boolean confidential;
-    private boolean confidentialToHmcts;
+    private String confidentialLevel;
     private DocumentReference document;
     private String title;
     private boolean includeSWETField;

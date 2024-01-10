@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.document.aggregator;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -150,15 +151,15 @@ class BundleViewAggregatorTest {
             DocumentView.builder()
                 .title(filename1)
                 .fileName(filename1)
-                .confidential(true)
-                .confidentialToHmcts(false)
+                .documentType(StringUtils.replace(documentType.getDescription(), "└─ ",  ""))
+                .confidentialLevel("Restrict to the LA, Cafcass and HMCTS staff")
                 .uploaderType(DESIGNATED_LOCAL_AUTHORITY.name())
                 .build(),
             DocumentView.builder()
                 .title(filename2)
                 .fileName(filename2)
-                .confidential(true)
-                .confidentialToHmcts(true)
+                .documentType(StringUtils.replace(documentType.getDescription(), "└─ ",  ""))
+                .confidentialLevel("Restrict to HMCTS staff")
                 .uploaderType("unknown")
                 .build());
 
@@ -167,8 +168,8 @@ class BundleViewAggregatorTest {
             DocumentView.builder()
                 .title(filename1)
                 .fileName(filename1)
-                .confidential(true)
-                .confidentialToHmcts(false)
+                .documentType(StringUtils.replace(documentType.getDescription(), "└─ ",  ""))
+                .confidentialLevel("Restrict to the LA, Cafcass and HMCTS staff")
                 .uploaderType(DESIGNATED_LOCAL_AUTHORITY.name())
                 .build());
     }

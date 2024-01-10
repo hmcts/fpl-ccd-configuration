@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.document.aggregator;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatements
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
@@ -91,16 +94,20 @@ public class BundleViewAggregator {
         return bundles;
     }
 
-    private DocumentView toDocumentView(WithDocument md, ConfidentialLevel level) {
-        String filename = md.getDocument().getFilename();
+    private DocumentView toConfidentialDocumentView(DocumentType documentType, WithDocument md,
+                                                    ConfidentialLevel level) {
+        String filename = Optional.ofNullable(md.getDocument()).orElse(DocumentReference.builder().build())
+            .getFilename();
         return DocumentView.builder()
             .title(filename)
             .fileName(filename)
-            .confidential(true)
-            .confidentialToHmcts(level == CTSC)
+            .confidentialLevel(level == CTSC ? "Restrict to HMCTS staff"
+                : "Restrict to the LA, Cafcass and HMCTS staff")
             .uploaderType(md.getUploaderType() == null ? "unknown" : md.getUploaderType().name())
+            .documentType(StringUtils.replace(documentType.getDescription(), "└─ ",  ""))
             .build();
     }
+
 
     public List<DocumentView> getConfidentialDocumentBundleViews(CaseData caseData, DocumentViewType view) {
         DocumentType[] documentTypes = new DocumentType[] {CASE_SUMMARY, POSITION_STATEMENTS, POSITION_STATEMENTS_CHILD,
@@ -117,14 +124,14 @@ public class BundleViewAggregator {
             manageDocumentService.retrieveDocuments(caseData, dt, LA).forEach(element -> {
                 if (element.getValue() instanceof WithDocument) {
                     WithDocument md = (WithDocument) element.getValue();
-                    ret.add(toDocumentView(md, LA));
+                    ret.add(toConfidentialDocumentView(dt, md, LA));
                 }
             });
             if (view == HMCTS) {
                 manageDocumentService.retrieveDocuments(caseData, dt, CTSC).forEach(element -> {
                     if (element.getValue() instanceof WithDocument) {
                         WithDocument md = (WithDocument) element.getValue();
-                        ret.add(toDocumentView(md, CTSC));
+                        ret.add(toConfidentialDocumentView(dt, md, CTSC));
                     }
                 });
             }

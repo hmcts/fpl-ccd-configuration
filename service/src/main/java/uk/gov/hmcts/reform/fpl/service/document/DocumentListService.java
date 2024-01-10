@@ -61,7 +61,7 @@ public class DocumentListService {
     private String renderConfidentialDocumentBundleViews(CaseData caseData, DocumentViewType view) {
         List<DocumentView> bundles = bundleViewAggregator.getConfidentialDocumentBundleViews(caseData, view);
         if (isNotEmpty(bundles)) {
-            return documentsListRenderer.renderDocumentViews(bundles);
+            return documentsListRenderer.renderConfidentialDocumentViews(bundles);
         }
         return null;
     }
