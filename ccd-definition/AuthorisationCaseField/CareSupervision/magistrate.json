@@ -2466,7 +2466,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "confidentialDocumentViewHMCTS",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentListPageHMCTS",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "confidentialDocumentListPageHMCTS",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRU"
   },

@@ -6,25 +6,25 @@
     "TabID": "ConfidentialDocuments",
     "TabLabel": "Confidential Documents",
     "TabDisplayOrder": 8,
-    "CaseFieldID": "documentViewLA",
+    "CaseFieldID": "confidentialDocumentViewLA",
     "TabFieldDisplayOrder": 90,
-    "FieldShowCondition": "documentViewLA = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "confidentialDocumentViewLA = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ConfidentialDocuments",
-    "CaseFieldID": "documentViewHMCTS",
+    "CaseFieldID": "confidentialDocumentViewHMCTS",
     "TabFieldDisplayOrder": 100,
-    "FieldShowCondition": "documentViewLA = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "confidentialDocumentViewLA = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ConfidentialDocuments",
-    "CaseFieldID": "documentListPageLA",
+    "CaseFieldID": "confidentialDocumentListPageLA",
     "TabFieldDisplayOrder": 120
   },
   {
@@ -32,7 +32,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "ConfidentialDocuments",
-    "CaseFieldID": "documentListPageHMCTS",
+    "CaseFieldID": "confidentialDocumentListPageHMCTS",
     "TabFieldDisplayOrder": 130
   }
 ]

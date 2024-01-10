@@ -2050,7 +2050,25 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialDocumentViewHMCTS",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentViewLA",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialDocumentViewLA",
     "Label": "Case name",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
@@ -2077,8 +2095,26 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialDocumentListPageHMCTS",
+    "Label": "${confidentialDocumentViewHMCTS}",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentListPageLA",
     "Label": "${documentViewLA}",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialDocumentListPageLA",
+    "Label": "${confidentialDocumentViewLA}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"

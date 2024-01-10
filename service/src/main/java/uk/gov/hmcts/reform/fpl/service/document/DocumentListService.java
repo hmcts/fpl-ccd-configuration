@@ -38,8 +38,9 @@ public class DocumentListService {
 
     public Map<String, Object> getConfidentialDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
-        data.put("documentViewLA", renderConfidentialDocumentBundleViews(caseData, DocumentViewType.LA));
-        data.put("documentViewHMCTS", renderConfidentialDocumentBundleViews(caseData, DocumentViewType.HMCTS));
+        data.put("confidentialDocumentViewLA", renderConfidentialDocumentBundleViews(caseData, DocumentViewType.LA));
+        data.put("confidentialDocumentViewHMCTS", renderConfidentialDocumentBundleViews(caseData,
+            DocumentViewType.HMCTS));
         return data;
     }
 
