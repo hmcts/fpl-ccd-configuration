@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.fpl.service.document.aggregator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
@@ -91,13 +91,13 @@ public class BundleViewAggregator {
         return bundles;
     }
 
-    private DocumentView toDocumentView(WithDocument md, DocumentViewType view) {
+    private DocumentView toDocumentView(WithDocument md, ConfidentialLevel level) {
         String filename = md.getDocument().getFilename();
         return DocumentView.builder()
             .title(filename)
             .fileName(filename)
             .confidential(true)
-            .confidentialToHmcts(view == HMCTS)
+            .confidentialToHmcts(level == CTSC)
             .uploaderType(md.getUploaderType() == null ? "unknown" : md.getUploaderType().name())
             .build();
     }
@@ -114,17 +114,20 @@ public class BundleViewAggregator {
 
         List<DocumentView> ret = new ArrayList<>();
         Arrays.stream(documentTypes).forEach(dt -> {
-            List<Element> elements =
-                manageDocumentService.retrieveDocuments(caseData, dt, LA);
-            if (view == HMCTS) {
-                elements.addAll(manageDocumentService.retrieveDocuments(caseData, dt, CTSC));
-            }
-            elements.forEach(element -> {
+            manageDocumentService.retrieveDocuments(caseData, dt, LA).forEach(element -> {
                 if (element.getValue() instanceof WithDocument) {
                     WithDocument md = (WithDocument) element.getValue();
-                    ret.add(toDocumentView(md, view));
+                    ret.add(toDocumentView(md, LA));
                 }
             });
+            if (view == HMCTS) {
+                manageDocumentService.retrieveDocuments(caseData, dt, CTSC).forEach(element -> {
+                    if (element.getValue() instanceof WithDocument) {
+                        WithDocument md = (WithDocument) element.getValue();
+                        ret.add(toDocumentView(md, CTSC));
+                    }
+                });
+            }
         });
         return ret;
     }
