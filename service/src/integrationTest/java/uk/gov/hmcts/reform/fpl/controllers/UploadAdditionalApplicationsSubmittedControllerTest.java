@@ -51,8 +51,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static java.util.UUID.randomUUID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -140,6 +142,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+
+    @Captor
+    private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -585,6 +590,52 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             any(),
             any()));
     }
+
+    @Test
+    void shouldConvertBundles() {
+        UUID additionalApplicationsBundleId = UUID.randomUUID();
+        C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+        OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+            .c2DocumentBundle(c2Bundle)
+            .otherApplicationsBundle(otherBundle)
+            .build();
+
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER))
+            .put("additionalApplicationsBundle",
+                List.of(element(additionalApplicationsBundleId, additionalApplicationsBundle)))
+            .put("sendToCtsc", NO.getValue())
+            .build());
+
+        when(coreCaseDataService.performPostSubmitCallback(any(),
+                eq("internal-change-upload-add-apps"),
+                changeFunctionCaptor.capture())).thenReturn(caseDetails);
+
+        C2DocumentBundle expectedC2 = c2Bundle.toBuilder().applicantName("Converted C2").build();
+        when(uploadAdditionalApplicationsService.convertC2Bundle(any(), any())).thenReturn(expectedC2);
+        OtherApplicationsBundle expectedOtherBundle = otherBundle.toBuilder().applicantName("Converted Other").build();
+        when(uploadAdditionalApplicationsService.convertOtherBundle(any(), any())).thenReturn(expectedOtherBundle);
+
+        postSubmittedEvent(caseDetails);
+        Map<String, Object> actual = changeFunctionCaptor.getValue().apply(caseDetails);
+
+        assertEquals(actual.get("additionalApplicationsBundle"), List.of(element(additionalApplicationsBundleId,
+                additionalApplicationsBundle.toBuilder()
+                    .c2DocumentBundle(expectedC2)
+                    .otherApplicationsBundle(expectedOtherBundle)
+                    .build())));
+    }
+
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
