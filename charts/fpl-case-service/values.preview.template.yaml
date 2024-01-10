@@ -156,6 +156,7 @@ ccd:
     nodejs:
       disableKeyVaults: true
       releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66e26b9-20231116094420
       imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
