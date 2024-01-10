@@ -23,16 +23,17 @@ To execute the 'smoke-test.spec.ts' individually from the Terminal, use the comm
  playwright.config.ts # This sits outside playwright-e2e folder, but is the config file for playwright only tests.
 ```
 
-## 🔐 Configuring Default Password
+## 🔐 Configuring tests to run locally
 
-Create file 'config.js' under folder playwright-e2e/local-config.
+The password for the test user accounts has been securely stored in a vault. If you execute tests locally without updating the configuration, the tests will not pass, and you may inadvertently trigger account lockout by repeatedly attempting to log in with an incorrect password.
 
-// config.js
-`export const DefaultPassword = "your_default_password_here";`
+To prevent this issue, modify a specific setting in:
+fpl-ccd-configuration/playwright-e2e/settings/userCredentials.ts
 
-Add the default password for users, this will save you having to edit any code to run tests locally while you are developing.
+Update the line:
+`const e2ePw = process.env.E2E_TEST_PASSWORD || "enter_in_password_for_running_locally";`
 
-Also check that config.js is added to gitignore.
+Ensure you change the password accordingly. Please be cautious not to include these modifications when submitting your pull request.
 
 ## 🎬 Debugging
 
