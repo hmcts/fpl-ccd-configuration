@@ -33,7 +33,24 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRenderIfDocumentsAreUpdatedInTheCase() {
+    void shouldRenderIfCTSSConfidentialDocumentsAreUpdatedInTheCase() {
+        when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
+
+        CaseDetails caseDetails = CaseDetails.builder().data(someCaseDataWithCTSCDocuments()).build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
+
+        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
+        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
+    }
+
+    @Test
+    void shouldRenderIfConfidentialDocumentsAreUpdatedInTheCase() {
         when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
 
@@ -47,8 +64,6 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
         assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
-        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
-        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
 
     @Test
@@ -66,13 +81,29 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
         assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNull();
-        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNull();
-        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("NO");
     }
 
     private Map<String, Object> someCaseDataWithDocuments() {
         return Map.of(
-            "applicationDocuments", List.of(
+            "thresholdListLA", List.of(
+                Map.of(
+                    "id", UUID.randomUUID(),
+                    "value", Map.of(
+                        "document", Map.of(
+                            "document_url", "https://AnotherdocuURL",
+                            "document_filename", "mockChecklist.pdf",
+                            "document_binary_url", "http://dm-store:8080/documents/fakeUrl/binary"
+                        ),
+                        "documentType", "SOCIAL_WORK_STATEMENT"
+                    )
+                )
+            )
+        );
+    }
+
+    private Map<String, Object> someCaseDataWithCTSCDocuments() {
+        return Map.of(
+            "thresholdListCTSC", List.of(
                 Map.of(
                     "id", UUID.randomUUID(),
                     "value", Map.of(
