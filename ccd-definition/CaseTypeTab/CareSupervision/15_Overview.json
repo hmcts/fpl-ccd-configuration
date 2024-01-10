@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
-    "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "caseCompletionDate",
     "TabFieldDisplayOrder": 2
   },
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
-    "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "caseExtensionReasonList",
     "TabFieldDisplayOrder": 3
   },
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
-    "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "extensionComments",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "extensionComments!=\"\""
@@ -46,8 +40,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OverviewTab",
-    "TabLabel": "Overview",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "closeCaseTabField",
     "TabFieldDisplayOrder": 4
   }

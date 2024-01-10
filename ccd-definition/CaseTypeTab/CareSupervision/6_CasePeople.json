@@ -14,8 +14,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 1
   },
@@ -24,8 +22,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "children1",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 3
   },
@@ -45,8 +39,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "localAuthorities != \"*\""
@@ -56,8 +48,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "localAuthorities",
     "TabFieldDisplayOrder": 4
   },
@@ -66,8 +56,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
   },
@@ -76,8 +64,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 6,
     "FieldShowCondition": "localAuthorities != \"*\""
@@ -87,8 +73,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 7
   },
@@ -97,8 +81,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 6,
     "CaseFieldID": "representatives",
     "TabFieldDisplayOrder": 8
   }

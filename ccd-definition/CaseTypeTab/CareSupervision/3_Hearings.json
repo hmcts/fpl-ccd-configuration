@@ -14,8 +14,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "listGatekeepingHearingLink",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition":  "[STATE]=\"GATEKEEPING_LISTING\""
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "manageHearingsLink",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition":  "[STATE]=\"PREPARE_FOR_HEARING\" OR [STATE]=\"FINAL_HEARING\""
@@ -36,8 +32,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "noticeOfProceedingsBundle",
     "TabFieldDisplayOrder": 2
   },
@@ -46,8 +40,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 3
   },
@@ -56,8 +48,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "cancelledHearingDetails",
     "TabFieldDisplayOrder": 4
   },
@@ -66,8 +56,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearings",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "hearing",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 5

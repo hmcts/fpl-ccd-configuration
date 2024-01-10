@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "translatedSubmittedForm",
     "TabFieldDisplayOrder": 20
   },
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "supplementDocument",
     "TabFieldDisplayOrder": 21
   },
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "submittedFormNeedTranslation",
     "FieldShowCondition": "submittedForm=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 30
@@ -46,8 +40,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "submittedFormSentForTranslationLabel",
     "FieldShowCondition": "submittedFormNeedTranslation=\"YES\" AND translatedSubmittedForm!=\"*\"",
     "TabFieldDisplayOrder": 40
@@ -57,8 +49,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 50
   },
@@ -67,8 +57,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 60,
     "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
@@ -78,8 +66,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "documentTabFurtherEvidenceHeading",
     "TabFieldDisplayOrder": 70,
     "FieldShowCondition": "hearingFurtherEvidenceDocuments=\"*\" OR furtherEvidenceDocuments=\"*\" OR furtherEvidenceDocumentsLA=\"*\""
@@ -89,8 +75,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "TabFieldDisplayOrder": 80
   },
@@ -99,8 +83,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "furtherEvidenceDocuments",
     "TabFieldDisplayOrder": 90
   },
@@ -109,8 +91,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "furtherEvidenceDocumentsNC",
     "TabFieldDisplayOrder": 100
   },
@@ -119,8 +99,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "furtherEvidenceDocumentsLA",
     "TabFieldDisplayOrder": 110
   },
@@ -129,8 +107,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "furtherEvidenceDocumentsLANC",
     "TabFieldDisplayOrder": 120
   },
@@ -139,8 +115,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "respondentStatements",
     "TabFieldDisplayOrder": 130
   },
@@ -149,8 +123,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "documentTabBulkScanHeading",
     "TabFieldDisplayOrder": 140,
     "FieldShowCondition": "scannedDocuments=\"*\""
@@ -160,8 +132,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "scannedDocuments",
     "TabFieldDisplayOrder": 150
   },
@@ -170,8 +140,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 160
   },
@@ -180,8 +148,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "documentTabApplicationHeading",
     "TabFieldDisplayOrder": 170
   },
@@ -190,8 +156,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "applicationDocuments",
     "FieldShowCondition": "applicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 180
@@ -201,8 +165,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
     "TabFieldDisplayOrder": 190
@@ -212,8 +174,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 200
   },
@@ -222,8 +182,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 8,
     "CaseFieldID": "hiddenApplicationForm",
     "TabFieldDisplayOrder": 300
   }

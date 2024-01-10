@@ -16,8 +16,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "reviewCMOLink",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"\""
@@ -27,8 +25,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
@@ -38,8 +34,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "urgentDirectionsOrder",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "urgentDirectionsOrder.orderStatus=\"DRAFT\""
@@ -49,8 +43,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "draftSDOLinkDraftOrdersTab",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "standardDirectionOrder!=\"\" AND [STATE]=\"Gatekeeping\""
@@ -60,8 +52,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "sharedDraftCMODocument",
     "TabFieldDisplayOrder": 2
   },
@@ -70,8 +60,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "cmoToAction",
     "TabFieldDisplayOrder": 2
   },
@@ -80,8 +68,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "caseManagementOrder",
     "TabFieldDisplayOrder": 2
   },
@@ -90,8 +76,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "draftUploadedCMOs",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "hearingOrdersBundlesDrafts=\"DO_NOT_SHOW\""
@@ -101,8 +85,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
     "CaseFieldID": "hearingOrdersBundlesDrafts",
     "TabFieldDisplayOrder": 4
   }

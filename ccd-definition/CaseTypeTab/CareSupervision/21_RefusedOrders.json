@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "RefusedOrdersTab",
-    "TabLabel": "Refused Orders",
-    "TabDisplayOrder": 21,
     "CaseFieldID": "refusedHearingOrders",
     "TabFieldDisplayOrder": 2
   }

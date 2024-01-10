@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
-    "TabLabel": "Other applications",
-    "TabDisplayOrder": 10,
     "CaseFieldID": "reviewAdditionalApplicationLink",
     "TabFieldDisplayOrder": 2
   },
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
-    "TabLabel": "Other applications",
-    "TabDisplayOrder": 10,
     "CaseFieldID": "additionalApplicationsBundle",
     "TabFieldDisplayOrder": 3
   },
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
-    "TabLabel": "Other applications",
-    "TabDisplayOrder": 10,
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "c2DocumentBundle!=\"\""
@@ -46,8 +40,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
-    "TabLabel": "Other applications",
-    "TabDisplayOrder": 10,
     "CaseFieldID": "hiddenApplicationsBundle",
     "TabFieldDisplayOrder": 5
   }

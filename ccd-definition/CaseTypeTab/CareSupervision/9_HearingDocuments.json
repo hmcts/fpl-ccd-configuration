@@ -15,8 +15,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 2
   },
@@ -25,8 +23,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "courtBundleListV2",
     "TabFieldDisplayOrder": 3
   },
@@ -35,8 +31,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "caseSummaryList",
     "TabFieldDisplayOrder": 4
   },
@@ -45,8 +39,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "positionStatementChildList",
     "TabFieldDisplayOrder": 5
   },
@@ -55,8 +47,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "positionStatementChildListV2",
     "TabFieldDisplayOrder": 5
   },
@@ -65,8 +55,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "positionStatementRespondentList",
     "TabFieldDisplayOrder": 6
   },
@@ -75,8 +63,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "positionStatementRespondentListV2",
     "TabFieldDisplayOrder": 6
   },
@@ -85,8 +71,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "skeletonArgumentList",
     "TabFieldDisplayOrder": 6
   },
@@ -95,8 +79,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingDocumentsTab",
-    "TabLabel": "Hearing documents",
-    "TabDisplayOrder": 9,
     "CaseFieldID": "hearingOrdersBundlesDraftReview",
     "TabFieldDisplayOrder": 7
   }

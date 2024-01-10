@@ -14,8 +14,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
-    "TabLabel": "Placement",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "placementsNonConfidential",
     "TabFieldDisplayOrder": 1
   },
@@ -24,8 +22,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
-    "TabLabel": "Placement",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "placementsNonConfidentialNotices",
     "TabFieldDisplayOrder": 1
   },
@@ -34,8 +30,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
-    "TabLabel": "Placement",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "placementPayment",
     "TabFieldDisplayOrder": 2
   },
@@ -44,8 +38,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
-    "TabLabel": "Placement",
-    "TabDisplayOrder": 15,
     "CaseFieldID": "removedPlacements",
     "TabFieldDisplayOrder": 3
   }

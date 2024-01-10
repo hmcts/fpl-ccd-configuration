@@ -14,8 +14,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Confidential",
-    "TabLabel": "Confidential information",
-    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialRespondents",
     "TabFieldDisplayOrder": 2
   },
@@ -24,8 +22,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Confidential",
-    "TabLabel": "Confidential information",
-    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialOthers",
     "TabFieldDisplayOrder": 3
   },
@@ -34,8 +30,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "Confidential",
-    "TabLabel": "Confidential information",
-    "TabDisplayOrder": 14,
     "CaseFieldID": "documentsWithConfidentialAddress",
     "TabFieldDisplayOrder": 4
   }
