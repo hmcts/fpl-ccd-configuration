@@ -17,7 +17,7 @@ export class SmokeCreateCase {
     this.addApplicationTitle = this.page.getByRole("heading", {
       name: "Add application details",
     });
-    //this.viewHistory = page.getByText("History");
+    this.viewHistory = page.getByText("History");
   }
 
   async CreateCase() {
