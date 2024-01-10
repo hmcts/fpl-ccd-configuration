@@ -91,6 +91,7 @@ class UploadAdditionalApplicationsServiceTest {
     private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
     private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT =
         testDocumentReference("Sealed_SupplementFile.pdf");
+    private static final DocumentReference  SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -114,6 +115,8 @@ class UploadAdditionalApplicationsServiceTest {
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
+            .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
             time, user, uploadHelper, documentSealingService, conversionService);
         given(user.isHmctsUser()).willReturn(true);
@@ -480,7 +483,7 @@ class UploadAdditionalApplicationsServiceTest {
         }
 
         @Test
-        void shouldConvertC2SupplementToPdf() {
+        void shouldSealC2DocumentIfHmctsUser() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
@@ -489,12 +492,14 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
             C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
-        void shouldConvertOtherSupplementToPdf() {
+        void shouldSealOtherDocumentIfHmctsUser() {
             OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
@@ -503,6 +508,42 @@ class UploadAdditionalApplicationsServiceTest {
                 .build();
             OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
 
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldConvertC2DocumentToPdfIfNotHmctsUser() {
+            given(user.isHmctsUser()).willReturn(false);
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(CONVERTED_DOCUMENT);
+            assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldConvertOtherDocumentToPdfIfNotUser() {
+            given(user.isHmctsUser()).willReturn(false);
+            OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
+
+            assertThat(converted.getDocument())
+                .isEqualTo(CONVERTED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
