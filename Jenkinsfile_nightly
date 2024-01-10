@@ -106,13 +106,13 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  before('crossBrowserTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = false
-    env.ENV = 'aat'
-  }
+  // before('crossBrowserTest') {
+  //   yarnBuilder.yarn('yarn-update')
+  //   yarnBuilder.yarn('install-dependencies')
+  //   env.TEST_RETRIES = 5
+  //   env.TESTS_FOR_ACCESSIBILITY = false
+  //   env.ENV = 'aat'
+  // }
 
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
