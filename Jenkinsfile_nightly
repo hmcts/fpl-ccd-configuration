@@ -116,14 +116,14 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
-  afterAlways('crossBrowserTest') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
+  // afterAlways('crossBrowserTest') {
+  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  // }
 
   // afterAlways('fortify-scan') {
   //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
