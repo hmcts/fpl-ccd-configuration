@@ -15,10 +15,10 @@ To execute the 'smoke-test.spec.ts' individually from the Terminal, use the comm
 
 ```sh
 |- playwright-e2e
-|-|- local-config # config.js where you can store local configuration e.g. default password.
-|-|- pages # Where to keep page classes with respective locators and methods.
-|-|- tests # Here is where you can do your magic. 🧙‍♂️
+|-|- fixtures # With fixtures, you can group tests based on their meaning, instead of their common setup.
+|-|- pages # Where to keep page classes with respective locators and methods. We utilise POM (Page Object Modeling).
 |-|- settings # essential settings for the framework, such as user credentials and URLs.
+|-|- tests # Here is where you can do your magic. 🧙‍♂️
 
  playwright.config.ts # This sits outside playwright-e2e folder, but is the config file for playwright only tests.
 ```
