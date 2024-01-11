@@ -1551,7 +1551,10 @@ public class ManageDocumentService {
             .build();
     }
 
-    public List<Element> retrieveDocuments(CaseData caseData, DocumentType documentType, ConfidentialLevel level) {
-        return new ArrayList<>(nullSafeList(readFromFieldName(caseData, documentType.getFieldName(level))));
+    @SuppressWarnings("unchecked")
+    public List<Element<WithDocument>> retrieveDocuments(CaseData caseData, DocumentType documentType,
+                                                         ConfidentialLevel level) {
+        return new ArrayList<>((List<Element<WithDocument>>) (List<?>)
+            nullSafeList(readFromFieldName(caseData, documentType.getFieldName(level))));
     }
 }

@@ -108,7 +108,6 @@ public class BundleViewAggregator {
             .build();
     }
 
-
     public List<DocumentView> getConfidentialDocumentBundleViews(CaseData caseData, DocumentViewType view) {
         DocumentType[] documentTypes = new DocumentType[] {CASE_SUMMARY, POSITION_STATEMENTS, POSITION_STATEMENTS_CHILD,
             POSITION_STATEMENTS_RESPONDENT, THRESHOLD, SKELETON_ARGUMENTS, JUDGEMENTS, TRANSCRIPTS,
@@ -121,19 +120,11 @@ public class BundleViewAggregator {
 
         List<DocumentView> ret = new ArrayList<>();
         Arrays.stream(documentTypes).forEach(dt -> {
-            manageDocumentService.retrieveDocuments(caseData, dt, LA).forEach(element -> {
-                if (element.getValue() instanceof WithDocument) {
-                    WithDocument md = (WithDocument) element.getValue();
-                    ret.add(toConfidentialDocumentView(dt, md, LA));
-                }
-            });
+            manageDocumentService.retrieveDocuments(caseData, dt, LA).forEach(element ->
+                ret.add(toConfidentialDocumentView(dt, element.getValue(), LA)));
             if (view == HMCTS) {
-                manageDocumentService.retrieveDocuments(caseData, dt, CTSC).forEach(element -> {
-                    if (element.getValue() instanceof WithDocument) {
-                        WithDocument md = (WithDocument) element.getValue();
-                        ret.add(toConfidentialDocumentView(dt, md, CTSC));
-                    }
-                });
+                manageDocumentService.retrieveDocuments(caseData, dt, CTSC).forEach(element ->
+                    ret.add(toConfidentialDocumentView(dt, element.getValue(), CTSC)));
             }
         });
         return ret;

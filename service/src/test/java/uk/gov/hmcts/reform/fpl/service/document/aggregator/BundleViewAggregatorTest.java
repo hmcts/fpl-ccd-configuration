@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentContainerView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsBundlesTransformer;
@@ -120,6 +121,7 @@ class BundleViewAggregatorTest {
         assertThat(actual).isEqualTo(Collections.emptyList());
     }
 
+    @SuppressWarnings("unchecked")
     @ParameterizedTest
     @EnumSource(value = DocumentType.class, names = {
         "CASE_SUMMARY", "POSITION_STATEMENTS", "POSITION_STATEMENTS_CHILD",
@@ -143,8 +145,10 @@ class BundleViewAggregatorTest {
             .document(DocumentReference.builder().filename(filename2).build())
             .build());
 
-        when(manageDocumentService.retrieveDocuments(CASE_DATA, documentType, LA)).thenReturn(List.of(confDoc1));
-        when(manageDocumentService.retrieveDocuments(CASE_DATA, documentType, CTSC)).thenReturn(List.of(confDoc2));
+        when(manageDocumentService.retrieveDocuments(CASE_DATA, documentType, LA))
+            .thenReturn((List<Element<WithDocument>>) (List<?>) List.of(confDoc1));
+        when(manageDocumentService.retrieveDocuments(CASE_DATA, documentType, CTSC))
+            .thenReturn((List<Element<WithDocument>>) (List<?>) List.of(confDoc2));
 
         List<DocumentView> actual = underTest.getConfidentialDocumentBundleViews(CASE_DATA, HMCTS);
         assertThat(actual).hasSize(2).contains(
