@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,12 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());
         if (shouldCloseCase && isFinalOrder) {
+
+            LocalDate closeCaseDate =
+                (manageOrdersEventData.getManageOrdersApprovalDate() != null) ? manageOrdersEventData.getManageOrdersApprovalDate() : time.now().toLocalDate();
+
             data.put("state", CLOSED);
-            data.put("closeCaseTabField", CloseCase.builder().date(manageOrdersEventData.getManageOrdersApprovalDate())
+            data.put("closeCaseTabField", CloseCase.builder().date(closeCaseDate)
                 .build());
         }
 
