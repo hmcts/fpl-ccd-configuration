@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -2384,6 +2385,25 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s}, "
                         + "threshold details does not contain provided text",
                     MIGRATION_ID, 1));
+        }
+    }
+
+    @Nested
+    class changeApplicantToLaManaging {
+        private final OrganisationPolicy outsourcePolicy = OrganisationPolicy.organisationPolicy("JTLD1QJ",
+            "Manchester City Council", CaseRole.LAMANAGING);
+
+        @Test
+        void shouldUpdateOutsourcingPolicy(){
+            when(organisationService.findOrganisation(outsourcePolicy.getOrganisation().getOrganisationID()))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(outsourcePolicy.getOrganisation().getOrganisationName())
+                    .build()));
+
+            Map<String, OrganisationPolicy> fields = underTest.changeApplicantToLaManaging("JTLD1QJ");
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+
+            assertThat(updatedOrgPolicy).isEqualTo(outsourcePolicy);
         }
     }
 }

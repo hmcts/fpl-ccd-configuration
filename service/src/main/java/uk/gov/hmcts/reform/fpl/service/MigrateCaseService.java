@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -905,6 +906,16 @@ public class MigrateCaseService {
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(applicantCaseRole).build());
+    }
+
+    public Map<String, OrganisationPolicy> changeApplicantToLaManaging(String orgId) {
+        String orgName = organisationService.findOrganisation(orgId)
+            .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
+            .orElseThrow();
+
+        OrganisationPolicy outsourcePolicy = OrganisationPolicy.organisationPolicy(orgId, orgName, CaseRole.LAMANAGING);
+
+        return Map.of("outsourcingPolicy", outsourcePolicy);
     }
 
     public  Map<String, Object> removeApplicantEmailAndStopNotifyingTheirColleagues(CaseData caseData,

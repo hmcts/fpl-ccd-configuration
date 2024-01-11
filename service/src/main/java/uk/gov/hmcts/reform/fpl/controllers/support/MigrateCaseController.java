@@ -43,10 +43,10 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-1957", this::run1957,
-        "DFPL-1993", this::run1993
+        "DFPL-1993", this::run1993,
+        "DFPL-1965", this::run1965
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -191,10 +191,6 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run1934(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
     private void runLogMigration(CaseDetails caseDetails) {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
@@ -223,5 +219,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData, migrationId, false,
             UUID.fromString("5572d526-7045-4fd6-86a6-136656dc4ef4")));
+    }
+
+    private void run1965(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1965";
+        var possibleCaseId = 1690901925013890L;
+        var manchesterOrgId = "JTLD1QJ";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), possibleCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.changeApplicantToLaManaging(manchesterOrgId));
     }
 }
