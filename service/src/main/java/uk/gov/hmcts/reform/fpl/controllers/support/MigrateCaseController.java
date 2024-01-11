@@ -46,7 +46,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-2013", this::run2013,
-        "DFPl-1964", this::run1964
+        "DFPL-1964", this::run1964
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
