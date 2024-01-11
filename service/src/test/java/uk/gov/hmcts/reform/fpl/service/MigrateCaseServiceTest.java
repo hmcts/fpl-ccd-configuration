@@ -2389,12 +2389,12 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class changeApplicantToLaManaging {
+    class ChangeApplicantToLaManaging {
         private final OrganisationPolicy outsourcePolicy = OrganisationPolicy.organisationPolicy("JTLD1QJ",
             "Manchester City Council", CaseRole.LAMANAGING);
 
         @Test
-        void shouldUpdateOutsourcingPolicy(){
+        void shouldUpdateOutsourcingPolicy() {
             when(organisationService.findOrganisation(outsourcePolicy.getOrganisation().getOrganisationID()))
                 .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
                     .name(outsourcePolicy.getOrganisation().getOrganisationName())
