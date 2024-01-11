@@ -155,7 +155,6 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       disableKeyVaults: true
-      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66e26b9-20231116094420
       releaseNameOverride: ${SERVICE_NAME}-ccd-api-gw
       imagePullPolicy: Always
       environment:
