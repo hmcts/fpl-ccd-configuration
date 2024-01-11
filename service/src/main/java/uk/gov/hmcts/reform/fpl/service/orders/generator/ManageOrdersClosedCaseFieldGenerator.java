@@ -31,7 +31,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
         Map<String, Object> data = new HashMap<>();
 
         boolean isFinalOrder = IsFinalOrder.YES.equals(order.getIsFinalOrder())
-                || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
+            || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
 
         if (isFinalOrder) {
             data.put("children1", childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData));
@@ -40,8 +40,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
         boolean shouldCloseCase = BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersCloseCase());
         if (shouldCloseCase && isFinalOrder) {
 
-            LocalDate closeCaseDate =
-                (manageOrdersEventData.getManageOrdersApprovalDate() != null) ? manageOrdersEventData.getManageOrdersApprovalDate() : time.now().toLocalDate();
+            LocalDate closeCaseDate = getCloseCaseDate(manageOrdersEventData);
 
             data.put("state", CLOSED);
             data.put("closeCaseTabField", CloseCase.builder().date(closeCaseDate)
@@ -49,6 +48,16 @@ public class ManageOrdersClosedCaseFieldGenerator {
         }
 
         return data;
+    }
+
+    private LocalDate getCloseCaseDate(ManageOrdersEventData manageOrdersEventData) {
+        if (manageOrdersEventData.getManageOrdersApprovalDate() != null) {
+            return manageOrdersEventData.getManageOrdersApprovalDate();
+        } else if (manageOrdersEventData.getManageOrdersApprovalDateOrDateTime() != null) {
+            return manageOrdersEventData.getManageOrdersApprovalDateOrDateTime().toLocalDate();
+        } else {
+            return time.now().toLocalDate();
+        }
     }
 
 }
