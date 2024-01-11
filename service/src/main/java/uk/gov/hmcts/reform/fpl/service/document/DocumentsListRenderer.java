@@ -69,11 +69,10 @@ class DocumentsListRenderer {
     }
 
     public String renderConfidentialDocumentViews(List<DocumentView> documentViews) {
-        String s = documentViews.stream()
+        return documentViews.stream()
             .sorted(Comparator.comparing(DocumentView::getTitle))
             .map(this::renderDocument)
             .collect(joining(""));
-        return s;
     }
 
     private String renderDocument(DocumentView documentView) {
