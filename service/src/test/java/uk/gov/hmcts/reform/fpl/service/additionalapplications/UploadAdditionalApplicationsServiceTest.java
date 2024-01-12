@@ -499,7 +499,7 @@ class UploadAdditionalApplicationsServiceTest {
         }
 
         @Test
-        void shouldSealOtherDocumentIf() {
+        void shouldSealOtherDocument() {
             OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
