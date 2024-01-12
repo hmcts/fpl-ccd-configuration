@@ -254,7 +254,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "policeDisclosureListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PoliceDisclosure",
+    "FieldTypeParameter": "PoliceDisclosureConfidential",
     "Label": "Police disclosure",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -264,7 +264,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "policeDisclosureListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PoliceDisclosure",
+    "FieldTypeParameter": "PoliceDisclosureConfidential",
     "Label": "Police disclosure",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -294,7 +294,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "medicalRecordListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MedicalRecord",
+    "FieldTypeParameter": "MedicalRecordConfidential",
     "Label": "Medical Records",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -304,7 +304,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "medicalRecordListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MedicalRecord",
+    "FieldTypeParameter": "MedicalRecordConfidential",
     "Label": "Medical Records",
     "SecurityClassification": "Public",
     "Searchable": "N"
