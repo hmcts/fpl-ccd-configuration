@@ -884,6 +884,47 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    class RemoveGatekeepingOrderStandardDirectionOrder {
+
+        private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionOrderIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .standardDirectionOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     class RemoveApplicationDocument {
 
         private final UUID applicationDocumentIdToRemove = UUID.randomUUID();

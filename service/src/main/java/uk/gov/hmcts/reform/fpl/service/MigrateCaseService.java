@@ -348,6 +348,24 @@ public class MigrateCaseService {
         }
     }
 
+    public void verifyStandardDirectionOrderExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (isEmpty(caseData.getStandardDirectionOrder())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, GateKeeping order - Standard direction order not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getStandardDirectionOrder().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                + " GateKeeping order - Standard direction order document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
+        }
+    }
+
     public Map<String, Object> removeApplicationDocument(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedApplicationDocumentId) {
