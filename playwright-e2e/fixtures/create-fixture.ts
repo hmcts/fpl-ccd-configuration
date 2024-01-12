@@ -6,7 +6,6 @@ import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 
 type CreateFixtures = {
     signInPage: SignInPage;
-    newSwanseaLocalAuthorityUserOne: typeof newSwanseaLocalAuthorityUserOne; // Include the type
     smokeCreateCase : SmokeCreateCase
     startApplication : StartApplication
     ordersAndDirectionSought : OrdersAndDirectionSought
