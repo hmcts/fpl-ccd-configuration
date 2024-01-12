@@ -534,6 +534,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryApplicationDocuments",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
@@ -3953,6 +3960,48 @@
     "CaseFieldID": "draftOrder10Document",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c1ApplicationDocList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c1ApplicationDocListLA",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c1ApplicationDocListCTSC",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2ApplicationDocList",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2ApplicationDocListLA",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2ApplicationDocListCTSC",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
