@@ -9,7 +9,7 @@ End to End testing suite using:
 
 For all options take a look at https://playwright.dev/docs/running-tests
 
-To execute the 'smoke-test.spec.ts' individually from the Terminal, use the command `yarn playwright test smoke-test.spec.ts`
+To execute the 'smoke-test.spec.ts' individually from the Terminal, use the command `yarn playwright test smoke-test.spec.ts`.
 
 ## 📁 Structure
 
