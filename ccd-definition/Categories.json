@@ -129,6 +129,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantWitnessStatementsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "applicantWitnessStatements",
+    "DisplayOrder": "9010"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "carePlan",
     "CategoryLabel": "Care Plan",
     "ParentCategoryID": "applicantsDocuments",
