@@ -161,6 +161,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantsOtherDocumentsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "applicantsOtherDocuments",
+    "DisplayOrder": "9050"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "meetingNotes",
     "CategoryLabel": "Meeting Notes",
     "ParentCategoryID": "applicantsDocuments",
