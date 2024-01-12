@@ -25,12 +25,15 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.*;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
-    private static final LocalDate APPROVAL_DATE =  LocalDate.of(2010, 01, 01);
-    private static final LocalDateTime APPROVAL_DATE_TIME =  LocalDateTime.of(2010, 01, 01, 10, 00, 00 );
+    private static final LocalDate APPROVAL_DATE = LocalDate.of(2010, 01, 01);
+    private static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2010, 01, 01, 10, 00, 00);
     private static final LocalDate TODAY = LocalDate.of(2012, 12, 22);
     private static final LocalDateTime NOW = TODAY.atStartOfDay();
 
@@ -104,7 +107,8 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
         assertThat(generatedData).containsKey("children1");
     }
 
-    private CaseData buildCaseData(String closeCase, String isFinalOrder, Order order, LocalDate approvalDate, LocalDateTime approvalDateTime) {
+    private CaseData buildCaseData(String closeCase, String isFinalOrder, Order order, LocalDate approvalDate,
+                                   LocalDateTime approvalDateTime) {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersCloseCase(closeCase)
             .manageOrdersIsFinalOrder(isFinalOrder)
@@ -135,6 +139,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
         assertThat(generatedData).containsAllEntriesOf(expectedData);
         assertThat(generatedData).containsKey("children1");
     }
+
     @Test
     void shouldCloseCaseWhenOrderIsDefaultFinalAndApprovalDateTime() {
         CaseData caseData = buildCaseData("Yes", "Yes", C26_SECURE_ACCOMMODATION_ORDER, null, APPROVAL_DATE_TIME);
@@ -151,9 +156,10 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
         assertThat(generatedData).containsAllEntriesOf(expectedData);
         assertThat(generatedData).containsKey("children1");
     }
+
     @Test
     void shouldCloseCaseWhenOrderIsDefaultFinalWhenNoApprovalDate() {
-        CaseData caseData = buildCaseData("Yes", "Yes", C26_SECURE_ACCOMMODATION_ORDER, null, null);
+        CaseData caseData = buildCaseData("Yes", "Yes", C21_BLANK_ORDER, null, null);
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
