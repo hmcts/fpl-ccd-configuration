@@ -157,6 +157,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
         assertThat(generatedData).containsAllEntriesOf(expectedData);
         assertThat(generatedData).containsKey("children1");
     }
+
     @Test
     void shouldCloseCaseWhenOrderIsDefaultFinalAndApprovalDateTime() {
         CaseData caseData = buildCaseData("Yes", "Yes", C26_SECURE_ACCOMMODATION_ORDER, null, APPROVAL_DATE_TIME);
