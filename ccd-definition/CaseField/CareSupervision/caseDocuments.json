@@ -334,7 +334,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skeletonArgumentListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SkeletonArgument",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
     "Label": "Skeleton argument",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -344,7 +344,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skeletonArgumentListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SkeletonArgument",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
     "Label": "Skeleton argument",
     "SecurityClassification": "Public",
     "Searchable": "N"
