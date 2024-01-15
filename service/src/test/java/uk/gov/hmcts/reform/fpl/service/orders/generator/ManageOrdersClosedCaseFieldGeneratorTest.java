@@ -141,6 +141,23 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     }
 
     @Test
+    void shouldCloseCaseWhenOrderIsDefaultFinalWhenNoApprovalDate() {
+        CaseData caseData = buildCaseData("Yes", "Yes", C32A_CARE_ORDER, null, null);
+
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
+            .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
+
+        Map<String, Object> generatedData = underTest.generate(caseData);
+        Map<String, Object> expectedData = Map.of(
+            "state", CLOSED,
+            "closeCaseTabField", CloseCase.builder().date(time.now().toLocalDate()).build()
+        );
+
+        assertThat(generatedData).containsAllEntriesOf(expectedData);
+        assertThat(generatedData).containsKey("children1");
+    }
+    @Test
     void shouldCloseCaseWhenOrderIsDefaultFinalAndApprovalDateTime() {
         CaseData caseData = buildCaseData("Yes", "Yes", C26_SECURE_ACCOMMODATION_ORDER, null, APPROVAL_DATE_TIME);
 
@@ -158,7 +175,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     }
 
     @Test
-    void shouldCloseCaseWhenOrderIsDefaultFinalWhenNoApprovalDate() {
+    void shouldCloseCaseWhenOrderIsDefaultFinalWhenNoApprovalDateForBlankOrder() {
         CaseData caseData = buildCaseData("Yes", "Yes", C21_BLANK_ORDER, null, null);
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
