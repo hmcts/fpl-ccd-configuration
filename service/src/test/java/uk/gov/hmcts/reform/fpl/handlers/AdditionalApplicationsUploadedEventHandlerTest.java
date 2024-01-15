@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -142,6 +144,9 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
     @InjectMocks
     private AdditionalApplicationsUploadedEventHandler underTest;
+
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     void before() {
@@ -563,6 +568,71 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         verify(cafcassNotificationService, never()).sendEmail(
                 any(), any(), any(), any()
         );
+    }
+
+    @Nested
+    class ConfidentialC2 {
+        private static final String UPLOADER_EMAIL = "uploader@test.com";
+
+        private final AdditionalApplicationsBundle additionalApplicationBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(null)
+            .c2DocumentBundleConfidential(C2DocumentBundle.builder()
+                .document(C2_DOCUMENT)
+                .respondents(RESPONDENTS)
+                .build())
+            .otherApplicationsBundle(null)
+            .build();
+
+        @Test
+        void shouldNotifyUploaderOnly() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(additionalApplicationBundle))
+                .build();
+
+            given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
+            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
+
+            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
+                caseDataBefore, ORDER_APPLICANT_LA));
+
+            verify(notificationService).sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL), notifyData,
+                caseDataWithConfidentialC2.getId().toString());
+
+            verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotifyApplicantIfOtherApplicationBundleUploaded() {
+            AdditionalApplicationsBundle additionalApplicationBundleWithOtherBundle =
+                additionalApplicationBundle.toBuilder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .document(OTHER_APPLICATION_DOCUMENT)
+                        .respondents(RESPONDENTS)
+                        .build())
+                    .build();
+
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(additionalApplicationBundleWithOtherBundle))
+                .build();
+
+            given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
+            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
+            given(localAuthorityRecipients.getRecipients(
+                RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
+                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
+                caseDataBefore, ORDER_APPLICANT_LA));
+
+            verify(notificationService).sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
+                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, UPLOADER_EMAIL),
+                notifyData, caseDataWithConfidentialC2.getId().toString()
+            );
+
+            verifyNoMoreInteractions(notificationService);
+        }
     }
 
     private static Stream<Arguments> applicationDataParams() {
