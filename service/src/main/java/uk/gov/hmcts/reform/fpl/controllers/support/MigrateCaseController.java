@@ -45,8 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-2013", this::run2013,
-        "DFPl-1964", this::run1964
+        "DFPL-1947", this::run1947,
+        "DFPL-1959", this::run1959
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -199,26 +199,29 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run2013(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2013";
-        var possibleCaseIds = List.of(1663684413688109L);
-        var expectedMessageId = UUID.fromString("c90aa5af-d2c9-472a-a885-62bde43b7092");
-
+    private void run1947(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1947";
+        var possibleCaseIds = List.of(1676634658659567L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        UUID documentId = UUID.fromString("492e4156-3066-4b1f-9b07-26347c21ae51");
+
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
+
+        migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, documentId);
+        caseDetails.getData().remove("standardDirectionOrder");
     }
 
-    private void run1964(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1964";
-        var possibleCaseIds = List.of(1699884822944766L);
+    private void run1959(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1959";
+        var possibleCaseIds = List.of(1701964866232462L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
-        CaseData caseData = getCaseData(caseDetails);
-        UUID expectedCMOId = UUID.fromString("7c62b934-4ab1-47e0-a152-b5512807ec09");
+        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
 
-        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId,
-            expectedCMOId,true));
+        CaseData caseData = getCaseData(caseDetails);
+
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }

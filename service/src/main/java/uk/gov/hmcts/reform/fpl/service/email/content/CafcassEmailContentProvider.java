@@ -49,7 +49,7 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
         String eldestChildLastName = helper.getEldestChildLastName(caseData.getAllChildren());
 
         return NewApplicationCafcassData.builder()
-            .localAuthourity(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .localAuthourity(caseData.getApplicantName().orElse("An applicant"))
             .ordersAndDirections(ordersAndDirections)
             .timeFramePresent(timeFrame.isPresent())
             .timeFrameValue(timeFrame.map(StringUtils::uncapitalize).orElse(""))
