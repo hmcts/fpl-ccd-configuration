@@ -253,6 +253,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "courtCorrespondenceConfidential",
     "CategoryLabel": "Confidential",
+    "ParentCategoryID": "courtCorrespondence",
     "DisplayOrder": "150"
   },
   {
