@@ -251,6 +251,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "courtCorrespondenceConfidential",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "150"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "hearingNotices",
     "CategoryLabel": "Hearing notices",
     "DisplayOrder": "16"

@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CorrespondenceDocument",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
     "Label": "Correspondence (Confidential)",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -74,7 +74,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CorrespondenceDocument",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
     "Label": "Correspondence (Restricted to CTSC only)",
     "SecurityClassification": "Public",
     "Searchable": "N"
