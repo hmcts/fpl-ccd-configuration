@@ -192,6 +192,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "respondentWitnessStatementsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "respondentWitnessStatements",
+    "DisplayOrder": "10020"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "guardiansEvidence",
     "CategoryLabel": "Guardian's evidence",
     "DisplayOrder": "11"
