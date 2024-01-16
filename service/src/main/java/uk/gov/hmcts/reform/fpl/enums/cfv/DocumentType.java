@@ -89,7 +89,7 @@ public enum DocumentType {
     TRANSCRIPTS("└─ Transcripts", standardResolver("transcriptList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 80, TRANSCRIPTS_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 80, NO_TRANSLATION_NOTIFICATION_CONFIG),
     AA_PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
         false, false, false, false,
         null,

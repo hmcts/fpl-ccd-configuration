@@ -59,11 +59,6 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToCafcassWelsh(null)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration TRANSCRIPTS_NOTIFICATION_CONFIG =
-        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToTranslationTeam(null)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration COURT_BUNDLE_NOTIFICATION_CONFIG =
         DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.COURT_BUNDLE)
