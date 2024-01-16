@@ -59,10 +59,9 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToCafcassWelsh(null)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration DEFAULT_ORDER_NOTIFICATION_CONFIG =
-        DocumentUploadedNotificationConfiguration.builder()
-            .sendToCafcassEngland(ConfidentialLevel.LA)
-            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
+    public static final DocumentUploadedNotificationConfiguration TRANSCRIPTS_NOTIFICATION_CONFIG =
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
+            .sendToTranslationTeam(null)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration HEARING_DOCUMENT_NOTIFICATION_CONFIG =
@@ -72,6 +71,9 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToChildSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
             .sendToDesignatedLA(ConfidentialLevel.LA)
             .sendToSecondaryLA(ConfidentialLevel.LA)
+            .sendToCafcassRepresentative(ConfidentialLevel.LA)
+            .sendToLegalRepresentative(ConfidentialLevel.LA)
+            .sendToTranslationTeam(ConfidentialLevel.CTSC)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration COURT_BUNDLE_NOTIFICATION_CONFIG =
@@ -86,8 +88,6 @@ public class DocumentUploadedNotificationConfiguration {
 
     public static final DocumentUploadedNotificationConfiguration POSITION_STATEMENT_NOTIFICATION_CONFIG =
         HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToLegalRepresentative(ConfidentialLevel.LA)
-            .sendToTranslationTeam(ConfidentialLevel.CTSC)
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.POSITION_STATEMENT)
             .build();
 
@@ -122,5 +122,10 @@ public class DocumentUploadedNotificationConfiguration {
     public static final DocumentUploadedNotificationConfiguration NOTICE_OF_ACTING_OR_ISSUE_NOTIFICATION_CONFIG =
         NO_CAFCASS_NOTIFICATION_CONFIG.toBuilder()
             .sendToCafcassRepresentative(null)
+            .build();
+
+    public static final DocumentUploadedNotificationConfiguration APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG =
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
+            .sendToChildSolicitor(null)
             .build();
 }

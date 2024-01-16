@@ -24,16 +24,17 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CASE_SUMMARY_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_ORDER_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_CAFCASS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.POSITION_STATEMENT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.SKELETON_ARGUMENT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.THRESHOLD_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.TRANSCRIPTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
@@ -87,11 +88,11 @@ public enum DocumentType {
     JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 70, DEFAULT_ORDER_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 70, DEFAULT_NOTIFICATION_CONFIG),
     TRANSCRIPTS("└─ Transcripts", standardResolver("transcriptList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 80, DEFAULT_ORDER_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 80, TRANSCRIPTS_NOTIFICATION_CONFIG),
     AA_PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
         false, false, false, false,
         null,
@@ -103,7 +104,7 @@ public enum DocumentType {
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 110, DEFAULT_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 110, APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
