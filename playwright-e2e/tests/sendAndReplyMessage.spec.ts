@@ -12,16 +12,13 @@ import {systemUpdateUser} from '../utils/userCredentials';
 {
   test('HMCTSAdmin send message to Judge',
     async ({page}) => {
-
-
       const idamApiUrl = 'https://idam-api.aat.platform.hmcts.net';
-      console.log('hghjgjhgjhjjhhj');
-      const user = systemUpdateUser,APIRequestContext = await request.newContext();
+      // console.log('hghjgjhgjhjjhhj');
+      const user = systemUpdateUser, APIRequestContext = await request.newContext();
       // getAuthToken();
-      const response = await APIRequestContext.post(`${idamApiUrl}/loginUser?username=${user.email}&password=${user.password}`);
+      const response = await APIRequestContext.post(`${idamApiUrl}/loginUser?username=${user.email}&password=${user.password}`,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}});
 
-      //  response = await APIRequestContext.get('https://api.publicapis.org/entries'), responsebody = await response.json();
-      console.log(response.status);
+      console.log(await response.json());
 
 
       // eslint-disable-next-line no-unused-vars
