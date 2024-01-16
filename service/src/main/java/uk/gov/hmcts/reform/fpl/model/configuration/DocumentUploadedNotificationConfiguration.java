@@ -84,11 +84,6 @@ public class DocumentUploadedNotificationConfiguration {
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.SKELETON_ARGUMENT)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration THRESHOLD_NOTIFICATION_CONFIG =
-        NO_TRANSLATION_NOTIFICATION_CONFIG.toBuilder()
-            .sendToCafcassWelsh(ConfidentialLevel.LA)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration COURT_CORRESPONDENCE_NOTIFICATION_CONFIG =
         DocumentUploadedNotificationConfiguration.builder()
             .sendToCafcassEngland(ConfidentialLevel.LA)
