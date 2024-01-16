@@ -64,38 +64,25 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToTranslationTeam(null)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration HEARING_DOCUMENT_NOTIFICATION_CONFIG =
-        DocumentUploadedNotificationConfiguration.builder()
-            .sendToCafcassEngland(ConfidentialLevel.CTSC)
-            .sendToRespondentSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
-            .sendToChildSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
-            .sendToDesignatedLA(ConfidentialLevel.LA)
-            .sendToSecondaryLA(ConfidentialLevel.LA)
-            .sendToCafcassRepresentative(ConfidentialLevel.LA)
-            .sendToLegalRepresentative(ConfidentialLevel.LA)
-            .sendToTranslationTeam(ConfidentialLevel.CTSC)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration COURT_BUNDLE_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.COURT_BUNDLE)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration CASE_SUMMARY_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.CASE_SUMMARY)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration POSITION_STATEMENT_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.POSITION_STATEMENT)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration SKELETON_ARGUMENT_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.SKELETON_ARGUMENT)
             .build();
-
 
     public static final DocumentUploadedNotificationConfiguration THRESHOLD_NOTIFICATION_CONFIG =
         NO_TRANSLATION_NOTIFICATION_CONFIG.toBuilder()
