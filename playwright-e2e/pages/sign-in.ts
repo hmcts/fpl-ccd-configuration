@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { UrlConfig } from "../utils/urls";
+import { UrlConfig } from "../settings/urls";
 
 export class SignInPage {
   readonly page: Page;
@@ -33,7 +33,7 @@ export class SignInPage {
   }
 
   async isSignedIn() {
-    await this.applyLocator.click({ timeout: 65000 });
+    await this.applyLocator.click();
     await expect(this.applyLocator).toBeVisible();
   }
 }
