@@ -24,14 +24,12 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CASE_SUMMARY_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_CAFCASS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.POSITION_STATEMENT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.SKELETON_ARGUMENT_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.THRESHOLD_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.TRANSCRIPTS_NOTIFICATION_CONFIG;
@@ -104,7 +102,7 @@ public enum DocumentType {
     APPLICANTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("applicantWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_APPLICANTS_DOCUMENTS, 110, APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_APPLICANTS_DOCUMENTS, 110, DEFAULT_NOTIFICATION_CONFIG),
     CARE_PLAN("└─ Care plan", standardResolver("carePlanList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
@@ -158,7 +156,7 @@ public enum DocumentType {
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 230, RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 230, DEFAULT_NOTIFICATION_CONFIG),
     GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"),
         false, false, false, false,
         defaultWithDocumentBuilder(),

@@ -89,11 +89,6 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToCafcassWelsh(ConfidentialLevel.LA)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG =
-        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToChildSolicitor(null)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration COURT_CORRESPONDENCE_NOTIFICATION_CONFIG =
         DocumentUploadedNotificationConfiguration.builder()
             .sendToCafcassEngland(ConfidentialLevel.LA)
@@ -109,10 +104,5 @@ public class DocumentUploadedNotificationConfiguration {
     public static final DocumentUploadedNotificationConfiguration NOTICE_OF_ACTING_OR_ISSUE_NOTIFICATION_CONFIG =
         NO_CAFCASS_NOTIFICATION_CONFIG.toBuilder()
             .sendToCafcassRepresentative(null)
-            .build();
-
-    public static final DocumentUploadedNotificationConfiguration APPLICANTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG =
-        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToChildSolicitor(null)
             .build();
 }
