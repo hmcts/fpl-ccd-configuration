@@ -230,10 +230,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "drugAndAlcoholReportsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "drugAndAlcoholReports",
+    "DisplayOrder": "12020"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "lettersOfInstructionReferrals",
     "CategoryLabel": "Letters of instruction/referrals",
     "ParentCategoryID": "parent_expertReports",
     "DisplayOrder": "1203"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "lettersOfInstructionReferralsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "lettersOfInstructionReferrals",
+    "DisplayOrder": "12030"
   },
   {
     "LiveFrom": "01/01/2017",
