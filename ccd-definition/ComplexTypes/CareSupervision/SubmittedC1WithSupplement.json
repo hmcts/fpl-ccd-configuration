@@ -48,7 +48,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1Supplement",
+    "FieldTypeParameter": "C1SupplementOriginal",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -58,7 +58,7 @@
     "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1SupportingEvidenceBundle",
+    "FieldTypeParameter": "C1SupportingEvidenceBundleOriginal",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
