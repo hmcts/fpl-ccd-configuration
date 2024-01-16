@@ -83,8 +83,6 @@ withNightlyPipeline(type, product, component) {
   enableFullFunctionalTest(240)
   // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
   //enableCrossBrowserTest(['chrome', 'firefox'])
-  //enableFortifyScan('fpl-aat')
-
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -104,7 +102,6 @@ withNightlyPipeline(type, product, component) {
     env.TESTS_FOR_ACCESSIBILITY = true
     env.ENV = 'aat'
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
-    yarnBuilder.yarn('test:functional-nightly')
   }
 
   // before('crossBrowserTest') {
