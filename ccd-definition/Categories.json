@@ -153,6 +153,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "familyAndViabilityAssessmentsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "familyAndViabilityAssessments",
+    "DisplayOrder": "9040"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "applicantsOtherDocuments",
     "CategoryLabel": "Applicant's other documents",
     "ParentCategoryID": "applicantsDocuments",
