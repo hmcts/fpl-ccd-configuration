@@ -45,8 +45,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1947", this::run1947,
-        "DFPL-1959", this::run1959
+        "DFPL-1978a", this::run1978a,
+        "DFPL-1978b", this::run1978b
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -199,29 +199,23 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run1947(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1947";
-        var possibleCaseIds = List.of(1676634658659567L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1978a(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1978a";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1566483828191389L, migrationId);
 
-        UUID documentId = UUID.fromString("492e4156-3066-4b1f-9b07-26347c21ae51");
+        UUID childId = UUID.fromString("47e723aa-4ee1-4898-bb9f-5b67ebf3e2f7");
 
         CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("standardDirectionOrder");
+        caseDetails.getData().putAll(migrateCaseService.removeSocialWorkerTelephone(caseData, migrationId, childId));
     }
 
-    private void run1959(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1959";
-        var possibleCaseIds = List.of(1701964866232462L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+    private void run1978b(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1978b";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1576755744090441L, migrationId);
 
-        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
+        UUID childId = UUID.fromString("5aa0e277-15c6-4cab-b575-252cb3115c96");
 
         CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
+        caseDetails.getData().putAll(migrateCaseService.removeSocialWorkerTelephone(caseData, migrationId, childId));
     }
 }

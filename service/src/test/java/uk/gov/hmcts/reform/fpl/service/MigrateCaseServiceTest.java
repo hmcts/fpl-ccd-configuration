@@ -47,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -2425,6 +2426,98 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s}, "
                         + "threshold details does not contain provided text",
                     MIGRATION_ID, 1));
+        }
+    }
+
+    @Nested
+    class RemoveSocialWorkerTelephone {
+
+        @Test
+        void shouldRemoveSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(Telephone.builder()
+                        .telephoneNumber("00000000000")
+                        .contactDirection("contact xyz")
+                        .build())
+                    .build())
+                .build();
+
+            Element<Child> unchangedChild = element(UUID.randomUUID(), Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jack")
+                    .lastName("Smith")
+                    .build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child), unchangedChild))
+                .build();
+
+            // should have the same child object, just missing a telephone number
+            Child updatedChild = child.toBuilder()
+                .party(child.getParty().toBuilder()
+                    .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                        .telephoneNumber(null)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, Object> response = underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId);
+
+            assertThat(response.get("children1")).asList()
+                .containsExactly(element(childId, updatedChild), unchangedChild);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "child did not have social worker telephone",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoChildWithId() {
+            UUID childId = UUID.randomUUID();
+            UUID expectedId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, expectedId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "could not find child with UUID %s",
+                    MIGRATION_ID, 1, expectedId));
         }
     }
 }

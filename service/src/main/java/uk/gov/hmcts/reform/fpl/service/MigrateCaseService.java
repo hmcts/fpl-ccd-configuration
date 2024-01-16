@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -943,5 +944,33 @@ public class MigrateCaseService {
         );
 
         return Map.of("localAuthorities", localAuthorities);
+    }
+
+    public Map<String, Object> removeSocialWorkerTelephone(CaseData caseData, String migrationId, UUID childId) {
+        List<Element<Child>> children = caseData.getAllChildren();
+        Element<Child> targetChild = ElementUtils.findElement(childId, children)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find child with UUID %s",
+                migrationId, caseData.getId(), childId))
+            );
+
+        final Child child = targetChild.getValue();
+
+        if (isEmpty(child.getParty().getSocialWorkerTelephoneNumber())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, child did not have social worker telephone",
+                migrationId, caseData.getId()));
+        }
+
+        Child updatedChild = child.toBuilder()
+            .party(child.getParty().toBuilder()
+                .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                    .telephoneNumber(null)
+                    .build())
+                .build())
+            .build();
+
+        targetChild.setValue(updatedChild);
+        return Map.of("children1", children);
     }
 }
