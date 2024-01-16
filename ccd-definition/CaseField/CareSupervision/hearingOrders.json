@@ -449,7 +449,7 @@
     "ID": "hearingOrdersBundlesDrafts",
     "Label": "Hearing",
     "FieldType": "Collection",
-    "FieldTypeParameter": "OrdersBundle",
+    "FieldTypeParameter": "OrdersBundleForApproval",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -459,7 +459,7 @@
     "ID": "hearingOrdersBundlesDraftReview",
     "Label": "Hearing",
     "FieldType": "Collection",
-    "FieldTypeParameter": "OrdersBundle",
+    "FieldTypeParameter": "OrdersBundleForReview",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

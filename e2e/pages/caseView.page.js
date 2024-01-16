@@ -55,20 +55,6 @@ module.exports = {
     await I.retryUntilExists(async () => {
       I.selectOption(this.actionsDropdown, actionSelected);
       I.click(this.goButton);
-      // commented as it has multiple check for element next step
-      // if(await I.waitForSelector(this.actionsDropdown, 30) != null) {
-      //   console.log("inside if");
-      //   //await I.scrollToElement(this.actionsDropdown);
-      //   I.selectOption(this.actionsDropdown, actionSelected);
-      //   I.click(this.goButton);
-      // } else {
-      //   console.log("\ninside else");
-      //   const newUrl = await I.grabCurrentUrl();
-      //   if(newUrl === currentUrl || !newUrl.includes('http')){
-      //     output.print('Page refresh');
-      //     I.refreshPage();
-      //   }
-      // }
     }, '#next-step', false);
   },
 

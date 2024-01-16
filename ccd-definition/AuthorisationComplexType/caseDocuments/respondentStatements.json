@@ -13,20 +13,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
-        "CRUD": "CRUD"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[SOLICITOR]",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -44,20 +31,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
-        "CRUD": "CRUD"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[SOLICITOR]",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
+        "CRUD": "CUD"
       }
     ]
   },
@@ -67,15 +41,6 @@
     "CaseFieldID": "respondentStatements",
     "ListElementCode": "supportingEvidenceBundle",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "R"
-      },
       {
         "UserRoles": [
           "[LASOLICITOR]",
@@ -121,7 +86,7 @@
           "[EPSMANAGING]",
           "[LAMANAGING]"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CUD"
       },
       {
         "UserRoles": [
@@ -153,15 +118,6 @@
           "[LAMANAGING]"
         ],
         "CRUD": "CUD"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass",
-          "[CAFCASSSOLICITOR]",
-          "[BARRISTER]",
-          "[SOLICITOR]"
-        ],
-        "CRUD": "R"
       }
     ]
   }
