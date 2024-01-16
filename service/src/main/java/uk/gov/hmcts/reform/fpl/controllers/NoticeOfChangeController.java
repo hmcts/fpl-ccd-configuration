@@ -99,4 +99,14 @@ public class NoticeOfChangeController extends CallbackController {
         }
         return aacResponse;
     }
+
+    @PostMapping("/update-respondents/about-to-submit")
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        // clean up after the NoC decision
+        caseDetails.getData().remove("changeOrganisationRequestField");
+
+        return respond(caseDetails);
+    }
 }
