@@ -164,7 +164,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CaseSummary",
+    "FieldTypeParameter": "CaseSummaryConfidential",
     "Label": "Case summary",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -174,7 +174,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CaseSummary",
+    "FieldTypeParameter": "CaseSummaryConfidential",
     "Label": "Case summary",
     "SecurityClassification": "Public",
     "Searchable": "N"
