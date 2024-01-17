@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -171,40 +170,27 @@ public class AdditionalApplicationsUploadedEventHandler {
                     recipients.add(emails.get(applicant.getName()));
                 }
             }
-        }
-
-        if (newBundleUploaded.getC2DocumentBundleLA() != null) {
-            // the bundle is uploaded by la, send notification to la shared inbox
-            log.info("Confidential C2 uploaded by LA. notify LA");
-            LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
-            if (la != null) {
-                recipients.add(localAuthorityRecipients.getShareInbox(la));
-                recipients.add(la.getEmail());
-            } else {
-                log.error("Organization not found. Fail to notify LA");
+        } else {
+            // only confidential c2 is uploaded
+            if (newBundleUploaded.getC2DocumentBundleLA() != null) {
+                // the bundle is uploaded by la, send notification to la shared inbox
+                log.info("Confidential C2 uploaded by LA.");
+                LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+                if (la != null) {
+                    localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
+                    recipients.add(la.getEmail());
+                } else {
+                    log.error("Organization not found. Won't send notification to LA's shared/group inbox");
+                }
+            } else if (!userService.isHmctsAdminUser()) {
+                log.info("Confidential C2 uploaded by solicitor.");
+                recipients.add(userService.getUserEmail());
             }
-        } else if (isConfidentialC2UploadedBySolicitor(newBundleUploaded)) {
-            // the bundle is uploaded by solicitor, not admin
-            log.info("Confidential C2 uploaded by solicitor. notify uploader");
-            recipients.add(userService.getUserEmail());
         }
 
         if (isNotEmpty(recipients)) {
             sendNotification(caseData, recipients);
         }
-    }
-
-    private boolean isConfidentialC2UploadedBySolicitor(AdditionalApplicationsBundle bundle) {
-        return Arrays.stream(bundle.getClass().getMethods())
-            .filter(method -> method.getName().contains("getC2DocumentBundleResp") ||
-                              method.getName().contains("getC2DocumentBundleChild"))
-            .anyMatch(method -> {
-                try {
-                    return method.invoke(bundle) != null;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
     }
 
     private Map<String, String> getRespondentAndChildEmails(CaseData caseData) {

@@ -626,9 +626,10 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         @BeforeEach
         void setup() {
             given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
+            given(userService.isHmctsAdminUser()).willReturn(false);
             given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
             given(contentProvider.getNotifyData(any())).willReturn(notifyData);
-            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(LA_SHARE_INBOX);
+            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(Optional.of(LA_SHARE_INBOX));
         }
 
         @Test
@@ -687,6 +688,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
             AdditionalApplicationsUploadedEvent event =
                 new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2, caseDataBefore, ORDER_APPLICANT_LA);
+
+            given(userService.isHmctsAdminUser()).willReturn(true);
 
             underTest.sendAdditionalApplicationsByPost(event);
             verifyNoInteractions(sendDocumentService);
