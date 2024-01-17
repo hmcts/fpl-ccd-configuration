@@ -11,10 +11,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "PlacementConfidentialDocument",
+    "ListElementCode": "otherDocTypeName",
+    "FieldType": "Text",
+    "ElementLabel": "Custom document type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementConfidentialDocument",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "placementApplicationsAndResponses"
   },
   {
     "LiveFrom": "01/01/2017",

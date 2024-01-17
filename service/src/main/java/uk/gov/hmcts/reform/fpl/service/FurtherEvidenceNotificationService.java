@@ -53,6 +53,10 @@ public class FurtherEvidenceNotificationService {
         return localAuthorityRecipients.getRecipients(recipientsRequest);
     }
 
+    public Set<String> getDesignatedLocalAuthorityRecipientsOnly(CaseData caseData) {
+        return new HashSet<>(localAuthorityRecipients.getDesignatedLocalAuthorityContacts(caseData));
+    }
+
     public Set<String> getSecondaryLocalAuthorityRecipients(CaseData caseData) {
         final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
@@ -60,6 +64,18 @@ public class FurtherEvidenceNotificationService {
             .build();
 
         return localAuthorityRecipients.getRecipients(recipientsRequest);
+    }
+
+    public Set<String> getSecondaryLocalAuthorityRecipientsOnly(CaseData caseData) {
+        return new HashSet<>(localAuthorityRecipients.getSecondaryLocalAuthorityContacts(caseData));
+    }
+
+    public Set<String> getLegalRepresentativeOnly(CaseData caseData) {
+        return new HashSet<>(localAuthorityRecipients.getLegalRepresentatives(caseData));
+    }
+
+    public Set<String> getFallbackInbox() {
+        return new HashSet<>(localAuthorityRecipients.getFallbackInbox());
     }
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {

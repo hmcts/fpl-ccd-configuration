@@ -1,0 +1,176 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Type",
+    "FieldTypeParameter": "DraftOrderType",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "order",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "draftOrderForReviewPriorToHearing"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "lastUploadedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "Last Uploaded Order",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\"",
+    "CategoryID": "draftOrderForReviewPriorToHearing"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "dateSent",
+    "FieldType": "Date",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public",
+    "FieldShowCondition:": "judgeTitleAndName=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "dateIssued",
+    "FieldType": "Date",
+    "ElementLabel": "Date issued",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "status",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CaseManagementOrderStatus",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public",
+    "FieldShowCondition:": "status!=\"APPROVED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "judgeTitleAndName",
+    "FieldType": "Text",
+    "ElementLabel": "Judge",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "othersNotified",
+    "FieldType": "Text",
+    "ElementLabel": "Others notified",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "requestedChanges",
+    "FieldType": "Text",
+    "ElementLabel": "Changes requested by judge",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\"",
+    "Comment": "Used to store the selected others to notify"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForReview",
+    "ListElementCode": "hearingId",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing UUID",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  }
+]
