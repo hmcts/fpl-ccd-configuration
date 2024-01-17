@@ -97,7 +97,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -4704,7 +4703,7 @@ class ManageDocumentServiceTest {
     @Nested
     class BuildManageDocumentsUploadedEventTest {
         @ParameterizedTest
-        @MethodSource("allDocumentsTypeParameters")
+        @MethodSource("provideTestData")
         void shouldBuildManageDocumentsUploadedEvent(DocumentType documentType, ConfidentialLevel confidentialLevel)
             throws Exception {
 
@@ -4752,18 +4751,8 @@ class ManageDocumentServiceTest {
             assertEquals(expectedNewDocumentsCTSC, eventData.getNewDocumentsCTSC());
         }
 
-        private static Stream<Arguments> allDocumentsTypeParameters() {
-            List<Arguments> streamList = new ArrayList<>();
-
-            for (DocumentType docType : DocumentType.values()) {
-                if (isNotEmpty(docType.getBaseFieldNameResolver())) {
-                    for (ConfidentialLevel level : ConfidentialLevel.values()) {
-                        streamList.add(Arguments.of(docType, level));
-                    }
-                }
-            }
-
-            return streamList.stream();
+        private static Stream<Arguments> provideTestData() {
+            return ManageDocumentsUploadedEventTestData.allUploadableDocumentsTypeParameters();
         }
     }
 }
