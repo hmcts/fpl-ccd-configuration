@@ -119,6 +119,11 @@ public class LocalAuthorityRecipientsService {
         return List.of(fallbackInbox);
     }
 
+    public String getShareInbox(LocalAuthority la) {
+        return localAuthorityIds.getLocalAuthorityCode(la.getId())
+            .flatMap(localAuthorityInboxes::getSharedInbox).orElse(null);
+    }
+
     private Optional<LocalAuthority> getDesignatedLocalAuthority(CaseData caseData) {
         return Optional.of(unwrapElements(caseData.getLocalAuthorities()).stream()
             .filter(la -> YesNo.YES.getValue().equals(la.getDesignated()))

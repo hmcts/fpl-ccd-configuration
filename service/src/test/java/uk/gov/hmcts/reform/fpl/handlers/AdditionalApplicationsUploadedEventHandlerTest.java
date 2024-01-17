@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -147,6 +149,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
     @Mock
     private UserService userService;
+    @Mock
+    private ApplicantLocalAuthorityService applicantLocalAuthorityService;
 
     @BeforeEach
     void before() {
@@ -573,24 +577,65 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Nested
     class ConfidentialC2 {
         private static final String UPLOADER_EMAIL = "uploader@test.com";
+        private static final String LA_SHARE_INBOX = "la@test.com";
+        private static final LocalAuthority LA = LocalAuthority.builder().email(LA_SHARE_INBOX).build();
 
-        private final AdditionalApplicationsBundle additionalApplicationBundle = AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(null)
-            .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                .document(C2_DOCUMENT)
+        private static final C2DocumentBundle CONFIDENTIAL_C2 = C2DocumentBundle.builder()
+            .document(C2_DOCUMENT)
                 .respondents(RESPONDENTS)
-                .build())
-            .otherApplicationsBundle(null)
-            .build();
-
-        @Test
-        void shouldNotifyUploaderOnly() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(additionalApplicationBundle))
+                .build();
+        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
                 .build();
 
+        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleLA(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleResp0(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleChild0(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION =
+            ADDITIONAL_APPLICATION_ADMIN.toBuilder()
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .document(OTHER_APPLICATION_DOCUMENT)
+                    .respondents(RESPONDENTS)
+                    .build())
+                .build();
+
+        @BeforeEach
+        void setup() {
             given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
-            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
+            given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
+            given(contentProvider.getNotifyData(any())).willReturn(notifyData);
+            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(LA_SHARE_INBOX);
+        }
+
+        @Test
+        void shouldNotifyUploaderOnlyWhenRespSolicitorUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_RESP_SOLICITOR))
+                .build();
 
             underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
                 caseDataBefore, ORDER_APPLICANT_LA));
@@ -603,21 +648,65 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         }
 
         @Test
-        void shouldNotifyApplicantIfOtherApplicationBundleUploaded() {
-            AdditionalApplicationsBundle additionalApplicationBundleWithOtherBundle =
-                additionalApplicationBundle.toBuilder()
-                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                        .document(OTHER_APPLICATION_DOCUMENT)
-                        .respondents(RESPONDENTS)
-                        .build())
-                    .build();
-
+        void shouldNotifyUploaderOnlyWhenChildSolicitorUploadedConfidentialC2() {
             CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(additionalApplicationBundleWithOtherBundle))
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_CHILD_SOLICITOR))
                 .build();
 
-            given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
-            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
+            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
+                caseDataBefore, ORDER_APPLICANT_LA));
+
+            verify(notificationService).sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL), notifyData,
+                caseDataWithConfidentialC2.getId().toString());
+
+            verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotifyLAOnlyWhenLAUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
+                .build();
+
+            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
+                caseDataBefore, ORDER_APPLICANT_LA));
+
+            verify(notificationService).sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LA_SHARE_INBOX), notifyData,
+                caseDataWithConfidentialC2.getId().toString());
+
+            verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotNotifyPartiesWhenAdminUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_ADMIN))
+                .build();
+
+            AdditionalApplicationsUploadedEvent event =
+                new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2, caseDataBefore, ORDER_APPLICANT_LA);
+
+            underTest.sendAdditionalApplicationsByPost(event);
+            verifyNoInteractions(sendDocumentService);
+
+            underTest.notifyApplicant(event);
+            verifyNoInteractions(notificationService);
+
+            underTest.notifyDigitalRepresentatives(event);
+            verifyNoInteractions(representativeNotificationService);
+
+            underTest.notifyEmailServedRepresentatives(event);
+            verifyNoInteractions(representativeNotificationService);
+        }
+
+        @Test
+        void shouldNotifyApplicantIfOtherApplicationBundleUploaded() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION))
+                .build();
+
             given(localAuthorityRecipients.getRecipients(
                 RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
                 .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -627,11 +716,23 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
             verify(notificationService).sendEmail(
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, UPLOADER_EMAIL),
+                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 notifyData, caseDataWithConfidentialC2.getId().toString()
             );
 
             verifyNoMoreInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotifyCafcassWhenConfidentialC2DocumentsUploaded() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
+                .build();
+
+            verifyInvocation(List.of(CONFIDENTIAL_C2.getDocument()), caseData, caseDataBefore);
         }
     }
 

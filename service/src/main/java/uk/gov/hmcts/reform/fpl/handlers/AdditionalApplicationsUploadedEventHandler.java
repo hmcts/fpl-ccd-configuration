@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -77,6 +80,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final CafcassNotificationService cafcassNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final UserService userService;
+    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
     private static final String LIST = "•";
 
     @EventListener
@@ -84,10 +88,12 @@ public class AdditionalApplicationsUploadedEventHandler {
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-        final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle, false);
+        if (uploadedBundle.getC2DocumentBundle() != null || uploadedBundle.getOtherApplicationsBundle() != null) {
+            final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle, false);
 
-        Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData);
-        sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
+            Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData);
+            sendDocumentService.sendDocuments(caseData, documents, new ArrayList<>(recipientsToNotify));
+        }
     }
 
     @EventListener
@@ -167,15 +173,38 @@ public class AdditionalApplicationsUploadedEventHandler {
             }
         }
 
-        if (newBundleUploaded.getC2DocumentBundleConfidential() != null) {
-            log.info("Confidential C2 uploaded. notifyUploaderOrganization");
-
+        if (newBundleUploaded.getC2DocumentBundleLA() != null) {
+            // the bundle is uploaded by la, send notification to la shared inbox
+            log.info("Confidential C2 uploaded by LA. notify LA");
+            LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+            if (la != null) {
+                recipients.add(localAuthorityRecipients.getShareInbox(la));
+                recipients.add(la.getEmail());
+            } else {
+                log.error("Organization not found. Fail to notify LA");
+            }
+        } else if (isConfidentialC2UploadedBySolicitor(newBundleUploaded)) {
+            // the bundle is uploaded by solicitor, not admin
+            log.info("Confidential C2 uploaded by solicitor. notify uploader");
             recipients.add(userService.getUserEmail());
         }
 
         if (isNotEmpty(recipients)) {
             sendNotification(caseData, recipients);
         }
+    }
+
+    private boolean isConfidentialC2UploadedBySolicitor(AdditionalApplicationsBundle bundle) {
+        return Arrays.stream(bundle.getClass().getMethods())
+            .filter(method -> method.getName().contains("getC2DocumentBundleResp") ||
+                              method.getName().contains("getC2DocumentBundleChild"))
+            .anyMatch(method -> {
+                try {
+                    return method.invoke(bundle) != null;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 
     private Map<String, String> getRespondentAndChildEmails(CaseData caseData) {
@@ -219,16 +248,20 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        NotifyData notifyData = contentProvider.getNotifyData(caseData);
+        AdditionalApplicationsBundle bundleUploaded = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
-        Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
+        if (bundleUploaded.getC2DocumentBundle() != null || bundleUploaded.getOtherApplicationsBundle() != null) {
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
-        representativeNotificationService.sendNotificationToRepresentatives(
-            caseData.getId(),
-            notifyData,
-            digitalRepresentativesEmails,
-            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
-        );
+            Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
+
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                digitalRepresentativesEmails,
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+            );
+        }
     }
 
     private Set<String> getRepresentativesEmails(CaseData caseData,
@@ -249,17 +282,22 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
-        Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
+        AdditionalApplicationsBundle bundleUploaded = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
-        if (!emailRepresentatives.isEmpty()) {
-            representativeNotificationService.sendNotificationToRepresentatives(
-                caseData.getId(),
-                notifyData,
-                emailRepresentatives,
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
-            );
+        if (bundleUploaded.getC2DocumentBundle() != null || bundleUploaded.getOtherApplicationsBundle() != null) {
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
+
+            Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
+
+            if (!emailRepresentatives.isEmpty()) {
+                representativeNotificationService.sendNotificationToRepresentatives(
+                    caseData.getId(),
+                    notifyData,
+                    emailRepresentatives,
+                    INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS
+                );
+            }
         }
     }
 
