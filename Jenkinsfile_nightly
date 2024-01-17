@@ -79,21 +79,26 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  // enableMutationTest()
+   stages {
+    parallel (
+        stage('Fortify') {
+          enableFortifyScan('fpl-aat')
+      },
+        stage('Mutation Test') {
+           enableMutationTest()
+      }
+    )
+  }
   enableFullFunctionalTest(240)
-  // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
-  //enableCrossBrowserTest(['chrome', 'firefox'])
-  // enableFortifyScan('fpl-aat')
 
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
 
-  // before('mutationTest') {
-  //   setupSecretsForIntegrationTests(pipelineConf)
-  // }
-
-  // afterAlways('mutationTest') {
-  //   archiveExtraFilesForIntegrationTests()
-  //   teardownSecretsForIntegrationTests()
-  // }
+  afterAlways('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
+    teardownSecretsForIntegrationTests()
+  }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
@@ -106,14 +111,6 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  // before('crossBrowserTest') {
-  //   yarnBuilder.yarn('yarn-update')
-  //   yarnBuilder.yarn('install-dependencies')
-  //   env.TEST_RETRIES = 5
-  //   env.TESTS_FOR_ACCESSIBILITY = false
-  //   env.ENV = 'aat'
-  // }
-
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
     //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
@@ -121,11 +118,7 @@ withNightlyPipeline(type, product, component) {
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
-  // afterAlways('crossBrowserTest') {
-  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  // }
-
-  // afterAlways('fortify-scan') {
-  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  // }
+  afterAlways('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
 }
