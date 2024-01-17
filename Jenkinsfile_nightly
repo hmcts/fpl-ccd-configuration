@@ -106,25 +106,24 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  before('crossBrowserTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = false
-    env.ENV = 'aat'
-  }
+  // before('crossBrowserTest') {
+  //   yarnBuilder.yarn('yarn-update')
+  //   yarnBuilder.yarn('install-dependencies')
+  //   env.TEST_RETRIES = 5
+  //   env.TESTS_FOR_ACCESSIBILITY = false
+  //   env.ENV = 'aat'
+  // }
 
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    //archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
-  afterAlways('crossBrowserTest') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
+  // afterAlways('crossBrowserTest') {
+  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  // }
 
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
