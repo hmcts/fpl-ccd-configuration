@@ -664,4 +664,10 @@ class LocalAuthorityRecipientsServiceTest {
         );
     }
 
+    @Test
+    void shouldReturnShareInboxOfGivenLA() {
+        given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_GROUP_EMAIL));
+        String actual = underTest.getShareInbox(LocalAuthority.builder().id(LA_1_ID).build());
+        assertThat(actual).isEqualTo(LA_1_GROUP_EMAIL);
+    }
 }
