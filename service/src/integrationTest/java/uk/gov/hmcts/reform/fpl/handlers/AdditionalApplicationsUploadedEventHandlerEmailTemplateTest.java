@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -58,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @MockBeans({
     @MockBean(RequestData.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
     @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class), @MockBean(CafcassNotificationService.class),
-    @MockBean(UserService.class)
+    @MockBean(UserService.class), @MockBean(ApplicantLocalAuthorityService.class)
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
