@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantWitnessStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantWitnessStatement",
+    "FieldTypeParameter": "ApplicantWitnessStatementConfidential",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantWitnessStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantWitnessStatement",
+    "FieldTypeParameter": "ApplicantWitnessStatementConfidential",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
