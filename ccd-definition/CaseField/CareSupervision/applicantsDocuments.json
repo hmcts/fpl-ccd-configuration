@@ -254,7 +254,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentsFiledOnIssueListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "FieldTypeParameter": "DocumentsFiledOnIssueConfidential",
     "Label": "Documents filed on issue",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -264,7 +264,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentsFiledOnIssueListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "FieldTypeParameter": "DocumentsFiledOnIssueConfidential",
     "Label": "Documents filed on issue",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -294,7 +294,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "carePlanListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CarePlan",
+    "FieldTypeParameter": "CarePlanConfidential",
     "Label": "Care plan",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -304,7 +304,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "carePlanListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CarePlan",
+    "FieldTypeParameter": "CarePlanConfidential",
     "Label": "Care plan",
     "SecurityClassification": "Public",
     "Searchable": "N"
