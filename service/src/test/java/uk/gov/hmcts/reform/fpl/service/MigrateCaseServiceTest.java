@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -54,10 +57,12 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +78,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith({MockitoExtension.class})
@@ -249,7 +256,7 @@ class MigrateCaseServiceTest {
                     .email(null)
                     .colleagues(List.of(
                         element(colleague1.getId(),
-                            colleague1.getValue().toBuilder().notificationRecipient(YesNo.NO.getValue()).build()),
+                            colleague1.getValue().toBuilder().notificationRecipient(NO.getValue()).build()),
                         element(colleague2.getId(), colleague2.getValue())))
                     .build());
 
@@ -2425,6 +2432,245 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s}, "
                         + "threshold details does not contain provided text",
                     MIGRATION_ID, 1));
+        }
+    }
+
+    @Nested
+    class MigrateCaseClosedDateToLatestFinalOrderApprovalDate {
+        private static final LocalDateTime LATEST_APPROVAL_DATE_TIME = LocalDateTime.now();
+        private static final LocalDate LATEST_APPROVAL_DATE = LATEST_APPROVAL_DATE_TIME.toLocalDate();
+
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, names = {"OPEN", "SUBMITTED", "GATEKEEPING", "GATEKEEPING_LISTING",
+            "CASE_MANAGEMENT", "DELETED", "RETURNED"})
+        void shouldThrowExceptionIfCaseNotClosed(State state) {
+            CaseData caseData = CaseData.builder().id(1L).state(state).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Case is not closed yet",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderCollectionIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderCollectionIsEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).orderCollection(List.of()).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfFinalOrderNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
+                        .markedFinal(NO.getValue())
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Blank order (C21)")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Care order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Discharge of care order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Supervision order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim testing order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim testing order")
+                        .markedFinal(YES.getValue())
+                        .build())
+                    )
+                ).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} No final order found",
+                    MIGRATION_ID, 1));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Final Emergency protection order",
+            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
+            "Final Discharge of care order", "Final Supervision order", "Final testing order"})
+        void shouldUpdateCloseDateIfOldVersionOfOrderFound(String orderType) {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .type(orderType)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Final Emergency protection order",
+            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
+            "Final Discharge of care order", "Final Supervision order", "Final testing order", "Just an order"})
+        void shouldUpdateCloseDateIfNewVersionOfFinalOrderFound(String orderType) {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .type(orderType)
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsApprovalDateIfApprovalDateTimeIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .approvalDateTime(null)
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsApprovalDateTimeIfApprovalDateIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateIfApprovalDateIsTheLatestDate() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateIfApprovalDateTimeIsTheLatestDate() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(1))
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsLatestApprovalDateIfMultipleFinalOrderExist() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    // not final order
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(NO.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Care order")
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()),
+
+                    // no approval date
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(null)
+                        .build()),
+
+                    // approved final orders
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Final Care order")
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
+                        .build())
+                    )
+                ).build();
+
+            assertApprovalDate(caseData, LATEST_APPROVAL_DATE.minusDays(1));
+        }
+
+        private void assertApprovalDate(CaseData caseData, LocalDate expectedApprovalDate) {
+            Map<String, Object> actual =
+                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
+
+            assertThat(actual)
+                .isEqualTo(Map.of("closeCaseTabField", CloseCase.builder().date(expectedApprovalDate).build()));
         }
     }
 }

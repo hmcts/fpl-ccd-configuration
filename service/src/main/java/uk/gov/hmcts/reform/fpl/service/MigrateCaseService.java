@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -985,7 +986,7 @@ public class MigrateCaseService {
                     }
                 }
             })
-            .sorted()
+            .sorted(Comparator.reverseOrder())
             .findFirst()
             .orElseThrow(() ->
                 new AssertionError(format("Migration {id = %s, case reference = %s} approval date not found",
