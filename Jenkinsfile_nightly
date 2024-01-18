@@ -79,16 +79,8 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-   stages {
-    parallel (
-        stage('Fortify') {
-          enableFortifyScan('fpl-aat')
-      },
-        stage('Mutation Test') {
-           enableMutationTest()
-      }
-    )
-  }
+  enableMutationTest()
+  enableFortifyScan('fpl-aat')
   enableFullFunctionalTest(240)
 
   before('mutationTest') {
