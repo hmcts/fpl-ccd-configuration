@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -33,6 +36,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,6 +68,8 @@ public class UploadAdditionalApplicationsService {
     private final UserService userService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
+    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
+    private final LocalAuthorityRecipientsService localAuthorityRecipients;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -325,5 +331,29 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
+    }
+
+    public List<String> getRecipientsOfConfidentialC2(CaseData caseData, AdditionalApplicationsBundle lastBundle) {
+        Set<String> recipients = new HashSet<>();
+
+        if (lastBundle.getC2DocumentBundleConfidential() != null) {
+            // only confidential c2 is uploaded
+            if (lastBundle.getC2DocumentBundleLA() != null) {
+                // the bundle is uploaded by la, send notification to la shared inbox
+                log.info("Confidential C2 uploaded by LA.");
+                LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+                if (la != null) {
+                    localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
+                    recipients.add(la.getEmail());
+                } else {
+                    log.error("Organization not found. Won't send notification to LA's shared/group inbox");
+                }
+            } else if (!userService.isHmctsAdminUser()) {
+                log.info("Confidential C2 uploaded by solicitor.");
+                recipients.add(lastBundle.getC2DocumentBundleConfidential().getAuthor());
+            }
+        }
+
+        return List.copyOf(recipients);
     }
 }

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -32,6 +33,8 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
@@ -44,6 +47,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -67,6 +71,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FAT
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
@@ -101,6 +106,11 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
 
+    private final ApplicantLocalAuthorityService applicantLocalAuthorityService =
+        mock(ApplicantLocalAuthorityService.class);
+    private final LocalAuthorityRecipientsService localAuthorityRecipients =
+        mock(LocalAuthorityRecipientsService.class);
+
     private UploadAdditionalApplicationsService underTest;
 
     @BeforeEach()
@@ -111,7 +121,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService);
+            time, user, uploadHelper, conversionService, applicantLocalAuthorityService, localAuthorityRecipients);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
@@ -618,6 +628,111 @@ class UploadAdditionalApplicationsServiceTest {
                 .getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
+    }
+
+    @Nested
+    class ConfidentialC2 {
+        private static final String UPLOADER_EMAIL = "uploader@test.com";
+        private static final String LA_SHARE_INBOX = "la@test.com";
+        private static final LocalAuthority LA = LocalAuthority.builder().email(LA_SHARE_INBOX).build();
+        private static final List<Element<Respondent>> RESPONDENTS = List.of(element(Respondent.builder().build()));
+        private static final DocumentReference C2_DOCUMENT = testDocumentReference("C2.doc");
+        private static final C2DocumentBundle CONFIDENTIAL_C2 = C2DocumentBundle.builder()
+            .document(C2_DOCUMENT)
+            .respondents(RESPONDENTS)
+            .author(UPLOADER_EMAIL)
+            .build();
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
+            AdditionalApplicationsBundle.builder()
+                .author(UPLOADER_EMAIL)
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
+            AdditionalApplicationsBundle.builder()
+                .author(UPLOADER_EMAIL)
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleLA(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
+            AdditionalApplicationsBundle.builder()
+                .author(UPLOADER_EMAIL)
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleResp0(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
+            AdditionalApplicationsBundle.builder()
+                .author(UPLOADER_EMAIL)
+                .c2DocumentBundle(null)
+                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
+                .c2DocumentBundleChild0(CONFIDENTIAL_C2)
+                .otherApplicationsBundle(null)
+                .build();
+
+        @BeforeEach
+        void setup() {
+            given(user.isHmctsAdminUser()).willReturn(false);
+            given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
+            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(Optional.of(LA_SHARE_INBOX));
+        }
+
+        @Test
+        void shouldReturnUploaderEmailOnlyWhenRespSolicitorUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_RESP_SOLICITOR))
+                .build();
+
+            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
+                ADDITIONAL_APPLICATION_RESP_SOLICITOR);
+
+            assertThat(actual).isEqualTo(List.of(UPLOADER_EMAIL));
+        }
+
+        @Test
+        void shouldReturnUploaderEmailOnlyWhenChildSolicitorUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_CHILD_SOLICITOR))
+                .build();
+
+            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
+                ADDITIONAL_APPLICATION_CHILD_SOLICITOR);
+
+            assertThat(actual).isEqualTo(List.of(UPLOADER_EMAIL));
+        }
+
+        @Test
+        void shouldReturnLAInboxOnlyWhenLAUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
+                .build();
+
+            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
+                ADDITIONAL_APPLICATION_LA);
+
+            assertThat(actual).isEqualTo(List.of(LA_SHARE_INBOX));
+        }
+
+        @Test
+        void shouldReturnEmptyWhenAdminUploadedConfidentialC2() {
+            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
+                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_ADMIN))
+                .build();
+
+            given(user.isHmctsAdminUser()).willReturn(true);
+            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
+                ADDITIONAL_APPLICATION_ADMIN);
+
+            assertThat(actual).isEqualTo(List.of());
+        }
+
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -25,11 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -78,8 +75,6 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final CafcassNotificationService cafcassNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final UserService userService;
-    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
     private static final String LIST = "•";
 
     @EventListener
@@ -160,7 +155,6 @@ public class AdditionalApplicationsUploadedEventHandler {
         final Set<String> recipients = new HashSet<>();
 
         if (newBundleUploaded.getC2DocumentBundle() != null || newBundleUploaded.getOtherApplicationsBundle() != null) {
-            log.info("Non-confidential C2 or other application bundle uploaded. notifyApplicant");
             recipients.addAll(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
                 .caseData(caseData).build()));
 
@@ -170,22 +164,10 @@ public class AdditionalApplicationsUploadedEventHandler {
                     recipients.add(emails.get(applicant.getName()));
                 }
             }
-        } else {
-            // only confidential c2 is uploaded
-            if (newBundleUploaded.getC2DocumentBundleLA() != null) {
-                // the bundle is uploaded by la, send notification to la shared inbox
-                log.info("Confidential C2 uploaded by LA.");
-                LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
-                if (la != null) {
-                    localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
-                    recipients.add(la.getEmail());
-                } else {
-                    log.error("Organization not found. Won't send notification to LA's shared/group inbox");
-                }
-            } else if (!userService.isHmctsAdminUser()) {
-                log.info("Confidential C2 uploaded by solicitor.");
-                recipients.add(userService.getUserEmail());
-            }
+        }
+
+        if (newBundleUploaded.getC2DocumentBundleConfidential() != null) {
+            recipients.addAll(event.getRecipientsOfConfidentialC2());
         }
 
         if (isNotEmpty(recipients)) {

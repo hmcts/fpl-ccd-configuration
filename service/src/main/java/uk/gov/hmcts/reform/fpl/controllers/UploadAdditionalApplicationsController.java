@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
-import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -82,7 +81,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
-    private final UserService userService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -278,7 +276,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
         publishEvent(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
-            applicantsListGenerator.getApplicant(caseData, lastBundle)));
+            applicantsListGenerator.getApplicant(caseData, lastBundle),
+            uploadAdditionalApplicationsService.getRecipientsOfConfidentialC2(caseData, lastBundle)));
 
         publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 

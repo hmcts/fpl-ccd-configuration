@@ -172,7 +172,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
 
         underTest.notifyDigitalRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -194,7 +194,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -225,7 +225,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         for (OrderApplicant applicant : allApplicants) {
             underTest.notifyApplicant(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant)
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant, List.of())
             );
         }
 
@@ -268,7 +268,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name(respondent1FullName).type(RESPONDENT).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
+            List.of()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
@@ -309,7 +310,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name(child1FullName).type(CHILD).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
+            List.of()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
@@ -331,7 +333,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
-                OrderApplicant.builder().type(OTHER).name(applicantName).build())
+                OrderApplicant.builder().type(OTHER).name(applicantName).build(), List.of())
         );
 
         verifyNoInteractions(notificationService);
@@ -357,7 +359,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getRespondents1()).willReturn(wrapElements(respondent));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(
-            caseData, caseDataBefore, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build())
+            caseData, caseDataBefore, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build(), List.of())
         );
 
         verifyNoInteractions(notificationService);
@@ -387,7 +389,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name("John Smith").type(RESPONDENT).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
+            List.of()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of("respondent1@test.com"),
@@ -407,7 +410,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(emptySet());
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
         );
 
         verifyNoMoreInteractions(representativeNotificationService);
@@ -426,7 +429,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(List.of(representative1, representative2, representative3));
 
         underTest.sendAdditionalApplicationsByPost(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
         );
 
         verify(sendDocumentService).sendDocuments(caseData, documents,
@@ -442,7 +445,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(courtService.getCourtEmail(caseData)).willReturn("hmcts-non-admin@test.com");
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
+            List.of()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -468,7 +472,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
+            List.of()));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
@@ -481,7 +486,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             new HashSet<>(Set.of("caseworker", "caseworker-publiclaw", "caseworker-publiclaw-courtadmin"))
         );
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
+            List.of()));
 
         verifyNoInteractions(notificationService);
     }
@@ -536,7 +542,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                         "C20 - Secure accommodation (England)"));
 
         underTest.sendDocumentsToCafcass(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of()));
 
         verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
@@ -568,7 +574,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build();
 
         underTest.sendDocumentsToCafcass(
-                new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA));
+                new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA, List.of()));
         verify(cafcassNotificationService, never()).sendEmail(
                 any(), any(), any(), any()
         );
@@ -579,147 +585,68 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         private static final String UPLOADER_EMAIL = "uploader@test.com";
         private static final String LA_SHARE_INBOX = "la@test.com";
         private static final LocalAuthority LA = LocalAuthority.builder().email(LA_SHARE_INBOX).build();
-
+        private static final List<Element<Respondent>> RESPONDENTS = List.of(element(Respondent.builder().build()));
+        private static final DocumentReference C2_DOCUMENT = testDocumentReference("C2.doc");
+        private static final DocumentReference OTHER_APPLICATION_DOCUMENT = testDocumentReference("C2.doc");
         private static final C2DocumentBundle CONFIDENTIAL_C2 = C2DocumentBundle.builder()
             .document(C2_DOCUMENT)
-                .respondents(RESPONDENTS)
-                .build();
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
+            .respondents(RESPONDENTS)
+            .author(UPLOADER_EMAIL)
+            .build();
+        private static final AdditionalApplicationsBundle CONFIDENTIAL_ADDITIONAL_APPLICATION =
             AdditionalApplicationsBundle.builder()
+                .author(UPLOADER_EMAIL)
                 .c2DocumentBundle(null)
                 .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
                 .otherApplicationsBundle(null)
                 .build();
 
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleLA(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleResp0(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
-            AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleChild0(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION =
-            ADDITIONAL_APPLICATION_ADMIN.toBuilder()
+        private static final AdditionalApplicationsBundle CONFIDENTIAL_ADDITIONAL_APPLICATION_WITH_OTHER =
+            CONFIDENTIAL_ADDITIONAL_APPLICATION.toBuilder()
                 .otherApplicationsBundle(OtherApplicationsBundle.builder()
                     .document(OTHER_APPLICATION_DOCUMENT)
                     .respondents(RESPONDENTS)
                     .build())
                 .build();
 
-        @BeforeEach
-        void setup() {
-            given(userService.getUserEmail()).willReturn(UPLOADER_EMAIL);
-            given(userService.isHmctsAdminUser()).willReturn(false);
-            given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
-            given(contentProvider.getNotifyData(any())).willReturn(notifyData);
-            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(Optional.of(LA_SHARE_INBOX));
-        }
-
         @Test
-        void shouldNotifyUploaderOnlyWhenRespSolicitorUploadedConfidentialC2() {
+        void shouldNotifyConfidentialRecipientOnlyIfOnlyConfidentialC2Uploaded() {
             CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_RESP_SOLICITOR))
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION))
                 .build();
 
+            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
+            given(localAuthorityRecipients.getRecipients(
+                RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
+                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
             underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
+                caseDataBefore, ORDER_APPLICANT_LA, List.of(UPLOADER_EMAIL)));
 
             verify(notificationService).sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL), notifyData,
-                caseDataWithConfidentialC2.getId().toString());
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL),
+                notifyData, caseDataWithConfidentialC2.getId().toString()
+            );
 
             verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
-        void shouldNotifyUploaderOnlyWhenChildSolicitorUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_CHILD_SOLICITOR))
-                .build();
-
-            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
-
-            verify(notificationService).sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL), notifyData,
-                caseDataWithConfidentialC2.getId().toString());
-
-            verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
-        void shouldNotifyLAOnlyWhenLAUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
-                .build();
-
-            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
-
-            verify(notificationService).sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LA_SHARE_INBOX), notifyData,
-                caseDataWithConfidentialC2.getId().toString());
-
-            verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
-        void shouldNotNotifyPartiesWhenAdminUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_ADMIN))
-                .build();
-
-            AdditionalApplicationsUploadedEvent event =
-                new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2, caseDataBefore, ORDER_APPLICANT_LA);
-
-            given(userService.isHmctsAdminUser()).willReturn(true);
-
-            underTest.sendAdditionalApplicationsByPost(event);
-            verifyNoInteractions(sendDocumentService);
-
-            underTest.notifyApplicant(event);
-            verifyNoInteractions(notificationService);
-
-            underTest.notifyDigitalRepresentatives(event);
-            verifyNoInteractions(representativeNotificationService);
-
-            underTest.notifyEmailServedRepresentatives(event);
-            verifyNoInteractions(representativeNotificationService);
         }
 
         @Test
         void shouldNotifyApplicantIfOtherApplicationBundleUploaded() {
             CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION))
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_WITH_OTHER))
                 .build();
 
+            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
             given(localAuthorityRecipients.getRecipients(
                 RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
                 .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
+                caseDataBefore, ORDER_APPLICANT_LA, List.of(UPLOADER_EMAIL)));
 
             verify(notificationService).sendEmail(
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, UPLOADER_EMAIL),
                 notifyData, caseDataWithConfidentialC2.getId().toString()
             );
 
@@ -732,7 +659,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .id(RandomUtils.nextLong())
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .sendToCtsc("Yes")
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION))
                 .build();
 
             verifyInvocation(List.of(CONFIDENTIAL_C2.getDocument()), caseData, caseDataBefore);
