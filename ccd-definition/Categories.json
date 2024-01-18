@@ -39,7 +39,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "skeletonArgumentsConfidential",
     "ParentCategoryID": "skeletonArguments",
-    "CategoryLabel": "Skeleton Arguments",
+    "CategoryLabel": "Confidential",
     "DisplayOrder": "50"
   },
   {
