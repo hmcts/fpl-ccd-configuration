@@ -16,12 +16,12 @@ let hearingEndDate;
 let correctedHearingStartDate;
 let correctedHearingEndDate;
 
-Feature('Hearing administration');
+Feature('Hearing administration @fixed');
 
 async function setupScenario(I) {
   let caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId.caseId);
   return caseId;
 }
 
@@ -42,9 +42,10 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
   manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
-  //await I.goToNextPage();
+  await I.goToNextPage();
   //await manageHearingsEventPage.selectOthers(manageHearingsEventPage.fields.allOthers.options.all);
-  await I.completeEvent('Save and continue');
+  await I.waitForText('Save and continue');
+  await I.submitEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -93,7 +94,7 @@ Scenario('HMCTS admin creates subsequent hearings @nightlyOnly', async ({I, case
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
 });
 
-Scenario('HMCTS admin edits a future hearing  @nightlyOnly', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin edits a future hearing ', async ({I, caseViewPage, manageHearingsEventPage}) => {
   let caseId = await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditFutureHearing('Case management hearing, 1 January 2060');
@@ -128,7 +129,7 @@ Scenario('HMCTS admin edits a future hearing  @nightlyOnly', async ({I, caseView
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('HMCTS admin uploads further hearing evidence documents  @nightlyOnly', async ({I, caseViewPage, manageDocumentsEventPage}) => {
+Scenario('HMCTS admin uploads further hearing evidence documents  ', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await setupScenario(I);
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
@@ -166,7 +167,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents  @nightlyOnly',
   I.seeInExpandedDocument('Document 3', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
-Scenario('HMCTS admin adjourns and re-lists a hearing @nightlyOnly', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin adjourns and re-lists a hearing ', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await setupScenario(I);
   const reListedHearingJudgeName = 'Brown';
 
