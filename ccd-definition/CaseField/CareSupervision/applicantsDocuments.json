@@ -214,7 +214,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "thresholdListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Threshold",
+    "FieldTypeParameter": "ThresholdConfidential",
     "Label": "Threshold",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -224,7 +224,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "thresholdListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Threshold",
+    "FieldTypeParameter": "ThresholdConfidential",
     "Label": "Threshold",
     "SecurityClassification": "Public",
     "Searchable": "N"
