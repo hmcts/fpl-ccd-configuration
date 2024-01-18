@@ -115,7 +115,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     void notifyAdmin() {
         given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT, List.of()));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
@@ -161,7 +161,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
                     .build()))
                 .build();
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, CASE_DATA, APPLICANT));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, CASE_DATA, APPLICANT, List.of()));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
@@ -191,7 +191,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
 
     @Test
     void notifyParties() {
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(CASE_DATA, CASE_DATA, APPLICANT, List.of()));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + CHILD_LAST_NAME)
