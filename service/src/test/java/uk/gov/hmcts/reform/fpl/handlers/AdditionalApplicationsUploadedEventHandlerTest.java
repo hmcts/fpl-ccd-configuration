@@ -584,14 +584,14 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .document(C2_DOCUMENT)
                 .respondents(RESPONDENTS)
                 .build();
-        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(null)
                 .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
                 .otherApplicationsBundle(null)
                 .build();
 
-        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(null)
                 .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
@@ -599,7 +599,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .otherApplicationsBundle(null)
                 .build();
 
-        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(null)
                 .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
@@ -607,7 +607,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .otherApplicationsBundle(null)
                 .build();
 
-        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(null)
                 .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
@@ -615,7 +615,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .otherApplicationsBundle(null)
                 .build();
 
-        private final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION =
+        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_WITH_OTHER_APPLICATION =
             ADDITIONAL_APPLICATION_ADMIN.toBuilder()
                 .otherApplicationsBundle(OtherApplicationsBundle.builder()
                     .document(OTHER_APPLICATION_DOCUMENT)
