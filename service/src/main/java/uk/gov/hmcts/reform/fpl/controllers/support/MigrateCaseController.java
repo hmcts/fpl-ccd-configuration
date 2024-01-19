@@ -45,7 +45,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-2033", this::run2033
+        "DFPL-2051", this::run2051
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -198,14 +198,19 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run2033(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2033";
-        var possibleCaseIds = List.of(1700651082936197L);
-        var expectedMessageId = UUID.fromString("d80b8dbe-889d-41f3-b9c5-ea3df08e53c7");
-
+    private void run2051(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2051";
+        var possibleCaseIds = List.of(1704384343011099L);
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        UUID udoDocumentId = UUID.fromString("8e5cf45c-98d0-45f7-851a-974b6afbdb44");
+        UUID sdoDocumentId = UUID.fromString("beacba9d-2ac9-407e-8596-da98a891d823");
+
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
+
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, udoDocumentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
+        migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, sdoDocumentId);
+        caseDetails.getData().remove("standardDirectionOrder");
     }
 }
