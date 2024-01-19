@@ -346,7 +346,7 @@ public class UploadAdditionalApplicationsService {
                     localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
                     recipients.add(la.getEmail());
                 } else {
-                    log.error("Organization not found. Won't send notification to LA's shared/group inbox");
+                    log.error("Organisation not found. Won't send notification to LA's shared/group inbox");
                 }
             } else if (!userService.isHmctsAdminUser()) {
                 log.info("Confidential C2 uploaded by solicitor.");

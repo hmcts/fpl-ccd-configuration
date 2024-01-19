@@ -81,8 +81,8 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void sendAdditionalApplicationsByPost(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
-        if (uploadedBundle.getC2DocumentBundle() != null || uploadedBundle.getOtherApplicationsBundle() != null) {
+        AdditionalApplicationsBundle uploadedBundle = getUploadedBundle(caseData);
+        if (!isConfidentialC2UploadedOnly(uploadedBundle)) {
             final List<DocumentReference> documents = getApplicationDocuments(uploadedBundle, false);
 
             Set<Recipient> recipientsToNotify = getRecipientsToNotifyByPost(caseData);
@@ -95,31 +95,31 @@ public class AdditionalApplicationsUploadedEventHandler {
     public void sendDocumentsToCafcass(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            AdditionalApplicationsBundle uploadedBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+            AdditionalApplicationsBundle uploadedBundle = getUploadedBundle(caseData);
 
             final CaseData caseDataBefore = event.getCaseDataBefore();
             AdditionalApplicationsBundle oldBundle =
-                    Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
+                Optional.ofNullable(caseDataBefore.getAdditionalApplicationsBundle())
                     .filter(Predicate.not(List::isEmpty))
                     .map(additionalApplicationsBundle -> additionalApplicationsBundle.get(0).getValue())
                     .orElse(null);
 
             if (!uploadedBundle.equals(oldBundle)) {
                 String documentTypes = contentProvider.getApplicationTypes(uploadedBundle).stream()
-                        .map(docType -> String.join(" ", LIST, docType))
-                        .collect(Collectors.joining("\n"));
+                    .map(docType -> String.join(" ", LIST, docType))
+                    .collect(Collectors.joining("\n"));
 
                 final Set<DocumentReference> documentReferences =
                     Set.copyOf(getApplicationDocuments(uploadedBundle, true));
 
                 cafcassNotificationService.sendEmail(
-                        caseData,
-                        documentReferences,
-                        ADDITIONAL_DOCUMENT,
-                        NewDocumentData.builder()
-                                .documentTypes(documentTypes)
-                                .emailSubjectInfo("additional documents")
-                                .build()
+                    caseData,
+                    documentReferences,
+                    ADDITIONAL_DOCUMENT,
+                    NewDocumentData.builder()
+                        .documentTypes(documentTypes)
+                        .emailSubjectInfo("additional documents")
+                        .build()
                 );
             }
         }
@@ -149,16 +149,16 @@ public class AdditionalApplicationsUploadedEventHandler {
         final CaseData caseData = event.getCaseData();
         final OrderApplicant applicant = event.getApplicant();
 
-        AdditionalApplicationsBundle newBundleUploaded = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        AdditionalApplicationsBundle newBundleUploaded = getUploadedBundle(caseData);
 
         // DFPL-498 notify all LAs
         final Set<String> recipients = new HashSet<>();
 
-        if (newBundleUploaded.getC2DocumentBundle() != null || newBundleUploaded.getOtherApplicationsBundle() != null) {
+        if (!isConfidentialC2UploadedOnly(newBundleUploaded)) {
             recipients.addAll(localAuthorityRecipients.getRecipients(RecipientsRequest.builder()
                 .caseData(caseData).build()));
 
-            if (applicant.getType() != LOCAL_AUTHORITY && applicant.getType() != SECONDARY_LOCAL_AUTHORITY) {
+            if (!List.of(LOCAL_AUTHORITY, SECONDARY_LOCAL_AUTHORITY).contains(applicant.getType())) {
                 final Map<String, String> emails = getRespondentAndChildEmails(caseData);
                 if (isNotEmpty(emails.get(applicant.getName()))) {
                     recipients.add(emails.get(applicant.getName()));
@@ -216,9 +216,9 @@ public class AdditionalApplicationsUploadedEventHandler {
     @Async
     public void notifyDigitalRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
-        AdditionalApplicationsBundle bundleUploaded = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        AdditionalApplicationsBundle bundleUploaded = getUploadedBundle(caseData);
 
-        if (bundleUploaded.getC2DocumentBundle() != null || bundleUploaded.getOtherApplicationsBundle() != null) {
+        if (!isConfidentialC2UploadedOnly(bundleUploaded)) {
             NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
             Set<String> digitalRepresentativesEmails = getRepresentativesEmails(caseData, DIGITAL_SERVICE);
@@ -251,9 +251,9 @@ public class AdditionalApplicationsUploadedEventHandler {
     public void notifyEmailServedRepresentatives(final AdditionalApplicationsUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
 
-        AdditionalApplicationsBundle bundleUploaded = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        AdditionalApplicationsBundle bundleUploaded = getUploadedBundle(caseData);
 
-        if (bundleUploaded.getC2DocumentBundle() != null || bundleUploaded.getOtherApplicationsBundle() != null) {
+        if (!isConfidentialC2UploadedOnly(bundleUploaded)) {
             NotifyData notifyData = contentProvider.getNotifyData(caseData);
 
             Set<String> emailRepresentatives = getRepresentativesEmails(caseData, EMAIL);
@@ -270,37 +270,37 @@ public class AdditionalApplicationsUploadedEventHandler {
     }
 
     private List<DocumentReference> getApplicationDocuments(
-            AdditionalApplicationsBundle bundle, boolean getConfidential) {
+        AdditionalApplicationsBundle bundle, boolean includeConfidential) {
         UnaryOperator<DocumentReference> addDocumentType =
             documentReference -> {
                 documentReference.setType(ADDITIONAL_DOCUMENT.getLabel());
-                return  documentReference;
+                return documentReference;
             };
 
         List<DocumentReference> documents = new ArrayList<>();
 
         documents.addAll(getC2DocumentList(addDocumentType, bundle.getC2DocumentBundle()));
-        if (getConfidential) {
+        if (includeConfidential) {
             documents.addAll(getC2DocumentList(addDocumentType, bundle.getC2DocumentBundleConfidential()));
         }
 
         if (bundle.getOtherApplicationsBundle() != null) {
             documents.add(Optional.ofNullable(bundle.getOtherApplicationsBundle().getDocument())
-                    .map(addDocumentType)
-                    .orElse(DocumentReference.builder().build()));
+                .map(addDocumentType)
+                .orElse(DocumentReference.builder().build()));
             documents.addAll(
                 unwrapElements(bundle.getOtherApplicationsBundle().getSupplementsBundle())
                     .stream()
-                        .map(Supplement::getDocument)
-                        .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                    .map(Supplement::getDocument)
+                    .map(addDocumentType)
+                    .collect(Collectors.toList()));
 
             documents.addAll(
                 unwrapElements(bundle.getOtherApplicationsBundle().getSupportingEvidenceBundle())
                     .stream()
-                        .map(SupportingEvidenceBundle::getDocument)
-                        .map(addDocumentType)
-                        .collect(Collectors.toList()));
+                    .map(SupportingEvidenceBundle::getDocument)
+                    .map(addDocumentType)
+                    .collect(Collectors.toList()));
         }
 
         return documents;
@@ -330,5 +330,13 @@ public class AdditionalApplicationsUploadedEventHandler {
         }
 
         return documents;
+    }
+
+    private AdditionalApplicationsBundle getUploadedBundle(CaseData caseData) {
+        return caseData.getAdditionalApplicationsBundle().get(0).getValue();
+    }
+
+    private boolean isConfidentialC2UploadedOnly(AdditionalApplicationsBundle bundle) {
+        return bundle.getC2DocumentBundle() == null && bundle.getOtherApplicationsBundle() == null;
     }
 }
