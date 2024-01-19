@@ -151,6 +151,7 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    postgresSecret: ${POSTGRES_PASSWORD}
 
   ccd-api-gateway-web:
     nodejs:

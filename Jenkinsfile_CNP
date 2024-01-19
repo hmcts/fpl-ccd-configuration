@@ -44,7 +44,8 @@ def otherSecrets = [
   ],
   'fpl-${env}': [
     secret('definition-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('definition-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('postgres-password', 'POSTGRES_PASSWORD')
   ]
 ]
 
