@@ -167,7 +167,7 @@ ccd:
 
   ccd-data-store-api:
     java:
-      keyVaults: []
+      disableKeyVaults: true
       imagePullPolicy: Always
       devmemoryRequests: '1524Mi'
       devmemoryLimits: '2048Mi'
@@ -197,7 +197,7 @@ ccd:
         enabled: false
   ccd-definition-store-api:
     java:
-      keyVaults: []
+      disableKeyVaults: true
       devmemoryRequests: '1024Mi'
       devmemoryLimits: '2048Mi'
       devcpuRequests: '900m'
@@ -217,7 +217,7 @@ ccd:
 
   ccd-user-profile-api:
     java:
-      keyVaults: []
+      disableKeyVaults: true
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
@@ -289,7 +289,11 @@ ccd:
     java:
       environment:
         ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
-      keyVaults: []
+      keyVaults:
+        am:
+          secrets:
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
 aac-manage-case-assignment:
   enabled: true
   java:
