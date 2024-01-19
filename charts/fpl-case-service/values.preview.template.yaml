@@ -151,7 +151,7 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    postgresSecret: ${POSTGRES_PASSWORD}
+    postgresSecret: postgres-password
 
   ccd-api-gateway-web:
     nodejs:
@@ -290,12 +290,7 @@ ccd:
     java:
       environment:
         ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
-      keyVaults:
-        am:
-          secrets:
-          - name: role-assignment-service-LD-SDK-KEY
-            alias: LD_SDK_KEY
-aac-manage-case-assignment:
+      disableKeyVaults: true
   enabled: true
   java:
     imagePullPolicy: Always
