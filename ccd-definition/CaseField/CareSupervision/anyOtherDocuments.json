@@ -174,7 +174,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "expertReportListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ExpertReport",
+    "FieldTypeParameter": "ExpertReportConfidential",
     "Label": "Expert reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -184,7 +184,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "expertReportListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ExpertReport",
+    "FieldTypeParameter": "ExpertReportConfidential",
     "Label": "Expert reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
