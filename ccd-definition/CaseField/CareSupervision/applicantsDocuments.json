@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "parentAssessmentListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ParentAssessment",
+    "FieldTypeParameter": "ParentAssessmentConfidential",
     "Label": "Parent assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "parentAssessmentListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ParentAssessment",
+    "FieldTypeParameter": "ParentAssessmentConfidential",
     "Label": "Parent assessments",
     "SecurityClassification": "Public",
     "Searchable": "N"
