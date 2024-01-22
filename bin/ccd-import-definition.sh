@@ -13,13 +13,14 @@ echo ">>> Got userToken"
 serviceToken=$(${dir}/utils/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
 echo ">>> Got serviceToken"
 
-version="no version"
+version="n/a"
+newVersion="n/a"
 
 if [[ "$ENVIRONMENT" == "preview" ]]; then
   version=$(curl --insecure --silent --show-error -X GET \
     ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
     -H "Authorization: Bearer ${userToken}" \
-    -H "ServiceAuthorization: Bearer ${serviceToken}")
+    -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
   echo "Current version is ${version}"
 fi
@@ -46,7 +47,7 @@ if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
   newVersion=$(curl --insecure --silent --show-error -X GET \
     ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
     -H "Authorization: Bearer ${userToken}" \
-    -H "ServiceAuthorization: Bearer ${serviceToken}")
+    -H "ServiceAuthorization: Bearer ${serviceToken}" || echo 'bypass-if-error')
 
     echo "Current version is ${newVersion}"
     if [[ "$newVersion" == "$version" ]]; then
