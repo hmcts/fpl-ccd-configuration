@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -992,11 +993,12 @@ public class MigrateCaseService {
                 new AssertionError(format("Migration {id = %s, case reference = %s} approval date not found",
                 migrationId, caseData.getId())));
 
-        CloseCase existingCloseCaseField = caseData.getCloseCaseTabField();
+        CloseCase existingCloseCaseField = Optional.ofNullable(caseData.getCloseCaseTabField())
+            .orElse(CloseCase.builder().build());
 
         return Map.of("closeCaseTabField", CloseCase.builder()
             .date(latestApprovalDate)
-            .dateBackup((existingCloseCaseField == null || isEmpty(existingCloseCaseField.getDateBackup())
+            .dateBackup((isEmpty(existingCloseCaseField.getDateBackup())
                 ? existingCloseCaseField.getDate() : existingCloseCaseField.getDateBackup()))
             .build());
     }
