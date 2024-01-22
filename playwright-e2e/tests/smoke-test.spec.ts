@@ -1,7 +1,7 @@
 import { test } from "../fixtures/create-fixture";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 
-test("Smoke Test @smoke-test", async ({ signInPage, smokeCreateCase }) => {
+test("Smoke Test @smoke-test", async ({ signInPage, smokeCreateCase, ordersAndDirectionSought, startApplication }) => {
 
   await signInPage.visit();
   await signInPage.login(
@@ -13,4 +13,6 @@ test("Smoke Test @smoke-test", async ({ signInPage, smokeCreateCase }) => {
   await smokeCreateCase.CreateCase();
   await smokeCreateCase.SubmitCase(smokeCreateCase.generatedCaseName);
   await smokeCreateCase.CheckCaseIsCreated(smokeCreateCase.generatedCaseName);
+  await ordersAndDirectionSought.OrdersAndDirectionsNeeded();
+  await startApplication.AddApplicationDetailsHeading.isVisible();
 });
