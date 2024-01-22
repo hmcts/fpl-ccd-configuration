@@ -992,6 +992,26 @@ public class MigrateCaseService {
                 new AssertionError(format("Migration {id = %s, case reference = %s} approval date not found",
                 migrationId, caseData.getId())));
 
-        return Map.of("closeCaseTabField", CloseCase.builder().date(latestApprovalDate).build());
+        CloseCase existingCloseCaseField = caseData.getCloseCaseTabField();
+
+        return Map.of("closeCaseTabField", CloseCase.builder()
+            .date(latestApprovalDate)
+            .dateBackup((existingCloseCaseField == null || isEmpty(existingCloseCaseField.getDateBackup())
+                ? existingCloseCaseField.getDate() : existingCloseCaseField.getDateBackup()))
+            .build());
+    }
+
+    public Map<String, Object> rollbackCloseCaseTabFieldMigration(CaseData caseData, String migrationId) {
+        CloseCase closeCaseField = caseData.getCloseCaseTabField();
+        if (closeCaseField == null) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} closeCaseField is null",
+                migrationId, caseData.getId()));
+        }
+        return Map.of("closeCaseTabField", CloseCase.builder().date(closeCaseField.getDateBackup()).build());
+    }
+
+    public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
+        CloseCase closeCaseField = caseData.getCloseCaseTabField();
+        return Map.of("closeCaseTabField", CloseCase.builder().date(closeCaseField.getDate()).build());
     }
 }

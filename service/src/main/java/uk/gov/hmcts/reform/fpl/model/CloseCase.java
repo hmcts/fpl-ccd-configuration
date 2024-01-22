@@ -15,4 +15,5 @@ import java.time.LocalDate;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CloseCase {
     private LocalDate date;
+    private LocalDate dateBackup;
 }

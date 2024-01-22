@@ -2439,6 +2439,9 @@ class MigrateCaseServiceTest {
     class MigrateCaseClosedDateToLatestFinalOrderApprovalDate {
         private static final LocalDateTime LATEST_APPROVAL_DATE_TIME = LocalDateTime.now();
         private static final LocalDate LATEST_APPROVAL_DATE = LATEST_APPROVAL_DATE_TIME.toLocalDate();
+        private static final LocalDate ORIGINAL_CLOSE_CASE_DATE = LATEST_APPROVAL_DATE.minusYears(1);
+        private static final CloseCase CLOSE_CASE_TAB_FIELD = CloseCase.builder()
+            .date(ORIGINAL_CLOSE_CASE_DATE).build();
 
 
         @ParameterizedTest
@@ -2519,6 +2522,7 @@ class MigrateCaseServiceTest {
             "Final Discharge of care order", "Final Supervision order", "Final testing order"})
         void shouldUpdateCloseDateIfOldVersionOfOrderFound(String orderType) {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .type(orderType)
@@ -2526,7 +2530,7 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @ParameterizedTest
@@ -2535,6 +2539,7 @@ class MigrateCaseServiceTest {
             "Final Discharge of care order", "Final Supervision order", "Final testing order", "Just an order"})
         void shouldUpdateCloseDateIfNewVersionOfFinalOrderFound(String orderType) {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .type(orderType)
@@ -2544,12 +2549,13 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @Test
         void shouldUpdateCloseDateAsApprovalDateIfApprovalDateTimeIsNull() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
@@ -2559,12 +2565,13 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @Test
         void shouldUpdateCloseDateAsApprovalDateTimeIfApprovalDateIsNull() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
@@ -2574,12 +2581,13 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @Test
         void shouldUpdateCloseDateIfApprovalDateIsTheLatestDate() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
@@ -2589,12 +2597,13 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @Test
         void shouldUpdateCloseDateIfApprovalDateTimeIsTheLatestDate() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     element(GeneratedOrder.builder()
                         .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
@@ -2604,12 +2613,13 @@ class MigrateCaseServiceTest {
                         .build()))
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE);
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
         }
 
         @Test
         void shouldUpdateCloseDateAsLatestApprovalDateIfMultipleFinalOrderExist() {
             CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
                 .orderCollection(List.of(
                     // not final order
                     element(GeneratedOrder.builder()
@@ -2662,15 +2672,80 @@ class MigrateCaseServiceTest {
                     )
                 ).build();
 
-            assertApprovalDate(caseData, LATEST_APPROVAL_DATE.minusDays(1));
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE.minusDays(1), ORIGINAL_CLOSE_CASE_DATE);
         }
 
-        private void assertApprovalDate(CaseData caseData, LocalDate expectedApprovalDate) {
+        @Test
+        void shouldRollbackCloseCaseTabFieldMigration() {
+            CaseData caseData = CaseData.builder()
+                .id(1L).state(State.CLOSED)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.rollbackCloseCaseTabFieldMigration(caseData, MIGRATION_ID);
+
+            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                .date(ORIGINAL_CLOSE_CASE_DATE)
+                .build()));
+        }
+
+        @Test
+        void shouldNotUpdateBackupFieldIfNotEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build())))
+                .build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCloseCaseTabFieldNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.rollbackCloseCaseTabFieldMigration(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} closeCaseField is null",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldClearCloseCaseTabBackupField() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.clearCloseCaseTabBackupField(caseData);
+
+            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                .date(LATEST_APPROVAL_DATE).build()));
+        }
+
+        private void assertCloseCaseDate(CaseData caseData, LocalDate expectedCloseDate, LocalDate expectedBackupDate) {
             Map<String, Object> actual =
                 underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
 
             assertThat(actual)
-                .isEqualTo(Map.of("closeCaseTabField", CloseCase.builder().date(expectedApprovalDate).build()));
+                .isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                    .date(expectedCloseDate)
+                    .dateBackup(expectedBackupDate)
+                    .build()));
         }
     }
 }
