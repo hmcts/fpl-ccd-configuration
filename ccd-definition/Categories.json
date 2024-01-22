@@ -39,6 +39,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "positionStatementsConfidential",
+    "ParentCategoryID": "positionStatements",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "30"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "threshold",
     "CategoryLabel": "Threshold",
     "DisplayOrder": "4"
