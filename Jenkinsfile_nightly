@@ -117,7 +117,8 @@ withNightlyPipeline(type, product, component) {
             reportFiles          : 'index.html',
             reportName           : 'UI Functional Test Report'
     ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/tests-results/functionalTest/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+    //steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/tests-results/functionalTest/*'
   }
 
   afterAlways('fortify-scan') {
