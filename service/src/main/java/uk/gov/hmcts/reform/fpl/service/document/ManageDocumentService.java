@@ -348,33 +348,29 @@ public class ManageDocumentService {
         return targetElements;
     }
 
+    private boolean checkEvidenceBundle(ApplicationsBundle bundle, UUID documentElementId) {
+        return bundle != null && bundle.getSupportingEvidenceBundle().stream()
+            .anyMatch(e -> documentElementId.equals(e.getId()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Element<AdditionalApplicationsBundle> locateAdditionalApplicationBundleToBeModified(CaseData caseData,
+        UUID documentElementId) {
+        return (Element<AdditionalApplicationsBundle>) Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
+            .orElse(List.of()).stream()
+            .filter(adb -> checkEvidenceBundle(adb.getValue().getC2DocumentBundle(), documentElementId) ||
+                checkEvidenceBundle(adb.getValue().getC2DocumentBundleConfidential(), documentElementId) ||
+                checkEvidenceBundle(adb.getValue().getOtherApplicationsBundle(), documentElementId))
+            .findFirst()
+            .orElse(null);
+    }
+
     @SuppressWarnings("unchecked")
     private Element<? extends WithDocument>
         handleC1OrC2SupportingDocumentsInAdditionalApplications(CaseData caseData, UUID documentElementId,
                                                                 Map<String, Object> output) {
-        Element<AdditionalApplicationsBundle> targetBundle = (Element<AdditionalApplicationsBundle>)
-            Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
-                .orElse(List.of()).stream()
-                .map(adb -> {
-                    Function<ApplicationsBundle, Boolean> checkEvidenceBundle = bundle ->
-                        bundle != null && bundle.getSupportingEvidenceBundle().stream()
-                            .anyMatch(e -> documentElementId.equals(e.getId()));
-
-                    if (checkEvidenceBundle.apply(adb.getValue().getC2DocumentBundle())) {
-                        return Optional.ofNullable(adb);
-                    }
-                    if (checkEvidenceBundle.apply(adb.getValue().getC2DocumentBundleConfidential())) {
-                        return Optional.ofNullable(adb);
-                    }
-                    if (checkEvidenceBundle.apply(adb.getValue().getOtherApplicationsBundle())) {
-                        return Optional.ofNullable(adb);
-                    }
-                    return Optional.empty();
-                })
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst()
-                .orElse(null);
+        Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
+            documentElementId);
 
         Element<SupportingEvidenceBundle> ret = null;
         if (targetBundle != null) {
@@ -427,10 +423,10 @@ public class ManageDocumentService {
             } else {
                 throw new AssertionError("should not reach this line.");
             }
-        }
-        output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
-        // TODO move to removedList;
 
+            output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+        }
+        // TODO move to removedList;
         return ret;
     }
 
