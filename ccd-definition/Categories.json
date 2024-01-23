@@ -91,6 +91,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "c2ApplicationsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "c2Applications",
+    "DisplayOrder": "703"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "orders",
     "CategoryLabel": "Orders",
     "DisplayOrder": "8"
