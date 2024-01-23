@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Transcript",
+    "FieldTypeParameter": "TranscriptConfidential",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "transcriptListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Transcript",
+    "FieldTypeParameter": "TranscriptConfidential",
     "Label": "Transcripts",
     "SecurityClassification": "Public",
     "Searchable": "N"
