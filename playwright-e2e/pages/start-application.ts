@@ -12,9 +12,12 @@ export class StartApplication {
 
   public constructor(page: Page) {
     this.page = page;
-    this.OrdersAndDirectionsSoughtLink = page.getByRole("heading", {
-      name: "Orders and directions sought",
-    });
+    this.AddApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details"} );
+    this.OrdersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought",});
+  }
+
+  async AddApplicationDetails(){
+    await expect (this.AddApplicationDetailsHeading).toBeVisible();
   }
 
   async OrdersAndDirectionsSought() {
