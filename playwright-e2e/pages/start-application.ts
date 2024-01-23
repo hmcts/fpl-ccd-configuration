@@ -19,16 +19,16 @@ export class StartApplication {
     this.HearingUrgencyHeader = page.getByRole('heading', { name: 'Hearing urgency' })
   }
 
-  async AddApplicationDetails(){
+  async addApplicationDetails(){
     await expect (this.AddApplicationDetailsHeading).toBeVisible();
   }
 
-  async OrdersAndDirectionsSought() {
+  async ordersAndDirectionsSought() {
     await this.OrdersAndDirectionsSoughtLink.isVisible();
     await this.OrdersAndDirectionsSoughtLink.click();
   }
 
-  async HearingUrgency() {
+  async hearingUrgency() {
     await this.HearingUrgencyLink.isVisible();
     await this.HearingUrgencyLink.click();
     await expect (this.HearingUrgencyHeader).toBeVisible();

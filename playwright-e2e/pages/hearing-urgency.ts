@@ -81,26 +81,26 @@ export class HearingUrgency {
     await locator.click();
   }
 
-  async WhenDoYouNeedHearingRadio(timeFrame: string) {
+  async whenDoYouNeedHearingRadio(timeFrame: string) {
     const locator = this.hearingNeeded[timeFrame];
     await expect(locator).toBeVisible();
     await locator.click();
   }
 
-  async WhatTypeOfHearingDoYouNeed(typeOfHearing: string) {
+  async whatTypeOfHearingDoYouNeed(typeOfHearing: string) {
     const locator = this.hearingNeeded[typeOfHearing];
     await expect(locator).toBeVisible();
     await locator.click();
   }
 
-  async WithoutNoticeHearing(doYouNeedAWithoutNoticeHearing: string) {
+  async withoutNoticeHearing(doYouNeedAWithoutNoticeHearing: string) {
     await this.handleHearingOption(
       this.doYouNeedAWithoutNoticeGroup,
       doYouNeedAWithoutNoticeHearing,
     );
   }
 
-  async NeedAHearingWithReducedNoise(
+  async needAHearingWithReducedNoise(
     doYouNeedAHearingWithReducedNoise: string,
   ) {
     await this.handleHearingOption(
@@ -109,7 +109,7 @@ export class HearingUrgency {
     );
   }
 
-  async RespondentsAwareOfProceedings(
+  async respondentsAwareOfProceedings(
     areRespondentsAwareOfProceedings: string,
   ) {
     await this.handleHearingOption(
@@ -118,7 +118,7 @@ export class HearingUrgency {
     );
   }
 
-  async GiveReasonTextBox() {
+  async giveReasonTextBoxFill() {
     await this.giveReasonTextBox.isVisible();
     await this.giveReasonTextBox.fill("Eum laudantium tempor, yet magni beatae. Architecto tempor. Quae adipisci, and labore, but voluptate, but est voluptas. Ipsum error minima. Suscipit eiusmod excepteur veniam. Consequat aliqua ex. Nostrud elit nostrum fugiat, yet esse nihil. Natus anim perspiciatis, and illum, so magni. Consequuntur eiusmod, so error. Anim magna. Dolores nequeporro, yet tempora. Amet rem aliquid.");
   }

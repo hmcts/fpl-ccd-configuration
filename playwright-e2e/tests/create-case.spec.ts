@@ -21,10 +21,10 @@ test.skip("Create a case", async ({ page }) => {
   await signInPage.isSignedIn();
   // Add application details
   // 2. Start new case, get case id and assert case id is created
-  await createCase.CaseName();
-  await createCase.CreateCase();
-  await createCase.SubmitCase(createCase.generatedCaseName);
-  await createCase.CheckCaseIsCreated(createCase.generatedCaseName);
+  await createCase.caseName();
+  await createCase.createCase();
+  await createCase.submitCase(createCase.generatedCaseName);
+  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // 3. Orders and directions sought
   await startApplication.OrdersAndDirectionsSoughtLink.isVisible();

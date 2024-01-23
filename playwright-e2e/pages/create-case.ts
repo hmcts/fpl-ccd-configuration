@@ -20,7 +20,7 @@ export class CreateCase {
     this.viewHistory = page.getByText("History");
   }
 
-  async CreateCase() {
+  async createCase() {
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.createCaseLink.click();
     await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
@@ -29,7 +29,7 @@ export class CreateCase {
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async CaseName() {
+  async caseName() {
     const currentDate = new Date();
 
     // Format the date and time components
@@ -53,7 +53,7 @@ export class CreateCase {
     console.log("Case name:", caseName);
   }
 
-  async SubmitCase(caseName) {
+  async submitCase(caseName) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
@@ -66,7 +66,7 @@ export class CreateCase {
     await this.viewHistory.click();
   }
 
-  async CheckCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page
