@@ -1,6 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
-export class SmokeCreateCase {
+export class CreateCase {
   readonly page: Page;
   readonly caseJurisdictionFilterDropdown: Locator;
   readonly caseTypeFilterDropdown: Locator;
