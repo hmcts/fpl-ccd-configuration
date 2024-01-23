@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "caseFileView",
     "TabLabel": "Case File View",
-    "TabDisplayOrder": -1,
+    "TabDisplayOrder": 2,
     "CaseFieldID": "componentLauncher",
     "DisplayContextParameter": "#ARGUMENT(CaseFileView)",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
