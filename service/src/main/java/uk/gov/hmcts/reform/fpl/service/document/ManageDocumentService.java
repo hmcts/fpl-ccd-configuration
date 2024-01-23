@@ -61,6 +61,8 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.ObjectHelper;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,8 +76,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -353,10 +353,9 @@ public class ManageDocumentService {
             .anyMatch(e -> documentElementId.equals(e.getId()));
     }
 
-    @SuppressWarnings("unchecked")
     private Element<AdditionalApplicationsBundle> locateAdditionalApplicationBundleToBeModified(CaseData caseData,
         UUID documentElementId) {
-        return (Element<AdditionalApplicationsBundle>) Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
+        return Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
             .orElse(List.of()).stream()
             .filter(adb -> checkEvidenceBundle(adb.getValue().getC2DocumentBundle(), documentElementId) ||
                 checkEvidenceBundle(adb.getValue().getC2DocumentBundleConfidential(), documentElementId) ||
@@ -365,58 +364,82 @@ public class ManageDocumentService {
             .orElse(null);
     }
 
+    private static C2DocumentBundle getC2DocumentBundle(AdditionalApplicationsBundle aab,
+                                                        String propertyName) {
+        Method getter = BeanUtils.getPropertyDescriptor(AdditionalApplicationsBundle.class, propertyName)
+            .getReadMethod();
+        try {
+            return (C2DocumentBundle) getter.invoke(aab);
+        } catch (IllegalAccessException|InvocationTargetException e) {
+            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+                AdditionalApplicationsBundle.class));
+        }
+    }
+
+    private static AdditionalApplicationsBundle applyNewList(String propertyName,
+                                                             AdditionalApplicationsBundle aab,
+                                                             C2DocumentBundle c2DocumentBundle,
+                                                             List<Element<SupportingEvidenceBundle>> newList) {
+        try {
+            Method builderPropertySetter = AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class
+                .getMethod(propertyName, C2DocumentBundle.class);
+            C2DocumentBundle newC2DocumentBundle = c2DocumentBundle.toBuilder()
+                .supportingEvidenceBundle(newList)
+                .build();
+            return ((AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder)
+                builderPropertySetter.invoke(aab.toBuilder(), newC2DocumentBundle)).build();
+        } catch (NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
+            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+                AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class));
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    private Element<? extends WithDocument>
-        handleC1OrC2SupportingDocumentsInAdditionalApplications(CaseData caseData, UUID documentElementId,
-                                                                Map<String, Object> output) {
+    private Element<? extends WithDocument> handleC1OrC2SupportingDocumentsInAdditionalApplications(
+        CaseData caseData, UUID documentElementId, Map<String, Object> output) {
         Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
             documentElementId);
 
         Element<SupportingEvidenceBundle> ret = null;
         if (targetBundle != null) {
-            if (targetBundle.getValue().getC2DocumentBundle() != null) {
-                ret = ElementUtils.findElement(documentElementId, targetBundle.getValue().getC2DocumentBundle()
-                        .getSupportingEvidenceBundle())
-                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
-                List<Element<SupportingEvidenceBundle>> newList = targetBundle.getValue().getC2DocumentBundle()
-                    .getSupportingEvidenceBundle().stream()
-                    .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
-                    .toList();
-                targetBundle.setValue(targetBundle.getValue().toBuilder()
-                    .c2DocumentBundle(targetBundle.getValue().getC2DocumentBundle().toBuilder()
-                        .supportingEvidenceBundle(newList)
-                        .build())
-                    .build());
-            } else if (targetBundle.getValue().getC2DocumentBundleConfidential() != null) {
-                Function<Element<AdditionalApplicationsBundle>, C2DocumentBundle> c2DocumentAccessor = (tb) ->
-                    tb.getValue().getC2DocumentBundleConfidential();
-                BiFunction<Element<AdditionalApplicationsBundle>, List<Element<SupportingEvidenceBundle>>,
-                    AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder>
-                    elementC2DocumentBundleBuilderFunction = (tb, newList) ->
-                    tb.getValue().toBuilder()
-                        .c2DocumentBundleConfidential(targetBundle.getValue().getC2DocumentBundleConfidential()
-                            .toBuilder()
-                            .supportingEvidenceBundle(newList)
-                            .build());
+            AdditionalApplicationsBundle aab = targetBundle.getValue();
+            if (aab.getOtherApplicationsBundle() == null) {
 
-                ret = ElementUtils.findElement(documentElementId, c2DocumentAccessor.apply(targetBundle)
+                List<String> allProperties = new ArrayList<>(List.of("c2DocumentBundle", "c2DocumentBundleConfidential",
+                    "c2DocumentBundleLA"));
+                for (int i = 0; i <= 14; i++) {
+                    allProperties.add("c2DocumentBundleChild" + i);
+                }
+                for (int i = 0; i <= 9; i++) {
+                    allProperties.add("c2DocumentBundleResp" + i);
+                }
+
+                for (String propertyName : allProperties) {
+                    C2DocumentBundle c2DocumentBundle = getC2DocumentBundle(aab, propertyName);
+                    if (isEmpty(c2DocumentBundle)) {
+                        continue;
+                    }
+
+                    ret = ElementUtils.findElement(documentElementId, c2DocumentBundle.getSupportingEvidenceBundle())
+                        .orElseThrow(
+                            () -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                    List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
+                        .stream()
+                        .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
+                        .toList();
+                    targetBundle.setValue(applyNewList(propertyName, aab, c2DocumentBundle,newList));
+                    aab = targetBundle.getValue();
+                }
+            } else if (aab.getOtherApplicationsBundle() != null) {
+                ret = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
                         .getSupportingEvidenceBundle())
                     .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
-                List<Element<SupportingEvidenceBundle>> newList = c2DocumentAccessor.apply(targetBundle)
+                List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
                     .getSupportingEvidenceBundle().stream()
                     .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
                     .toList();
-                targetBundle.setValue(elementC2DocumentBundleBuilderFunction.apply(targetBundle, newList).build());
-            } else if (targetBundle.getValue().getOtherApplicationsBundle() != null) {
-                ret = ElementUtils.findElement(documentElementId, targetBundle.getValue().getOtherApplicationsBundle()
-                        .getSupportingEvidenceBundle())
-                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
-                List<Element<SupportingEvidenceBundle>> newList = targetBundle.getValue().getOtherApplicationsBundle()
-                    .getSupportingEvidenceBundle().stream()
-                    .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
-                    .toList();
-                targetBundle.setValue(targetBundle.getValue().toBuilder()
-                    .otherApplicationsBundle(targetBundle.getValue().getOtherApplicationsBundle().toBuilder()
+                targetBundle.setValue(aab.toBuilder()
+                    .otherApplicationsBundle(aab.getOtherApplicationsBundle().toBuilder()
                         .supportingEvidenceBundle(newList)
                         .build())
                     .build());
