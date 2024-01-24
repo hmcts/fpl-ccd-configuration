@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -41,6 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
@@ -78,6 +80,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private RequestData requestData;
 
+    @MockBean
+    private UserService userService;
+
     @Autowired
     private Time time;
 
@@ -91,6 +96,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         given(requestData.userRoles()).willReturn(Set.of(ADMIN_ROLE));
         given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(documentConversionService.convertToPdf(UPLOADED_DOCUMENT)).willReturn(PDF_DOCUMENT);
+        given(userService.getCaseRoles(any())).willReturn(Set.of());
+        given(userService.isHmctsUser()).willReturn(true);
     }
 
     @Test
