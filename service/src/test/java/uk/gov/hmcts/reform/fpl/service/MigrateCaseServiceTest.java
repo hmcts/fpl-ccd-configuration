@@ -2673,6 +2673,35 @@ class MigrateCaseServiceTest {
         }
 
         @Test
+        void shouldOnlyUpdateCloseDateAndKeepDeprecatedFieldUnchanged() {
+            CloseCase closeCase = CLOSE_CASE_TAB_FIELD.toBuilder()
+                .details("details")
+                .fullReason("fullReason")
+                .partialReason("partialReason")
+                .showFullReason("showFullReason")
+                .build();
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(closeCase)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            Map<String, Object> actual =
+                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
+
+            assertThat(actual)
+                .isEqualTo(Map.of("closeCaseTabField", closeCase.toBuilder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build()));
+        }
+
+        @Test
         void shouldRollbackCloseCaseTabFieldMigration() {
             CaseData caseData = CaseData.builder()
                 .id(1L).state(State.CLOSED)
