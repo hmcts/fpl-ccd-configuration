@@ -7,6 +7,7 @@ test("Smoke Test @smoke-test", async ({
   ordersAndDirectionSought,
   startApplication,
   hearingUrgency,
+  groundsForTheApplication
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -25,11 +26,11 @@ test("Smoke Test @smoke-test", async ({
 
   // 3. Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  await startApplication.AddApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // 4. Hearing urgency
-  await startApplication.HearingUrgencyLink.isVisible();
-  await startApplication.HearingUrgencyLink.click();
+  await startApplication.hearingUrgencyLink.isVisible();
+  await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
   await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
   await hearingUrgency.giveReasonTextBoxFill();
@@ -39,5 +40,12 @@ test("Smoke Test @smoke-test", async ({
   await hearingUrgency.continueButton.click();
   await hearingUrgency.checkYourAnswers.isVisible();
   await hearingUrgency.saveAndContinueButton.click();
-  await startApplication.AddApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // 5. Grounds for the application
+  await startApplication.groundsForTheApplication();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.groundsForTheApplicationHasBeenUpdated();
 });
