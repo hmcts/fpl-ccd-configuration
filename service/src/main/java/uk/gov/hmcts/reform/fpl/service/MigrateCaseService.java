@@ -995,7 +995,7 @@ public class MigrateCaseService {
         CloseCase existingCloseCaseField = Optional.ofNullable(caseData.getCloseCaseTabField())
             .orElse(CloseCase.builder().build());
 
-        return Map.of("closeCaseTabField", CloseCase.builder()
+        return Map.of("closeCaseTabField", existingCloseCaseField.toBuilder()
             .date(latestApprovalDate)
             .dateBackup((isEmpty(existingCloseCaseField.getDateBackup())
                 ? existingCloseCaseField.getDate() : existingCloseCaseField.getDateBackup()))
@@ -1008,11 +1008,13 @@ public class MigrateCaseService {
             throw new AssertionError(format("Migration {id = %s, case reference = %s} closeCaseField is null",
                 migrationId, caseData.getId()));
         }
-        return Map.of("closeCaseTabField", CloseCase.builder().date(closeCaseField.getDateBackup()).build());
+        return Map.of("closeCaseTabField", closeCaseField.toBuilder()
+            .date(closeCaseField.getDateBackup())
+            .dateBackup(null).build());
     }
 
     public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
         CloseCase closeCaseField = caseData.getCloseCaseTabField();
-        return Map.of("closeCaseTabField", CloseCase.builder().date(closeCaseField.getDate()).build());
+        return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
     }
 }
