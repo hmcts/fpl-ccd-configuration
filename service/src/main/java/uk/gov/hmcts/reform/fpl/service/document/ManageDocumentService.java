@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocument;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
@@ -274,11 +275,10 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element<? extends WithDocument>> handleRemoveCourtBundle(CaseData caseData,
+    private List<Element<? extends WithDocument>> handleRemoveCourtBundle(String fieldName,
+                                                                          CaseData caseData,
                                                                           UUID documentElementId,
-                                                                          Map<String, Object> output,
-                                                                          String fieldName,
-                                                                          List<Element<?>> listOfRemovedElement) {
+                                                                          Map<String, Object> output) {
         List<Element> listOfElement = null;
         HearingDocuments hearingDocuments = caseData.getHearingDocuments();
         switch (fieldName) {
@@ -324,6 +324,8 @@ public class ManageDocumentService {
             targetElements.add(targetElementNC);
         }
 
+        List<Element<?>> listOfRemovedElement = getListOfRemovedElement(caseData, COURT_BUNDLE);
+
         final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
             .anyMatch(e -> e.getId().equals(hcbElement.getId()));
 
@@ -357,9 +359,9 @@ public class ManageDocumentService {
         UUID documentElementId) {
         return Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
             .orElse(List.of()).stream()
-            .filter(adb -> checkEvidenceBundle(adb.getValue().getC2DocumentBundle(), documentElementId) ||
-                checkEvidenceBundle(adb.getValue().getC2DocumentBundleConfidential(), documentElementId) ||
-                checkEvidenceBundle(adb.getValue().getOtherApplicationsBundle(), documentElementId))
+            .filter(adb -> checkEvidenceBundle(adb.getValue().getC2DocumentBundle(), documentElementId)
+                || checkEvidenceBundle(adb.getValue().getC2DocumentBundleConfidential(), documentElementId)
+                || checkEvidenceBundle(adb.getValue().getOtherApplicationsBundle(), documentElementId))
             .findFirst()
             .orElse(null);
     }
@@ -370,7 +372,7 @@ public class ManageDocumentService {
             .getReadMethod();
         try {
             return (C2DocumentBundle) getter.invoke(aab);
-        } catch (IllegalAccessException|InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new AssertionError(format("Fail to get property %s from %s", propertyName,
                 AdditionalApplicationsBundle.class));
         }
@@ -388,10 +390,24 @@ public class ManageDocumentService {
                 .build();
             return ((AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder)
                 builderPropertySetter.invoke(aab.toBuilder(), newC2DocumentBundle)).build();
-        } catch (NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new AssertionError(format("Fail to get property %s from %s", propertyName,
                 AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class));
         }
+    }
+
+    private void appendToRemovedList(DocumentType documentType,
+                                     CaseData caseData,
+                                     Element removed,
+                                     Map<String, Object> output) {
+        List<Element<?>> removedList = getListOfRemovedElement(caseData, documentType);
+        removedList.add(removed);
+        output.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()),
+            removedList);
+    }
+
+    private static Element<ManagedDocument> toManagedDocumentElement(Element<SupportingEvidenceBundle> removed) {
+        return element(removed.getId(), ManagedDocument.builder().document(removed.getValue().getDocument()).build());
     }
 
     @SuppressWarnings("unchecked")
@@ -400,7 +416,7 @@ public class ManageDocumentService {
         Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
             documentElementId);
 
-        Element<SupportingEvidenceBundle> ret = null;
+        Element<SupportingEvidenceBundle> removed = null;
         if (targetBundle != null) {
             AdditionalApplicationsBundle aab = targetBundle.getValue();
             if (aab.getOtherApplicationsBundle() == null) {
@@ -420,7 +436,8 @@ public class ManageDocumentService {
                         continue;
                     }
 
-                    ret = ElementUtils.findElement(documentElementId, c2DocumentBundle.getSupportingEvidenceBundle())
+                    removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
+                        .getSupportingEvidenceBundle())
                         .orElseThrow(
                             () -> new AssertionError(format("target element not found (%s)", documentElementId)));
                     List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
@@ -430,8 +447,9 @@ public class ManageDocumentService {
                     targetBundle.setValue(applyNewList(propertyName, aab, c2DocumentBundle,newList));
                     aab = targetBundle.getValue();
                 }
+                appendToRemovedList(C2_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
             } else if (aab.getOtherApplicationsBundle() != null) {
-                ret = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
+                removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
                         .getSupportingEvidenceBundle())
                     .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
                 List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
@@ -443,37 +461,40 @@ public class ManageDocumentService {
                         .supportingEvidenceBundle(newList)
                         .build())
                     .build());
+
+                appendToRemovedList(C1_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
             } else {
                 throw new AssertionError("should not reach this line.");
             }
-
             output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
         }
-        // TODO move to removedList;
-        return ret;
+        return removed;
     }
 
     @SuppressWarnings("unchecked")
-    private Element<? extends WithDocument> handleRemoveGeneralDocumentType(CaseData caseData, UUID documentElementId,
-                                                                            Map<String, Object> output,
+    private Element<? extends WithDocument> handleRemoveGeneralDocumentType(DocumentType documentType,
                                                                             String fieldName,
-                                                                            List<Element<?>> listOfRemovedElement) {
+                                                                            CaseData caseData, UUID documentElementId,
+                                                                            Map<String, Object> output) {
         if (List.of(C1_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.name()).contains(fieldName)) {
             return handleC1OrC2SupportingDocumentsInAdditionalApplications(caseData, documentElementId, output);
         } else {
             List<Element<?>> listOfElement = readFromFieldName(caseData, fieldName);
-            Element target = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
+            Element removed = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
                 .orElseThrow(() -> {
                     throw new IllegalStateException("Fail to locate the target document");
                 });
-            listOfElement.remove(target);
-            listOfRemovedElement.add(target); // Putting it to removed list for backing
+            listOfElement.remove(removed);
 
             output.put(DocumentType.toJsonFieldName(fieldName), listOfElement);
-            output.put(DocumentType.toJsonFieldName(DocumentType.fromFieldName(fieldName).getFieldNameOfRemovedList()),
-                listOfRemovedElement);
-            return target;
+            appendToRemovedList(documentType, caseData, removed, output);
+            return removed;
         }
+    }
+
+    private List<Element<?>> getListOfRemovedElement(CaseData caseData, DocumentType documentType) {
+        return Optional.ofNullable(readFromFieldName(caseData,
+                documentType.getFieldNameOfRemovedList())).orElse(new ArrayList<>());
     }
 
     @SuppressWarnings("unchecked")
@@ -499,18 +520,11 @@ public class ManageDocumentService {
         if (documentType == PLACEMENT_RESPONSES) {
             targetElements.add(handleRemovePlacementResponse(caseData, documentElementId, output));
         } else {
-            // getting list of removed element
-            List<Element<?>> listOfRemovedElement = readFromFieldName(caseData,
-                documentType.getFieldNameOfRemovedList());
-            if (listOfRemovedElement == null) {
-                listOfRemovedElement = new ArrayList<>();
-            }
             if (documentType == COURT_BUNDLE) {
-                targetElements.addAll(handleRemoveCourtBundle(caseData, documentElementId, output, fieldName,
-                    listOfRemovedElement));
+                targetElements.addAll(handleRemoveCourtBundle(fieldName, caseData, documentElementId, output));
             } else {
-                targetElements.add(handleRemoveGeneralDocumentType(caseData, documentElementId, output, fieldName,
-                    listOfRemovedElement));
+                targetElements.add(handleRemoveGeneralDocumentType(documentType, fieldName, caseData, documentElementId,
+                    output));
             }
         }
         targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
