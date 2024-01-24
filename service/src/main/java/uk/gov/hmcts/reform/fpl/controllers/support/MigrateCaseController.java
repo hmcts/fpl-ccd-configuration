@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final MigrateCFVService migrateCFVService;
 
@@ -178,11 +179,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1855(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1855";
-        caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
-    }
-  
     private void run1940(CaseDetails caseDetails) {
         var migrationId = "DFPL-1940";
         var possibleCaseIds = List.of(1697791879605293L);
@@ -201,6 +197,7 @@ public class MigrateCaseController extends CallbackController {
     private void runLogMigration(CaseDetails caseDetails) {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
+
     private void run2033(CaseDetails caseDetails) {
         var migrationId = "DFPL-2033";
         var possibleCaseIds = List.of(1700651082936197L);
