@@ -208,6 +208,9 @@ public class ManageDocumentService {
         if (caseRoles.contains(CaseRole.BARRISTER)) {
             return BARRISTER;
         }
+        if (caseRoles.contains(CaseRole.CAFCASSSOLICITOR)) {
+            return CAFCASS;
+        }
         if (userService.isHmctsUser()) {
             return HMCTS;
         }
@@ -469,12 +472,13 @@ public class ManageDocumentService {
         switch (uploaderType) {
             case SOLICITOR:
             case CAFCASS:
-                return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
+            case BARRISTER:
+                return documentType.isHiddenFromSolicitorUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
-                return documentType.isHiddenFromLAUpload() || documentType.isHiddenFromUpload();
+                return documentType.isHiddenFromLAUpload();
             case HMCTS:
-                return documentType.isHiddenFromCTSCUpload() || documentType.isHiddenFromUpload();
+                return documentType.isHiddenFromCTSCUpload();
             default:
                 throw new IllegalStateException("unsupported uploaderType: " + uploaderType);
         }

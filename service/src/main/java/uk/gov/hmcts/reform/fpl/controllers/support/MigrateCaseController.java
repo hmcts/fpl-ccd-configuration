@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCFVService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final MigrateCFVService migrateCFVService;
 
@@ -44,9 +45,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1855", this::run1855,
-        "DFPL-1954", this::run1954,
-        "DFPL-1948", this::run1948
+        "DFPL-2033", this::run2033
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -180,11 +179,6 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1855(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1855";
-        caseDetails.getData().putAll(migrateCaseService.fixIncorrectCaseManagementLocation(caseDetails, migrationId));
-    }
-  
     private void run1940(CaseDetails caseDetails) {
         var migrationId = "DFPL-1940";
         var possibleCaseIds = List.of(1697791879605293L);
@@ -204,31 +198,14 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run1954(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1954";
-        var possibleCaseIds = List.of(1680510780369230L);
+    private void run2033(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2033";
+        var possibleCaseIds = List.of(1700651082936197L);
+        var expectedMessageId = UUID.fromString("d80b8dbe-889d-41f3-b9c5-ea3df08e53c7");
+
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        String orgId = "2Z69Q0U";
-
         CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "3cb2d4b1-d0cb-46d7-99e1-913cb15bfa0e"));
-    }
-
-    private void run1948(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1948";
-        var possibleCaseIds = List.of(1681814563345287L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        String orgId = "P71FQC0";
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(caseData, orgId));
-        caseDetails.getData().putAll(migrateCaseService.removeApplicantEmailAndStopNotifyingTheirColleagues(caseData,
-            migrationId, "d7beca42-edbd-42db-a922-bcbec58b8306"));
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            String.valueOf(expectedMessageId)));
     }
 }

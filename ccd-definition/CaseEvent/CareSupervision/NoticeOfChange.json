@@ -38,6 +38,7 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/noc-decision/update-respondents/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/noc-decision/update-respondents/about-to-submit",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N"
