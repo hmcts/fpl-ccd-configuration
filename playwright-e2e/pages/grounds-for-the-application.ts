@@ -14,7 +14,7 @@ export class GroundsForTheApplication {
         this.page = page;
         this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
         this.howDoesThisMeetTheThresholdCriteriaHeading = page.getByRole('heading', { name: '*How does this case meet the threshold criteria?' });
-        this.notReceivingCareThatWouldBeResonablyExpectedFromAParentCheckBox = page.getByLabel('Not receiving care that would be reasonably expected from a parent')
+        this.notReceivingCareThatWouldBeResonablyExpectedFromAParentCheckBox = page.getByLabel('Not receiving care that would be reasonably expected from a parent');
         this.giveDetailsOfHowThisCaseMeetsTheThresholdCriteriaTextBox = page.getByRole("textbox", {name: '*Give details of how this case meets the threshold criteria (Optional)'});
         this.continueButton = page.getByRole('button', { name: 'Continue' });
         this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });

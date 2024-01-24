@@ -44,8 +44,14 @@ test("Smoke Test @smoke-test", async ({
 
   // 5. Grounds for the application
   await startApplication.groundsForTheApplication();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-  await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-  await startApplication.addApplicationDetailsHeading.isVisible();
+  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
+  await groundsForTheApplication.notReceivingCareThatWouldBeResonablyExpectedFromAParentCheckBox.click();
+  await groundsForTheApplication.giveDetailsOfHowThisCaseMeetsTheThresholdCriteriaTextBox.fill("Eum laudantium tempor, yet magni beatae. Architecto tempor. Quae adipisci, and labore, but voluptate, but est voluptas. Ipsum error minima. Suscipit eiusmod excepteur veniam. Consequat aliqua ex. Nostrud elit nostrum fugiat, yet esse nihil. Natus anim perspiciatis, and illum, so magni. Consequuntur eiusmod, so error. Anim magna. Dolores nequeporro, yet tempora. Amet rem aliquid.");
+  await groundsForTheApplication.notReceivingCareThatWouldBeResonablyExpectedFromAParentCheckBox.isChecked();
+  await groundsForTheApplication.continueButton.click();
+  await groundsForTheApplication.checkYourAnswersHeader.isVisible();
+  await groundsForTheApplication.saveAndContinueButton.click();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
+  // Uncommenting the blow line will make it work?
+  //await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 });

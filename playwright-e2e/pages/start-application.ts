@@ -11,7 +11,7 @@ export class StartApplication {
   readonly riskAndHarmToChildrenLink: Locator;
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
-  readonly groundsForTheApplicationHasBeenUpdatedAlert: Locator;
+  readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -21,7 +21,7 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole('heading', { name: 'Hearing urgency' });
     this.groundsForTheApplicationLink = page.getByRole('link', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
-    this.groundsForTheApplicationHasBeenUpdatedAlert = page.getByText('ping pong rubbish has been updated with event: Grounds for the application');
+    this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
   }
 
   async addApplicationDetails(){
@@ -46,6 +46,6 @@ export class StartApplication {
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
-    await expect (this.groundsForTheApplicationHasBeenUpdatedAlert).toBeVisible
+    await expect (this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible;
   }
 }

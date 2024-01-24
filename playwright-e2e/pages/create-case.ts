@@ -47,7 +47,7 @@ export class CreateCase {
     // Create the timestamp string
     const timestamp = `${day} ${month} ${year}, ${hours}:${minutes}:${seconds}.${milliseconds}`;
 
-    const caseName = `Playwright only e2e smoke test ${timestamp}`;
+    const caseName = `Wednesday Test ${timestamp}`;
     this.generatedCaseName = caseName;
 
     console.log("Case name:", caseName);
