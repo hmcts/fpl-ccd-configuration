@@ -89,6 +89,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("elinks-enabled", createLDUser(), false);
     }
 
+    public boolean isWATaskEmailsEnabled() {
+        return ldClient.boolVariation("elinks-enabled", createLDUser(), true);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
