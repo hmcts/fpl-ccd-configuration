@@ -281,7 +281,7 @@ public enum DocumentType {
         };
     }
 
-    private static final String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
+    private static String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
         if (confidentialLevel == null) {
             return baseFieldName + "Removed";
         }
@@ -297,7 +297,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
+    private static Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
 
