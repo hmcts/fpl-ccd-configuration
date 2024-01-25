@@ -43,8 +43,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
+        "DFPL-1965", this::run1965,
         "DFPL-2033", this::run2033
     );
 
@@ -190,10 +190,6 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run1934(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
     private void runLogMigration(CaseDetails caseDetails) {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
@@ -207,5 +203,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
             String.valueOf(expectedMessageId)));
+    }
+
+    private void run1965(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1965";
+        var possibleCaseId = 1690901925013890L;
+        var manchesterOrgId = "JTLD1QJ";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), possibleCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.changeApplicantToLaManaging(manchesterOrgId));
     }
 }
