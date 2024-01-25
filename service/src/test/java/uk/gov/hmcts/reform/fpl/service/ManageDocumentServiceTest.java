@@ -4001,6 +4001,8 @@ class ManageDocumentServiceTest {
         DynamicList expectedDynamicList2 = DynamicList.builder().build();
         DynamicList expectedDynamicList3 = DynamicList.builder().build();
 
+        DocumentReference additionalApplicationDocument = testDocumentReference("additional-application");
+
         @ParameterizedTest
         @ValueSource(ints = {1, 2, 3, 4, 5})
         void testForNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
@@ -4240,6 +4242,95 @@ class ManageDocumentServiceTest {
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
             }
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void shouldReturnDynamicListWhenC2ApplicationSupportingDocumentUploadedByThemselves(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.additionalApplicationsBundle(List.of(
+                element(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build())))
+                        .build())
+                    .build())
+            ));
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 2, 3, 4, 5})
+        void shouldReturnDynamicListWhenC1ApplicationSupportingDocumentUploadedByThemselves(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.additionalApplicationsBundle(List.of(
+                element(AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(loginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
+                            .build())))
+                        .build())
+                    .build())
+            ));
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 4})
+        void shouldReturnDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByLA(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.additionalApplicationsBundle(List.of(
+                element(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundleConfidential(C2DocumentBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(1))
+                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .build())))
+                        .build())
+                    .c2DocumentBundleLA(C2DocumentBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(1))
+                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .build())))
+                        .build())
+                    .build())
+            ));
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
     }
 
