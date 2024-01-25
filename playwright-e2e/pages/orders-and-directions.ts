@@ -4,27 +4,34 @@ export class OrdersAndDirectionSought {
   readonly page: Page;
   readonly OrdersAndDirectionsLink: Locator;
   readonly OrdersAndDirectionsHeading: Locator;
+  readonly OrdersAndDirectionsSought: Locator;
+  readonly WhichOrdersDoYouNeedCareOrder: Locator;
+  readonly DoYouNeedAnyOtherDirectionsRadioNo: Locator;
+  readonly WhichCourtAreYouIssuingFor: Locator;
+  readonly Continue: Locator;
+  readonly CheckYourAnswers: Locator;
+  readonly SaveAndContinue: Locator;
 
   public constructor(page: Page) {
     this.page = page;
-    this.OrdersAndDirectionsHeading = page.getByRole("heading", {
-      name: "Orders and directions needed",
-    });
+    this.OrdersAndDirectionsHeading = page.getByRole("heading", {name: "Orders and directions needed"});
+    this.OrdersAndDirectionsSought = page.getByRole("link", { name: "Orders and directions sought" });
+    this.WhichOrdersDoYouNeedCareOrder = page.getByLabel("Care order", { exact: true });
+    this.DoYouNeedAnyOtherDirectionsRadioNo = page.getByRole('radio', { name: 'No' });
+    this.WhichCourtAreYouIssuingFor = page.getByRole('group', { name: 'Orders and directions needed' }).getByLabel('*Which court are you issuing');
+    this.Continue = page.getByRole('button', { name: 'Continue' });
+    this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
+    this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
-  async OrdersAndDirectionsNeeded() {
+  async ordersAndDirectionsNeeded() {
     await this.OrdersAndDirectionsHeading.isVisible;
-
-    await this.page.getByLabel('Care order', { exact: true }).check();
-    await this.page.getByLabel('Interim care order').check();
-    await this.page.getByLabel('Interim care order').uncheck();
-    await this.page.getByRole('radio', { name: 'No' }).check();
-    await this.page.getByRole('group', { name: 'Orders and directions needed' }).getByLabel('*Which court are you issuing for? (Optional)').selectOption('37: 262');
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('heading', { name: 'Check your answers' }).click();
-    await this.page.getByRole('button', { name: 'Save and continue' }).click();
-    await this.page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1699273737290970');
-    await this.page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1699273737290970#Start%20application');
-    await this.page.getByText('C110a Application', { exact: true }).click();
+    await this.OrdersAndDirectionsSought.click();
+    await this.WhichOrdersDoYouNeedCareOrder.check();
+    await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
+    await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
+    await this.Continue.click();
+    await expect(this.CheckYourAnswers).toBeVisible;
+    await this.SaveAndContinue.click();
   }
 }
