@@ -95,6 +95,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
@@ -856,6 +857,7 @@ public class ManageDocumentService {
                     .orElse(OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build())
                     .getSupportingEvidenceBundle().stream())
                 .toList().isEmpty()) {
+                finalDocumentTypes.add(AA_PARENT_APPLICATIONS);
                 finalDocumentTypes.add(C1_APPLICATION_DOCUMENTS);
             }
         }
@@ -867,6 +869,7 @@ public class ManageDocumentService {
                         .orElse(C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build()))
                     .getSupportingEvidenceBundle().stream())
                 .toList().isEmpty()) {
+                finalDocumentTypes.add(AA_PARENT_APPLICATIONS);
                 finalDocumentTypes.add(C2_APPLICATION_DOCUMENTS);
             }
         }
