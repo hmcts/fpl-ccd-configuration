@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.junit.jupiter.params.provider.Arguments;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
@@ -16,9 +17,12 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
@@ -58,6 +62,20 @@ public class ManageDocumentsUploadedEventTestData {
         Method builderMethod = CaseData.CaseDataBuilder.class.getMethod(fieldName, List.class);
 
         return (CaseData.CaseDataBuilder<?,?>) builderMethod.invoke(builder, documents);
+    }
+
+    public static Stream<Arguments> allUploadableDocumentsTypeParameters() {
+        List<Arguments> streamList = new ArrayList<>();
+
+        for (DocumentType docType : DocumentType.values()) {
+            if (isNotEmpty(docType.getBaseFieldNameResolver()) && docType.isUploadable()) {
+                for (ConfidentialLevel level : ConfidentialLevel.values()) {
+                    streamList.add(Arguments.of(docType, level));
+                }
+            }
+        }
+
+        return streamList.stream();
     }
 
     public static CaseData buildSubmittedCaseDataWithNewDocumentUploaded(List<DocumentType> docTypes,
