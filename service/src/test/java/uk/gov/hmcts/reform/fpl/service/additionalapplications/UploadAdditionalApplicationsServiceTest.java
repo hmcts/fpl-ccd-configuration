@@ -131,6 +131,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldBuildExpectedC2DocumentBundle() {
         Supplement supplement = createSupplementsBundle();
@@ -157,7 +158,10 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(List.of())
+            .build());
 
         // No longer called in this method
         // verify(conversionService).convertToPdf(DOCUMENT);
@@ -866,8 +870,6 @@ class UploadAdditionalApplicationsServiceTest {
         return createSupportingEvidenceBundleBuilder(name).build();
     }
 
-
-
     private Supplement createSupplementsBundle() {
         return createSupplementsBundle(C13A_SPECIAL_GUARDIANSHIP);
     }
@@ -888,17 +890,6 @@ class UploadAdditionalApplicationsServiceTest {
             .forename("Steve")
             .email("steve.hudson@gov.uk")
             .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
-            .build();
-    }
-
-
-    private UserDetails createUserDetailsWithLaRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Kurt")
-            .forename("Kurt")
-            .email("kurt@swansea.gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-solicitor"))
             .build();
     }
 }
