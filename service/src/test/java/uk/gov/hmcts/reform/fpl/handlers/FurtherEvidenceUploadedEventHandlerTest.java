@@ -462,6 +462,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
             newDocumentDataCaptor.capture());
     }
 
+    /*
+    // Remove this test case since in the new manage document flow will not modify the existing
+    // `c2DocumentBundle` anymore
     @Test
     void shouldEmailCafcassWhenC2AdditionalBundleIsUploadedByLA() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
@@ -507,6 +510,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
         assertThat(newDocumentData.getEmailSubjectInfo())
                 .isEqualTo("additional applications");
     }
+    */
 
     @Test
     void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {

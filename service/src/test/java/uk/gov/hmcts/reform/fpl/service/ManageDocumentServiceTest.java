@@ -157,6 +157,7 @@ class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
+    private static final int HMCTS_LOGIN_TYPE = 4;
 
     @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -3737,8 +3738,8 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldShowASingleDocumentType() {
-            initialiseUserService(4);
-            DocumentUploaderType uploaderType = getUploaderType(4);
+            initialiseUserService(HMCTS_LOGIN_TYPE);
+            DocumentUploaderType uploaderType = getUploaderType(HMCTS_LOGIN_TYPE);
 
             when(caseConverter.toMap(any())).thenReturn(Map.of("courtBundleListV2", List.of(
                 element(HearingCourtBundle.builder()
@@ -3746,12 +3747,12 @@ class ManageDocumentServiceTest {
                         element(CourtBundle.builder()
                             .document(testDocumentReference())
                             .uploaderType(uploaderType)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build()),
                         element(CourtBundle.builder()
                             .document(testDocumentReference())
                             .uploaderType(uploaderType)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build())
                     ))
                     .build()))));
@@ -3765,8 +3766,8 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldShowMultipleDocumentTypes() {
-            initialiseUserService(4);
-            DocumentUploaderType uploaderType = getUploaderType(4);
+            initialiseUserService(HMCTS_LOGIN_TYPE);
+            DocumentUploaderType uploaderType = getUploaderType(HMCTS_LOGIN_TYPE);
 
             when(caseConverter.toMap(any())).thenReturn(Map.of(
                 "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
@@ -3776,12 +3777,12 @@ class ManageDocumentServiceTest {
                             element(CourtBundle.builder()
                                 .document(testDocumentReference())
                                 .uploaderType(uploaderType)
-                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                                 .build()),
                             element(CourtBundle.builder()
                                 .document(testDocumentReference())
                                 .uploaderType(uploaderType)
-                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                                 .build())
                         ))
                         .build()))));
@@ -3797,8 +3798,8 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldShowPlacementResponseInDocumentTypes() {
-            initialiseUserService(4);
-            DocumentUploaderType uploaderType = getUploaderType(4);
+            initialiseUserService(HMCTS_LOGIN_TYPE);
+            DocumentUploaderType uploaderType = getUploaderType(HMCTS_LOGIN_TYPE);
 
             when(caseConverter.toMap(any())).thenReturn(Map.of(
                 "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
@@ -3808,12 +3809,51 @@ class ManageDocumentServiceTest {
                             element(CourtBundle.builder()
                                 .document(testDocumentReference())
                                 .uploaderType(uploaderType)
-                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                                 .build()),
                             element(CourtBundle.builder()
                                 .document(testDocumentReference())
                                 .uploaderType(uploaderType)
-                                .uploaderCaseRoles(getUploaderCaseRoles(4))
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
+                                .build())
+                        ))
+                        .build()))));
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(DocumentType.COURT_BUNDLE.name(), DocumentType.COURT_BUNDLE.getDescription()),
+                Pair.of(DocumentType.AA_PARENT_ORDERS.name(), DocumentType.AA_PARENT_ORDERS.getDescription()),
+                Pair.of(DocumentType.TRANSCRIPTS.name(), DocumentType.TRANSCRIPTS.getDescription()),
+                Pair.of(DocumentType.PLACEMENT_RESPONSES.name(), DocumentType.PLACEMENT_RESPONSES.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(List.of(element(Placement.builder()
+                        .noticeDocuments(List.of(element(PlacementNoticeDocument.builder().build())))
+                        .build())))
+                    .build())
+                .build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
+        void shouldShowC1SupportingDocumentsInDocumentTypes() {
+            initialiseUserService(HMCTS_LOGIN_TYPE);
+            DocumentUploaderType uploaderType = getUploaderType(HMCTS_LOGIN_TYPE);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of(
+                "transcriptListCTSC", List.of(element(ManagedDocument.builder().build())),
+                "courtBundleListV2", List.of(
+                    element(HearingCourtBundle.builder()
+                        .courtBundle(List.of(
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
+                                .build()),
+                            element(CourtBundle.builder()
+                                .document(testDocumentReference())
+                                .uploaderType(uploaderType)
+                                .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                                 .build())
                         ))
                         .build()))));
@@ -3904,12 +3944,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.HMCTS)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.HMCTS)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build())
                     ))
                     .build())))
@@ -4025,7 +4065,7 @@ class ManageDocumentServiceTest {
                         element(elementId3, CourtBundle.builder()
                             .document(testDocumentReference(filename3))
                             .uploaderType(DocumentUploaderType.HMCTS)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build()),
                         element(elementId4, CourtBundle.builder()
                             .document(testDocumentReference(filename4))
@@ -4055,7 +4095,7 @@ class ManageDocumentServiceTest {
                         element(elementId3, CourtBundle.builder()
                             .document(testDocumentReference(filename3))
                             .uploaderType(DocumentUploaderType.HMCTS)
-                            .uploaderCaseRoles(getUploaderCaseRoles(4))
+                            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
                             .build()),
                         element(elementId4, CourtBundle.builder()
                             .document(testDocumentReference(filename4))
@@ -4136,18 +4176,18 @@ class ManageDocumentServiceTest {
         CourtBundle cb4 = CourtBundle.builder()
             .document(testDocumentReference(filename4))
             .uploaderType(DocumentUploaderType.HMCTS)
-            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
             .build();
 
         ManagedDocument md1 = ManagedDocument.builder()
             .document(testDocumentReference(filename1))
             .uploaderType(DocumentUploaderType.HMCTS)
-            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
             .build();
         ManagedDocument md2 = ManagedDocument.builder()
             .document(testDocumentReference(filename2))
             .uploaderType(DocumentUploaderType.HMCTS)
-            .uploaderCaseRoles(getUploaderCaseRoles(4))
+            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
             .build();
 
         CaseSummary cs1 = CaseSummary.builder()
