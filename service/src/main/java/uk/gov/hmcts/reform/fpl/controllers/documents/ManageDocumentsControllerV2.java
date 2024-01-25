@@ -92,7 +92,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
                     return respond(caseDetails, List.of("There is no document to be removed."));
                 }
             } else {
-                // For LA or external solicitor
+                // for LA or external solicitor
                 DynamicList availableDocumentsToBeRemoved = manageDocumentService
                     .buildAvailableDocumentsToBeRemoved(caseData);
                 if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {
