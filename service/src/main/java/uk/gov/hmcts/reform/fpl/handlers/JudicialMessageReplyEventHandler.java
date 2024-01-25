@@ -35,9 +35,7 @@ public class JudicialMessageReplyEventHandler {
             notificationService.sendEmail(JUDICIAL_MESSAGE_REPLY_TEMPLATE, newJudicialMessage.getRecipient(),
                 notifyData, caseData.getId());
         } else {
-            log.info("Would have sent Judicial Message email on case {}, but was disabled, should have created a task",
-                event.getCaseData().getId());
-
+            log.info("WA EMAIL SKIPPED - judicial message reply - {}", event.getCaseData().getId());
         }
     }
 }
