@@ -98,6 +98,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -3944,35 +3945,8 @@ class ManageDocumentServiceTest {
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
         }
 
-        private AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder
-            toConfidentialAdditionalApplicationsBundleBuilder(String modifier, C2DocumentBundle c2DocumentBundle) {
-            AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder ret = AdditionalApplicationsBundle
-                .builder();
-            try {
-                Method method0 = AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class
-                    .getMethod("c2DocumentBundle", C2DocumentBundle.class);
-                Method method1 = AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class
-                    .getMethod("c2DocumentBundle" + modifier, C2DocumentBundle.class);
-                ret = (AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder) method0
-                    .invoke(ret, c2DocumentBundle);
-                ret = (AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder) method1
-                    .invoke(ret, c2DocumentBundle);
-                return ret;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         private static Stream<Arguments> buildC2DocumentBundleModifiers() {
-            List<Arguments> args = new ArrayList<>();
-            args.add(Arguments.of("LA"));
-            for (int i = 0; i <= 9; i++) {
-                args.add(Arguments.of("Resp" + i));
-            }
-            for (int i = 0; i <= 14; i++) {
-                args.add(Arguments.of("Child" + i));
-            }
-            return args.stream();
+            return ManageDocumentServiceTest.buildC2DocumentBundleModifiers();
         }
 
         @ParameterizedTest
@@ -4306,6 +4280,17 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
             .build();
 
+        SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
+            .document(testDocumentReference(filename1))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
+            .build();
+        SupportingEvidenceBundle seb2 = SupportingEvidenceBundle.builder()
+            .document(testDocumentReference(filename2))
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
+            .build();
+
         ManagedDocument md1 = ManagedDocument.builder()
             .document(testDocumentReference(filename1))
             .uploaderType(DocumentUploaderType.HMCTS)
@@ -4341,9 +4326,11 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(3))
             .build();
 
+        DocumentReference c2ApplicationDocument = testDocumentReference("C2APPLICATION");
+
         @Test
         void shouldBeAbleToRemovePlacementResponseFromSinglePlacementResponseByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.placementEventData(PlacementEventData.builder()
@@ -4399,7 +4386,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemovePlacementResponseFromMultiplePlacementResponsesByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.placementEventData(PlacementEventData.builder()
@@ -4571,7 +4558,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveNcCourtBundleWithoutCourtBundleNCByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4607,7 +4594,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveNcCourtBundleFromMultipleCourtBundlesByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4653,7 +4640,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveNcCourtBundleFromSingleCourtBundleByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4693,7 +4680,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveCourtBundleLAFromMultipleCourtBundlesByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4739,7 +4726,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveCourtBundleLAFromSingleCourtBundleByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4780,7 +4767,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveCourtBundleCTSCFromSingleCourtBundleByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4821,7 +4808,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldBeAbleToRemoveNcCourtBundleWithMultipleHearingCourtBundleByAdmin() {
-            int loginType = 4;
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.hearingDocuments(HearingDocuments.builder()
@@ -4864,6 +4851,53 @@ class ManageDocumentServiceTest {
                     .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
                     .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
                     .build())));
+        }
+
+        private static Stream<Arguments> buildC2DocumentBundleModifiers() {
+            return ManageDocumentServiceTest.buildC2DocumentBundleModifiers();
+        }
+
+        @ParameterizedTest
+        @MethodSource("buildC2DocumentBundleModifiers")
+        void shouldBeAbleToRemoveConfidentialC2SupportingDocumentFromAdditionalApplicationByAdmin(String modifier) {
+            int loginType = HMCTS_LOGIN_TYPE;
+            UUID additionalApplicationUUID = UUID.randomUUID();
+
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.additionalApplicationsBundle(List.of(
+                element(additionalApplicationUUID, toConfidentialAdditionalApplicationsBundleBuilder(modifier,
+                    C2DocumentBundle.builder()
+                        .document(c2ApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
+                        .build()).build())
+            ));
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(C2_APPLICATION_DOCUMENTS.name() + "###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            assertThat(result.get("c2ApplicationDocListRemoved")).isEqualTo(List.of(
+                element(elementId1, ManagedDocument.builder()
+                    .document(seb1.getDocument())
+                    .markAsConfidential(seb1.getMarkAsConfidential())
+                    .uploaderType(seb1.getUploaderType())
+                    .uploaderCaseRoles(seb1.getUploaderCaseRoles())
+                    .build())
+            ));
+            assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
+                element(additionalApplicationUUID, toConfidentialAdditionalApplicationsBundleBuilder(modifier,
+                    C2DocumentBundle.builder()
+                        .document(c2ApplicationDocument)
+                        .supportingEvidenceBundle(List.of())
+                        .build()).build())
+            ));
         }
     }
 
@@ -4921,5 +4955,40 @@ class ManageDocumentServiceTest {
         private static Stream<Arguments> provideTestData() {
             return ManageDocumentsUploadedEventTestData.allUploadableDocumentsTypeParameters();
         }
+    }
+
+    private static AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder
+        toConfidentialAdditionalApplicationsBundleBuilder(String modifier, C2DocumentBundle c2DocumentBundle) {
+        AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder ret = AdditionalApplicationsBundle
+            .builder();
+        try {
+            Method method0 = AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class
+                .getMethod("c2DocumentBundleConfidential", C2DocumentBundle.class);
+            ret = (AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder) method0
+                .invoke(ret, c2DocumentBundle);
+
+            if (isNotEmpty(modifier)) {
+                Method method1 = AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder.class
+                    .getMethod("c2DocumentBundle" + modifier, C2DocumentBundle.class);
+                ret = (AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder) method1
+                    .invoke(ret, c2DocumentBundle);
+            }
+            return ret;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Stream<Arguments> buildC2DocumentBundleModifiers() {
+        List<Arguments> args = new ArrayList<>();
+        args.add(Arguments.of(""));
+        args.add(Arguments.of("LA"));
+        for (int i = 0; i <= 9; i++) {
+            args.add(Arguments.of("Resp" + i));
+        }
+        for (int i = 0; i <= 14; i++) {
+            args.add(Arguments.of("Child" + i));
+        }
+        return args.stream();
     }
 }
