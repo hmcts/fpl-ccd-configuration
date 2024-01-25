@@ -847,7 +847,7 @@ public class ManageDocumentService {
             finalDocumentTypes.add(PLACEMENT_RESPONSES);
         }
 
-        // TODO Check submittedC1WithSupplement?!
+        // TODO DFPL-2120
         // C1 application documents
         if (!Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).isEmpty()) {
             if (!caseData.getAdditionalApplicationsBundle().stream()
