@@ -745,10 +745,6 @@ public class ManageDocumentService {
                         .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
                             app.getValue().getC2DocumentBundleLA().getSupportingEvidenceBundle()));
                 }
-                if (level == ConfidentialLevel.NON_CONFIDENTIAL) {
-                    // TODO for c2DocumentBundleResp0 to 9
-                    // TODO for c2DocumentBundleChild0 to 14
-                }
             }
         }
         return ret;
