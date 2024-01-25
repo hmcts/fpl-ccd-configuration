@@ -246,6 +246,10 @@ public enum DocumentType {
         return getBaseFieldNameResolver().apply(null);
     }
 
+    public String getJsonFieldNameOfRemovedList() {
+        return toJsonFieldName(getBaseFieldNameResolver().apply(null));
+    }
+
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
         switch (uploaderType) {
             case DESIGNATED_LOCAL_AUTHORITY:
@@ -260,7 +264,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> courtBundleResolver() {
+    private static Function<ConfidentialLevel, String> courtBundleResolver() {
         return confidentialLevel -> {
             if (confidentialLevel == null) {
                 return "hearingDocuments.courtBundleListRemoved";

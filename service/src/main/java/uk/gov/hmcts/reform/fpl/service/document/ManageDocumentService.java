@@ -368,8 +368,12 @@ public class ManageDocumentService {
 
     private static C2DocumentBundle getC2DocumentBundle(AdditionalApplicationsBundle aab,
                                                         String propertyName) {
-        Method getter = BeanUtils.getPropertyDescriptor(AdditionalApplicationsBundle.class, propertyName)
-            .getReadMethod();
+        PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(AdditionalApplicationsBundle.class, propertyName);
+        if (pd == null) {
+            throw new AssertionError(format("Fail to get property %s from %s", propertyName,
+                AdditionalApplicationsBundle.class));
+        }
+        Method getter = pd.getReadMethod();
         try {
             return (C2DocumentBundle) getter.invoke(aab);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -402,12 +406,17 @@ public class ManageDocumentService {
                                      Map<String, Object> output) {
         List<Element<?>> removedList = getListOfRemovedElement(caseData, documentType);
         removedList.add(removed);
-        output.put(DocumentType.toJsonFieldName(documentType.getFieldNameOfRemovedList()),
-            removedList);
+        output.put(documentType.getJsonFieldNameOfRemovedList(), removedList);
     }
 
     private static Element<ManagedDocument> toManagedDocumentElement(Element<SupportingEvidenceBundle> removed) {
-        return element(removed.getId(), ManagedDocument.builder().document(removed.getValue().getDocument()).build());
+        return element(removed.getId(), ManagedDocument.builder()
+            .uploaderType(removed.getValue().getUploaderType())
+            .uploaderCaseRoles(removed.getValue().getUploaderCaseRoles())
+            .translationRequirements(removed.getValue().getTranslationRequirements())
+            .markAsConfidential(removed.getValue().getMarkAsConfidential())
+            .document(removed.getValue().getDocument())
+            .build());
     }
 
     @SuppressWarnings("unchecked")
