@@ -458,6 +458,7 @@ public class ManageDocumentService {
                     targetBundle.setValue(applyNewList(propertyName, aab, c2DocumentBundle,newList));
                     aab = targetBundle.getValue();
                 }
+                assert removed != null;
                 appendToRemovedList(C2_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
             } else if (aab.getOtherApplicationsBundle() != null) {
                 removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
@@ -472,7 +473,7 @@ public class ManageDocumentService {
                         .supportingEvidenceBundle(newList)
                         .build())
                     .build());
-
+                assert removed != null;
                 appendToRemovedList(C1_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
             } else {
                 throw new AssertionError("should not reach this line.");
