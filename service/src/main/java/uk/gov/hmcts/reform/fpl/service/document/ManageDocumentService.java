@@ -420,6 +420,18 @@ public class ManageDocumentService {
             .build());
     }
 
+    private List<String> getC2DocumentBundleProperties() {
+        List<String> allProperties = new ArrayList<>(List.of("c2DocumentBundle", "c2DocumentBundleConfidential",
+            "c2DocumentBundleLA"));
+        for (int i = 0; i <= 14; i++) {
+            allProperties.add("c2DocumentBundleChild" + i);
+        }
+        for (int i = 0; i <= 9; i++) {
+            allProperties.add("c2DocumentBundleResp" + i);
+        }
+        return allProperties;
+    }
+
     @SuppressWarnings("unchecked")
     private Element<? extends WithDocument> handleC1OrC2SupportingDocumentsInAdditionalApplications(
         CaseData caseData, UUID documentElementId, Map<String, Object> output) {
@@ -430,22 +442,11 @@ public class ManageDocumentService {
         if (targetBundle != null) {
             AdditionalApplicationsBundle aab = targetBundle.getValue();
             if (aab.getOtherApplicationsBundle() == null) {
-
-                List<String> allProperties = new ArrayList<>(List.of("c2DocumentBundle", "c2DocumentBundleConfidential",
-                    "c2DocumentBundleLA"));
-                for (int i = 0; i <= 14; i++) {
-                    allProperties.add("c2DocumentBundleChild" + i);
-                }
-                for (int i = 0; i <= 9; i++) {
-                    allProperties.add("c2DocumentBundleResp" + i);
-                }
-
-                for (String propertyName : allProperties) {
+                for (String propertyName : getC2DocumentBundleProperties()) {
                     C2DocumentBundle c2DocumentBundle = getC2DocumentBundle(aab, propertyName);
                     if (isEmpty(c2DocumentBundle)) {
                         continue;
                     }
-
                     removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
                         .getSupportingEvidenceBundle())
                         .orElseThrow(
