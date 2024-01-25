@@ -398,6 +398,8 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData, caseDataBefore,
                 additionalPredicate));
 
+            // TODO remove getOtherApplicationBundle and getC2DocumentBundle in the future since "Manage Document" event
+            // TODO will not update otherApplicationBundle and C2DocumentBundle anymore
             // documents for additional applications
             documentInfoConsumer.accept(getOtherApplicationBundle(caseData, caseDataBefore, uploaderType));
 
