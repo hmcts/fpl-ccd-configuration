@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -126,6 +127,7 @@ class UploadAdditionalApplicationsServiceTest {
             time, user, manageDocumentService, uploadHelper, conversionService, applicantLocalAuthorityService,
             localAuthorityRecipients);
         given(user.isHmctsUser()).willReturn(true);
+        given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
 
@@ -197,6 +199,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildOtherApplicationsBundleWithOtherApplicantName() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
@@ -226,7 +229,11 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
         assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
-        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement,
+            createSupportingEvidenceBundleBuilder()
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .uploaderCaseRoles(List.of())
+                .build());
     }
 
     @ParameterizedTest
@@ -248,6 +255,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
@@ -284,11 +292,18 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
-        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(List.of()).build());
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement,
+            createSupportingEvidenceBundleBuilder("other document")
+                .uploaderCaseRoles(List.of())
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .build());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildBundleWhenLAUploadConfidentialC2Application() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
@@ -317,6 +332,8 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.LASOLICITOR));
+        given(user.isHmctsUser()).willReturn(false);
+        given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -325,11 +342,18 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleLA().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement, c2SupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement,
+            createSupportingEvidenceBundleBuilder()
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR)).build());
+        assertC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement,
+            createSupportingEvidenceBundleBuilder()
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR)).build());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildBundleWhenSolicitorUploadConfidentialC2Application() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
@@ -359,6 +383,8 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
 
         given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
+        given(user.isHmctsUser()).willReturn(false);
+        given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.SOLICITOR);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -367,8 +393,13 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getC2DocumentBundleResp0().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, c2SupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement,
+            createSupportingEvidenceBundleBuilder()
+                .uploaderType(DocumentUploaderType.SOLICITOR)
+                .uploaderCaseRoles(List.of(CaseRole.SOLICITORA)).build());
+        assertC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.SOLICITOR)
+            .uploaderCaseRoles(List.of(CaseRole.SOLICITORA)).build());
     }
 
     @Test
@@ -814,18 +845,28 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
     }
 
+    private SupportingEvidenceBundle.SupportingEvidenceBundleBuilder createSupportingEvidenceBundleBuilder() {
+        return createSupportingEvidenceBundleBuilder("Supporting document");
+    }
+
+    private SupportingEvidenceBundle.SupportingEvidenceBundleBuilder
+        createSupportingEvidenceBundleBuilder(String name) {
+        return SupportingEvidenceBundle.builder()
+            .name(name)
+            .notes("Document notes")
+            .document(SUPPORTING_DOCUMENT)
+            .dateTimeReceived(time.now().minusDays(1));
+    }
+
     private SupportingEvidenceBundle createSupportingEvidenceBundle() {
         return createSupportingEvidenceBundle("Supporting document");
     }
 
     private SupportingEvidenceBundle createSupportingEvidenceBundle(String name) {
-        return SupportingEvidenceBundle.builder()
-            .name(name)
-            .notes("Document notes")
-            .document(SUPPORTING_DOCUMENT)
-            .dateTimeReceived(time.now().minusDays(1))
-            .build();
+        return createSupportingEvidenceBundleBuilder(name).build();
     }
+
+
 
     private Supplement createSupplementsBundle() {
         return createSupplementsBundle(C13A_SPECIAL_GUARDIANSHIP);
@@ -847,6 +888,17 @@ class UploadAdditionalApplicationsServiceTest {
             .forename("Steve")
             .email("steve.hudson@gov.uk")
             .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .build();
+    }
+
+
+    private UserDetails createUserDetailsWithLaRole() {
+        return UserDetails.builder()
+            .id(USER_ID)
+            .surname("Kurt")
+            .forename("Kurt")
+            .email("kurt@swansea.gov.uk")
+            .roles(Arrays.asList("caseworker-publiclaw-solicitor"))
             .build();
     }
 }
