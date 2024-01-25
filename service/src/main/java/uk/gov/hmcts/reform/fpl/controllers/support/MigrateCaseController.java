@@ -46,7 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-1978a", this::run1978a,
-        "DFPL-1978b", this::run1978b
+        "DFPL-1978b", this::run1978b,
+        "DFPL-2033", this::run2033
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -217,5 +218,16 @@ public class MigrateCaseController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeSocialWorkerTelephone(caseData, migrationId, childId));
+    }
+      
+    private void run2033(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2033";
+        var possibleCaseIds = List.of(1700651082936197L);
+        var expectedMessageId = UUID.fromString("d80b8dbe-889d-41f3-b9c5-ea3df08e53c7");
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            String.valueOf(expectedMessageId)));
     }
 }
