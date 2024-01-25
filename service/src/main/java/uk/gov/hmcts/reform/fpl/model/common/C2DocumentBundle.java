@@ -81,16 +81,12 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
+        return null;
     }
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+        return null;
     }
 
     @JsonIgnore
