@@ -4326,7 +4326,7 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(3))
             .build();
 
-        DocumentReference c2ApplicationDocument = testDocumentReference("C2APPLICATION");
+        DocumentReference additionalApplicationDocument = testDocumentReference("C2APPLICATION");
 
         @Test
         void shouldBeAbleToRemovePlacementResponseFromSinglePlacementResponseByAdmin() {
@@ -4868,7 +4868,7 @@ class ManageDocumentServiceTest {
             builder.additionalApplicationsBundle(List.of(
                 element(additionalApplicationUUID, toConfidentialAdditionalApplicationsBundleBuilder(modifier,
                     C2DocumentBundle.builder()
-                        .document(c2ApplicationDocument)
+                        .document(additionalApplicationDocument)
                         .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
                         .build()).build())
             ));
@@ -4894,7 +4894,7 @@ class ManageDocumentServiceTest {
             assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
                 element(additionalApplicationUUID, toConfidentialAdditionalApplicationsBundleBuilder(modifier,
                     C2DocumentBundle.builder()
-                        .document(c2ApplicationDocument)
+                        .document(additionalApplicationDocument)
                         .supportingEvidenceBundle(List.of())
                         .build()).build())
             ));
@@ -4910,7 +4910,7 @@ class ManageDocumentServiceTest {
             builder.additionalApplicationsBundle(List.of(
                 element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(C2DocumentBundle.builder()
-                        .document(c2ApplicationDocument)
+                        .document(additionalApplicationDocument)
                         .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
                         .build()).build())
             ));
@@ -4937,9 +4937,51 @@ class ManageDocumentServiceTest {
                 element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(
                         C2DocumentBundle.builder()
-                            .document(c2ApplicationDocument)
+                            .document(additionalApplicationDocument)
                             .supportingEvidenceBundle(List.of())
                             .build()).build())
+            ));
+        }
+
+        @Test
+        void shouldBeAbleToRemoveC1SupportingDocumentFromAdditionalApplicationByAdmin() {
+            int loginType = HMCTS_LOGIN_TYPE;
+            UUID additionalApplicationUUID = UUID.randomUUID();
+
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.additionalApplicationsBundle(List.of(
+                element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
+                        .build()).build())
+            ));
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(C1_APPLICATION_DOCUMENTS.name() + "###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            assertThat(result.get("c1ApplicationDocListRemoved")).isEqualTo(List.of(
+                element(elementId1, ManagedDocument.builder()
+                    .document(seb1.getDocument())
+                    .markAsConfidential(seb1.getMarkAsConfidential())
+                    .uploaderType(seb1.getUploaderType())
+                    .uploaderCaseRoles(seb1.getUploaderCaseRoles())
+                    .build())
+            ));
+            assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
+                element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of())
+                        .build()).build())
             ));
         }
     }
