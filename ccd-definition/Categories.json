@@ -319,6 +319,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "guardiansEvidenceConfidential",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "110",
+    "ParentCategoryID": "guardiansEvidence"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "parent_expertReports",
     "CategoryLabel": "Expert reports",
     "DisplayOrder": "12"

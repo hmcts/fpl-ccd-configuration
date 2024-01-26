@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
