@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -94,7 +94,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "drugAndAlcoholReportListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "FieldTypeParameter": "DrugAndAlcoholReportConfidential",
     "Label": "Drug and alcohol reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -104,7 +104,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "drugAndAlcoholReportListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "FieldTypeParameter": "DrugAndAlcoholReportConfidential",
     "Label": "Drug and alcohol reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -134,7 +134,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "lettersOfInstructionListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "LettersOfInstruction",
+    "FieldTypeParameter": "LettersOfInstructionConfidential",
     "Label": "Letters of instructions/referrals",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -144,7 +144,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "lettersOfInstructionListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "LettersOfInstruction",
+    "FieldTypeParameter": "LettersOfInstructionConfidential",
     "Label": "Letters of instructions/referrals",
     "SecurityClassification": "Public",
     "Searchable": "N"
