@@ -398,6 +398,7 @@ public class FurtherEvidenceUploadedEventHandler {
             documentInfoConsumer.accept(getHearingFurtherEvidenceDocuments(caseData, caseDataBefore,
                 additionalPredicate));
 
+            // TOOD The followings will be implemented under DFPL-2050
             // TODO remove getOtherApplicationBundle and getC2DocumentBundle in the future since "Manage Document" event
             // TODO will not update otherApplicationBundle and C2DocumentBundle anymore
             // documents for additional applications
