@@ -374,7 +374,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -384,7 +384,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"

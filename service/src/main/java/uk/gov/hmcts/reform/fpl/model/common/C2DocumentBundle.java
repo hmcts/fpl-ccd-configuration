@@ -78,11 +78,15 @@ public class C2DocumentBundle implements ApplicationsBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
+    @Deprecated
+    @JsonIgnore
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return null;
     }
 
+    @Deprecated
+    @JsonIgnore
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return null;

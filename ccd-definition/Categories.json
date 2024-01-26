@@ -54,6 +54,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "thresholdConfidential",
+    "ParentCategoryID": "threshold",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "40"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "skeletonArguments",
     "CategoryLabel": "Skeleton Arguments",
     "DisplayOrder": "5"
@@ -273,10 +281,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "meetingNotesConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "meetingNotes",
+    "DisplayOrder": "9060"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "contactNotes",
     "CategoryLabel": "Contact Notes",
     "ParentCategoryID": "applicantsDocuments",
     "DisplayOrder": "907"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "contactNotesConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "contactNotes",
+    "DisplayOrder": "9070"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -296,9 +320,25 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "respondentWitnessStatementsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "respondentWitnessStatements",
+    "DisplayOrder": "10020"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "guardiansEvidence",
     "CategoryLabel": "Guardian's evidence",
     "DisplayOrder": "11"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "guardiansEvidenceConfidential",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "110",
+    "ParentCategoryID": "guardiansEvidence"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -334,10 +374,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "drugAndAlcoholReportsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "drugAndAlcoholReports",
+    "DisplayOrder": "12020"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "lettersOfInstructionReferrals",
     "CategoryLabel": "Letters of instruction/referrals",
     "ParentCategoryID": "parent_expertReports",
     "DisplayOrder": "1203"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "lettersOfInstructionReferralsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "lettersOfInstructionReferrals",
+    "DisplayOrder": "12030"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -404,6 +460,14 @@
     "CategoryID": "previousProceedings",
     "CategoryLabel": "Previous proceedings",
     "DisplayOrder": "18"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "previousProceedingsConfidential",
+    "ParentCategoryID": "previousProceedings",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "180"
   },
   {
     "LiveFrom": "01/01/2017",
