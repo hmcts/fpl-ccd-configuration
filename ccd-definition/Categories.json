@@ -448,6 +448,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "previousProceedingsConfidential",
+    "ParentCategoryID": "previousProceedings",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "180"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "placementApplicationsAndResponses",
     "CategoryLabel": "Placement applications and responses",
     "DisplayOrder": "19"
