@@ -411,12 +411,13 @@ public class ManageDocumentService {
     }
 
     private static Element<ManagedDocument> toManagedDocumentElement(Element<SupportingEvidenceBundle> removed) {
+        SupportingEvidenceBundle seb = removed.getValue();
         return element(removed.getId(), ManagedDocument.builder()
-            .uploaderType(removed.getValue().getUploaderType())
-            .uploaderCaseRoles(removed.getValue().getUploaderCaseRoles())
-            .translationRequirements(removed.getValue().getTranslationRequirements())
-            .markAsConfidential(removed.getValue().getMarkAsConfidential())
-            .document(removed.getValue().getDocument())
+            .uploaderType(seb.getUploaderType())
+            .uploaderCaseRoles(seb.getUploaderCaseRoles())
+            .translationRequirements(seb.getTranslationRequirements())
+            .markAsConfidential(seb.getMarkAsConfidential())
+            .document(seb.getDocument())
             .build());
     }
 
