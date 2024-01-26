@@ -45,8 +45,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
-        "DFPL-1947", this::run1947,
-        "DFPL-1959", this::run1959
+        "DFPL-2033", this::run2033,
+        "DFPL-2094", this::run2094,
+        "DFPL-2094-rollback", this::run2094Rollback
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -199,29 +200,30 @@ public class MigrateCaseController extends CallbackController {
         log.info("Dummy migration for case {}", caseDetails.getId());
     }
 
-    private void run1947(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1947";
-        var possibleCaseIds = List.of(1676634658659567L);
+    private void run2033(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2033";
+        var possibleCaseIds = List.of(1700651082936197L);
+        var expectedMessageId = UUID.fromString("d80b8dbe-889d-41f3-b9c5-ea3df08e53c7");
+
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        UUID documentId = UUID.fromString("492e4156-3066-4b1f-9b07-26347c21ae51");
-
         CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("standardDirectionOrder");
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
+            String.valueOf(expectedMessageId)));
     }
 
-    private void run1959(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1959";
-        var possibleCaseIds = List.of(1701964866232462L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
+    private void run2094(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2094";
 
         CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+            migrationId));
+    }
 
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
+    private void run2094Rollback(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2094-rollback";
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.rollbackCloseCaseTabFieldMigration(caseData,
+            migrationId));
     }
 }
