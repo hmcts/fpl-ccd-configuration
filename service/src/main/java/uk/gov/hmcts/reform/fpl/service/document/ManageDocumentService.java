@@ -167,7 +167,6 @@ public class ManageDocumentService {
     private static final Predicate<Element<SupportingEvidenceBundle>> SOLICITOR_FILTER =
         bundle -> bundle.getValue().isUploadedByRepresentativeSolicitor();
 
-    @Autowired
     private final CaseConverter caseConverter;
 
     private String getDocumentListHolderFieldName(String fieldName) {
@@ -714,6 +713,24 @@ public class ManageDocumentService {
         return new ArrayList<>();
     }
 
+    private C2DocumentBundle getC2DocumentBundleResp(AdditionalApplicationsBundle aab, int index) {
+        try {
+            return (C2DocumentBundle) AdditionalApplicationsBundle.class
+                .getMethod("getC2DocumentBundleResp" + index).invoke(aab);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private C2DocumentBundle getC2DocumentBundleChild(AdditionalApplicationsBundle aab, int index) {
+        try {
+            return (C2DocumentBundle) AdditionalApplicationsBundle.class
+                .getMethod("getC2DocumentBundleChild" + index).invoke(aab);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                         ConfidentialLevel level) {
         Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
@@ -745,6 +762,22 @@ public class ManageDocumentService {
                         .filter(a -> a.getValue().getC2DocumentBundleLA() != null)
                         .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
                             app.getValue().getC2DocumentBundleLA().getSupportingEvidenceBundle()));
+                }
+                if (level == ConfidentialLevel.NON_CONFIDENTIAL) {
+                    for (int i = 0; i <= 9; i++) {
+                        final int index = i;
+                        Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
+                            .filter(a -> getC2DocumentBundleResp(a.getValue(), index) != null)
+                            .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
+                                getC2DocumentBundleResp(app.getValue(), index).getSupportingEvidenceBundle()));
+                    }
+                    for (int i = 0; i <= 14; i++) {
+                        final int index = i;
+                        Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
+                            .filter(a -> getC2DocumentBundleChild(a.getValue(), index) != null)
+                            .forEach(app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
+                                getC2DocumentBundleChild(app.getValue(), index).getSupportingEvidenceBundle()));
+                    }
                 }
             }
         }
