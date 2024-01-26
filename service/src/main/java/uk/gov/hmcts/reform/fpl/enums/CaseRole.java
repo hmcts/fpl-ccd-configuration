@@ -83,4 +83,10 @@ public enum CaseRole {
     private static String formatName(String name) {
         return String.format("[%s]", name);
     }
+
+    public static CaseRole getByIndex(String enumPrefix, int index) {
+        char enumChar = (char) ('A' + index);
+        String enumName = enumPrefix + enumChar;
+        return CaseRole.from(enumName);
+    }
 }

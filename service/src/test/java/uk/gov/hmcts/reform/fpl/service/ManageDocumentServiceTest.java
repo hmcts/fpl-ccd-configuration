@@ -91,6 +91,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -4371,17 +4373,6 @@ class ManageDocumentServiceTest {
             .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
             .build();
 
-        SupportingEvidenceBundle seb1 = SupportingEvidenceBundle.builder()
-            .document(testDocumentReference(filename1))
-            .uploaderType(DocumentUploaderType.HMCTS)
-            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
-            .build();
-        SupportingEvidenceBundle seb2 = SupportingEvidenceBundle.builder()
-            .document(testDocumentReference(filename2))
-            .uploaderType(DocumentUploaderType.HMCTS)
-            .uploaderCaseRoles(getUploaderCaseRoles(HMCTS_LOGIN_TYPE))
-            .build();
-
         ManagedDocument md1 = ManagedDocument.builder()
             .document(testDocumentReference(filename1))
             .uploaderType(DocumentUploaderType.HMCTS)
@@ -4948,19 +4939,83 @@ class ManageDocumentServiceTest {
             return ManageDocumentServiceTest.buildC2DocumentBundleModifiers();
         }
 
+        private static SupportingEvidenceBundle buildSupportingEvidenceBundle(String filename,
+                                                                              DocumentUploaderType uploaderType,
+                                                                              List<CaseRole> uploaderCaseRoles) {
+            return SupportingEvidenceBundle.builder()
+                .document(testDocumentReference(filename))
+                .uploaderType(uploaderType)
+                .uploaderCaseRoles(uploaderCaseRoles)
+                .build();
+        }
+
+        private static DocumentUploaderType modifierToDocumentUploaderType(String modifier) {
+            if (modifier == null) {
+                return null;
+            }
+            if ("".equals(modifier)) {
+                return DocumentUploaderType.HMCTS;
+            }
+            if ("LA".equals(modifier)) {
+                return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
+            }
+            if (modifier.startsWith("Resp") || modifier.startsWith("Child")) {
+                return DocumentUploaderType.SOLICITOR;
+            }
+            throw new AssertionError("unsupported modifier: " + modifier);
+        }
+
+        private static int extractNumericalPart(String input) {
+            // Use regular expression to match digits in the input string
+            Pattern pattern = Pattern.compile("\\d+");
+            Matcher matcher = pattern.matcher(input);
+
+            // Check if there is a match
+            if (matcher.find()) {
+                String numericalString = matcher.group();
+                return Integer.parseInt(numericalString); // Parse the matched digits to integer
+            } else {
+                // Handle the case when no numerical part is found
+                throw new IllegalArgumentException("No numerical part found in the input string.");
+            }
+        }
+
+        private static List<CaseRole> modifierToCaseRole(String modifier) {
+            if (modifier == null) {
+                return null;
+            }
+            if ("".equals(modifier)) {
+                return List.of();
+            }
+            if ("LA".equals(modifier)) {
+                return List.of(CaseRole.LASOLICITOR);
+            }
+            if (modifier.startsWith("Resp")) {
+                return List.of(CaseRole.getByIndex("SOLICITOR", extractNumericalPart(modifier)));
+            }
+            if (modifier.startsWith("Child")) {
+                return List.of(CaseRole.getByIndex("CHILDSOLICITOR", extractNumericalPart(modifier)));
+            }
+            throw new AssertionError("unsupported modifier: " + modifier);
+        }
+
         @ParameterizedTest
         @MethodSource("buildC2DocumentBundleModifiers")
-        void shouldBeAbleToRemoveConfidentialC2SupportingDocumentFromAdditionalApplicationByAdmin(String modifier) {
+        void adminShouldBeAbleToRemoveConfidentialC2SupportingDocumentFromAdditionalApplication(String modifier) {
             int loginType = HMCTS_LOGIN_TYPE;
             UUID additionalApplicationUUID = UUID.randomUUID();
 
             initialiseUserService(loginType);
+
+            SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
+                modifierToDocumentUploaderType(modifier), modifierToCaseRole(modifier));
+
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.additionalApplicationsBundle(List.of(
                 element(additionalApplicationUUID, toConfidentialAdditionalApplicationsBundleBuilder(modifier,
                     C2DocumentBundle.builder()
                         .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
+                        .supportingEvidenceBundle(List.of(element(elementId1, seb)))
                         .build()).build())
             ));
             builder.manageDocumentEventData(ManageDocumentEventData.builder()
@@ -4976,10 +5031,10 @@ class ManageDocumentServiceTest {
             Map<String, Object> result = underTest.removeDocuments(builder.build());
             assertThat(result.get("c2ApplicationDocListRemoved")).isEqualTo(List.of(
                 element(elementId1, ManagedDocument.builder()
-                    .document(seb1.getDocument())
-                    .markAsConfidential(seb1.getMarkAsConfidential())
-                    .uploaderType(seb1.getUploaderType())
-                    .uploaderCaseRoles(seb1.getUploaderCaseRoles())
+                    .document(seb.getDocument())
+                    .markAsConfidential(seb.getMarkAsConfidential())
+                    .uploaderType(seb.getUploaderType())
+                    .uploaderCaseRoles(seb.getUploaderCaseRoles())
                     .build())
             ));
             assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
@@ -4991,18 +5046,23 @@ class ManageDocumentServiceTest {
             ));
         }
 
-        @Test
-        void shouldBeAbleToRemoveC2SupportingDocumentFromAdditionalApplicationByAdmin() {
+        @ParameterizedTest
+        @MethodSource("buildC2DocumentBundleModifiers")
+        void adminShouldBeAbleToRemoveC2SupportingDocumentFromAdditionalApplication(String modifier) {
             int loginType = HMCTS_LOGIN_TYPE;
             UUID additionalApplicationUUID = UUID.randomUUID();
 
             initialiseUserService(loginType);
+
+            SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
+                modifierToDocumentUploaderType(modifier), modifierToCaseRole(modifier));
+
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.additionalApplicationsBundle(List.of(
                 element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
+                        .supportingEvidenceBundle(List.of(element(elementId1, seb)))
                         .build()).build())
             ));
             builder.manageDocumentEventData(ManageDocumentEventData.builder()
@@ -5018,10 +5078,10 @@ class ManageDocumentServiceTest {
             Map<String, Object> result = underTest.removeDocuments(builder.build());
             assertThat(result.get("c2ApplicationDocListRemoved")).isEqualTo(List.of(
                 element(elementId1, ManagedDocument.builder()
-                    .document(seb1.getDocument())
-                    .markAsConfidential(seb1.getMarkAsConfidential())
-                    .uploaderType(seb1.getUploaderType())
-                    .uploaderCaseRoles(seb1.getUploaderCaseRoles())
+                    .document(seb.getDocument())
+                    .markAsConfidential(seb.getMarkAsConfidential())
+                    .uploaderType(seb.getUploaderType())
+                    .uploaderCaseRoles(seb.getUploaderCaseRoles())
                     .build())
             ));
             assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
@@ -5034,18 +5094,23 @@ class ManageDocumentServiceTest {
             ));
         }
 
-        @Test
-        void shouldBeAbleToRemoveC1SupportingDocumentFromAdditionalApplicationByAdmin() {
+        @ParameterizedTest
+        @MethodSource("buildC2DocumentBundleModifiers")
+        void adminShouldBeAbleToRemoveC1SupportingDocumentFromAdditionalApplication(String modifier) {
             int loginType = HMCTS_LOGIN_TYPE;
             UUID additionalApplicationUUID = UUID.randomUUID();
 
             initialiseUserService(loginType);
+
+            SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
+                modifierToDocumentUploaderType(modifier), modifierToCaseRole(modifier));
+
             CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
             builder.additionalApplicationsBundle(List.of(
                 element(additionalApplicationUUID, AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, seb1)))
+                        .supportingEvidenceBundle(List.of(element(elementId1, seb)))
                         .build()).build())
             ));
             builder.manageDocumentEventData(ManageDocumentEventData.builder()
@@ -5061,10 +5126,10 @@ class ManageDocumentServiceTest {
             Map<String, Object> result = underTest.removeDocuments(builder.build());
             assertThat(result.get("c1ApplicationDocListRemoved")).isEqualTo(List.of(
                 element(elementId1, ManagedDocument.builder()
-                    .document(seb1.getDocument())
-                    .markAsConfidential(seb1.getMarkAsConfidential())
-                    .uploaderType(seb1.getUploaderType())
-                    .uploaderCaseRoles(seb1.getUploaderCaseRoles())
+                    .document(seb.getDocument())
+                    .markAsConfidential(seb.getMarkAsConfidential())
+                    .uploaderType(seb.getUploaderType())
+                    .uploaderCaseRoles(seb.getUploaderCaseRoles())
                     .build())
             ));
             assertThat(result.get("additionalApplicationsBundle")).isEqualTo(List.of(
@@ -5157,6 +5222,7 @@ class ManageDocumentServiceTest {
 
     private static Stream<Arguments> buildC2DocumentBundleModifiers() {
         List<Arguments> args = new ArrayList<>();
+        args.add(Arguments.of((String) null)); // for legacy without updateCaseRoles/uploaderType
         args.add(Arguments.of(""));
         args.add(Arguments.of("LA"));
         for (int i = 0; i <= 9; i++) {
