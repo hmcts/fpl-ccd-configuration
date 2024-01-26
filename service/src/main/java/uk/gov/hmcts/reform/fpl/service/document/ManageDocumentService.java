@@ -733,7 +733,7 @@ public class ManageDocumentService {
                         isC1DocumentType ? OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build()
                             : C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build())
                     .getSupportingEvidenceBundle()));
-            if (!isC1DocumentType) { // add cC2 document
+            if (!isC1DocumentType) {
                 if (level == ConfidentialLevel.CTSC) {
                     Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
                         .filter(a -> a.getValue().getC2DocumentBundleConfidential() != null)

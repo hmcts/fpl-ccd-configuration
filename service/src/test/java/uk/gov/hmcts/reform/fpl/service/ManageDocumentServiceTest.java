@@ -195,7 +195,10 @@ class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
     public static final boolean NOT_SOLICITOR = false;
     public static final boolean IS_SOLICITOR = true;
+    private static final int LA_LOGIN_TYPE = 1;
+    private static final int EXT_SOL_LOGIN_TYPE = 3;
     private static final int HMCTS_LOGIN_TYPE = 4;
+    private static final int LEGACY_LOGIN_TYPE = 999;
 
     @Spy
     private final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -2889,16 +2892,18 @@ class ManageDocumentServiceTest {
 
     private static DocumentUploaderType getUploaderType(int loginType) {
         switch (loginType) {
-            case 1:
+            case LA_LOGIN_TYPE:
                 return DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
             case 2:
                 return DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY;
-            case 3:
+            case EXT_SOL_LOGIN_TYPE:
                 return DocumentUploaderType.SOLICITOR;
-            case 4:
+            case HMCTS_LOGIN_TYPE:
                 return DocumentUploaderType.HMCTS;
             case 5:
                 return DocumentUploaderType.CAFCASS;
+            case LEGACY_LOGIN_TYPE:
+                return null;
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
         }
@@ -2906,19 +2911,19 @@ class ManageDocumentServiceTest {
 
     private static List<CaseRole> getUploaderCaseRoles(int loginType) {
         switch (loginType) {
-            case 1:
+            case LA_LOGIN_TYPE:
                 return List.of(CaseRole.LASOLICITOR);
             case 2:
                 return List.of(CaseRole.LASHARED);
-            case 3:
+            case EXT_SOL_LOGIN_TYPE:
                 return List.of(CaseRole.SOLICITORA);
-            case 4:
+            case HMCTS_LOGIN_TYPE:
             case 5:
                 return List.of();
             case 6:
                 return List.of(CaseRole.BARRISTER);
-            case 7:
-                return List.of(CaseRole.CAFCASSSOLICITOR);
+            case LEGACY_LOGIN_TYPE:
+                return null;
             default:
                 throw new IllegalStateException("unrecognised loginType: " + loginType);
         }
@@ -4008,7 +4013,7 @@ class ManageDocumentServiceTest {
         DocumentReference additionalApplicationDocument = testDocumentReference("additional-application");
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void testForNonConfidentialCourtBundleUploadedByThemselves(int loginType) {
             initialiseUserService(loginType);
             DocumentUploaderType uploaderType = getUploaderType(loginType);
@@ -4040,7 +4045,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void testForNonConfidentialCourtBundleUploadedByHMCTS(int loginType) {
             initialiseUserService(loginType);
             DocumentUploaderType uploaderType = getUploaderType(loginType);
@@ -4077,7 +4082,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2})
         void testForNonConfidentialCourtBundleUploadedByLA(int loginType) {
             initialiseUserService(loginType);
             DocumentUploaderType uploaderType = getUploaderType(loginType);
@@ -4116,7 +4121,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void testForNonConfidentialCourtBundleUploadedBySolicitor(int loginType) {
             initialiseUserService(loginType);
             CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
@@ -4126,12 +4131,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
-                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
-                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE))
                             .build())
                     ))
                     .build())))
@@ -4144,7 +4149,7 @@ class ManageDocumentServiceTest {
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList2);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            if (loginType == 1 || loginType == 2) { // LAs should get an empty dynamic list
+            if (loginType == LA_LOGIN_TYPE || loginType == 2) { // LAs should get an empty dynamic list
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
@@ -4152,7 +4157,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {3}) // testing for solicitor login type only
+        @ValueSource(ints = {EXT_SOL_LOGIN_TYPE}) // testing for solicitor login type only
         void shouldReturnEmptyDynamicListWhenNonConfidentialCourtBundleAreUploadedByOthers(
             int loginType) {
             initialiseUserService(loginType);
@@ -4163,7 +4168,7 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
-                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
@@ -4190,7 +4195,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void testForConfidentialCTSCUploadedAndNonConfidentialCourtBundleExist(
             int loginType) {
             initialiseUserService(loginType);
@@ -4215,12 +4220,12 @@ class ManageDocumentServiceTest {
                         element(elementId1, CourtBundle.builder()
                             .document(testDocumentReference(filename1))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
-                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE))
                             .build()),
                         element(elementId2, CourtBundle.builder()
                             .document(testDocumentReference(filename2))
                             .uploaderType(DocumentUploaderType.SOLICITOR)
-                            .uploaderCaseRoles(getUploaderCaseRoles(3))
+                            .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE))
                             .build())
                     ))
                     .build())))
@@ -4249,7 +4254,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void shouldReturnDynamicListWhenC2ApplicationSupportingDocumentUploadedByThemselves(
             int loginType) {
             initialiseUserService(loginType);
@@ -4276,7 +4281,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 2, 3, 4, 5})
+        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
         void shouldReturnDynamicListWhenC1ApplicationSupportingDocumentUploadedByThemselves(
             int loginType) {
             initialiseUserService(loginType);
@@ -4303,7 +4308,7 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 4})
+        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
         void shouldReturnDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByLA(
             int loginType) {
             initialiseUserService(loginType);
@@ -4314,16 +4319,16 @@ class ManageDocumentServiceTest {
                         .document(additionalApplicationDocument)
                         .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
                             .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(1))
-                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
+                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
                             .build())))
                         .build())
                     .c2DocumentBundleLA(C2DocumentBundle.builder()
                         .document(additionalApplicationDocument)
                         .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
                             .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(1))
-                            .uploaderCaseRoles(getUploaderCaseRoles(1))
+                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
+                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
                             .build())))
                         .build())
                     .build())
@@ -4332,6 +4337,39 @@ class ManageDocumentServiceTest {
             when(dynamicListService.asDynamicList(List.of(
                 Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
             ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {EXT_SOL_LOGIN_TYPE, LEGACY_LOGIN_TYPE})
+        void laShouldGetEmptyDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByOtherSolicitor(
+            int uploaderLoginType) {
+            initialiseUserService(LA_LOGIN_TYPE);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.additionalApplicationsBundle(List.of(
+                element(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundleConfidential(C2DocumentBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(uploaderLoginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(uploaderLoginType))
+                            .build())))
+                        .build())
+                    .c2DocumentBundleResp0(C2DocumentBundle.builder()
+                        .document(additionalApplicationDocument)
+                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                            .document(testDocumentReference(filename1))
+                            .uploaderType(getUploaderType(uploaderLoginType))
+                            .uploaderCaseRoles(getUploaderCaseRoles(uploaderLoginType))
+                            .build())))
+                        .build())
+                    .build())
+            ));
+
+            when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
