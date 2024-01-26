@@ -1,6 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
-export class SmokeCreateCase {
+export class CreateCase {
   readonly page: Page;
   readonly caseJurisdictionFilterDropdown: Locator;
   readonly caseTypeFilterDropdown: Locator;
@@ -20,7 +20,7 @@ export class SmokeCreateCase {
     this.viewHistory = page.getByText("History");
   }
 
-  async CreateCase() {
+  async createCase() {
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.createCaseLink.click();
     await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
@@ -29,7 +29,7 @@ export class SmokeCreateCase {
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async CaseName() {
+  async caseName() {
     const currentDate = new Date();
 
     // Format the date and time components
@@ -44,16 +44,34 @@ export class SmokeCreateCase {
       .toString()
       .padStart(3, "0");
 
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    let dayOfTheWeek;
+    days.forEach((day, index) => {
+      // Check if the index of day value is equal to the returned value of getDay()
+      if (index == new Date().getDay()) {
+        dayOfTheWeek = day;
+        console.log("Today is " + dayOfTheWeek);
+      }
+    });
+
     // Create the timestamp string
     const timestamp = `${day} ${month} ${year}, ${hours}:${minutes}:${seconds}.${milliseconds}`;
 
-    const caseName = `Playwright only e2e smoke test ${timestamp}`;
+    const caseName = `Smoke Test ${dayOfTheWeek} ${timestamp}`;
     this.generatedCaseName = caseName;
 
     console.log("Case name:", caseName);
   }
 
-  async SubmitCase(caseName) {
+  async submitCase(caseName) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
@@ -66,7 +84,7 @@ export class SmokeCreateCase {
     await this.viewHistory.click();
   }
 
-  async CheckCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page

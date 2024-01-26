@@ -1,16 +1,16 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "previousProceedings"
+    "CategoryID": "positionStatementsConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "removalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "uploaderType",
     "FieldType": "FixedList",
     "FieldTypeParameter": "DocumentUploaderType",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "uploaderCaseRoles",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CaseRole",
@@ -36,7 +36,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "markAsConfidential",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is confidential?",
@@ -44,7 +44,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PreviousProceeding",
+    "ID": "PositionStatementConfidential",
     "ListElementCode": "translationRequirements",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LanguageTranslationRequirement",
