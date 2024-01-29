@@ -1130,7 +1130,7 @@ public class MigrateCaseService {
                     if (hearingType.isPresent()) {
                         hearingBooking.setType(hearingType.get());
                     } else {
-                        hearingBooking.setType(null);
+                        hearingBooking.setType(FURTHER_CASE_MANAGEMENT); // default to further case management
                     }
                 }
             }
