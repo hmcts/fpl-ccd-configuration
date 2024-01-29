@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -291,7 +292,7 @@ public class ManageHearingsService {
             judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
         }
 
-        if (OTHER.equals(hearingBooking.getType())) {
+        if (Objects.nonNull(hearingBooking.getTypeDetails())) {
             caseFields.put(HEARING_TYPE_DETAILS, hearingBooking.getTypeDetails());
         }
 
