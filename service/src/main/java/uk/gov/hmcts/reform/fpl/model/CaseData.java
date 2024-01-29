@@ -1273,9 +1273,6 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
-    @Deprecated
-    private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
-
     @JsonUnwrapped
     @Builder.Default
     private final OtherToRespondentEventData otherToRespondentEventData = OtherToRespondentEventData.builder().build();
