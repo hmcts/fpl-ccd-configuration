@@ -30,45 +30,29 @@ export class CreateCase {
   }
 
   async caseName() {
-    const currentDate = new Date();
 
-    // Format the date and time components
-    const year = currentDate.getFullYear();
-    const month = currentDate.toLocaleString("en-UK", { month: "long" });
-    const day = currentDate.getDate();
-    const hours = currentDate.getHours().toString().padStart(2, "0");
-    const minutes = currentDate.getMinutes().toString().padStart(2, "0");
-    const seconds = currentDate.getSeconds().toString().padStart(2, "0");
-    const milliseconds = currentDate
-      .getMilliseconds()
-      .toString()
-      .padStart(3, "0");
+    var date = new Date();
 
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    let dayOfTheWeek;
-    days.forEach((day, index) => {
-      // Check if the index of day value is equal to the returned value of getDay()
-      if (index == new Date().getDay()) {
-        dayOfTheWeek = day;
-        console.log("Today is " + dayOfTheWeek);
-      }
-    });
+    let options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZoneName: "short",
+    };
 
-    // Create the timestamp string
-    const timestamp = `${day} ${month} ${year}, ${hours}:${minutes}:${seconds}.${milliseconds}`;
+    // Specify default date formatting for language (locale)
+    const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
 
-    const caseName = `Smoke Test ${dayOfTheWeek} ${timestamp}`;
+    // Create the case name using a timestamp string
+    const caseName = `Smoke Test ${formattedDate}`;
     this.generatedCaseName = caseName;
 
     console.log("Case name:", caseName);
+
   }
 
   async submitCase(caseName) {
@@ -78,7 +62,7 @@ export class CreateCase {
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
       .click();
-    await this.addApplicationTitle.isVisible;
+    await this.addApplicationTitle.isVisible();
 
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.viewHistory.click();
