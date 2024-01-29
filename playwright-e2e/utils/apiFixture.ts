@@ -8,7 +8,7 @@ import lodash from 'lodash'
 
 export class Apihelp {
 
-  async getAccessToken(user) {
+  async getAccessToken({user}: { user: any }) {
     try {
       let axiosConfig ={
         headers : {
@@ -36,30 +36,28 @@ export class Apihelp {
             caseName : caseName,
          };
       res= await this.apiRequest(url,swanseaUser,'post',data);
-     return res.id;
+     // @ts-ignore
+    return res.id;
   }
 
   async updateCase(caseName = 'e2e Test',caseID: string,caseData: {} | undefined){
-
+    //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with docuemnt url
-     let docDetail: object ;
-     docDetail =await this.apiRequest(UrlConfig.serviceUrl + '/testing-support/test-document',systemUpdateUser);
-       //This can be moved to before test hook to as same document URL will be used for all test data
-    let docParameter= {
+    let  docDetail =await this.apiRequest(UrlConfig.serviceUrl + '/testing-support/test-document',systemUpdateUser);
+          let docParameter= {
       TEST_DOCUMENT_URL : docDetail.document_url,
       TEST_DOCUMENT_BINARY_URL : docDetail.document_binary_url
 
     };
     const dateTime = new Date().toISOString();
+    // @ts-ignore
     caseData.caseData.caseName= caseName;
-  caseData.caseData.dateSubmitted = dateTime.slice(0, 10);
-  caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
-
-
-
-     let data =lodash.template(JSON.stringify(caseData))(docParameter);
-   // console.log('data  ' + data );
-  const postURL = `${UrlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
+    // @ts-ignore
+    caseData.caseData.dateSubmitted = dateTime.slice(0, 10);
+    // @ts-ignore
+    caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
+    let data =lodash.template(JSON.stringify(caseData))(docParameter);
+    let postURL = `${UrlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
       try {
         console.log (' update request')
      let   res = await this.apiRequest(postURL,systemUpdateUser,'post',data);
@@ -69,9 +67,9 @@ export class Apihelp {
       }
     }
 
-  async apiRequest(postURL,authUser,method ='get',data={} )
+  async apiRequest(postURL: string, authUser: any, method: string ='get', data: any ={} )
   {
-    const  systemUserAuthToke = await this.getAccessToken(authUser);
+    const  systemUserAuthToke = await this.getAccessToken({user: authUser});
     console.log ('systemUserAuthToke' + systemUserAuthToke)
     const requestConfig ={
       method: method,
@@ -88,7 +86,6 @@ export class Apihelp {
      });
    } catch (error) {
     if(axios.isAxiosError(error)){
-
       console.log(error.status);
       console.log(error.request);
       console.log(error.response);
@@ -98,8 +95,4 @@ export class Apihelp {
 
   }
 
-  async updateCase(){
-
-
-  }
 }
