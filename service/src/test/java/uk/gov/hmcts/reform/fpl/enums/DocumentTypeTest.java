@@ -3,7 +3,12 @@ package uk.gov.hmcts.reform.fpl.enums;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ARCHIVED_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
 
 class DocumentTypeTest {
 
@@ -56,5 +61,15 @@ class DocumentTypeTest {
     void testToJsonFieldName() {
         assertThat(DocumentType.toJsonFieldName("hearingDocuments.courtBundleListV2"))
             .isEqualTo("courtBundleListV2");
+    }
+
+    @Test
+    void shouldHiddenFromUploadNewDocument() {
+        assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromLAUpload()))
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+        assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromCTSCUpload()))
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+        assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromSolicitorUpload()))
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
     }
 }

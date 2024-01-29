@@ -80,11 +80,8 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(integrationTestSecrets)
 
   enableMutationTest()
-  enableFullFunctionalTest(240)
-  // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
-  //enableCrossBrowserTest(['chrome', 'firefox'])
   enableFortifyScan('fpl-aat')
-
+  enableFullFunctionalTest(240)
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -106,24 +103,18 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  before('crossBrowserTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = false
-    env.ENV = 'aat'
-  }
-
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
-  }
-
-  afterAlways('crossBrowserTest') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "playwright-report",
+      reportFiles          : 'index.html',
+      reportName           : 'UI Functional Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
   }
 
   afterAlways('fortify-scan') {
