@@ -8,12 +8,13 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
-import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
@@ -33,39 +34,28 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FAMILY_DRUG_ALCOHOL_COURT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.INTERIM_CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -81,92 +71,6 @@ public class MigrateCaseService {
     private static final String ORDER_TYPE = "orderType";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
-
-    private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
-
-
-    private static Map<String, HearingType> initialiseHearingMapping() {
-        Map<String, HearingType> hearingMapping = new LinkedHashMap<>();
-        hearingMapping.put("EPO", EMERGENCY_PROTECTION_ORDER);
-        hearingMapping.put("EMERGENCY", EMERGENCY_PROTECTION_ORDER);
-        hearingMapping.put("URGENT OUT OF HOURS", EMERGENCY_PROTECTION_ORDER);
-        hearingMapping.put("ICO", INTERIM_CARE_ORDER);
-        hearingMapping.put("INTERIM", INTERIM_CARE_ORDER);
-        hearingMapping.put("REMOVAL", INTERIM_CARE_ORDER);
-        hearingMapping.put("CMH", INTERIM_CARE_ORDER);
-        hearingMapping.put("CASE MANAGEMENT", CASE_MANAGEMENT);
-        hearingMapping.put("PCMH", CASE_MANAGEMENT);
-        hearingMapping.put("HEARING", CASE_MANAGEMENT);
-        hearingMapping.put("URGENT", CASE_MANAGEMENT);
-        hearingMapping.put("SECURE ORDER REVIEW", CASE_MANAGEMENT);
-        hearingMapping.put("RECOVERY", CASE_MANAGEMENT);
-        hearingMapping.put("SECURE ACCOMMODATION", CASE_MANAGEMENT);
-        hearingMapping.put("SECURE ACCOMODATION", CASE_MANAGEMENT);
-        hearingMapping.put("ISO", CASE_MANAGEMENT);
-        hearingMapping.put("DISCHARGE", ACCELERATED_DISCHARGE_OF_CARE);
-        hearingMapping.put("C2", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DIRECTIONS", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("PTR", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("C1", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("APPLICATION", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("GROUND RULES", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DIRECTION", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("MENTION", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DOLS", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DOL", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("PERMISSION TO APPEAL", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("PENDING APPEAL", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("LEAVE TO APPEAL", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("POLICE DISCLOSURE", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DEFAULT NOTICE", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("PHR", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("DIRS", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("LAWYER REVIEW", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("NLR", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("REVIEW", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("COMPLIANCE", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("FCMH", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("NEUTRAL EVALUATION", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("NEH", FURTHER_CASE_MANAGEMENT);
-        hearingMapping.put("FACT", FACT_FINDING);
-        hearingMapping.put("ISSUE", ISSUE_RESOLUTION);
-        hearingMapping.put("IRH", ISSUE_RESOLUTION);
-        hearingMapping.put("EFH", ISSUE_RESOLUTION);
-        hearingMapping.put("EARLY FINAL", ISSUE_RESOLUTION);
-        hearingMapping.put("JUDGEMENT", JUDGMENT_AFTER_HEARING);
-        hearingMapping.put("JUDGMENT", JUDGMENT_AFTER_HEARING);
-        hearingMapping.put("CONTESTED", FINAL);
-        hearingMapping.put("WELFARE", FINAL);
-        hearingMapping.put("THRESHOLD", FINAL);
-        hearingMapping.put("FINAL", FINAL);
-        hearingMapping.put("SUBMISSIONS", FINAL);
-        hearingMapping.put("URGENT APPEAL", CASE_MANAGEMENT);
-        hearingMapping.put("APPEAL", FINAL);
-        hearingMapping.put("DRUG", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("CONTEST", FINAL);
-        hearingMapping.put("SEPARATION HEARING", FINAL);
-        hearingMapping.put("PART HEARD", FINAL);
-        hearingMapping.put("FDAC", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("PSMC", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("NON-LAWYER", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("EXIT", FAMILY_DRUG_ALCOHOL_COURT);
-        hearingMapping.put("PLACEMENT", PLACEMENT_HEARING);
-        return hearingMapping;
-    }
-
-    private static final List<HearingType> MIGRATED_HEARING_TYPES = List.of(
-        EMERGENCY_PROTECTION_ORDER,
-        INTERIM_CARE_ORDER,
-        CASE_MANAGEMENT,
-        ACCELERATED_DISCHARGE_OF_CARE,
-        FURTHER_CASE_MANAGEMENT,
-        FACT_FINDING,
-        ISSUE_RESOLUTION,
-        JUDGMENT_AFTER_HEARING,
-        FINAL,
-        FAMILY_DRUG_ALCOHOL_COURT,
-        PLACEMENT_HEARING
-    );
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -1046,4 +950,71 @@ public class MigrateCaseService {
         return Map.of("localAuthorities", localAuthorities);
     }
 
+    public Map<String, Object> migrateCaseClosedDateToLatestFinalOrderApprovalDate(CaseData caseData,
+                                                                                   String migrationId) {
+        if (!State.CLOSED.equals(caseData.getState())) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} Case is not closed yet",
+                migrationId, caseData.getId()));
+        }
+
+        if (isEmpty(caseData.getOrderCollection())) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
+                migrationId, caseData.getId()));
+        }
+
+        List<GeneratedOrder> finalOrders = unwrapElements(caseData.getOrderCollection()).stream()
+            .filter(GeneratedOrder::isFinalOrder)
+            .toList();
+
+        if (finalOrders.isEmpty()) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} No final order found",
+                migrationId, caseData.getId()));
+        }
+
+        LocalDate latestApprovalDate = finalOrders.stream()
+            .filter(order -> order.getApprovalDate() != null || order.getApprovalDateTime() != null)
+            .map(order -> {
+                if (order.getApprovalDateTime() == null) {
+                    return order.getApprovalDate();
+                } else {
+                    LocalDate convertedApprovalDateTime = order.getApprovalDateTime().toLocalDate();
+                    if (order.getApprovalDate() == null) {
+                        return convertedApprovalDateTime;
+                    } else {
+                        return (convertedApprovalDateTime.isAfter(order.getApprovalDate()))
+                            ? convertedApprovalDateTime : order.getApprovalDate();
+                    }
+                }
+            })
+            .sorted(Comparator.reverseOrder())
+            .findFirst()
+            .orElseThrow(() ->
+                new AssertionError(format("Migration {id = %s, case reference = %s} approval date not found",
+                migrationId, caseData.getId())));
+
+        CloseCase existingCloseCaseField = Optional.ofNullable(caseData.getCloseCaseTabField())
+            .orElse(CloseCase.builder().build());
+
+        return Map.of("closeCaseTabField", existingCloseCaseField.toBuilder()
+            .date(latestApprovalDate)
+            .dateBackup((isEmpty(existingCloseCaseField.getDateBackup())
+                ? existingCloseCaseField.getDate() : existingCloseCaseField.getDateBackup()))
+            .build());
+    }
+
+    public Map<String, Object> rollbackCloseCaseTabFieldMigration(CaseData caseData, String migrationId) {
+        CloseCase closeCaseField = caseData.getCloseCaseTabField();
+        if (closeCaseField == null) {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} closeCaseField is null",
+                migrationId, caseData.getId()));
+        }
+        return Map.of("closeCaseTabField", closeCaseField.toBuilder()
+            .date(closeCaseField.getDateBackup())
+            .dateBackup(null).build());
+    }
+
+    public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
+        CloseCase closeCaseField = caseData.getCloseCaseTabField();
+        return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
+    }
 }
