@@ -589,6 +589,35 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             any()));
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldConvertC2Bundle() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        C2DocumentBundle c2 = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
+            .build();
+
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("sendToCtsc", NO)
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+                .c2DocumentBundle(c2)
+                .build()))
+            .build());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
+            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
+        changeFunctionCaptor.getValue().apply(caseDetails);
+        verify(uploadAdditionalApplicationsService).convertC2Bundle(c2);
+    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -618,6 +647,35 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
         changeFunctionCaptor.getValue().apply(caseDetails);
         verify(uploadAdditionalApplicationsService).convertConfidentialC2Bundle(any(), eq(c2), any());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldConvertOtherApplicationBundle() {
+        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
+            .willReturn(List.of(ApplicationType.C2_APPLICATION));
+
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+            .document(testDocumentReference())
+            .build();
+
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("sendToCtsc", NO)
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+                .otherApplicationsBundle(otherApplicationsBundle)
+                .build()))
+            .build());
+
+        postSubmittedEvent(caseDetails);
+
+        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
+            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
+        changeFunctionCaptor.getValue().apply(caseDetails);
+        verify(uploadAdditionalApplicationsService).convertOtherBundle(otherApplicationsBundle);
     }
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
