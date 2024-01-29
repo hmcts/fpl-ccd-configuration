@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -81,13 +82,17 @@ public class C2DocumentBundle implements ApplicationsBundle {
     @Deprecated
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
-        return null;
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
+            .collect(Collectors.toList());
     }
 
     @Deprecated
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
-        return null;
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
     }
 
     @JsonIgnore
