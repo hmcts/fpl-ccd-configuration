@@ -2455,6 +2455,7 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @Nested
     class MigrateCaseClosedDateToLatestFinalOrderApprovalDate {
         private static final LocalDateTime LATEST_APPROVAL_DATE_TIME = LocalDateTime.now();
         private static final LocalDate LATEST_APPROVAL_DATE = LATEST_APPROVAL_DATE_TIME.toLocalDate();
