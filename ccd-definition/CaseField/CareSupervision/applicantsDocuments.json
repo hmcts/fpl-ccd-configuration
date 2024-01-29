@@ -134,7 +134,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MeetingNote",
+    "FieldTypeParameter": "MeetingNoteConfidential",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -144,7 +144,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "meetingNoteListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MeetingNote",
+    "FieldTypeParameter": "MeetingNoteConfidential",
     "Label": "Meeting notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -174,7 +174,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ContactNote",
+    "FieldTypeParameter": "ContactNoteConfidential",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -184,7 +184,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "contactNoteListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ContactNote",
+    "FieldTypeParameter": "ContactNoteConfidential",
     "Label": "Contact notes",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -214,7 +214,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "thresholdListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Threshold",
+    "FieldTypeParameter": "ThresholdConfidential",
     "Label": "Threshold",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -224,7 +224,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "thresholdListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Threshold",
+    "FieldTypeParameter": "ThresholdConfidential",
     "Label": "Threshold",
     "SecurityClassification": "Public",
     "Searchable": "N"
