@@ -12,7 +12,7 @@ test.describe('send and reply message',()=>{
 
   });
 
-  test('CTSC admin send message to Jude',
+  test('CTSC admin send message to Judge',
     async ({request,page}) => {
     // await  apiDataSetup.createCase('CTSCSendMessageJudge');
    // await apiDataSetup.updateCase(caseData);
