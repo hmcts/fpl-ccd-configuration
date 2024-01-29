@@ -556,7 +556,17 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LASHARED]",
           "[LABARRISTER]",
+          "[CAFCASSSOLICITOR]",
           "[SOLICITOR]",
           "[SOLICITORA]",
           "[SOLICITORB]",
@@ -583,15 +593,9 @@
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
-          "[LASOLICITOR]",
-          "[LASHARED]",
-          "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-systemupdate",
-          "caseworker-publiclaw-cafcass",
           "[BARRISTER]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CU"
       },
       {
         "UserRoles": [
@@ -600,6 +604,12 @@
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "U"
       }
     ]
   }
