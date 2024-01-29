@@ -46,8 +46,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1934", this::run1934,
         "DFPL-log", this::runLogMigration,
         "DFPL-2033", this::run2033,
-        "DFPL-2094", this::run2094,
-        "DFPL-2094-rollback", this::run2094Rollback
+        "DFPL-1233", this::run1233,
+        "DFPL-1233Rollback", this::run1233Rollback
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -225,5 +225,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.rollbackCloseCaseTabFieldMigration(caseData,
             migrationId));
+    }
+
+    private void run1233Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run1233(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }
