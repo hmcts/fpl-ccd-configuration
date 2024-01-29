@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+@Deprecated
 public enum ManageDocumentTypeListLA {
     FURTHER_EVIDENCE_DOCUMENTS,
     CORRESPONDENCE,

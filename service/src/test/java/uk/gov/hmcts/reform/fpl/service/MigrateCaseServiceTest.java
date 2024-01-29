@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -58,7 +57,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -76,7 +74,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -85,11 +82,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class MigrateCaseServiceTest {
 
     private static final String MIGRATION_ID = "test-migration";
-
-    @Mock
-    private CaseNoteService caseNoteService;
-    @Mock
-    private DocumentListService documentListService;
 
     @Mock
     private CourtService courtService;
@@ -927,62 +919,6 @@ class MigrateCaseServiceTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class RemoveApplicationDocument {
-
-        private final UUID applicationDocumentIdToRemove = UUID.randomUUID();
-
-        @Test
-        void shouldThrowExceptionWhenApplicationDocumentNotPresent() {
-            UUID otherApplicationDocumentId1 = UUID.randomUUID();
-            UUID otherApplicationDocumentId2 = UUID.randomUUID();
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(
-                    element(otherApplicationDocumentId1, ApplicationDocument.builder().documentName("1").build()),
-                    element(otherApplicationDocumentId2, ApplicationDocument.builder().documentName("2").build())
-                ))
-                .build();
-
-            assertThrows(AssertionError.class, () -> underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove));
-        }
-
-        @Test
-        void shouldRemoveApplicationDocument() {
-            UUID otherApplicationDocumentId1 = UUID.randomUUID();
-            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
-            applicationDocuments.add(element(otherApplicationDocumentId1, ApplicationDocument.builder().build()));
-            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(applicationDocuments)
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove);
-
-            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(1);
-            assertThat(updatedFields).extracting("applicationDocuments").asList()
-                .doesNotContainAnyElementsOf(List.of(applicationDocumentIdToRemove));
-        }
-
-        @Test
-        void shouldRemoveSingleApplicationDocument() {
-            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
-            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(applicationDocuments)
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove);
-
-            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(0);
-        }
-    }
-
     @Nested
     class UpdateIncorrectCourtCodes {
 
@@ -1340,17 +1276,6 @@ class MigrateCaseServiceTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class RefreshDocumentView {
-        @Test
-        void shouldInvokeDocumentListServiceForRefreshingDocumentViews() {
-            CaseData data  = CaseData.builder().build();
-            underTest.refreshDocumentViews(data);
-            verify(documentListService).getDocumentView(data);
-        }
-    }
-
     @Test
     void shouldNotThrowWhenNoConfidentialDocumentInDocumentViewNC() {
         assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
@@ -1551,73 +1476,6 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () ->
                 underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
                     orderIdToRemove));
-        }
-    }
-
-    @Nested
-    class RenameApplicationDocuments {
-
-        @Test
-        void shouldRemoveAngularBracketsFromDocumentNames() {
-            UUID docId = UUID.randomUUID();
-            Element<ApplicationDocument> appDoc = element(docId, ApplicationDocument.builder()
-                .documentName("PA>S")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc = element(docId, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc);
-        }
-
-        @Test
-        void shouldDoNothingIfNoAngularBrackets() {
-            Element<ApplicationDocument> appDoc = element(ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(appDoc);
-        }
-
-        @Test
-        void shouldRenameMultipleDocsIfAngularBrackets() {
-            UUID docId1 = UUID.randomUUID();
-            UUID docId2 = UUID.randomUUID();
-            Element<ApplicationDocument> appDoc1 = element(docId1, ApplicationDocument.builder()
-                .documentName("PA>S")
-                .build());
-            Element<ApplicationDocument> appDoc2 = element(docId2, ApplicationDocument.builder()
-                .documentName("PA<S")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc1 = element(docId1, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc2 = element(docId2, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc1, appDoc2))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
         }
     }
 

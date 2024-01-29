@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController extends CallbackController {
     private final ApplicationDocumentsService applicationDocumentsService;
-    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
@@ -51,8 +49,6 @@ public class UploadDocumentsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
             currentDocuments, previousDocuments));
-
-        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
     }
 }

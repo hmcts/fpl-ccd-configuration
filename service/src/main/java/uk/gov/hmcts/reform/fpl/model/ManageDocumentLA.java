@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 
 @Data
 @Builder(toBuilder = true)
+@Deprecated
 public class ManageDocumentLA {
     private final ManageDocumentTypeListLA type;
     private final String hasHearings; // Hidden CCD field

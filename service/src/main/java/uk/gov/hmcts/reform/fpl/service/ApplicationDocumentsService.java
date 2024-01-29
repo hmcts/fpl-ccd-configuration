@@ -81,7 +81,7 @@ public class ApplicationDocumentsService {
         return updateApplicationDocuments(currentDocuments, previousDocuments, "temporaryApplicationDocuments");
     }
 
-    public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
+    private Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments,
                                                           String populatedField) {
         List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(

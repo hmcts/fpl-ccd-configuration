@@ -97,7 +97,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRespondentStatementsHeading",
     "FieldType": "Label",
-      "Label": "## Respondent statement",
+    "Label": "## Respondent statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
