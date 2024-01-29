@@ -2049,11 +2049,9 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-systemupdate",
-          "[BARRISTER]"
         ],
         "CRUD": "CRU"
       },
@@ -2067,6 +2065,8 @@
       },
       {
         "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
           "[SOLICITORA]",
           "[SOLICITORB]",
           "[SOLICITORC]",
