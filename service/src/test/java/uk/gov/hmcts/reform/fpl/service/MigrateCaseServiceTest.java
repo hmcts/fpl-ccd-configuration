@@ -2451,7 +2451,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldSetTypeToNullWhenTypeDetailsDontMatch() {
+        void shouldSetTypeToFurtherCaseManagementWhenTypeDetailsDontMatch() {
             List<Element<HearingBooking>> bookings = new ArrayList<>();
             bookings.add(element(otherHearingBookingId, HearingBooking.builder()
                 .type(OTHER)
@@ -2466,7 +2466,7 @@ class MigrateCaseServiceTest {
 
             List<Element<HearingBooking>> expected = new ArrayList<>();
             expected.add(element(otherHearingBookingId, HearingBooking.builder()
-                .type(null)
+                .type(FURTHER_CASE_MANAGEMENT)
                 .typeDetails("TEST")
                 .build()));
 
