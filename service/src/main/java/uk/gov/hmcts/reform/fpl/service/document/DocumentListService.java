@@ -23,6 +23,7 @@ public class DocumentListService {
     private final DocumentsListRenderer documentsListRenderer;
     private final BundleViewAggregator bundleViewAggregator;
 
+    @Deprecated
     public Map<String, Object> getDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 

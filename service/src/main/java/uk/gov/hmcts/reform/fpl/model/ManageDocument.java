@@ -5,6 +5,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 
 @Data
+@Deprecated
 @Builder(toBuilder = true)
 public class ManageDocument {
     private final ManageDocumentType type;

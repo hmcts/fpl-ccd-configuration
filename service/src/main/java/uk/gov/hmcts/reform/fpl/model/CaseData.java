@@ -227,15 +227,6 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
-    public DynamicList buildRespondentDynamicList(UUID selected) {
-        return asDynamicList(getAllRespondents(), selected,
-            respondent -> respondent.getParty().getFullName());
-    }
-
-    public DynamicList buildRespondentDynamicList() {
-        return buildRespondentDynamicList(null);
-    }
-
     private final Proceeding proceeding;
 
     @Deprecated
@@ -709,14 +700,20 @@ public class CaseData extends CaseDataParent {
     private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
         RecordChildrenFinalDecisionsEventData.builder().build();
 
+    @Deprecated
     private final ManageDocument manageDocument;
+    @Deprecated
     private final ManageDocumentLA manageDocumentLA;
+    @Deprecated
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    @Deprecated
     private final ManageDocumentSubtypeList manageDocumentSubtypeList;
     @JsonUnwrapped
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
+    @Deprecated
     private final String manageDocumentsRelatedToHearing;
+    @Deprecated
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     /**
      * Collection field for storing furtherEvidenceDocuments uploaded by HMCTS admin.
@@ -749,6 +746,7 @@ public class CaseData extends CaseDataParent {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
+    @Deprecated
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
@@ -761,16 +759,24 @@ public class CaseData extends CaseDataParent {
      */
     @Deprecated(since = "DFPL-1438")
     private final List<Element<RespondentStatement>> respondentStatements;
+    @Deprecated
     private final Object manageDocumentsHearingList;
+    @Deprecated
     private final Object manageDocumentsSupportingC2List;
     private final Object hearingDocumentsHearingList;
     private final Object respondentStatementList;
 
+    @Deprecated
     private final HearingDocumentType manageDocumentsHearingDocumentType;
+    @Deprecated
     private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
+    @Deprecated
     private final CaseSummary manageDocumentsCaseSummary;
+    @Deprecated
     private final PositionStatementChild manageDocumentsPositionStatementChild;
+    @Deprecated
     private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
+    @Deprecated
     private final SkeletonArgument manageDocumentsSkeletonArgument;
     private final DynamicList manageDocumentsChildrenList;
     private final DynamicList hearingDocumentsRespondentList;
@@ -781,10 +787,6 @@ public class CaseData extends CaseDataParent {
     @Builder.Default
     private final HearingDocuments hearingDocuments = HearingDocuments.builder().build();
 
-    public DynamicList buildDynamicChildrenList() {
-        return buildDynamicChildrenList(null);
-    }
-
     public DynamicList buildDynamicChildrenList(UUID selected) {
         return buildDynamicChildrenList(getAllChildren(), selected);
     }
@@ -793,6 +795,7 @@ public class CaseData extends CaseDataParent {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
     }
 
+    @Deprecated
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
         return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
@@ -817,17 +820,6 @@ public class CaseData extends CaseDataParent {
 
     public List<Element<RespondentStatement>> getRespondentStatements() {
         return defaultIfNull(respondentStatements, new ArrayList<>());
-    }
-
-    public Optional<Element<RespondentStatement>> getRespondentStatementByRespondentId(UUID id) {
-        return getRespondentStatements().stream()
-            .filter(respondentStatement -> respondentStatement.getValue().getRespondentId().equals(id))
-            .findAny();
-    }
-
-    public boolean documentBundleContainsHearingId(UUID hearingId) {
-        return getHearingFurtherEvidenceDocuments().stream()
-            .anyMatch(element -> element.getId().equals(hearingId));
     }
 
     @JsonIgnore
@@ -1281,6 +1273,7 @@ public class CaseData extends CaseDataParent {
             .orElse(false);
     }
 
+    @Deprecated
     private List<Element<DocumentWithConfidentialAddress>> documentsWithConfidentialAddress;
 
     @JsonUnwrapped

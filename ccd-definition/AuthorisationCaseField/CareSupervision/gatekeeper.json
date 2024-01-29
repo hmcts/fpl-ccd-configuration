@@ -562,13 +562,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "c2SupportingDocuments",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cafcassDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
@@ -1262,20 +1255,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsSkeletonArgument",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingDocumentsPartyList",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "skeletonArgumentList",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
@@ -1731,23 +1710,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocuments",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsNC",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocumentsTEMP",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "D"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2308,69 +2273,6 @@
     "CaseFieldID": "localAuthorityDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocument",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsC2Heading",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsCorrespondenceHeading",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsFurtherEvidenceHeading",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsHearingLabel",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsHearingList",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsLink",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsSupportingC2Label",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsSupportingC2List",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -3362,13 +3264,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "toReListHearingDateList",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
@@ -3827,34 +3722,6 @@
     "CaseFieldID": "changeOfRepresentatives",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentStatementList",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentSubtypeList",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsRelatedToHearing",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageDocumentsRespondentStatementsHeading",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

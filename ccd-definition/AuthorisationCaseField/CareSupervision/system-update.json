@@ -1908,7 +1908,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentsWithConfidentialAddress",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "U"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",

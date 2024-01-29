@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+@Deprecated
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
