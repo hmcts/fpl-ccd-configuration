@@ -2051,7 +2051,7 @@
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "CRU"
       },
