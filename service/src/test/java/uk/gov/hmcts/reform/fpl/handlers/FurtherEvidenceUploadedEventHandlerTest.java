@@ -462,56 +462,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
             newDocumentDataCaptor.capture());
     }
 
-    /*
-    // Remove this test case since in the new manage document flow will not modify the existing
-    // `c2DocumentBundle` anymore
-    @Test
-    void shouldEmailCafcassWhenC2AdditionalBundleIsUploadedByLA() {
-        when(cafcassLookupConfiguration.getCafcassEngland(any()))
-                .thenReturn(
-                        Optional.of(
-                                new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                        )
-            );
-
-
-        CaseData caseData = buildCaseDataWithC2AdditionalApplicationBundle();
-
-        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
-                new FurtherEvidenceUploadedEvent(
-                        caseData,
-                        buildCaseDataWithConfidentialLADocuments(),
-                        DESIGNATED_LOCAL_AUTHORITY,
-                        userDetailsLA());
-
-        furtherEvidenceUploadedEventHandler.sendDocumentsToCafcass(furtherEvidenceUploadedEvent);
-
-        Set<DocumentReference> documentReferences = unwrapElements(caseData.getAdditionalApplicationsBundle())
-                .stream()
-                .map(AdditionalApplicationsBundle::getC2DocumentBundle)
-                .map(C2DocumentBundle::getAllC2DocumentReferences)
-                .flatMap(List::stream)
-                .map(Element::getValue)
-                .collect(toSet());
-
-
-        verify(cafcassNotificationService).sendEmail(
-                eq(caseData),
-                eq(documentReferences),
-                eq(NEW_DOCUMENT),
-                newDocumentDataCaptor.capture());
-
-        NewDocumentData newDocumentData = newDocumentDataCaptor.getValue();
-        assertThat(newDocumentData.getDocumentTypes())
-                .contains("• additional applications");
-        assertThat(newDocumentData.getDocumentTypes())
-                .contains("• additional applications");
-
-        assertThat(newDocumentData.getEmailSubjectInfo())
-                .isEqualTo("additional applications");
-    }
-    */
-
     @Test
     void shouldNotSendEmailToCafcassWhenCafcassIsNotEnlang() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
