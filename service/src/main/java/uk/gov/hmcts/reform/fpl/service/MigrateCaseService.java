@@ -642,7 +642,8 @@ public class MigrateCaseService {
     }
 
     private List<Element<JudicialMessage>> removeJudicialMessageFormList(List<Element<JudicialMessage>> messages,
-                                                                         String messageId, String migrationId, Long caseId) {
+                                                                         String messageId, String migrationId,
+                                                                         Long caseId) {
         if (messages == null) {
             throw new AssertionError(format("Migration {id = %s, case reference = %s}, judicial message is null",
                 migrationId, caseId));
