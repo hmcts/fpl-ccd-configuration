@@ -26,7 +26,7 @@ class ApplicationDocumentCheckerTest {
     @Test
     void shouldReturnNoErrorsAndUncompleteStateWhenApplicationDocumentsIsStarted() {
         final CaseData caseData = CaseData.builder()
-                .applicationDocuments(documents())
+                .temporaryApplicationDocuments(documents())
                 .build();
 
         final List<String> errors = applicationDocumentChecker.validate(caseData);
@@ -39,7 +39,7 @@ class ApplicationDocumentCheckerTest {
     @Test
     void shouldSetIsStartedToTrueWhenDocumentsToFollowFieldAdded() {
         final CaseData caseData = CaseData.builder()
-            .applicationDocuments(documents())
+            .temporaryApplicationDocuments(documents())
             .applicationDocumentsToFollowReason("Document to follow")
             .build();
 
@@ -51,7 +51,7 @@ class ApplicationDocumentCheckerTest {
     @Test
     void shouldSetIsStartedToTrueWhenApplicationDocumentsAdded() {
         final CaseData caseData = CaseData.builder()
-            .applicationDocuments(documents())
+            .temporaryApplicationDocuments(documents())
             .build();
 
         final boolean isStarted = applicationDocumentChecker.isStarted(caseData);
