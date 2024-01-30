@@ -28,14 +28,14 @@ export class Apihelp {
 
 
   }
-  async createCase(caseName='e2e UI Test'){
+  async createCase(caseName='e2e UI Test',user:{email:String,password:String}){
 
     let res : object;
     const url = `${UrlConfig.serviceUrl}/testing-support/case/create`;
     const data = {
             caseName : caseName,
          };
-      res= await this.apiRequest(url,swanseaUser,'post',data);
+      res= await this.apiRequest(url,user,'post',data);
      // @ts-ignore
     return res.id;
   }
