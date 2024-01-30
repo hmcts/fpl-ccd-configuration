@@ -9,8 +9,3 @@ export const systemUpdateUser ={
   password: e2ePw,
 
 };
-export const swanseaUser ={
-  email: 'kurt@swansea.gov.uk',
-  password: e2ePw,
-
-};
