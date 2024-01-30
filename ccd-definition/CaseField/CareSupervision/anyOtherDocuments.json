@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantWitnessStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantWitnessStatement",
+    "FieldTypeParameter": "ApplicantWitnessStatementConfidential",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantWitnessStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantWitnessStatement",
+    "FieldTypeParameter": "ApplicantWitnessStatementConfidential",
     "Label": "Witness statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -54,7 +54,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianEvidenceListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianEvidence",
+    "FieldTypeParameter": "GuardianEvidenceConfidential",
     "Label": "Guardian's evidence",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -94,7 +94,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "drugAndAlcoholReportListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "FieldTypeParameter": "DrugAndAlcoholReportConfidential",
     "Label": "Drug and alcohol reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -104,7 +104,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "drugAndAlcoholReportListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DrugAndAlcoholReport",
+    "FieldTypeParameter": "DrugAndAlcoholReportConfidential",
     "Label": "Drug and alcohol reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -134,7 +134,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "lettersOfInstructionListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "LettersOfInstruction",
+    "FieldTypeParameter": "LettersOfInstructionConfidential",
     "Label": "Letters of instructions/referrals",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -144,7 +144,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "lettersOfInstructionListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "LettersOfInstruction",
+    "FieldTypeParameter": "LettersOfInstructionConfidential",
     "Label": "Letters of instructions/referrals",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -174,7 +174,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "expertReportListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ExpertReport",
+    "FieldTypeParameter": "ExpertReportConfidential",
     "Label": "Expert reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -184,7 +184,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "expertReportListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ExpertReport",
+    "FieldTypeParameter": "ExpertReportConfidential",
     "Label": "Expert reports",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -254,7 +254,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "policeDisclosureListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PoliceDisclosure",
+    "FieldTypeParameter": "PoliceDisclosureConfidential",
     "Label": "Police disclosure",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -264,7 +264,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "policeDisclosureListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PoliceDisclosure",
+    "FieldTypeParameter": "PoliceDisclosureConfidential",
     "Label": "Police disclosure",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -294,7 +294,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "medicalRecordListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MedicalRecord",
+    "FieldTypeParameter": "MedicalRecordConfidential",
     "Label": "Medical Records",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -304,7 +304,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "medicalRecordListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "MedicalRecord",
+    "FieldTypeParameter": "MedicalRecordConfidential",
     "Label": "Medical Records",
     "SecurityClassification": "Public",
     "Searchable": "N"
