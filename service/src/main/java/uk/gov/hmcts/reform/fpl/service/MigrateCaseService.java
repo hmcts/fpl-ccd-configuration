@@ -94,7 +94,7 @@ public class MigrateCaseService {
         hearingMapping.put("ICO", INTERIM_CARE_ORDER);
         hearingMapping.put("INTERIM", INTERIM_CARE_ORDER);
         hearingMapping.put("REMOVAL", INTERIM_CARE_ORDER);
-        hearingMapping.put("CMH", INTERIM_CARE_ORDER);
+        hearingMapping.put("CMH", CASE_MANAGEMENT);
         hearingMapping.put("CASE MANAGEMENT", CASE_MANAGEMENT);
         hearingMapping.put("PCMH", CASE_MANAGEMENT);
         hearingMapping.put("HEARING", CASE_MANAGEMENT);
