@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
@@ -38,7 +36,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1956", this::run1956
     );
 
-    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
+    protected static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
             if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
                 && ((Collection) entrySet.getValue()).isEmpty())) {
@@ -50,7 +48,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     @SuppressWarnings("unchecked")
-    private void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
+    protected static void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
         newChanges.entrySet().forEach(entry -> {
             if (target.containsKey(entry.getKey())) {
                 ((List) target.get(entry.getKey())).addAll((List) entry.getValue());
