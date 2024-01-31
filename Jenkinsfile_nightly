@@ -105,9 +105,16 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
-    //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    //archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
     env.TESTS_FOR_ACCESSIBILITY = false
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "playwright-report",
+      reportFiles          : 'index.html',
+      reportName           : 'UI Functional Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
   }
 
   afterAlways('fortify-scan') {
