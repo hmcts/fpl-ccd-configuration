@@ -102,8 +102,6 @@ public class MigrateCaseService {
         hearingMapping.put("CMH", CASE_MANAGEMENT);
         hearingMapping.put("CASE MANAGEMENT", CASE_MANAGEMENT);
         hearingMapping.put("PCMH", CASE_MANAGEMENT);
-        hearingMapping.put("HEARING", CASE_MANAGEMENT);
-        hearingMapping.put("URGENT", CASE_MANAGEMENT);
         hearingMapping.put("SECURE ORDER REVIEW", CASE_MANAGEMENT);
         hearingMapping.put("RECOVERY", CASE_MANAGEMENT);
         hearingMapping.put("SECURE ACCOMMODATION", CASE_MANAGEMENT);
@@ -157,6 +155,8 @@ public class MigrateCaseService {
         hearingMapping.put("NON-LAWYER", FAMILY_DRUG_ALCOHOL_COURT);
         hearingMapping.put("EXIT", FAMILY_DRUG_ALCOHOL_COURT);
         hearingMapping.put("PLACEMENT", PLACEMENT_HEARING);
+        hearingMapping.put("HEARING", CASE_MANAGEMENT);
+        hearingMapping.put("URGENT", CASE_MANAGEMENT);
         return hearingMapping;
     }
 
