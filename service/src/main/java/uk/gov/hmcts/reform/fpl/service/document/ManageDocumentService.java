@@ -245,9 +245,9 @@ public class ManageDocumentService {
         return List.of(HMCTS).contains(getUploaderType(caseData));
     }
     
-    private Element<? extends WithDocument> handleRemovePlacementResponse(CaseData caseData,
-                                                                          UUID documentElementId,
-                                                                          Map<String, Object> output) {
+    private Element<? extends WithDocument> handlePlacementResponseRemoval(CaseData caseData,
+                                                                           UUID documentElementId,
+                                                                           Map<String, Object> output) {
         Element<Placement> placement = caseData.getPlacementEventData().getPlacements().stream()
             .filter(placementElement -> placementElement.getValue().getNoticeDocuments().stream()
                 .anyMatch(nd -> documentElementId.equals(nd.getId())))
@@ -275,10 +275,10 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element<? extends WithDocument>> handleRemoveCourtBundle(String fieldName,
-                                                                          CaseData caseData,
-                                                                          UUID documentElementId,
-                                                                          Map<String, Object> output) {
+    private List<Element<? extends WithDocument>> handleCourtBundleRemoval(String fieldName,
+                                                                           CaseData caseData,
+                                                                           UUID documentElementId,
+                                                                           Map<String, Object> output) {
         List<Element> listOfElement = null;
         HearingDocuments hearingDocuments = caseData.getHearingDocuments();
         switch (fieldName) {
@@ -433,7 +433,7 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private Element<? extends WithDocument> handleC1OrC2SupportingDocumentsInAdditionalApplications(
+    private Element<? extends WithDocument> handleC1SupportingDocumentsInAdditionalApplicationsRemoval(
         CaseData caseData, UUID documentElementId, Map<String, Object> output) {
         Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
             documentElementId);
@@ -441,42 +441,53 @@ public class ManageDocumentService {
         Element<SupportingEvidenceBundle> removed = null;
         if (targetBundle != null) {
             AdditionalApplicationsBundle aab = targetBundle.getValue();
-            if (aab.getOtherApplicationsBundle() == null) {
-                for (String propertyName : getC2DocumentBundleProperties()) {
-                    C2DocumentBundle c2DocumentBundle = getC2DocumentBundle(aab, propertyName);
-                    if (isEmpty(c2DocumentBundle)) {
-                        continue;
-                    }
-                    removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
-                        .getSupportingEvidenceBundle())
-                        .orElseThrow(
-                            () -> new AssertionError(format("target element not found (%s)", documentElementId)));
-                    List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
-                        .stream()
-                        .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
-                        .toList();
-                    targetBundle.setValue(applyNewList(propertyName, aab, c2DocumentBundle,newList));
-                    aab = targetBundle.getValue();
+            removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
+                    .getSupportingEvidenceBundle())
+                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+            List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
+                .getSupportingEvidenceBundle().stream()
+                .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
+                .toList();
+            targetBundle.setValue(aab.toBuilder()
+                .otherApplicationsBundle(aab.getOtherApplicationsBundle().toBuilder()
+                    .supportingEvidenceBundle(newList)
+                    .build())
+                .build());
+            assert removed != null;
+            appendToRemovedList(C1_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
+
+            output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
+        }
+        return removed;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Element<? extends WithDocument> handleC2SupportingDocumentsInAdditionalApplicationsRemoval(
+        CaseData caseData, UUID documentElementId, Map<String, Object> output) {
+        Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
+            documentElementId);
+
+        Element<SupportingEvidenceBundle> removed = null;
+        if (targetBundle != null) {
+            AdditionalApplicationsBundle aab = targetBundle.getValue();
+            for (String propertyName : getC2DocumentBundleProperties()) {
+                C2DocumentBundle c2DocumentBundle = getC2DocumentBundle(aab, propertyName);
+                if (isEmpty(c2DocumentBundle)) {
+                    continue;
                 }
-                assert removed != null;
-                appendToRemovedList(C2_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
-            } else if (aab.getOtherApplicationsBundle() != null) {
-                removed = ElementUtils.findElement(documentElementId, aab.getOtherApplicationsBundle()
+                removed = ElementUtils.findElement(documentElementId, c2DocumentBundle
                         .getSupportingEvidenceBundle())
-                    .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
-                List<Element<SupportingEvidenceBundle>> newList = aab.getOtherApplicationsBundle()
-                    .getSupportingEvidenceBundle().stream()
+                    .orElseThrow(
+                        () -> new AssertionError(format("target element not found (%s)", documentElementId)));
+                List<Element<SupportingEvidenceBundle>> newList = c2DocumentBundle.getSupportingEvidenceBundle()
+                    .stream()
                     .filter(el -> !Arrays.asList(documentElementId).contains(el.getId()))
                     .toList();
-                targetBundle.setValue(aab.toBuilder()
-                    .otherApplicationsBundle(aab.getOtherApplicationsBundle().toBuilder()
-                        .supportingEvidenceBundle(newList)
-                        .build())
-                    .build());
-                assert removed != null;
-                appendToRemovedList(C1_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
-            } else {
-                throw new AssertionError("should not reach this line.");
+                targetBundle.setValue(applyNewList(propertyName, aab, c2DocumentBundle, newList));
+                aab = targetBundle.getValue();
+            }
+            if (removed != null) {
+                appendToRemovedList(C2_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
             }
             output.put("additionalApplicationsBundle", caseData.getAdditionalApplicationsBundle());
         }
@@ -484,12 +495,14 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private Element<? extends WithDocument> handleRemoveGeneralDocumentType(DocumentType documentType,
-                                                                            String fieldName,
-                                                                            CaseData caseData, UUID documentElementId,
-                                                                            Map<String, Object> output) {
-        if (List.of(C1_APPLICATION_DOCUMENTS.name(), C2_APPLICATION_DOCUMENTS.name()).contains(fieldName)) {
-            return handleC1OrC2SupportingDocumentsInAdditionalApplications(caseData, documentElementId, output);
+    private Element<? extends WithDocument> handleGeneralDocumentTypeRemoval(DocumentType documentType,
+                                                                             String fieldName,
+                                                                             CaseData caseData, UUID documentElementId,
+                                                                             Map<String, Object> output) {
+        if (C1_APPLICATION_DOCUMENTS.name().equals(fieldName)) {
+            return handleC1SupportingDocumentsInAdditionalApplicationsRemoval(caseData, documentElementId, output);
+        } else if (C2_APPLICATION_DOCUMENTS.name().equals(fieldName)) {
+            return handleC2SupportingDocumentsInAdditionalApplicationsRemoval(caseData, documentElementId, output);
         } else {
             List<Element<?>> listOfElement = readFromFieldName(caseData, fieldName);
             Element removed = listOfElement.stream().filter(i -> documentElementId.equals(i.getId())).findFirst()
@@ -530,13 +543,13 @@ public class ManageDocumentService {
 
         final Map<String, Object> output = new HashMap<>();
         if (documentType == PLACEMENT_RESPONSES) {
-            targetElements.add(handleRemovePlacementResponse(caseData, documentElementId, output));
+            targetElements.add(handlePlacementResponseRemoval(caseData, documentElementId, output));
         } else {
             if (documentType == COURT_BUNDLE) {
-                targetElements.addAll(handleRemoveCourtBundle(fieldName, caseData, documentElementId, output));
+                targetElements.addAll(handleCourtBundleRemoval(fieldName, caseData, documentElementId, output));
             } else {
-                targetElements.add(handleRemoveGeneralDocumentType(documentType, fieldName, caseData, documentElementId,
-                    output));
+                targetElements.add(handleGeneralDocumentTypeRemoval(documentType, fieldName, caseData,
+                    documentElementId, output));
             }
         }
         targetElements.forEach(t -> t.getValue().setRemovalReason(removalReason));
