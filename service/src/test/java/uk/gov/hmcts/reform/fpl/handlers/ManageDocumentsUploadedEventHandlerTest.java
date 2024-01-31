@@ -622,7 +622,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldCreateWorkAllocationTaskWhenConfidentialNewCorrespondenceIsAddedByCtsc() {
+    void shouldNotCreateWorkAllocationTaskWhenConfidentialNewCorrespondenceIsAddedByCtsc() {
         ManagedDocument newCorrespondence = ManagedDocument.builder().document(getPDFDocument()).build();
         List<Element<ManagedDocument>> newCorrespondences = wrapElements(newCorrespondence);
         List<Element<NotifyDocumentUploaded>> notifyDocumentUploadedList = wrapElements(newCorrespondence);
@@ -638,6 +638,62 @@ public class ManageDocumentsUploadedEventHandlerTest {
             .newDocumentsLA(Map.of())
             .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
             .build();
+
+        when(userService.isJudiciaryUser()).thenReturn(false);
+        when(userService.isCafcassUser()).thenReturn(false);
+
+        underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
+
+        verifyNoInteractions(workAllocationTaskService);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenConfidentialNewCorrespondenceIsAddedByJudge() {
+        ManagedDocument newCorrespondence = ManagedDocument.builder().document(getPDFDocument()).build();
+        List<Element<ManagedDocument>> newCorrespondences = wrapElements(newCorrespondence);
+        List<Element<NotifyDocumentUploaded>> notifyDocumentUploadedList = wrapElements(newCorrespondence);
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .correspondenceDocListCTSC(newCorrespondences)
+            .build();
+
+        ManageDocumentsUploadedEvent manageDocumentsUploadedEvent = ManageDocumentsUploadedEvent.builder()
+            .caseData(caseData)
+            .newDocuments(Map.of())
+            .newDocumentsLA(Map.of())
+            .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
+            .build();
+
+        when(userService.isJudiciaryUser()).thenReturn(true);
+        when(userService.isCafcassUser()).thenReturn(false);
+
+        underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
+
+        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
+            WorkAllocationTaskType.CORRESPONDENCE_UPLOADED);
+    }
+
+    @Test
+    void shouldCreateWorkAllocationTaskWhenConfidentialNewCorrespondenceIsAddedByCafcassUser() {
+        ManagedDocument newCorrespondence = ManagedDocument.builder().document(getPDFDocument()).build();
+        List<Element<ManagedDocument>> newCorrespondences = wrapElements(newCorrespondence);
+        List<Element<NotifyDocumentUploaded>> notifyDocumentUploadedList = wrapElements(newCorrespondence);
+
+        CaseData caseData = CaseData.builder()
+            .id(1L)
+            .correspondenceDocListCTSC(newCorrespondences)
+            .build();
+
+        ManageDocumentsUploadedEvent manageDocumentsUploadedEvent = ManageDocumentsUploadedEvent.builder()
+            .caseData(caseData)
+            .newDocuments(Map.of())
+            .newDocumentsLA(Map.of())
+            .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
+            .build();
+
+        when(userService.isJudiciaryUser()).thenReturn(false);
+        when(userService.isCafcassUser()).thenReturn(true);
 
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 

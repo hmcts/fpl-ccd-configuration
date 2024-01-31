@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationC
 import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
@@ -71,6 +72,7 @@ public class ManageDocumentsUploadedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final UserService userService;
 
     private static final String BULLET_POINT = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
@@ -357,9 +359,13 @@ public class ManageDocumentsUploadedEventHandler {
     @EventListener
     public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
         CaseData caseData = event.getCaseData();
+
+        boolean shouldCheckCtscLevelChange = userService.isJudiciaryUser() || userService.isCafcassUser();
+
         if (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
             || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
-            || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE))) {
+            || (shouldCheckCtscLevelChange
+                && isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
     }
