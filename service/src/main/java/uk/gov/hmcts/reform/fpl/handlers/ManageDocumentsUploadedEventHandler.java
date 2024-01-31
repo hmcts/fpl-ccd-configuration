@@ -360,9 +360,7 @@ public class ManageDocumentsUploadedEventHandler {
     public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        boolean shouldCheckCtscLevelChange = userService.isJudiciaryUser() || userService.isCafcassUser();
-
-        if (shouldCheckCtscLevelChange
+        if (!userService.isHmctsAdminUser()
             && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
                 || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
