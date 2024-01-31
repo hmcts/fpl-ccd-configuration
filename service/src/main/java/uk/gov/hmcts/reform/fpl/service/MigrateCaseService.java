@@ -830,6 +830,10 @@ public class MigrateCaseService {
         caseDetails.getData().remove("changeOrganisationRequestField");
     }
 
+    public void clearHearingOption(CaseDetails caseDetails) {
+        caseDetails.getData().remove("hearingOption");
+    }
+
     public Map<String, List<Element<LocalAuthority>>> removeElementFromLocalAuthorities(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedLocalAuthorityId) {
