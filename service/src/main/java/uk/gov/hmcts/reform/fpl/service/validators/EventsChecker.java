@@ -115,14 +115,10 @@ public class EventsChecker {
         eventCheckers.put(LANGUAGE_REQUIREMENTS, languageRequirementsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
         eventCheckers.put(SELECT_COURT, courtChecker);
-    }
-
-    private void addCheckersBasedOnToggle() {
         eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
     }
 
     public List<String> validate(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.validate(caseData))
             .orElse(emptyList());
@@ -147,7 +143,6 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.isAvailable(caseData))
             .orElse(true);
