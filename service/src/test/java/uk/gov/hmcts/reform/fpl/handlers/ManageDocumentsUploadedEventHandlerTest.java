@@ -722,6 +722,9 @@ public class ManageDocumentsUploadedEventHandlerTest {
             ))
             .build();
 
+        when(userService.isJudiciaryUser()).thenReturn(true);
+        when(userService.isCafcassUser()).thenReturn(false);
+
         underTest.createWorkAllocationTask(manageDocumentsUploadedEvent);
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
