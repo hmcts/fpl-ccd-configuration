@@ -362,10 +362,10 @@ public class ManageDocumentsUploadedEventHandler {
 
         boolean shouldCheckCtscLevelChange = userService.isJudiciaryUser() || userService.isCafcassUser();
 
-        if (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
-            || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
-            || (shouldCheckCtscLevelChange
-                && isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
+        if (shouldCheckCtscLevelChange
+            && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
+                || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
+                || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
             workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
         }
     }

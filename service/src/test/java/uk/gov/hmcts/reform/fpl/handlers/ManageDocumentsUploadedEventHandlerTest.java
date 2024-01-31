@@ -634,9 +634,11 @@ public class ManageDocumentsUploadedEventHandlerTest {
 
         ManageDocumentsUploadedEvent manageDocumentsUploadedEvent = ManageDocumentsUploadedEvent.builder()
             .caseData(caseData)
-            .newDocuments(Map.of())
+            .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE,
+                wrapElements(ManagedDocument.builder().document(getPDFDocument()).build())))
             .newDocumentsLA(Map.of())
-            .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE, notifyDocumentUploadedList))
+            .newDocumentsCTSC(Map.of(COURT_CORRESPONDENCE,
+                wrapElements(ManagedDocument.builder().document(getPDFDocument()).build())))
             .build();
 
         when(userService.isJudiciaryUser()).thenReturn(false);
