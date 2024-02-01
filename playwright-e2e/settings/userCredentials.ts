@@ -7,10 +7,4 @@ export const newSwanseaLocalAuthorityUserOne = {
 export const systemUpdateUser ={
   email: 'fpl-system-update@mailnesia.com',
   password: e2ePw,
-
-};
-export const swanseaUser ={
-  email: 'kurt@swansea.gov.uk',
-  password: e2ePw,
-
 };
