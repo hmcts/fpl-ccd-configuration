@@ -710,8 +710,6 @@ public class CaseData extends CaseDataParent {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
-    @Deprecated
-    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
