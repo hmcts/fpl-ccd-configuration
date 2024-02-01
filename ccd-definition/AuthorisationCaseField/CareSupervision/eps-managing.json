@@ -1619,6 +1619,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submittedC1WithSupplement",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
@@ -1853,6 +1860,13 @@
     "CaseFieldID": "groundsForChildAssessmentOrder",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c1Application",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
