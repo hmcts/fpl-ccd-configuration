@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -114,6 +115,7 @@ public class TaskListRenderer {
         ofNullable(tasks.get(SELECT_COURT)).ifPresent(courtRequirements::withTask);
 
         final TaskSection additionalInformation = newSection("Add additional information")
+            .withTask(tasks.get(C1_WITH_SUPPLEMENT))
             .withTask(tasks.get(OTHER_PROCEEDINGS))
             .withTask(tasks.get(INTERNATIONAL_ELEMENT))
             .withTask(tasks.get(OTHERS))

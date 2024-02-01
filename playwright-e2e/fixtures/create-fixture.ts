@@ -1,14 +1,20 @@
 import { test as base } from "@playwright/test";
 import { SignInPage } from "../pages/sign-in";
-import { SmokeCreateCase } from "../pages/create-case";
+import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
+import { HearingUrgency } from "../pages/hearing-urgency";
+import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
+import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 
 type CreateFixtures = {
   signInPage: SignInPage;
-  smokeCreateCase: SmokeCreateCase;
+  createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
+  hearingUrgency : HearingUrgency;
+  groundsForTheApplication : GroundsForTheApplication;
+  riskAndHarmToChildren : RiskAndHarmToChildren;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -16,8 +22,8 @@ export const test = base.extend<CreateFixtures>({
     await use(new SignInPage(page));
   },
 
-  smokeCreateCase: async ({ page }, use) => {
-    await use(new SmokeCreateCase(page));
+  createCase: async ({ page }, use) => {
+    await use(new CreateCase(page));
   },
 
   startApplication: async ({ page }, use) => {
@@ -27,4 +33,17 @@ export const test = base.extend<CreateFixtures>({
   ordersAndDirectionSought: async ({ page }, use) => {
     await use(new OrdersAndDirectionSought(page));
   },
+
+  hearingUrgency: async ({ page }, use) => {
+    await use(new HearingUrgency(page));
+  },
+
+  groundsForTheApplication: async ({ page }, use) => {
+    await use(new GroundsForTheApplication(page));
+  },
+
+  riskAndHarmToChildren: async ({ page }, use) => {
+    await use(new RiskAndHarmToChildren(page));
+  },
+
 });

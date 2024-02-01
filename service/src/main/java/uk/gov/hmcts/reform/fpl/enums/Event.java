@@ -29,7 +29,8 @@ public enum Event {
     APPLICATION_DOCUMENTS("uploadDocuments", "Upload documents"),
     SELECT_COURT("selectCourt", "Select court to issue"),
     ADD_URGENT_DIRECTIONS("addUrgentDirections", "Add urgent directions"),
-    JUDICIAL_GATEKEEPNIG("addGatekeepingOrder", "Judicial Gatekeeping");
+    JUDICIAL_GATEKEEPNIG("addGatekeepingOrder", "Judicial Gatekeeping"),
+    C1_WITH_SUPPLEMENT("enterC1WithSupplement", "C1 with Supplement");
 
     private final String id;
     private final String name;
