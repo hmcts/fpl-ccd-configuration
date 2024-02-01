@@ -431,16 +431,6 @@ public class MigrateCaseService {
         }
     }
 
-    public void doDocumentViewNCCheck(long caseId, String migrationId, CaseDetails caseDetails) throws AssertionError {
-        String documentViewNC = (String) caseDetails.getData().get("documentViewNC");
-        if (!Optional.ofNullable(documentViewNC).orElse("").contains("title='Confidential'")) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
-                migrationId, caseId
-            ));
-        }
-    }
-
     public Map<String, Object> removeSpecificPlacements(CaseData caseData, UUID placementToRemove) {
         List<Element<Placement>> placementsToKeep = caseData.getPlacementEventData().getPlacements().stream()
             .filter(x -> !x.getId().equals(placementToRemove)).toList();

@@ -1276,41 +1276,6 @@ class MigrateCaseServiceTest {
         }
     }
 
-    @Test
-    void shouldNotThrowWhenNoConfidentialDocumentInDocumentViewNC() {
-        assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
-            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
-                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
-                + "Applicant's statements and application documents</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<dt class=\\\"govuk-summary-list__key\\\">"
-                + "<img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/"
-                + "master/resources/confidential.png' title='Confidential'/></dt>"
-                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
-                + "<div class=\\\"govuk-summary-list__row\\\">")).build()));
-    }
-
-    @Test
-    void shouldThrowWhenNoConfidentialDocumentInDocumentViewNC() {
-        assertThatThrownBy(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
-            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
-                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
-                + "Applicant's statements and application documents</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
-                + "<div class=\\\"govuk-summary-list__row\\\">")).build()))
-            .isInstanceOf(AssertionError.class)
-            .hasMessage(format(
-                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
-                MIGRATION_ID, 1L));
-    }
-
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class RemovePlacementApplication {
