@@ -965,16 +965,9 @@ class CaseDataTest {
                     .otherApplicationsBundle(otherBundle)
                     .build()));
 
-            DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
-                Pair.of(futureC2Bundle.getId(), "C2, " + futureC2Bundle.getUploadedDateTime()),
-                Pair.of(pastC2Element.getId(), "C2, " + pastC2Element.getValue().getUploadedDateTime())
-            );
-
             CaseData caseData = CaseData.builder()
                 .c2DocumentBundle(List.of(pastC2Element))
                 .additionalApplicationsBundle(additionalBundles)
-                .manageDocumentsSupportingC2List(expectedDynamicList)
                 .build();
 
             assertThat(caseData.getApplicationBundleByUUID(pastC2Element.getId())).isEqualTo(pastC2Element.getValue());

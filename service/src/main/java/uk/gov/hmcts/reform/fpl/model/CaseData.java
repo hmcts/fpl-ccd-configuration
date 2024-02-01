@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
-import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -713,37 +712,6 @@ public class CaseData extends CaseDataParent {
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
-    /**
-     * Collection field for storing respondent statements.
-     *
-     * @deprecated Data restructure due to CaseFileView change. Making use of respStmtList, respStmtListLA and
-     *     respStmtListCTSC in the future which are defined in CaseDataParent
-     */
-    @Deprecated(since = "DFPL-1438")
-    private final List<Element<RespondentStatement>> respondentStatements;
-    @Deprecated
-    private final Object manageDocumentsHearingList;
-    @Deprecated
-    private final Object manageDocumentsSupportingC2List;
-    private final Object hearingDocumentsHearingList;
-    private final Object respondentStatementList;
-
-    @Deprecated
-    private final HearingDocumentType manageDocumentsHearingDocumentType;
-    @Deprecated
-    private final List<Element<CourtBundle>> manageDocumentsCourtBundle;
-    @Deprecated
-    private final CaseSummary manageDocumentsCaseSummary;
-    @Deprecated
-    private final PositionStatementChild manageDocumentsPositionStatementChild;
-    @Deprecated
-    private final PositionStatementRespondent manageDocumentsPositionStatementRespondent;
-    @Deprecated
-    private final SkeletonArgument manageDocumentsSkeletonArgument;
-    private final DynamicList manageDocumentsChildrenList;
-    private final DynamicList hearingDocumentsRespondentList;
-    private final DynamicList hearingDocumentsPartyList;
-
 
     @JsonUnwrapped
     @Builder.Default
@@ -755,10 +723,6 @@ public class CaseData extends CaseDataParent {
 
     public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
-    }
-
-    public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
-        return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
     }
 
     @Deprecated(since = "DFPL-1438")
@@ -773,10 +737,6 @@ public class CaseData extends CaseDataParent {
 
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
         return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
-    }
-
-    public List<Element<RespondentStatement>> getRespondentStatements() {
-        return defaultIfNull(respondentStatements, new ArrayList<>());
     }
 
     @JsonIgnore

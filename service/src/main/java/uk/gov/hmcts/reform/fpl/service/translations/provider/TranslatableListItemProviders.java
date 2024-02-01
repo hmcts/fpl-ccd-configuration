@@ -18,7 +18,6 @@ public class TranslatableListItemProviders {
     private final TranslatableNoticeOfHearingProvider translatableNoticeOfHearingProvider;
     private final TranslatableC110AProvider translatableC110AProvider;
     private final TranslatableHearingFurtherEvidenceProvider translatableHearingFurtherEvidenceProvider;
-    private final TranslatableRespondentStatementsProvider translatableRespondentStatementsProvider;
 
     public List<TranslatableListItemProvider> getAll() {
         return List.of(
@@ -29,8 +28,7 @@ public class TranslatableListItemProviders {
             translatableUrgentHearingOrderProvider,
             translatableNoticeOfHearingProvider,
             translatableC110AProvider,
-            translatableHearingFurtherEvidenceProvider,
-            translatableRespondentStatementsProvider
+            translatableHearingFurtherEvidenceProvider
         );
     }
 
