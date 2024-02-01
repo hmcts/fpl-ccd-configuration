@@ -376,8 +376,6 @@ public class CaseData extends CaseDataParent {
     // Transient field
     private YesNo caseFlagValueUpdated;
 
-
-
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
         return isNotEmpty(c2DocumentBundle);
@@ -703,12 +701,6 @@ public class CaseData extends CaseDataParent {
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
-    @Deprecated(since = "DFPL-1438")
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
-    @Deprecated(since = "DFPL-1438")
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
-    @Deprecated(since = "DFPL-1438")
-    private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
@@ -723,16 +715,6 @@ public class CaseData extends CaseDataParent {
 
     public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
-    }
-
-    @Deprecated(since = "DFPL-1438")
-    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
-        return defaultIfNull(correspondenceDocuments, new ArrayList<>());
-    }
-
-    @Deprecated(since = "DFPL-1438")
-    public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsSolicitor() {
-        return defaultIfNull(correspondenceDocumentsSolicitor, new ArrayList<>());
     }
 
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
