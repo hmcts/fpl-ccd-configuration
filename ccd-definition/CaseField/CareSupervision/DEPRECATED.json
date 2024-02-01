@@ -741,5 +741,35 @@
     "Label": "## Correspondence",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListV2Backup",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryListBackup",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseSummary",
+    "Label": "Case summary",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skeletonArgumentListBackup",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SkeletonArgument",
+    "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
