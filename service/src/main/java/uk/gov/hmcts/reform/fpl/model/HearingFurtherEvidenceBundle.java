@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
-@Deprecated
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
