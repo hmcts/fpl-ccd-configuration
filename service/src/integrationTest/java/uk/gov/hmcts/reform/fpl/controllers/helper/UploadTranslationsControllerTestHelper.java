@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -27,8 +26,6 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -118,19 +115,6 @@ public class UploadTranslationsControllerTestHelper {
                         .type(EXPERT_REPORTS)
                         .translationRequirements(ENGLISH_TO_WELSH)
                         .dateTimeUploaded(LocalDateTime.of(2009, 1, 3, 12, 1, 2))
-                        .build())
-                )).build())
-        ))
-        .respondentStatements(List.of(
-            element(UUID_9, RespondentStatement.builder()
-                .respondentId(UUID_RESPONDENT)
-                .respondentName("Respondent 1")
-                .supportingEvidenceBundle(List.of(
-                    element(UUID_10, SupportingEvidenceBundle.builder()
-                        .name("Document 2")
-                        .type(GUARDIAN_REPORTS)
-                        .translationRequirements(ENGLISH_TO_WELSH)
-                        .dateTimeUploaded(LocalDateTime.of(2008, 1, 3, 12, 1, 2))
                         .build())
                 )).build())
         ))
