@@ -134,14 +134,6 @@ public class UploadTranslationsControllerTestHelper {
                         .build())
                 )).build())
         ))
-        .furtherEvidenceDocuments(List.of(
-            element(UUID_11, SupportingEvidenceBundle.builder()
-                .name("Document 3")
-                .type(OTHER_REPORTS)
-                .translationRequirements(ENGLISH_TO_WELSH)
-                .dateTimeUploaded(LocalDateTime.of(2007, 1, 3, 12, 1, 2))
-                .build())
-        ))
         .build();
     public static final DynamicList RENDERED_DYNAMIC_LIST = DynamicList.builder()
         .value(DynamicListElement.EMPTY)
