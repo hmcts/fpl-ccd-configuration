@@ -574,7 +574,7 @@ public class MigrateCaseService {
         }
     }
 
-    private String stripIllegalCharacters(String str) {
+    protected static String stripIllegalCharacters(String str) {
         if (isEmpty(str)) {
             return str;
         }
