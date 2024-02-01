@@ -703,8 +703,6 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
-    @Deprecated
-    private final String manageDocumentsRelatedToHearing;
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
