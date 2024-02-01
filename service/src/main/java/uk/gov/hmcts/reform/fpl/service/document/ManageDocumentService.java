@@ -245,18 +245,11 @@ public class ManageDocumentService {
                     .filter(i -> documentElementId.equals(i.getId())).findFirst().orElseThrow(() -> {
                         throw new IllegalStateException("Fail to locate the target document");
                     });
-                Element<CourtBundle> targetNC = hcbElement.getValue().getCourtBundleNC().stream()
-                    .filter(i -> documentElementId.equals(i.getId())).findFirst().orElse(null);
 
-                if (hcbElement.getValue().getCourtBundle().size() == 1
-                    && hcbElement.getValue().getCourtBundleNC().size() <= 1) {
-                    // multiple court bundles(nc) keep hcbElement, otherwise remove it
+                if (hcbElement.getValue().getCourtBundle().size() == 1) {
                     listOfElement.remove(hcbElement);
                 }
                 hcbElement.getValue().getCourtBundle().remove(target);
-                if (targetNC != null) {
-                    hcbElement.getValue().getCourtBundleNC().remove(targetNC);
-                }
 
                 final boolean isNewHearingCourtBundleInRemovedList = !listOfRemovedElement.stream()
                     .anyMatch(e -> e.getId().equals(hcbElement.getId()));
@@ -264,14 +257,9 @@ public class ManageDocumentService {
                     .filter(e -> e.getId().equals(hcbElement.getId())).findFirst()
                     .orElse(element(hcbElement.getId(), hcbElement.getValue().toBuilder()
                         .courtBundle(new ArrayList<>())
-                        .courtBundleNC(new ArrayList<>())
                         .build()));
                 target.getValue().setRemovalReason(removalReason); // Setting the removal reason
                 hcbFromRemovedList.getValue().getCourtBundle().add(target);
-                if (targetNC != null) {
-                    targetNC.getValue().setRemovalReason(removalReason); // Setting the removal reason
-                    hcbFromRemovedList.getValue().getCourtBundleNC().add(targetNC);
-                }
                 if (isNewHearingCourtBundleInRemovedList) {
                     listOfRemovedElement.add(hcbFromRemovedList);
                 }

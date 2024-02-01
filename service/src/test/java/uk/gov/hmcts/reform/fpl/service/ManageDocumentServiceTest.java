@@ -2074,10 +2074,6 @@ class ManageDocumentServiceTest {
                         element(elementId1, cb1),
                         element(elementId2, cb2)
                     )))
-                    .courtBundleNC(new ArrayList<>(List.of(
-                        element(elementId1, cb1),
-                        element(elementId2, cb2)
-                    )))
                     .build())))
                 .build());
             builder.manageDocumentEventData(ManageDocumentEventData.builder()
@@ -2100,12 +2096,10 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
-                    .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId2, cb2)))
-                    .courtBundleNC(List.of(element(elementId2, cb2)))
                     .build())));
         }
 
@@ -2117,9 +2111,6 @@ class ManageDocumentServiceTest {
             builder.hearingDocuments(HearingDocuments.builder()
                 .courtBundleListV2(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(
-                        element(elementId1, cb1)
-                    )))
-                    .courtBundleNC(new ArrayList<>(List.of(
                         element(elementId1, cb1)
                     )))
                     .build())))
@@ -2144,7 +2135,6 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
-                    .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListV2")).isEqualTo(List.of());
         }
@@ -2157,10 +2147,6 @@ class ManageDocumentServiceTest {
             builder.hearingDocuments(HearingDocuments.builder()
                 .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(
-                        element(elementId3, cb3),
-                        element(elementId2, cb2)
-                    )))
-                    .courtBundleNC(new ArrayList<>(List.of(
                         element(elementId3, cb3),
                         element(elementId2, cb2)
                     )))
@@ -2186,12 +2172,10 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId3, removedCb)))
-                    .courtBundleNC(List.of(element(elementId3, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListLA")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId2, cb2)))
-                    .courtBundleNC(List.of(element(elementId2, cb2)))
                     .build())));
         }
 
@@ -2203,9 +2187,6 @@ class ManageDocumentServiceTest {
             builder.hearingDocuments(HearingDocuments.builder()
                 .courtBundleListLA(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(
-                        element(elementId3, cb3)
-                    )))
-                    .courtBundleNC(new ArrayList<>(List.of(
                         element(elementId3, cb3)
                     )))
                     .build())))
@@ -2231,7 +2212,6 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId3, removedCb)))
-                    .courtBundleNC(List.of(element(elementId3, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListLA")).isEqualTo(List.of());
         }
@@ -2244,9 +2224,6 @@ class ManageDocumentServiceTest {
             builder.hearingDocuments(HearingDocuments.builder()
                 .courtBundleListCTSC(List.of(element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(
-                        element(elementId4, cb4)
-                    )))
-                    .courtBundleNC(new ArrayList<>(List.of(
                         element(elementId4, cb4)
                     )))
                     .build())))
@@ -2272,7 +2249,6 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId4, removedCb)))
-                    .courtBundleNC(List.of(element(elementId4, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListCTSC")).isEqualTo(List.of());
         }
@@ -2286,11 +2262,9 @@ class ManageDocumentServiceTest {
                 .courtBundleListV2(List.of(
                     element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                         .courtBundle(new ArrayList<>(List.of(element(elementId1, cb1))))
-                        .courtBundleNC(new ArrayList<>(List.of(element(elementId1, cb1))))
                         .build()),
                     element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
                         .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
-                        .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
                         .build()))
                 )
                 .build());
@@ -2315,12 +2289,10 @@ class ManageDocumentServiceTest {
             assertThat(result.get("courtBundleListRemoved")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdOne, HearingCourtBundle.builder()
                     .courtBundle(List.of(element(elementId1, removedCb)))
-                    .courtBundleNC(List.of(element(elementId1, removedCb)))
                     .build())));
             assertThat(result.get("courtBundleListV2")).isEqualTo(List.of(
                 element(hearingCourtBundleElementIdTwo, HearingCourtBundle.builder()
                     .courtBundle(new ArrayList<>(List.of(element(elementId2, cb2))))
-                    .courtBundleNC(new ArrayList<>(List.of(element(elementId2, cb2))))
                     .build())));
         }
     }
