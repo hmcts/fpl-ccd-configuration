@@ -159,4 +159,19 @@ class OrdersNeededControllerTest extends AbstractCallbackTest {
         assertThat(caseManagementLocation).containsEntry("baseLocation", "234946");
         assertThat(caseManagementLocation).containsEntry("region", "7");
     }
+
+    @Test
+    void shouldRemoveSubmittedC1WithSupplementIfC1Application() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+            "fixtures/caseCareAndStandaloneOrderTypeWithSubmittedC1WithSupplement.json");
+        assertThat(response.getData().get("submittedC1WithSupplement")).isNull();
+    }
+
+    @Test
+    void shouldNotRemoveSubmittedC1WithSupplementIfC1Application() {
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
+            "fixtures/caseNonC1ApplicationWithSubmittedC1WithSupplement.json");
+        assertThat(response.getData().get("submittedC1WithSupplement")).isNotNull();
+    }
+
 }
