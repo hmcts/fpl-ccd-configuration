@@ -622,30 +622,6 @@ public class MigrateCaseService {
         }
     }
 
-    public Map<String, Object> removeFurtherEvidenceSolicitorDocuments(CaseData caseData,
-                                                                       String migrationId,
-                                                                       UUID expectedDocId) {
-        Long caseId = caseData.getId();
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor =
-            caseData.getFurtherEvidenceDocumentsSolicitor().stream()
-                .filter(el -> !expectedDocId.equals(el.getId()))
-                .toList();
-
-        if (furtherEvidenceDocumentsSolicitor.size() != caseData.getFurtherEvidenceDocumentsSolicitor().size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
-                migrationId, caseId));
-        }
-
-        if (furtherEvidenceDocumentsSolicitor.isEmpty()) {
-            Map<String, Object> ret = new HashMap<>();
-            ret.put("furtherEvidenceDocumentsSolicitor", null);
-            return ret;
-        } else {
-            return Map.of("furtherEvidenceDocumentsSolicitor", furtherEvidenceDocumentsSolicitor);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public Map<String, Object> fixOrderTypeTypo(String migrationId, CaseDetails caseDetails) {
         String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
