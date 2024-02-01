@@ -700,14 +700,6 @@ public class CaseData extends CaseDataParent {
     private final RecordChildrenFinalDecisionsEventData recordChildrenFinalDecisionsEventData =
         RecordChildrenFinalDecisionsEventData.builder().build();
 
-    @Deprecated
-    private final ManageDocument manageDocument;
-    @Deprecated
-    private final ManageDocumentLA manageDocumentLA;
-    @Deprecated
-    private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
-    @Deprecated
-    private final ManageDocumentSubtypeList manageDocumentSubtypeList;
     @JsonUnwrapped
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
