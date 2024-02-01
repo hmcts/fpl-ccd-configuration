@@ -94,7 +94,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantOtherDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantsOtherDocument",
+    "FieldTypeParameter": "ApplicantsOtherDocumentConfidential",
     "Label": "Applicant's other documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -104,7 +104,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicantOtherDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "ApplicantsOtherDocument",
+    "FieldTypeParameter": "ApplicantsOtherDocumentConfidential",
     "Label": "Applicant's other documents",
     "SecurityClassification": "Public",
     "Searchable": "N"

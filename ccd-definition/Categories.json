@@ -39,6 +39,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "positionStatementsConfidential",
+    "ParentCategoryID": "positionStatements",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "30"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "threshold",
     "CategoryLabel": "Threshold",
     "DisplayOrder": "4"
@@ -237,6 +245,14 @@
     "CategoryLabel": "Applicant's other documents",
     "ParentCategoryID": "applicantsDocuments",
     "DisplayOrder": "905"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "applicantsOtherDocumentsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "applicantsOtherDocuments",
+    "DisplayOrder": "9050"
   },
   {
     "LiveFrom": "01/01/2017",

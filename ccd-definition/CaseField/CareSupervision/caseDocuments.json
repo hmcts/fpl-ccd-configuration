@@ -204,7 +204,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtChildListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementChild",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -214,7 +214,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtChildListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementChild",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -244,7 +244,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtRespListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
     "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -254,7 +254,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtRespListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
     "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -284,7 +284,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatement",
+    "FieldTypeParameter": "PositionStatementConfidential",
     "Label": "Position statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -294,7 +294,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatement",
+    "FieldTypeParameter": "PositionStatementConfidential",
     "Label": "Position statement",
     "SecurityClassification": "Public",
     "Searchable": "N"

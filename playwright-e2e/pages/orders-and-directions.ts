@@ -24,7 +24,7 @@ export class OrdersAndDirectionSought {
     this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
-  async OrdersAndDirectionsNeeded() {
+  async ordersAndDirectionsNeeded() {
     await this.OrdersAndDirectionsHeading.isVisible;
     await this.OrdersAndDirectionsSought.click();
     await this.WhichOrdersDoYouNeedCareOrder.check();
