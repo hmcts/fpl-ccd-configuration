@@ -8,27 +8,10 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -37,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -1020,5 +1004,21 @@ public class MigrateCaseService {
     public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
         CloseCase closeCaseField = caseData.getCloseCaseTabField();
         return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
+    }
+
+    public Map<String, Object> migrateCaseRemoveUnknownAllocatedJudgeTitle(CaseData caseData,
+                                                                           String migrationId) {
+
+        if (caseData.getAllocatedJudge().getJudgeTitle() == JudgeOrMagistrateTitle.OTHER &&
+            caseData.getAllocatedJudge().getOtherTitle().equalsIgnoreCase("Unknown")) {
+            return Map.of("allocatedJudge", caseData.getAllocatedJudge().toBuilder()
+                .otherTitle(JudicialUserProfile.builder()
+                    .fullName(caseData.getAllocatedJudge().getJudgeFullName())
+                    .build().getTitle())
+                .build());
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                migrationId, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
+        }
     }
 }

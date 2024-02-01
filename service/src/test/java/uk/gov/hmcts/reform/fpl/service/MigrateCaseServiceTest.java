@@ -19,34 +19,8 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
-import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
-import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.enums.*;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -54,12 +28,11 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.*;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -2794,6 +2767,73 @@ class MigrateCaseServiceTest {
                     .date(expectedCloseDate)
                     .dateBackup(expectedBackupDate)
                     .build()));
+        }
+
+        @Test
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleAsJudge() {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .otherTitle("Judge")
+                .judgeFullName("Random Title Here John Smith")
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        private static Stream<String> allJudgeTitlesStream() {
+            return JudicialUserProfile.TITLES.stream();
+        }
+
+        @ParameterizedTest
+        @MethodSource("allJudgeTitlesStream")
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleWithJudgeTitleEnum(String otherTitle) {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName(otherTitle + " John Smith")
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeFullName(otherTitle + " John Smith")
+                .otherTitle(otherTitle)
+                .build();
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        @Test
+        void shouldThrowExceptionWhenAllocationJudgeOtherTitleIsNotUknownAndSomethingElse() {
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Test")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                    MIGRATION_ID, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
         }
     }
 }

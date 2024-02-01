@@ -43,8 +43,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1956", this::run1956
-    );
+        "DFPL-1956", this::run1956,
+        "DFPL-1882", this::run1882
+        );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
@@ -190,6 +191,15 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1956(CaseDetails caseDetails) {
         migrateCaseService.clearHearingOption(caseDetails);
+    }
+
+    private void run1882(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1882";
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
+            migrationId));
+
     }
 
 }
