@@ -705,8 +705,6 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     @Deprecated
     private final String manageDocumentsRelatedToHearing;
-    @Deprecated
-    private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     /**
      * Collection field for storing furtherEvidenceDocuments uploaded by HMCTS admin.
      *
@@ -785,11 +783,6 @@ public class CaseData extends CaseDataParent {
 
     public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
-    }
-
-    @Deprecated
-    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceDocumentsTemp() {
-        return defaultIfNull(supportingEvidenceDocumentsTemp, new ArrayList<>());
     }
 
     public List<Element<CourtBundle>> getManageDocumentsCourtBundle() {
