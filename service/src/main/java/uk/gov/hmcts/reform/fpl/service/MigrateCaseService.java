@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
@@ -1124,45 +1125,78 @@ public class MigrateCaseService {
         return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
     }
 
-    public Map<String, Object> migrateHearingType(CaseData caseData) {
-        if (nonNull(caseData.getHearingDetails())) {
-            List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-            for (Element<HearingBooking> hearings: hearingDetails) {
-                HearingBooking hearingBooking = hearings.getValue();
-                if (OTHER.equals(hearingBooking.getType())) {
-                    Optional<HearingType> hearingType = evaluateType(hearingBooking.getTypeDetails());
-                    if (hearingType.isPresent()) {
-                        hearingBooking.setType(hearingType.get());
-                    } else {
-                        hearingBooking.setType(FURTHER_CASE_MANAGEMENT); // default to further case management
-                    }
-                }
+    private static void processHearingBooking(Element<HearingBooking> element) {
+        HearingBooking hearingBooking = element.getValue();
+        if (OTHER.equals(element.getValue().getType())) {
+            Optional<HearingType> hearingType = evaluateType(hearingBooking.getTypeDetails());
+            if (hearingType.isPresent()) {
+                hearingBooking.setType(hearingType.get());
+            } else {
+                hearingBooking.setType(FURTHER_CASE_MANAGEMENT);
             }
-            return Map.of("hearingDetails", hearingDetails);
         }
-        return emptyMap();
     }
 
-    private Optional<HearingType> evaluateType(String typeDetails) {
+    public static Map<String, Object> migrateHearingType(CaseData caseData) {
+        List<Element<HearingBooking>> updatedHearingDetails = Optional.ofNullable(caseData.getHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+        if (!updatedHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("hearingDetails", updatedHearingDetails);
+        }
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        }
+
+        return hearingDetailsMap;
+    }
+
+    private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
             .map(Map.Entry::getValue)
             .findFirst();
     }
 
+
+
     public Map<String, Object> rollbackHearingType(CaseData caseData) {
-        if (nonNull(caseData.getHearingDetails())) {
-            List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-            for (Element<HearingBooking> hearings: hearingDetails) {
-                HearingBooking hearingBooking = hearings.getValue();
-                if ((Objects.isNull(hearingBooking.getType())
-                    || MIGRATED_HEARING_TYPES.contains(hearingBooking.getType()))
-                    && org.apache.commons.lang3.ObjectUtils.isNotEmpty(hearingBooking.getTypeDetails())) {
-                    hearingBooking.setType(OTHER);
-                }
-            }
-            return Map.of("hearingDetails", hearingDetails);
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+        if (nonNull(hearingDetails) && !hearingDetails.isEmpty()) {
+            rollbackHearingBooking(hearingDetails);
+            hearingDetailsMap.put("hearingDetails", hearingDetails);
         }
-        return emptyMap();
+
+        List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
+        if (nonNull(cancelledHearingDetails) && !cancelledHearingDetails.isEmpty()) {
+            rollbackHearingBooking(cancelledHearingDetails);
+            hearingDetailsMap.put("cancelledHearingDetails", cancelledHearingDetails);
+        }
+
+        return hearingDetailsMap.isEmpty() ? emptyMap() : hearingDetailsMap;
+    }
+
+    private void rollbackHearingBooking(List<Element<HearingBooking>> hearingBookings) {
+        for (Element<HearingBooking> bookingElement : hearingBookings) {
+            HearingBooking booking = bookingElement.getValue();
+            if ((Objects.isNull(booking.getType())
+                || MIGRATED_HEARING_TYPES.contains(booking.getType()))
+                && isNotEmpty(booking.getTypeDetails())) {
+                booking.setType(OTHER);
+            }
+        }
     }
 }

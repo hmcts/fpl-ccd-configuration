@@ -2803,6 +2803,9 @@ class MigrateCaseServiceTest {
     @Nested
     class MigratingHearingDetails {
         private final UUID otherHearingBookingId = UUID.randomUUID();
+        private final UUID otherHearingBookingId2 = UUID.randomUUID();
+        private final UUID cancelledHearingBookingId = UUID.randomUUID();
+        private final UUID cancelledHearingBookingId2 = UUID.randomUUID();
 
         @Test
         void shouldSetTypeToFurtherCaseManagementWhenTypeDetailsMatchFurtherCaseManagementJudgmentOfHearing() {
@@ -2882,11 +2885,67 @@ class MigrateCaseServiceTest {
 
             assertThat(updates).containsEntry("hearingDetails", expected);
         }
+
+        @Test
+        void shouldMigrateCancelledHearingTypeOfTypeOther() {
+            List<Element<HearingBooking>> cancelledBookings = new ArrayList<>();
+            cancelledBookings.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions judgement")
+                .build()));
+            cancelledBookings.add(element(cancelledHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>();
+            hearingBookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions judgement")
+                .build()));
+            hearingBookings.add(element(otherHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(cancelledBookings)
+                .build();
+
+            List<Element<HearingBooking>> expectedHearingDetails = new ArrayList<>();
+            expectedHearingDetails.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions judgement")
+                .build()));
+            expectedHearingDetails.add(element(otherHearingBookingId2, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("TEST")
+                .build()));
+
+            List<Element<HearingBooking>> expectedCancelledHearingDetails = new ArrayList<>();
+            expectedCancelledHearingDetails.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("directions judgement")
+                .build()));
+            expectedCancelledHearingDetails.add(element(cancelledHearingBookingId2, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .typeDetails("TEST")
+                .build()));
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            assertThat(updates).containsEntry("hearingDetails", expectedHearingDetails);
+            assertThat(updates).containsEntry("cancelledHearingDetails", expectedCancelledHearingDetails);
+        }
     }
 
     @Nested
     class RollbackHearingDetails {
         private final UUID otherHearingBookingId = UUID.randomUUID();
+        private final UUID otherHearingBookingId2 = UUID.randomUUID();
+        private final UUID cancelledHearingBookingId = UUID.randomUUID();
+        private final UUID cancelledHearingBookingId2 = UUID.randomUUID();
 
         @Test
         void shouldSetTypeToOtherWhenTypeIsFurtherCaseManagement() {
@@ -2986,6 +3045,55 @@ class MigrateCaseServiceTest {
                 .build()));
 
             assertThat(updates).containsEntry("hearingDetails", expected);
+        }
+
+        @Test
+        void shouldRollbackCancelledHearingBooking() {
+            List<Element<HearingBooking>> cancelledBookings = new ArrayList<>();
+            cancelledBookings.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .build()));
+            cancelledBookings.add(element(cancelledHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            List<Element<HearingBooking>> hearingBookings = new ArrayList<>();
+            hearingBookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .build()));
+            hearingBookings.add(element(otherHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(cancelledBookings)
+                .build();
+
+            List<Element<HearingBooking>> expectedHearingDetails = new ArrayList<>();
+            expectedHearingDetails.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .build()));
+            expectedHearingDetails.add(element(otherHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            List<Element<HearingBooking>> expectedCancelledHearingDetails = new ArrayList<>();
+            expectedCancelledHearingDetails.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(FURTHER_CASE_MANAGEMENT)
+                .build()));
+            expectedCancelledHearingDetails.add(element(cancelledHearingBookingId2, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("TEST")
+                .build()));
+
+            Map<String, Object> updates = underTest.rollbackHearingType(caseData);
+
+            assertThat(updates).containsEntry("hearingDetails", expectedHearingDetails);
+            assertThat(updates).containsEntry("cancelledHearingDetails", expectedCancelledHearingDetails);
         }
     }
 }
