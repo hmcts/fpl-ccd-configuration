@@ -1169,8 +1169,6 @@ public class MigrateCaseService {
             .findFirst();
     }
 
-
-
     public Map<String, Object> rollbackHearingType(CaseData caseData) {
         Map<String, Object> hearingDetailsMap = new HashMap<>();
 
