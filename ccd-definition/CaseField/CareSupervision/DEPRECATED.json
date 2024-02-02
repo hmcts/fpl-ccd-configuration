@@ -826,5 +826,14 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentTabBulkScanHeading",
+    "Label": "## Bulk scan documents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
