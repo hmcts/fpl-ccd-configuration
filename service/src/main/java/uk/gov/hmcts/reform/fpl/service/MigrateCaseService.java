@@ -1173,13 +1173,13 @@ public class MigrateCaseService {
         Map<String, Object> hearingDetailsMap = new HashMap<>();
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        if (nonNull(hearingDetails) && !hearingDetails.isEmpty()) {
+        if (!hearingDetails.isEmpty()) {
             rollbackHearingBooking(hearingDetails);
             hearingDetailsMap.put("hearingDetails", hearingDetails);
         }
 
         List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
-        if (nonNull(cancelledHearingDetails) && !cancelledHearingDetails.isEmpty()) {
+        if (!cancelledHearingDetails.isEmpty()) {
             rollbackHearingBooking(cancelledHearingDetails);
             hearingDetailsMap.put("cancelledHearingDetails", cancelledHearingDetails);
         }
