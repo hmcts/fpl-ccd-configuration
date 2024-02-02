@@ -43,10 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1934", this::run1934,
-        "DFPL-log", this::runLogMigration,
-        "DFPL-1947", this::run1947,
-        "DFPL-1959", this::run1959
+        "DFPL-1956", this::run1956
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -191,37 +188,8 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run1934(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    private void run1956(CaseDetails caseDetails) {
+        migrateCaseService.clearHearingOption(caseDetails);
     }
 
-    private void runLogMigration(CaseDetails caseDetails) {
-        log.info("Dummy migration for case {}", caseDetails.getId());
-    }
-
-    private void run1947(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1947";
-        var possibleCaseIds = List.of(1676634658659567L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        UUID documentId = UUID.fromString("492e4156-3066-4b1f-9b07-26347c21ae51");
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.verifyStandardDirectionOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("standardDirectionOrder");
-    }
-
-    private void run1959(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1959";
-        var possibleCaseIds = List.of(1701964866232462L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        UUID documentId = UUID.fromString("a4218369-872d-4270-a703-55e20416b4eb");
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, documentId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
-    }
 }
