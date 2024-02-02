@@ -140,6 +140,8 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "NO");
         }
 
+        data.put("c1Application", YesNo.from(caseData.isC1Application()).getValue());
+
         if (caseData.getOrders() != null) {
             String courtCode = caseData.getOrders().getCourt();
             Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
@@ -170,6 +172,10 @@ public class OrdersNeededController extends CallbackController {
 
         if (ordersFieldName.equals("ordersSolicitor")) {
             data.put("orders", data.get("ordersSolicitor"));
+        }
+
+        if (caseData.isC1Application()) {
+            data.remove("submittedC1WithSupplement");
         }
 
         return respond(caseDetails);
