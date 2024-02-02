@@ -138,7 +138,7 @@ class PlacementEventsHandlerNotificationTest {
 
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-            underTest.notifyCourt(event);
+            underTest.notifyCourtOfNewApplication(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
@@ -149,7 +149,7 @@ class PlacementEventsHandlerNotificationTest {
 
             final PlacementApplicationChanged event = new PlacementApplicationChanged(caseData, placement);
 
-            underTest.notifyCourt(event);
+            underTest.notifyCourtOfChangedApplication(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
