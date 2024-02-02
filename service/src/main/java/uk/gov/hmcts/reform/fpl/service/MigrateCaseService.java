@@ -54,6 +54,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -1129,11 +1130,7 @@ public class MigrateCaseService {
         HearingBooking hearingBooking = element.getValue();
         if (OTHER.equals(element.getValue().getType())) {
             Optional<HearingType> hearingType = evaluateType(hearingBooking.getTypeDetails());
-            if (hearingType.isPresent()) {
-                hearingBooking.setType(hearingType.get());
-            } else {
-                hearingBooking.setType(FURTHER_CASE_MANAGEMENT);
-            }
+            hearingBooking.setType(hearingType.orElse(FURTHER_CASE_MANAGEMENT));
         }
     }
 
@@ -1173,13 +1170,13 @@ public class MigrateCaseService {
         Map<String, Object> hearingDetailsMap = new HashMap<>();
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-        if (!hearingDetails.isEmpty()) {
+        if (!isNull(hearingDetails) && !hearingDetails.isEmpty()) {
             rollbackHearingBooking(hearingDetails);
             hearingDetailsMap.put("hearingDetails", hearingDetails);
         }
 
         List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
-        if (!cancelledHearingDetails.isEmpty()) {
+        if (!isNull(cancelledHearingDetails) && !cancelledHearingDetails.isEmpty()) {
             rollbackHearingBooking(cancelledHearingDetails);
             hearingDetailsMap.put("cancelledHearingDetails", cancelledHearingDetails);
         }
@@ -1188,13 +1185,13 @@ public class MigrateCaseService {
     }
 
     private void rollbackHearingBooking(List<Element<HearingBooking>> hearingBookings) {
-        for (Element<HearingBooking> bookingElement : hearingBookings) {
-            HearingBooking booking = bookingElement.getValue();
-            if ((Objects.isNull(booking.getType())
-                || MIGRATED_HEARING_TYPES.contains(booking.getType()))
-                && isNotEmpty(booking.getTypeDetails())) {
-                booking.setType(OTHER);
-            }
-        }
+        hearingBookings.stream()
+            .map(Element::getValue)
+            .forEach(booking -> {
+                if (Objects.isNull(booking.getType()) || MIGRATED_HEARING_TYPES.contains(booking.getType())
+                    && isNotEmpty(booking.getTypeDetails())) {
+                    booking.setType(OTHER);
+                }
+            });
     }
 }

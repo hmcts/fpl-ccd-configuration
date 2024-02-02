@@ -2908,11 +2908,6 @@ class MigrateCaseServiceTest {
                 .typeDetails("TEST")
                 .build()));
 
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingBookings)
-                .cancelledHearingDetails(cancelledBookings)
-                .build();
-
             List<Element<HearingBooking>> expectedHearingDetails = new ArrayList<>();
             expectedHearingDetails.add(element(otherHearingBookingId, HearingBooking.builder()
                 .type(FURTHER_CASE_MANAGEMENT)
@@ -2932,6 +2927,11 @@ class MigrateCaseServiceTest {
                 .type(FURTHER_CASE_MANAGEMENT)
                 .typeDetails("TEST")
                 .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(cancelledBookings)
+                .build();
 
             Map<String, Object> updates = underTest.migrateHearingType(caseData);
 
@@ -3067,11 +3067,6 @@ class MigrateCaseServiceTest {
                 .typeDetails("TEST")
                 .build()));
 
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingBookings)
-                .cancelledHearingDetails(cancelledBookings)
-                .build();
-
             List<Element<HearingBooking>> expectedHearingDetails = new ArrayList<>();
             expectedHearingDetails.add(element(otherHearingBookingId, HearingBooking.builder()
                 .type(FURTHER_CASE_MANAGEMENT)
@@ -3089,6 +3084,11 @@ class MigrateCaseServiceTest {
                 .type(OTHER)
                 .typeDetails("TEST")
                 .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(cancelledBookings)
+                .build();
 
             Map<String, Object> updates = underTest.rollbackHearingType(caseData);
 
