@@ -3096,21 +3096,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentTabFurtherEvidenceHeading",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentTabBulkScanHeading",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentTabApplicationHeading",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
