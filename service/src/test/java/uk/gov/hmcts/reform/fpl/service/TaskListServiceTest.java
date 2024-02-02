@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.validators.EventsChecker;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -47,10 +49,11 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SELECT_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
-
 
 @ExtendWith(SpringExtension.class)
 class TaskListServiceTest {
@@ -193,6 +196,60 @@ class TaskListServiceTest {
         }
     }
 
+    @Nested
+    class C1Application {
+        @Test
+        void shouldNotContainC1WithSupplementEventIfNotC1Application() {
+            when(caseData.isC1Application()).thenReturn(true);
+            when(caseData.getOrders()).thenReturn(Orders.builder().orderType(
+                List.of(CHILD_ASSESSMENT_ORDER)
+            ).build());
+
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+        }
+
+        @Test
+        void shouldNotContainC1WithSupplementEventIfOrderDoesNotExist() {
+            when(caseData.isC1Application()).thenReturn(false);
+            when(caseData.getOrders()).thenReturn(null);
+
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+        }
+
+        @Test
+        void shouldNotContainC1WithSupplementEventIfOrderTypeDoesNotExist() {
+            when(caseData.isC1Application()).thenReturn(false);
+            when(caseData.getOrders()).thenReturn(Orders.builder().orderType(null).build());
+
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            assertThat(actualTasks).isNotEmpty().doesNotContain(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+        }
+
+        @Test
+        void shouldContainC1WithSupplementEventIfNotC1Application() {
+            when(caseData.isC1Application()).thenReturn(false);
+            when(caseData.getOrders()).thenReturn(Orders.builder().orderType(
+                List.of(CARE_ORDER)
+            ).build());
+
+            when(eventsChecker.isInProgress(any(Event.class), eq(caseData))).thenReturn(true);
+            when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
+
+            final List<Task> actualTasks = taskListService.getTasksForOpenCase(caseData);
+            assertThat(actualTasks).isNotEmpty().contains(task(C1_WITH_SUPPLEMENT, IN_PROGRESS));
+        }
+    }
 
     @Nested
     class DischargeOfCareOrder {
