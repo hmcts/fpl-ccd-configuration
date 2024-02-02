@@ -43,10 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1934", this::run1934,
-        "DFPL-log", this::runLogMigration,
-        "DFPL-2013", this::run2013,
-        "DFPL-1964", this::run1964
+        "DFPL-1956", this::run1956
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -191,34 +188,8 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run1934(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
+    private void run1956(CaseDetails caseDetails) {
+        migrateCaseService.clearHearingOption(caseDetails);
     }
 
-    private void runLogMigration(CaseDetails caseDetails) {
-        log.info("Dummy migration for case {}", caseDetails.getId());
-    }
-
-    private void run2013(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2013";
-        var possibleCaseIds = List.of(1663684413688109L);
-        var expectedMessageId = UUID.fromString("c90aa5af-d2c9-472a-a885-62bde43b7092");
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
-    }
-
-    private void run1964(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1964";
-        var possibleCaseIds = List.of(1699884822944766L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        UUID expectedCMOId = UUID.fromString("7c62b934-4ab1-47e0-a152-b5512807ec09");
-
-        caseDetails.getData().putAll(migrateCaseService.removeSealedCMO(caseData, migrationId,
-            expectedCMOId,true));
-    }
 }

@@ -100,7 +100,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -121,7 +121,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -142,7 +142,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -205,7 +205,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -247,7 +247,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   }
