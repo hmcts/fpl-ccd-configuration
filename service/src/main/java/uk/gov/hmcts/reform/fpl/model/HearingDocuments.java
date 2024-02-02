@@ -16,14 +16,11 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HearingDocuments {
-    // the element ID is the ID of the linked hearing
     private final List<Element<HearingCourtBundle>> courtBundleListV2;
     private final List<Element<HearingCourtBundle>> courtBundleListLA;
     private final List<Element<HearingCourtBundle>> courtBundleListCTSC;
     private final List<Element<HearingCourtBundle>> courtBundleListRemoved;
-    // the element ID is the ID of the linked hearing
-    private final List<Element<CourtBundle>> courtBundleList;
-    // the element ID is the ID of the linked hearing
+
     private final List<Element<CaseSummary>> caseSummaryList;
     private final List<Element<CaseSummary>> caseSummaryListLA;
     private final List<Element<CaseSummary>> caseSummaryListCTSC;
