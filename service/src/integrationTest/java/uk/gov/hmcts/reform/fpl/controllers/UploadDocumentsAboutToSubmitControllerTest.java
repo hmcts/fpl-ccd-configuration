@@ -55,7 +55,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
             Map.of(
-                "applicationDocuments", List.of(
+                "temporaryApplicationDocuments", List.of(
                     Map.of(
                         "id", UUID_1,
                         "value", Map.of(
@@ -74,7 +74,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(
             Map.of(
-                "applicationDocuments", List.of(
+                "temporaryApplicationDocuments", List.of(
                     Map.of(
                         "id", UUID_1,
                         "value", Map.of(
@@ -98,7 +98,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
         CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        List<Element<ApplicationDocument>> actualDocument = responseCaseData.getApplicationDocuments();
+        List<Element<ApplicationDocument>> actualDocument = responseCaseData.getTemporaryApplicationDocuments();
 
         assertThat(actualDocument).isEqualTo(List.of(
             element(UUID_1, ApplicationDocument.builder()
@@ -113,11 +113,6 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .dateTimeUploaded(now())
                 .build()))
         );
-
-        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
-        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
-        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
-        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
     }
 
     @Test

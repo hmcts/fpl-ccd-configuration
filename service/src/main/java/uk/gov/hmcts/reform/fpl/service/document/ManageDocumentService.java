@@ -200,13 +200,20 @@ public class ManageDocumentService {
         }
     }
 
+    public List<CaseRole> getUploaderCaseRoles(CaseData caseData) {
+        return new ArrayList<>(userService.getCaseRoles(caseData.getId()));
+    }
+
     public DocumentUploaderType getUploaderType(CaseData caseData) {
-        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+        final List<CaseRole> caseRoles = getUploaderCaseRoles(caseData);
         if (caseRoles.stream().anyMatch(representativeSolicitors()::contains)) {
             return SOLICITOR;
         }
         if (caseRoles.contains(CaseRole.BARRISTER)) {
             return BARRISTER;
+        }
+        if (caseRoles.contains(CaseRole.CAFCASSSOLICITOR)) {
+            return CAFCASS;
         }
         if (userService.isHmctsUser()) {
             return HMCTS;
@@ -390,7 +397,7 @@ public class ManageDocumentService {
             .type(recipientType)
             .response(e.getValue().getDocument())
             .uploaderType(uploaderType)
-            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .uploaderCaseRoles(getUploaderCaseRoles(caseData))
             .translationRequirements(e.getValue().getTranslationRequirements())
             .build()));
         caseData.setPlacementNoticeResponses(placementNoticeResponses);
@@ -440,7 +447,7 @@ public class ManageDocumentService {
         }
         UploadBundle bundle = UploadBundle.builder().document(e.getValue().getDocument())
             .uploaderType(uploaderType)
-            .uploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())))
+            .uploaderCaseRoles(getUploaderCaseRoles(caseData))
             .translationRequirement(e.getValue().getTranslationRequirements())
             .confidential(confidential)
             .build();
@@ -469,12 +476,13 @@ public class ManageDocumentService {
         switch (uploaderType) {
             case SOLICITOR:
             case CAFCASS:
-                return documentType.isHiddenFromSolicitorUpload() || documentType.isHiddenFromUpload();
+            case BARRISTER:
+                return documentType.isHiddenFromSolicitorUpload();
             case DESIGNATED_LOCAL_AUTHORITY:
             case SECONDARY_LOCAL_AUTHORITY:
-                return documentType.isHiddenFromLAUpload() || documentType.isHiddenFromUpload();
+                return documentType.isHiddenFromLAUpload();
             case HMCTS:
-                return documentType.isHiddenFromCTSCUpload() || documentType.isHiddenFromUpload();
+                return documentType.isHiddenFromCTSCUpload();
             default:
                 throw new IllegalStateException("unsupported uploaderType: " + uploaderType);
         }

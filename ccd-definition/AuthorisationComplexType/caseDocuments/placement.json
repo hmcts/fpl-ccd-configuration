@@ -7,14 +7,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -34,14 +26,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementChildName",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -65,14 +49,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -92,14 +68,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementUploadDateTime",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -123,14 +91,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -140,7 +100,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -152,14 +112,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -169,7 +121,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -181,14 +133,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -198,7 +142,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -208,14 +152,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementConfidentialDocuments",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -239,14 +175,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -268,14 +196,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -285,7 +205,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   },
@@ -295,14 +215,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementRespondentsToNotify",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CRU"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -326,14 +238,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
-          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -343,7 +247,7 @@
           "[LASOLICITOR]",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CUD"
+        "CRUD": "CRUD"
       }
     ]
   }
