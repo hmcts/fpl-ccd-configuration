@@ -11,7 +11,25 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseSummary;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
+import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
+import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -1009,8 +1027,8 @@ public class MigrateCaseService {
     public Map<String, Object> migrateCaseRemoveUnknownAllocatedJudgeTitle(CaseData caseData,
                                                                            String migrationId) {
 
-        if (caseData.getAllocatedJudge().getJudgeTitle() == JudgeOrMagistrateTitle.OTHER &&
-            caseData.getAllocatedJudge().getOtherTitle().equalsIgnoreCase("Unknown")) {
+        if (caseData.getAllocatedJudge().getJudgeTitle() == JudgeOrMagistrateTitle.OTHER
+            && caseData.getAllocatedJudge().getOtherTitle().equalsIgnoreCase("Unknown")) {
             return Map.of("allocatedJudge", caseData.getAllocatedJudge().toBuilder()
                 .otherTitle(JudicialUserProfile.builder()
                     .fullName(caseData.getAllocatedJudge().getJudgeFullName())
