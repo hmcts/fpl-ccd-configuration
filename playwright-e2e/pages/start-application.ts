@@ -22,6 +22,7 @@ export class StartApplication {
     this.groundsForTheApplicationLink = page.getByRole('link', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
+    this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
   }
 
   async addApplicationDetails(){
@@ -47,5 +48,10 @@ export class StartApplication {
 
   async groundsForTheApplicationHasBeenUpdated() {
     await expect (this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible;
+  }
+
+  async riskAndHarmToChildren() {
+    await this.riskAndHarmToChildrenLink.isVisible();
+    await this.riskAndHarmToChildrenLink.click();
   }
 }
