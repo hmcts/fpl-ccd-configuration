@@ -26,12 +26,8 @@ export class AllocationProposal {
   }
 
 async allocationProposalNeeded() {
-   // await this.page.locator('.govuk-template__body.js-enabled').click();
-   // await this.page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1706796716648686/trigger/otherProposal/otherProposal1');
     await this.page.getByRole('heading', { name: 'Add application details' }).isVisible();
     await this.page.getByRole('link', { name: 'Allocation proposal' }).click();
-    //await this.page.locator('h1').filter({ hasText: 'Allocation proposal' }).click();
-   // await this.page.getByRole('group', { name: 'Allocation proposal' }).getByRole('heading').click();
     await this.page.getByLabel('Circuit Judge', { exact: true }).check();
     await this.page.getByLabel('Circuit Judge', { exact: true }).check();
     await this.page.getByLabel('Circuit Judge (Section 9)').check();
@@ -59,19 +55,7 @@ async allocationProposalNeeded() {
 
 
 
-    // await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1706878896239450');
-    // await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1706878896239450#Summary');
-    // await page.getByRole('heading', { name: 'Add application details' }).click();
-    // await page.getByRole('link', { name: 'Allocation proposal' }).click();
-    // await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1706878896239450/trigger/otherProposal/otherProposal1');
-    // await page.getByRole('group', { name: 'Allocation proposal' }).getByRole('heading').click();
-    // await page.getByLabel('Circuit Judge', { exact: true }).check();
-
-
-
-
-
-
+    
 
 
 
