@@ -45,7 +45,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-2118", this::run2118,
         "DFPL-1882", this::run1882
-        );
+    );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
@@ -206,7 +206,5 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
             migrationId));
-
     }
-
 }
