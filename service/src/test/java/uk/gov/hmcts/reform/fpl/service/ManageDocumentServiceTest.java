@@ -5294,6 +5294,45 @@ class ManageDocumentServiceTest {
                         .build()).build())
             ));
         }
+
+        @Test
+        void adminShouldBeAbleToRemoveSupportingDocumentFromC1WithSupplement() {
+            int loginType = HMCTS_LOGIN_TYPE;
+            UUID additionalApplicationUUID = UUID.randomUUID();
+
+            initialiseUserService(loginType);
+
+            SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
+                DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY, modifierToCaseRole("LA"));
+
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
+                .supportingEvidenceBundle(List.of(element(elementId1, seb)))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(C1_APPLICATION_DOCUMENTS.name() + "###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            assertThat(result.get("c1ApplicationDocListRemoved")).isEqualTo(List.of(
+                element(elementId1, ManagedDocument.builder()
+                    .document(seb.getDocument())
+                    .markAsConfidential(seb.getMarkAsConfidential())
+                    .uploaderType(seb.getUploaderType())
+                    .uploaderCaseRoles(seb.getUploaderCaseRoles())
+                    .build())
+            ));
+            assertThat(result.get("submittedC1WithSupplement")).isEqualTo(
+                SubmittedC1WithSupplementBundle.builder()
+                    .supportingEvidenceBundle(List.of())
+                    .build());
+        }
     }
 
     @Nested
