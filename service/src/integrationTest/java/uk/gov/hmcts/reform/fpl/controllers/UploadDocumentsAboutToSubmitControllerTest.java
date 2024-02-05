@@ -7,19 +7,25 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
@@ -44,6 +50,12 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private ManageDocumentService manageDocumentService;
+
     UploadDocumentsAboutToSubmitControllerTest() {
         super("upload-documents");
     }
@@ -52,6 +64,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
+        when(userService.getCaseRoles(any())).thenReturn(Set.of(CaseRole.LASOLICITOR));
+        when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
             Map.of(
@@ -110,6 +124,8 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .build())
                 .documentAcknowledge(List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY))
                 .uploadedBy(ANOTHER_USER)
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
                 .dateTimeUploaded(now())
                 .build()))
         );
