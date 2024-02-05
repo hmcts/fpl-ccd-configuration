@@ -16,9 +16,7 @@ export class SignInPage {
     this.emailInputLocator = page.getByLabel("Email address");
     this.passwordInputLocator = page.getByLabel("Password");
     this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
-    this.dropdownLocator = this.page.locator(
-      'h2[aria-label="Filters"].heading-h2',
-    );
+    this.dropdownLocator = this.page.locator('h2[aria-label="Filters"].heading-h2',);
     this.applyLocator = page.getByRole("button", { name: "Apply" });
   }
 
@@ -37,3 +35,4 @@ export class SignInPage {
     await expect(this.applyLocator).toBeVisible();
   }
 }
+

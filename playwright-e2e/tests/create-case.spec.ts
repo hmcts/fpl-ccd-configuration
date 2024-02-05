@@ -4,14 +4,16 @@ import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
+import {AllocationProposal} from "../pages/allocation-proposal";
 
 // WIP
-test.skip("Create a case", async ({ page }) => {
+test("Create a case", async ({ page }) => {
   // 1. Sign in as local-authority user
   const signInPage = new SignInPage(page);
   const createCase = new CreateCase(page);
   const startApplication = new StartApplication(page);
   const ordersAndDirectionSought = new OrdersAndDirectionSought(page);
+  const allocationProposal = new AllocationProposal(page);
 
   await signInPage.visit();
   await signInPage.login(
@@ -27,9 +29,9 @@ test.skip("Create a case", async ({ page }) => {
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // 3. Orders and directions sought
-  await startApplication.ordersAndDirectionsSoughtLink.isVisible();
-  await startApplication.ordersAndDirectionsSoughtLink.click();
-  await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();
+  // await startApplication.ordersAndDirectionsSoughtLink.isVisible();
+  // await startApplication.ordersAndDirectionsSoughtLink.click();
+  // await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();
 
   // 4. Hearing urgency
 
@@ -56,6 +58,8 @@ test.skip("Create a case", async ({ page }) => {
 
   // Add court requirements
   // 14. Allocation proposal
+  await allocationProposal.AllocationProposalHeading.isVisible();
+  
 
   // Add additional information
   // 15. Other proceedings

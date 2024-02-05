@@ -1,6 +1,9 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
+  allocationProposalHasBeenUpdated() {
+    throw new Error("Method not implemented.");
+  }
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
