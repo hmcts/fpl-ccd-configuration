@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -437,10 +438,36 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
+    private Element<? extends WithDocument> handleSupportingDocumentsInC1WithSupplementRemoval(
+        CaseData caseData, UUID documentElementId, Map<String, Object> output) {
+        SubmittedC1WithSupplementBundle targetBundle = Optional.ofNullable(caseData.getSubmittedC1WithSupplement())
+            .orElse(null);
+
+        Element<SupportingEvidenceBundle> removed = null;
+        if (targetBundle != null) {
+            removed = ElementUtils.findElement(documentElementId, targetBundle.getSupportingEvidenceBundle())
+                .orElseThrow(() -> new AssertionError(format("target element not found (%s)", documentElementId)));
+            List<Element<SupportingEvidenceBundle>> newList = targetBundle
+                .getSupportingEvidenceBundle().stream()
+                .filter(el -> !documentElementId.equals(el.getId()))
+                .toList();
+
+            targetBundle = targetBundle.toBuilder().supportingEvidenceBundle(newList).build();
+            assert removed != null;
+            appendToRemovedList(C1_APPLICATION_DOCUMENTS, caseData, toManagedDocumentElement(removed), output);
+            output.put("submittedC1WithSupplement", targetBundle);
+        }
+        return removed;
+    }
+
+    @SuppressWarnings("unchecked")
     private Element<? extends WithDocument> handleC1SupportingDocumentsInAdditionalApplicationsRemoval(
         CaseData caseData, UUID documentElementId, Map<String, Object> output) {
         Element<AdditionalApplicationsBundle> targetBundle = locateAdditionalApplicationBundleToBeModified(caseData,
             documentElementId);
+        if (targetBundle == null) {
+            return handleSupportingDocumentsInC1WithSupplementRemoval(caseData, documentElementId, output);
+        }
 
         Element<SupportingEvidenceBundle> removed = null;
         if (targetBundle != null) {
@@ -748,6 +775,16 @@ public class ManageDocumentService {
         }
     }
 
+    private Element<AdditionalApplicationsBundle> mimicAdditionalApplicationsBundle(
+        SubmittedC1WithSupplementBundle submittedC1WithSupplementBundle) {
+        return element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(
+            OtherApplicationsBundle.builder()
+                .supportingEvidenceBundle(submittedC1WithSupplementBundle == null ? List.of()
+                    : submittedC1WithSupplementBundle.getSupportingEvidenceBundle())
+                .build())
+            .build());
+    }
+
     private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                         ConfidentialLevel level) {
         Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
@@ -760,13 +797,16 @@ public class ManageDocumentService {
         }
         if (List.of(C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS).contains(documentType)) {
             boolean isC1DocumentType = C1_APPLICATION_DOCUMENTS.equals(documentType);
-            Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).forEach(
-                app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(Optional.ofNullable(
-                        isC1DocumentType ? app.getValue().getOtherApplicationsBundle()
-                            : app.getValue().getC2DocumentBundle()).orElse(
-                        isC1DocumentType ? OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build()
-                            : C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build())
-                    .getSupportingEvidenceBundle()));
+            Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
+                .orElse(List.of(mimicAdditionalApplicationsBundle(caseData.getSubmittedC1WithSupplement()))).forEach(
+                    app -> ret.computeIfAbsent(documentType.name(), key -> new ArrayList<>()).addAll(
+                        Optional.ofNullable(
+                            isC1DocumentType ? app.getValue().getOtherApplicationsBundle()
+                                : app.getValue().getC2DocumentBundle()).orElse(
+                            isC1DocumentType ? OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of())
+                                .build()
+                                : C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build())
+                        .getSupportingEvidenceBundle()));
             if (!isC1DocumentType) {
                 if (level == ConfidentialLevel.CTSC) {
                     Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).stream()
@@ -874,6 +914,15 @@ public class ManageDocumentService {
         return dynamicListService.asDynamicList(toListOfPair(caseData, fieldNameToListOfElementMap));
     }
 
+    private List<Element<AdditionalApplicationsBundle>> getC1Applications(CaseData caseData) {
+        return Optional.ofNullable(caseData.getAdditionalApplicationsBundle())
+            .orElse(List.of(mimicAdditionalApplicationsBundle(caseData.getSubmittedC1WithSupplement())));
+    }
+
+    private List<Element<AdditionalApplicationsBundle>> getC2Applications(CaseData caseData) {
+        return Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of());
+    }
+
     // For HMCTS admin's journey
     public DynamicList buildDocumentTypeDynamicListForRemoval(CaseData caseData) {
         Map<String, Object> map = caseConverter.toMap(caseData);
@@ -898,10 +947,9 @@ public class ManageDocumentService {
             finalDocumentTypes.add(PLACEMENT_RESPONSES);
         }
 
-        // TODO DFPL-2120
         // C1 application documents
-        if (!Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).isEmpty()) {
-            if (!caseData.getAdditionalApplicationsBundle().stream()
+        if (!getC1Applications(caseData).isEmpty()) {
+            if (!getC1Applications(caseData).stream()
                 .flatMap(a -> Optional.ofNullable(a.getValue().getOtherApplicationsBundle())
                     .orElse(OtherApplicationsBundle.builder().supportingEvidenceBundle(List.of()).build())
                     .getSupportingEvidenceBundle().stream())
@@ -911,8 +959,8 @@ public class ManageDocumentService {
             }
         }
         // C2 application documents
-        if (!Optional.ofNullable(caseData.getAdditionalApplicationsBundle()).orElse(List.of()).isEmpty()) {
-            if (!caseData.getAdditionalApplicationsBundle().stream()
+        if (!getC2Applications(caseData).isEmpty()) {
+            if (!getC2Applications(caseData).stream()
                 .flatMap(a -> Optional.ofNullable(a.getValue().getC2DocumentBundle())
                     .orElse(Optional.ofNullable(a.getValue().getC2DocumentBundleConfidential())
                         .orElse(C2DocumentBundle.builder().supportingEvidenceBundle(List.of()).build()))
