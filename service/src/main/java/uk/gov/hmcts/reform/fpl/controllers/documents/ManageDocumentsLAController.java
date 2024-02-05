@@ -229,7 +229,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
                     //Application documents
 
-                    caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
+                    caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(caseData,
                         caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments(),
                         "applicationDocuments"
                     ));
