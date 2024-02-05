@@ -1766,6 +1766,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submittedC1WithSupplement",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
@@ -2070,6 +2077,13 @@
     "CaseFieldID": "groundsForChildAssessmentOrder",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c1Application",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
