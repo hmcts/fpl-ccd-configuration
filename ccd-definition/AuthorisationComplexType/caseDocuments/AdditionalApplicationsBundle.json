@@ -1175,7 +1175,7 @@
           "[CHILDSOLICITORO]",
           "[BARRISTER]"
         ],
-        "CRUD": "CU"
+        "CRUD": "CRU"
       },
       {
         "UserRoles": [
@@ -1189,7 +1189,7 @@
         "UserRoles": [
           "caseworker-publiclaw-cafcass"
         ],
-        "CRUD": "U"
+        "CRUD": "RU"
       }
     ]
   },
