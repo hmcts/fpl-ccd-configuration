@@ -129,23 +129,4 @@ async ClickOnCancelButton(){
     throw new Error("Method not implemented.");
   }
 
-}
-
-  
-
-  
-  
-  
-
-
- 
-
-
-
-
-  
-
-
-
-
- 
+}   
