@@ -54,7 +54,7 @@ class EPOEndDateValidatorTest {
 
         assertThat(underTest.validate(caseData)).asList().isEmpty();
     }
-    
+
     @Test
     void validateDateAfter1Year() {
         LocalDateTime after1YearTime = time.now().minusYears(-1);
