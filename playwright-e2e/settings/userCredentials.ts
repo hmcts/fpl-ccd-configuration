@@ -1,4 +1,6 @@
-const e2ePw = process.env.E2E_TEST_PASSWORD || '';
+require('dotenv').config();
+
+const e2ePw = process.env.E2E_TEST_PASSWORD;
 
 export const newSwanseaLocalAuthorityUserOne = {
   email: 'local-authority-swansea-0001@maildrop.cc',
