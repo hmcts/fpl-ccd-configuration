@@ -5297,9 +5297,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void adminShouldBeAbleToRemoveSupportingDocumentFromC1WithSupplement() {
-            int loginType = HMCTS_LOGIN_TYPE;
-            UUID additionalApplicationUUID = UUID.randomUUID();
-
+            int loginType = HMCTS_LOGIN_TYPE;x
             initialiseUserService(loginType);
 
             SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
