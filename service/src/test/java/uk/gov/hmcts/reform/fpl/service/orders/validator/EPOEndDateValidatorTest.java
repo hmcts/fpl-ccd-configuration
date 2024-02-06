@@ -1,26 +1,47 @@
 package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.BEFORE_APPROVAL_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class EPOEndDateValidatorTest {
 
-    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private static final LocalDate TODAY = LocalDate.now();
+
+    @Mock
+    private Time time;
 
     private final EPOEndDateValidator underTest = new EPOEndDateValidator(time);
+
+    @BeforeEach
+    void init() {
+        when(time.now()).thenReturn(TODAY.atStartOfDay());
+    }
 
     @Test
     void accept() {
@@ -28,13 +49,11 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
-    void validateDateBefore2YearsAgo() {
-        LocalDateTime twoYearsAgo = time.now().minusYears(2).minusSeconds(1);
-
+    void validateDateMoreThan2YearsBehind() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(twoYearsAgo)
-                .manageOrdersEndDateTime(twoYearsAgo)
+                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusDays(1))
+                .manageOrdersEndDateTime(TODAY.atStartOfDay().plusYears(2).plusSeconds(1))
                 .build())
             .build();
 
@@ -42,13 +61,11 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
-    void validateDateWithin2YearsAgo() {
-        LocalDateTime within2YearTime = time.now().minusYears(2).minusSeconds(-1);
-
+    void validateDateWithin2Years() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(within2YearTime)
-                .manageOrdersEndDateTime(within2YearTime)
+                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusDays(1))
+                .manageOrdersEndDateTime(TODAY.atStartOfDay().plusYears(1))
                 .build())
             .build();
 
@@ -56,13 +73,11 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
-    void validateDateAfter1Year() {
-        LocalDateTime after1YearTime = time.now().minusYears(-1);
-
+    void validateDatBeforeToday() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(after1YearTime)
-                .manageOrdersEndDateTime(after1YearTime)
+                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusYears(1))
+                .manageOrdersEndDateTime(TODAY.atStartOfDay().minusDays(1))
                 .build())
             .build();
 

@@ -54,8 +54,9 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
 
     private List<String> validateEpoEndDateTime(LocalDateTime epoEndTime) {
         List<String> errors = new ArrayList<>();
+        long diff = ChronoUnit.MILLIS.between(time.now(), epoEndTime);
 
-        if (ChronoUnit.MILLIS.between(epoEndTime, time.now()) > Duration.ofDays(365).multipliedBy(2).toMillis()) {
+        if (diff > Duration.ofDays(365).multipliedBy(2).toMillis()) {
             errors.add(UP_TO_2_YEARS_BEHIND_MESSAGE);
         }
 
