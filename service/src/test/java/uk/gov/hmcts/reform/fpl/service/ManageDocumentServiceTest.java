@@ -5297,7 +5297,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void adminShouldBeAbleToRemoveSupportingDocumentFromC1WithSupplement() {
-            int loginType = HMCTS_LOGIN_TYPE;x
+            int loginType = HMCTS_LOGIN_TYPE;
             initialiseUserService(loginType);
 
             SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
