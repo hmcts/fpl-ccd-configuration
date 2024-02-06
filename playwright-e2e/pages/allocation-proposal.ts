@@ -2,12 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import test from "node:test";
 
 export class AllocationProposal {
-  //static AllocationProposalHeading() {
-    //throw new Error("Method not implemented.");
- // }
- // static AlocationProposalHeading: any;
- // static   alocationProposalHeading() {throw new Error("Method not implemented.");
-  //}
+  
   readonly page: Page;
   readonly AllocationProposalLink: Locator;
   readonly AllocationProposalHeading: Locator;
