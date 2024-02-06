@@ -28,15 +28,45 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
-    void validateFutureDate() {
+    void validateDateBefore2YearsAgo() {
+        LocalDateTime twoYearsAgo = time.now().minusYears(2).minusSeconds(1);
+
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now())
-                .manageOrdersEndDateTime(time.now().minusHours(1))
+                .manageOrdersApprovalDateTime(twoYearsAgo)
+                .manageOrdersEndDateTime(twoYearsAgo)
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of("Enter an end date in the future"));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of("Enter an end date up to 2 years behind"));
+    }
+
+    @Test
+    void validateDateWithin2YearsAgo() {
+        LocalDateTime within2YearTime = time.now().minusYears(2).minusSeconds(-1);
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(within2YearTime)
+                .manageOrdersEndDateTime(within2YearTime)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).asList().isEmpty();
+    }
+    
+    @Test
+    void validateDateAfter1Year() {
+        LocalDateTime after1YearTime = time.now().minusYears(-1);
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(after1YearTime)
+                .manageOrdersEndDateTime(after1YearTime)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).asList().isEmpty();
     }
 
     @Test

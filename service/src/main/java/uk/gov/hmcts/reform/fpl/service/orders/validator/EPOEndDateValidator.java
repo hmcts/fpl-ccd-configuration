@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_
 public class EPOEndDateValidator implements QuestionBlockOrderValidator {
 
     private static final String INVALID_TIME_MESSAGE = "Enter a valid time";
-    private static final String FUTURE_DATE_MESSAGE = "Enter an end date in the future";
+    private static final String UP_TO_2_YEARS_BEHIND_MESSAGE = "Enter an end date up to 2 years behind";
     public static final String BEFORE_APPROVAL_MESSAGE = "Enter a date after the approval date";
     public static final String END_DATE_RANGE_MESSAGE = "Emergency protection orders cannot last longer than 1 year";
     private static final Duration EPO_END_DATE_RANGE = Duration.of(365, ChronoUnit.DAYS);
@@ -55,8 +55,8 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
     private List<String> validateEpoEndDateTime(LocalDateTime epoEndTime) {
         List<String> errors = new ArrayList<>();
 
-        if (!epoEndTime.isAfter(time.now())) {
-            errors.add(FUTURE_DATE_MESSAGE);
+        if (ChronoUnit.MILLIS.between(epoEndTime, time.now()) > Duration.ofDays(365).multipliedBy(2).toMillis()) {
+            errors.add(UP_TO_2_YEARS_BEHIND_MESSAGE);
         }
 
         if (epoEndTime.toLocalTime().equals(MIDNIGHT)) {
