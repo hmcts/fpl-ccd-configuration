@@ -60,10 +60,10 @@ class SecureDocStoreHelperTest {
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
 
             if (toggleOn == false) {
-                byte[] resultFromOldDmStoreApproach = "DATA_FROM_OLD".getBytes();
-                byte[] actualData = underTest.download(DOCUMENT_URL_STRING, () -> resultFromOldDmStoreApproach);
+                byte[] resultFromCdamApproach = "DATA_FROM_OLD".getBytes();
+                byte[] actualData = underTest.download(DOCUMENT_URL_STRING, resultFromCdamApproach);
 
-                assertThat(actualData).isEqualTo(resultFromOldDmStoreApproach);
+                assertThat(actualData).isEqualTo(resultFromCdamApproach);
                 assertThat(logs.getErrors()).isEmpty();
             } else {
                 byte[] actualData = underTest.download(DOCUMENT_URL_STRING);
@@ -96,10 +96,10 @@ class SecureDocStoreHelperTest {
             SecureDocStoreHelper underTest = new SecureDocStoreHelper(secureDocStoreService, featureToggleService);
 
             if (toggleOn == false) {
-                byte[] resultFromOldDmStoreApproach = "DATA_FROM_OLD".getBytes();
-                byte[] actualData = underTest.download(DOCUMENT_URL_STRING, () -> resultFromOldDmStoreApproach);
+                byte[] resultFromCdamApproach = "DATA_FROM_OLD".getBytes();
+                byte[] actualData = underTest.download(DOCUMENT_URL_STRING, resultFromCdamApproach);
 
-                assertThat(actualData).isEqualTo(resultFromOldDmStoreApproach);
+                assertThat(actualData).isEqualTo(resultFromCdamApproach);
                 assertThat(logs.getErrorThrowableClassNames()).contains("java.lang.RuntimeException");
                 assertThat(logs.getErrorThrowableMessages()).contains("TEST RUNTIME EXCEPTION");
                 assertThat(logs.getErrors()).contains(

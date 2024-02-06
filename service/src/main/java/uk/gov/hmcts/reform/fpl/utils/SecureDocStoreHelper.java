@@ -33,12 +33,12 @@ public class SecureDocStoreHelper {
     /**
      * If secure doc store toggle is off, attempt to fire the API and log any exceptions caught.
      * @param documentUrlString  document url in string
-     * @param oldDmStoreApproach if featureToggleService.isSecureDocstoreEnabled() = false, it is a mandatory parameter.
+     * @param cdamApproach if featureToggleService.isSecureDocstoreEnabled() = false, it is a mandatory parameter.
      *                           otherwise, UnsupportedOperationException will be thrown.
      * @return byte array of the file
      */
     @SneakyThrows
-    public byte[] download(final String documentUrlString, Callable<byte[]> oldDmStoreApproach) {
+    public byte[] download(final String documentUrlString, byte[] cdamApproach) {
         try {
             log.info("Downloading document: {}", documentUrlString);
             byte[] bytesFromSecureDocStore = secureDocStoreService.downloadDocument(documentUrlString);
@@ -50,13 +50,13 @@ public class SecureDocStoreHelper {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: DISABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
             } else {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT (SECURE DOC STORE: ENABLED) ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
-                if (oldDmStoreApproach == null) {
+                if (cdamApproach == null) {
                     throw t;
                 }
             }
         }
-        if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(oldDmStoreApproach)) {
-            return oldDmStoreApproach.call();
+        if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(cdamApproach)) {
+            return cdamApproach;
         }
         throw new UnsupportedOperationException();
     }

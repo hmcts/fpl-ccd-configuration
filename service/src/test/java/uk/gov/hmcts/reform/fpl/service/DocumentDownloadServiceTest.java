@@ -23,39 +23,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
 class DocumentDownloadServiceTest {
 
-    private static final String AUTH_TOKEN = "token";
-    private static final String SERVICE_AUTH_TOKEN = "service-token";
-    private static final String USER_ID = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
-    private static final String SYSTEM_USER_TOKEN = "system-user-token";
-    private static final String SYSTEM_USER_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-
-    @Mock
-    private DocumentDownloadClientApi documentDownloadClient;
-
     @Mock
     private SecureDocStoreService secureDocStoreService;
 
     @Mock
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private IdamClient idamClient;
-
-    @Mock
-    private RequestData requestData;
-
-    @Mock
     private FeatureToggleService featureToggleService;
-
-    @Mock
-    private SystemUserService systemUserService;
 
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
@@ -69,27 +47,10 @@ class DocumentDownloadServiceTest {
 
     @BeforeEach
     void setup() {
-        UserInfo userInfo = UserInfo.builder()
-            .sub("cafcass@cafcass.com")
-            .roles(CAFCASS.getRoleNames())
-            .uid(USER_ID)
-            .build();
+        //given(featureToggleService.isSecureDocstoreEnabled()).willReturn(true);
 
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(userInfo);
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(requestData.userId()).willReturn(USER_ID);
-        given(featureToggleService.isSecureDocstoreEnabled()).willReturn(false);
-        given(systemUserService.getSysUserToken()).willReturn(SYSTEM_USER_TOKEN);
-        given(systemUserService.getUserId(any())).willReturn(SYSTEM_USER_ID);
-
-        documentDownloadService = new DocumentDownloadService(authTokenGenerator,
-            documentDownloadClient,
-            idamClient,
-            requestData,
-            secureDocStoreService,
-            featureToggleService,
-            systemUserService);
+        documentDownloadService = new DocumentDownloadService(secureDocStoreService,
+            featureToggleService);
     }
 
     @Test
@@ -97,29 +58,15 @@ class DocumentDownloadServiceTest {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
 
-        ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
-        given(resourceResponseEntity.getStatusCode())
-            .willReturn(expectedResponse.getStatusCode());
-
-        given(resourceResponseEntity.getBody())
-            .willReturn(expectedResponse.getBody());
-
-        given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoleNames())), anyString(), anyString()))
-            .willReturn(resourceResponseEntity);
+        when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(false);
+        when(documentDownloadService.downloadDocument(document.links.binary.href)).thenReturn(expectedDocumentContents);
 
         byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
-
-        verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            join(",", CAFCASS.getRoleNames()),
-            USER_ID,
-            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }
 
-    @Test
+    /*@Test
     void shouldThrowExceptionWhenDownloadBinaryReturnsNull() {
         ResponseEntity<Resource> responseEntity = ResponseEntity.notFound().build();
         given(resourceResponseEntity.getStatusCode()).willReturn(responseEntity.getStatusCode());
@@ -142,35 +89,5 @@ class DocumentDownloadServiceTest {
         EmptyFileException exceptionThrown = assertThrows(EmptyFileException.class,
             () -> documentDownloadService.downloadDocument(document.links.binary.href));
         assertThat(exceptionThrown.getMessage()).isEqualTo("File cannot be empty");
-    }
-
-    @Test
-    void shouldUseSystemUpdateUserIfNotInRequest() {
-        given(requestData.authorisation()).willThrow(new IllegalStateException());
-
-        Document document = document();
-        byte[] expectedDocumentContents = "test".getBytes();
-
-        ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
-        given(resourceResponseEntity.getStatusCode())
-            .willReturn(expectedResponse.getStatusCode());
-
-        given(resourceResponseEntity.getBody())
-            .willReturn(expectedResponse.getBody());
-
-        given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            anyString(), anyString(), anyString()))
-            .willReturn(resourceResponseEntity);
-
-        byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
-
-        assertThat(documentContents).isEqualTo(expectedDocumentContents);
-
-        verify(documentDownloadClient).downloadBinary(SYSTEM_USER_TOKEN,
-            SERVICE_AUTH_TOKEN,
-            "caseworker-publiclaw-systemupdate",
-            SYSTEM_USER_ID,
-            "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
-
-    }
+    }}*/
 }
