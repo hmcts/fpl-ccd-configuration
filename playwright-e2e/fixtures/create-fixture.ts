@@ -4,6 +4,8 @@ import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
+import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
+import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -11,6 +13,8 @@ type CreateFixtures = {
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
   hearingUrgency : HearingUrgency;
+  groundsForTheApplication : GroundsForTheApplication;
+  riskAndHarmToChildren : RiskAndHarmToChildren;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -33,4 +37,13 @@ export const test = base.extend<CreateFixtures>({
   hearingUrgency: async ({ page }, use) => {
     await use(new HearingUrgency(page));
   },
+
+  groundsForTheApplication: async ({ page }, use) => {
+    await use(new GroundsForTheApplication(page));
+  },
+
+  riskAndHarmToChildren: async ({ page }, use) => {
+    await use(new RiskAndHarmToChildren(page));
+  },
+
 });
