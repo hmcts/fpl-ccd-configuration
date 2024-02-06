@@ -41,8 +41,8 @@ upload_http_code=$(echo "$uploadResponse" | tail -n1)
 upload_response_content=$(echo "$uploadResponse" | sed '$d')
 
 if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
-  echo "Bypassing audit check as on preview - will wait 45s and then verify the version has changed"
-  sleep 45
+  echo "Bypassing audit check as on preview - will wait 90s and then verify the version has changed"
+  sleep 90
 
   newVersion=$(curl --insecure --silent --show-error -X GET \
     ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
