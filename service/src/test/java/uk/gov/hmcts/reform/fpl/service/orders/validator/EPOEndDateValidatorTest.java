@@ -70,6 +70,18 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
+    void validateDatWithin2Years() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(NOW.plusYears(1))
+                .manageOrdersEndDateTime(NOW.plusYears(2))
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).asList().isEmpty();
+    }
+
+    @Test
     void validateDatBeforeToday() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -103,8 +115,7 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of(END_DATE_RANGE_MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(END_DATE_RANGE_MESSAGE));
     }
 
     @Test
@@ -130,7 +141,6 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of(BEFORE_APPROVAL_MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(BEFORE_APPROVAL_MESSAGE));
     }
 }
