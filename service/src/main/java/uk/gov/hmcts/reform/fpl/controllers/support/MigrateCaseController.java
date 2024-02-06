@@ -43,7 +43,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-2118", this::run2118
+        "DFPL-2118", this::run2118,
+        "DFPL-2148", this::run2148
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -197,5 +198,15 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
             String.valueOf(expectedMessageId)));
+    }
+
+    private void run2148(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2148";
+        var possibleCaseIds = List.of(1706286062107610L);
+        UUID expectedDocumentFiledOnIssueId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeDocumentFiledOnIssue(getCaseData(caseDetails),
+            expectedDocumentFiledOnIssueId, migrationId));
     }
 }

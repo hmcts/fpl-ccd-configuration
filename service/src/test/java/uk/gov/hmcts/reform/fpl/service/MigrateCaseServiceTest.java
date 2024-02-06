@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -1853,6 +1854,60 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s},"
                         + " notice of proceedings bundle %s not found",
                     MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveDocumentFiledOnIssue {
+        private final Element<ManagedDocument> document1 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> document2 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> documentToBeRemoved =
+            element(ManagedDocument.builder().build());
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssue() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2,
+                    documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList()
+                .containsExactly(document1, document2);
+        }
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssueIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " document filed on issue %s not found",
+                    MIGRATION_ID, 1, documentToBeRemoved.getId()));
         }
     }
 
