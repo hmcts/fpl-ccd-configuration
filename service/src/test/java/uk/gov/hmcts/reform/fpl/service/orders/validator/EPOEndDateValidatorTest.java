@@ -20,27 +20,24 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.BEFORE_APPROVAL_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
 
-
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = LENIENT)
 class EPOEndDateValidatorTest {
 
-    private static final LocalDate TODAY = LocalDate.now();
+    private static final LocalDateTime NOW = LocalDateTime.of(2012, 10, 12, 13, 20, 44);
 
-    @Mock
-    private Time time;
+    private final Time time = mock(Time.class);
 
     private final EPOEndDateValidator underTest = new EPOEndDateValidator(time);
 
     @BeforeEach
     void init() {
-        when(time.now()).thenReturn(TODAY.atStartOfDay());
+        when(time.now()).thenReturn(NOW);
     }
 
     @Test
@@ -52,8 +49,8 @@ class EPOEndDateValidatorTest {
     void validateDateMoreThan2YearsBehind() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusDays(1))
-                .manageOrdersEndDateTime(TODAY.atStartOfDay().plusYears(2).plusSeconds(1))
+                .manageOrdersApprovalDateTime(NOW.minusDays(1))
+                .manageOrdersEndDateTime(NOW.plusYears(2).plusSeconds(1))
                 .build())
             .build();
 
@@ -61,11 +58,11 @@ class EPOEndDateValidatorTest {
     }
 
     @Test
-    void validateDateWithin2Years() {
+    void validateFutureDate() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusDays(1))
-                .manageOrdersEndDateTime(TODAY.atStartOfDay().plusYears(1))
+                .manageOrdersApprovalDateTime(NOW.minusDays(1))
+                .manageOrdersEndDateTime(NOW.plusDays(30))
                 .build())
             .build();
 
@@ -76,8 +73,8 @@ class EPOEndDateValidatorTest {
     void validateDatBeforeToday() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(TODAY.atStartOfDay().minusYears(1))
-                .manageOrdersEndDateTime(TODAY.atStartOfDay().minusDays(1))
+                .manageOrdersApprovalDateTime(NOW.minusYears(1))
+                .manageOrdersEndDateTime(NOW.minusDays(1))
                 .build())
             .build();
 
