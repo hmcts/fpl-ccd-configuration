@@ -45,13 +45,13 @@ test("Smoke Test @smoke-test", async ({
   await hearingUrgency.saveAndContinueButton.click();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // // 5. Grounds for the application
+  // 5. Grounds for the application
   await startApplication.groundsForTheApplication();
   await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // // 6. Risk and harm to children
+  // 6. Risk and harm to children
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
