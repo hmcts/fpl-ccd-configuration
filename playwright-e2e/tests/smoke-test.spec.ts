@@ -8,6 +8,7 @@ test("Smoke Test @smoke-test", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
+  riskAndHarmToChildren
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -47,4 +48,8 @@ test("Smoke Test @smoke-test", async ({
   await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
+
+  // 6. Risk and harm to children
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 });
