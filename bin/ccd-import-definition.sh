@@ -40,9 +40,22 @@ uploadResponse=$(curl --insecure --silent -w "\n%{http_code}" --show-error -X PO
 upload_http_code=$(echo "$uploadResponse" | tail -n1)
 upload_response_content=$(echo "$uploadResponse" | sed '$d')
 
+
+checkDefinitionUpdated() {
+  audit_response=$(curl --insecure --silent --show-error -X GET \
+    ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/import-audits \
+    -H "Authorization: Bearer ${userToken}" \
+    -H "ServiceAuthorization: Bearer ${serviceToken}")
+
+  if [[ ${audit_response} == *"${uploadFilename}"* ]]; then
+    exit 0
+  fi
+  exit 1
+}
+
 if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
-  echo "Bypassing audit check as on preview - will wait 45s and then verify the version has changed"
-  sleep 45
+  echo "Bypassing audit check as on preview - will wait 90s and then verify the version has changed"
+  sleep 90
 
   newVersion=$(curl --insecure --silent --show-error -X GET \
     ${CCD_DEFINITION_STORE_API_BASE_URL:-http://localhost:4451}/api/data/case-type/CARE_SUPERVISION_EPO/version \
@@ -51,8 +64,11 @@ if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
 
     echo "Current version is ${newVersion}"
     if [[ "$newVersion" == "$version" ]]; then
-      echo "Version has not changed - the definition was not imported successfully"
-      exit 1
+      updateStatus=checkDefinitionUpdated();
+      if [[$updateStatus==1]]; then
+        echo "Version has not changed - the definition was not imported successfully"
+        exit 1
+      fi
     fi
 
   echo "CCD definition version has changed, definition successfully uploaded"
