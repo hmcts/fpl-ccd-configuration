@@ -1,9 +1,9 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { UrlConfig } from "../settings/urls";
+import UrlConfig from "../settings/urls";
 
 export class SignInPage {
   readonly page: Page;
-  readonly url: string = UrlConfig.aatUrl;
+  readonly url: string;
   readonly emailInputLocator: Locator;
   readonly passwordInputLocator: Locator;
   readonly signinButtonLocator: Locator;
@@ -12,7 +12,7 @@ export class SignInPage {
 
   public constructor(page: Page) {
     this.page = page;
-
+    this.url = UrlConfig.frontEndBaseURL;
     this.emailInputLocator = page.getByLabel("Email address");
     this.passwordInputLocator = page.getByLabel("Password");
     this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
