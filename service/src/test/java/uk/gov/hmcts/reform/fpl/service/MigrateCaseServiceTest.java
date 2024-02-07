@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -884,28 +885,6 @@ class MigrateCaseServiceTest {
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
                     "test.pdf"));
         }
-    }
-
-    @Test
-    void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
-        UUID document1Id = UUID.randomUUID();
-        String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
-            + UUID.randomUUID();
-        DocumentReference documentReference = DocumentReference.builder()
-            .url(document2Url)
-            .filename("Test Document")
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .id(caseId)
-            .standardDirectionOrder(
-                StandardDirectionOrder.builder()
-                    .orderDoc(documentReference)
-                    .build())
-            .build();
-
-        assertThrows(AssertionError.class, () -> underTest
-            .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
