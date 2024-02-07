@@ -48,9 +48,9 @@ checkDefinitionUpdated() {
     -H "ServiceAuthorization: Bearer ${serviceToken}")
 
   if [[ ${audit_response} == *"${uploadFilename}"* ]]; then
-    exit 0
+    return 0
   fi
-  exit 1
+  return 1
 }
 
 if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
@@ -64,8 +64,9 @@ if [ "$ENVIRONMENT" == "preview" ] && [ "$upload_http_code" != "201" ]; then
 
     echo "Current version is ${newVersion}"
     if [[ "$newVersion" == "$version" ]]; then
-      updateStatus=checkDefinitionUpdated();
-      if [[$updateStatus==1]]; then
+      checkDefinitionUpdated
+      updateStatus=$?
+      if [["$updateStatus"!="0"]]; then
         echo "Version has not changed - the definition was not imported successfully"
         exit 1
       fi
