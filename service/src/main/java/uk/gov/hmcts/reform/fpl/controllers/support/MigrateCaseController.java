@@ -44,7 +44,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
         "DFPL-2118", this::run2118,
-        "DFPL-2148", this::run2148
+        "DFPL-2148", this::run2148,
+        "DFPL-2149", this::run2149
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -209,4 +210,16 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.removeDocumentFiledOnIssue(getCaseData(caseDetails),
             expectedDocumentFiledOnIssueId, migrationId));
     }
+
+    private void run2149(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2149";
+        var possibleCaseIds = List.of(1689246804719172L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        
+        CaseData caseData = getCaseData(caseDetails);
+        UUID returnApplicationDocId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
+
+        migrateCaseService.verifyReturnApplicationExists(caseData, migrationId, returnApplicationDocId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
+    }    
 }

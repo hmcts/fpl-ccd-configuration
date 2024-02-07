@@ -23,31 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -889,24 +865,24 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class RemoveGatekeepingOrderStandardDirectionOrder {
+    class RemoveReturnApplication {
 
         private final long caseId = 1L;
         private final String fileName = "Test Filname.pdf";
 
         @Test
-        void shouldThrowExceptionIfStandardDirectionOrderIsNullOrEmpty() {
+        void shouldThrowExceptionIfReturnApplicationIsNullOrEmpty() {
             UUID documentId = UUID.randomUUID();
             CaseData caseData = CaseData.builder()
                 .id(caseId)
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest
-                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, documentId));
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
         }
 
         @Test
-        void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
+        void shouldThrowExceptionIfReturnApplicationNotMatching() {
             UUID document1Id = UUID.randomUUID();
             String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
                 + UUID.randomUUID();
@@ -917,16 +893,39 @@ class MigrateCaseServiceTest {
 
             CaseData caseData = CaseData.builder()
                 .id(caseId)
-                .standardDirectionOrder(
-                    StandardDirectionOrder.builder()
-                        .orderDoc(documentReference)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
                         .build())
                 .build();
 
             assertThrows(AssertionError.class, () -> underTest
-                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, document1Id));
         }
     }
+
+    @Test
+    void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
+        UUID document1Id = UUID.randomUUID();
+        String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+            + UUID.randomUUID();
+        DocumentReference documentReference = DocumentReference.builder()
+            .url(document2Url)
+            .filename("Test Document")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(caseId)
+            .standardDirectionOrder(
+                StandardDirectionOrder.builder()
+                    .orderDoc(documentReference)
+                    .build())
+            .build();
+
+        assertThrows(AssertionError.class, () -> underTest
+            .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
+    }
+}
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
