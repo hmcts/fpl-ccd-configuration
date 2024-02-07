@@ -29,9 +29,9 @@ test("Create a case", async ({ page }) => {
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // 3. Orders and directions sought
-  // await startApplication.ordersAndDirectionsSoughtLink.isVisible();
-  // await startApplication.ordersAndDirectionsSoughtLink.click();
-  // await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();
+  await startApplication.ordersAndDirectionsSoughtLink.isVisible();
+  await startApplication.ordersAndDirectionsSoughtLink.click();
+  await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();
 
   // 4. Hearing urgency
 
