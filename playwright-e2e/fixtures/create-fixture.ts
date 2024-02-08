@@ -5,6 +5,7 @@ import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
+import { SendMessage } from "../pages/sendMessage";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -13,6 +14,7 @@ type CreateFixtures = {
   ordersAndDirectionSought: OrdersAndDirectionSought;
   hearingUrgency : HearingUrgency;
   groundsForTheApplication : GroundsForTheApplication;
+  sendMessage : SendMessage;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -39,4 +41,8 @@ export const test = base.extend<CreateFixtures>({
   groundsForTheApplication: async ({ page }, use) => {
     await use(new GroundsForTheApplication(page));
   },
+  sendMessage: async ({ page }, use) => {
+    await use(new SendMessage(page));
+  },
+
 });
