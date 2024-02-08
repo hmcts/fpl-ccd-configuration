@@ -4,7 +4,7 @@ import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
-import {AllocationProposal} from "../pages/allocation-proposal";
+import {  AllocationProposal  } from "../pages/allocation-proposal";
 
 // WIP
 test("Create a case", async ({ page }) => {
