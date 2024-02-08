@@ -82,7 +82,8 @@ public class DraftOrdersUploadedEventHandler {
                     );
 
                     notificationService.sendEmail(
-                        DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE, judge.getJudgeEmailAddress(), content, caseData.getId()
+                        DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE, judge.getJudgeEmailAddress(), content,
+                        caseData.getId()
                     );
                 }
             });

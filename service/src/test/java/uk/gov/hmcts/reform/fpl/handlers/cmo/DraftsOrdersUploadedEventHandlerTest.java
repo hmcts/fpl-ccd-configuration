@@ -219,6 +219,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         void before() {
             when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         }
+
         @Test
         void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
             final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
@@ -375,7 +376,8 @@ class DraftsOrdersUploadedEventHandlerTest {
             final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail(hearingJudgeEmail);
 
             final HearingOrdersBundle bundle1 = ordersBundle(hearing1.getId(), AGREED_CMO, C21);
-            final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21, C21);
+            final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(),
+                DRAFT_CMO, C21, C21);
 
             final Judge judge = allocatedJudge();
 
@@ -389,7 +391,8 @@ class DraftsOrdersUploadedEventHandlerTest {
                 .build();
 
             when(draftOrdersContentProvider.buildContent(
-                caseData, selectedHearing.getValue(), judge, unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
             )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
             underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
