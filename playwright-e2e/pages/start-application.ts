@@ -1,9 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
-  allocationProposalHasBeenUpdated() {
-    throw new Error("Method not implemented.");
-  }
+
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
@@ -15,6 +13,9 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
+  readonly allocationProposalHasBeenUpdatedFinished: Locator;
+  readonly allocationProposalLink: Locator;
+  readonly allocationProposalHeading: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -26,6 +27,9 @@ export class StartApplication {
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
     this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
+    this.allocationProposalHasBeenUpdatedFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img');
+    this.allocationProposalHeading = page.getByRole('group', { name: 'Allocation proposal' }).getByRole('heading');
+    this.allocationProposalLink = page.getByRole('link', { name: 'Allocation proposal' });
   }
 
   async addApplicationDetails(){
@@ -56,5 +60,14 @@ export class StartApplication {
   async riskAndHarmToChildren() {
     await this.riskAndHarmToChildrenLink.isVisible();
     await this.riskAndHarmToChildrenLink.click();
+  }
+
+  async allocationProposal(){
+    await this.allocationProposalLink.isVisible();
+    await this.allocationProposalLink.click();
+  }
+
+  async allocationProposalHasBeenUpdated(){
+    await expect (this.allocationProposalHasBeenUpdatedFinished).toBeVisible;
   }
 }

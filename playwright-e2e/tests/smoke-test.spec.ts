@@ -56,10 +56,7 @@ test("Smoke Test @smoke-test", async ({
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
  // 7. Allocation Proposal
-  await startApplication.addApplicationDetailsHeading.isVisible();
-  await allocationProposal.AllocationProposalHeading.isVisible();
+  await startApplication.allocationProposal();
+  await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
-
-
-
 });
