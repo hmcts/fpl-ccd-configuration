@@ -370,13 +370,14 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void epoEndDateShouldReturnErrorForPastDate() {
+    void epoEndDateShouldReturnErrorForExceed2Years() {
+        LocalDateTime now = now();
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
+            buildRemoveToAccommodationEventData(now.plusDays(365), now.plusDays(366 * 2))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).containsOnly("Enter an end date in the future");
+        assertThat(response.getErrors()).containsOnly("Enter an end date up to 2 years behind");
     }
 
     @Test
