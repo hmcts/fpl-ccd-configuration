@@ -1,10 +1,16 @@
-const e2ePw = process.env.E2E_TEST_PASSWORD || '';
-const defaultPwd = process.env.E2E_TEST_PASSWORD || '';
+
+import dotenv from "dotenv";
+dotenv.config();
+
+const e2ePw = process.env.E2E_TEST_PASSWORD || "";
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
+
 
 export const newSwanseaLocalAuthorityUserOne = {
-  email: 'local-authority-swansea-0001@maildrop.cc',
+  email: "local-authority-swansea-0001@maildrop.cc",
   password: e2ePw,
 };
+
 export const systemUpdateUser ={
   email: process.env.SYSTEM_UPDATE_USER_USERNAME  || '',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || '',
@@ -17,4 +23,5 @@ export const  CTSCUser = {
 export const  judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
   password: defaultPwd,
+
 };

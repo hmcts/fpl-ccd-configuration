@@ -66,7 +66,8 @@
     "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -77,6 +78,16 @@
     "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL",
     "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
-    "FieldShowCondition": "documentName!=\"SHOW_IN_EVENT_ONLY\""
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
+    "ListElementCode": "allowMarkDocumentConfidential",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\""
   }
 ]

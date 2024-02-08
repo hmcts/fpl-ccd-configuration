@@ -6,6 +6,8 @@ import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
 import { SendMessage } from "../pages/sendMessage";
+import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -15,6 +17,7 @@ type CreateFixtures = {
   hearingUrgency : HearingUrgency;
   groundsForTheApplication : GroundsForTheApplication;
   sendMessage : SendMessage;
+  riskAndHarmToChildren : RiskAndHarmToChildren;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -41,8 +44,13 @@ export const test = base.extend<CreateFixtures>({
   groundsForTheApplication: async ({ page }, use) => {
     await use(new GroundsForTheApplication(page));
   },
+
   sendMessage: async ({ page }, use) => {
     await use(new SendMessage(page));
+  },
+  riskAndHarmToChildren: async ({ page }, use) => {
+    await use(new RiskAndHarmToChildren(page));
+
   },
 
 });
