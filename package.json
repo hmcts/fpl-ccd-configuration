@@ -57,6 +57,7 @@
   "packageManager": "yarn@3.6.4",
   "license": "MIT",
   "dependencies": {
-    "@types/lodash": "^4.14.202"
+    "@types/lodash": "^4.14.202",
+    "dotenv": "^16.4.1"
   }
 }
