@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -140,6 +141,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -205,6 +208,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(uploadAdditionalApplicationsService.convertOtherBundle(any()))
             .willAnswer(returnsFirstArg());
+
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
 
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
@@ -282,6 +287,21 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             eq(notificationReference(CASE_ID))
         ));
     }
+
+    @Test
+    void submittedEventShouldNotNotifyCtscAdminIfWaEmailToggledOff() {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        postSubmittedEvent(buildCaseDetails(YES, YES));
+
+        checkUntil(() -> verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(notificationReference(CASE_ID))
+        ));
+    }
+
 
     @Test
     void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() {
