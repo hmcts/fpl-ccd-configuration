@@ -3,26 +3,17 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.BEFORE_APPROVAL_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.service.orders.validator.EPOEndDateValidator.END_DATE_RANGE_MESSAGE;
