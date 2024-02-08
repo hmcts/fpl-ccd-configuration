@@ -64,4 +64,9 @@ infrastructure/.terraform/
 /playwright/.cache/
 tests-examples/demo-todo-app.spec.ts
 playwright-e2e/local-config/config.js
+playwright-e2e/.env
+
 service/.properties
+
+# Ignore .env file
+.env
