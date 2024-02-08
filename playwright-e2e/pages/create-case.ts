@@ -47,8 +47,11 @@ export class CreateCase {
     // Specify default date formatting for language (locale)
     const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
 
+    // Append milliseconds to avoid duplicated case names with parallelisation
+    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
     // Create the case name using a timestamp string
-    const caseName = `Smoke Test ${formattedDate}`;
+    const caseName = `Smoke Test ${formattedDate}.${milliseconds}`;
     this.generatedCaseName = caseName;
 
     console.log("Case name:", caseName);
