@@ -43,7 +43,7 @@ class EPOEndDateValidatorTest {
     void validateDatBeforeToday() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().minusYears(1))
+                .manageOrdersApprovalDateTime(time.now().minusDays(3))
                 .manageOrdersEndDateTime(time.now().minusDays(1))
                 .build())
             .build();
