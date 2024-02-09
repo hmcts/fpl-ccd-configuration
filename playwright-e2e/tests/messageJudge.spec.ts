@@ -1,6 +1,6 @@
 import { test} from '../fixtures/create-fixture';
 import {Apihelp} from '../utils/apiFixture';
-import {UrlConfig} from "../settings/urls";
+//import {urlConfig} from "../settings/urls";
 import caseData from '../caseData/mandatorySubmissionFields.json';
 import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/userCredentials';
@@ -21,7 +21,7 @@ test.describe('send and reply message',()=>{
         await apiDataSetup.updateCase(casename,caseNumber,caseData);
         await  signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
-        await signInPage.navigateTOCaseDetails(`${UrlConfig.aatUrl}case-details/${caseNumber}`);
+        await signInPage.navigateTOCaseDetails(caseNumber);
         await sendMessage.gotoNextStep('Send messages');
         await sendMessage.sendMessageToAllocatedJudge();
         await sendMessage.checkYourAnsAndSubmit();
@@ -34,12 +34,15 @@ test.describe('send and reply message',()=>{
         await apiDataSetup.updateCase(casename,caseNumber,caseDataJudgeMessage);
         await  signInPage.visit();
         await signInPage.login(judgeUser.email,judgeUser.password);
-        await  signInPage.navigateTOCaseDetails(`${UrlConfig.aatUrl}case-details/${caseNumber}`);
+        await  signInPage.navigateTOCaseDetails(caseNumber);
         await sendMessage.gotoNextStep('Reply to messages');
         await sendMessage.judgeReplyMessage();
         await sendMessage.checkYourAnsAndSubmit();
         await sendMessage.tabNavigation('Judicial messages');
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
+    })
+    test('CTSC admin close the Message',async(page,signInPage,sendMessage) =>{
+
     })
 
 });

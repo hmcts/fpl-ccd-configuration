@@ -1,19 +1,17 @@
 
-import dotenv from "dotenv";
-dotenv.config();
 
-const e2ePw = process.env.E2E_TEST_PASSWORD || "";
-const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
+const e2ePw = process.env.E2E_TEST_PASSWORD || 'Password1234';
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || 'Password12';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
-  email: "local-authority-swansea-0001@maildrop.cc",
+  email: 'local-authority-swansea-0001@maildrop.cc',
   password: e2ePw,
 };
 
 export const systemUpdateUser ={
-  email: process.env.SYSTEM_UPDATE_USER_USERNAME  || '',
-  password: process.env.SYSTEM_UPDATE_USER_PASSWORD || '',
+  email: process.env.SYSTEM_UPDATE_USER_USERNAME  || 'fpl-system-update@mailnesia.com',
+  password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
 
 };
 export const  CTSCUser = {

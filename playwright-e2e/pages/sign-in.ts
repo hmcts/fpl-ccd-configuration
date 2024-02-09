@@ -25,8 +25,8 @@ export class SignInPage {
   async visit() {
     await this.page.goto(this.url);
   }
-  async navigateTOCaseDetails(url:string) {
-    await this.page.goto(url);
+  async navigateTOCaseDetails(caseNumber:string) {
+    await this.page.goto(`${UrlConfig.frontEndBaseURL}case-details/${caseNumber}`);
   }
 
   async login(email: string, password: string) {
