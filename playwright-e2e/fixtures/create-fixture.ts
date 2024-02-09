@@ -5,7 +5,7 @@ import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
-import { SendMessage } from "../pages/sendMessage";
+import { JudicialMessage } from "../pages/judicialMessage";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 
 
@@ -16,7 +16,7 @@ type CreateFixtures = {
   ordersAndDirectionSought: OrdersAndDirectionSought;
   hearingUrgency : HearingUrgency;
   groundsForTheApplication : GroundsForTheApplication;
-  sendMessage : SendMessage;
+  judicialMessages : JudicialMessage;
   riskAndHarmToChildren : RiskAndHarmToChildren;
 };
 
@@ -45,8 +45,8 @@ export const test = base.extend<CreateFixtures>({
     await use(new GroundsForTheApplication(page));
   },
 
-  sendMessage: async ({ page }, use) => {
-    await use(new SendMessage(page));
+  judicialMessages: async ({ page }, use) => {
+    await use(new JudicialMessage(page));
   },
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
