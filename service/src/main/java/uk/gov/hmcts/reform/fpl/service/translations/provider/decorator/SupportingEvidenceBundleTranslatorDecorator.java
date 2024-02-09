@@ -20,18 +20,18 @@ public class SupportingEvidenceBundleTranslatorDecorator {
 
     private final Time time;
 
-    public Function<Element<SupportingEvidenceBundle>, Element<SupportingEvidenceBundle>> translatedBundle(
+    public Function<Element<? extends SupportingEvidenceBundle>, Element<? extends SupportingEvidenceBundle>> translatedBundle(
         DocumentReference document, UUID selectedOrderId) {
         return bundle -> element(bundle.getId(), bundleMatch(selectedOrderId, bundle)
             ? addTranslationInfo(document, bundle) : bundle.getValue());
     }
 
-    private boolean bundleMatch(UUID selectedOrderId, Element<SupportingEvidenceBundle> bundle) {
+    private boolean bundleMatch(UUID selectedOrderId, Element<? extends SupportingEvidenceBundle> bundle) {
         return Objects.equals(bundle.getId(), selectedOrderId);
     }
 
     private SupportingEvidenceBundle addTranslationInfo(DocumentReference document,
-                                                        Element<SupportingEvidenceBundle> bundle) {
+                                                        Element<? extends SupportingEvidenceBundle> bundle) {
         return bundle.getValue().toBuilder()
             .translatedDocument(document)
             .translationUploadDateTime(time.now())

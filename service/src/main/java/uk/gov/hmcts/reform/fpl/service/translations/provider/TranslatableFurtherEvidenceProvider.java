@@ -1,16 +1,20 @@
 //package uk.gov.hmcts.reform.fpl.service.translations.provider;
 //
 //import lombok.RequiredArgsConstructor;
+//import org.apache.commons.lang3.ObjectUtils;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Component;
 //import uk.gov.hmcts.reform.fpl.model.CaseData;
-//import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 //import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 //import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 //import uk.gov.hmcts.reform.fpl.model.common.Element;
 //import uk.gov.hmcts.reform.fpl.model.interfaces.TranslatableItem;
+//import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 //import uk.gov.hmcts.reform.fpl.service.translations.provider.decorator.SupportingEvidenceBundleTranslatorDecorator;
+//import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 //
+//import java.util.ArrayList;
+//import java.util.HashMap;
 //import java.util.List;
 //import java.util.Map;
 //import java.util.Objects;
@@ -18,14 +22,15 @@
 //import java.util.stream.Collectors;
 //
 //import static java.util.Collections.unmodifiableList;
-//import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+//import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 //
 //@Component
 //@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-//public class TranslatableHearingFurtherEvidenceProvider implements TranslatableListItemProvider {
+//public class TranslatableFurtherEvidenceProvider implements TranslatableListItemProvider {
 //
-//    private static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY = "hearingFurtherEvidenceDocuments";
+//    private static final String FURTHER_EVIDENCE_DOCUMENTS_KEY = "furtherEvidenceDocuments";
 //
+//    private final ConfidentialDocumentsSplitter confidentialDocumentsSplitter;
 //    private final SupportingEvidenceBundleTranslatorDecorator decorator;
 //
 //    @Override
@@ -34,10 +39,7 @@
 //    }
 //
 //    private List<Element<SupportingEvidenceBundle>> getElements(CaseData caseData) {
-//        return caseData.getHearingFurtherEvidenceDocuments()
-//            .stream()
-//            .flatMap(x -> x.getValue().getSupportingEvidenceBundle().stream())
-//            .collect(Collectors.toList());
+//        return defaultIfNull(caseData.getFurtherEvidenceDocuments(), new ArrayList<>());
 //    }
 //
 //    @Override
@@ -57,22 +59,28 @@
 //    @Override
 //    public Map<String, Object> applyTranslatedOrder(CaseData caseData, DocumentReference document,
 //                                                    UUID selectedOrderId) {
+//        CaseDetailsMap data = CaseDetailsMap.caseDetailsMap(new HashMap<>());
 //
-//        return Map.of(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY,
-//            translateHearingFurtherEvidenceDocuments(caseData, document, selectedOrderId));
+//        List<Element<SupportingEvidenceBundle>> translatedFurtherEvidenceDocuments =
+//            translateFurtherEvidenceDocuments(caseData, document, selectedOrderId);
+//
+//        data.put(FURTHER_EVIDENCE_DOCUMENTS_KEY, translatedFurtherEvidenceDocuments);
+//
+//        confidentialDocumentsSplitter.updateConfidentialDocsInCaseDetails(data,
+//            translatedFurtherEvidenceDocuments,
+//            FURTHER_EVIDENCE_DOCUMENTS_KEY);
+//
+//        return data;
 //    }
 //
-//    private List<Element<HearingFurtherEvidenceBundle>>
-//        translateHearingFurtherEvidenceDocuments(CaseData caseData,
-//                                             DocumentReference document,
-//                                             UUID selectedOrderId) {
-//        return caseData.getHearingFurtherEvidenceDocuments().stream().map(
-//            it -> element(it.getId(), it.getValue().toBuilder()
-//                .supportingEvidenceBundle(it.getValue().getSupportingEvidenceBundle().stream()
-//                    .map(decorator.translatedBundle(document, selectedOrderId))
-//                    .collect(Collectors.toList()))
-//                .build())).collect(Collectors.toList());
+//    private List<Element<SupportingEvidenceBundle>> translateFurtherEvidenceDocuments(CaseData caseData,
+//                                                                                      DocumentReference document,
+//                                                                                      UUID selectedOrderId) {
+//        return ObjectUtils.<List<Element<SupportingEvidenceBundle>>>defaultIfNull(
+//                caseData.getFurtherEvidenceDocuments(),
+//                new ArrayList<>())
+//            .stream()
+//            .map(decorator.translatedBundle(document, selectedOrderId))
+//            .collect(Collectors.toList());
 //    }
-//
-//
 //}
