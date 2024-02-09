@@ -8,6 +8,7 @@ import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
+import { RespondentsDetails  }  from "../pages/respondents-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -19,6 +20,8 @@ type CreateFixtures = {
   riskAndHarmToChildren : RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
+  respondentsDetails : RespondentsDetails;
+
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -50,6 +53,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new RiskAndHarmToChildren(page));
   },
 
+
   factorsAffectingParenting: async ({ page }, use) => {
     await use(new FactorsAffectingParenting(page));
   },
@@ -57,4 +61,9 @@ export const test = base.extend<CreateFixtures>({
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
   },
-});
+
+   respondentsDetails: async ({ page }, use) => {
+    await use(new RespondentsDetails(page));
+  },
+}
+)

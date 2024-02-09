@@ -10,48 +10,56 @@ export class RespondentsDetails {
     readonly FirstName: Locator;
     readonly LastName : Locator;
     readonly DateOfBirth : Locator;
-    readonly DayMonthYear : Locator;
     readonly Gender : Locator;
-    readonly CurrentAddressKnown: Locator
+    readonly CurrentAddressKnown: Locator;
     readonly RelationshipToChildLocator : Locator;
     readonly DoYouNeedContactDetailsHiddenFromParties : Locator;
     readonly AbilityToTakePartInProceedings: Locator;
     readonly DoTheyHaveLegalRepresentation: Locator;
     readonly RespondentsDetailsNeeded: Locator;
-  static RespondentsDetailsHeading: any;
+    readonly Day: Locator;
+    readonly Month: Locator;
+    readonly Year: Locator;
     
-  public constructor(page: Page) {
+
+  static RespondentsDetailsHeading: any;
+  SaveAndContinue: any;
+
+    
+public constructor(page: Page) {
         this.page = page;
         this.RespondentsDetailsHeading = page.getByRole("heading", {name: "AllocationProposal needed",});
         this.RespondentsDetailsLink = page.locator(".govuk-template__body.js-enabled");
         this.RespondentDetailsNeeded(); 
+        this.DateOfBirth =page.getByText('Date of birth (Optional)');
+        this.Day = page.getByLabel('Day');  
+        this.Month = page.getByLabel('Month');
+        this.Year = page.getByLabel('Year');
+        this.CurrentAddressKnown = page.getByRole('group', { name: '*Current address known?' });
 }
 async RespondentDetailsNeeded() {
   await this.page.getByRole('heading', { name: 'Add information about the' }).isVisible();
   await this.page.getByRole('link', { name: 'Respondents\' details' }).click();
   await this.page.getByLabel('*First name (Optional)').fill('Asa');
   await this.page.getByLabel('*Last name (Optional)').fill('Thierry');
-  await this.page.getByText('Date of birth (Optional)').click();
-  await this.page.getByLabel('Day').fill('20');  
-  await this.page.getByLabel('Month').fill('10');
-  await this.page.getByLabel('Year').fill('2010');
+  await this.DateOfBirth.click();
+  await this.Day.fill('10');
+  await this.Month.fill('12');
+  await this.Year. fill('2008');
   await this.page.getByLabel('Gender (Optional)').selectOption('1: Male');
-  await this.page.getByRole('group', { name: '*Current address known?' }).getByLabel('No').click();
-  await this.page.getByRole('group', { name: 'Do you need contact details' }).getByLabel('No').check();
-  await this.page.locator('#respondents1_0_party_contactDetailsHidden_radio').getByText('No').click();
-  await this.page.locator('#respondents1_0_party_litigationIssues').getByText('No', { exact: true }).click();
+  await this.CurrentAddressKnown.getByLabel('No').check();
+  //await this.page.getByRole('group', { name: '*Current address known?' }).getByLabel('No').click();
+  //await this.page.pause();
   await this.page.getByLabel('*Reason the address is not').selectOption('1: No fixed abode');
-  await this.page.getByRole('group', { name: 'Telephone (Optional)' }).locator('#respondents1_0_party_telephoneNumber_telephoneNumber').fill('00000000');
-  await this.page.getByRole('heading', { name: 'Relationship to the child' }).click();
-  await this.page.getByLabel('*What is the respondent\'s').fill('Uncle');
+  await this.page.getByLabel('*What is the respondent\'s').click();
+  await this.page.getByLabel('*What is the respondent\'s').fill('uncle');
   await this.page.getByRole('group', { name: 'Do you need contact details' }).getByLabel('No').check();
   await this.page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true }).check();
   await this.page.getByRole('group', { name: '*Do they have legal' }).getByLabel('No').check();
   await this.page.getByRole('button', { name: 'Continue' }).click();
   await this.page.getByRole('button', { name: 'Save and continue' }).click();
 }
-async respondentDetails() {
-    await this.RespondentsDetailsLink.isVisible();
-    await this.RespondentsDetailsLink.click();
-}
-}
+async  RespondentsDetails() {
+  await this.RespondentsDetailsLink.isVisible();
+  await this.RespondentsDetailsLink.click();
+}}

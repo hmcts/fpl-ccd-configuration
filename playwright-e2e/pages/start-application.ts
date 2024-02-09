@@ -19,13 +19,13 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
-
   readonly respondentsDetailsHeading: Locator;
   readonly respondentsDetailsHasBeenUpdatedFinished: Locator;
+  readonly respodentsDetailsLink: Locator
   readonly allocationProposalHasBeenUpdatedFinished: Locator;
   readonly allocationProposalLink: Locator;
   readonly allocationProposalHeading: Locator;
-
+;
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details"} );
@@ -36,14 +36,15 @@ export class StartApplication {
     this.groundsForTheApplicationLink = page.getByRole('link', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
-    this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' }
+    this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
     this.respondentsDetailsLink = page.getByRole('link',{ name: 'Responsdents details'});
     this.respondentsDetailsHeader = page.getByRole('heading', { name: 'Respondents detals' });
-
-
     this.allocationProposalHasBeenUpdatedFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img');
     this.allocationProposalHeading = page.getByRole('group', { name: 'Allocation proposal' }).getByRole('heading');
     this.allocationProposalLink = page.getByRole('link', { name: 'Allocation proposal' });
+    this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
+    this.respondentsDetailsLink = page.getByRole('link',{ name: 'Responsdents details'});
+    this.respondentsDetailsHeader = page.getByRole('heading', { name: 'Respondents detals' });
 
   }
 
@@ -83,7 +84,6 @@ export class StartApplication {
     await expect (this.respondentsDetailsHeading).toBeVisible();
 
   }
-
   async allocationProposal(){
     await this.allocationProposalLink.isVisible();
     await this.allocationProposalLink.click();
