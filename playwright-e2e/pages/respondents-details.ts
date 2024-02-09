@@ -66,8 +66,3 @@ async respondentDetails() {
     await this.RespondentsDetailsLink.click();
 }
 }
-
-
-
-
-
