@@ -4,6 +4,7 @@ import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
+import {  RespondentsDetails  } from "../pages/respondents-details";
 
 // WIP
 test.skip("Create a case", async ({ page }) => {
@@ -53,7 +54,10 @@ test.skip("Create a case", async ({ page }) => {
   // 12. Child's details
 
   // 13. Respondents' details
-
+  await startApplication.respondentsDetailsLink.isVisible();
+  await startApplication.respondentsDetailsLink.click();
+  await RespondentsDetails.RespondentsDetailsHeading.isVisible();
+  
   // Add court requirements
   // 14. Allocation proposal
 

@@ -1,6 +1,11 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
+  respondentsDetailsLink: Locator;
+  respondentsDetailsHeader: Locator;
+  respondentsDetailsHasBeenUpdated() {
+    throw new Error("Method not implemented.");
+  }
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
@@ -12,6 +17,10 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
+  readonly 
+
+  readonly respondentsDetailsHeading: Locator;
+  readonly respondentsDetailsHasBeenUpdatedFinished: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -23,6 +32,10 @@ export class StartApplication {
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
     this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
+
+    this.respondentsDetailsLink = page.getByRole('link',{ name: 'Responsdents details'});
+    this.respondentsDetailsHeader = page.getByRole('heading', { name: 'Respondents detals' });
+
   }
 
   async addApplicationDetails(){
@@ -54,4 +67,12 @@ export class StartApplication {
     await this.riskAndHarmToChildrenLink.isVisible();
     await this.riskAndHarmToChildrenLink.click();
   }
+
+  async respondentsDetails() {
+    await this.respondentsDetailsLink.isVisible();
+    await this.respondentsDetailsLink.click();
+    await expect (this.respondentsDetailsHeading).toBeVisible();
+
+  }
+
 }

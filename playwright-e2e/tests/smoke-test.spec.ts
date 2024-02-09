@@ -8,7 +8,9 @@ test("Smoke Test @smoke-test", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren
+  riskAndHarmToChildren,
+  respondentsDetails,
+
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -52,4 +54,7 @@ test("Smoke Test @smoke-test", async ({
   // 6. Risk and harm to children
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+  //7. Respondents Details
+  await startApplication.respondentsDetails();
+  await riskAndHarmToChildren.respondentsDetailsSmokeTest();
 });
