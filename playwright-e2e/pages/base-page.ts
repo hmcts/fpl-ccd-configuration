@@ -6,6 +6,7 @@ export abstract class BasePage {
   readonly go:Locator;
   readonly page: Page ;
   readonly saveAndContinue : Locator;
+  readonly continue :Locator;
 
 
   constructor(page : Page){
@@ -13,6 +14,7 @@ export abstract class BasePage {
     this.nextStep = page.getByLabel('Next step');
     this.go=  page.getByRole('button', { name: 'Go' });
     this.saveAndContinue =  page.getByRole('button', { name: 'Save and continue' });
+    this.continue = page.getByRole('button', { name: 'Continue' });
   }
 async gotoNextStep(eventName:string)
 {
@@ -27,6 +29,10 @@ async checkYourAnsAndSubmit(){
 async tabNavigation(tabName :string){
 
   await this.page.getByText(tabName).click();
+
+}
+async clickContinue(){
+  await this.continue.click();
 
 }
 

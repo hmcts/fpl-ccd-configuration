@@ -3,6 +3,7 @@ import {Apihelp} from '../utils/apiFixture';
 //import {urlConfig} from "../settings/urls";
 import caseData from '../caseData/mandatorySubmissionFields.json';
 import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
+import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json';
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/userCredentials';
 import { expect } from '@playwright/test';
 
@@ -42,7 +43,18 @@ test.describe('send and reply message',()=>{
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
     })
     test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
-
+      casename = 'CTSC Admin Close Message' + dateTime.slice(0, 10);
+      await apiDataSetup.updateCase(casename,caseNumber,caseDataCloseMessage);
+      await  signInPage.visit();
+      await signInPage.login(CTSCUser.email,CTSCUser.password);
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await judicialMessages.gotoNextStep('Reply to messages');
+      await judicialMessages.CTSCUserCloseMessage();
+      await judicialMessages.checkYourAnsAndSubmit();
+      await judicialMessages.tabNavigation('Judicial messages');
+    //  await expect(page.getByText('Closed')).await page.locator('ccd-read-complex-field-table ccd-read-collection-field ccd-field-read-label div').click();
+      await expect(page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
+      
     })
 
 });

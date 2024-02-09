@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 
@@ -12,7 +12,6 @@ export class JudicialMessage extends BasePage
     readonly recipientEmail:Locator;
     readonly message:Locator;
     readonly messageToReply:Locator;
-    readonly continue:Locator;
     readonly haveToReply : Locator;
     readonly reply: Locator;
 
@@ -28,9 +27,8 @@ export class JudicialMessage extends BasePage
         this.recipientEmail =page.getByLabel('Recipient\'s email address');
         this.message = page.getByLabel('Message');
         this.messageToReply = page.getByLabel('Your messages');
-        this.continue = page.getByRole('button', { name: 'Continue' });
         this.haveToReply = page.getByRole('group', { name: 'Do you need to reply?' });
-       this.reply = page.getByRole('textbox', { name: 'Reply' });
+        this.reply = page.getByRole('textbox', { name: 'Reply' });
 
     }
 
@@ -43,21 +41,28 @@ export class JudicialMessage extends BasePage
         await this.recipientEmail.fill('Judge@email.com');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
-        await this.continue.click();
+        await this.clickContinue();
         await this.message.click();
         await this.message.fill('message send to allocated Judge');
-        await this.continue.click();
+        await this.clickContinue();
 
     }
     async judgeReplyMessage(){
 
         await this.messageToReply.selectOption('1: c09eb60e-facc-4af6-9761-3e23f6748673');
-        await this.continue.click();
+        await this.clickContinue();
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
-        await this.continue.click();
+        await this.clickContinue();
 
     }
+async CTSCUserCloseMessage(){
+
+    await this.messageToReply.selectOption('Subject 1, 1 December 2023 at 2:41pm, High');
+    await this.clickContinue();
+    await this.haveToReply.getByLabel('No').check();
+    await this.clickContinue();
+}
 
 
 
