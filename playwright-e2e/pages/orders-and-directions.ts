@@ -31,7 +31,7 @@ export class OrdersAndDirectionSought {
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
     await this.Continue.click();
-    await expect(this.this.CheckYourAnswers).toBeVisible;
+    await expect(this.CheckYourAnswers).toBeVisible;
     await this.SaveAndContinue.click();
   }
 }
