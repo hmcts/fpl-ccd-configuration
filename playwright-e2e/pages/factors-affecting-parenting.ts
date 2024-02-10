@@ -3,6 +3,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 export class FactorsAffectingParenting {
   readonly page: Page;
   readonly factorsAffectingParentingHeading: Locator;
+  readonly factorsAffectingParentingLink: Locator;
   readonly alcoholOrDrugAbuse: Locator;
   readonly detailsAlcoholOrDrugAbuse: Locator;
   readonly domesticViolence: Locator;
@@ -16,7 +17,8 @@ export class FactorsAffectingParenting {
   public constructor(page: Page) {
     this.page = page;
     this.factorsAffectingParentingHeading = page.getByRole("heading", {name: "Factors affecting parenting"});
-    this.alcoholOrDrugAbuse = page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' }).getByLabel('Yes');
+    this.factorsAffectingParentingLink = page.getByRole("link", { name: "Factors affecting parenting" });
+    this.alcoholOrDrugAbuse = page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' });
     this.detailsAlcoholOrDrugAbuse = page.getByRole('textbox', { name: 'Give details (Optional)' });
     this.domesticViolence = page.getByRole('group', { name: 'Domestic violence (Optional)' }).getByLabel('Yes');
     this.detailsDomesticViolence = page.getByRole('textbox', { name: 'Give details (Optional)' });
@@ -29,7 +31,8 @@ export class FactorsAffectingParenting {
 
   async addFactorsAffectingParenting() {
     await this.factorsAffectingParentingHeading.isVisible();
-    await this.alcoholOrDrugAbuse.check();
+    await this.factorsAffectingParentingLink.click();
+    await this.alcoholOrDrugAbuse.getByLabel('Yes').check();
     await this.detailsAlcoholOrDrugAbuse.fill('details alcohol abuse');
     await this.domesticViolence.check();
     await this.detailsDomesticViolence.fill('details domestic violence');
