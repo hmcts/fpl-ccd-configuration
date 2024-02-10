@@ -31,23 +31,11 @@ export class CreateCase {
 
   async caseName() {
 
-    var date = new Date();
+    const date = new Date();
+    const formattedDate = date.toISOString();
+    //const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
 
-    let options: Intl.DateTimeFormatOptions = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      timeZoneName: "short",
-    };
-
-    // Specify default date formatting for language (locale)
-    const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
-
-    // Append milliseconds to avoid duplicated case names with parallelisation
+    // Append milliseconds to avoid duplicated case names with parallelization
     const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
 
     // Create the case name using a timestamp string
@@ -58,7 +46,7 @@ export class CreateCase {
 
   }
 
-  async submitCase(caseName) {
+  async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
@@ -71,7 +59,7 @@ export class CreateCase {
     await this.viewHistory.click();
   }
 
-  async checkCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName: string) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page
