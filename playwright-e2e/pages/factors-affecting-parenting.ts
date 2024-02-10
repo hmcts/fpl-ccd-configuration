@@ -19,11 +19,11 @@ export class FactorsAffectingParenting {
     this.factorsAffectingParentingHeading = page.getByRole("heading", {name: "Factors affecting parenting"});
     this.factorsAffectingParentingLink = page.getByRole("link", { name: "Factors affecting parenting" });
     this.alcoholOrDrugAbuse = page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' });
-    this.detailsAlcoholOrDrugAbuse = page.getByRole('textbox', { name: 'Give details (Optional)' });
+    this.detailsAlcoholOrDrugAbuse = page.locator('#factorsParenting_alcoholDrugAbuseReason');
     this.domesticViolence = page.getByRole('group', { name: 'Domestic violence (Optional)' }).getByLabel('Yes');
-    this.detailsDomesticViolence = page.getByRole('textbox', { name: 'Give details (Optional)' });
+    this.detailsDomesticViolence = page.locator('#factorsParenting_domesticViolenceReason');
     this.anythingElse = page.getByRole('group', { name: 'Anything else (Optional)' }).getByLabel('No');
-    this.detailsAnythingElse = page.getByRole('textbox', { name: 'Give details (Optional)' });
+    this.detailsAnythingElse = page.locator('#factorsParenting_anythingElseReason');
     this.Continue = page.getByRole('button', { name: 'Continue' });
     this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
     this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
