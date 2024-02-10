@@ -84,13 +84,13 @@ withNightlyPipeline(type, product, component) {
   enableFullFunctionalTest(240)
 
   before('mutationTest') {
-   setupSecretsForIntegrationTests(pipelineConf)
+    setupSecretsForIntegrationTests(pipelineConf)
   }
 
-   afterAlways('mutationTest') {
-     archiveExtraFilesForIntegrationTests()
-     teardownSecretsForIntegrationTests()
-   }
+  afterAlways('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
+    teardownSecretsForIntegrationTests()
+  }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
