@@ -52,6 +52,4 @@ test("Smoke Test @smoke-test", async ({
   // 6. Risk and harm to children
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // 9. Factors affecting parenting
 });
