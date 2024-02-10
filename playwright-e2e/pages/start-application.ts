@@ -17,7 +17,7 @@ export class StartApplication {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details"} );
     this.ordersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought",});
-    this.hearingUrgencyLink = page.getByRole('link', { name: 'Hearing urgency' }); 
+    this.hearingUrgencyLink = page.getByRole('link', { name: 'Hearing urgency' });
     this.hearingUrgencyHeader = page.getByRole('heading', { name: 'Hearing urgency' });
     this.groundsForTheApplicationLink = page.getByRole('link', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
