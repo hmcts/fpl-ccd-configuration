@@ -33,17 +33,8 @@ export class CreateCase {
 
     const date = new Date();
     const formattedDate = date.toISOString();
-    //const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
-
-    // Append milliseconds to avoid duplicated case names with parallelization
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-
     // Create the case name using a timestamp string
-    const caseName = `Smoke Test ${formattedDate}.${milliseconds}`;
-    this.generatedCaseName = caseName;
-
-    console.log("Case name:", caseName);
-
+    this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
   async submitCase(caseName: string) {
