@@ -118,6 +118,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fortify-scan') {
-   steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }
