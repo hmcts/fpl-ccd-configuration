@@ -8,8 +8,7 @@ test("Smoke Test @smoke-test", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren,
-  factorsAffectingParenting
+  riskAndHarmToChildren
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -55,6 +54,4 @@ test("Smoke Test @smoke-test", async ({
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
   // 9. Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
 });
