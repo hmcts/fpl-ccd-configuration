@@ -22,7 +22,7 @@ export class FactorsAffectingParenting {
     this.detailsAlcoholOrDrugAbuse = page.locator('#factorsParenting_alcoholDrugAbuseReason');
     this.domesticViolence = page.getByRole('group', { name: 'Domestic violence (Optional)' }).getByLabel('Yes');
     this.detailsDomesticViolence = page.locator('#factorsParenting_domesticViolenceReason');
-    this.anythingElse = page.getByRole('group', { name: 'Anything else (Optional)' }).getByLabel('No');
+    this.anythingElse = page.getByRole('group', { name: 'Anything else (Optional)' }).getByLabel('Yes');
     this.detailsAnythingElse = page.locator('#factorsParenting_anythingElseReason');
     this.Continue = page.getByRole('button', { name: 'Continue' });
     this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
