@@ -5,6 +5,7 @@ import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import {FactorsAffectingParenting} from "../pages/factors-affecting-parenting";
+import { AllocationProposal } from "../pages/allocation-proposal";
 
 // WIP
 test.skip("Create a case", async ({ page }) => {
@@ -14,6 +15,7 @@ test.skip("Create a case", async ({ page }) => {
   const startApplication = new StartApplication(page);
   const ordersAndDirectionSought = new OrdersAndDirectionSought(page);
   const factorsAffectingParenting = new FactorsAffectingParenting(page);
+  const allocationProposal = new AllocationProposal(page);
 
   await signInPage.visit();
   await signInPage.login(
@@ -22,13 +24,13 @@ test.skip("Create a case", async ({ page }) => {
   );
   await signInPage.isSignedIn();
   // Add application details
-  // 2. Start new case, get case id and assert case id is created
+  // Start new case, get case id and assert case id is created
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // 3. Orders and directions sought
+  // Orders and directions sought
   await startApplication.ordersAndDirectionsSoughtLink.isVisible();
   await startApplication.ordersAndDirectionsSoughtLink.click();
   await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();

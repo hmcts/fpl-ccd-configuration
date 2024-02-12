@@ -1,5 +1,5 @@
 const recorder = require('codeceptjs').recorder;
-const output = require('codeceptjs').output;
+//const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const retryableErrors = [
   'Execution context was destroyed',
