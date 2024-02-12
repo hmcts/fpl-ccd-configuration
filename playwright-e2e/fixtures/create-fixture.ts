@@ -7,6 +7,7 @@ import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
 import { JudicialMessage } from "../pages/judicialMessage";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
+import { AllocationProposal } from "../pages/allocation-proposal";
 
 
 type CreateFixtures = {
@@ -18,6 +19,7 @@ type CreateFixtures = {
   groundsForTheApplication : GroundsForTheApplication;
   judicialMessages : JudicialMessage;
   riskAndHarmToChildren : RiskAndHarmToChildren;
+  allocationProposal : AllocationProposal;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -52,5 +54,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new RiskAndHarmToChildren(page));
 
   },
-
+  allocationProposal: async ({ page }, use) => {
+    await use(new AllocationProposal(page));
+  },
 });
