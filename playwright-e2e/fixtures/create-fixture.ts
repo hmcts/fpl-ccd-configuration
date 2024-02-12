@@ -5,7 +5,7 @@ import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
-import { JudicialMessage } from "../pages/judicialMessage";
+import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
