@@ -59,9 +59,7 @@ export class Apihelp {
     let data =lodash.template(JSON.stringify(caseData))(docParameter);
     let postURL = `${urlConfig.aatServiceUrl}testing-support/case/populate/${caseID}`;
       try {
-        console.log (' update request')
      let   res = await this.apiRequest(postURL,systemUpdateUser,'post',data);
-     console.log ('res' + res);
       } catch (error) {
           console.log(error);
       }
@@ -70,7 +68,6 @@ export class Apihelp {
   async apiRequest(postURL: string, authUser: any, method: string ='get', data: any ={} )
   {
     const  systemUserAuthToke = await this.getAccessToken({user: authUser});
-    console.log ('systemUserAuthToke' + systemUserAuthToke)
     const requestConfig ={
       method: method,
       url: postURL,
