@@ -6,7 +6,7 @@ import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
 import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json';
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/userCredentials';
 import { expect } from '@playwright/test';
-import {isNull} from "lodash";
+
 
 test.describe('send and reply message',()=>{
   let apiDataSetup = new Apihelp();
