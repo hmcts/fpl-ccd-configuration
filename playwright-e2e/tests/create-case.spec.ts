@@ -5,6 +5,7 @@ import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import {  RespondentsDetails  } from "../pages/respondents-details";
+import { AllocationProposal } from "../pages/allocation-proposal";
 
 // WIP
 test.skip("Create a case", async ({ page }) => {
@@ -13,6 +14,7 @@ test.skip("Create a case", async ({ page }) => {
   const createCase = new CreateCase(page);
   const startApplication = new StartApplication(page);
   const ordersAndDirectionSought = new OrdersAndDirectionSought(page);
+  const allocationProposal = new AllocationProposal(page);
 
   await signInPage.visit();
   await signInPage.login(
@@ -21,18 +23,18 @@ test.skip("Create a case", async ({ page }) => {
   );
   await signInPage.isSignedIn();
   // Add application details
-  // 2. Start new case, get case id and assert case id is created
+  // Start new case, get case id and assert case id is created
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // 3. Orders and directions sought
+  // Orders and directions sought
   await startApplication.ordersAndDirectionsSoughtLink.isVisible();
   await startApplication.ordersAndDirectionsSoughtLink.click();
   await ordersAndDirectionSought.OrdersAndDirectionsHeading.isVisible();
 
-  // 4. Hearing urgency
+ // 4. Hearing urgency
 
   // Add application details
   // 5. Grounds for the application
@@ -67,4 +69,5 @@ test.skip("Create a case", async ({ page }) => {
   // 16. International element
 
   // 17. Other people in the case
+
 });
