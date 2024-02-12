@@ -49,7 +49,7 @@ export class JudicialMessage extends BasePage
     }
     async judgeReplyMessage(){
 
-        await this.messageToReply.selectOption('1: c09eb60e-facc-4af6-9761-3e23f6748673');
+        await this.messageToReply.selectOption('Subject 1, 16 November 2023 at 4:51pm, High');
         await this.clickContinue();
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
