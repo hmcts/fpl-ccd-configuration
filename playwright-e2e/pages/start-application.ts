@@ -17,8 +17,6 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
-  readonly 
-
   readonly respondentsDetailsHeading: Locator;
   readonly respondentsDetailsHasBeenUpdatedFinished: Locator;
 
