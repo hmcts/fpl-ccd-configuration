@@ -15,10 +15,6 @@ test.describe('send and reply message',()=>{
   let casename : string;
   test.beforeEach(async ()  => {
       caseNumber =  await apiDataSetup.createCase('e2e case',newSwanseaLocalAuthorityUserOne);
-      if (isNull(caseNumber))
-      {
-        test.skip();
-      }
 
   });
 
