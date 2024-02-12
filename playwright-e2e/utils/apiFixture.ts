@@ -35,7 +35,13 @@ export class Apihelp {
     const data = {
             caseName : caseName,
          };
+    try{
       res= await this.apiRequest(url,user,'post',data);
+    }
+    catch (error) {
+      console.log(error);
+    }
+
      // @ts-ignore
     return res.id;
   }

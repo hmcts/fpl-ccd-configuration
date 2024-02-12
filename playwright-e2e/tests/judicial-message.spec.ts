@@ -18,7 +18,7 @@ test.describe('send and reply message',()=>{
 
   test('CTSC admin send message to Judge',
     async ({page,signInPage,judicialMessages}) => {
-        casename = 'CTSC message Judge' + dateTime.slice(0, 10);
+        casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
         await apiDataSetup.updateCase(casename,caseNumber,caseData);
         await  signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
@@ -31,7 +31,7 @@ test.describe('send and reply message',()=>{
     });
 
     test('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
-        casename = 'Judge Reply' + dateTime.slice(0, 10);
+        casename = 'Judge Reply ' + dateTime.slice(0, 10);
         await apiDataSetup.updateCase(casename,caseNumber,caseDataJudgeMessage);
         await  signInPage.visit();
         await signInPage.login(judgeUser.email,judgeUser.password);
@@ -43,7 +43,7 @@ test.describe('send and reply message',()=>{
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
     })
     test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
-      casename = 'CTSC Admin Close Message' + dateTime.slice(0, 10);
+      casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
       await apiDataSetup.updateCase(casename,caseNumber,caseDataCloseMessage);
       await  signInPage.visit();
       await signInPage.login(CTSCUser.email,CTSCUser.password);
@@ -54,7 +54,7 @@ test.describe('send and reply message',()=>{
       await judicialMessages.tabNavigation('Judicial messages');
     //  await expect(page.getByText('Closed')).await page.locator('ccd-read-complex-field-table ccd-read-collection-field ccd-field-read-label div').click();
       await expect(page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
-      
+
     })
 
 });
