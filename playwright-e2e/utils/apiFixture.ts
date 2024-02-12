@@ -1,4 +1,4 @@
-import {systemUpdateUser} from '../settings/userCredentials';
+import {systemUpdateUser} from '../settings/user-credentials';
 import urlConfig from '../settings/urls';
 
 
