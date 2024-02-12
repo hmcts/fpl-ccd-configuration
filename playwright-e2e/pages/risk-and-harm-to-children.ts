@@ -1,9 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class RiskAndHarmToChildren {
-    respondentsDetailsSmokeTest() {
-      throw new Error("Method not implemented.");
-    } 
     readonly page: Page;
     readonly physicalHarmRadio: Locator;
     readonly emotionalHarmRadio: Locator;
