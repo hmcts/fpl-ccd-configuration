@@ -4,7 +4,7 @@ import {Apihelp} from '../utils/apiFixture';
 import caseData from '../caseData/mandatorySubmissionFields.json';
 import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
 import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json';
-import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/userCredentials';
+import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 
 
