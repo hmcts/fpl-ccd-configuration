@@ -1,5 +1,5 @@
 import { test} from '../fixtures/create-fixture';
-import {Apihelp} from '../utils/apiFixture';
+import {Apihelp} from '../utils/api-helpher';
 //import {urlConfig} from "../settings/urls";
 import caseData from '../caseData/mandatorySubmissionFields.json';
 import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
