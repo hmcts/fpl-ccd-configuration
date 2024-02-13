@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {CreateCaseName} from "../utils/create-case-name";
 
 export class CreateCase {
   readonly page: Page;
@@ -30,11 +31,7 @@ export class CreateCase {
   }
 
   async caseName() {
-
-    const date = new Date();
-    const formattedDate = date.toISOString();
-    // Create the case name using a timestamp string
-    this.generatedCaseName = `Smoke Test ${formattedDate}`;
+    this.generatedCaseName = CreateCaseName.getCaseName();
   }
 
   async submitCase(caseName: string) {
