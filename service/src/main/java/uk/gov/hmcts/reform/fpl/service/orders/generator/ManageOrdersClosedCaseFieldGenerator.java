@@ -9,14 +9,23 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -31,7 +40,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
         Map<String, Object> data = new HashMap<>();
 
         boolean isFinalOrder = IsFinalOrder.YES.equals(order.getIsFinalOrder())
-            || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
+                               || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
 
         if (isFinalOrder) {
             data.put("children1", childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData));
@@ -41,21 +50,22 @@ public class ManageOrdersClosedCaseFieldGenerator {
         if (shouldCloseCase && isFinalOrder) {
 
             data.put("state", CLOSED);
-            data.put("closeCaseTabField", CloseCase.builder().date(getCloseCaseDate(manageOrdersEventData))
+            data.put("closeCaseTabField", CloseCase.builder().date(getCloseCaseDate(caseData, manageOrdersEventData))
                 .build());
         }
 
         return data;
     }
 
-    private LocalDate getCloseCaseDate(ManageOrdersEventData manageOrdersEventData) {
-        if (manageOrdersEventData.getManageOrdersApprovalDate() != null) {
-            return manageOrdersEventData.getManageOrdersApprovalDate();
-        } else if (manageOrdersEventData.getManageOrdersApprovalDateOrDateTime() != null) {
-            return manageOrdersEventData.getManageOrdersApprovalDateOrDateTime().toLocalDate();
-        } else {
-            return time.now().toLocalDate();
-        }
+    private LocalDate getCloseCaseDate(CaseData caseData, ManageOrdersEventData manageOrdersEventData) {
+        return Stream.of(
+                OrderHelper.getLatestApprovalDateOfFinalOrders(caseData),
+                Optional.ofNullable(manageOrdersEventData.getManageOrdersApprovalDate()),
+                Optional.ofNullable(manageOrdersEventData.getManageOrdersApprovalDateTime())
+                    .map(LocalDateTime::toLocalDate))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .max(Comparator.naturalOrder())
+            .orElse(time.now().toLocalDate());
     }
-
 }
