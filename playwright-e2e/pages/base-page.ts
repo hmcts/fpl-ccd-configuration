@@ -16,25 +16,21 @@ export abstract class BasePage {
     this.saveAndContinue =  page.getByRole('button', { name: 'Save and continue' });
     this.continue = page.getByRole('button', { name: 'Continue' });
   }
-async gotoNextStep(eventName:string)
-{
-  await this.nextStep.selectOption(eventName);
-  await this.go.click();
-}
-async checkYourAnsAndSubmit(){
+  async gotoNextStep(eventName:string)
+  {
+    await this.nextStep.selectOption(eventName);
+    await this.go.click();
+  }
+  async checkYourAnsAndSubmit(){
+    await this.saveAndContinue.click();
+  }
 
-  await this.saveAndContinue.click();
-}
-
-async tabNavigation(tabName :string){
-
-  await this.page.getByText(tabName).click();
-
-}
-async clickContinue(){
-  await this.continue.click();
-
-}
+  async tabNavigation(tabName :string){
+    await this.page.getByText(tabName).click();
+  }
+  async clickContinue(){
+    await this.continue.click();
+  }
 
 
 }
