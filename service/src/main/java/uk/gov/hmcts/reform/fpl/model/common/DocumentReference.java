@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+
+import java.util.Date;
 
 @Data
 @Builder(toBuilder = true)

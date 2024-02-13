@@ -33,8 +33,8 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
 
     private List<Element<RespondentStatementV2>> getElements(CaseData caseData) {
         return concat(concat(nullSafeList(caseData.getRespStmtListLA()).stream(),
-                nullSafeList(caseData.getRespStmtListCTSC()).stream())
-            , nullSafeList(caseData.getRespStmtList()).stream()).collect(Collectors.toList());
+                nullSafeList(caseData.getRespStmtListCTSC()).stream()),
+            nullSafeList(caseData.getRespStmtList()).stream()).collect(Collectors.toList());
     }
 
     @Override

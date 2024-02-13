@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

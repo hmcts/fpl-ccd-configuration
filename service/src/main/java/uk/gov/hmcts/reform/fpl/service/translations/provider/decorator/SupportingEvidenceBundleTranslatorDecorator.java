@@ -20,8 +20,8 @@ public class SupportingEvidenceBundleTranslatorDecorator {
 
     private final Time time;
 
-    public Function<Element<? extends SupportingEvidenceBundle>, Element<? extends SupportingEvidenceBundle>> translatedBundle(
-        DocumentReference document, UUID selectedOrderId) {
+    public Function<Element<? extends SupportingEvidenceBundle>, Element<? extends SupportingEvidenceBundle>>
+        translatedBundle(DocumentReference document, UUID selectedOrderId) {
         return bundle -> element(bundle.getId(), bundleMatch(selectedOrderId, bundle)
             ? addTranslationInfo(document, bundle) : bundle.getValue());
     }
