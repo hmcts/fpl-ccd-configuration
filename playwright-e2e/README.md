@@ -41,6 +41,7 @@ AAT_SERVICE_URL=https://example.com
 
 # Passwords
 E2E_TEST_PASSWORD=passwordhere
+E2E_TEST_JUDGE_PASSWORD=passwordhere
 
 # Ports
 SERVER_PORT=
