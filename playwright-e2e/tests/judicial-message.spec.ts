@@ -15,7 +15,6 @@ test.describe('send and reply message',()=>{
   let casename : string;
   test.beforeEach(async ()  => {
       caseNumber =  await apiDataSetup.createCase('e2e case',newSwanseaLocalAuthorityUserOne);
-
   });
 
   test('CTSC admin send message to Judge',
@@ -43,7 +42,8 @@ test.describe('send and reply message',()=>{
         await judicialMessages.checkYourAnsAndSubmit();
         await judicialMessages.tabNavigation('Judicial messages');
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
-    })
+    });
+
     test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
       casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
       await apiDataSetup.updateCase(casename,caseNumber,caseDataCloseMessage);
@@ -54,9 +54,7 @@ test.describe('send and reply message',()=>{
       await judicialMessages.CTSCUserCloseMessage();
       await judicialMessages.checkYourAnsAndSubmit();
       await judicialMessages.tabNavigation('Judicial messages');
-    //  await expect(page.getByText('Closed')).await page.locator('ccd-read-complex-field-table ccd-read-collection-field ccd-field-read-label div').click();
       await expect(page.getByRole('cell', { name: 'Closed', exact: true })).toBeVisible();
-
     })
 
 });

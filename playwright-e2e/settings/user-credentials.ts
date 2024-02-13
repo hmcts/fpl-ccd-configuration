@@ -1,7 +1,7 @@
 
 
-const e2ePw = process.env.E2E_TEST_PASSWORD || 'Password1234';
-const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || 'Password12';
+const e2ePw = process.env.E2E_TEST_PASSWORD || '';
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
