@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -15,6 +17,8 @@ public class DocumentReference {
     private String filename;
     @JsonProperty("document_binary_url")
     private final String binaryUrl;
+    @JsonProperty("document_created_on")
+    private final Date createdOn;
     @JsonIgnore
     private Long size;
     @JsonIgnore
@@ -26,6 +30,7 @@ public class DocumentReference {
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
             .filename(document.originalDocumentName)
+            .createdOn(document.createdOn)
             .build();
     }
 
@@ -34,6 +39,7 @@ public class DocumentReference {
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
             .filename(document.originalDocumentName)
+            .createdOn(document.createdOn)
             .build();
     }
 
