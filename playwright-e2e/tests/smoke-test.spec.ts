@@ -9,9 +9,8 @@ test("Smoke Test @smoke-test", async ({
   hearingUrgency,
   groundsForTheApplication,
   riskAndHarmToChildren,
-  respondentsDetails,
+  factorsAffectingParenting,
   allocationProposal,
-  
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -55,10 +54,10 @@ test("Smoke Test @smoke-test", async ({
   // Risk and harm to children
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-  //7. Respondents Details
-  await startApplication.respondentsDetails();
-  await riskAndHarmToChildren.respondentsDetailsSmokeTest();
 
+  // 9. Factors affecting parenting
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await startApplication.addApplicationDetailsHeading.isVisible();
   // Allocation Proposal
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
