@@ -30,8 +30,9 @@ export class CreateCase {
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async caseName() {
-    this.generatedCaseName = CreateCaseName.getCaseName();
+   caseName()  {
+    let formattedDate = CreateCaseName.getFormattedDate();
+    this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
   async submitCase(caseName: string) {
