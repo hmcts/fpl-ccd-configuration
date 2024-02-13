@@ -1,5 +1,5 @@
 export class CreateCaseName {
-  static async getFormattedDate() : Promise<any> {
+  static getFormattedDate() : string {
     const date = new Date();
     return date.toISOString();
   }
