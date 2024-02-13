@@ -43,7 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-1956", this::run1956,
+        "DFPL-2177", this::run2177,
         "DFPL-1233", this::run1233,
         "DFPL-1233Rollback", this::run1233Rollback
     );
@@ -190,8 +190,15 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run1956(CaseDetails caseDetails) {
-        migrateCaseService.clearHearingOption(caseDetails);
+    private void run2177(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2177";
+        var possibleCaseIds = List.of(1704384343011099L);
+        var expectedDocumentId = UUID.fromString("8e5cf45c-98d0-45f7-851a-974b6afbdb44");
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        CaseData caseData = getCaseData(caseDetails);
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run1233Rollback(CaseDetails caseDetails) {
@@ -201,5 +208,4 @@ public class MigrateCaseController extends CallbackController {
     private void run1233(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
-
 }
