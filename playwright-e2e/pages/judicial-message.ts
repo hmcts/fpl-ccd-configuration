@@ -15,8 +15,6 @@ export class JudicialMessage extends BasePage
     readonly haveToReply : Locator;
     readonly reply: Locator;
 
-
-
     constructor(page:Page){
         super(page);
         this.whichApplication =page.getByLabel('Which application?');
@@ -47,24 +45,19 @@ export class JudicialMessage extends BasePage
         await this.clickContinue();
 
     }
-    async judgeReplyMessage(){
 
+    async judgeReplyMessage(){
         await this.messageToReply.selectOption('Subject 1, 16 November 2023 at 4:51pm, High');
         await this.clickContinue();
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
         await this.clickContinue();
-
     }
-async CTSCUserCloseMessage(){
 
+async CTSCUserCloseMessage(){
     await this.messageToReply.selectOption('Subject 1, 1 December 2023 at 2:41pm, High');
     await this.clickContinue();
     await this.haveToReply.getByLabel('No').check();
     await this.clickContinue();
 }
-
-
-
-
 }
