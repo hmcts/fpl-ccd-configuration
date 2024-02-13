@@ -97,18 +97,18 @@ public class PlacementService {
 
         final PlacementEventData placementData = caseData.getPlacementEventData();
 
-        final List<Element<Child>> childrenWithoutPlacement = caseData.getAllChildren();
+        final List<Element<Child>> children = caseData.getAllChildren();
 
-        placementData.setPlacementChildrenCardinality(Cardinality.from(childrenWithoutPlacement.size()));
+        placementData.setPlacementChildrenCardinality(Cardinality.from(children.size()));
 
         if (placementData.getPlacementChildrenCardinality() == ONE) {
-            final Element<Child> child = childrenWithoutPlacement.get(0);
+            final Element<Child> child = children.get(0);
 
             placementData.setPlacement(getChildPlacement(placementData, child));
         }
 
         if (placementData.getPlacementChildrenCardinality() == MANY) {
-            placementData.setPlacementChildrenList(asDynamicList(childrenWithoutPlacement, Child::asLabel));
+            placementData.setPlacementChildrenList(asDynamicList(children, Child::asLabel));
         }
 
         return placementData;
