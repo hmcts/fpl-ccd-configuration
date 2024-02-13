@@ -26,7 +26,6 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
 
     private final SupportingEvidenceBundleTranslatorDecorator decorator;
 
-
     @Override
     public List<Element<? extends TranslatableItem>> provideListItems(CaseData caseData) {
         return unmodifiableList(getElements(caseData));
