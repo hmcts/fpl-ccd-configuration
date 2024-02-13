@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import {CreateCaseName} from "../utils/create-case-name";
+import { CreateCaseName } from "../utils/create-case-name";
 
 export class CreateCase {
   readonly page: Page;
