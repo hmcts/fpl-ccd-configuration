@@ -71,7 +71,7 @@ def teardownSecretsForIntegrationTests() {
 
 withNightlyPipeline(type, product, component) {
   pipelineConf = config;
-
+  
   env.URL = params.FRONTEND_URL
   env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
   env.IDAM_API_URL=params.IDAM_API_URL
@@ -80,19 +80,8 @@ withNightlyPipeline(type, product, component) {
   env.ORG_ID = params.ORG_ID
 
   loadVaultSecrets(integrationTestSecrets)
-
-  // enableMutationTest()
-  // enableFortifyScan('fpl-aat')
   enableFullFunctionalTest(240)
 
-  // before('mutationTest') {
-  //   setupSecretsForIntegrationTests(pipelineConf)
-  // }
-
-  // afterAlways('mutationTest') {
-  //   archiveExtraFilesForIntegrationTests()
-  //   teardownSecretsForIntegrationTests()
-  // }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
@@ -104,7 +93,6 @@ withNightlyPipeline(type, product, component) {
     env.ENV = 'aat'
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
-
   afterAlways('fullFunctionalTest') {
     yarnBuilder.yarn('test:functional-nightly')
     env.TESTS_FOR_ACCESSIBILITY = false
@@ -118,8 +106,4 @@ withNightlyPipeline(type, product, component) {
     ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
   }
-
-  // afterAlways('fortify-scan') {
-  //   steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  // }
 }
