@@ -23,10 +23,7 @@ def serviceSecrets = [
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
-    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
@@ -200,7 +197,7 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('saat')
   }
 
-  before('smoketest:preview','fullfunctionaltest:preview') {
+  before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./bin/add-ccd-user-roles.sh
@@ -218,7 +215,7 @@ withPipeline(type, product, component) {
     env.TEST_RETRIES = 3
   }
 
-  afterAlways('smoketest:preview',fullfunctionaltes:preview) {
+  afterAlways('smoketest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smokeTest/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'test-results/smoke/**/*'
