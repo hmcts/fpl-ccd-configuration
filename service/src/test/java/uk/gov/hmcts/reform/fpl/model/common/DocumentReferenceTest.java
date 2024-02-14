@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import java.time.Instant;
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
