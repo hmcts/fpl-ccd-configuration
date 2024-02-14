@@ -33,7 +33,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-1940", this::run1940,
-        "DFPL-2116", this::run2116
+        "DFPL-2177", this::run2177
     );
 
     protected static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -89,14 +89,14 @@ public class MigrateCaseController extends CallbackController {
             String.valueOf(expectedMessageId)));
     }
 
-    private void run2116(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2116";
-        var possibleCaseIds = List.of(1695647810775524L);
-        var expectedMessageId = UUID.fromString("6af1ad04-220c-4782-b334-ae82af1ecae8");
+    private void run2177(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2177";
+        var possibleCaseIds = List.of(1704384343011099L);
+        var expectedDocumentId = UUID.fromString("8e5cf45c-98d0-45f7-851a-974b6afbdb44");
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
+        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }

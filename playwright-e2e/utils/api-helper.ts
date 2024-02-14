@@ -1,5 +1,5 @@
-import {systemUpdateUser,newSwanseaLocalAuthorityUserOne, swanseaUser} from '../settings/userCredentials';
-import {UrlConfig} from '../settings/urls';
+import {systemUpdateUser} from '../settings/user-credentials';
+import urlConfig from '../settings/urls';
 
 
 import axios from 'axios';
@@ -15,7 +15,7 @@ export class Apihelp {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       };
-      let  url = `${UrlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
+      let  url = `${urlConfig.aatIdamUrl}loginUser?username=${user.email}&password=${user.password}`;
       return await axios.post(url,qs.stringify(axiosConfig));
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -28,14 +28,20 @@ export class Apihelp {
 
 
   }
-  async createCase(caseName='e2e UI Test'){
+  async createCase(caseName='e2e UI Test',user:{email:string,password:string}){
 
     let res : object;
-    const url = `${UrlConfig.serviceUrl}/testing-support/case/create`;
+    const url = `${urlConfig.aatServiceUrl}testing-support/case/create`;
     const data = {
             caseName : caseName,
          };
-      res= await this.apiRequest(url,swanseaUser,'post',data);
+    try{
+      res= await this.apiRequest(url,user,'post',data);
+    }
+    catch (error) {
+      console.log(error);
+    }
+
      // @ts-ignore
     return res.id;
   }
@@ -43,7 +49,7 @@ export class Apihelp {
   async updateCase(caseName = 'e2e Test',caseID: string,caseData: {} | undefined){
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with docuemnt url
-    let  docDetail =await this.apiRequest(UrlConfig.serviceUrl + '/testing-support/test-document',systemUpdateUser);
+    let  docDetail =await this.apiRequest(urlConfig.aatServiceUrl + 'testing-support/test-document',systemUpdateUser);
           let docParameter= {
       TEST_DOCUMENT_URL : docDetail.document_url,
       TEST_DOCUMENT_BINARY_URL : docDetail.document_binary_url
@@ -57,11 +63,9 @@ export class Apihelp {
     // @ts-ignore
     caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data =lodash.template(JSON.stringify(caseData))(docParameter);
-    let postURL = `${UrlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
+    let postURL = `${urlConfig.aatServiceUrl}testing-support/case/populate/${caseID}`;
       try {
-        console.log (' update request')
      let   res = await this.apiRequest(postURL,systemUpdateUser,'post',data);
-     console.log ('res' + res);
       } catch (error) {
           console.log(error);
       }
@@ -70,7 +74,6 @@ export class Apihelp {
   async apiRequest(postURL: string, authUser: any, method: string ='get', data: any ={} )
   {
     const  systemUserAuthToke = await this.getAccessToken({user: authUser});
-    console.log ('systemUserAuthToke' + systemUserAuthToke)
     const requestConfig ={
       method: method,
       url: postURL,
