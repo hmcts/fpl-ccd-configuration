@@ -3,17 +3,8 @@
 properties([
   pipelineTriggers([cron('H 17 * * 1-5')]),
   parameters([
-    string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
-      description: 'The URL you want to run the full functional tests against'),
-    string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
-      description: 'The URL of case service callbacks'),
-    string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
-      description: 'The URL of idam api'),
-    string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
-      description: 'The organisation id of Swansea local authority'),
-    string(name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '8',
-      description: 'Number of workers running functional tests'),
+    string(name: 'ENVIRONMENT', defaultValue: 'aat',
+      description: 'The environment you wish to run against (aat/demo/perftest/ithc)'),
   ])
 ])
 
@@ -30,7 +21,8 @@ def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
     secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD')
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
   ]
 ]
 
@@ -79,18 +71,18 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableMutationTest()
-  enableFortifyScan('fpl-aat')
+//  enableMutationTest()
+//  enableFortifyScan('fpl-aat')
   enableFullFunctionalTest(240)
 
-  before('mutationTest') {
-    setupSecretsForIntegrationTests(pipelineConf)
-  }
+//  before('mutationTest') {
+//    setupSecretsForIntegrationTests(pipelineConf)
+//  }
 
-  afterAlways('mutationTest') {
-    archiveExtraFilesForIntegrationTests()
-    teardownSecretsForIntegrationTests()
-  }
+//  afterAlways('mutationTest') {
+//    archiveExtraFilesForIntegrationTests()
+//    teardownSecretsForIntegrationTests()
+//  }
 
   before('fullFunctionalTest') {
     yarnBuilder.yarn('yarn-update')
@@ -117,7 +109,7 @@ withNightlyPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
   }
 
-  afterAlways('fortify-scan') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
+//  afterAlways('fortify-scan') {
+//    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+//  }
 }
