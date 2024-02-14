@@ -30,7 +30,7 @@ public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
         return template;
     }
 
-    public String getApplicantName(CaseData caseData) {
+    private String getApplicantName(CaseData caseData) {
         LocalAuthority applicant = caseData.getLocalAuthorities().stream()
             .map(Element::getValue)
             .findFirst()
