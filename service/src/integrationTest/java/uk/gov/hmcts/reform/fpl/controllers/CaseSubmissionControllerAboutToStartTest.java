@@ -129,6 +129,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getData())
             .containsEntry("draftApplicationDocument",
                 of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                    "document_created_on", SecureDocumentManagementStoreLoader.CREATED_ON_STRING,
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
