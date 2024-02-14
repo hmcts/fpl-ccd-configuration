@@ -95,12 +95,6 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  afterSuccess('build') {
-    stage('test:functional-nightly') {
-      yarnBuilder.yarn('test:functional-nightly')
-    }
-  }
-
   afterAlways('fullFunctionalTest') {
     env.TESTS_FOR_ACCESSIBILITY = false
     publishHTML([
@@ -112,6 +106,7 @@ withNightlyPipeline(type, product, component) {
       reportName           : 'UI Functional Test Report'
     ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+    yarnBuilder.yarn('test:functional-nightly')
   }
 
 //  afterAlways('fortify-scan') {
