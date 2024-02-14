@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -145,13 +147,15 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
         assertThat(callbackResponse.getData())
                 .containsEntry("draftSupplement",
-                        of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                        of("document_created_on", SecureDocumentManagementStoreLoader.CREATED_ON_STRING,
+                            "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
                                 "document_filename", "file.pdf",
                                 "document_binary_url",
                                 "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
         assertThat(callbackResponse.getData())
                 .containsEntry("draftApplicationDocument",
-                        of("document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                        of("document_created_on", SecureDocumentManagementStoreLoader.CREATED_ON_STRING,
+                            "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
                                 "document_filename", "file.pdf",
                                 "document_binary_url",
                                 "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));

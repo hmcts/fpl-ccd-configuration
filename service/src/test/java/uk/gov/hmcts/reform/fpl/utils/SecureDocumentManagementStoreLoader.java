@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class SecureDocumentManagementStoreLoader {
 
-    public static final String CREATED_ON_STRING = "2017-11-01T10:23:55.271+0000";
-    public static final String MODIFIED_ON_STRING = "2017-11-01T10:23:55.120+0000";
+    public static final String CREATED_ON_STRING = "2017-11-01T10:23:55.271+00:00";
+    public static final String MODIFIED_ON_STRING = "2017-11-01T10:23:55.120+00:00";
 
     private SecureDocumentManagementStoreLoader() {
         // NO-OP
