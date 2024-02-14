@@ -40,10 +40,12 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -104,6 +106,7 @@ public class TestDataHelper {
             .filename(filename)
             .url(randomAlphanumeric(10))
             .binaryUrl(randomAlphanumeric(10))
+            .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
             .build();
     }
 

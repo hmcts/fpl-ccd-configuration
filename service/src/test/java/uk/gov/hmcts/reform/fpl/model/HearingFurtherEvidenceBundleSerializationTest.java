@@ -11,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,6 +43,7 @@ class HearingFurtherEvidenceBundleSerializationTest {
                         .binaryUrl("translatedBinaryUrl")
                         .filename("translatedFilename")
                         .url("translatedUrl")
+                        .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
                         .build())
                     .translationUploadDateTime(LocalDateTime.of(2011, 10, 10, 3, 4))
                     .dateTimeReceived(LocalDateTime.of(2012, 10, 10, 3, 4))
@@ -49,6 +52,7 @@ class HearingFurtherEvidenceBundleSerializationTest {
                         .binaryUrl("binaryUrl")
                         .filename("filename")
                         .url("url")
+                        .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
                         .build())
                     .confidential(List.of("CONFIDENTIAL"))
                     .uploadedBy("uploadedBy")
@@ -66,7 +70,8 @@ class HearingFurtherEvidenceBundleSerializationTest {
                 Map.entry("translatedDocument", Map.of(
                     "document_binary_url", "translatedBinaryUrl",
                     "document_filename", "translatedFilename",
-                    "document_url", "translatedUrl"
+                    "document_url", "translatedUrl",
+                    "document_created_on", "2024-02-14T00:00:00.000+00:00"
                 )),
                 Map.entry("translationUploadDateTime", "2011-10-10T03:04:00"),
                 Map.entry("uploadedBy", "uploadedBy"),
@@ -77,7 +82,8 @@ class HearingFurtherEvidenceBundleSerializationTest {
                 Map.entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",
-                    "document_url", "url"
+                    "document_url", "url",
+                    "document_created_on", "2024-02-14T00:00:00.000+00:00"
                 )),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )

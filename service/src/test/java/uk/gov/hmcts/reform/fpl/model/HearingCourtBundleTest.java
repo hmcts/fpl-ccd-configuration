@@ -61,20 +61,8 @@ public class HearingCourtBundleTest {
                 Map.entry("document", Map.of(
                     "document_binary_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
                     "document_filename", CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
-                    "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
-                )),
-                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
-                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
-            )));
-
-        List<Map<String, Object>> expectedNCCourtBundle = List.of(Map.of(
-            "id", TEST_ID.toString(),
-            "value", Map.ofEntries(
-                Map.entry("confidential", List.of()),
-                Map.entry("document", Map.of(
-                    "document_binary_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
-                    "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
-                    "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
+                    "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl(),
+                    "document_created_on", "2024-02-14T00:00:00.000+00:00"
                 )),
                 Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
