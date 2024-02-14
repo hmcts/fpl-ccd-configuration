@@ -283,6 +283,34 @@ withPipeline(type, product, component) {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
+  before('fullFunctionalTest') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.PARALLEL_CHUNKS = 5
+    env.MOCKED_PAYMENTS = false
+    env.TEST_RETRIES = 5
+    env.TESTS_FOR_ACCESSIBILITY = true
+    env.ENV = 'aat'
+    env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
+    env.URL = "https://manage-case.aat.platform.hmcts.net"
+    env.URL_FOR_SECURITY_SCAN = "http://fpl-case-service-aat.service.core-compute-aat.internal"
+    env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
+    env.ORG_ID = "62LYJRF"
+  }
+
+  afterAlways('fullFunctionalTest') {
+    yarnBuilder.yarn('test:functional-nightly')
+    env.TESTS_FOR_ACCESSIBILITY = false
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "playwright-report",
+      reportFiles          : 'index.html',
+      reportName           : 'UI Functional Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+  }
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
   def branchesToSync = ['perftest','ithc']
