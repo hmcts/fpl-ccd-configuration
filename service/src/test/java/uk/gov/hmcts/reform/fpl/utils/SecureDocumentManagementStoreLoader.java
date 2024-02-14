@@ -10,9 +10,6 @@ import java.util.Map;
 
 public class SecureDocumentManagementStoreLoader {
 
-    public static final String CREATED_ON_STRING = "2017-11-01T10:23:55.271+00:00";
-    public static final String MODIFIED_ON_STRING = "2017-11-01T10:23:55.120+00:00";
-
     private SecureDocumentManagementStoreLoader() {
         // NO-OP
     }
@@ -29,8 +26,8 @@ public class SecureDocumentManagementStoreLoader {
             .originalDocumentName("file.pdf")
             .createdBy("15")
             .lastModifiedBy("15")
-            .modifiedOn(new DateTime(MODIFIED_ON_STRING).toDate())
-            .createdOn(new DateTime(CREATED_ON_STRING).toDate())
+            .modifiedOn(new DateTime("2017-11-01T10:23:55.120+0000").toDate())
+            .createdOn(new DateTime("2017-11-01T10:23:55.271+0000").toDate())
             .classification(Classification.PRIVATE)
             .links(links)
             .build();
