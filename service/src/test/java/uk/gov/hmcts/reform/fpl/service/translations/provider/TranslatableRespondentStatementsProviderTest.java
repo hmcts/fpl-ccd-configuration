@@ -157,8 +157,7 @@ class TranslatableRespondentStatementsProviderTest {
     class ApplyTranslatedOrder {
 
         @Test
-        void applyMatchedOrder() {
-
+        void applyMatchedOrderUnderRespStmtList() {
             when(time.now()).thenReturn(NOW);
 
             List<Element<RespondentStatementV2>> bundles = new ArrayList<>();
@@ -174,6 +173,52 @@ class TranslatableRespondentStatementsProviderTest {
                 "respStmtListLA", List.of(),
                 "respStmtListCTSC", List.of(),
                 "respStmtList", List.of(element(SELECTED_ORDER_ID, RespondentStatementV2.builder()
+                    .translatedDocument(DOCUMENT_REFERENCE)
+                    .translationUploadDateTime(NOW)
+                    .build()))
+            ));
+        }
+
+        @Test
+        void applyMatchedOrderUnderRespStmtListLA() {
+            when(time.now()).thenReturn(NOW);
+
+            List<Element<RespondentStatementV2>> bundles = new ArrayList<>();
+            bundles.add(element(SELECTED_ORDER_ID, RespondentStatementV2.builder().build()));
+
+            Map<String, Object> actual = underTest.applyTranslatedOrder(CaseData.builder()
+                    .respStmtListLA(bundles)
+                    .build(),
+                DOCUMENT_REFERENCE,
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "respStmtList", List.of(),
+                "respStmtListCTSC", List.of(),
+                "respStmtListLA", List.of(element(SELECTED_ORDER_ID, RespondentStatementV2.builder()
+                    .translatedDocument(DOCUMENT_REFERENCE)
+                    .translationUploadDateTime(NOW)
+                    .build()))
+            ));
+        }
+
+        @Test
+        void applyMatchedOrderUnderRespStmtListCTSC() {
+            when(time.now()).thenReturn(NOW);
+
+            List<Element<RespondentStatementV2>> bundles = new ArrayList<>();
+            bundles.add(element(SELECTED_ORDER_ID, RespondentStatementV2.builder().build()));
+
+            Map<String, Object> actual = underTest.applyTranslatedOrder(CaseData.builder()
+                    .respStmtListCTSC(bundles)
+                    .build(),
+                DOCUMENT_REFERENCE,
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isEqualTo(Map.of(
+                "respStmtList", List.of(),
+                "respStmtListLA", List.of(),
+                "respStmtListCTSC", List.of(element(SELECTED_ORDER_ID, RespondentStatementV2.builder()
                     .translatedDocument(DOCUMENT_REFERENCE)
                     .translationUploadDateTime(NOW)
                     .build()))
