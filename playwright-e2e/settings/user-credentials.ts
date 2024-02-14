@@ -28,3 +28,7 @@ export const judgeWalesUser = {
   email: 'judge-wales@ejudiciary.net',
   password: judgePwd,
 }
+export const judgeMidlandsUser = {
+  email: 'judge-midlands@ejudiciary.net',
+  password: judgePwd,
+}
