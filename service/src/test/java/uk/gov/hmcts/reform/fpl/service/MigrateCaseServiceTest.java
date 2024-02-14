@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -79,7 +80,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FAMILY_DRUG_ALCOHOL_COURT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -2937,6 +2942,105 @@ class MigrateCaseServiceTest {
 
             assertThat(updates).containsEntry("hearingDetails", expectedHearingDetails);
             assertThat(updates).containsEntry("cancelledHearingDetails", expectedCancelledHearingDetails);
+        }
+
+        static Stream<Arguments> hearingTypeInputProvider() {
+            return Stream.of(
+                Arguments.of("Review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Urgent Hearing", CASE_MANAGEMENT),
+                Arguments.of("Pre-Trial Review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Review Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Pre Trial Review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Judgment", JUDGMENT_AFTER_HEARING),
+                Arguments.of("Urgent", CASE_MANAGEMENT),
+                Arguments.of("Hearing", CASE_MANAGEMENT),
+                Arguments.of("Non-compliance Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Recovery Order", CASE_MANAGEMENT),
+                Arguments.of("Compliance Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("GROUND RULES HEARING", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("NLR", FAMILY_DRUG_ALCOHOL_COURT),
+                Arguments.of("Non Compliance Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("NON COMPLIANCE", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Non-compliance", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Secure accommodation", CASE_MANAGEMENT),
+                Arguments.of("secure accommodation order", CASE_MANAGEMENT),
+                Arguments.of("DIRECTION HEARING", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Pre-trial Review Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Pre hearing review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Pre-hearing Review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Neutral Evaluation Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Mention", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("DOLs", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Re W Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("SECURE ACCOMMODATION HEARING", CASE_MANAGEMENT),
+                Arguments.of("Handing down judgment", JUDGMENT_AFTER_HEARING),
+                Arguments.of("Appeal", FINAL),
+                Arguments.of("DOLS Review", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Handing down of Judgment", JUDGMENT_AFTER_HEARING),
+                Arguments.of("Direction", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("ISO", CASE_MANAGEMENT),
+                Arguments.of("compliance", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Urgent Preliminary Hearing", CASE_MANAGEMENT),
+                Arguments.of("Initial Hearing", CASE_MANAGEMENT),
+                Arguments.of("Further Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("PHR", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Mention Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Capacity Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("submissions", FINAL),
+                Arguments.of("Police disclosure", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("LAWYER REVIEW", FAMILY_DRUG_ALCOHOL_COURT),
+                Arguments.of("Default Notice", FAMILY_DRUG_ALCOHOL_COURT),
+                Arguments.of("dirs", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Judgment Hearing", JUDGMENT_AFTER_HEARING),
+                Arguments.of("ground rules", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Non Lawyer Review hearing", FAMILY_DRUG_ALCOHOL_COURT),
+                Arguments.of("Contest", FINAL),
+                Arguments.of("DOLS HEARING", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("FCMH", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Police Disclosure Hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Non Lawyer Review", FAMILY_DRUG_ALCOHOL_COURT),
+                Arguments.of("Pre Trial hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("ISO/CMH", CASE_MANAGEMENT),
+                Arguments.of("Information hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Non-compliance referral", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("DOLS Review hearing", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Separation hearing", FINAL),
+                Arguments.of("Secure Accommodation Order hearing", CASE_MANAGEMENT),
+                Arguments.of("Recovery Order hearing", CASE_MANAGEMENT),
+                Arguments.of("Recovery", CASE_MANAGEMENT),
+                Arguments.of("Secure Accomodation", CASE_MANAGEMENT),
+                Arguments.of("Urgent CMH", CASE_MANAGEMENT),
+                Arguments.of("Part Heard Hearing", FINAL),
+                Arguments.of("NEH", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("PART HEARD", FINAL),
+                Arguments.of("Contact hearing", FINAL),
+                Arguments.of("DOL", FURTHER_CASE_MANAGEMENT),
+                Arguments.of("Designation hearing", FURTHER_CASE_MANAGEMENT)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("hearingTypeInputProvider")
+        void migrateHearingTypeDetailsAsExpected(String hearingTypeDetail, HearingType expectedHearingType) {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails(hearingTypeDetail)
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.migrateHearingType(caseData);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(otherHearingBookingId, HearingBooking.builder()
+                .type(expectedHearingType)
+                .typeDetails(hearingTypeDetail)
+                .build()));
+
+            assertThat(updates).containsEntry("hearingDetails", expected);
         }
     }
 
