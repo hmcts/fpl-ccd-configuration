@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers.helper;
 
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -19,8 +21,10 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,6 +97,14 @@ public class UploadTranslationsControllerTestHelper {
                 .build()
             )
         ))
+        .respStmtList(List.of(
+            element(UUID_8, RespondentStatementV2.builder()
+                .document(DocumentReference.builder()
+                    .filename("respStmt.pdf")
+                    .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
+                    .build())
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build())))
         .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6.pdf")
@@ -130,7 +142,7 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
             dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
             dlElement(C110A.COLLECTION_ID, "Application (C110A)"),
-            dlElement(UUID_8, "Expert reports - Document 1 - 3 January 2009")
+            dlElement(UUID_8, "Respondent Statement - respStmt.pdf - 14 February 2024")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();
