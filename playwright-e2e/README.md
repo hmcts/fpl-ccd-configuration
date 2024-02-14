@@ -21,19 +21,55 @@ To execute the 'smoke-test.spec.ts' individually from the Terminal, use the comm
 |-|- tests # Here is where you can do your magic. 🧙‍♂️
 
  playwright.config.ts # This sits outside playwright-e2e folder, but is the config file for playwright only tests.
+ .env # This sits outside playwright-e2e folder, this is required to run your tests locally. See Setup Environment Variables below.
 ```
 
-## 🔐 Configuring tests to run locally
+## 🔐 Setup Environment Variables
 
-The password for the test user accounts has been securely stored in a vault. If you execute tests locally without updating the configuration, the tests will not pass, and you may inadvertently trigger account lockout by repeatedly attempting to log in with an incorrect password.
+This repository contains automation tests that can be run locally. To set up the environment variables for configuring URLs and passwords, follow the instructions below:
 
-To prevent this issue, modify a specific setting in:
-fpl-ccd-configuration/playwright-e2e/settings/userCredentials.ts
+1. Create a .env file in the root directory of this project if it doesn't already exist.
 
-Update the line:
-`const e2ePw = process.env.E2E_TEST_PASSWORD || "enter_in_password_for_running_locally";`
+2. Add the following environment variables to the .env file: (ask a team mate for details/values can be found in Azure Keyvault)
 
-Ensure you change the password accordingly. Please be cautious not to include these modifications when submitting your pull request.
+```
+# URLs
+FE_BASE_URL=https://example.com/login
+AAT_BASE_URL=https://example.com
+AAT_IDAM_URL=https://example.com
+AAT_SERVICE_URL=https://example.com
+
+# userCredentials and Passwords
+E2E_TEST_PASSWORD=passwordhere
+SYSTEM_UPDATE_USER_USERNAME =systemUserloginEmail
+SYSTEM_UPDATE_USER_PASSWORD =systemUserPassword
+
+
+# Ports
+SERVER_PORT=
+```
+Replace the placeholder URLs and passwords with the actual values relevant to your environment.
+
+`FE_BASE_URL=` Can be used to toggle between PR environment and AAT or other environments.
+
+3. Save the .env file.
+
+.env file is excluded from version control using Git's .gitignore.
+
+## Install Dependencies
+
+Before running the automation tests, ensure that all necessary dependencies are installed. You can do this by running:
+
+```
+yarn install
+```
+
+## Running Tests
+
+Once the environment variables are configured and dependencies are installed, you can run the automation tests using the following command:
+```
+yarn playwright test smoke-test.spec.ts
+```
 
 ## 🎬 Debugging
 
