@@ -95,8 +95,13 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
+  afterSuccess('build') {
+    stage('test:functional-nightly') {
+      yarnBuilder.yarn('test:functional-nightly')
+    }
+  }
+
   afterAlways('fullFunctionalTest') {
-    yarnBuilder.yarn('test:functional-nightly')
     env.TESTS_FOR_ACCESSIBILITY = false
     publishHTML([
       allowMissing         : true,
