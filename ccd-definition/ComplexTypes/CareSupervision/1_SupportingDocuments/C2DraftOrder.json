@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Document name",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "dateTimeUploaded",
     "FieldType": "DateTime",
     "ElementLabel": "Date and time uploaded",
@@ -17,15 +17,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "c2Applications"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -35,7 +36,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "documentAcknowledgeLabelForCYA",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -45,7 +46,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DraftOrder",
+    "ID": "C2DraftOrder",
     "ListElementCode": "documentAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",

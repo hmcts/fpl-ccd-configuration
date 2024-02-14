@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "documentType",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
@@ -12,7 +12,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "documentName",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
@@ -21,7 +21,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "includedInSWET",
     "EventElementLabel": "Let us know what you are including in your SWET",
     "FieldDisplayOrder": 3,
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 4,
@@ -41,42 +41,53 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "dateTimeUploaded",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
+    "FieldShowCondition": "temporaryApplicationDocuments=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadApplicationDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "uploadedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "applicationDocuments=\"DO NOT SHOW\""
+    "FieldShowCondition": "temporaryApplicationDocuments=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "confidentialWarningLabel",
     "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
     "CaseEventID": "uploadDocuments",
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "ListElementCode": "confidential",
     "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL",
     "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
-    "FieldShowCondition": "documentName!=\"SHOW_IN_EVENT_ONLY\""
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadApplicationDocuments",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
+    "ListElementCode": "allowMarkDocumentConfidential",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\""
   }
 ]

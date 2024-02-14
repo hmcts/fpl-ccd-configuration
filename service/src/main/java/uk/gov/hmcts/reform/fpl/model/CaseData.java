@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.document.SealType;
@@ -58,6 +59,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ConfirmApplicationReviewedEventData;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthoritiesEventData;
 import uk.gov.hmcts.reform.fpl.model.event.LocalAuthorityEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageLegalCounselEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -281,6 +283,7 @@ public class CaseData extends CaseDataParent {
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
+    private final SubmittedC1WithSupplementBundle submittedC1WithSupplement;
 
     @JsonProperty("documents_socialWorkOther")
     private final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments;
@@ -712,19 +715,53 @@ public class CaseData extends CaseDataParent {
     private final ManageDocumentLA manageDocumentLA;
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
     private final ManageDocumentSubtypeList manageDocumentSubtypeList;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by HMCTS admin.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by LA.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
+    /**
+     * Collection field for storing furtherEvidenceDocuments uploaded by solicitor.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of new fields xxxList, xxxListLA and
+     *     xxxListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsSolicitor; //general evidence
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsSolicitor;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
+    /**
+     * Collection field for storing respondent statements.
+     *
+     * @deprecated Data restructure due to CaseFileView change. Making use of respStmtList, respStmtListLA and
+     *     respStmtListCTSC in the future which are defined in CaseDataParent
+     */
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
@@ -766,10 +803,12 @@ public class CaseData extends CaseDataParent {
         return defaultIfNull(manageDocumentsCourtBundle, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocuments() {
         return defaultIfNull(correspondenceDocuments, new ArrayList<>());
     }
 
+    @Deprecated(since = "DFPL-1438")
     public List<Element<SupportingEvidenceBundle>> getCorrespondenceDocumentsSolicitor() {
         return defaultIfNull(correspondenceDocumentsSolicitor, new ArrayList<>());
     }
@@ -1070,7 +1109,10 @@ public class CaseData extends CaseDataParent {
         return hearingEndDate.isBefore(LocalDateTime.now()) || hearingStartDate.isBefore(LocalDateTime.now());
     }
 
+    @Deprecated(since = "DFPL-1438")
     private final List<Element<ApplicationDocument>> applicationDocuments;
+    // It will be used in "upload-documents" event (when the case is in Open state)
+    private final List<Element<ApplicationDocument>> temporaryApplicationDocuments;
     private final String applicationDocumentsToFollowReason;
 
     @JsonUnwrapped
@@ -1202,7 +1244,7 @@ public class CaseData extends CaseDataParent {
 
     private final DynamicList placementList;
 
-    private final List<Element<PlacementNoticeDocument>> placementNoticeResponses;
+    private List<Element<PlacementNoticeDocument>> placementNoticeResponses;
 
     @JsonIgnore
     public boolean isDischargeOfCareApplication() {
@@ -1326,5 +1368,9 @@ public class CaseData extends CaseDataParent {
         } else {
             return Optional.empty();
         }
+    }
+
+    public void setPlacementNoticeResponses(List<Element<PlacementNoticeDocument>> placementNoticeResponses) {
+        this.placementNoticeResponses = placementNoticeResponses;
     }
 }
