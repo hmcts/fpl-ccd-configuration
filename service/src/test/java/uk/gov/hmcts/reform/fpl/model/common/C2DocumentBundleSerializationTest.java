@@ -177,6 +177,7 @@ class C2DocumentBundleSerializationTest {
                 .binaryUrl("binaryUrl")
                 .filename("filename")
                 .url("url")
+                .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
                 .build())
             .description("description")
             .uploadedDateTime("uploadedDatetime")
@@ -191,6 +192,7 @@ class C2DocumentBundleSerializationTest {
                         .binaryUrl("binaryUrl")
                         .filename("filename")
                         .url("url")
+                        .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
                         .build())
                     .uploadedBy("uploadedBy")
                     .build())))
@@ -213,7 +215,8 @@ class C2DocumentBundleSerializationTest {
                 "documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY),
                 "document", Map.of(
                     "document_binary_url", "binaryUrl",
-                    "document_filename", "filename", "document_url", "url"
+                    "document_filename", "filename", "document_url", "url",
+                    "document_created_on", "2024-02-14T00:00:00.000+00:00"
                 )
             )
         ));
@@ -229,7 +232,8 @@ class C2DocumentBundleSerializationTest {
             entry("document", Map.of(
                     "document_binary_url", "binaryUrl",
                     "document_filename", "filename",
-                    "document_url", "url"
+                    "document_url", "url",
+                "document_created_on", "2024-02-14T00:00:00.000+00:00"
                 )
             ),
             entry("description", "description"),
