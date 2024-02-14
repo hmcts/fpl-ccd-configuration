@@ -16,14 +16,15 @@ export class SignInPage {
     this.emailInputLocator = page.getByLabel("Email address");
     this.passwordInputLocator = page.getByLabel("Password");
     this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
-    this.dropdownLocator = this.page.locator(
-      'h2[aria-label="Filters"].heading-h2',
-    );
+    this.dropdownLocator = this.page.locator('h2[aria-label="Filters"].heading-h2',);
     this.applyLocator = page.getByRole("button", { name: "Apply" });
   }
 
   async visit() {
     await this.page.goto(this.url);
+  }
+  async navigateTOCaseDetails(caseNumber:string) {
+    await this.page.goto(`${UrlConfig.frontEndBaseURL}case-details/${caseNumber}`);
   }
 
   async login(email: string, password: string) {
@@ -37,3 +38,4 @@ export class SignInPage {
     await expect(this.applyLocator).toBeVisible();
   }
 }
+

@@ -1,10 +1,12 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
+
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
   readonly ordersAndDirectionsSoughtLink: Locator;
+  readonly factorsAffectingParentingLink: Locator;
   readonly hearingUrgencyLink: Locator;
   readonly addGroundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationLink: Locator;
@@ -12,17 +14,24 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
+  readonly allocationProposalHasBeenUpdatedFinished: Locator;
+  readonly allocationProposalLink: Locator;
+  readonly allocationProposalHeading: Locator;
 
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details"} );
     this.ordersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought",});
-    this.hearingUrgencyLink = page.getByRole('link', { name: 'Hearing urgency' });  
+    this.factorsAffectingParentingLink = page.getByRole("heading", { name: "Factors affecting parenting",});
+    this.hearingUrgencyLink = page.getByRole('link', { name: 'Hearing urgency' });
     this.hearingUrgencyHeader = page.getByRole('heading', { name: 'Hearing urgency' });
     this.groundsForTheApplicationLink = page.getByRole('link', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHeading = page.getByRole('heading', { name: 'Grounds for the application' });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img');
     this.riskAndHarmToChildrenLink = page.getByRole('link', { name: 'Risk and harm to children' });
+    this.allocationProposalHasBeenUpdatedFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img');
+    this.allocationProposalHeading = page.getByRole('group', { name: 'Allocation proposal' }).getByRole('heading');
+    this.allocationProposalLink = page.getByRole('link', { name: 'Allocation proposal' });
   }
 
   async addApplicationDetails(){
@@ -53,5 +62,14 @@ export class StartApplication {
   async riskAndHarmToChildren() {
     await this.riskAndHarmToChildrenLink.isVisible();
     await this.riskAndHarmToChildrenLink.click();
+  }
+
+  async allocationProposal(){
+    await this.allocationProposalLink.isVisible();
+    await this.allocationProposalLink.click();
+  }
+
+  async allocationProposalHasBeenUpdated(){
+    await expect (this.allocationProposalHasBeenUpdatedFinished).toBeVisible;
   }
 }
