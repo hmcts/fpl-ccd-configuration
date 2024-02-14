@@ -53,10 +53,36 @@ class TranslatableRespondentStatementsProviderTest {
         }
 
         @Test
+        void getItemsFromCTSC() {
+            List<Element<RespondentStatementV2>> bundles =
+                List.of(element(mock(RespondentStatementV2.class)));
+
+            List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
+                .respStmtListCTSC(bundles)
+                .build());
+
+            assertThat(actual).isEqualTo(bundles);
+        }
+
+        @Test
+        void getItemsFromLA() {
+            List<Element<RespondentStatementV2>> bundles =
+                List.of(element(mock(RespondentStatementV2.class)));
+
+            List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
+                .respStmtListLA(bundles)
+                .build());
+
+            assertThat(actual).isEqualTo(bundles);
+        }
+
+        @Test
         void getItemsIfEmpty() {
 
             List<Element<? extends TranslatableItem>> actual = underTest.provideListItems(CaseData.builder()
                 .respStmtList(null)
+                .respStmtListLA(null)
+                .respStmtListCTSC(null)
                 .build());
 
             assertThat(actual).isEqualTo(List.of());
@@ -68,9 +94,36 @@ class TranslatableRespondentStatementsProviderTest {
 
         @Test
         void testIfMatchingInCollection() {
-
             TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
                     .respStmtList(List.of(
+                        element(SELECTED_ORDER_ID, RespondentStatementV2.builder().document(DOCUMENT_REFERENCE).build())
+                    ))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isEqualTo(RespondentStatementV2.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
+        }
+
+        @Test
+        void testIfMatchingInLACollection() {
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
+                    .respStmtListLA(List.of(
+                        element(SELECTED_ORDER_ID, RespondentStatementV2.builder().document(DOCUMENT_REFERENCE).build())
+                    ))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isEqualTo(RespondentStatementV2.builder()
+                .document(DOCUMENT_REFERENCE)
+                .build());
+        }
+
+        @Test
+        void testIfMatchingInCTSCCollection() {
+            TranslatableItem actual = underTest.provideSelectedItem(CaseData.builder()
+                    .respStmtListCTSC(List.of(
                         element(SELECTED_ORDER_ID, RespondentStatementV2.builder().document(DOCUMENT_REFERENCE).build())
                     ))
                     .build(),
@@ -93,10 +146,34 @@ class TranslatableRespondentStatementsProviderTest {
         }
 
         @Test
+        void testIfNotMatchingInLACollection() {
+            assertThrows(IllegalArgumentException.class,
+                () -> underTest.provideSelectedItem(CaseData.builder()
+                        .respStmtListLA(List.of(
+                            element(UUID_1, RespondentStatementV2.builder().document(DOCUMENT_REFERENCE).build())
+                        ))
+                        .build(),
+                    SELECTED_ORDER_ID));
+        }
+
+        @Test
+        void testIfNotMatchingInCTSCCollection() {
+            assertThrows(IllegalArgumentException.class,
+                () -> underTest.provideSelectedItem(CaseData.builder()
+                        .respStmtListCTSC(List.of(
+                            element(UUID_1, RespondentStatementV2.builder().document(DOCUMENT_REFERENCE).build())
+                        ))
+                        .build(),
+                    SELECTED_ORDER_ID));
+        }
+
+        @Test
         void testIfCollectionEmpty() {
             assertThrows(IllegalArgumentException.class,
                 () -> underTest.provideSelectedItem(CaseData.builder()
                         .respStmtList(null)
+                        .respStmtListLA(null)
+                        .respStmtListCTSC(null)
                         .build(),
                     SELECTED_ORDER_ID));
         }
@@ -107,7 +184,6 @@ class TranslatableRespondentStatementsProviderTest {
 
         @Test
         void testIfMatchingInCollection() {
-
             boolean actual = underTest.accept(CaseData.builder()
                     .respStmtList(List.of(
                         element(SELECTED_ORDER_ID, RespondentStatementV2.builder().build())
@@ -115,7 +191,28 @@ class TranslatableRespondentStatementsProviderTest {
                 SELECTED_ORDER_ID);
 
             assertThat(actual).isTrue();
+        }
 
+        @Test
+        void testIfMatchingInLACollection() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListLA(List.of(
+                        element(SELECTED_ORDER_ID, RespondentStatementV2.builder().build())
+                    )).build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isTrue();
+        }
+
+        @Test
+        void testIfMatchingInCTSCCollection() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListCTSC(List.of(
+                        element(SELECTED_ORDER_ID, RespondentStatementV2.builder().build())
+                    )).build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isTrue();
         }
 
         @Test
@@ -126,7 +223,26 @@ class TranslatableRespondentStatementsProviderTest {
                 SELECTED_ORDER_ID);
 
             assertThat(actual).isFalse();
+        }
 
+        @Test
+        void testIfNotMatchingInLACollectionEmpty() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListLA(List.of(element(RespondentStatementV2.builder().build())))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void testIfNotMatchingInCTSCCollectionEmpty() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListCTSC(List.of(element(RespondentStatementV2.builder().build())))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isFalse();
         }
 
         @Test
@@ -139,13 +255,38 @@ class TranslatableRespondentStatementsProviderTest {
                 SELECTED_ORDER_ID);
 
             assertThat(actual).isFalse();
+        }
 
+        @Test
+        void testIfNotMatchingInLACollection() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListLA(List.of(element(UUID_1, RespondentStatementV2.builder()
+                        .document(DOCUMENT_REFERENCE)
+                        .build())))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isFalse();
+        }
+
+        @Test
+        void testIfNotMatchingInCTSCCollection() {
+            boolean actual = underTest.accept(CaseData.builder()
+                    .respStmtListCTSC(List.of(element(UUID_1, RespondentStatementV2.builder()
+                        .document(DOCUMENT_REFERENCE)
+                        .build())))
+                    .build(),
+                SELECTED_ORDER_ID);
+
+            assertThat(actual).isFalse();
         }
 
         @Test
         void testIfCollectionEmpty() {
             boolean actual = underTest.accept(CaseData.builder()
                     .respStmtList(null)
+                    .respStmtListCTSC(null)
+                    .respStmtListLA(null)
                     .build(),
                 SELECTED_ORDER_ID);
 
