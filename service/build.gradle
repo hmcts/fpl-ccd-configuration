@@ -194,6 +194,7 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
 
 task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(runApiTests))
+  commandLine '/usr/bin/yarn', '--silent', 'test:functional-nightly'
 }
 
 task contract(description: 'Runs the contract tests.') {
