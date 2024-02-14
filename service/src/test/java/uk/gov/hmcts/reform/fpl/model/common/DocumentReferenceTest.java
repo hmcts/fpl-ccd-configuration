@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +13,6 @@ class DocumentReferenceTest {
             .url(document().links.self.href)
             .binaryUrl(document().links.binary.href)
             .filename(document().originalDocumentName)
-            .createdOn(new DateTime("2017-11-01T10:23:55.271+00:00").toDate())
             .build());
     }
 

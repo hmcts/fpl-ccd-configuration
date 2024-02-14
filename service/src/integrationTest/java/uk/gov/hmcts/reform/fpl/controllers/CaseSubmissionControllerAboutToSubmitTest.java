@@ -50,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.CREATED_ON_STRING;
 import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
@@ -107,7 +106,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .put("document_url", document.links.self.href)
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
-                .put("document_created_on", CREATED_ON_STRING)
                 .build());
     }
 

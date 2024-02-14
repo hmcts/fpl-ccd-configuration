@@ -100,7 +100,6 @@ public class UploadTranslationsControllerTestHelper {
             element(UUID_8, RespondentStatementV2.builder()
                 .document(DocumentReference.builder()
                     .filename("respStmt.pdf")
-                    .createdOn(Date.from(Instant.parse("2024-02-14T00:00:00Z")))
                     .build())
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .build())))

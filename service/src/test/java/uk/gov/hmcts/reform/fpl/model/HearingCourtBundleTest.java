@@ -61,8 +61,7 @@ public class HearingCourtBundleTest {
                 Map.entry("document", Map.of(
                     "document_binary_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
                     "document_filename", CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
-                    "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl(),
-                    "document_created_on", "2024-02-14T00:00:00.000+00:00"
+                    "document_url", CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
                 )),
                 Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
