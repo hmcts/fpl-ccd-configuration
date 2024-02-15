@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
-import uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader;
 
 import java.math.BigDecimal;
 import java.util.List;
