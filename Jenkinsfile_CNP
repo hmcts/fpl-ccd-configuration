@@ -15,6 +15,7 @@ def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
   ]
@@ -189,6 +190,37 @@ withPipeline(type, product, component) {
   afterAlways('test') {
     archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
+  }
+  before('functionalTest:preview'){
+    sh """
+      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      ./bin/add-ccd-user-roles.sh
+    """
+
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview', '0')
+
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.FRONTEND_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.SWANSEA_ORG_ID = "62LYJRF"
+    env.MOCKED_PAYMENTS = false
+    env.FUNCTIONAL_TESTS_WORKERS = 1
+    env.TEST_RETRIES = 1
+
+  }
+  after('functionalTest:preview'){
+    env.TESTS_FOR_ACCESSIBILITY = false
+    publishHTML([
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "playwright-report",
+      reportFiles          : 'index.html',
+      reportName           : 'UI Functional Test Report'
+    ])
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+
   }
 
   before('smoketest:saat') {
