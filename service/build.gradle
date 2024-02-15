@@ -198,10 +198,13 @@ task yarnInstall(type: Exec) {
 
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests,yarnInstall))
-  exec {
-    commandLine 'yarn', 'test:functional-nightly'
+  dependsOn(inStrictOrder(yarnInstall ,runApiTests))
+  doLast{
+    exec {
+      commandLine 'yarn', 'test:functional-nightly'
+    }
   }
+
 }
 
 task contract(description: 'Runs the contract tests.') {
