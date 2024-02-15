@@ -15,9 +15,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentPro
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
-
 import static java.util.Objects.nonNull;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
