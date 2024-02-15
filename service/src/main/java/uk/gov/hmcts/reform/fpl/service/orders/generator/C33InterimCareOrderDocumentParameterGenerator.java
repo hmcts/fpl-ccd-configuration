@@ -7,8 +7,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
@@ -45,8 +43,9 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
             .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .exclusionClause(eventData.getManageOrdersExclusionDetails())
-            .localAuthorityName(nonNull(caseData.getCaseLocalAuthority()) 
-                ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()) : getApplicantName(caseData))
+            .localAuthorityName(nonNull(caseData.getCaseLocalAuthority())
+                ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+                : caseData.getApplicantName().orElse(null))
             .orderDetails(orderDetailsWithEndTypeGenerator.orderDetails(
                 eventData.getManageOrdersEndDateTypeWithEndOfProceedings(),
                 OrderDetailsWithEndTypeMessages.builder()
@@ -64,14 +63,5 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
     @Override
     public DocmosisTemplates template() {
         return DocmosisTemplates.ORDER_V2;
-    }
-
-    private String getApplicantName(CaseData caseData) {
-        LocalAuthority applicant = caseData.getLocalAuthorities().stream()
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(null);
-
-        return nonNull(applicant) ? applicant.getName() : null;
     }
 }

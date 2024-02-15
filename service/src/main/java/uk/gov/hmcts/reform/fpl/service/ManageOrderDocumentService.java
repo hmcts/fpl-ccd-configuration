@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 
@@ -29,8 +27,9 @@ public class ManageOrderDocumentService {
         context.put("childOrChildren", getChildGrammar(numOfChildren));
         context.put("childIsOrAre", getChildIsOrAreGrammar(numOfChildren));
         context.put("childWasOrWere", getChildWasOrWereGrammar(numOfChildren));
-        context.put("localAuthorityName", nonNull(caseData.getCaseLocalAuthority()) 
-            ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()) : getApplicantName(caseData));
+        context.put("localAuthorityName", nonNull(caseData.getCaseLocalAuthority())
+            ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            : caseData.getApplicantName().orElse(null));
         context.put("courtName", caseData.getCourt() != null ? caseData.getCourt().getName() : null);
         return context;
     }
@@ -45,14 +44,5 @@ public class ManageOrderDocumentService {
 
     private String getChildWasOrWereGrammar(int numOfChildren) {
         return GrammarHelper.getWasOrWereGrammar(numOfChildren);
-    }
-
-    private String getApplicantName(CaseData caseData) {
-        LocalAuthority applicant = caseData.getLocalAuthorities().stream()
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(null);
-
-        return nonNull(applicant) ? applicant.getName() : null;
     }
 }
