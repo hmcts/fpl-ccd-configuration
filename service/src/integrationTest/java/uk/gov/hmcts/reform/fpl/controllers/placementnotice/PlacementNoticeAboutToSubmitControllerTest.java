@@ -74,7 +74,7 @@ class PlacementNoticeAboutToSubmitControllerTest extends AbstractPlacementNotice
 
         final PlacementEventData actualPlacementData = updatedCaseData.getPlacementEventData();
 
-        assertThat(actualPlacementData.getPlacement()).isNotNull();
+        assertThat(actualPlacementData.getPlacement()).isNull(); // should be null, it's a temp field!
         assertThat(actualPlacementData.getPlacements().size()).isEqualTo(1);
         assertThat(actualPlacementData.getPlacements().get(0).getValue().getPlacementNotice()).isNotNull();
     }
