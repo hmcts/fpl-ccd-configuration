@@ -27,7 +27,6 @@ def integrationTestSecrets = [
   ]
 ]
 
-
 def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
   's2s-${env}': [
@@ -283,7 +282,6 @@ withPipeline(type, product, component) {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
-
 
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
   def branchesToSync = ['perftest','ithc']
