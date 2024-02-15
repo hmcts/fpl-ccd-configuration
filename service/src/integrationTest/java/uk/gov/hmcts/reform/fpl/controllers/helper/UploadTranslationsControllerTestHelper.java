@@ -140,7 +140,7 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
             dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
             dlElement(C110A.COLLECTION_ID, "Application (C110A)"),
-            dlElement(UUID_8, "Respondent Statement - respStmt.pdf - 14 February 2024")
+            dlElement(UUID_8, "Respondent Statement - respStmt.pdf")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();
