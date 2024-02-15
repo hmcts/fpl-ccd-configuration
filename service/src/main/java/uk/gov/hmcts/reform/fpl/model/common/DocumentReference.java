@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
-import java.util.Date;
-
 @Data
 @Builder(toBuilder = true)
 public class DocumentReference {
