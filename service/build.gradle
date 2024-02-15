@@ -191,9 +191,14 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
 task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
   dependsOn(inStrictOrder(runSmokeTests))
 }
+task UIfunctionalTest{
+  exec {
+    commandLine 'yarn', 'test:functional-nightly'
+  }
+}
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests))
+  dependsOn(inStrictOrder(runApiTests,UIfunctionalTest))
 }
 
 task contract(description: 'Runs the contract tests.') {
