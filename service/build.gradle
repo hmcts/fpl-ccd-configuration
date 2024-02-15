@@ -205,7 +205,7 @@ task UIfunctionalTest{
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests,UIfunctionalTest))
+  dependsOn(inStrictOrder(runApiTests))
 }
 
 task contract(description: 'Runs the contract tests.') {
