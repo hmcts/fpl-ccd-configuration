@@ -202,7 +202,7 @@ task UIfunctionalTest(type:Test,description: 'Runs the Ui tests',){
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests,UIfunctionalTest))
+  dependsOn(inStrictOrder(runApiTests,yarnInstall,UIfunctionalTest))
 }
 
 task contract(description: 'Runs the contract tests.') {
