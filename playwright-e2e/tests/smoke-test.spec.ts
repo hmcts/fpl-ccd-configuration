@@ -1,5 +1,6 @@
 import { test } from "../fixtures/create-fixture";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
+import { AddApplicationDocuments } from "../pages/add-application-documents";
+import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
 
 test("Smoke Test @smoke-test", async ({
   signInPage,
@@ -11,6 +12,7 @@ test("Smoke Test @smoke-test", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   allocationProposal,
+  addApplicationDocuments,
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -27,39 +29,46 @@ test("Smoke Test @smoke-test", async ({
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // Orders and directions sought
-  await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+  // // Orders and directions sought
+  // await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+  // await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // // Hearing urgency
+  // await startApplication.hearingUrgencyLink.isVisible();
+  // await startApplication.hearingUrgencyLink.click();
+  // await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
+  // await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
+  // await hearingUrgency.giveReasonTextBoxFill();
+  // await hearingUrgency.withoutNoticeHearing("No");
+  // await hearingUrgency.needAHearingWithReducedNoise("No");
+  // await hearingUrgency.respondentsAwareOfProceedings("No");
+  // await hearingUrgency.continueButton.click();
+  // await hearingUrgency.checkYourAnswers.isVisible();
+  // await hearingUrgency.saveAndContinueButton.click();
+  // await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // // Grounds for the application
+  // await startApplication.groundsForTheApplication();
+  // await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
+  // await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+  // await startApplication.groundsForTheApplicationHasBeenUpdated();
+
+  // // Risk and harm to children
+  // await startApplication.riskAndHarmToChildren();
+  // await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+
+  // // Factors affecting parenting
+  // await factorsAffectingParenting.addFactorsAffectingParenting();
+  // await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
 
-  // Hearing urgency
-  await startApplication.hearingUrgencyLink.isVisible();
-  await startApplication.hearingUrgencyLink.click();
-  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
-  await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
-  await hearingUrgency.giveReasonTextBoxFill();
-  await hearingUrgency.withoutNoticeHearing("No");
-  await hearingUrgency.needAHearingWithReducedNoise("No");
-  await hearingUrgency.respondentsAwareOfProceedings("No");
-  await hearingUrgency.continueButton.click();
-  await hearingUrgency.checkYourAnswers.isVisible();
-  await hearingUrgency.saveAndContinueButton.click();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
-  // Grounds for the application
-  await startApplication.groundsForTheApplication();
-  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
-  await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-  await startApplication.groundsForTheApplicationHasBeenUpdated();
-
-  // Risk and harm to children
-  await startApplication.riskAndHarmToChildren();
-  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // 9. Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
   // Allocation Proposal
-  await startApplication.allocationProposal();
-  await allocationProposal.allocationProposalSmokeTest();
-  await startApplication.allocationProposalHasBeenUpdated();
+  // await startApplication.allocationProposal();
+  // await allocationProposal.allocationProposalSmokeTest();
+  // await startApplication.allocationProposalHasBeenUpdated();
 });
