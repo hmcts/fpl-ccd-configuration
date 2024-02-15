@@ -1,6 +1,6 @@
 import { test } from "../fixtures/create-fixture";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
+import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test", async ({
   signInPage,
