@@ -195,14 +195,13 @@ task yarnInstall(type: Exec) {
   workingDir '.'
     commandLine 'yarn', 'install'
 }
-task UIfunctionalTest(type:Test,description: 'Runs the Ui tests',){
+
+
+task functional(description: 'Runs the functional tests.') {
+  dependsOn(inStrictOrder(runApiTests,yarnInstall))
   exec {
     commandLine 'yarn', 'test:functional-nightly'
   }
-}
-
-task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(runApiTests,yarnInstall,UIfunctionalTest))
 }
 
 task contract(description: 'Runs the contract tests.') {
