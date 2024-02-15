@@ -59,52 +59,24 @@ public class DocumentUploadedNotificationConfiguration {
             .sendToCafcassWelsh(null)
             .build();
 
-    public static final DocumentUploadedNotificationConfiguration DEFAULT_ORDER_NOTIFICATION_CONFIG =
-        DocumentUploadedNotificationConfiguration.builder()
-            .sendToCafcassEngland(ConfidentialLevel.LA)
-            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.NEW_DOCUMENT)
-            .build();
-
-    public static final DocumentUploadedNotificationConfiguration HEARING_DOCUMENT_NOTIFICATION_CONFIG =
-        DocumentUploadedNotificationConfiguration.builder()
-            .sendToCafcassEngland(ConfidentialLevel.CTSC)
-            .sendToRespondentSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
-            .sendToChildSolicitor(ConfidentialLevel.NON_CONFIDENTIAL)
-            .sendToDesignatedLA(ConfidentialLevel.LA)
-            .sendToSecondaryLA(ConfidentialLevel.LA)
-            .build();
-
     public static final DocumentUploadedNotificationConfiguration COURT_BUNDLE_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.COURT_BUNDLE)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration CASE_SUMMARY_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.CASE_SUMMARY)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration POSITION_STATEMENT_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToLegalRepresentative(ConfidentialLevel.LA)
-            .sendToTranslationTeam(ConfidentialLevel.CTSC)
+        DEFAULT_NOTIFICATION_CONFIG.toBuilder()
             .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.POSITION_STATEMENT)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration SKELETON_ARGUMENT_NOTIFICATION_CONFIG =
-        HEARING_DOCUMENT_NOTIFICATION_CONFIG.toBuilder()
-            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.SKELETON_ARGUMENT)
-            .build();
-
-
-    public static final DocumentUploadedNotificationConfiguration THRESHOLD_NOTIFICATION_CONFIG =
-        NO_TRANSLATION_NOTIFICATION_CONFIG.toBuilder()
-            .sendToCafcassWelsh(ConfidentialLevel.LA)
-            .build();
-
-    public static final DocumentUploadedNotificationConfiguration RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG =
         DEFAULT_NOTIFICATION_CONFIG.toBuilder()
-            .sendToChildSolicitor(null)
+            .cafcassRequestEmailContentProvider(CafcassRequestEmailContentProvider.SKELETON_ARGUMENT)
             .build();
 
     public static final DocumentUploadedNotificationConfiguration COURT_CORRESPONDENCE_NOTIFICATION_CONFIG =
