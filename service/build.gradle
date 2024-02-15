@@ -191,6 +191,13 @@ task smoke(type: Test, description: 'Runs smoke test.', group: 'Verification') {
 task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke test.', group: 'Verification') {
   dependsOn(inStrictOrder(runSmokeTests))
 }
+task yarnInstall(type: Exec) {
+  workingDir '.'
+  exec{
+    commandLine 'yarn', 'install'
+  }
+
+}
 task UIfunctionalTest{
   exec {
     commandLine 'yarn', 'test:functional-nightly'
