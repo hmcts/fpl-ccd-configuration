@@ -192,8 +192,13 @@ task runCodeceptSmokeTest(type: Test, description: 'Runs the old codecept smoke 
   dependsOn(inStrictOrder(runSmokeTests))
 }
 
-task functional(description: 'Runs the functional tests.') {
+task functional(type: 'Test', dependsOn: ':yarnInstall' ,description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(runApiTests))
+  doLast {
+    exec {
+      commandLine 'yarn', 'test:functional-nightly'
+    }
+  }
 }
 
 task contract(description: 'Runs the contract tests.') {
@@ -210,7 +215,10 @@ task contract(description: 'Runs the contract tests.') {
 //task crossbrowser(description: 'Runs crossbrowser tests.') {
 //  dependsOn(inStrictOrder(lintUserInterfaceTests, runCrossBrowserTests))
 //}
-
+task yarnInstall(type: Exec) {
+  workingDir '.'
+  commandLine 'yarn', 'install'
+}
 task fortifyScan(type: JavaExec) {
   mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
