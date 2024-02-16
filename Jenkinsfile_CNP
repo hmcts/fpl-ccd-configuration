@@ -192,13 +192,6 @@ withPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
   before('functionalTest:preview'){
-    sh """
-      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
-      ./bin/add-ccd-user-roles.sh
-    """
-
-    archiveCoreCaseDataDefinitions('preview')
-    uploadCoreCaseDataDefinitions('preview', '0')
 
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -209,7 +202,7 @@ withPipeline(type, product, component) {
     env.TEST_RETRIES = 1
 
   }
-  after('functionalTest:preview'){
+  afterAlways('functionalTest:preview'){
     env.TESTS_FOR_ACCESSIBILITY = false
     publishHTML([
       allowMissing         : true,
