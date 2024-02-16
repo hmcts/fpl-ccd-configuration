@@ -9,11 +9,11 @@ interface Config {
 const config: Config = {
   testPdfFile: path.resolve(
     __dirname,
-    "../playwright-e2e/settings/test-docs/testPdf.pdf",
+    "../test-docs/testPdf.pdf",
   ),
   testWordFile: path.resolve(
     __dirname,
-    "../playwright-e2e/settings/test-docs/testWordDoc.docx",
+    "../test-docs/testWordDoc.docx",
   ),
 };
 
