@@ -81,43 +81,53 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-//  enableMutationTest()
-//  enableFortifyScan('fpl-aat')
-//  //enableFullFunctionalTest(240)
-//
-//  before('mutationTest') {
-//    setupSecretsForIntegrationTests(pipelineConf)
-//  }
-//
-//  afterAlways('mutationTest') {
-//    archiveExtraFilesForIntegrationTests()
-//    teardownSecretsForIntegrationTests()
-//  }
+  enableMutationTest()
+  enableFortifyScan('fpl-aat')
+  enableFullFunctionalTest(240)
 
-  stage('Full functional tests') {
-    try {
-      yarnBuilder.yarn('yarn-update')
-      yarnBuilder.yarn('install-dependencies')
-      env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
-      env.MOCKED_PAYMENTS = false
-      env.TEST_RETRIES = 5
-      env.TESTS_FOR_ACCESSIBILITY = true
-      env.ENV = 'aat'
-      env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
-      yarnBuilder.yarn('test:functional-nightly')
-    } catch (Error) {
-      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString() )
-    } finally {
-      env.TESTS_FOR_ACCESSIBILITY = false
-      publishHTML([
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "playwright-report",
-        reportFiles          : 'index.html',
-        reportName           : 'UI Functional Test Report'
-      ])
-      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  afterAlways('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
+    teardownSecretsForIntegrationTests()
+  }
+
+  before('fullFunctionalTest') {
+    yarnBuilder.yarn('yarn-update')
+    yarnBuilder.yarn('install-dependencies')
+    env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
+    env.MOCKED_PAYMENTS = false
+    env.TEST_RETRIES = 5
+    env.TESTS_FOR_ACCESSIBILITY = true
+    env.ENV = 'aat'
+    env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
+  }
+
+  afterAlways('fullFunctionalTest') {
+
+    stage('DSS Create E2E tests') {
+      try {
+        yarnBuilder.yarn('test:functional-nightly')
+        env.TESTS_FOR_ACCESSIBILITY = false
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable")
+      } finally {
+        publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "playwright-report",
+          reportFiles          : 'index.html',
+          reportName           : 'UI Functional Test Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+      }
     }
+  }
+
+  afterAlways('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }
