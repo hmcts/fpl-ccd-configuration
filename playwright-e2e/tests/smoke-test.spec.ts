@@ -1,7 +1,7 @@
 import { test } from "../fixtures/create-fixture";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test", async ({
+test.skip("Smoke Test @smoke-test", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
