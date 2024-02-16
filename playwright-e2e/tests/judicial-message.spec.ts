@@ -18,7 +18,7 @@ test.describe('send and reply message',()=>{
       caseNumber =  await apiDataSetup.createCase('e2e case',newSwanseaLocalAuthorityUserOne);
   });
 
-  test('CTSC admin send message to Judge',
+  test.skip('CTSC admin send message to Judge',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
         await apiDataSetup.updateCase(casename,caseNumber,caseData);

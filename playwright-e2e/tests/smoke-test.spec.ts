@@ -1,7 +1,8 @@
 import { test } from "../fixtures/create-fixture";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test.skip("Smoke Test @smoke-test", async ({
+// @ts-ignore
+test.("Smoke Test @smoke-test", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -14,6 +15,9 @@ test.skip("Smoke Test @smoke-test", async ({
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
+  console.log('email:' + newSwanseaLocalAuthorityUserOne.email);
+  console.log('password : ' + newSwanseaLocalAuthorityUserOne.password);
+
   await signInPage.login(
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
