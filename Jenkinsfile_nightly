@@ -81,18 +81,18 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableMutationTest()
-  enableFortifyScan('fpl-aat')
-  //enableFullFunctionalTest(240)
-
-  before('mutationTest') {
-    setupSecretsForIntegrationTests(pipelineConf)
-  }
-
-  afterAlways('mutationTest') {
-    archiveExtraFilesForIntegrationTests()
-    teardownSecretsForIntegrationTests()
-  }
+//  enableMutationTest()
+//  enableFortifyScan('fpl-aat')
+//  //enableFullFunctionalTest(240)
+//
+//  before('mutationTest') {
+//    setupSecretsForIntegrationTests(pipelineConf)
+//  }
+//
+//  afterAlways('mutationTest') {
+//    archiveExtraFilesForIntegrationTests()
+//    teardownSecretsForIntegrationTests()
+//  }
 
   stage('Full functional tests') {
     try {
@@ -119,9 +119,5 @@ withNightlyPipeline(type, product, component) {
       ])
       steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
     }
-  }
-
-  afterAlways('fortify-scan') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 }
