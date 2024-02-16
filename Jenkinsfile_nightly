@@ -96,17 +96,22 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fullFunctionalTest') {
-    env.TESTS_FOR_ACCESSIBILITY = false
-    publishHTML([
-      allowMissing         : true,
-      alwaysLinkToLastBuild: true,
-      keepAll              : true,
-      reportDir            : "build/reports/tests/functionalTest/",
-      reportFiles          : 'index.html',
-      reportName           : 'UI Functional Test Report'
-    ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-    yarnBuilder.yarn('test:functional-nightly')
+    try {
+      yarnBuilder.yarn('test:functional-nightly')
+    } catch (Error) {
+      unstable(message: Error.toString())
+    } finally {
+      env.TESTS_FOR_ACCESSIBILITY = false
+      publishHTML([
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/functionalTest/",
+        reportFiles          : 'index.html',
+        reportName           : 'UI Functional Test Report'
+      ])
+      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+    }
   }
 
 //  afterAlways('fortify-scan') {
