@@ -13,7 +13,7 @@ export class StartApplication {
   readonly hearingUrgencyHeader: Locator;
   readonly groundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationHasBeenUpdatedFinished: Locator;
-  readonly allocationProposalHasBeenUpdatedFinished: Locator;
+  readonly allocationProposalFinished: Locator;
   readonly allocationProposalLink: Locator;
   readonly allocationProposalHeading: Locator;
   readonly addApplicationDocsHeading: Locator;
@@ -31,13 +31,8 @@ export class StartApplication {
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator( 'xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img', );
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
-    this.allocationProposalHasBeenUpdatedFinished = page
-      .locator("p")
-      .filter({ hasText: "Allocation proposal" })
-      .getByRole("img");
-    this.allocationProposalHeading = page
-      .getByRole("group", { name: "Allocation proposal" })
-      .getByRole("heading");
+    this.allocationProposalFinished = page.locator('p:has(a[text()="Allocation proposal"]) > img[title="Finished"]');
+    this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
@@ -90,6 +85,6 @@ export class StartApplication {
   }
 
   async allocationProposalHasBeenUpdated() {
-    await expect(this.allocationProposalHasBeenUpdatedFinished).toBeVisible;
+    await expect(this.allocationProposalFinished).toBeVisible;
   }
 }

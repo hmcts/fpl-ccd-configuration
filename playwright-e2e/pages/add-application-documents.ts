@@ -32,18 +32,13 @@ export class AddApplicationDocuments {
         await this.typeOfDocument.isVisible();
         await this.typeOfDocument.selectOption('8: BIRTH_CERTIFICATE');
         await this.page.locator('input#temporaryApplicationDocuments_0_document').first().setInputFiles(config.testPdfFile);
-
-        // const fileChooserPromise = this.page.waitForEvent('filechooser');
-        // await this.chooseFileButton.click();
-        // const fileChooser = await fileChooserPromise;
-        // await fileChooser.setFiles(path.join(__dirname, '../playwright-e2e/settings/test-docs/testPdf.pdf'));
-
-        //await this.chooseFileButton.setInputFiles(config.testPdfFile);
-        //await expect(this.page.locator(".error-message")).toHaveCount(0);
+        // Wait for the "Uploading..." process to finish otherwise step will fail
+        await this.page.locator('span.error-message:has-text("Uploading...")').isVisible();
+        await expect(this.page.locator('span.error-message:has-text("Uploading...")')).toBeHidden();
         await this.giveDetailsText.isVisible();
         await this.giveDetailsText.fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
         await this.continueButton.click();
-        await this.checkYourAnswersHeader.isVisible();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.saveAndContinueButton.click();
     }
 }
