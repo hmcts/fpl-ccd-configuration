@@ -83,7 +83,7 @@ withNightlyPipeline(type, product, component) {
 
   enableMutationTest()
   enableFortifyScan('fpl-aat')
-  enableFullFunctionalTest(240)
+  //enableFullFunctionalTest(240)
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -94,22 +94,19 @@ withNightlyPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
 
-  before('fullFunctionalTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
-    env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = true
-    env.ENV = 'aat'
-    env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
-  }
-
   stage('Full functional tests') {
     try {
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+      env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
+      env.MOCKED_PAYMENTS = false
+      env.TEST_RETRIES = 5
+      env.TESTS_FOR_ACCESSIBILITY = true
+      env.ENV = 'aat'
+      env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
       yarnBuilder.yarn('test:functional-nightly')
     } catch (Error) {
-      unstable(message: "${STAGE_NAME} is unstable")
+      unstable(message: "${STAGE_NAME} is unstable: " + Error.toString() )
     } finally {
       env.TESTS_FOR_ACCESSIBILITY = false
       publishHTML([
