@@ -96,17 +96,17 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fullFunctionalTest') {
+    yarnBuilder.yarn('test:functional-nightly')
     env.TESTS_FOR_ACCESSIBILITY = false
     publishHTML([
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
       keepAll              : true,
-      reportDir            : "build/reports/tests/functionalTest/",
+      reportDir            : "playwright-report",
       reportFiles          : 'index.html',
       reportName           : 'UI Functional Test Report'
     ])
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-    yarnBuilder.yarn('test:functional-nightly')
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/tests-results/functional/*'
   }
 
 //  afterAlways('fortify-scan') {
