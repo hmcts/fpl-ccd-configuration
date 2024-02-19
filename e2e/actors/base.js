@@ -234,7 +234,7 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-     await I.goToPage(config.baseUrl, user);
+    await I.goToPage(config.baseUrl, user);
     await this.navigateToCaseDetails(caseId);
   },
 
