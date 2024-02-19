@@ -50,7 +50,7 @@ public class PlacementEventData {
     @JsonDeserialize(using = DynamicListDeserializer.class)
     private DynamicList placementChildrenList;
 
-    @TempNullify
+    @Temp
     @FieldsGroup(PLACEMENT_GROUP)
     private Placement placement;
 
