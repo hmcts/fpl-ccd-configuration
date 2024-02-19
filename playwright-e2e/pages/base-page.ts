@@ -26,7 +26,7 @@ export abstract class BasePage {
   }
 
   async tabNavigation(tabName :string){
-    await this.page.getByText(tabName).click();
+    await this.page.getByRole('tab', { name: tabName }).click();
   }
   async clickContinue(){
     await this.continue.click();

@@ -9,6 +9,7 @@ import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
+import { AdditionalApplications } from "../pages/additional-applications";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -21,6 +22,7 @@ type CreateFixtures = {
   riskAndHarmToChildren : RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
+  additionalApplications: AdditionalApplications;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -62,4 +64,9 @@ export const test = base.extend<CreateFixtures>({
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
   },
+
+  additionalApplications: async ({ page }, use) => {
+    await use(new AdditionalApplications(page));
+  },
+
 });
