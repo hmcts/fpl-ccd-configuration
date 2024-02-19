@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -110,7 +111,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotNotifyJudicialMessageRecipientIfToggledOff() throws NotificationClientException {
-        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
 
         JudicialMessage latestJudicialMessage = JudicialMessage.builder()
             .recipient(JUDICIAL_MESSAGE_RECIPIENT)
@@ -160,7 +161,7 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             "latestMessage", REPLY
         );
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, never()).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, notificationReference(CASE_ID));
         verifyNoInteractions(concurrencyHelper);
     }
