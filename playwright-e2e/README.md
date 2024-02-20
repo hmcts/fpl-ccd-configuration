@@ -30,7 +30,7 @@ This repository contains automation tests that can be run locally. To set up the
 
 1. Create a .env file in the root directory of this project if it doesn't already exist.
 
-2. Add the following environment variables to the .env file: (ask a team mate for details)
+2. Add the following environment variables to the .env file: (ask a team mate for details/values can be found in Azure Keyvault)
 
 ```
 # URLs
@@ -39,8 +39,11 @@ AAT_BASE_URL=https://example.com
 AAT_IDAM_URL=https://example.com
 AAT_SERVICE_URL=https://example.com
 
-# Passwords
+# userCredentials and Passwords
 E2E_TEST_PASSWORD=passwordhere
+SYSTEM_UPDATE_USER_USERNAME =systemUserloginEmail
+SYSTEM_UPDATE_USER_PASSWORD =systemUserPassword
+
 
 # Ports
 SERVER_PORT=
