@@ -55,10 +55,13 @@ public class SecureDocStoreHelper {
                 }
             }
         }
+
         if (!featureToggleService.isSecureDocstoreEnabled() && !isEmpty(cdamApproach)) {
             return cdamApproach;
         }
-        throw new UnsupportedOperationException();
+
+        throw new UnsupportedOperationException(String.format("Download of document from %s unsuccessful.",
+            documentUrlString));
     }
 
     private static Supplier<IllegalArgumentException> exceptionSupplier(String documentUrlString) {
