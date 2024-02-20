@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "RespondentStatementV2",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
     "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "RespondentStatementV2",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
     "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -64,7 +64,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CorrespondenceDocument",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
     "Label": "Correspondence (Confidential)",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -74,7 +74,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "correspondenceDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CorrespondenceDocument",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
     "Label": "Correspondence (Restricted to CTSC only)",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -204,7 +204,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtChildListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementChild",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -214,7 +214,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtChildListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementChild",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
     "Label": "Position statement child",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -244,7 +244,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtRespListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
     "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -254,7 +254,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtRespListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
     "Label": "Position statement respondent",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -284,7 +284,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatement",
+    "FieldTypeParameter": "PositionStatementConfidential",
     "Label": "Position statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -294,7 +294,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "posStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatement",
+    "FieldTypeParameter": "PositionStatementConfidential",
     "Label": "Position statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -334,7 +334,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skeletonArgumentListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SkeletonArgument",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
     "Label": "Skeleton argument",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -344,7 +344,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "skeletonArgumentListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SkeletonArgument",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
     "Label": "Skeleton argument",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -374,7 +374,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -384,7 +384,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"

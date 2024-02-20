@@ -2742,6 +2742,7 @@ class ManageDocumentServiceTest {
                     toPair(DocumentType.MEDICAL_RECORDS),
                     toPair(DocumentType.COURT_CORRESPONDENCE),
                     toPair(DocumentType.NOTICE_OF_ACTING_OR_ISSUE),
+                    toPair(DocumentType.PREVIOUS_PROCEEDING),
                     b == 0 ? toPair(DocumentType.PLACEMENT_RESPONSES) : Pair.of("", ""));
                 args.add(Arguments.of(i, b == 0, expected.stream()
                     .filter(p -> !Pair.of("", "").equals(p))
