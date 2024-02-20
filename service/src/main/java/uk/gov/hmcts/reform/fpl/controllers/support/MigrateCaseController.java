@@ -43,9 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
-        "DFPL-2177", this::run2177,
-        "DFPL-1233", this::run1233,
-        "DFPL-1233Rollback", this::run1233Rollback
+        "DFPL-2177", this::run2177
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -199,13 +197,5 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
         caseDetails.getData().remove("urgentDirectionsOrder");
-    }
-
-    private void run1233Rollback(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
-    }
-
-    private void run1233(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }
