@@ -277,7 +277,9 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder sealDocumentAfterEventSubmitted(CaseData caseData) {
-        StandardDirectionOrder order = caseData.getStandardDirectionOrder();
+        StandardDirectionOrder order = (nonNull(caseData.getStandardDirectionOrder()))
+            ? caseData.getStandardDirectionOrder() : caseData.getUrgentDirectionsOrder();
+
         if (caseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision().isSealed()) {
             DocumentReference orderDoc = order.getOrderDoc();
 
