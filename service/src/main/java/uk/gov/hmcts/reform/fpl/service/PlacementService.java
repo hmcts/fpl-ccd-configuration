@@ -70,6 +70,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -96,18 +97,18 @@ public class PlacementService {
 
         final PlacementEventData placementData = caseData.getPlacementEventData();
 
-        final List<Element<Child>> childrenWithoutPlacement = caseData.getAllChildren();
+        final List<Element<Child>> children = caseData.getAllChildren();
 
-        placementData.setPlacementChildrenCardinality(Cardinality.from(childrenWithoutPlacement.size()));
+        placementData.setPlacementChildrenCardinality(Cardinality.from(children.size()));
 
         if (placementData.getPlacementChildrenCardinality() == ONE) {
-            final Element<Child> child = childrenWithoutPlacement.get(0);
+            final Element<Child> child = children.get(0);
 
             placementData.setPlacement(getChildPlacement(placementData, child));
         }
 
         if (placementData.getPlacementChildrenCardinality() == MANY) {
-            placementData.setPlacementChildrenList(asDynamicList(childrenWithoutPlacement, Child::asLabel));
+            placementData.setPlacementChildrenList(asDynamicList(children, Child::asLabel));
         }
 
         return placementData;
@@ -346,16 +347,13 @@ public class PlacementService {
 
 
     public List<Object> getEvents(CaseData caseData, CaseData caseDataBefore) {
-
         final List<Object> events = new ArrayList<>();
 
-        final PlacementEventData placementData = caseData.getPlacementEventData();
+        Element<Placement> updatedPlacement = getUpdatedPlacement(caseData, caseDataBefore);
+        final Placement placement = updatedPlacement.getValue();
+
         final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
-
-        final UUID childId = placementData.getPlacement().getChildId();
-
-        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
-        final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, childId);
+        final Optional<Placement> placementBefore = findChildPlacement(placementDataBefore, placement.getChildId());
 
         if (placementBefore.isEmpty()) {
             events.add(new PlacementApplicationSubmitted(caseData, placement));
@@ -375,13 +373,20 @@ public class PlacementService {
         return events;
     }
 
-    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData) {
+    public Element<Placement> getUpdatedPlacement(CaseData caseData, CaseData caseDataBefore) {
         final PlacementEventData placementData = caseData.getPlacementEventData();
+        final PlacementEventData placementDataBefore = caseDataBefore.getPlacementEventData();
 
-        final UUID childId = placementData.getPlacement().getChildId();
-        final Placement placement = findChildPlacement(placementData, childId).orElseThrow();
+        return nullSafeList(placementData.getPlacements()).stream()
+            .filter(el -> !nullSafeList(placementDataBefore.getPlacements()).contains(el))
+            .findFirst()
+            .orElseThrow();
+    }
 
-        return new PlacementNoticeAdded(caseData, placement);
+    public PlacementNoticeAdded getNoticeAddedEvent(CaseData caseData, CaseData caseDataBefore) {
+        Element<Placement> updatedPlacement = getUpdatedPlacement(caseData, caseDataBefore);
+
+        return new PlacementNoticeAdded(caseData, updatedPlacement.getValue());
     }
 
     private boolean isPaymentRequired(PlacementEventData eventData) {
@@ -477,18 +482,11 @@ public class PlacementService {
             DocumentReference sealedApplication = sealingService.sealDocument(applicationToBeSealed,
                 caseData.getCourt(), SealType.ENGLISH);
 
+            // Seal the application
             placementToBeSealed.setApplication(sealedApplication);
-
-            // seal the current placement if it is the same placement
-            if (placementData.getPlacement() != null && placementData.getPlacement().getApplication() != null
-                && placementData.getPlacement().getApplication().getBinaryUrl()
-                .equals(applicationToBeSealed.getBinaryUrl())) {
-                placementData.getPlacement().setApplication(sealedApplication);
-            }
 
             return PlacementEventData.builder()
                 .placements(placementData.getPlacements())
-                .placement(placementData.getPlacement())
                 .build();
         }
 

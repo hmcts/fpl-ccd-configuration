@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { CreateCaseName } from "../utils/create-case-name";
 
 export class CreateCase {
   readonly page: Page;
@@ -29,33 +30,12 @@ export class CreateCase {
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async caseName() {
-
-    var date = new Date();
-
-    let options: Intl.DateTimeFormatOptions = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      timeZoneName: "short",
-    };
-
-    // Specify default date formatting for language (locale)
-    const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
-
-    // Create the case name using a timestamp string
-    const caseName = `Smoke Test ${formattedDate}`;
-    this.generatedCaseName = caseName;
-
-    console.log("Case name:", caseName);
-
+   caseName()  {
+    let formattedDate = CreateCaseName.getFormattedDate();
+    this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
-  async submitCase(caseName) {
+  async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
@@ -68,7 +48,7 @@ export class CreateCase {
     await this.viewHistory.click();
   }
 
-  async checkCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName: string) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page
