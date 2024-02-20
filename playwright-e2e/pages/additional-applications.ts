@@ -45,12 +45,14 @@ export class AdditionalApplications extends BasePage {
 
     // upload application form
     await this.applicationForm.setInputFiles('./playwright-e2e/files/textfile.txt');
-    await expect(this.page.getByText('Cancel upload')).toBeDisabled();
+    await this.expectAllUploadsCompleted();
 
     await this.acknowledgeOtherApplicationForm.check();
     await this.sameDay.click();
 
     // upload supplements, supporting evidence
+    await this.uploadOtherSupplement();
+    await this.uploadOtherSupportingEvidence();
 
     await this.clickContinue();
   }
@@ -87,6 +89,25 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
     await this.expectAllUploadsCompleted();
   }
+
+  public async uploadOtherSupplement() {
+    await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle').getByRole('button', { name: 'Add new' }).click();
+    await this.page.getByLabel('Document name').selectOption('1: C13A_SPECIAL_GUARDIANSHIP');
+    await this.page.getByLabel('Notes (Optional)').fill('Notes');
+    await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_document').setInputFiles('./playwright-e2e/files/textfile.txt');
+    await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').click();
+    await this.expectAllUploadsCompleted();
+  }
+
+  public async uploadOtherSupportingEvidence() {
+    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle').getByRole('button', { name: 'Add new' }).click();
+    await this.page.getByLabel('File name').fill('supporting document');
+    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_notes').fill('supporting doc notes');
+    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles('./playwright-e2e/files/textfile.txt');
+    await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
+    await this.expectAllUploadsCompleted();
+  }
+
 
   public async payForApplication() {
     await this.page.getByLabel('Yes').check();
