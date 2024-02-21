@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -1064,5 +1066,21 @@ public class MigrateCaseService {
     public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
         CloseCase closeCaseField = caseData.getCloseCaseTabField();
         return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
+    }
+
+    public Map<String, Object> migrateCaseRemoveUnknownAllocatedJudgeTitle(CaseData caseData,
+                                                                           String migrationId) {
+
+        if (caseData.getAllocatedJudge().getJudgeTitle() == JudgeOrMagistrateTitle.OTHER
+            && caseData.getAllocatedJudge().getOtherTitle().equalsIgnoreCase("Unknown")) {
+            return Map.of("allocatedJudge", caseData.getAllocatedJudge().toBuilder()
+                .otherTitle(JudicialUserProfile.builder()
+                    .fullName(caseData.getAllocatedJudge().getJudgeFullName())
+                    .build().getTitle())
+                .build());
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                migrationId, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
+        }
     }
 }

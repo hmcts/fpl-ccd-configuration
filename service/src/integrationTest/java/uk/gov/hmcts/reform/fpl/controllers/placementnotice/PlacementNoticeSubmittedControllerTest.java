@@ -123,6 +123,7 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
 
         final Element<Placement> placement = element(Placement.builder()
             .childId(child1.getId())
+            .childName(child1.getValue().getParty().getFullName())
             .placementRespondentsToNotify(newArrayList(father))
             .placementNotice(testDocumentReference())
             .build());
@@ -205,6 +206,7 @@ class PlacementNoticeSubmittedControllerTest extends AbstractPlacementNoticeCont
 
         final Element<Placement> placement = element(Placement.builder()
                 .childId(child1.getId())
+                .childName(child1.getValue().getParty().getFullName())
                 .placementRespondentsToNotify(newArrayList(father))
                 .placementNotice(placementNotice)
                 .application(application)
