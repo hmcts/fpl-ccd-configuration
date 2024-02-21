@@ -61,7 +61,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1940", this::run1940,
         "DFPL-2177", this::run2177,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback
+        "DFPL-AM-Rollback", this::runAmRollback,
+        "DFPL-1882", this::run1882,
+        "DFPL-2177", this::run2177
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -351,5 +353,13 @@ public class MigrateCaseController extends CallbackController {
 
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
+    }
+  
+    private void run1882(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1882";
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
+            migrationId));
     }
 }
