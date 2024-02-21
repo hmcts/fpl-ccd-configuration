@@ -43,6 +43,7 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-CFV-Failure", this::runCfvFailure,
         "DFPL-CFV-dry", this::dryRunCFV,
         "DFPL-1940", this::run1940,
+        "DFPL-1882", this::run1882,
         "DFPL-2177", this::run2177
     );
 
@@ -197,5 +198,13 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
         caseDetails.getData().remove("urgentDirectionsOrder");
+    }
+
+    private void run1882(CaseDetails caseDetails) {
+        var migrationId = "DFPL-1882";
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
+            migrationId));
     }
 }
