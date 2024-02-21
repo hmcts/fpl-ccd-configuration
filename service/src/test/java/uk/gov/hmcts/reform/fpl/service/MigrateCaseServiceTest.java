@@ -937,7 +937,6 @@ class MigrateCaseServiceTest {
     class RemoveReturnApplication {
 
         private final long caseId = 1L;
-        private final String fileName = "Test Filname.pdf";
 
         @Test
         void shouldThrowExceptionIfReturnApplicationIsNullOrEmpty() {
@@ -970,6 +969,27 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () -> underTest
                 .verifyReturnApplicationExists(caseData, MIGRATION_ID, document1Id));
+        }
+
+        @Test
+        void shouldNotThrowExceptionIfReturnApplicationIsMatching() {
+            UUID documentId = UUID.randomUUID();
+            String documentUrl = "http://dm-store-prod.service.core-compute-prod.internal/documents/" + documentId;
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(documentUrl)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
+                        .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
         }
     }
 
