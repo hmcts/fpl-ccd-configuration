@@ -60,6 +60,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData;
@@ -3914,6 +3915,29 @@ class ManageDocumentServiceTest {
         }
 
         @Test
+        void shouldShowC1SupportingDocumentsInDocumentTypesForSubmittedC1WithSupplementByLA() {
+            initialiseUserService(HMCTS_LOGIN_TYPE);
+            DocumentUploaderType uploaderType = getUploaderType(LA_LOGIN_TYPE);
+
+            when(caseConverter.toMap(any())).thenReturn(Map.of());
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(AA_PARENT_APPLICATIONS.name(), AA_PARENT_APPLICATIONS.getDescription()),
+                Pair.of(C1_APPLICATION_DOCUMENTS.name(), C1_APPLICATION_DOCUMENTS.getDescription())
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildDocumentTypeDynamicListForRemoval(CaseData.builder()
+                .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder()
+                        .document(testDocumentReference())
+                        .uploaderType(uploaderType)
+                        .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
+                        .build())))
+                    .build())
+                .build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @Test
         void shouldShowC2SupportingDocumentsInDocumentTypes() {
             initialiseUserService(HMCTS_LOGIN_TYPE);
             DocumentUploaderType uploaderType = getUploaderType(HMCTS_LOGIN_TYPE);
@@ -4307,6 +4331,29 @@ class ManageDocumentServiceTest {
                         .build())
                     .build())
             ));
+
+            when(dynamicListService.asDynamicList(List.of(
+                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
+            ))).thenReturn(expectedDynamicList1);
+
+            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
+            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
+        void shouldReturnDynamicListWhenC1WithSupplementSupportingDocumentUploadedByLA(
+            int loginType) {
+            initialiseUserService(loginType);
+            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
+            builder.submittedC1WithSupplement(
+                SubmittedC1WithSupplementBundle.builder()
+                    .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
+                        .document(testDocumentReference(filename1))
+                        .uploaderType(getUploaderType(LA_LOGIN_TYPE))
+                        .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
+                        .build())))
+                    .build());
 
             when(dynamicListService.asDynamicList(List.of(
                 Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
@@ -5246,6 +5293,43 @@ class ManageDocumentServiceTest {
                         .supportingEvidenceBundle(List.of())
                         .build()).build())
             ));
+        }
+
+        @Test
+        void adminShouldBeAbleToRemoveSupportingDocumentFromC1WithSupplement() {
+            int loginType = HMCTS_LOGIN_TYPE;
+            initialiseUserService(loginType);
+
+            SupportingEvidenceBundle seb = buildSupportingEvidenceBundle(filename1,
+                DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY, modifierToCaseRole("LA"));
+
+            CaseData.CaseDataBuilder builder = CaseData.builder().id(CASE_ID);
+            builder.submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
+                .supportingEvidenceBundle(List.of(element(elementId1, seb)))
+                .build());
+            builder.manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .manageDocumentRemoveDocReason(ManageDocumentRemovalReason.UPLOADED_TO_WRONG_CASE)
+                .documentsToBeRemoved(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(C1_APPLICATION_DOCUMENTS.name() + "###" + elementId1)
+                        .build())
+                    .build())
+                .build());
+
+            Map<String, Object> result = underTest.removeDocuments(builder.build());
+            assertThat(result.get("c1ApplicationDocListRemoved")).isEqualTo(List.of(
+                element(elementId1, ManagedDocument.builder()
+                    .document(seb.getDocument())
+                    .markAsConfidential(seb.getMarkAsConfidential())
+                    .uploaderType(seb.getUploaderType())
+                    .uploaderCaseRoles(seb.getUploaderCaseRoles())
+                    .build())
+            ));
+            assertThat(result.get("submittedC1WithSupplement")).isEqualTo(
+                SubmittedC1WithSupplementBundle.builder()
+                    .supportingEvidenceBundle(List.of())
+                    .build());
         }
     }
 
