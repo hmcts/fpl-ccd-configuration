@@ -171,9 +171,6 @@ public class PlacementController extends CallbackController {
                     if (isNotEmpty(sealedEventData.getPlacements())) {
                         updates.put("placements", sealedEventData.getPlacements());
                     }
-                    if (isNotEmpty(sealedEventData.getPlacement())) {
-                        updates.put(PLACEMENT, sealedEventData.getPlacement());
-                    }
                 }
                 return updates;
             });
@@ -193,7 +190,6 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
 
         caseDetails.getData().remove("placementIdToBeSealed");
-        caseDetails.getData().remove(PLACEMENT);
 
         return respond(caseDetails);
     }
