@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -108,7 +109,8 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         CaseData responseData = extractCaseData(callbackResponse);
 
         assertThat(responseData.getReviewCMODecision())
-            .isEqualTo(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+            .isEqualTo(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER)
+                .urgency(YesNo.NO).build());
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedReviewDraftOrdersData);
     }
