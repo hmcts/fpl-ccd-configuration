@@ -9,9 +9,12 @@ import {
 } from '../settings/user-credentials';
 import {expect} from '@playwright/test';
 import {caseNumberHyphenated} from "../utils/case-number";
+import { testConfig } from '../settings/test-config';
 
 
 test.describe('Regional case access', () => {
+  test.skip(!testConfig.waEnabled); // Skip tests if WA is disabled, as they can't be tested
+  
   let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;

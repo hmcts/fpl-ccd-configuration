@@ -64,4 +64,8 @@ export const test = base.extend<CreateFixtures>({
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
   },
+
+  challengedAccess: async ({ page }, use) => {
+    await use(new ChallengedAccess(page));
+  },
 });
