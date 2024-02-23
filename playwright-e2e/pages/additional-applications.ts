@@ -12,6 +12,7 @@ export class AdditionalApplications extends BasePage {
   readonly acknowledgeOtherApplicationForm: Locator;
   readonly acknowledgeC2ApplicationForm: Locator;
   readonly sameDay: Locator;
+  readonly within2Days: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -24,6 +25,7 @@ export class AdditionalApplications extends BasePage {
     this.acknowledgeOtherApplicationForm = page.locator('[name="temporaryOtherApplicationsBundle_documentAcknowledge"]');
     this.acknowledgeC2ApplicationForm = page.locator('[name="temporaryC2Document_documentAcknowledge"]');
     this.sameDay = page.getByText('On the same day');
+    this.within2Days = page.getByText('Within 2 days');
   }
 
   public async chooseOtherApplicationType() {
@@ -39,6 +41,13 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
+  public async chooseBothApplicationTypes() {
+    await this.c2Order.click();
+    await this.otherSpecificOrder.click();
+    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.clickContinue();
+  }
 
   public async fillOtherApplicationDetails() {
     await this.c1ApplicationType.selectOption('C1 - Change surname or remove from jurisdiction');
@@ -72,7 +81,7 @@ export class AdditionalApplications extends BasePage {
 
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();
-    await this.sameDay.click();
+    await this.within2Days.click();
 
     // TODO - upload supplements, supporting evidence?
 
