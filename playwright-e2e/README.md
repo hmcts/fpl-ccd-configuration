@@ -47,6 +47,9 @@ SYSTEM_UPDATE_USER_USERNAME =systemUserloginEmail
 SYSTEM_UPDATE_USER_PASSWORD =systemUserPassword
 E2E_TEST_JUDGE_PASSWORD=passwordhere
 
+# Run WA tests
+WA_ENABLED=true
+
 # Ports
 SERVER_PORT=
 ```
