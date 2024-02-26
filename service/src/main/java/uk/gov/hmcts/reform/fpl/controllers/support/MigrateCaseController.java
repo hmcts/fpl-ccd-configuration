@@ -383,6 +383,6 @@ public class MigrateCaseController extends CallbackController {
         UUID returnApplicationDocId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
 
         migrateCaseService.verifyReturnApplicationExists(caseData, migrationId, returnApplicationDocId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
+        caseDetails.getData().remove("returnApplication");
     } 
 }
