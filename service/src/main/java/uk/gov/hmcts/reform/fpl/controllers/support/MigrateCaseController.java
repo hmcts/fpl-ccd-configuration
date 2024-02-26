@@ -62,7 +62,6 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1882", this::run1882,
-        "DFPL-2177", this::run2177,
         "DFPL-2148", this::run2148,
         "DFPL-2149", this::run2149
     );
@@ -207,17 +206,6 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
             String.valueOf(expectedMessageId)));
-    }
-
-    private void run2177(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2177";
-        var possibleCaseIds = List.of(1704384343011099L);
-        var expectedDocumentId = UUID.fromString("8e5cf45c-98d0-45f7-851a-974b6afbdb44");
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void migrateRoles(CaseData caseData) {
