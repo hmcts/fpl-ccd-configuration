@@ -706,7 +706,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-approve-order",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CR"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
