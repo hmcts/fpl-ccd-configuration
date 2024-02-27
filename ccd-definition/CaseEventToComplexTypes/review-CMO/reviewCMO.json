@@ -30,15 +30,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMODecision",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision1",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -66,15 +57,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision1",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision2",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -96,15 +78,6 @@
     "CaseFieldID": "reviewDecision2",
     "ListElementCode": "judgeAmendedDocument",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision2",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -138,15 +111,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision5",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision4",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -174,15 +138,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision4",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision5",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -204,15 +159,6 @@
     "CaseFieldID": "reviewDecision5",
     "ListElementCode": "judgeAmendedDocument",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision5",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -246,15 +192,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision6",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision7",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -276,15 +213,6 @@
     "CaseFieldID": "reviewDecision7",
     "ListElementCode": "judgeAmendedDocument",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision7",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -318,15 +246,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision8",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision9",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -354,15 +273,6 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision9",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewDecision10",
     "ListElementCode": "decision",
     "FieldDisplayOrder": 1,
@@ -384,15 +294,6 @@
     "CaseFieldID": "reviewDecision10",
     "ListElementCode": "judgeAmendedDocument",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewDecision10",
-    "ListElementCode": "urgency",
-    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
 ]
