@@ -29,7 +29,7 @@ test("Smoke Test @smoke-test", async ({
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // // Orders and directions sought
+  // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
