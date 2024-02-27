@@ -30,7 +30,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfNoDocuments() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-            .applicationDocuments(null)
+            .temporaryApplicationDocuments(null)
             .build(),
             LANGUAGE);
 
@@ -55,7 +55,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfSinglePopulated() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-            .applicationDocuments(List.of(
+            .temporaryApplicationDocuments(List.of(
                 documentWithType(DOCUMENT_TYPE)
             )).build(),
             LANGUAGE);
@@ -70,7 +70,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfSingleOtherDocumentPopulated() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-            .applicationDocuments(List.of(
+            .temporaryApplicationDocuments(List.of(
                 otherDocument(OTHER_DOC_TITLE_1),
                 otherDocument(OTHER_DOC_TITLE_2)
             )).build(),
@@ -87,7 +87,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfMultiplePopulated() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-            .applicationDocuments(List.of(
+            .temporaryApplicationDocuments(List.of(
                 documentWithType(DOCUMENT_TYPE),
                 documentWithType(ANOTHER_DOCUMENT_TYPE)
             )).build(),
@@ -104,7 +104,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfMultiplePopulatedWelsh() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-                .applicationDocuments(List.of(
+                .temporaryApplicationDocuments(List.of(
                     documentWithType(DOCUMENT_TYPE),
                     documentWithType(ANOTHER_DOCUMENT_TYPE)
                 )).build(),
@@ -121,7 +121,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfMultipleOfSamePopulated() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-            .applicationDocuments(List.of(
+            .temporaryApplicationDocuments(List.of(
                 documentWithType(DOCUMENT_TYPE),
                 documentWithType(DOCUMENT_TYPE)
             )).build(),
@@ -137,7 +137,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
     @Test
     void testIfMultipleOfSamePopulatedWelsh() {
         DocmosisAnnexDocuments actual = underTest.generate(CaseData.builder()
-                .applicationDocuments(List.of(
+                .temporaryApplicationDocuments(List.of(
                     documentWithType(DOCUMENT_TYPE),
                     documentWithType(DOCUMENT_TYPE)
                 )).build(),
