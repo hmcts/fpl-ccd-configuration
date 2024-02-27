@@ -2,17 +2,15 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialDraftOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -24,25 +22,28 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
+import javax.swing.text.html.Option;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -68,8 +69,7 @@ public class UploadAdditionalApplicationsService {
     private final UserService userService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentConversionService documentConversionService;
-    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
-    private final LocalAuthorityRecipientsService localAuthorityRecipients;
+    private final DraftOrderService draftOrderService;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -122,45 +122,26 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
-    @SuppressWarnings("unchecked")
     private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
                                       AdditionalApplicationsBundleBuilder builder) {
-        final Set<String> caseRoles = userService.getCaseRoles(caseData.getId()).stream()
-            .map(CaseRole::formattedName)
-            .collect(Collectors.toSet());
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
 
-        final BiConsumer<OrganisationPolicy, String> addBundleToList = (policy, fieldName) -> {
-            if (policy != null && caseRoles.contains(policy.getOrgPolicyCaseAssignedRole())) {
-                try {
-                    AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
-                        .invoke(builder, c2Bundle);
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
+        final Consumer<String> setConfidentialC2 = (fieldName) -> {
+            try {
+                AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
+                    .invoke(builder, c2Bundle);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
             }
         };
 
-        final TriConsumer<Object, String, String> addBundleByPolicy = (policyData, getterName, bundleField) -> {
-            if (policyData != null) {
-                Arrays.stream(policyData.getClass().getMethods())
-                    .filter(method -> method.getName().startsWith(getterName))
-                    .forEach(method -> {
-                        try {
-                            OrganisationPolicy policy = (OrganisationPolicy) method.invoke(policyData);
-                            String bundleFieldName = bundleField + method.getName().replace(getterName, "");
-                            addBundleToList.accept(policy, bundleFieldName);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-            }
-        };
-
-        addBundleByPolicy.accept(caseData.getRespondentPolicyData(), "getRespondentPolicy",
-            "c2DocumentBundleResp");
-        addBundleByPolicy.accept(caseData.getChildPolicyData(), "getChildPolicy",
-            "c2DocumentBundleChild");
-        addBundleToList.accept(caseData.getLocalAuthorityPolicy(), "c2DocumentBundleLA");
+        PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "c2DocumentBundleResp",
+            caseRoles, setConfidentialC2);
+        PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "c2DocumentBundleChild",
+            caseRoles, setConfidentialC2);
+        if (PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
+            setConfidentialC2.accept("c2DocumentBundleLA");
+        }
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> bundles) {
@@ -331,5 +312,33 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> addConfidentialHearingOrdersBundlesDrafts(CaseData caseData,
+                                                                         List<Element<HearingOrder>> newDrafts) {
+        Map<String, Object> updates = new HashMap<>();
+
+        ConfidentialDraftOrders confidentialDraftOrders = caseData.getConfidentialHearingOrdersBundlesDrafts();
+        Consumer<String> addNewDraftOrderByPolicy = (fieldSuffix) -> {
+            List<Element<HearingOrdersBundle>> draftOrders =
+                Optional.ofNullable(confidentialDraftOrders.getOrderBySuffix(fieldSuffix))
+                    .orElse(new ArrayList<>());
+            draftOrderService.additionalApplicationUpdateCase(newDrafts, draftOrders);
+            updates.put("hearingOrdersBundlesDrafts" + fieldSuffix, draftOrders);
+        };
+
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+
+        addNewDraftOrderByPolicy.accept("Confidential");
+        PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "Resp", caseRoles,
+            addNewDraftOrderByPolicy);
+        PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "Child", caseRoles,
+            addNewDraftOrderByPolicy);
+        if(PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
+            addNewDraftOrderByPolicy.accept("LA");
+        }
+
+        return updates;
     }
 }
