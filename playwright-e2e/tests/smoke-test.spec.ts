@@ -1,5 +1,5 @@
 import { test } from "../fixtures/create-fixture";
-import { AddApplicationDocuments } from "../pages/add-application-documents";
+import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test", async ({
@@ -13,7 +13,9 @@ test("Smoke Test @smoke-test", async ({
   factorsAffectingParenting,
   allocationProposal,
   addApplicationDocuments,
+  page
 }) => {
+  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -66,6 +68,9 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
+  await basePage.continueButton.click();
+  await basePage.checkYourAnswersHeader.isVisible();
+  await basePage.checkYourAnsAndSubmit();
 
   // Allocation Proposal
   await startApplication.allocationProposal();

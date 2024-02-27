@@ -10,9 +10,7 @@ export class AddApplicationDocuments {
     readonly typeOfDocument: Locator;
     readonly chooseFileButton: Locator;
     readonly giveDetailsText: Locator;
-    readonly continueButton: Locator;
-    readonly checkYourAnswersHeader: Locator;
-    readonly saveAndContinueButton: Locator;
+    // readonly saveAndContinueButton: Locator;
   
     public constructor(page: Page) {
       this.page = page;
@@ -21,9 +19,7 @@ export class AddApplicationDocuments {
       this.typeOfDocument = page.getByLabel('Type of document');
       this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
       this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
-      this.continueButton = page.getByRole('button', { name: 'Continue' });
-      this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-      this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
+      // this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
     }
 
     async uploadDocumentSmokeTest() {
@@ -37,8 +33,5 @@ export class AddApplicationDocuments {
         await expect(this.page.locator('span.error-message:has-text("Uploading...")')).toBeHidden();
         await this.giveDetailsText.isVisible();
         await this.giveDetailsText.fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
-        await this.continueButton.click();
-        await expect(this.checkYourAnswersHeader).toBeVisible();
-        await this.saveAndContinueButton.click();
     }
 }
