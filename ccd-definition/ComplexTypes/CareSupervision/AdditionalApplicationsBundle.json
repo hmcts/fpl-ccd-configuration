@@ -2,6 +2,26 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "hasConfidentialC2",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "hasConfidentialC2",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "confidentialC2RestrictedLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This is a confidential application and restricted viewing applies",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "hasConfidentialC2=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundle",
     "FieldType": "C2DocumentBundle",
     "ElementLabel": "C2 application",

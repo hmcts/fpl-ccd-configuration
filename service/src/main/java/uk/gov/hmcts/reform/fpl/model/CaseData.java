@@ -923,6 +923,9 @@ public class CaseData extends CaseDataParent {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    @JsonUnwrapped
+    @Builder.Default
+    private ConfidentialDraftOrders confidentialHearingOrdersBundlesDrafts = ConfidentialDraftOrders.builder().build();
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;

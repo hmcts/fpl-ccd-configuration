@@ -332,28 +332,4 @@ public class UploadAdditionalApplicationsService {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
     }
-
-    public List<String> getRecipientsOfConfidentialC2(CaseData caseData, AdditionalApplicationsBundle lastBundle) {
-        Set<String> recipients = new HashSet<>();
-
-        if (lastBundle.getC2DocumentBundleConfidential() != null) {
-            // only confidential c2 is uploaded
-            if (lastBundle.getC2DocumentBundleLA() != null) {
-                // the bundle is uploaded by la, send notification to la shared inbox
-                log.info("Confidential C2 uploaded by LA.");
-                LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
-                if (la != null) {
-                    localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
-                    recipients.add(la.getEmail());
-                } else {
-                    log.error("Organisation not found. Won't send notification to LA's shared/group inbox");
-                }
-            } else if (!userService.isHmctsAdminUser()) {
-                log.info("Confidential C2 uploaded by solicitor.");
-                recipients.add(lastBundle.getC2DocumentBundleConfidential().getAuthor());
-            }
-        }
-
-        return List.copyOf(recipients);
-    }
 }

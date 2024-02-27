@@ -88,4 +88,8 @@ public class AdditionalApplicationsBundle {
         }
         throw new MissingApplicationException(uploadedDateTime);
     }
+
+    public YesNo getHasConfidentialC2() {
+       return YesNo.from(isNotEmpty(c2DocumentBundleConfidential));
+    }
 }

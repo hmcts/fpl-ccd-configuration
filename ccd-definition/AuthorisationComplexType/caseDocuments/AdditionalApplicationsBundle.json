@@ -3,6 +3,62 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "additionalApplicationsBundle",
+    "ListElementCode": "confidentialC2RestrictedLabel",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-cafcass",
+          "[EPSMANAGING]",
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASOLICITOR]",
+          "[LASHARED]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
+          "[CHILDSOLICITORA]",
+          "[CHILDSOLICITORB]",
+          "[CHILDSOLICITORC]",
+          "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]",
+          "[CHILDSOLICITORF]",
+          "[CHILDSOLICITORG]",
+          "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]",
+          "[CHILDSOLICITORJ]",
+          "[CHILDSOLICITORK]",
+          "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]",
+          "[CHILDSOLICITORN]",
+          "[CHILDSOLICITORO]",
+          "[BARRISTER]"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-courtadmin"
+        ],
+        "CRUD": "CU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundle",
     "AccessControl": [
       {
@@ -2043,7 +2099,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-systemupdate"
         ],
@@ -2059,6 +2114,7 @@
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITORA]",
@@ -2720,6 +2776,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORA]"
         ],
@@ -2752,7 +2809,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -2776,6 +2832,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORB]"
         ],
@@ -2808,7 +2865,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -2832,6 +2888,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORC]"
         ],
@@ -2864,7 +2921,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -2888,6 +2944,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORD]"
         ],
@@ -2920,7 +2977,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -2944,6 +3000,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORE]"
         ],
@@ -2976,7 +3033,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3000,6 +3056,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORF]"
         ],
@@ -3032,7 +3089,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3056,6 +3112,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORG]"
         ],
@@ -3088,7 +3145,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3112,6 +3168,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORH]"
         ],
@@ -3144,7 +3201,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3168,6 +3224,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORI]"
         ],
@@ -3200,7 +3257,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3224,6 +3280,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORJ]"
         ],
@@ -3256,7 +3313,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3280,6 +3336,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORK]"
         ],
@@ -3312,7 +3369,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3336,6 +3392,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORL]"
         ],
@@ -3368,7 +3425,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3392,6 +3448,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORM]"
         ],
@@ -3424,7 +3481,6 @@
           "[CHILDSOLICITORN]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3448,6 +3504,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORN]"
         ],
@@ -3480,7 +3537,6 @@
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORO]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",
@@ -3504,6 +3560,7 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-systemupdate",
           "[CHILDSOLICITORO]"
         ],
@@ -3536,7 +3593,6 @@
           "[CHILDSOLICITORM]",
           "[CHILDSOLICITORN]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[BARRISTER]",
           "caseworker-publiclaw-gatekeeper",

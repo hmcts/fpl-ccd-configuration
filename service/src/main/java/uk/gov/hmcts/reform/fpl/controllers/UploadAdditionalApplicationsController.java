@@ -276,8 +276,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
         publishEvent(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
-            applicantsListGenerator.getApplicant(caseData, lastBundle),
-            uploadAdditionalApplicationsService.getRecipientsOfConfidentialC2(caseData, lastBundle)));
+            applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
         publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 

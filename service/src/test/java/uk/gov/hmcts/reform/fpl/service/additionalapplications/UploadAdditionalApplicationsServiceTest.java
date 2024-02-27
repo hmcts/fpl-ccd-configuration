@@ -683,56 +683,6 @@ class UploadAdditionalApplicationsServiceTest {
             given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
             given(localAuthorityRecipients.getShareInbox(LA)).willReturn(Optional.of(LA_SHARE_INBOX));
         }
-
-        @Test
-        void shouldReturnUploaderEmailOnlyWhenRespSolicitorUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_RESP_SOLICITOR))
-                .build();
-
-            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
-                ADDITIONAL_APPLICATION_RESP_SOLICITOR);
-
-            assertThat(actual).isEqualTo(List.of(UPLOADER_EMAIL));
-        }
-
-        @Test
-        void shouldReturnUploaderEmailOnlyWhenChildSolicitorUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_CHILD_SOLICITOR))
-                .build();
-
-            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
-                ADDITIONAL_APPLICATION_CHILD_SOLICITOR);
-
-            assertThat(actual).isEqualTo(List.of(UPLOADER_EMAIL));
-        }
-
-        @Test
-        void shouldReturnLAInboxOnlyWhenLAUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_LA))
-                .build();
-
-            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
-                ADDITIONAL_APPLICATION_LA);
-
-            assertThat(actual).isEqualTo(List.of(LA_SHARE_INBOX));
-        }
-
-        @Test
-        void shouldReturnEmptyWhenAdminUploadedConfidentialC2() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(ADDITIONAL_APPLICATION_ADMIN))
-                .build();
-
-            given(user.isHmctsAdminUser()).willReturn(true);
-            List<String> actual = underTest.getRecipientsOfConfidentialC2(caseDataWithConfidentialC2,
-                ADDITIONAL_APPLICATION_ADMIN);
-
-            assertThat(actual).isEqualTo(List.of());
-        }
-
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
