@@ -341,7 +341,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "documentsLink",
-    "FieldShowCondition": "applicationDocuments!=\"\"",
+    "FieldShowCondition": "temporaryApplicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 27
   },
   {
@@ -352,7 +352,7 @@
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
     "CaseFieldID": "supportingDocumentsHeadingLabel",
-    "FieldShowCondition": "applicationDocuments!=\"\"",
+    "FieldShowCondition": "temporaryApplicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 28
   },
   {
@@ -362,9 +362,9 @@
     "TabID": "ViewApplicationTab",
     "TabLabel": "View application",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "applicationDocuments",
+    "CaseFieldID": "temporaryApplicationDocuments",
     "TabFieldDisplayOrder": 29,
-    "FieldShowCondition": "applicationDocuments !=\"\""
+    "FieldShowCondition": "temporaryApplicationDocuments !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
