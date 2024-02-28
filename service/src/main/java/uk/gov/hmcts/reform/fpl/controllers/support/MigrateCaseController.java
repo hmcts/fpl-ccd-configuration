@@ -368,7 +368,7 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
 
         CaseData caseData = getCaseData(caseDetails);
-        UUID returnApplicationDocId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
+        UUID returnApplicationDocId = UUID.fromString("472abae2-465b-4345-9fef-89b39a239397");
 
         migrateCaseService.verifyReturnApplicationExists(caseData, migrationId, returnApplicationDocId);
         caseDetails.getData().remove("returnApplication");
