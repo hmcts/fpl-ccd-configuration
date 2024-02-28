@@ -44,15 +44,5 @@
     "FieldShowCondition": "decision=\"JUDGE_AMENDS_DRAFT\"",
     "SecurityClassification": "Public",
     "RegularExpression": ".doc,.docx"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
-    "ListElementCode": "urgency",
-    "FieldType": "FixedRadioList",
-    "ElementLabel": "Is this order need to be reviewed urgently?",
-    "FieldTypeParameter": "YesOrNoFixedList",
-    "FieldShowCondition": "decision=\"SEND_TO_ALL_PARTIES\"",
-    "SecurityClassification": "Public"
   }
 ]
