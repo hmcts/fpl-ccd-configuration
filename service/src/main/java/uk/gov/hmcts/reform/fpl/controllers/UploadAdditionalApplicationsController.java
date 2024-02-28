@@ -232,14 +232,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 // If we have a C2 application, do the conversion if needed
                 if (!isEmpty(lastBundle.getC2DocumentBundle())) {
                     bundleBuilder.c2DocumentBundle(
-                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
+                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle(),
+                            caseDataCurrent)
                     );
                 }
 
                 // If we have a other application, do conversion if needed
                 if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
                     bundleBuilder.otherApplicationsBundle(
-                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle())
+                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle(),
+                            caseDataCurrent)
                     );
                 }
 

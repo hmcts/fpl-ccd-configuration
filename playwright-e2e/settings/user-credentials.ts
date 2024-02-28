@@ -1,7 +1,9 @@
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const e2ePw = process.env.E2E_TEST_PASSWORD || '';
 const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
+const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
@@ -9,17 +11,20 @@ export const newSwanseaLocalAuthorityUserOne = {
   password: e2ePw,
 };
 
-export const systemUpdateUser ={
-  email: process.env.SYSTEM_UPDATE_USER_USERNAME  || 'fpl-system-update@mailnesia.com',
+export const systemUpdateUser = {
+  email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
 
 };
-export const  CTSCUser = {
+export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
   password: defaultPwd,
 };
-export const  judgeUser = {
+export const judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
   password: defaultPwd,
-
 };
+export const judgeWalesUser = {
+  email: 'judge-wales@ejudiciary.net',
+  password: judgePwd,
+}
