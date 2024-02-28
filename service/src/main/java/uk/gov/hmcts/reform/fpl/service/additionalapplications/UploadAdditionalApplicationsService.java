@@ -330,7 +330,7 @@ public class UploadAdditionalApplicationsService {
 
         final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
 
-        addNewDraftOrderByPolicy.accept("Confidential");
+        addNewDraftOrderByPolicy.accept("CTSC");
         PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "Resp", caseRoles,
             addNewDraftOrderByPolicy);
         PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "Child", caseRoles,

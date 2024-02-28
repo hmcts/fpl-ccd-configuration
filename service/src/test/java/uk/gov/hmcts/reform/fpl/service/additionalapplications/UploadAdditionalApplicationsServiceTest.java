@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -105,6 +106,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
+    private final DraftOrderService draftOrderService = mock(DraftOrderService.class);
 
     private final ApplicantLocalAuthorityService applicantLocalAuthorityService =
         mock(ApplicantLocalAuthorityService.class);
@@ -121,7 +123,7 @@ class UploadAdditionalApplicationsServiceTest {
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService, applicantLocalAuthorityService, localAuthorityRecipients);
+            time, user, uploadHelper, conversionService, draftOrderService);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }

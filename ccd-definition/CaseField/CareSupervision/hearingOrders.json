@@ -456,7 +456,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingOrdersBundlesDraftsConfidential",
+    "ID": "hasConfidentialDraftOrder",
+    "Label": "hasConfidentialDraftOrder",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "hearingOrdersBundlesDrafts=\"Do not show\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingOrdersBundlesDraftsCTSC",
     "Label": "Hearing",
     "FieldType": "Collection",
     "FieldTypeParameter": "OrdersBundleForApproval",

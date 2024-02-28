@@ -172,7 +172,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
 
         underTest.notifyDigitalRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -194,7 +194,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
@@ -225,7 +225,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         for (OrderApplicant applicant : allApplicants) {
             underTest.notifyApplicant(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant, List.of())
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant)
             );
         }
 
@@ -268,8 +268,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name(respondent1FullName).type(RESPONDENT).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
-            List.of()));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
@@ -310,8 +309,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name(child1FullName).type(CHILD).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
-            List.of()));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
@@ -333,7 +331,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
-                OrderApplicant.builder().type(OTHER).name(applicantName).build(), List.of())
+                OrderApplicant.builder().type(OTHER).name(applicantName).build())
         );
 
         verifyNoInteractions(notificationService);
@@ -359,7 +357,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(caseData.getRespondents1()).willReturn(wrapElements(respondent));
 
         underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(
-            caseData, caseDataBefore, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build(), List.of())
+            caseData, caseDataBefore, OrderApplicant.builder().type(RESPONDENT).name(applicantName).build())
         );
 
         verifyNoInteractions(notificationService);
@@ -389,8 +387,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         ));
 
         OrderApplicant applicant = OrderApplicant.builder().name("John Smith").type(RESPONDENT).build();
-        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant,
-            List.of()));
+        underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, applicant));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of("respondent1@test.com"),
@@ -410,7 +407,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(emptySet());
 
         underTest.notifyEmailServedRepresentatives(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verifyNoMoreInteractions(representativeNotificationService);
@@ -429,7 +426,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(List.of(representative1, representative2, representative3));
 
         underTest.sendAdditionalApplicationsByPost(
-            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of())
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
         );
 
         verify(sendDocumentService).sendDocuments(caseData, documents,
@@ -445,8 +442,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(courtService.getCourtEmail(caseData)).willReturn("hmcts-non-admin@test.com");
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
-            List.of()));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC,
@@ -472,8 +468,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
-            List.of()));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
@@ -486,8 +481,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             new HashSet<>(Set.of("caseworker", "caseworker-publiclaw", "caseworker-publiclaw-courtadmin"))
         );
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA,
-            List.of()));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verifyNoInteractions(notificationService);
     }
@@ -542,7 +536,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                         "C20 - Secure accommodation (England)"));
 
         underTest.sendDocumentsToCafcass(
-                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA, List.of()));
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
 
         verify(cafcassNotificationService).sendEmail(
                 eq(caseData),
@@ -574,7 +568,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build();
 
         underTest.sendDocumentsToCafcass(
-                new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA, List.of()));
+                new AdditionalApplicationsUploadedEvent(caseData, caseData, ORDER_APPLICANT_LA));
         verify(cafcassNotificationService, never()).sendEmail(
                 any(), any(), any(), any()
         );
@@ -620,7 +614,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
                 .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
             underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA, List.of(UPLOADER_EMAIL)));
+                caseDataBefore, ORDER_APPLICANT_LA));
 
             verify(notificationService).sendEmail(
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL),
@@ -642,7 +636,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
             underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA, List.of(UPLOADER_EMAIL)));
+                caseDataBefore, ORDER_APPLICANT_LA));
 
             verify(notificationService).sendEmail(
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
