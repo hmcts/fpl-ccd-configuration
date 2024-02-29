@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentPro
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
@@ -30,7 +31,9 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
         SubmitCaseCafcassTemplate template = buildNotifyTemplate(SubmitCaseCafcassTemplate.builder().build(), caseData);
 
         template.setCafcass(cafcassLookup.getCafcass(caseData.getCaseLaOrRelatingLa()).getName());
-        template.setLocalAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        template.setLocalAuthority(nonNull(caseData.getCaseLocalAuthority())
+            ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            : caseData.getApplicantName().orElse(null));
         template.setDocumentLink(linkToAttachedDocument(caseData.getC110A().getSubmittedForm()));
 
         return template;
