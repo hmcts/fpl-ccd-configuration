@@ -15,9 +15,6 @@ test("Smoke Test @smoke-test", async ({
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
-  console.log('email:' + newSwanseaLocalAuthorityUserOne.email);
-  console.log('password : ' + newSwanseaLocalAuthorityUserOne.password);
-
   await signInPage.login(
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,

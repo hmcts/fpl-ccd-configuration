@@ -15,7 +15,6 @@ test.describe('send and reply message',()=>{
   let casename : string;
   test.beforeEach(async ()  => {
       caseNumber =  await apiDataSetup.createCase('e2e case',newSwanseaLocalAuthorityUserOne);
-
   });
 
   test('CTSC admin send message to Judge',

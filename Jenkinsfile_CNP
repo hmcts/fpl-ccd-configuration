@@ -15,7 +15,6 @@ def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
-
   ]
 ]
 
@@ -193,7 +192,6 @@ withPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
   before('functionalTest:preview'){
-
     env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net/"
     env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
     env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
@@ -201,7 +199,6 @@ withPipeline(type, product, component) {
     env.MOCKED_PAYMENTS = false
     env.FUNCTIONAL_TESTS_WORKERS = 1
     env.TEST_RETRIES = 1
-
   }
   afterAlways('functionalTest:preview'){
     env.TESTS_FOR_ACCESSIBILITY = false
@@ -214,7 +211,6 @@ withPipeline(type, product, component) {
       reportName           : 'UI Functional Test Report'
     ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-
   }
 
   before('smoketest:saat') {
