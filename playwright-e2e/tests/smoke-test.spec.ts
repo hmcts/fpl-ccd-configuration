@@ -96,6 +96,6 @@ test("Smoke Test @smoke-test", async ({
   // await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
   // 7. Respondents Details
   await startApplication.respondentsDetails();
-  await riskAndHarmToChildren.respondentsDetailsSmokeTest();
+  await respondentsDetails.respondentsDetailsSmokeTest();
 
 });

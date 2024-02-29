@@ -67,7 +67,7 @@ export const test = base.extend<CreateFixtures>({
     await use(new AllocationProposal(page));
   },
 
-   respondentsDetails: async ({ page }, use) => {
+  respondentsDetails: async ({ page }, use) => {
     await use(new RespondentsDetails(page));
   },
 }

@@ -2,6 +2,9 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import test from "node:test";
 
 export class RespondentsDetails {
+  respondentsDetailsSmokeTest() {
+    throw new Error("Method not implemented.");
+  }
     readonly page: Page;
     readonly RespondentsDetailsLink: Locator;
     readonly RespondentsDetailsHeading: Locator;
@@ -47,7 +50,7 @@ async RespondentDetailsNeeded() {
   await this.Month.fill('12');
   await this.Year. fill('2008');
   await this.page.getByLabel('Gender (Optional)').selectOption('1: Male');
-  await this.CurrentAddressKnown.getByLabel('No').check();
+  await this.CurrentAddressKnown.getByLabel('No').dblclick();
   //await this.page.getByRole('group', { name: '*Current address known?' }).getByLabel('No').click();
   //await this.page.pause();
   await this.page.getByLabel('*Reason the address is not').selectOption('1: No fixed abode');
