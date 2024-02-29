@@ -1,7 +1,6 @@
 import { test } from "../fixtures/create-fixture";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-// @ts-ignore
 test("Smoke Test @smoke-test", async ({
   signInPage,
   createCase,
