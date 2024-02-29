@@ -83,7 +83,7 @@ export class Apihelp {
       },
     };
     try {
-      console.log ('axios request : ' + requestConfig)
+      console.log ('axios request : ' + requestConfig.url + requestConfig.data + requestConfig.headers);
       return axios.request(requestConfig).then((res) => {
         return res.data;
       });
