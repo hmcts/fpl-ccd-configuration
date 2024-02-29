@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -585,22 +584,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
             WorkAllocationTaskType.CMO_REVIEWED);
-    }
-
-    @Test
-    void shouldCreateUrgentWorkAllocationTaskWhenDraftOrderApproved() {
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .hearingDetails(List.of(HEARING))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
-
-        List<HearingOrder> orders = List.of(HearingOrder.builder().urgentReview(YesNo.YES).build());
-
-        underTest.createWorkAllocationTask(new DraftOrdersApproved(caseData, orders));
-
-        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
-            WorkAllocationTaskType.URGENT_CMO_REVIEWED);
     }
 
     private HearingOrder hearingOrder() {
