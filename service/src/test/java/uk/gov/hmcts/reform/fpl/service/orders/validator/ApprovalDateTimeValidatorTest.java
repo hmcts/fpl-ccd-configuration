@@ -49,7 +49,7 @@ class ApprovalDateTimeValidatorTest {
     void validateNotInRange() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().plusYears(1))
+                .manageOrdersApprovalDateTime(time.now().plusYears(1).plusDays(1))
                 .build())
             .build();
 
