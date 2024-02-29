@@ -49,6 +49,7 @@ export class Apihelp {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with docuemnt url
     console.log ( ' test documnet serviceURl: ' +urlConfig.serviceUrl );
+    console.log('sytemuser password + ' + systemUpdateUser.password);
     let docDetail = await this.apiRequest(urlConfig.serviceUrl + 'testing-support/test-document', systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
