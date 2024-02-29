@@ -47,6 +47,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
+    private DocumentReference orderConfidential;
     private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
     private String hearing;

@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTING_ADJOURNMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Slf4j
 @Service
@@ -317,14 +318,20 @@ public class UploadAdditionalApplicationsService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> addConfidentialHearingOrdersBundlesDrafts(CaseData caseData,
                                                                          List<Element<HearingOrder>> newDrafts) {
-        Map<String, Object> updates = new HashMap<>();
+        final Map<String, Object> updates = new HashMap<>();
 
-        ConfidentialDraftOrders confidentialDraftOrders = caseData.getConfidentialHearingOrdersBundlesDrafts();
+        final List<Element<HearingOrder>> newDraftsConfidential = newDrafts.stream()
+            .map(element ->
+                element(element.getId(), element.getValue().toBuilder()
+                    .order(null).orderConfidential(element.getValue().getOrder()).build()))
+            .toList();
+
+        final ConfidentialDraftOrders confidentialDraftOrders = caseData.getConfidentialHearingOrdersBundlesDrafts();
         Consumer<String> addNewDraftOrderByPolicy = (fieldSuffix) -> {
             List<Element<HearingOrdersBundle>> draftOrders =
                 Optional.ofNullable(confidentialDraftOrders.getOrderBySuffix(fieldSuffix))
                     .orElse(new ArrayList<>());
-            draftOrderService.additionalApplicationUpdateCase(newDrafts, draftOrders);
+            draftOrderService.additionalApplicationUpdateCase(newDraftsConfidential, draftOrders);
             updates.put("hearingOrdersBundlesDrafts" + fieldSuffix, draftOrders);
         };
 

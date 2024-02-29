@@ -39,6 +39,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOrderForApproval",
+    "ListElementCode": "orderConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "draftOrdersConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
