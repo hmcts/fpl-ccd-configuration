@@ -16,6 +16,7 @@ export class Apihelp {
         },
       };
       let url = `${urlConfig.idamUrl}loginUser?username=${user.email}&password=${user.password}`;
+      console.log( 'access Token: ' + url);
       return await axios.post(url, qs.stringify(axiosConfig));
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -47,6 +48,7 @@ export class Apihelp {
   async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with docuemnt url
+    console.log ( ' test documnet serviceURl: ' +urlConfig.serviceUrl );
     let docDetail = await this.apiRequest(urlConfig.serviceUrl + 'testing-support/test-document', systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
@@ -81,6 +83,7 @@ export class Apihelp {
       },
     };
     try {
+      console.log ('axios request : ' + requestConfig)
       return axios.request(requestConfig).then((res) => {
         return res.data;
       });
