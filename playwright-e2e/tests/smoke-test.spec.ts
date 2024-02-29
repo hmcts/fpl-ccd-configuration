@@ -2,7 +2,7 @@ import { test } from "../fixtures/create-fixture";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 // @ts-ignore
-test.skip("Smoke Test @smoke-test", async ({
+test("Smoke Test @smoke-test", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,

@@ -14,9 +14,8 @@ test.describe('send and reply message',()=>{
   let caseNumber : string;
   let casename : string;
   test.beforeEach(async ()  => {
-    console.log("user: " + newSwanseaLocalAuthorityUserOne.email + newSwanseaLocalAuthorityUserOne.password)
       caseNumber =  await apiDataSetup.createCase('e2e case',newSwanseaLocalAuthorityUserOne);
-    console.log("casenumber: " + caseNumber);
+
   });
 
   test('CTSC admin send message to Judge',
@@ -33,7 +32,7 @@ test.describe('send and reply message',()=>{
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Message send to Allocated Judge')).toBeVisible();
     });
 
-    test.skip('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
+    test('Judge reply CTCS message',async({page,signInPage,judicialMessages})=>{
         casename = 'Judge Reply ' + dateTime.slice(0, 10);
         await apiDataSetup.updateCase(casename,caseNumber,caseDataJudgeMessage);
         await  signInPage.visit();
@@ -46,7 +45,7 @@ test.describe('send and reply message',()=>{
         await expect(page.getByText('FamilyPublicLaw+ctsc@gmail.com - Some note judiciary-only@mailnesia.com - Reply CTSC admin about the hearing.')).toBeVisible();
     });
 
-    test.skip('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
+    test('CTSC admin close the Message',async({page,signInPage,judicialMessages}) =>{
       casename = 'CTSC Admin Close Message ' + dateTime.slice(0, 10);
       await apiDataSetup.updateCase(casename,caseNumber,caseDataCloseMessage);
       await  signInPage.visit();
