@@ -31,11 +31,10 @@ public class JudgeAndLegalAdvisorHelper {
 
     public static JudgeAndLegalAdvisor getSelectedJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                         Judge allocatedJudge) {
-        if (isEmpty(judgeAndLegalAdvisor) || judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
-            return migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge);
-        } else {
-            return judgeAndLegalAdvisor;
-        }
+        return (isEmpty(judgeAndLegalAdvisor) ||
+                (judgeAndLegalAdvisor.isUsingAllocatedJudge() && !isEmpty(allocatedJudge)))
+            ? migrateJudgeAndLegalAdvisor(judgeAndLegalAdvisor, allocatedJudge)
+            : judgeAndLegalAdvisor;
     }
 
     public static JudgeAndLegalAdvisor getJudgeForTabView(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
