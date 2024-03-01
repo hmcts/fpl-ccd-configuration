@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithE
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeMessages;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
+import static java.util.Objects.nonNull;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
@@ -41,7 +43,9 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
             .orderMessage(orderMessageGenerator.getCareOrderRestrictions(caseData))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .exclusionClause(eventData.getManageOrdersExclusionDetails())
-            .localAuthorityName(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .localAuthorityName(nonNull(caseData.getCaseLocalAuthority())
+                ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+                : caseData.getApplicantName().orElse(null))
             .orderDetails(orderDetailsWithEndTypeGenerator.orderDetails(
                 eventData.getManageOrdersEndDateTypeWithEndOfProceedings(),
                 OrderDetailsWithEndTypeMessages.builder()
