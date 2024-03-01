@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -372,6 +373,24 @@ public class MigrateCaseService {
         }
     }
 
+    public void verifyReturnApplicationExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (isEmpty(caseData.getReturnApplication())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Returned Application not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getReturnApplication().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                    + " Returned Application document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
+        }
+    }
+
     public Map<String, Object> removeApplicationDocument(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedApplicationDocumentId) {
@@ -609,6 +628,31 @@ public class MigrateCaseService {
         }
 
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
+    }
+
+    public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<ManagedDocument>> documentsFiledOnIssueList = caseData.getDocumentsFiledOnIssueList();
+
+        if (documentsFiledOnIssueList.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, documentsFiledOnIssueList is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<ManagedDocument>> updatedDocumentsFiledOnIssueList =
+            ElementUtils.removeElementWithUUID(documentsFiledOnIssueList, documentFiledOnIssueId);
+
+        if (updatedDocumentsFiledOnIssueList.size() != documentsFiledOnIssueList.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, document filed on issue %s not found",
+                migrationId, caseId, documentFiledOnIssueId
+            ));
+        }
+
+        return Map.of("documentsFiledOnIssueList", updatedDocumentsFiledOnIssueList);
     }
 
     public Map<String, Object> addCourt(String courtId) {

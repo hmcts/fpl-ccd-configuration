@@ -62,7 +62,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1882", this::run1882,
-        "DFPL-2177", this::run2177
+        "DFPL-2148", this::run2148,
+        "DFPL-2149", this::run2149
     );
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
@@ -205,17 +206,6 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
             String.valueOf(expectedMessageId)));
-    }
-
-    private void run2177(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2177";
-        var possibleCaseIds = List.of(1704384343011099L);
-        var expectedDocumentId = UUID.fromString("8e5cf45c-98d0-45f7-851a-974b6afbdb44");
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        migrateCaseService.verifyUrgentDirectionsOrderExists(caseData, migrationId, expectedDocumentId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void migrateRoles(CaseData caseData) {
@@ -361,4 +351,26 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
             migrationId));
     }
+
+    private void run2148(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2148";
+        var possibleCaseIds = List.of(1706286062107610L);
+        UUID expectedDocumentFiledOnIssueId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeDocumentFiledOnIssue(getCaseData(caseDetails),
+            expectedDocumentFiledOnIssueId, migrationId));
+    }
+
+    private void run2149(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2149";
+        var possibleCaseIds = List.of(1689246804719172L);
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        UUID returnApplicationDocId = UUID.fromString("472abae2-465b-4345-9fef-89b39a239397");
+
+        migrateCaseService.verifyReturnApplicationExists(caseData, migrationId, returnApplicationDocId);
+        caseDetails.getData().remove("returnApplication");
+    } 
 }
