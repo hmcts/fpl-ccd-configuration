@@ -80,7 +80,6 @@ test.describe('manage hearings', () => {
       await caseDetails.validateRolesAndAccessTab(expectedRows, 'District Judge (MC) Craig Taylor');
       await manageHearings.gotoNextStep('Manage hearings')
       await page.getByText('Edit a future hearing').click();
-      await page.pause();
       await manageHearings.editFutureHearingOnCase('His Honour Judge Arthur Ramirez');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
       const expectedRowsPostAmendHearingJudge = [
@@ -90,7 +89,6 @@ test.describe('manage hearings', () => {
         'District Judge (MC) Craig Taylor');
       await caseDetails.signOut();
       await signInPage.visit();
-      await page.pause();
       await signInPage.login(secondJudgeWalesUser.email, secondJudgeWalesUser.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
       await caseDetails.tabNavigation('Roles and access');

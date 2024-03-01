@@ -24,7 +24,7 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await this.clickContinue();
     await this.page.getByLabel('I complete the listing and').check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();

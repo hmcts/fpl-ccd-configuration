@@ -30,7 +30,7 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.completeHearingDetails();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await this.clickContinue();
     await this.page.getByRole('radio', { name: 'No' }).check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
