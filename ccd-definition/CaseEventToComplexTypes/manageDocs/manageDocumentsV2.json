@@ -55,7 +55,7 @@
     "ListElementCode": "hasConfidentialAddress",
     "FieldDisplayOrder": "7",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "hasConfidentialParty = \"YES\""
+    "FieldShowCondition": "hasConfidentialParty = \"YES\" AND uploadableDocumentBundle.confidential = \"No\""
   },
   {
     "LiveFrom": "01/01/2017",

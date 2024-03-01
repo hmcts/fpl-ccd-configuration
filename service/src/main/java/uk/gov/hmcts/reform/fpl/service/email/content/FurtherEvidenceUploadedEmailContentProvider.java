@@ -32,7 +32,7 @@ public class FurtherEvidenceUploadedEmailContentProvider extends AbstractEmailCo
             .caseUrl(getCaseUrl(caseData.getId(), DOCUMENTS))
             .callout(buildSubjectLineWithHearingBookingDateSuffix(
                 caseData.getFamilyManCaseNumber(), caseData.getRespondents1(),
-                hearingBooking.orElse(caseData.getFirstHearing().orElse(null))
+                hearingBooking.orElse(null)
             ))
             .userName(sender)
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))

@@ -403,6 +403,29 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterC1WithSupplement",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterOthers",
     "AccessControl": [
       {
@@ -683,7 +706,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-approve-order",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CR"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

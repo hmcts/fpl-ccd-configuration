@@ -1,0 +1,111 @@
+{
+  "case_details": {
+    "id": "2313",
+    "case_data": {
+      "submittedC1WithSupplement": {
+        "document": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/eaabb925-7657-4a30-b397-5995171d0506",
+          "document_filename": "A_DOC_1.docx",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/eaabb925-7657-4a30-b397-5995171d0506/binary"
+        },
+        "supplementsBundle": [
+          {
+            "id": "b7293735-f126-425e-a814-d98dcc29127d",
+            "value": {
+              "name": "C13A_SPECIAL_GUARDIANSHIP",
+              "notes": "asd",
+              "document": {
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b0093881-90f1-47b5-8213-edf700f00f48",
+                "document_filename": "A_DOC_2.docx",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b0093881-90f1-47b5-8213-edf700f00f48/binary"
+              },
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ]
+            }
+          }
+        ],
+        "isDocumentUploaded": "YES",
+        "urgencyTimeFrameType": "SAME_DAY",
+        "supportingEvidenceBundle": [
+          {
+            "id": "6b0bf1bb-6f2b-49ff-92dd-9da37afa467e",
+            "value": {
+              "name": "qwe",
+              "notes": "qwe",
+              "document": {
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/23764a1e-a8fa-4049-9543-76bdba089c81",
+                "document_filename": "A_DOC_3.docx",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/23764a1e-a8fa-4049-9543-76bdba089c81/binary"
+              },
+              "confidential": [],
+              "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+              "needTranslation": "NO",
+              "uploaderCaseRoles": [
+                "LASOLICITOR"
+              ],
+              "documentAcknowledge": [
+                "ACK_RELATED_TO_CASE"
+              ],
+              "hasConfidentialAddress": "No"
+            }
+          }
+        ],
+        "clearSubmittedC1WithSupplement": "NO"
+      },
+      "caseLocalAuthority": "test1",
+      "applicants": [
+        {
+          "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+          "value": {
+            "party": {
+              "email": {
+                "email": "applicant@email.com"
+              },
+              "organisationName": "test organisation name"
+            }
+          }
+        }
+      ],
+      "respondents1": [
+        {
+          "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+          "value": {
+            "party": {
+              "gender": "Male",
+              "address": {
+                "County": "",
+                "Country": "United Kingdom",
+                "PostCode": "RG4 7AA",
+                "PostTown": "Reading",
+                "AddressLine1": "Flat 2",
+                "AddressLine2": "Caversham House 15-17",
+                "AddressLine3": "Church Road"
+              },
+              "lastName": "Bloggs",
+              "firstName": "Joe",
+              "dateOfBirth": "1980-01-01",
+              "placeOfBirth": "London",
+              "telephoneNumber": {
+                "telephoneNumber": "00000 000000"
+              },
+              "relationshipToChild": "Uncle"
+            },
+            "legalRepresentation": "Yes",
+            "solicitor": {
+              "firstName": "Tom",
+              "lastName": "Jones",
+              "email": "test@test.co.uk"
+            }
+          }
+        }
+      ],
+      "orders": {
+        "orderType": [
+          "CARE_ORDER",
+          "CHILD_ASSESSMENT_ORDER"
+        ]
+      }
+    }
+  }
+}

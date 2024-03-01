@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "RespondentStatementV2",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
     "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "RespondentStatementV2",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
     "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -374,7 +374,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -384,7 +384,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousProceedingListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PreviousProceeding",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
     "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"
