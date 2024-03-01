@@ -7,7 +7,7 @@ import {
   CTSCUser,
   newSwanseaLocalAuthorityUserOne,
   judgeWalesUser,
-  judgeMidlandsUser, secondJudgeWalesUser
+  secondJudgeWalesUser
 } from "../settings/user-credentials";
 import {expect} from "@playwright/test";
 
@@ -56,7 +56,7 @@ test.describe('manage hearings', () => {
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
     });
 
-  test('CTSC admin edits future hearing judge',
+  test('CTSC admin updates future hearing judge',
     async({page,signInPage,gateKeepingListing,
             manageHearings, caseDetails}) => {
       caseName = 'CTSC admin edits future hearing judge ' + dateTime.slice(0, 10);
