@@ -204,7 +204,6 @@ withPipeline(type, product, component) {
     env.TEST_RETRIES = 1
   }
   afterAlways('functionalTest:preview'){
-    env.TESTS_FOR_ACCESSIBILITY = false
     publishHTML([
       allowMissing         : true,
       alwaysLinkToLastBuild: true,

@@ -107,12 +107,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   afterAlways('fullFunctionalTest') {
-    stage('Functional Tests Nightly') {
-      try {
-        yarnBuilder.yarn('test:functional-nightly')
-      } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
         publishHTML([
           allowMissing         : true,
           alwaysLinkToLastBuild: true,
@@ -122,8 +116,6 @@ withNightlyPipeline(type, product, component) {
           reportName           : 'UI Functional Test Report'
         ])
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-      }
-    }
   }
 
   afterAlways('fortify-scan') {
