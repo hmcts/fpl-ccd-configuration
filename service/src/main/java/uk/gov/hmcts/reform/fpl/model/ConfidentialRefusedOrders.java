@@ -41,6 +41,6 @@ public class ConfidentialRefusedOrders implements ConfidentialOrderBundle<Hearin
 
     @Override
     public String getFieldBaseName() {
-        return null;
+        return "refusedHearingOrders";
     }
 }
