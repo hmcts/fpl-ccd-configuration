@@ -10,8 +10,7 @@ import {
   secondJudgeWalesUser
 } from "../settings/user-credentials";
 import {expect} from "@playwright/test";
-
-const waEnabled = process.env.WA_ENABLED === 'true';
+import {testConfig} from "../settings/test-config";
 
 test.describe('manage hearings', () => {
   let apiDataSetup = new Apihelp();
@@ -61,7 +60,7 @@ test.describe('manage hearings', () => {
   test('CTSC admin updates future hearing judge',
     async({page,signInPage,gateKeepingListing,
             manageHearings, caseDetails}) => {
-      test.skip(waEnabled, 'This test should only run when work allocation has been enabled');
+      test.skip(testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
       caseName = 'CTSC admin edits future hearing judge ' + dateTime.slice(0, 10);
       await apiDataSetup.updateCase(caseName, caseNumber, preJudgeAllocationCaseData);
       await signInPage.visit();
