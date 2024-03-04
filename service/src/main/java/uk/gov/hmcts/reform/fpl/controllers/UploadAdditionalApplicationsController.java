@@ -182,16 +182,16 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 .map(ElementUtils::element)
                 .collect(Collectors.toList());
 
-            if (NO.equals(caseData.getIsC2Confidential())) {
-                HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+            HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-                draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
-
-                caseDetails.getData().put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
+            if (YES.equals(caseData.getIsC2Confidential())) {
+                draftOrderService.confidentialAdditionalApplicationUpdateCase(caseData, newDrafts,
+                    hearingOrdersBundles.getAgreedCmos());
             } else {
-                caseDetails.getData().putAll(uploadAdditionalApplicationsService
-                    .addConfidentialHearingOrdersBundlesDrafts(caseData, newDrafts));
+                draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
             }
+
+            caseDetails.getData().put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
         }
 
         List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,10 +28,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.REVIEW_LATER;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -236,7 +240,8 @@ public class ApproveDraftOrdersService {
     @SuppressWarnings("unchecked")
     public void reviewC21Orders(CaseData caseData, Map<String, Object> data,
                                 Element<HearingOrdersBundle> selectedOrdersBundle) {
-        List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue().getOrders().stream()
+        List<Element<HearingOrder>> draftOrders = Stream.of(selectedOrdersBundle.getValue().getOrders(),
+                selectedOrdersBundle.getValue().getAllConfidentialOrders()).flatMap(List::stream)
             .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
 
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
@@ -261,15 +266,33 @@ public class ApproveDraftOrdersService {
                         reviewDecision, orderElement, selectedOthers, getOthersNotified(selectedOthers),
                         caseData.getSealType(),
                         caseData.getCourt());
-                    orderCollection.add(blankOrderGenerator.buildBlankOrder(caseData,
-                        selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers)));
 
-                    ordersToBeSent.add(reviewedOrder);
+                    Element<GeneratedOrder> generatedBlankOrder = blankOrderGenerator.buildBlankOrder(caseData,
+                        selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
+
+                    if (orderElement.getValue().isConfidentialOrder()) {
+                        ConfidentialOrdersBundle confidentialOrders = caseData.getConfidentialOrders();
+                        selectedOrdersBundle.getValue().processAllConfidentialOrders((suffix, orders) -> {
+                            if (isNotEmpty(orders)
+                                && ElementUtils.findElement(orderElement.getId(), orders).isPresent()) {
+                                List<Element<GeneratedOrder>> confidentialOrderCollection =
+                                    defaultIfNull(confidentialOrders.getConfidentialOrdersBySuffix(suffix),
+                                        new ArrayList<>());
+                                confidentialOrderCollection.add(generatedBlankOrder);
+                                data.put(confidentialOrders.getFieldBaseName() + suffix, confidentialOrderCollection);
+                            }
+                        });
+                    } else {
+                        orderCollection.add(generatedBlankOrder);
+                        ordersToBeSent.add(reviewedOrder);
+                        data.put("orderCollection", orderCollection);
+                    }
+
                 } else {
                     ordersToBeSent.add(hearingOrderGenerator.buildRejectedHearingOrder(
                         orderElement, reviewDecision.getChangesRequestedByJudge()));
                 }
-                selectedOrdersBundle.getValue().getOrders().remove(orderElement);
+                selectedOrdersBundle.getValue().removeOrderElement(orderElement);
             }
             counter++;
         }
@@ -281,7 +304,6 @@ public class ApproveDraftOrdersService {
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
-        data.put("orderCollection", orderCollection);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
@@ -302,15 +324,27 @@ public class ApproveDraftOrdersService {
         }
     }
 
-    private void updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
-        if (selectedOrdersBundle.getValue().getOrders().isEmpty()) {
-            caseData.getHearingOrdersBundlesDrafts()
-                .removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
+    private Map<String, Object> updateHearingDraftOrdersBundle(CaseData caseData,
+                                                               Element<HearingOrdersBundle> selectedOrdersBundle) {
+        Map<String, Object> updates = new HashMap<>();
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts();
+
+        if (selectedOrdersBundle.getValue().getOrders().isEmpty()
+                && selectedOrdersBundle.getValue().getAllConfidentialOrders().isEmpty()) {
+            hearingOrdersBundlesDrafts.removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
+            updates.put("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
         } else {
-            caseData.getHearingOrdersBundlesDrafts().stream()
+            hearingOrdersBundlesDrafts.stream()
                 .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
-                .forEach(bundle -> bundle.getValue().setOrders(selectedOrdersBundle.getValue().getOrders()));
+                .forEach(bundle -> {
+                    bundle.getValue().setOrders(selectedOrdersBundle.getValue().getOrders());
+                    selectedOrdersBundle.getValue().processAllConfidentialOrders((suffix, orders) -> {
+                        bundle.getValue().setConfidentialOrdersBySuffix(suffix, orders);
+                    });
+                });
+            updates.put("hearingOrdersBundlesDrafts", hearingOrdersBundlesDrafts);
         }
+        return updates;
     }
 
     private void updateHearingCMO(CaseData caseData, UUID cmoId) {

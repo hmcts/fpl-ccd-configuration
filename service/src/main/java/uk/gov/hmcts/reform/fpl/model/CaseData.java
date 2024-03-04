@@ -517,6 +517,9 @@ public class CaseData extends CaseDataParent {
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ConfidentialOrdersBundle confidentialOrders = ConfidentialOrdersBundle.builder().build();
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
@@ -923,9 +926,6 @@ public class CaseData extends CaseDataParent {
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
-    @JsonUnwrapped
-    @Builder.Default
-    private ConfidentialDraftOrders confidentialHearingOrdersBundlesDrafts = ConfidentialDraftOrders.builder().build();
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
     private final UUID lastHearingOrderDraftsHearingId;
@@ -933,7 +933,8 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE))
+                                       || isNotEmpty(bundle.getValue().getAllConfidentialOrdersByStatus(SEND_TO_JUDGE)))
             .collect(toList());
     }
 

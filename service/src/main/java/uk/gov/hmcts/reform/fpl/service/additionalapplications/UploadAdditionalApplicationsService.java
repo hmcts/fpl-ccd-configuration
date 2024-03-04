@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialDraftOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
-import javax.swing.text.html.Option;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -313,39 +311,5 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
-    }
-
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> addConfidentialHearingOrdersBundlesDrafts(CaseData caseData,
-                                                                         List<Element<HearingOrder>> newDrafts) {
-        final Map<String, Object> updates = new HashMap<>();
-
-        final List<Element<HearingOrder>> newDraftsConfidential = newDrafts.stream()
-            .map(element ->
-                element(element.getId(), element.getValue().toBuilder()
-                    .order(null).orderConfidential(element.getValue().getOrder()).build()))
-            .toList();
-
-        final ConfidentialDraftOrders confidentialDraftOrders = caseData.getConfidentialHearingOrdersBundlesDrafts();
-        Consumer<String> addNewDraftOrderByPolicy = (fieldSuffix) -> {
-            List<Element<HearingOrdersBundle>> draftOrders =
-                Optional.ofNullable(confidentialDraftOrders.getOrderBySuffix(fieldSuffix))
-                    .orElse(new ArrayList<>());
-            draftOrderService.additionalApplicationUpdateCase(newDraftsConfidential, draftOrders);
-            updates.put("hearingOrdersBundlesDrafts" + fieldSuffix, draftOrders);
-        };
-
-        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
-
-        addNewDraftOrderByPolicy.accept("CTSC");
-        PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "Resp", caseRoles,
-            addNewDraftOrderByPolicy);
-        PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "Child", caseRoles,
-            addNewDraftOrderByPolicy);
-        if(PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
-            addNewDraftOrderByPolicy.accept("LA");
-        }
-
-        return updates;
     }
 }

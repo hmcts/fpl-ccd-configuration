@@ -1120,6 +1120,276 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionCTSC",
+    "Label": "Confidential Order (Restricted to CTSC only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionLA",
+    "Label": "Confidential Order (Restricted to LA only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp0",
+    "Label": "Confidential Order (Restricted to Respondent 1 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp1",
+    "Label": "Confidential Order (Restricted to Respondent 2 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp2",
+    "Label": "Confidential Order (Restricted to Respondent 3 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp3",
+    "Label": "Confidential Order (Restricted to Respondent 4 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp4",
+    "Label": "Confidential Order (Restricted to Respondent 5 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp5",
+    "Label": "Confidential Order (Restricted to Respondent 6 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp6",
+    "Label": "Confidential Order (Restricted to Respondent 7 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp7",
+    "Label": "Confidential Order (Restricted to Respondent 8 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp8",
+    "Label": "Confidential Order (Restricted to Respondent 9 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionResp9",
+    "Label": "Confidential Order (Restricted to Respondent 10 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild0",
+    "Label": "Confidential Order (Restricted to Child 1 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild1",
+    "Label": "Confidential Order (Restricted to Child 2 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild2",
+    "Label": "Confidential Order (Restricted to Child 3 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild3",
+    "Label": "Confidential Order (Restricted to Child 4 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild4",
+    "Label": "Confidential Order (Restricted to Child 5 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild5",
+    "Label": "Confidential Order (Restricted to Child 6 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild6",
+    "Label": "Confidential Order (Restricted to Child 7 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild7",
+    "Label": "Confidential Order (Restricted to Child 8 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild8",
+    "Label": "Confidential Order (Restricted to Child 9 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild9",
+    "Label": "Confidential Order (Restricted to Child 10 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild10",
+    "Label": "Confidential Order (Restricted to Child 11 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild11",
+    "Label": "Confidential Order (Restricted to Child 12 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild12",
+    "Label": "Confidential Order (Restricted to Child 13 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild13",
+    "Label": "Confidential Order (Restricted to Child 14 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderCollectionChild14",
+    "Label": "Confidential Order (Restricted to Child 15 only)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "GeneratedOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "representatives",
     "Label": "Representatives",
     "FieldType": "Collection",
