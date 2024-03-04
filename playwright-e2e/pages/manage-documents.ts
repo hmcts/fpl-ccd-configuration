@@ -22,6 +22,7 @@ export class ManageDocuments extends BasePage {
         // is on right case
         await this.page.getByRole('checkbox', { name: 'Yes' }).check();
 
+        await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }

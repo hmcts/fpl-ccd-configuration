@@ -11,6 +11,7 @@ import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting"
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { ManageDocuments } from "../pages/manage-documents";
 import { BasePage } from "../pages/base-page";
+import { CaseFileView } from "../pages/case-file-view";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -24,6 +25,7 @@ type CreateFixtures = {
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal: AllocationProposal;
   manageDocuments: ManageDocuments;
+  caseFileView: CaseFileView;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -68,6 +70,10 @@ export const test = base.extend<CreateFixtures>({
 
   manageDocuments: async ({ page }, use) => {
     await use(new ManageDocuments(page));
+  },
+
+  caseFileView: async ({ page }, use) => {  
+    await use(new CaseFileView(page));
   }
 
 });

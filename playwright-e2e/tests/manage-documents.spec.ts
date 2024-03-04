@@ -14,7 +14,7 @@ test.describe('Manage Documents', () => {
         caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA uploads correspondence documents', async ({ page, signInPage, manageDocuments }) => {
+    test('LA uploads correspondence documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         casename = 'LA uploads correspondence documents ' + dateTime.slice(0, 10);
         await apiDataSetup.updateCase(casename, caseNumber, caseData);
         await signInPage.visit();
@@ -22,7 +22,10 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.uploadDocuments('Court correspondence');
 
-        // todo check CFV
+        // Check CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(page.getByRole('tree')).toContainText('textfile.txt');
 
         // If WA is enabled
         if (testConfig.waEnabled) {
@@ -35,7 +38,7 @@ test.describe('Manage Documents', () => {
 
             // Judge in Wales should see this Welsh case task + be able to assign it to themselves
             await manageDocuments.tabNavigation('Tasks');
-            await manageDocuments.waitForTask('View Additional Applications');
+            await manageDocuments.waitForTask('Review Correspondence');
 
             // Assign and complete the task
             await page.getByText('Assign to me').click();
@@ -43,7 +46,7 @@ test.describe('Manage Documents', () => {
             await page.getByRole('button', { name: "Mark as done" }).click();
 
             // Should be no more tasks on the page
-            await expect(page.getByText('View Additional Applications')).toHaveCount(0);
+            await expect(page.getByText('Review Correspondence')).toHaveCount(0);
         }
     });
 

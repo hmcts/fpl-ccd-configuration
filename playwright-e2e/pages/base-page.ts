@@ -58,6 +58,13 @@ export abstract class BasePage {
         return false;
     }
 
+    async waitForAllUploadsToBeCompleted() {
+        let locs = await this.page.getByText('Cancel upload').all();
+        for (let i = 0; i < locs.length; i++) {
+            await expect(locs[i]).toBeDisabled();
+        }
+    }
+
 }
 
 
