@@ -95,7 +95,7 @@ withNightlyPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
 
-  before('fullFunctionalTest') {
+  before('fullFunctionalTest:aat') {
     yarnBuilder.yarn('yarn-update')
     yarnBuilder.yarn('install-dependencies')
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
