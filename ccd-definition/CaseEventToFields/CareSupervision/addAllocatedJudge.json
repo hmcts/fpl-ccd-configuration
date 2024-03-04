@@ -44,6 +44,7 @@
     "PageID": "AllocatedJudge",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "enterManually = \"Yes\""
+    "FieldShowCondition": "enterManually = \"Yes\"",
+    "Publish": "Y"
   }
 ]
