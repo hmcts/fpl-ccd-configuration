@@ -519,7 +519,7 @@ public class CaseData extends CaseDataParent {
     private final List<Element<GeneratedOrder>> orderCollection;
     @JsonUnwrapped
     @Builder.Default
-    private final ConfidentialOrdersBundle confidentialOrders = ConfidentialOrdersBundle.builder().build();
+    private final ConfidentialGeneratedOrders confidentialOrders = ConfidentialGeneratedOrders.builder().build();
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
@@ -928,6 +928,9 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @JsonUnwrapped
+    @Builder.Default
+    private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore

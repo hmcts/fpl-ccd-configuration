@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class ConfidentialOrdersBundle implements ConfidentialOrderBundle<GeneratedOrder> {
+public class ConfidentialGeneratedOrders implements ConfidentialOrderBundle<GeneratedOrder> {
     private List<Element<GeneratedOrder>> orderCollectionCTSC;
     private List<Element<GeneratedOrder>> orderCollectionLA;
     private List<Element<GeneratedOrder>> orderCollectionResp0;

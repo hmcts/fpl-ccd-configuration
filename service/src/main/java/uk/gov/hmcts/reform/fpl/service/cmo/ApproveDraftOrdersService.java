@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ConfidentialOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -271,26 +271,24 @@ public class ApproveDraftOrdersService {
                         selectedOrdersBundle, reviewedOrder, selectedOthers, getOthersNotified(selectedOthers));
 
                     if (orderElement.getValue().isConfidentialOrder()) {
-                        ConfidentialOrdersBundle confidentialOrders = caseData.getConfidentialOrders();
-                        selectedOrdersBundle.getValue().processAllConfidentialOrders((suffix, orders) -> {
-                            if (isNotEmpty(orders)
-                                && ElementUtils.findElement(orderElement.getId(), orders).isPresent()) {
-                                List<Element<GeneratedOrder>> confidentialOrderCollection =
-                                    defaultIfNull(confidentialOrders.getConfidentialOrdersBySuffix(suffix),
-                                        new ArrayList<>());
-                                confidentialOrderCollection.add(generatedBlankOrder);
-                                data.put(confidentialOrders.getFieldBaseName() + suffix, confidentialOrderCollection);
-                            }
-                        });
+                        data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
+                            caseData.getConfidentialOrders(), generatedBlankOrder));
                     } else {
                         orderCollection.add(generatedBlankOrder);
-                        ordersToBeSent.add(reviewedOrder);
                         data.put("orderCollection", orderCollection);
                     }
+                    ordersToBeSent.add(reviewedOrder);
 
                 } else {
-                    ordersToBeSent.add(hearingOrderGenerator.buildRejectedHearingOrder(
-                        orderElement, reviewDecision.getChangesRequestedByJudge()));
+                    Element<HearingOrder> rejectedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+                        orderElement, reviewDecision.getChangesRequestedByJudge());
+
+                    if (orderElement.getValue().isConfidentialOrder()) {
+                        data.putAll(addToConfidentialOrderBundle(selectedOrdersBundle, orderElement,
+                            caseData.getConfidentialRefusedOrders(), rejectedOrder));
+                    }
+
+                    ordersToBeSent.add(rejectedOrder);
                 }
                 selectedOrdersBundle.getValue().removeOrderElement(orderElement);
             }
@@ -307,6 +305,30 @@ public class ApproveDraftOrdersService {
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
+    private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>
+                                                                               selectedDraftOrdersBundle,
+                                                                           Element<HearingOrder>
+                                                                               draftOrderElement,
+                                                                           ConfidentialOrderBundle<T>
+                                                                               confidentialOrderBundle,
+                                                                           Element<T> orderToBeAdded) {
+        Map<String, List<Element<T>>> updates = new HashMap<>();
+
+        selectedDraftOrdersBundle.getValue().processAllConfidentialOrders((suffix, selectedDraftOrders) -> {
+            if (isNotEmpty(selectedDraftOrders)
+                && ElementUtils.findElement(draftOrderElement.getId(), selectedDraftOrders).isPresent()) {
+                List<Element<T>> confidentialOrders =
+                    defaultIfNull(confidentialOrderBundle.getConfidentialOrdersBySuffix(suffix),
+                        new ArrayList<>());
+                confidentialOrders.add(orderToBeAdded);
+                updates.put(confidentialOrderBundle.getFieldBaseName() + suffix, confidentialOrders);
+                confidentialOrderBundle.setConfidentialOrdersBySuffix(suffix, confidentialOrders);
+            }
+        });
+
+        return updates;
+    }
+
     @SuppressWarnings("unchecked")
     public void updateRejectedHearingOrders(Map<String, Object> data) {
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
@@ -316,7 +338,8 @@ public class ApproveDraftOrdersService {
             List<Element<HearingOrder>>) data.get(REFUSED_ORDERS), newArrayList());
 
         rejectedOrders.addAll(ordersToBeSent.stream()
-            .filter(bundle -> bundle.getValue().getRequestedChanges() != null)
+            .filter(bundle -> bundle.getValue().getRequestedChanges() != null
+                              && !bundle.getValue().isConfidentialOrder())
             .collect(toList()));
 
         if (!rejectedOrders.isEmpty()) {
