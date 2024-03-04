@@ -11,7 +11,6 @@ import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting"
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { ManageHearings } from "../pages/manage-hearings";
 
-
 type CreateFixtures = {
   signInPage: SignInPage;
   createCase: CreateCase;
@@ -56,7 +55,6 @@ export const test = base.extend<CreateFixtures>({
   },
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
-
   },
 
   factorsAffectingParenting: async ({ page }, use) => {
