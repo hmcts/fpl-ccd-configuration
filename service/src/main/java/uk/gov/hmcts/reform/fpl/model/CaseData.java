@@ -525,6 +525,13 @@ public class CaseData extends CaseDataParent {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    @JsonIgnore
+    public List<Element<GeneratedOrder>> getAllOrderCollections() {
+        return Stream.of(getOrderCollection(), confidentialOrders.getAllConfidentialOrders())
+            .flatMap(List::stream)
+            .toList();
+    }
+
     @JsonUnwrapped
     @Builder.Default
     private final RemovalToolData removalToolData = RemovalToolData.builder().build();
