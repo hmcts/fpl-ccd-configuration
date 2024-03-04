@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
 
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C26_SECURE_ACCOMMODATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32A_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
 public class ManageOrdersClosedCaseFieldGeneratorTest {
@@ -52,6 +54,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
 
         Map<String, Object> generatedData = underTest.generate(caseData);
         Map<String, Object> expectedData = Map.of(
@@ -129,6 +132,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
                 .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
 
         Map<String, Object> generatedData = underTest.generate(caseData);
         Map<String, Object> expectedData = Map.of(
@@ -164,6 +168,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
         when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
 
         Map<String, Object> generatedData = underTest.generate(caseData);
         Map<String, Object> expectedData = Map.of(
@@ -187,6 +192,31 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
         Map<String, Object> expectedData = Map.of(
             "state", CLOSED,
             "closeCaseTabField", CloseCase.builder().date(time.now().toLocalDate()).build()
+        );
+
+        assertThat(generatedData).containsAllEntriesOf(expectedData);
+        assertThat(generatedData).containsKey("children1");
+    }
+
+    @Test
+    void shouldCloseCaseWhenOrderIsDefaultFinalAndApprovalDateIsLaterThanExistingFinalOrder() {
+        CaseData caseData = buildCaseData("Yes", "Yes", C26_SECURE_ACCOMMODATION_ORDER,
+            APPROVAL_DATE.minusDays(100), null);
+        caseData = caseData.toBuilder().orderCollection(wrapElements(GeneratedOrder.builder()
+                .markedFinal(YesNo.YES.getValue())
+                .dateTimeIssued(APPROVAL_DATE_TIME)
+                .approvalDate(APPROVAL_DATE)
+                .build()))
+            .build();
+
+        when(childrenSmartFinalOrderUpdater.updateFinalOrderIssued(caseData))
+            .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
+
+        Map<String, Object> generatedData = underTest.generate(caseData);
+        Map<String, Object> expectedData = Map.of(
+            "state", CLOSED,
+            "closeCaseTabField", CloseCase.builder().date(APPROVAL_DATE).build()
         );
 
         assertThat(generatedData).containsAllEntriesOf(expectedData);
