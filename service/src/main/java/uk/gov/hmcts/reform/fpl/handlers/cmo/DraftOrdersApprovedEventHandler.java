@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -45,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Set.of;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -53,9 +57,11 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class DraftOrdersApprovedEventHandler {
 
     private final CourtService courtService;
@@ -73,9 +79,10 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationToAdminAndLA(final DraftOrdersApproved event) {
+    public void sendNotificationToAdmin(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -87,18 +94,43 @@ public class DraftOrdersApprovedEventHandler {
 
         String adminEmail = courtService.getCourtEmail(caseData);
 
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .build();
-
-        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
-
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             adminEmail,
             content,
             caseData.getId()
         );
+    }
+
+    @Async
+    @EventListener
+    public void sendNotificationToLA(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        approvedOrders.addAll(event.getApprovedConfidentialOrders().stream()
+            .filter(order -> findElement(order.getId(),
+                caseData.getConfidentialOrders().getOrderCollectionLA()).isPresent())
+            .map(Element::getValue)
+            .toList());
+
+        if (approvedOrders.isEmpty()) {
+            log.info("Only confidential orders uploaded and not accessible by LA. Skip notifying LA");
+            return;
+        }
+
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+
+        final ApprovedOrdersTemplate content = contentProvider.buildOrdersApprovedContent(caseData, hearing,
+            approvedOrders, DIGITAL_SERVICE);
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
@@ -118,6 +150,13 @@ public class DraftOrdersApprovedEventHandler {
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
             if (recipientIsWelsh.isPresent()) {
                 List<HearingOrder> approvedOrders = event.getApprovedOrders();
+                approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
+
+                if (approvedOrders.isEmpty()) {
+                    log.info("Only confidential orders uploaded and not accessible by Cafcass. "
+                             + "Skip notifying Cafcass Welsh");
+                    return;
+                }
 
                 final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
@@ -143,13 +182,22 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
+            List<HearingOrder> approvedOrders = event.getApprovedOrders();
+            approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
+
+            if (approvedOrders.isEmpty()) {
+                log.info("Only confidential orders uploaded and not accessible by Cafcass. "
+                         + "Skip notifying Cafcass England");
+                return;
+            }
+
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)
                     .map(HearingBooking::getStartDate)
                     .orElse(null);
 
-            event.getApprovedOrders()
+            approvedOrders
                 .forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
                             of(hearingOrder.getOrder()),
@@ -162,6 +210,16 @@ public class DraftOrdersApprovedEventHandler {
                         )
                 );
         }
+    }
+
+    private List<HearingOrder> getConfidentialOrderToBeSentToCafcass(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        List<Element<GeneratedOrder>> allChildConfidentialOrders = caseData.getConfidentialOrders()
+            .getAllChildConfidentialOrders();
+        return event.getApprovedConfidentialOrders().stream()
+            .filter(order -> findElement(order.getId(), allChildConfidentialOrders).isPresent())
+            .map(Element::getValue)
+            .toList();
     }
 
     @Async

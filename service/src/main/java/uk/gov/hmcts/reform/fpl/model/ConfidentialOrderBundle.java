@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public interface ConfidentialOrderBundle<T> {
     default List<Element<T>> getConfidentialOrdersBySuffix(String suffix) {
         final String fieldName = getGetterBaseName() + suffix;
         return Arrays.stream(this.getClass().getMethods())
-            .filter(method -> method.getName().contains(fieldName))
+            .filter(method -> method.getName().equals(fieldName))
             .map(method -> {
                 try {
                     return method.invoke(this);
@@ -102,5 +103,17 @@ public interface ConfidentialOrderBundle<T> {
             });
 
         return confidentialOrders;
+    }
+
+    @JsonIgnore
+    default List<Element<T>> getAllChildConfidentialOrders() {
+        final List<Element<T>> childConfidentialOrders = new ArrayList<>();
+        processAllConfidentialOrders((suffix, orders) -> {
+            if (suffix.contains("Child")) {
+                childConfidentialOrders.addAll(orders);
+            }
+        });
+
+        return childConfidentialOrders;
     }
 }

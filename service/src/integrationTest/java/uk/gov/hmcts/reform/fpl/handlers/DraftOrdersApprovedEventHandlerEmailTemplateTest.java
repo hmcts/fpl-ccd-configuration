@@ -81,7 +81,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     @Test
     void notifyLAAndAdmin() {
-        underTest.sendNotificationToAdminAndLA(buildEvent());
+        underTest.sendNotificationToAdmin(buildEvent());
 
         allResponses().forEach(response ->
             assertThat(response)

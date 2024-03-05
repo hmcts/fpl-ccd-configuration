@@ -145,7 +145,7 @@ class DraftOrdersApprovedEventHandlerTest {
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, HEARING.getValue(), orders, DIGITAL_SERVICE)).willReturn(EXPECTED_TEMPLATE);
 
-        underTest.sendNotificationToAdminAndLA(new DraftOrdersApproved(caseData, orders));
+        underTest.sendNotificationToAdmin(new DraftOrdersApproved(caseData, orders));
 
         verify(notificationService).sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
