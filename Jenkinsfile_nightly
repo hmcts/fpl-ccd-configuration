@@ -32,7 +32,8 @@ def integrationTestSecrets = [
     secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
     secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
   ]
 ]
 

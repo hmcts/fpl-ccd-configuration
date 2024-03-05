@@ -54,6 +54,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static java.util.UUID.randomUUID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -141,8 +142,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+
     @Captor
-    ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
+    private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -204,9 +206,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
-        given(uploadAdditionalApplicationsService.convertC2Bundle(any()))
+        given(uploadAdditionalApplicationsService.convertC2Bundle(any(), any()))
             .willAnswer(returnsFirstArg());
-        given(uploadAdditionalApplicationsService.convertOtherBundle(any()))
+        given(uploadAdditionalApplicationsService.convertOtherBundle(any(), any()))
             .willAnswer(returnsFirstArg());
 
         doNothing().when(sendDocumentService).sendDocuments(any());
@@ -590,93 +592,50 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldConvertC2Bundle() {
-        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
-            .willReturn(List.of(ApplicationType.C2_APPLICATION));
-
-        C2DocumentBundle c2 = C2DocumentBundle.builder()
+    void shouldConvertBundles() {
+        UUID additionalApplicationsBundleId = UUID.randomUUID();
+        C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
             .type(WITH_NOTICE)
             .supplementsBundle(new ArrayList<>())
-            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
-            .build();
-
-        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("sendToCtsc", NO)
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
-                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
-                .c2DocumentBundle(c2)
-                .build()))
-            .build());
-
-        postSubmittedEvent(caseDetails);
-
-        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
-            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
-        changeFunctionCaptor.getValue().apply(caseDetails);
-        verify(uploadAdditionalApplicationsService).convertC2Bundle(c2);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void shouldConvertC2ConfidentialBundle() {
-        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
-            .willReturn(List.of(ApplicationType.C2_APPLICATION));
-
-        C2DocumentBundle c2 = C2DocumentBundle.builder()
-            .type(WITH_NOTICE)
-            .supplementsBundle(new ArrayList<>())
-            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
-            .build();
-
-        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonNotificationParameters())
-            .put("sendToCtsc", NO)
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
-                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
-                .c2DocumentBundleConfidential(c2)
-                .build()))
-            .build());
-
-        postSubmittedEvent(caseDetails);
-
-        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
-            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
-        changeFunctionCaptor.getValue().apply(caseDetails);
-        verify(uploadAdditionalApplicationsService).convertConfidentialC2Bundle(any(), eq(c2), any());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void shouldConvertOtherApplicationBundle() {
-        given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
-            .willReturn(List.of(ApplicationType.C2_APPLICATION));
-
-        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+        OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
-            .document(testDocumentReference())
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+            .c2DocumentBundle(c2Bundle)
+            .otherApplicationsBundle(otherBundle)
             .build();
 
         CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .put("sendToCtsc", NO)
-            .put("additionalApplicationType", List.of(C2_ORDER))
-            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
-                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
-                .otherApplicationsBundle(otherApplicationsBundle)
-                .build()))
+            .put("additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER))
+            .put("additionalApplicationsBundle",
+                List.of(element(additionalApplicationsBundleId, additionalApplicationsBundle)))
+            .put("sendToCtsc", NO.getValue())
             .build());
 
-        postSubmittedEvent(caseDetails);
+        when(coreCaseDataService.performPostSubmitCallback(any(),
+                eq("internal-change-upload-add-apps"),
+                changeFunctionCaptor.capture())).thenReturn(caseDetails);
 
-        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
-            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
-        changeFunctionCaptor.getValue().apply(caseDetails);
-        verify(uploadAdditionalApplicationsService).convertOtherBundle(otherApplicationsBundle);
+        C2DocumentBundle expectedC2 = c2Bundle.toBuilder().applicantName("Converted C2").build();
+        when(uploadAdditionalApplicationsService.convertC2Bundle(any(), any())).thenReturn(expectedC2);
+        OtherApplicationsBundle expectedOtherBundle = otherBundle.toBuilder().applicantName("Converted Other").build();
+        when(uploadAdditionalApplicationsService.convertOtherBundle(any(), any())).thenReturn(expectedOtherBundle);
+
+        postSubmittedEvent(caseDetails);
+        Map<String, Object> actual = changeFunctionCaptor.getValue().apply(caseDetails);
+
+        assertEquals(actual.get("additionalApplicationsBundle"), List.of(element(additionalApplicationsBundleId,
+                additionalApplicationsBundle.toBuilder()
+                    .c2DocumentBundle(expectedC2)
+                    .otherApplicationsBundle(expectedOtherBundle)
+                    .build())));
     }
+
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()

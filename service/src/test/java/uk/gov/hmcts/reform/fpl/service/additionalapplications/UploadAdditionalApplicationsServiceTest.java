@@ -8,21 +8,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -32,12 +28,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
-import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -48,8 +43,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +51,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_ID;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -72,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FAT
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomUUID;
@@ -96,6 +89,9 @@ class UploadAdditionalApplicationsServiceTest {
 
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
     private static final DocumentReference CONVERTED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
+    private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT =
+        testDocumentReference("Sealed_SupplementFile.pdf");
+    private static final DocumentReference  SEALED_DOCUMENT = testDocumentReference("Sealed_TestDocument.pdf");
 
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
@@ -106,12 +102,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
-    private final DraftOrderService draftOrderService = mock(DraftOrderService.class);
-
-    private final ApplicantLocalAuthorityService applicantLocalAuthorityService =
-        mock(ApplicantLocalAuthorityService.class);
-    private final LocalAuthorityRecipientsService localAuthorityRecipients =
-        mock(LocalAuthorityRecipientsService.class);
+    private final DocumentSealingService documentSealingService = mock(DocumentSealingService.class);
 
     private UploadAdditionalApplicationsService underTest;
 
@@ -122,8 +113,12 @@ class UploadAdditionalApplicationsServiceTest {
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
         given(conversionService.convertToPdf(DOCUMENT)).willReturn(CONVERTED_DOCUMENT);
         given(conversionService.convertToPdf(SUPPLEMENT_DOCUMENT)).willReturn(CONVERTED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT, COURT_1, SealType.ENGLISH))
+            .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
+        given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
+            .willReturn(SEALED_DOCUMENT);
         underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, conversionService, draftOrderService);
+            time, user, uploadHelper, documentSealingService, conversionService);
         given(user.isHmctsUser()).willReturn(true);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
@@ -285,89 +280,6 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
-    }
-
-    @Test
-    void shouldBuildBundleWhenLAUploadConfidentialC2Application() {
-        Supplement c2Supplement = createSupplementsBundle();
-        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0))
-            .listItems(DYNAMIC_LIST_ELEMENTS).build();
-
-        List<Element<Respondent>> respondentsInCase = wrapElements(
-            Respondent.builder().party(
-                RespondentParty.builder().firstName("First").lastName("Respondent")
-                    .address(Address.builder().postcode("SE1").build()).build()).build());
-
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER))
-            .c2Type(WITH_NOTICE)
-            .isC2Confidential(YesNo.YES)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .respondents1(respondentsInCase)
-            .localAuthorityPolicy(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(CaseRole.LASOLICITOR.formattedName())
-                .build())
-            .build();
-
-        given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.LASOLICITOR));
-
-        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
-
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
-        assertThat(actual.getC2DocumentBundle()).isNull();
-        assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
-        assertThat(actual.getC2DocumentBundleLA().getApplicantName()).isEqualTo(APPLICANT_NAME);
-
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement, c2SupportingDocument);
-    }
-
-    @Test
-    void shouldBuildBundleWhenSolicitorUploadConfidentialC2Application() {
-        Supplement c2Supplement = createSupplementsBundle();
-        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0))
-            .listItems(DYNAMIC_LIST_ELEMENTS).build();
-
-        List<Element<Respondent>> respondentsInCase = wrapElements(
-            Respondent.builder().party(
-                RespondentParty.builder().firstName("First").lastName("Respondent")
-                    .address(Address.builder().postcode("SE1").build()).build()).build());
-
-        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
-            .additionalApplicationType(List.of(C2_ORDER))
-            .c2Type(WITH_NOTICE)
-            .isC2Confidential(YesNo.YES)
-            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
-            .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
-            .respondents1(respondentsInCase)
-            .respondentPolicyData(RespondentPolicyData.builder()
-                .respondentPolicy0(OrganisationPolicy.builder()
-                    .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
-                .build())
-            .build();
-
-        given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
-
-        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
-
-        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
-        assertThat(actual.getC2DocumentBundle()).isNull();
-        assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
-        assertThat(actual.getC2DocumentBundleResp0().getApplicantName()).isEqualTo(APPLICANT_NAME);
-
-        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
-        assertC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, c2SupportingDocument);
     }
 
     @Test
@@ -556,6 +468,7 @@ class UploadAdditionalApplicationsServiceTest {
 
     @Nested
     class PostSubmitProcessing {
+        private static final CaseData CASE_DATA = CaseData.builder().court(COURT_1).build();
 
         @Test
         void shouldSetSupplementsToEmptyListIfNonePresent() {
@@ -563,127 +476,42 @@ class UploadAdditionalApplicationsServiceTest {
                 .document(DOCUMENT)
                 .supplementsBundle(List.of())
                 .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
             assertThat(converted.getSupplementsBundle()).isEmpty();
             assertThat(converted.getSupplementsBundle()).isNotNull();
         }
 
         @Test
-        void shouldConvertC2SupplementToPdf() {
+        void shouldSealC2Document() {
             C2DocumentBundle bundle = C2DocumentBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
                     .document(SUPPLEMENT_DOCUMENT)
                     .build()))
                 .build();
-            C2DocumentBundle converted = underTest.convertC2Bundle(bundle);
+            C2DocumentBundle converted = underTest.convertC2Bundle(bundle, CASE_DATA);
 
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
-        void shouldConvertOtherSupplementToPdf() {
+        void shouldSealOtherDocument() {
             OtherApplicationsBundle bundle = OtherApplicationsBundle.builder()
                 .document(DOCUMENT)
                 .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
                     .document(SUPPLEMENT_DOCUMENT)
                     .build()))
                 .build();
-            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle);
+            OtherApplicationsBundle converted = underTest.convertOtherBundle(bundle, CASE_DATA);
 
+            assertThat(converted.getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-        }
-
-
-        @Test
-        void shouldConvertConfidentialC2SupplementToPdf() {
-            C2DocumentBundle bundle = C2DocumentBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-
-            CaseData caseData = CaseData.builder()
-                .isC2Confidential(YesNo.YES)
-                .respondentPolicyData(RespondentPolicyData.builder()
-                    .respondentPolicy0(OrganisationPolicy.builder()
-                        .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
-                    .build())
-                .build();
-
-            AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder builder =
-                AdditionalApplicationsBundle.builder();
-
-            given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
-            underTest.convertConfidentialC2Bundle(caseData, bundle, builder);
-
-            AdditionalApplicationsBundle additionalApplicationsBundle = builder.build();
-
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
-                .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
-                .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-        }
-    }
-
-    @Nested
-    class ConfidentialC2 {
-        private static final String UPLOADER_EMAIL = "uploader@test.com";
-        private static final String LA_SHARE_INBOX = "la@test.com";
-        private static final LocalAuthority LA = LocalAuthority.builder().email(LA_SHARE_INBOX).build();
-        private static final List<Element<Respondent>> RESPONDENTS = List.of(element(Respondent.builder().build()));
-        private static final DocumentReference C2_DOCUMENT = testDocumentReference("C2.doc");
-        private static final C2DocumentBundle CONFIDENTIAL_C2 = C2DocumentBundle.builder()
-            .document(C2_DOCUMENT)
-            .respondents(RESPONDENTS)
-            .author(UPLOADER_EMAIL)
-            .build();
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_ADMIN =
-            AdditionalApplicationsBundle.builder()
-                .author(UPLOADER_EMAIL)
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_LA =
-            AdditionalApplicationsBundle.builder()
-                .author(UPLOADER_EMAIL)
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleLA(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_RESP_SOLICITOR =
-            AdditionalApplicationsBundle.builder()
-                .author(UPLOADER_EMAIL)
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleResp0(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        private static final AdditionalApplicationsBundle ADDITIONAL_APPLICATION_CHILD_SOLICITOR =
-            AdditionalApplicationsBundle.builder()
-                .author(UPLOADER_EMAIL)
-                .c2DocumentBundle(null)
-                .c2DocumentBundleConfidential(CONFIDENTIAL_C2)
-                .c2DocumentBundleChild0(CONFIDENTIAL_C2)
-                .otherApplicationsBundle(null)
-                .build();
-
-        @BeforeEach
-        void setup() {
-            given(user.isHmctsAdminUser()).willReturn(false);
-            given(applicantLocalAuthorityService.getUserLocalAuthority(any())).willReturn(LA);
-            given(localAuthorityRecipients.getShareInbox(LA)).willReturn(Optional.of(LA_SHARE_INBOX));
         }
     }
 
