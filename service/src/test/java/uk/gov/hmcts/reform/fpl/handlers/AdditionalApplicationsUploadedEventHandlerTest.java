@@ -595,6 +595,11 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .otherApplicationsBundle(null)
                 .build();
 
+        private static final AdditionalApplicationsBundle CONFIDENTIAL_ADDITIONAL_APPLICATION_BY_CHILD =
+            CONFIDENTIAL_ADDITIONAL_APPLICATION.toBuilder()
+                .c2DocumentBundleChild0(CONFIDENTIAL_C2)
+                .build();
+
         private static final AdditionalApplicationsBundle CONFIDENTIAL_ADDITIONAL_APPLICATION_WITH_OTHER =
             CONFIDENTIAL_ADDITIONAL_APPLICATION.toBuilder()
                 .otherApplicationsBundle(OtherApplicationsBundle.builder()
@@ -604,51 +609,19 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .build();
 
         @Test
-        void shouldNotifyConfidentialRecipientOnlyIfOnlyConfidentialC2Uploaded() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION))
+        void shouldNotifyCafcassWhenConfidentialC2DocumentsIsUploadedByChildSolicitor() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_BY_CHILD))
                 .build();
 
-            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
-            given(localAuthorityRecipients.getRecipients(
-                RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
-                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
-            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
-
-            verify(notificationService).sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(UPLOADER_EMAIL),
-                notifyData, caseDataWithConfidentialC2.getId().toString()
-            );
-
-            verifyNoMoreInteractions(notificationService);
+            verifyInvocation(List.of(CONFIDENTIAL_C2.getDocument()), caseData, caseDataBefore);
         }
 
         @Test
-        void shouldNotifyApplicantIfOtherApplicationBundleUploaded() {
-            CaseData caseDataWithConfidentialC2 = caseData().toBuilder()
-                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_WITH_OTHER))
-                .build();
-
-            given(contentProvider.getNotifyData(caseDataWithConfidentialC2)).willReturn(notifyData);
-            given(localAuthorityRecipients.getRecipients(
-                RecipientsRequest.builder().caseData(caseDataWithConfidentialC2).build()))
-                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS, SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS));
-
-            underTest.notifyApplicant(new AdditionalApplicationsUploadedEvent(caseDataWithConfidentialC2,
-                caseDataBefore, ORDER_APPLICANT_LA));
-
-            verify(notificationService).sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS,
-                    SECONDARY_LOCAL_AUTHORITY_EMAIL_ADDRESS, UPLOADER_EMAIL),
-                notifyData, caseDataWithConfidentialC2.getId().toString()
-            );
-
-            verifyNoMoreInteractions(notificationService);
-        }
-
-        @Test
-        void shouldNotifyCafcassWhenConfidentialC2DocumentsUploaded() {
+        void shouldNotNotifyCafcassWhenConfidentialC2DocumentsIsNotUploadedByChildSolicitor() {
             CaseData caseData = CaseData.builder()
                 .id(RandomUtils.nextLong())
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
@@ -656,7 +629,35 @@ class AdditionalApplicationsUploadedEventHandlerTest {
                 .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION))
                 .build();
 
-            verifyInvocation(List.of(CONFIDENTIAL_C2.getDocument()), caseData, caseDataBefore);
+            underTest.sendDocumentsToCafcass(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+            verifyNoMoreInteractions(cafcassNotificationService);
+        }
+
+        @Test
+        void shouldNotifyCTSCWhenConfidentialC2DocumentsIsUploaded() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_BY_CHILD))
+                .build();
+
+            given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
+            given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
+
+            given(localAuthorityRecipients.getRecipients(
+                RecipientsRequest.builder().caseData(caseData).build()))
+                .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+            given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
+
+            underTest.notifyAdmin(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+            verify(notificationService).sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
+            );
         }
     }
 

@@ -135,17 +135,14 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
-        AdditionalApplicationsBundle uploadedBundle = getUploadedBundle(event.getCaseData());
-        if (!isConfidentialC2UploadedOnly(uploadedBundle) || !isConfidentialC2UploadedByAdmin(uploadedBundle)) {
-            List<String> roles = new ArrayList<>(requestData.userRoles());
-            if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
-                CaseData caseData = event.getCaseData();
+        List<String> roles = new ArrayList<>(requestData.userRoles());
+        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
+            CaseData caseData = event.getCaseData();
 
-                NotifyData notifyData = contentProvider.getNotifyData(caseData);
-                String recipient = courtService.getCourtEmail(caseData);
-                notificationService.sendEmail(
-                    INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
-            }
+            NotifyData notifyData = contentProvider.getNotifyData(caseData);
+            String recipient = courtService.getCourtEmail(caseData);
+            notificationService.sendEmail(
+                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
         }
     }
 
