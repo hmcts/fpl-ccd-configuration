@@ -30,7 +30,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
 
     // Record trace only when retrying a test for the first time.
-    trace: 'off',
+    trace: 'on',
 
     // Record video only when retrying a test for the first time.
     video: 'on-first-retry'
