@@ -213,7 +213,6 @@ withPipeline(type, product, component) {
       reportName           : 'UI Functional Test Report'
     ])
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'playwright-report/**/*'
   }
 
   before('smoketest:saat') {
