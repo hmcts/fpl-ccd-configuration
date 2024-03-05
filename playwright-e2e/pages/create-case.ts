@@ -24,6 +24,15 @@ export class CreateCase {
   async createCase() {
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.createCaseLink.click();
+
+    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW").catch(
+      (error)=>{
+           this.page.waitForTimeout(500);
+           console.log(error);
+           console.log(" the page reloaded to ");
+           this.page.reload({timeout:3000,waitUntil:'load'});
+         }
+       )
     await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
     await this.caseTypeFilterDropdown.selectOption("CARE_SUPERVISION_EPO");
     await this.page.getByLabel("Event").selectOption("openCase");
