@@ -10,7 +10,7 @@ import java.util.List;
 
 @Builder
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class ConfidentialGeneratedOrders implements ConfidentialOrderBundle<GeneratedOrder> {
     private List<Element<GeneratedOrder>> orderCollectionCTSC;
     private List<Element<GeneratedOrder>> orderCollectionLA;

@@ -90,6 +90,6 @@ public class AdditionalApplicationsBundle {
     }
 
     public YesNo getHasConfidentialC2() {
-       return YesNo.from(isNotEmpty(c2DocumentBundleConfidential));
+        return YesNo.from(isNotEmpty(c2DocumentBundleConfidential));
     }
 }

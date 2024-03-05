@@ -6,10 +6,6 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -33,7 +29,7 @@ public class ChildPolicyData implements PolicyDatas {
     @Override
     @JsonIgnore
     public OrganisationPolicy[] getAllPolicy() {
-         return new OrganisationPolicy[] {
+        return new OrganisationPolicy[] {
             childPolicy0, childPolicy1, childPolicy2, childPolicy3, childPolicy4, childPolicy5, childPolicy6,
             childPolicy7, childPolicy8, childPolicy9, childPolicy10, childPolicy11, childPolicy12, childPolicy13,
             childPolicy14

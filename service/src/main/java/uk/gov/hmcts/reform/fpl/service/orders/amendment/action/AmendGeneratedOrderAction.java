@@ -47,7 +47,7 @@ public class AmendGeneratedOrderAction implements AmendOrderAction {
         } else {
             Map<String, Object> updates = new HashMap<>();
             caseData.getConfidentialOrders().processAllConfidentialOrders((suffix, existingConfidentialOrders) -> {
-                if (ElementUtils.findElement(selectedOrderId, existingConfidentialOrders).isPresent()){
+                if (ElementUtils.findElement(selectedOrderId, existingConfidentialOrders).isPresent()) {
                     updates.putAll(updateOrdersAndCaseField(existingConfidentialOrders,
                         caseData.getConfidentialOrders().getFieldBaseName() + suffix,
                         selectedOrderId, amendedDocument, selectedOthers));

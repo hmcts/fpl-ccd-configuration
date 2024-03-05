@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -81,7 +82,8 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToAdmin(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        List<HearingOrder> approvedOrders = new ArrayList<>();
+        approvedOrders.addAll(event.getApprovedOrders());
         approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
@@ -106,7 +108,8 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToLA(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        List<HearingOrder> approvedOrders = new ArrayList<>();
+        approvedOrders.addAll(event.getApprovedOrders());
         approvedOrders.addAll(event.getApprovedConfidentialOrders().stream()
             .filter(order -> findElement(order.getId(),
                 caseData.getConfidentialOrders().getOrderCollectionLA()).isPresent())
@@ -149,7 +152,8 @@ public class DraftOrdersApprovedEventHandler {
             final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
             if (recipientIsWelsh.isPresent()) {
-                List<HearingOrder> approvedOrders = event.getApprovedOrders();
+                List<HearingOrder> approvedOrders = new ArrayList<>();
+                approvedOrders.addAll(event.getApprovedOrders());
                 approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
 
                 if (approvedOrders.isEmpty()) {
@@ -182,7 +186,8 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            List<HearingOrder> approvedOrders = event.getApprovedOrders();
+            List<HearingOrder> approvedOrders = new ArrayList<>();
+            approvedOrders.addAll(event.getApprovedOrders());
             approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
 
             if (approvedOrders.isEmpty()) {
@@ -197,8 +202,7 @@ public class DraftOrdersApprovedEventHandler {
                     .map(HearingBooking::getStartDate)
                     .orElse(null);
 
-            approvedOrders
-                .forEach(hearingOrder ->
+            approvedOrders.forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
                             of(hearingOrder.getOrder()),
                             ORDER,
@@ -207,8 +211,7 @@ public class DraftOrdersApprovedEventHandler {
                                     .hearingDate(hearingStartDate)
                                     .orderApprovalDate(hearingOrder.getDateIssued())
                                     .build()
-                        )
-                );
+                    ));
         }
     }
 

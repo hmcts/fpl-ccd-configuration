@@ -10,6 +10,10 @@ import java.util.function.Consumer;
 
 public class PolicyHelper {
 
+    private PolicyHelper() {
+        // DO nothing
+    }
+
     public static boolean isPolicyMatchingCaseRoles(OrganisationPolicy organisationPolicy,
                                                     Collection<CaseRole> caseRoles) {
         return organisationPolicy != null && caseRoles != null
