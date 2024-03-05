@@ -50,11 +50,16 @@ public class MigrateCaseController extends CallbackController {
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-log", this::runLog,
         "DFPL-1978a", this::run1978a,
         "DFPL-1978b", this::run1978b,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback
     );
+
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging on case {}", caseDetails.getId());
+    }
 
     private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
         for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
