@@ -288,9 +288,11 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendNotificationToUploaderWhenConfidentialOrderIsApproved(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
+        String adminEmail = courtService.getCourtEmail(caseData);
         Map<String, List<HearingOrder>> confidentiaOrdersMap = event.getApprovedConfidentialOrders()
             .stream()
             .map(Element::getValue)
+            .filter(hearingOrder -> adminEmail == null || !adminEmail.equals(hearingOrder.getUploaderEmail()))
             .collect(groupingBy(HearingOrder::getUploaderEmail));
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
@@ -300,7 +302,7 @@ public class DraftOrdersApprovedEventHandler {
 
         confidentiaOrdersMap.forEach((uploaderEmail, confidentialOrders) -> {
             NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, confidentialOrders,
-                EMAIL);
+                DIGITAL_SERVICE);
             notificationService.sendEmail(JUDGE_APPROVES_DRAFT_ORDERS, uploaderEmail, content, caseData.getId());
         });
     }
