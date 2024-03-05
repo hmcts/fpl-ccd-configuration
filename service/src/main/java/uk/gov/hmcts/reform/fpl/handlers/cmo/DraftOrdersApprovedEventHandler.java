@@ -6,7 +6,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
@@ -42,13 +41,14 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Set.of;
+import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -282,6 +282,27 @@ public class DraftOrdersApprovedEventHandler {
                 JUDGE_APPROVES_DRAFT_ORDERS
             );
         }
+    }
+
+    @Async
+    @EventListener
+    public void sendNotificationToUploaderWhenConfidentialOrderIsApproved(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        Map<String, List<HearingOrder>> confidentiaOrdersMap = event.getApprovedConfidentialOrders()
+            .stream()
+            .map(Element::getValue)
+            .collect(groupingBy(HearingOrder::getUploaderEmail));
+
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+
+        confidentiaOrdersMap.forEach((uploaderEmail, confidentialOrders) -> {
+            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, confidentialOrders,
+                EMAIL);
+            notificationService.sendEmail(JUDGE_APPROVES_DRAFT_ORDERS, uploaderEmail, content, caseData.getId());
+        });
     }
 
     @Async

@@ -68,6 +68,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String removalReason;
     private final List<Element<Other>> others;
     private String othersNotified;
+    private String uploaderEmail;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null, null, null);
