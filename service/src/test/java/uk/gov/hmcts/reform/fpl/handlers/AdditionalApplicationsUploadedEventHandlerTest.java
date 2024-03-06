@@ -435,6 +435,22 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotSendByPostIfConfidential() {
+        AdditionalApplicationsBundle additionalApplicationsBundle =
+            AdditionalApplicationsBundle.builder().c2DocumentBundleConfidential(
+                C2DocumentBundle.builder().document(testDocumentReference()).build())
+                .build();
+
+        given(caseData.getAdditionalApplicationsBundle()).willReturn(wrapElements(additionalApplicationsBundle));
+
+        underTest.sendAdditionalApplicationsByPost(
+            new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA)
+        );
+
+        verifyNoInteractions(sendDocumentService);
+    }
+
+    @Test
     void shouldNotifyNonHmctsAdminOnAdditionalApplicationsUpload() {
         CaseData caseData = caseData();
 
@@ -658,6 +674,36 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             verify(notificationService).sendEmail(
                 INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
             );
+        }
+
+        @Test
+        void shouldNotNotifyOtherPartiesIfOnlyConfidentialC2IsUploaded() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_BY_CHILD))
+                .build();
+            underTest.notifyApplicant(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+            underTest.notifyDigitalRepresentatives(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+            underTest.notifyEmailServedRepresentatives(
+                new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+            verifyNoInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotNotifyRepresentativesIfOnlyConfidentialC2IsUploaded() {
+            CaseData caseData = CaseData.builder()
+                .id(RandomUtils.nextLong())
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .sendToCtsc("Yes")
+                .additionalApplicationsBundle(wrapElements(CONFIDENTIAL_ADDITIONAL_APPLICATION_BY_CHILD))
+                .build();
+
+            verifyNoInteractions(notificationService);
         }
     }
 

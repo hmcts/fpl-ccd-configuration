@@ -349,22 +349,4 @@ public class AdditionalApplicationsUploadedEventHandler {
                || isNotEmpty(bundle.getC2DocumentBundleChild12()) || isNotEmpty(bundle.getC2DocumentBundleChild13())
                || isNotEmpty(bundle.getC2DocumentBundleChild14());
     }
-
-    private boolean isConfidentialC2UploadedByRespondentSolicitor(AdditionalApplicationsBundle bundle) {
-        return isNotEmpty(bundle.getC2DocumentBundleResp0()) || isNotEmpty(bundle.getC2DocumentBundleResp1())
-               || isNotEmpty(bundle.getC2DocumentBundleResp2()) || isNotEmpty(bundle.getC2DocumentBundleResp3())
-               || isNotEmpty(bundle.getC2DocumentBundleResp4()) || isNotEmpty(bundle.getC2DocumentBundleResp5())
-               || isNotEmpty(bundle.getC2DocumentBundleResp6()) || isNotEmpty(bundle.getC2DocumentBundleResp7())
-               || isNotEmpty(bundle.getC2DocumentBundleResp8()) || isNotEmpty(bundle.getC2DocumentBundleResp9());
-    }
-
-    private boolean isConfidentialC2UploadedByLA(AdditionalApplicationsBundle bundle) {
-        return isNotEmpty(bundle.getC2DocumentBundleLA());
-    }
-
-    private boolean isConfidentialC2UploadedByAdmin(AdditionalApplicationsBundle bundle) {
-        return isNotEmpty(bundle.getC2DocumentBundleConfidential()) && !isConfidentialC2UploadedByLA(bundle)
-               && !isConfidentialC2UploadedByChildSolicitor(bundle)
-               && !isConfidentialC2UploadedByRespondentSolicitor(bundle);
-    }
 }

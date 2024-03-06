@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -152,6 +154,31 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
+    void shouldNotifyAdminOfApprovedConfidentialOrders() {
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .build();
+
+        HearingOrder confidentialOrders = HearingOrder.builder().build();
+
+        given(courtService.getCourtEmail(caseData)).willReturn(CTSC_INBOX);
+
+        given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
+            caseData, HEARING.getValue(), List.of(confidentialOrders), DIGITAL_SERVICE)).willReturn(EXPECTED_TEMPLATE);
+
+        underTest.sendNotificationToAdmin(new DraftOrdersApproved(caseData, List.of(),
+            wrapElements(confidentialOrders)));
+
+        verify(notificationService).sendEmail(
+            JUDGE_APPROVES_DRAFT_ORDERS,
+            CTSC_INBOX,
+            EXPECTED_TEMPLATE,
+            caseData.getId());
+    }
+
+    @Test
     void shouldNotifyLAOfApprovedOrders() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -175,6 +202,53 @@ class DraftOrdersApprovedEventHandlerTest {
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
             caseData.getId());
+    }
+
+    @Test
+    void shouldNotifyLAOfApprovedConfidentialOrdersIfOrderWasUploadedByLa() {
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionLA(List.of(generatedOrder)).build())
+            .build();
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
+            caseData, HEARING.getValue(), List.of(hearingOrder.getValue()), DIGITAL_SERVICE))
+            .willReturn(EXPECTED_TEMPLATE);
+
+        underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
+
+        verify(notificationService).sendEmail(
+            JUDGE_APPROVES_DRAFT_ORDERS,
+            Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            EXPECTED_TEMPLATE,
+            caseData.getId());
+    }
+
+    @Test
+    void shouldNotNotifyLAOfApprovedConfidentialOrdersIfOrderWasNotUploadedByLa() {
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionResp0(List.of(generatedOrder)).build())
+            .build();
+
+        underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
+
+        verifyNoInteractions(notificationService);
     }
 
     @Test
