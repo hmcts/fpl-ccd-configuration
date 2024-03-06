@@ -275,7 +275,6 @@ public class ApproveDraftOrdersService {
                             caseData.getConfidentialOrders(), generatedBlankOrder));
                     } else {
                         orderCollection.add(generatedBlankOrder);
-                        data.put("orderCollection", orderCollection);
                     }
                     ordersToBeSent.add(reviewedOrder);
 
@@ -302,6 +301,7 @@ public class ApproveDraftOrdersService {
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
+        data.put("orderCollection", orderCollection);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
