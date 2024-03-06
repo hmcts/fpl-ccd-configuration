@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.caselink.CaseLink;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -184,6 +185,9 @@ public class CaseData extends CaseDataParent {
     @JsonIgnore
     private String courtField;
     private String dfjArea;
+
+    @JsonProperty("caseLinks")
+    private List<Element<CaseLink>> caseLinks;
 
     private final JudicialUser judicialUser;
     private final JudicialUser judicialUserHearingJudge;
@@ -932,6 +936,8 @@ public class CaseData extends CaseDataParent {
             .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
             .collect(toList());
     }
+
+    private final YesNo draftOrderNeedsReviewUploaded;
 
     @JsonUnwrapped
     @Builder.Default

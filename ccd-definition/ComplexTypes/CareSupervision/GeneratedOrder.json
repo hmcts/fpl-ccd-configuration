@@ -277,5 +277,15 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "notificationDocument!=\"\"",
     "CategoryID": "orders"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "urgentReview",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Is this order need to be reviewed urgently?",
+    "FieldTypeParameter": "YesOrNoFixedList",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]
