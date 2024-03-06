@@ -10,6 +10,9 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { RespondentsDetails  }  from "../pages/respondents-details";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import {CaseDetails} from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -23,10 +26,11 @@ type CreateFixtures = {
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
   respondentsDetails : RespondentsDetails;
-
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
 };
-
-export const test = base.extend<CreateFixtures>({
+  export const test = base.extend<CreateFixtures>({
   signInPage: async ({ page }, use) => {
     await use(new SignInPage(page));
   },
@@ -38,37 +42,39 @@ export const test = base.extend<CreateFixtures>({
   startApplication: async ({ page }, use) => {
     await use(new StartApplication(page));
   },
-
   ordersAndDirectionSought: async ({ page }, use) => {
     await use(new OrdersAndDirectionSought(page));
   },
-
   hearingUrgency: async ({ page }, use) => {
     await use(new HearingUrgency(page));
   },
-
   groundsForTheApplication: async ({ page }, use) => {
     await use(new GroundsForTheApplication(page));
   },
-
   judicialMessages: async ({ page }, use) => {
     await use(new JudicialMessage(page));
   },
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
   },
-
-
   factorsAffectingParenting: async ({ page }, use) => {
     await use(new FactorsAffectingParenting(page));
   },
-
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
   },
-
   respondentsDetails: async ({ page }, use) => {
     await use(new RespondentsDetails(page));
   },
 }
-)
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
+  },
+});
+
