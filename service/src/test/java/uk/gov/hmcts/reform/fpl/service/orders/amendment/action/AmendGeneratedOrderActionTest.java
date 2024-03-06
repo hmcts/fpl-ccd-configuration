@@ -52,7 +52,7 @@ class AmendGeneratedOrderActionTest {
     void acceptValid() {
         List<Element<GeneratedOrder>> orders = List.of(element(selectedOrderId, mock(GeneratedOrder.class)));
 
-        when(caseData.getOrderCollection()).thenReturn(orders);
+        when(caseData.getAllOrderCollections()).thenReturn(orders);
 
         assertThat(underTest.accept(caseData)).isTrue();
     }
@@ -61,7 +61,7 @@ class AmendGeneratedOrderActionTest {
     void acceptInvalid() {
         List<Element<GeneratedOrder>> orders = wrapElements(mock(GeneratedOrder.class));
 
-        when(caseData.getOrderCollection()).thenReturn(orders);
+        when(caseData.getAllOrderCollections()).thenReturn(orders);
 
         assertThat(underTest.accept(caseData)).isFalse();
     }
