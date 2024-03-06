@@ -23,6 +23,6 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "Publish": "Y",
-    "FieldShowCondition": "enterManually = \"DO_NOT_SHOW\""
+    "FieldShowCondition": "lastCreatedWATask = \"DO_NOT_SHOW\""
   }
 ]
