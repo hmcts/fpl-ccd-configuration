@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -260,7 +261,7 @@ public class DraftOrderService {
             }
         }
 
-        HearingOrdersBundle hearingOrdersBundle = nullSafeList(bundles).stream()
+        HearingOrdersBundle hearingOrdersBundle = bundles.stream()
             .filter(bundle -> isEmpty(bundle.getValue().getHearingId()))
             .map(Element::getValue)
             .findFirst()
@@ -270,15 +271,15 @@ public class DraftOrderService {
 
         List<String> suffixes = new ArrayList<>();
         if (userService.isHmctsUser()) {
-            suffixes.add("CTSC");
+            suffixes.add(ConfidentialOrderBundle.SUFFIX_CTSC);
         } else {
             if (PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
-                suffixes.add("LA");
+                suffixes.add(ConfidentialOrderBundle.SUFFIX_LA);
             }
-            PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "Resp", caseRoles,
-                suffixes::add);
-            PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "Child", caseRoles,
-                suffixes::add);
+            PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(),
+                ConfidentialOrderBundle.SUFFIX_RESPONDENT, caseRoles, suffixes::add);
+            PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(),
+                ConfidentialOrderBundle.SUFFIX_CHILD, caseRoles, suffixes::add);
         }
         hearingOrdersBundle.updateConfidentialOrders(draftOrders, C21, suffixes);
     }

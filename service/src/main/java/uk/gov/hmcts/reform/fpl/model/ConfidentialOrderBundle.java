@@ -15,6 +15,11 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public interface ConfidentialOrderBundle<T> {
+    String SUFFIX_CTSC = "CTSC";
+    String SUFFIX_LA = "LA";
+    String SUFFIX_RESPONDENT = "Resp";
+    String SUFFIX_CHILD = "Child";
+
 
     @JsonIgnore
     String getFieldBaseName();
@@ -108,7 +113,7 @@ public interface ConfidentialOrderBundle<T> {
     default List<Element<T>> getAllChildConfidentialOrders() {
         final List<Element<T>> childConfidentialOrders = new ArrayList<>();
         processAllConfidentialOrders((suffix, orders) -> {
-            if (orders != null && suffix.contains("Child")) {
+            if (orders != null && suffix.contains(SUFFIX_CHILD)) {
                 childConfidentialOrders.addAll(orders);
             }
         });
