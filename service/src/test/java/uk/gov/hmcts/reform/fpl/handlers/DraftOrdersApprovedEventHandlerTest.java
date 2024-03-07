@@ -279,6 +279,57 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
+    void shouldGovNotifyCafcassWelshOfApprovedConfidentialOrderIfUploadedByChildSolicitor() {
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionChild0(List.of(generatedOrder)).build())
+            .build();
+
+        CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+
+        given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.of(cafcass));
+        given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
+            caseData, HEARING.getValue(), List.of(hearingOrder.getValue()), DIGITAL_SERVICE))
+            .willReturn(EXPECTED_TEMPLATE);
+
+        underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
+
+        verify(notificationService).sendEmail(
+            JUDGE_APPROVES_DRAFT_ORDERS,
+            CAFCASS_EMAIL_ADDRESS,
+            EXPECTED_TEMPLATE,
+            caseData.getId());
+    }
+
+    @Test
+    void shouldNotNotifyCafcassWelshOfApprovedConfidentialOrderIfNotUploadedByChildSolicitor() {
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionResp0(List.of(generatedOrder)).build())
+            .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
+
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
     void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
         CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
@@ -383,6 +434,131 @@ class DraftOrdersApprovedEventHandlerTest {
                 tuple(orders.get(0).getTitle(), now, hearingDateTime),
                 tuple(orders.get(1).getTitle(), now, hearingDateTime)
             );
+    }
+
+    @Test
+    void shouldSendGridNotifyToCafcassEnglandOfApprovedConfidentialOrderIfUploadedByChildSolicitor() {
+        UUID selectedHearingId = UUID.randomUUID();
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+            LocalDate.of(2022, 5, 18),
+            LocalTime.of(10, 30)
+        );
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+            .id(selectedHearingId)
+            .value(HearingBooking.builder()
+                .startDate(hearingDateTime)
+                .build())
+            .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+            .id(UUID.randomUUID())
+            .value(HearingBooking.builder()
+                .startDate(hearingDateTime.minusDays(10))
+                .build())
+            .build();
+
+        LocalDate now = LocalDate.now();
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder()
+            .order(TestDataHelper.testDocumentReference())
+            .title("Test 1")
+            .dateIssued(now)
+            .build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .lastHearingOrderDraftsHearingId(selectedHearingId)
+            .hearingDetails(List.of(
+                hearingBookingElementOne,
+                hearingBookingElementTwo
+            ))
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionChild0(List.of(generatedOrder)).build())
+            .build();
+
+        CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+
+        given(cafcassLookupConfiguration.getCafcassEngland(LOCAL_AUTHORITY_CODE))
+            .willReturn(Optional.of(cafcass));
+
+        underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, List.of(),
+            List.of(hearingOrder)));
+
+        verify(cafcassNotificationService, times(1)).sendEmail(
+            eq(caseData),
+            documentRefArgumentCaptor.capture(),
+            eq(CafcassRequestEmailContentProvider.ORDER),
+            orderCafcassDataArgumentCaptor.capture()
+        );
+
+        Set<DocumentReference> documentReferences = documentRefArgumentCaptor.getAllValues().stream()
+            .flatMap(Set::stream)
+            .collect(toSet());
+
+        assertThat(documentReferences)
+            .containsAll(
+                Set.of(
+                    hearingOrder.getValue().getOrder()
+                ));
+
+        List<OrderCafcassData> allCafCassOrders = orderCafcassDataArgumentCaptor.getAllValues();
+
+        assertThat(allCafCassOrders)
+            .extracting("documentName", "orderApprovalDate", "hearingDate")
+            .contains(
+                tuple(hearingOrder.getValue().getTitle(), now, hearingDateTime)
+            );
+    }
+
+    @Test
+    void shouldNotSendToCafcassEnglandOfApprovedConfidentialOrderIfNotUploadedByChildSolicitor() {
+        UUID selectedHearingId = UUID.randomUUID();
+        LocalDateTime hearingDateTime = LocalDateTime.of(
+            LocalDate.of(2022, 5, 18),
+            LocalTime.of(10, 30)
+        );
+
+        Element<HearingBooking> hearingBookingElementOne = Element.<HearingBooking>builder()
+            .id(selectedHearingId)
+            .value(HearingBooking.builder()
+                .startDate(hearingDateTime)
+                .build())
+            .build();
+
+        Element<HearingBooking> hearingBookingElementTwo = Element.<HearingBooking>builder()
+            .id(UUID.randomUUID())
+            .value(HearingBooking.builder()
+                .startDate(hearingDateTime.minusDays(10))
+                .build())
+            .build();
+
+        LocalDate now = LocalDate.now();
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder()
+            .order(TestDataHelper.testDocumentReference())
+            .title("Test 1")
+            .dateIssued(now)
+            .build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .lastHearingOrderDraftsHearingId(selectedHearingId)
+            .hearingDetails(List.of(
+                hearingBookingElementOne,
+                hearingBookingElementTwo
+            ))
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionResp0(List.of(generatedOrder)).build())
+            .build();
+
+        underTest.sendNotificationToCafcassViaSendGrid(new DraftOrdersApproved(caseData, List.of(),
+            List.of(hearingOrder)));
+
+        verifyNoInteractions(cafcassNotificationService);
     }
 
     @Test
@@ -675,6 +851,38 @@ class DraftOrdersApprovedEventHandlerTest {
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
             WorkAllocationTaskType.CMO_REVIEWED);
+    }
+
+    @Test
+    void shouldNotifyUploaderWhenConfidentialOrderIsApproved() {
+        Element<HearingOrder> hearingOrder = element(HearingOrder.builder()
+            .uploaderEmail("uploaderEmail@email.com").build());
+        Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
+
+
+        CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .hearingDetails(List.of(HEARING))
+            .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder()
+                .orderCollectionResp0(List.of(generatedOrder))
+                .build())
+            .build();
+
+        given(courtService.getCourtEmail(any())).willReturn("courtEmail@email.com");
+        given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
+            caseData, HEARING.getValue(), List.of(hearingOrder.getValue()), DIGITAL_SERVICE))
+            .willReturn(EXPECTED_TEMPLATE);
+
+        underTest.sendNotificationToUploaderWhenConfidentialOrderIsApproved(
+            new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder))
+        );
+
+        verify(notificationService).sendEmail(
+            JUDGE_APPROVES_DRAFT_ORDERS,
+            "uploaderEmail@email.com",
+            EXPECTED_TEMPLATE,
+            CASE_ID);
     }
 
     private HearingOrder hearingOrder() {
