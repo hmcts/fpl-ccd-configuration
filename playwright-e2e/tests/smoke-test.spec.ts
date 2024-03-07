@@ -11,6 +11,7 @@ test("Smoke Test @smoke-test", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   allocationProposal,
+  
 }) => {
   // 1. Sign in as local-authority user
   await signInPage.visit();
