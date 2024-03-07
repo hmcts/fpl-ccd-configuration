@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { CreateCaseName } from "../utils/create-case-name";
 
 export class CreateCase {
   readonly page: Page;
@@ -29,62 +30,25 @@ export class CreateCase {
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async caseName() {
-    const currentDate = new Date();
-
-    // Format the date and time components
-    const year = currentDate.getFullYear();
-    const month = currentDate.toLocaleString("en-UK", { month: "long" });
-    const day = currentDate.getDate();
-    const hours = currentDate.getHours().toString().padStart(2, "0");
-    const minutes = currentDate.getMinutes().toString().padStart(2, "0");
-    const seconds = currentDate.getSeconds().toString().padStart(2, "0");
-    const milliseconds = currentDate
-      .getMilliseconds()
-      .toString()
-      .padStart(3, "0");
-
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    let dayOfTheWeek;
-    days.forEach((day, index) => {
-      // Check if the index of day value is equal to the returned value of getDay()
-      if (index == new Date().getDay()) {
-        dayOfTheWeek = day;
-        console.log("Today is " + dayOfTheWeek);
-      }
-    });
-
-    // Create the timestamp string
-    const timestamp = `${day} ${month} ${year}, ${hours}:${minutes}:${seconds}.${milliseconds}`;
-
-    const caseName = `Smoke Test ${dayOfTheWeek} ${timestamp}`;
-    this.generatedCaseName = caseName;
-
-    console.log("Case name:", caseName);
+   caseName()  {
+    let formattedDate = CreateCaseName.getFormattedDate();
+    this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
-  async submitCase(caseName) {
+  async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
       .click();
-    await this.addApplicationTitle.isVisible;
+    await this.addApplicationTitle.isVisible();
 
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.viewHistory.click();
   }
 
-  async checkCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName: string) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page

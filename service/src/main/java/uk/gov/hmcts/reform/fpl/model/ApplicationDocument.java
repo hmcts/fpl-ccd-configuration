@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOC
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class ApplicationDocument implements FurtherDocument, WithDocument {
+    private String allowMarkDocumentConfidential;
     private final DocumentReference document;
     private DocumentUploaderType uploaderType;
     private List<CaseRole> uploaderCaseRoles;
