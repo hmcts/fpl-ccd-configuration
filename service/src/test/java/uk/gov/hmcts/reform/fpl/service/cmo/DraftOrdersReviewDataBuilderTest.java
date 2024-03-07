@@ -220,6 +220,25 @@ class DraftOrdersReviewDataBuilderTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    void testIfConfidentialOrderToBeApproved() {
+        List<Element<HearingOrder>> orders = new ArrayList<>();
+        orders.add(anOrder(HearingOrderType.C21, CMOStatus.SEND_TO_JUDGE, BLANK_ORDER_TITLE_1, DOCUMENT_REFERENCE));
+
+        Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
+            .ordersCTSC(orders)
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "draftOrdersTitlesInBundle","C21 Order",
+            "draftCMOExists", "N",
+            "draftBlankOrdersCount", "1",
+            "draftOrder1Document", DOCUMENT_REFERENCE,
+            "draftOrder1Title", BLANK_ORDER_TITLE_1,
+            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+        ));
+    }
+
     private Element<HearingOrder> anOrder(HearingOrderType c21, CMOStatus sendToJudge, String blankOrderTitle2,
                                           DocumentReference documentReference2) {
         return element(UUID.randomUUID(), HearingOrder.builder()
