@@ -5,9 +5,13 @@ import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
 import { HearingUrgency } from "../pages/hearing-urgency";
 import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
+import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import {CaseDetails} from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -16,9 +20,13 @@ type CreateFixtures = {
   ordersAndDirectionSought: OrdersAndDirectionSought;
   hearingUrgency : HearingUrgency;
   groundsForTheApplication : GroundsForTheApplication;
+  judicialMessages : JudicialMessage;
   riskAndHarmToChildren : RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -46,6 +54,9 @@ export const test = base.extend<CreateFixtures>({
     await use(new GroundsForTheApplication(page));
   },
 
+  judicialMessages: async ({ page }, use) => {
+    await use(new JudicialMessage(page));
+  },
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
   },
@@ -56,5 +67,17 @@ export const test = base.extend<CreateFixtures>({
 
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
+  },
+
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
   },
 });
