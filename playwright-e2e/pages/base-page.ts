@@ -9,8 +9,7 @@ export abstract class BasePage {
   readonly continue: Locator;
   readonly submit: Locator;
 
-
-  constructor(page: Page) {
+ constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel('Next step');
     this.go = page.getByRole('button', { name: 'Go' });
@@ -43,7 +42,9 @@ export abstract class BasePage {
     }
   }
 
-
+  async signOut() {
+    await this.page.getByText('Sign out').click();
+  }
 }
 
 

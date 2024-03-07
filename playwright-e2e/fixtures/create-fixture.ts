@@ -10,6 +10,9 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { UploadDraftOrders } from "../pages/upload-draft-orders";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import {CaseDetails} from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -23,6 +26,10 @@ type CreateFixtures = {
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal: AllocationProposal;
   uploadDraftOrders: UploadDraftOrders;
+  allocationProposal : AllocationProposal;
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -67,5 +74,17 @@ export const test = base.extend<CreateFixtures>({
 
   uploadDraftOrders: async ({ page }, use) => {
     await use(new UploadDraftOrders(page));
+   },
+  
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
   },
 });
