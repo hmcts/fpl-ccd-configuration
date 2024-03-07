@@ -9,28 +9,28 @@ import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
-import { RespondentsDetails  }  from "../pages/respondents-details";
+import { RespondentsDetails } from "../pages/respondents-details";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
-import {CaseDetails} from "../pages/case-details";
+import { CaseDetails } from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
-  hearingUrgency : HearingUrgency;
-  groundsForTheApplication : GroundsForTheApplication;
-  judicialMessages : JudicialMessage;
-  riskAndHarmToChildren : RiskAndHarmToChildren;
+  hearingUrgency: HearingUrgency;
+  groundsForTheApplication: GroundsForTheApplication;
+  judicialMessages: JudicialMessage;
+  riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
-  allocationProposal : AllocationProposal;
-  respondentsDetails : RespondentsDetails;
+  allocationProposal: AllocationProposal;
+  respondentsDetails: RespondentsDetails;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
 };
-  export const test = base.extend<CreateFixtures>({
+export const test = base.extend<CreateFixtures>({
   signInPage: async ({ page }, use) => {
     await use(new SignInPage(page));
   },
@@ -66,7 +66,6 @@ type CreateFixtures = {
   respondentsDetails: async ({ page }, use) => {
     await use(new RespondentsDetails(page));
   },
-}
   manageHearings: async ({ page }, use) => {
     await use(new ManageHearings(page));
   },

@@ -11,7 +11,7 @@ test("Smoke Test @smoke-test", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   allocationProposal,
-  respondentsDetails,
+  respondentsDetails
 
 
 }) => {
@@ -31,69 +31,69 @@ test("Smoke Test @smoke-test", async ({
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
 
-  // Orders and directions sought
-  // await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  // await startApplication.addApplicationDetailsHeading.isVisible();
+  //Orders and directions sought
+  await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Hearing urgency
-  // await startApplication.hearingUrgencyLink.isVisible();
-  // await startApplication.hearingUrgencyLink.click();
-  // await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
-  // await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
-  // await hearingUrgency.giveReasonTextBoxFill();
-  // await hearingUrgency.withoutNoticeHearing("No");
-  // await hearingUrgency.needAHearingWithReducedNoise("No");
-  // await hearingUrgency.respondentsAwareOfProceedings("No");
-  // await hearingUrgency.continueButton.click();
-  // await hearingUrgency.checkYourAnswers.isVisible();
-  // await hearingUrgency.saveAndContinueButton.click();
-  // await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.hearingUrgencyLink.isVisible();
+  await startApplication.hearingUrgencyLink.click();
+  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
+  await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
+  await hearingUrgency.giveReasonTextBoxFill();
+  await hearingUrgency.withoutNoticeHearing("No");
+  await hearingUrgency.needAHearingWithReducedNoise("No");
+  await hearingUrgency.respondentsAwareOfProceedings("No");
+  await hearingUrgency.continueButton.click();
+  await hearingUrgency.checkYourAnswers.isVisible();
+  await hearingUrgency.saveAndContinueButton.click();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Grounds for the application
-  // await startApplication.groundsForTheApplication();
-  // await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
-  // await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-  // await startApplication.groundsForTheApplicationHasBeenUpdated();
+  await startApplication.groundsForTheApplication();
+  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
+  await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+  await startApplication.groundsForTheApplicationHasBeenUpdated();
 
   // // Risk and harm to children
-  // await startApplication.riskAndHarmToChildren();
-  // await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
   // 9. Factors affecting parenting
-  // await factorsAffectingParenting.addFactorsAffectingParenting();
-  // await startApplication.addApplicationDetailsHeading.isVisible();
-  // // Allocation Proposal
-  // await startApplication.allocationProposal();
-  // await allocationProposal.allocationProposalSmokeTest();
-  // await startApplication.allocationProposalHasBeenUpdated();
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  // Allocation Proposal
+  await startApplication.allocationProposal();
+  await allocationProposal.allocationProposalSmokeTest();
+  await startApplication.allocationProposalHasBeenUpdated();
 
   // 3. Orders and directions sought
-  // await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  // await startApplication.addApplicationDetailsHeading.isVisible();
+  await ordersAndDirectionSought.ordersAndDirectionsNeeded();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // 4. Hearing urgency
-  // await startApplication.hearingUrgencyLink.isVisible();
-  // await startApplication.hearingUrgencyLink.click();
-  // await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
-  // await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
-  // await hearingUrgency.giveReasonTextBoxFill();
-  // await hearingUrgency.withoutNoticeHearing("No");
-  // await hearingUrgency.needAHearingWithReducedNoise("No");
-  // await hearingUrgency.respondentsAwareOfProceedings("No");
-  // await hearingUrgency.continueButton.click();
-  // await hearingUrgency.checkYourAnswers.isVisible();
-  // await hearingUrgency.saveAndContinueButton.click();
-  // await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.hearingUrgencyLink.isVisible();
+  await startApplication.hearingUrgencyLink.click();
+  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
+  await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
+  await hearingUrgency.giveReasonTextBoxFill();
+  await hearingUrgency.withoutNoticeHearing("No");
+  await hearingUrgency.needAHearingWithReducedNoise("No");
+  await hearingUrgency.respondentsAwareOfProceedings("No");
+  await hearingUrgency.continueButton.click();
+  await hearingUrgency.checkYourAnswers.isVisible();
+  await hearingUrgency.saveAndContinueButton.click();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // 5. Grounds for the application
-  // await startApplication.groundsForTheApplication();
-  // await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
-  // await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-  // await startApplication.groundsForTheApplicationHasBeenUpdated();
+  await startApplication.groundsForTheApplication();
+  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
+  await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+  await startApplication.groundsForTheApplicationHasBeenUpdated();
 
   // 6. Risk and harm to children
-  // await startApplication.riskAndHarmToChildren();
-  // await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
   // 7. Respondents Details
   await startApplication.respondentsDetails();
   await respondentsDetails.respondentsDetailsSmokeTest();
