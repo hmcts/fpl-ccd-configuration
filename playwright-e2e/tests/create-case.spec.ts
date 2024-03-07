@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test} from "@playwright/test";
 import { SignInPage } from "../pages/sign-in";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
+import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 import { CreateCase } from "../pages/create-case";
 import { StartApplication } from "../pages/start-application";
 import { OrdersAndDirectionSought } from "../pages/orders-and-directions";
