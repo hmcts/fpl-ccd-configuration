@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Set.of;
 import static java.util.stream.Collectors.groupingBy;
@@ -344,8 +345,10 @@ public class DraftOrdersApprovedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(DraftOrdersApproved event) {
-        List<HearingOrder> approvedOrders = event.getApprovedOrders();
-        approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
+        List<HearingOrder> approvedOrders = Stream.of(event.getApprovedOrders(),
+            unwrapElements(event.getApprovedConfidentialOrders()))
+            .flatMap(List::stream)
+            .toList();
 
         approvedOrders.forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
