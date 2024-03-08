@@ -107,7 +107,8 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
 
     private List<String> buildDocumentCaseLinks(List<HearingOrder> orders) {
         List<String> documentCaseLinks = new ArrayList<>();
-        orders.forEach(order -> documentCaseLinks.add(getDocumentUrl(order.getOrder())));
+        orders.forEach(order -> documentCaseLinks.add(getDocumentUrl((order.isConfidentialOrder())
+            ? order.getOrderConfidential() : order.getOrder())));
         return documentCaseLinks;
     }
 }
