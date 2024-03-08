@@ -48,6 +48,7 @@ public class ConfidentialOrderBundleTest {
             .orderCollectionChild14(buildSampleGeneratedOrder("Child14"))
             .build();
     }
+
     static List<Element<GeneratedOrder>> buildSampleGeneratedOrder(String name) {
         return wrapElementsWithUUIDs(GeneratedOrder.builder().title(name).build());
     }
@@ -103,36 +104,92 @@ public class ConfidentialOrderBundleTest {
     void shouldReturnConfidentialOrdersBySuffix(String suffix) {
         ConfidentialGeneratedOrders test = buildTestConfidentialOrderBundle();
 
-        List<Element<GeneratedOrder>> expected = switch (suffix) {
-            case ConfidentialOrderBundle.SUFFIX_CTSC -> test.getOrderCollectionCTSC();
-            case ConfidentialOrderBundle.SUFFIX_LA -> test.getOrderCollectionLA();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0" -> test.getOrderCollectionResp0();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "1" -> test.getOrderCollectionResp1();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "2" -> test.getOrderCollectionResp2();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "3" -> test.getOrderCollectionResp3();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "4" -> test.getOrderCollectionResp4();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "5" -> test.getOrderCollectionResp5();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "6" -> test.getOrderCollectionResp6();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "7" -> test.getOrderCollectionResp7();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "8" -> test.getOrderCollectionResp8();
-            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "9" -> test.getOrderCollectionResp9();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "0" -> test.getOrderCollectionChild0();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "1" -> test.getOrderCollectionChild1();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "2" -> test.getOrderCollectionChild2();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "3" -> test.getOrderCollectionChild3();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "4" -> test.getOrderCollectionChild4();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "5" -> test.getOrderCollectionChild5();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "6" -> test.getOrderCollectionChild6();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "7" -> test.getOrderCollectionChild7();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "8" -> test.getOrderCollectionChild8();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "9" -> test.getOrderCollectionChild9();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "10" -> test.getOrderCollectionChild10();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "11" -> test.getOrderCollectionChild11();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "12" -> test.getOrderCollectionChild12();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "13" -> test.getOrderCollectionChild13();
-            case ConfidentialOrderBundle.SUFFIX_CHILD + "14" -> test.getOrderCollectionChild14();
-            default -> null;
-        };
+        List<Element<GeneratedOrder>> expected;
+        switch (suffix) {
+            case ConfidentialOrderBundle.SUFFIX_CTSC:
+                expected = test.getOrderCollectionCTSC();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_LA:
+                expected = test.getOrderCollectionLA();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0":
+                expected = test.getOrderCollectionResp0();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "1":
+                expected = test.getOrderCollectionResp1();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "2":
+                expected = test.getOrderCollectionResp2();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "3":
+                expected = test.getOrderCollectionResp3();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "4":
+                expected = test.getOrderCollectionResp4();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "5":
+                expected = test.getOrderCollectionResp5();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "6":
+                expected = test.getOrderCollectionResp6();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "7":
+                expected = test.getOrderCollectionResp7();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "8":
+                expected = test.getOrderCollectionResp8();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_RESPONDENT + "9":
+                expected = test.getOrderCollectionResp9();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "0":
+                expected = test.getOrderCollectionChild0();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "1":
+                expected = test.getOrderCollectionChild1();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "2":
+                expected = test.getOrderCollectionChild2();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "3":
+                expected = test.getOrderCollectionChild3();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "4":
+                expected = test.getOrderCollectionChild4();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "5":
+                expected = test.getOrderCollectionChild5();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "6":
+                expected = test.getOrderCollectionChild6();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "7":
+                expected = test.getOrderCollectionChild7();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "8":
+                expected = test.getOrderCollectionChild8();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "9":
+                expected = test.getOrderCollectionChild9();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "10":
+                expected = test.getOrderCollectionChild10();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "11":
+                expected = test.getOrderCollectionChild11();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "12":
+                expected = test.getOrderCollectionChild12();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "13":
+                expected = test.getOrderCollectionChild13();
+                break;
+            case ConfidentialOrderBundle.SUFFIX_CHILD + "14":
+                expected = test.getOrderCollectionChild14();
+                break;
+            default:
+                expected = null;
+        }
 
         assertThat(test.getConfidentialOrdersBySuffix(suffix)).containsAll(expected);
     }
@@ -182,7 +239,6 @@ public class ConfidentialOrderBundleTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldProcessAllConfidentialField() {
         ConfidentialGeneratedOrders test = buildTestConfidentialOrderBundle();
 

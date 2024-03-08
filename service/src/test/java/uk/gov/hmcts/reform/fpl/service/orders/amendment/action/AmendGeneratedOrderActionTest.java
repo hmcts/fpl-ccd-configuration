@@ -100,7 +100,7 @@ class AmendGeneratedOrderActionTest {
 
         when(caseData.getOrderCollection()).thenReturn(List.of());
         when(caseData.getConfidentialOrders()).thenReturn(ConfidentialGeneratedOrders.builder()
-            .orderCollectionCTSC( new ArrayList<>(List.of(
+            .orderCollectionCTSC(new ArrayList<>(List.of(
                 nonAmendedOrder1, element(selectedOrderId, orderToAmend), nonAmendedOrder2
             ))).build());
 
