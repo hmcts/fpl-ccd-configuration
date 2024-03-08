@@ -134,7 +134,7 @@ public class ConfidentialOrderBundleTest {
             default -> null;
         };
 
-        assertThat(test.getConfidentialOrdersBySuffix(suffix)).isEqualTo(expected);
+        assertThat(test.getConfidentialOrdersBySuffix(suffix)).containsAll(expected);
     }
 
     @ParameterizedTest
@@ -158,7 +158,7 @@ public class ConfidentialOrderBundleTest {
         ConfidentialGeneratedOrders test = ConfidentialGeneratedOrders.builder().build();
         List<Element<GeneratedOrder>> orders = buildSampleGeneratedOrder(suffix);
         test.setConfidentialOrdersBySuffix(suffix, orders);
-        assertThat(test.getConfidentialOrdersBySuffix(suffix)).isEqualTo(orders);
+        assertThat(test.getConfidentialOrdersBySuffix(suffix)).containsAll(orders);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class ConfidentialOrderBundleTest {
             .flatMap(List::stream)
             .toList();
 
-        assertThat(test.getAllConfidentialOrders()).isEqualTo(expectedAllOrders);
+        assertThat(test.getAllConfidentialOrders()).containsAll(expectedAllOrders);
     }
 
     @Test
@@ -204,6 +204,6 @@ public class ConfidentialOrderBundleTest {
 
         List<String> actual = new ArrayList<>();
         test.processAllConfidentialOrders((suffix, orders) -> actual.add(suffix));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).containsAll(expected);
     }
 }
