@@ -230,6 +230,9 @@ public class DraftOrdersApprovedEventHandler {
     public void sendNotificationToDigitalRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+        }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -262,6 +265,9 @@ public class DraftOrdersApprovedEventHandler {
     public void sendNotificationToEmailRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+        }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -314,7 +320,9 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void sendDocumentToPostRecipients(final DraftOrdersApproved event) {
         final CaseData caseData = event.getCaseData();
-
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+        }
         final List<DocumentReference> documents = event.getApprovedOrders()
             .stream()
             .filter(order -> order.getNeedTranslation() == YesNo.NO)
@@ -336,8 +344,10 @@ public class DraftOrdersApprovedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(DraftOrdersApproved event) {
+        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
 
-        ObjectUtils.<List<HearingOrder>>defaultIfNull(event.getApprovedOrders(), List.of()).forEach(
+        approvedOrders.forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(order.getTranslationRequirements()),
                 order.getOrder(),
