@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
