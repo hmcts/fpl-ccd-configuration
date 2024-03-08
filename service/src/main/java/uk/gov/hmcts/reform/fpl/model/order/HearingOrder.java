@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -68,6 +69,10 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private final List<Element<Other>> others;
     private String othersNotified;
     private List<YesNo> urgentReview;
+
+    public List<YesNo> getUrgentReview()  {
+        return Optional.ofNullable(urgentReview).orElse(List.of());
+    }
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null, null, null);
