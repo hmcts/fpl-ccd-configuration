@@ -15,7 +15,7 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   timeout: 250000,
-  expect: { timeout: 250000 },
+  expect: { timeout: 90000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -33,7 +33,7 @@ export default defineConfig({
     trace: 'off',
 
     // Record video only when retrying a test for the first time.
-    video: 'retain-on-failure'
+    video: 'on'
   },
 
   /* Configure projects for major browsers */
