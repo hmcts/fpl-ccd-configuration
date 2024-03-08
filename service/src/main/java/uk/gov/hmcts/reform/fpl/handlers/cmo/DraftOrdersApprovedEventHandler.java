@@ -269,7 +269,7 @@ public class DraftOrdersApprovedEventHandler {
     public void createWorkAllocationTask(DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         boolean isUrgentReview = event.getApprovedOrders().stream()
-            .filter(h -> YesNo.YES.equals(h.getUrgentReview()))
+            .filter(h -> Optional.ofNullable((h.getUrgentReview())).orElse(List.of()).contains(YesNo.YES))
             .findAny().isPresent();
         workAllocationTaskService.createWorkAllocationTask(caseData, isUrgentReview
             ? WorkAllocationTaskType.URGENT_CMO_REVIEWED : WorkAllocationTaskType.CMO_REVIEWED);

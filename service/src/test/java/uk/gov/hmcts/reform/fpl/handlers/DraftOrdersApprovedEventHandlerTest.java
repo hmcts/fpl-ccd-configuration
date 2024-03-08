@@ -595,7 +595,7 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .build();
 
-        List<HearingOrder> orders = List.of(HearingOrder.builder().urgentReview(YesNo.YES).build());
+        List<HearingOrder> orders = List.of(HearingOrder.builder().urgentReview(List.of(YesNo.YES)).build());
 
         underTest.createWorkAllocationTask(new DraftOrdersApproved(caseData, orders));
 
