@@ -317,14 +317,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "specific-access-legal-operations",
+    "RoleName": "specific-access-legal-ops",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "challenged-access-legal-operations",
+    "RoleName": "challenged-access-legal-ops",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
