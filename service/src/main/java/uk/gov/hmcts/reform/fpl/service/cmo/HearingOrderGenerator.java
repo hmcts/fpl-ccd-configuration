@@ -35,7 +35,7 @@ public class HearingOrderGenerator {
                                                          Court court) {
         DocumentReference order;
 
-        boolean isConfidentialOrder = isNotEmpty(hearingOrderElement.getValue().getOrderConfidential());
+        boolean isConfidentialOrder = hearingOrderElement.getValue().isConfidentialOrder();
 
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
             order = reviewDecision.getJudgeAmendedDocument();

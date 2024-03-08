@@ -172,6 +172,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "ordersConfidential",
     "CategoryLabel": "Confidential",
+    "ParentCategoryID": "orders",
     "DisplayOrder": "803"
   },
   {

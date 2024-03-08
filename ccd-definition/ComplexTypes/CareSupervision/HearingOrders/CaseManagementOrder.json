@@ -224,5 +224,15 @@
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "uploaderEmail",
+    "FieldType": "Text",
+    "ElementLabel": "uploader email",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   }
 ]
