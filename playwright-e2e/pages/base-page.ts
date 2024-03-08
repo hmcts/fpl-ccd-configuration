@@ -32,7 +32,9 @@ export abstract class BasePage {
     await this.continue.click();
   }
 
-
+  async signOut() {
+    await this.page.getByText('Sign out').click();
+  }
 }
 
 
