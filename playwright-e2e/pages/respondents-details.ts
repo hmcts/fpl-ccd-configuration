@@ -51,8 +51,6 @@ async RespondentDetailsNeeded() {
   await this.Year. fill('2008');
   await this.page.getByLabel('Gender (Optional)').selectOption('1: Male');
   await this.CurrentAddressKnown.getByLabel('No').dblclick();
-  //await this.page.getByRole('group', { name: '*Current address known?' }).getByLabel('No').click();
-  //await this.page.pause();
   await this.page.getByLabel('*Reason the address is not').selectOption('1: No fixed abode');
   await this.page.getByLabel('*What is the respondent\'s').click();
   await this.page.getByLabel('*What is the respondent\'s').fill('uncle');
