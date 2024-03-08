@@ -114,7 +114,8 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractCallbackTest {
             .draftOrder1Title(draftOrder2.getValue().getTitle())
             .draftOrder1Document(draftOrder2.getValue().getOrder())
             .draftBlankOrdersCount("1")
-            .reviewDecision1(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build())
+            .reviewDecision1(ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build())
             .build();
 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedPageData);

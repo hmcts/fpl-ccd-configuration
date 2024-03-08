@@ -47,6 +47,7 @@ public class HearingOrderGenerator {
             .lastUploadedOrder(order)
             .others(selectedOthers)
             .othersNotified(othersNotified)
+            .urgentReview(reviewDecision.getUrgencyOption().getUrgency())
             .build());
     }
 

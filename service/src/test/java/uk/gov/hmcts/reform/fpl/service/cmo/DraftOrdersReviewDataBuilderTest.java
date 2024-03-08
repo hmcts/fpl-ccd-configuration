@@ -71,7 +71,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
             "cmoDraftOrderDocument", DOCUMENT_REFERENCE,
-            "reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+            "reviewCMODecision", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -91,7 +92,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftCMOExists", "Y",
             "cmoDraftOrderTitle", CMO_TITLE,
             "cmoDraftOrderDocument", DOCUMENT_REFERENCE,
-            "reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+            "reviewCMODecision", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -110,7 +112,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftBlankOrdersCount", "1",
             "draftOrder1Document", DOCUMENT_REFERENCE,
             "draftOrder1Title", BLANK_ORDER_TITLE_1,
-            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+            "reviewDecision1", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -131,7 +134,8 @@ class DraftOrdersReviewDataBuilderTest {
             "draftBlankOrdersCount", "1",
             "draftOrder1Document", DOCUMENT_REFERENCE,
             "draftOrder1Title", BLANK_ORDER_TITLE_1,
-            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+            "reviewDecision1", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -153,8 +157,10 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder1Title", BLANK_ORDER_TITLE_1,
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
             "draftOrder2Title", BLANK_ORDER_TITLE_2,
-            "reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build(),
-            "reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build()
+            "reviewDecision1", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build(),
+            "reviewDecision2", ReviewDecision.builder()
+                .decision(CMOReviewOutcome.REVIEW_LATER).build()
         ));
     }
 
@@ -177,9 +183,12 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
             "draftOrder2Title", BLANK_ORDER_TITLE_2
         ));
-        expected.put("reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
-        expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
-        expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewCMODecision", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision1", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision2", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
 
         Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
             .orders(orders)
@@ -207,9 +216,12 @@ class DraftOrdersReviewDataBuilderTest {
             "draftOrder2Document", DOCUMENT_REFERENCE_2,
             "draftOrder2Title", BLANK_ORDER_TITLE_2
         ));
-        expected.put("reviewCMODecision", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
-        expected.put("reviewDecision1", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
-        expected.put("reviewDecision2", ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewCMODecision", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision1", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
+        expected.put("reviewDecision2", ReviewDecision.builder()
+            .decision(CMOReviewOutcome.REVIEW_LATER).build());
 
         Map<String, Object> actual = underTest.buildDraftOrdersReviewData(HearingOrdersBundle.builder()
             .hearingId(UUID.randomUUID())
