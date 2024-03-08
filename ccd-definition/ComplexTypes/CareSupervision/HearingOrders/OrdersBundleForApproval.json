@@ -10,8 +10,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AdditionalApplicationsBundle",
-    "ListElementCode": "confidentialC2RestrictedLabel",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "confidentialDraftRestrictedLabel",
     "FieldType": "Label",
     "ElementLabel": "This is a confidential draft order and restricted viewing applies",
     "SecurityClassification": "Public",
