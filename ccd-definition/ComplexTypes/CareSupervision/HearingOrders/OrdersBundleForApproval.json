@@ -16,7 +16,7 @@
     "ElementLabel": "This is a confidential draft order and restricted viewing applies",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "FieldShowCondition": "ordersCTSC!=\"*\" AND ordersLA!=\"*\" AND ordersResp0!=\"*\" AND ordersResp1!=\"*\" AND ordersResp2!=\"*\" AND ordersResp3!=\"*\" AND ordersResp4!=\"*\" AND ordersResp5!=\"*\" AND ordersResp6!=\"*\" AND ordersResp7!=\"*\" AND ordersResp8!=\"*\" AND ordersResp9!=\"*\" AND ordersChild0!=\"*\" AND ordersChild1!=\"*\" AND ordersChild2!=\"*\" AND ordersChild3!=\"*\" AND ordersChild4!=\"*\" AND ordersChild5!=\"*\" AND ordersChild6!=\"*\" AND ordersChild7!=\"*\" AND ordersChild8!=\"*\" AND ordersChild9!=\"*\" AND ordersChild10!=\"*\" AND ordersChild11!=\"*\" AND ordersChild12!=\"*\" AND ordersChild13!=\"*\" AND ordersChild14!=\"*\""
+    "FieldShowCondition": "orders!=\"*\" AND ordersCTSC!=\"*\" AND ordersLA!=\"*\" AND ordersResp0!=\"*\" AND ordersResp1!=\"*\" AND ordersResp2!=\"*\" AND ordersResp3!=\"*\" AND ordersResp4!=\"*\" AND ordersResp5!=\"*\" AND ordersResp6!=\"*\" AND ordersResp7!=\"*\" AND ordersResp8!=\"*\" AND ordersResp9!=\"*\" AND ordersChild0!=\"*\" AND ordersChild1!=\"*\" AND ordersChild2!=\"*\" AND ordersChild3!=\"*\" AND ordersChild4!=\"*\" AND ordersChild5!=\"*\" AND ordersChild6!=\"*\" AND ordersChild7!=\"*\" AND ordersChild8!=\"*\" AND ordersChild9!=\"*\" AND ordersChild10!=\"*\" AND ordersChild11!=\"*\" AND ordersChild12!=\"*\" AND ordersChild13!=\"*\" AND ordersChild14!=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
