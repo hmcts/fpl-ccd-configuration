@@ -31,4 +31,8 @@ export const judgeUser = {
 export const judgeWalesUser = {
   email: 'judge-wales@ejudiciary.net',
   password: judgePwd,
-}
+};
+export const secondJudgeWalesUser = {
+  email: 'EMP267006@ejudiciary.net',
+  password: judgePwd,
+};

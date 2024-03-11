@@ -56,6 +56,9 @@ export abstract class BasePage {
     return false;
   }
 
+  async signOut() {
+    await this.page.getByText('Sign out').click();
+  }
 }
 
 
