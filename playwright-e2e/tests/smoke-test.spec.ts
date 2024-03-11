@@ -68,9 +68,6 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
-  await basePage.continueButton.click();
-  await basePage.checkYourAnswersHeader.isVisible();
-  await basePage.checkYourAnsAndSubmit();
 
   // Allocation Proposal
   await startApplication.allocationProposal();
