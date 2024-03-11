@@ -199,8 +199,7 @@ task playwrightUIFunctional(type: Exec, dependsOn :'yarnInstall') {
   commandLine 'yarn', 'test:functional-nightly'
 }
 
-
-task functional(type: Test,description: 'Runs the functional tests.',group: 'Verification', dependsOn: ':playwrightUIFunctional') {
+task functional(type: Test,description: 'Runs the functional tests.',group: 'Verification', dependsOn: 'playwrightUIFunctional') {
   dependsOn(inStrictOrder(runApiTests))
 }
 
