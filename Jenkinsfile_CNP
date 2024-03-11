@@ -205,7 +205,7 @@ withPipeline(type, product, component) {
       env.TEST_RETRIES = 1
 
   }
-  afterAlways('functionalTest:preview') {
+  after('functionalTest:preview') {
     publishHTML([
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
