@@ -32,5 +32,15 @@
     "FieldTypeParameter": "HearingOrderForReview",
     "ElementLabel": "Draft",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForReview",
+    "ListElementCode": "urgentReview",
+    "FieldType": "MultiSelectList",
+    "ElementLabel": "Is this order need to be reviewed urgently?",
+    "FieldTypeParameter": "ReviewUrgency",
+    "FieldShowCondition": "judgeTitleAndName=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
   }
 ]
