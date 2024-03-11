@@ -1,5 +1,5 @@
 {
-  "state": "PREPARE_FOR_HEARING",
+  "state": "GATEKEEPING",
   "caseData": {
     "caseName": "e2e test case",
     "orders": {
@@ -65,60 +65,6 @@
           ],
           "type": "CASE_MANAGEMENT",
           "venueCustomAddress": {}
-        }
-      }
-    ],
-    "cancelledHearingDetails": [
-      {
-        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
-        "value": {
-          "type": "CASE_MANAGEMENT",
-          "venue": null,
-          "others": [],
-          "status": "ADJOURNED_TO_BE_RE_LISTED",
-          "endDate": "2012-11-03T14:34:00",
-          "presence": null,
-          "startDate": "2012-11-03T13:34:00",
-          "attendance": [
-            "IN_PERSON"
-          ],
-          "typeReason": null,
-          "hearingDays": null,
-          "typeDetails": null,
-          "vacatedDate": null,
-          "hearingHours": null,
-          "endDateDerived": null,
-          "hearingMinutes": null,
-          "othersNotified": null,
-          "additionalNotes": null,
-          "hearingDuration": null,
-          "needTranslation": "NO",
-          "noticeOfHearing": null,
-          "attendanceDetails": null,
-          "hearingJudgeLabel": null,
-          "legalAdvisorLabel": null,
-          "cancellationReason": "LW1",
-          "hearingNeedsBooked": [
-            "INTERPRETER",
-            "SPOKEN_OR_WRITTEN_WELSH",
-            "SOMETHING_ELSE"
-          ],
-          "venueCustomAddress": {},
-          "allocatedJudgeLabel": null,
-          "customPreviousVenue": null,
-          "hearingNeedsDetails": "Some details",
-          "judgeAndLegalAdvisor": {
-            "judgeTitle": "HER_HONOUR_JUDGE",
-            "judgeLastName": "Test",
-            "legalAdvisorName": "Test Test",
-            "judgeEmailAddress": "test@judge.com"
-          },
-          "preAttendanceDetails": "1 hour before the hearing",
-          "previousHearingVenue": {},
-          "caseManagementOrderId": null,
-          "translationRequirements": "NO",
-          "translatedNoticeOfHearing": null,
-          "translationUploadDateTime": null
         }
       }
     ],

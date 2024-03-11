@@ -2,8 +2,15 @@ import { test } from  '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
 import caseData from '../caseData/caseWithHearingDetails.json';
 import vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json';
-import {CTSCUser, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
+import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json'
+import {
+  CTSCUser,
+  newSwanseaLocalAuthorityUserOne,
+  judgeWalesUser,
+  secondJudgeWalesUser
+} from "../settings/user-credentials";
 import {expect} from "@playwright/test";
+import {testConfig} from "../settings/test-config";
 
 test.describe('manage hearings', () => {
   let apiDataSetup = new Apihelp();
@@ -48,6 +55,50 @@ test.describe('manage hearings', () => {
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.editFutureHearingOnCase();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
+    });
+
+  test('CTSC admin updates future hearing judge',
+    async({page,signInPage,gateKeepingListing,
+            manageHearings, caseDetails}) => {
+      test.skip(!testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
+      caseName = 'CTSC admin edits future hearing judge ' + dateTime.slice(0, 10);
+      await apiDataSetup.updateCase(caseName, caseNumber, preJudgeAllocationCaseData);
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password)
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await gateKeepingListing.gotoNextStep('Judicial Gatekeeping');
+      await gateKeepingListing.completeJudicialGatekeeping();
+      await gateKeepingListing.gotoNextStep('List Gatekeeping Hearing');
+      await gateKeepingListing.addAllocatedJudgeAndCompleteGatekeepingListing();
+      await gateKeepingListing.signOut();
+      await signInPage.visit();
+      await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await caseDetails.tabNavigation('Roles and access');
+      const expectedRows = [
+        ['District Judge (MC) Craig Taylor', 'Allocated Judge', '27 February 2024', ''],
+        ['District Judge (MC) Craig Taylor', 'Hearing Judge', '1 June 2024', '1 January 2050']
+      ];
+      await caseDetails.validateRolesAndAccessTab(expectedRows, 'District Judge (MC) Craig Taylor');
+      await manageHearings.gotoNextStep('Manage hearings')
+      await page.getByText('Edit a future hearing').click();
+      await manageHearings.editFutureHearingOnCase('His Honour Judge Arthur Ramirez');
+      await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
+      const expectedRowsPostAmendHearingJudge = [
+        ['District Judge (MC) Craig Taylor', 'Allocated Judge', '27 February 2024', '']
+      ];
+      await caseDetails.validateRolesAndAccessTab(expectedRowsPostAmendHearingJudge,
+        'District Judge (MC) Craig Taylor');
+      await caseDetails.signOut();
+      await signInPage.visit();
+      await signInPage.login(secondJudgeWalesUser.email, secondJudgeWalesUser.password);
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await caseDetails.tabNavigation('Roles and access');
+      const expectedRowsHearingJudge = [
+        ['His Honour Judge Arthur Ramirez', 'Hearing Judge', '1 June 2024', '1 January 2050']
+      ];
+      await caseDetails.validateRolesAndAccessTab(expectedRowsPostAmendHearingJudge,
+        'His Honour Judge Arthur Ramirez');
   });
 
   test('CTSC admin vacates a hearing',
