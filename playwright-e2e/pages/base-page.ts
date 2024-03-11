@@ -32,4 +32,12 @@ export class BasePage {
   async clickContinue() {
     await this.continueButton.click();
   }
+  
+  async clickContinue(){
+    await this.continue.click();
+  }
+
+  async signOut() {
+    await this.page.getByText('Sign out').click();
+  }
 }
