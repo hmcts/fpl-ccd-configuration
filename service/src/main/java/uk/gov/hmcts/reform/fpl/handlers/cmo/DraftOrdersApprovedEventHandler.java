@@ -232,6 +232,7 @@ public class DraftOrdersApprovedEventHandler {
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
         if (event.getApprovedOrders().isEmpty()) {
             log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            return;
         }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
@@ -267,6 +268,7 @@ public class DraftOrdersApprovedEventHandler {
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
         if (event.getApprovedOrders().isEmpty()) {
             log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            return;
         }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
@@ -322,6 +324,7 @@ public class DraftOrdersApprovedEventHandler {
         final CaseData caseData = event.getCaseData();
         if (event.getApprovedOrders().isEmpty()) {
             log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            return;
         }
         final List<DocumentReference> documents = event.getApprovedOrders()
             .stream()
