@@ -47,7 +47,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Set.of;
 import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
@@ -204,7 +203,8 @@ public class DraftOrdersApprovedEventHandler {
 
             approvedOrders.forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
-                            of(hearingOrder.getOrder()),
+                            Set.of(hearingOrder.isConfidentialOrder() ? hearingOrder.getOrderConfidential()
+                                : hearingOrder.getOrder()),
                             ORDER,
                             OrderCafcassData.builder()
                                     .documentName(hearingOrder.getTitle())

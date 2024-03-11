@@ -259,6 +259,7 @@ public class DraftOrderService {
                 hearingOrder.getValue().setOrderConfidential(hearingOrder.getValue().getOrder());
                 hearingOrder.getValue().setOrder(null);
             }
+            hearingOrder.getValue().setUploaderEmail(userService.getUserEmail());
         }
 
         HearingOrdersBundle hearingOrdersBundle = bundles.stream()
