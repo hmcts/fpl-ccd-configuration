@@ -124,12 +124,17 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
 
   async verifyHearingTypesSelection() {
     const expectedHearingTypes = [
+      'Emergency protection order',
+      'Interim care order',
       'Case management',
       'Further case management',
+      'Fact finding',
       'Issue resolution',
-      'Final',
-      'Interim care order',
-      'Accelerated discharge of care',
+      'Full hearing',
+      'Judgment after hearing',
+      'Discharge of care',
+      'Family drug & alcohol court',
+      'Placement hearing',
       'Other'
     ];
     const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
