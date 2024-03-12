@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright'; // 1
 
-test.describe('homepage', () => { // 2
+test.describe('homepage @accessibility', () => { // 2
 
   
     test('example with attachment', async ({ page }, testInfo) => {

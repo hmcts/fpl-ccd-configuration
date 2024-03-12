@@ -1,20 +1,20 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('H 17 * * 1-5')]),
-  parameters([
-    string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
-      description: 'The URL you want to run the full functional tests against'),
-    string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
-      description: 'The URL of case service callbacks'),
-    string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
-      description: 'The URL of idam api'),
-    string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
-      description: 'The organisation id of Swansea local authority'),
-    string(name: 'FUNCTIONAL_TESTS_WORKERS',
-      defaultValue: '8',
-      description: 'Number of workers running functional tests'),
-  ])
+    pipelineTriggers([cron('H 17 * * 1-5')]),
+    parameters([
+        string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
+            description: 'The URL you want to run the full functional tests against'),
+        string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
+            description: 'The URL of case service callbacks'),
+        string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
+            description: 'The URL of idam api'),
+        string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
+            description: 'The organisation id of Swansea local authority'),
+        string(name: 'FUNCTIONAL_TESTS_WORKERS',
+            defaultValue: '8',
+            description: 'Number of workers running functional tests'),
+    ])
 ])
 
 @Library('Infrastructure')
@@ -27,30 +27,30 @@ def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 AppPipelineConfig pipelineConf;
 
 def integrationTestSecrets = [
-  'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
-    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
-    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
-    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
-    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
-  ]
+    'fpl-aat': [
+        secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+        secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+        secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+        secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+        secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+        secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
+    ]
 ]
 
-static Map<String, Object> secret(String secretName, String envVariable) {
-    [ $class: 'AzureKeyVaultSecret',
-    secretType: 'Secret',
-    name: secretName,
-    envVariable: envVariable
-  ]
+static Map < String, Object > secret(String secretName, String envVariable) {
+    [$class: 'AzureKeyVaultSecret',
+        secretType: 'Secret',
+        name: secretName,
+        envVariable: envVariable
+    ]
 }
 
 def setupSecretsForIntegrationTests(pipelineConf) {
     withSubscription('nonprod') {
         withTeamSecrets(pipelineConf, 'aat') {
-      /* Setup Email template integration tests key with gov.notify */
+            /* Setup Email template integration tests key with gov.notify */
             env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
-      /* Setup Docmosis template integration tests key and url */
+            /* Setup Docmosis template integration tests key and url */
             env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
             env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = 'https://docmosis.aat.platform.hmcts.net'
             env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
@@ -74,8 +74,8 @@ withNightlyPipeline(type, product, component) {
 
     env.URL = params.FRONTEND_URL
     env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
-    env.IDAM_API_URL=params.IDAM_API_URL
-    env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
+    env.IDAM_API_URL = params.IDAM_API_URL
+    env.CASE_SERVICE_URL = params.CASE_SERVICE_URL
     env.SECURITY_RULES = params.SECURITY_RULES
     env.ORG_ID = params.ORG_ID
 
@@ -109,34 +109,34 @@ withNightlyPipeline(type, product, component) {
         stage('Functional Tests Nightly') {
             try {
                 yarnBuilder.yarn('test:functional-nightly')
-      } catch (Error) {
+            } catch (Error) {
                 unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
+            } finally {
                 publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : 'playwright-report',
-          reportFiles          : 'index.html',
-          reportName           : 'UI Functional Test Report'
-        ])
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    reportName: 'UI Functional Test Report'
+                ])
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
         stage('Accessibility Tests Nightly') {
             try {
                 yarnBuilder.yarn('test:accessibility-nightly')
-      } catch (Error) {
+            } catch (Error) {
                 unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
-      } finally {
+            } finally {
                 publishHTML([
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "playwright-report",
-          reportFiles          : 'index.html',
-          reportName           : 'Accessibility Functional Test Report'
-        ])
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: "playwright-report",
+                    reportFiles: 'index.html',
+                    reportName: 'Accessibility Functional Test Report'
+                ])
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
