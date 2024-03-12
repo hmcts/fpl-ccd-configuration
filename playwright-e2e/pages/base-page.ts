@@ -6,7 +6,7 @@ export abstract class BasePage {
   readonly go:Locator;
   readonly page: Page ;
   readonly saveAndContinue : Locator;
-  readonly continue :Locator;
+  readonly continueButton :Locator;
   readonly signOut: Locator;
 
   constructor(page : Page){
@@ -14,23 +14,25 @@ export abstract class BasePage {
     this.nextStep = page.getByLabel('Next step');
     this.go=  page.getByRole('button', { name: 'Go' });
     this.saveAndContinue =  page.getByRole('button', { name: 'Save and continue' });
-    this.continue = page.getByRole('button', { name: 'Continue' });
+    this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
   }
-  async gotoNextStep(eventName:string)
-  {
+
+  async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
     await this.go.click();
   }
-  async checkYourAnsAndSubmit(){
+
+  async checkYourAnsAndSubmit() {
     await this.saveAndContinue.click();
   }
 
-  async tabNavigation(tabName :string){
+  async tabNavigation(tabName: string) {
     await this.page.getByText(tabName).click();
   }
-  async clickContinue(){
-    await this.continue.click();
+
+  async clickContinue() {
+    await this.continueButton.click();
   }
 
   async waitForTask(taskName: string) {
@@ -60,5 +62,3 @@ export abstract class BasePage {
     await this.signOut.click();
   }
 }
-
-
