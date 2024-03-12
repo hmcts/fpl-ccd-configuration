@@ -74,6 +74,7 @@ export const test = base.extend<CreateFixtures>({
   addApplicationDocuments: async ({ page }, use) => {
     await use(new AddApplicationDocuments(page));
   },
+
   manageHearings: async ({ page }, use) => {
     await use(new ManageHearings(page));
   },

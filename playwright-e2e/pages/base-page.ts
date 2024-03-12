@@ -1,13 +1,13 @@
-import {type Page, type Locator, expect} from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 
 export abstract class BasePage {
-
   readonly nextStep: Locator;
-  readonly go:Locator;
+  readonly go: Locator;
   readonly page: Page ;
   readonly saveAndContinue : Locator;
-  readonly continueButton :Locator;
+  readonly continueButton: Locator;
   readonly signOut: Locator;
+  readonly checkYourAnswersHeader: Locator;
 
   constructor(page : Page){
     this.page=page;
@@ -16,6 +16,7 @@ export abstract class BasePage {
     this.saveAndContinue =  page.getByRole('button', { name: 'Save and continue' });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
+    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
   }
 
   async gotoNextStep(eventName: string) {
