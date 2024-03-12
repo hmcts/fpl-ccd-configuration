@@ -319,7 +319,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "specific-access-legal-operations",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caseworker-publiclaw-courtadmin"
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",
