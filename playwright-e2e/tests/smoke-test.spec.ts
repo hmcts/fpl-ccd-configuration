@@ -2,7 +2,7 @@ import { test } from "../fixtures/create-fixture";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test", async ({
+test("Smoke Test @smoke-test @nightly", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
