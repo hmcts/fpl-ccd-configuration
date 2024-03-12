@@ -14,7 +14,8 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "documentsSentToParties"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -22,7 +23,8 @@
     "ListElementCode": "coversheet",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "documentsSentToParties"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -270,13 +272,15 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 "applicants", List.of(element(buildApplicant())),
                 "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build()),
                 "draftApplicationDocument", DocumentReference.buildFromDocument(document),
-                "submissionConsentLabel", "Test"
+                "submissionConsentLabel", "Test",
+                "temporaryApplicationDocuments", buildApplicationDocuments()
             ))
             .build());
 
         assertThat(callbackResponse.getData()).doesNotContainKeys(
             "draftApplicationDocument",
-            "submissionConsentLabel"
+            "submissionConsentLabel",
+            "temporaryApplicationDocuments"
         );
     }
 
@@ -294,6 +298,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .gender("Male")
             .placeOfBirth("Newry")
             .build();
+    }
+
+    private List<Element<ApplicationDocument>> buildApplicationDocuments() {
+        return List.of(element(ApplicationDocument.builder()
+            .documentType(ApplicationDocumentType.CHECKLIST_DOCUMENT)
+            .document(DocumentReference.builder().filename("ABC").build())
+            .build()));
     }
 
     private Applicant buildApplicant() {
