@@ -278,10 +278,10 @@ public class ListGatekeepingHearingController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         final CaseData caseData = getCaseData(request);
 
-        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
         publishEvent(new NewAllocatedJudgeEvent(caseData.getAllocatedJudge(), caseData.getId()));
         triggerPostSubmissionHearingEvents(request);
         triggerPostSealingEvents(request);
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
     }
 
 

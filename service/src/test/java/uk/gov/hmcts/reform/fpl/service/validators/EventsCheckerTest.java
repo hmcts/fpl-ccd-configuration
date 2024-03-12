@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -89,6 +90,8 @@ class EventsCheckerTest {
     private LanguageRequirementsChecker languageRequirementsChecker;
     @MockBean
     private CourtSelectionChecker courtSelectionChecker;
+    @MockBean
+    private C1WithSupplementChecker c1WithSupplementChecker;
     @Autowired
     private EventsChecker eventsChecker;
 
@@ -164,7 +167,8 @@ class EventsCheckerTest {
             courtServiceChecker,
             factorsAffectingParentingChecker,
             languageRequirementsChecker,
-            courtSelectionChecker);
+            courtSelectionChecker,
+            c1WithSupplementChecker);
     }
 
     private Stream<Arguments> getEventsValidators() {
@@ -187,7 +191,8 @@ class EventsCheckerTest {
             Arguments.of(COURT_SERVICES, courtServiceChecker),
             Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker),
             Arguments.of(LANGUAGE_REQUIREMENTS, languageRequirementsChecker),
-            Arguments.of(SELECT_COURT, courtSelectionChecker));
+            Arguments.of(SELECT_COURT, courtSelectionChecker),
+            Arguments.of(C1_WITH_SUPPLEMENT, c1WithSupplementChecker));
     }
 
 }

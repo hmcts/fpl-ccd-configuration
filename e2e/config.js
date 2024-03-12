@@ -8,7 +8,7 @@ module.exports = {
     password:  e2ePw,
     forename: 'Local',
     surname: 'Authority',
-  }, 
+  },
 
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',

@@ -445,6 +445,32 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             .isEqualTo(expectedDynamicList);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = DocumentType.class, names = {"POSITION_STATEMENTS_CHILD", "POSITION_STATEMENTS_RESPONDENT",
+        "ARCHIVED_DOCUMENTS"})
+    void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyPositionStatement(DocumentType documentType) {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentEventData(ManageDocumentEventData.builder()
+                .manageDocumentAction(ManageDocumentAction.REMOVE_DOCUMENTS)
+                .availableDocumentTypesForRemoval(DynamicList.builder()
+                    .value(DynamicListElement.builder().code(documentType.name()).build())
+                    .build())
+                .build())
+            .build();
+
+        DynamicList expectedDynamicList = DynamicList.builder().listItems(List.of()).build();
+        when(manageDocumentService.buildAvailableDocumentsToBeRemoved(any(), eq(documentType)))
+            .thenReturn(expectedDynamicList);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "manage-document-type-selection");
+
+        CaseData responseCaseData = extractCaseData(callbackResponse);
+        assertThat(responseCaseData.getManageDocumentEventData()
+            .getDocumentsToBeRemoved())
+            .isEqualTo(expectedDynamicList);
+    }
+
     @Test
     void shouldGetErrorWhenSelectingAnInvalidDocumentType() {
         CaseData caseData = CaseData.builder()
