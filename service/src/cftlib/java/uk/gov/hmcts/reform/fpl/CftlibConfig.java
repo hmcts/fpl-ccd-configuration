@@ -28,9 +28,7 @@ public class CftlibConfig implements CFTLibConfigurer {
             "caseworker-caa",
             "caseworker-ras-validation",
             "GS_profile",
-            "caseworker-wa-task-configuration",
-            "caselinks_profile",
-            "caselinks_admin_profile"
+            "caseworker-wa-task-configuration"
         };
         lib.createRoles(roles);
 

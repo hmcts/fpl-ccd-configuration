@@ -4,28 +4,28 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hmcts-admin",
     "ReadOnly": "Y",
-    "AccessProfiles": "GS_profile,caselinks_admin_profile"
+    "AccessProfiles": "GS_profile"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hmcts-judiciary",
     "ReadOnly": "Y",
-    "AccessProfiles": "GS_profile,caselinks_profile"
+    "AccessProfiles": "GS_profile"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hmcts-staff",
     "ReadOnly": "Y",
-    "AccessProfiles": "GS_profile,caselinks_profile"
+    "AccessProfiles": "GS_profile"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hmcts-legal-operations",
     "ReadOnly": "Y",
-    "AccessProfiles": "GS_profile,caselinks_profile"
+    "AccessProfiles": "GS_profile"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -326,7 +326,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "specific-access-legal-operations",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-judiciary,caseworker-publiclaw-courtadmin"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -340,14 +340,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "specific-access-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "challenged-access-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -375,42 +375,42 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-judge",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "leadership-judge",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-gatekeeper"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -445,14 +445,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "tribunal-caseworker",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-judiciary,"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "judge",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary,caselinks_admin_profile"
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",

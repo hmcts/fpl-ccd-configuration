@@ -15,9 +15,7 @@
       "caseworker-caa",
       "caseworker-approver",
       "caseworker-ras-validation",
-      "caseworker-wa-task-configuration",
-      "caselinks_profile",
-      "caselinks_admin_profile"
+      "caseworker-wa-task-configuration"
     ],
     "CRUD": "CRU"
   },
