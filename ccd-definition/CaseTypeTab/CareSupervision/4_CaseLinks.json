@@ -5,10 +5,11 @@
     "Channel": "CaseWorker",
     "TabID": "CaseLinksTab",
     "TabLabel": "Linked Cases",
-    "TabDisplayOrder": 22,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "LinkedCasesComponentLauncher",
     "DisplayContextParameter" : "#ARGUMENT(LinkedCases)",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "TabShowCondition": "caseLinks!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -16,7 +17,7 @@
     "Channel": "CaseWorker",
     "TabID": "CaseLinksTab",
     "TabLabel": "Linked Cases",
-    "TabDisplayOrder": 22,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "caseLinks",
     "DisplayContextParameter" : "#ARGUMENT(LinkedCases)",
     "TabFieldDisplayOrder": 1,
