@@ -22,6 +22,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@axe-core/playwright@npm:^4.8.5":
+  version: 4.8.5
+  resolution: "@axe-core/playwright@npm:4.8.5"
+  dependencies:
+    axe-core: ~4.8.4
+  peerDependencies:
+    playwright-core: ">= 1.0.0"
+  checksum: 004045ceaf7fd72f6756a8a6bc40e09f3f61249a7a97f90c2f514f19096c89a8b11a7696db199bfe3f2d541a841504b2bc594410a5d6eab907a4bf40b1d5fad9
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.12.11":
   version: 7.12.11
   resolution: "@babel/code-frame@npm:7.12.11"
@@ -1101,6 +1112,13 @@ __metadata:
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
   checksum: 7b78c451df768adba04e2d02e63e2d0bf3b07adcd6e42b4cf665cb7ce899bedd344c69a1dcbce355b5f972d597b25aaa1c1742b52cffd9caccb22f348114f6be
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:~4.8.4":
+  version: 4.8.4
+  resolution: "axe-core@npm:4.8.4"
+  checksum: 644da2fec17bcf6f834edaab1baa5a75a9a3ee370c323215c73da6d7e45fac11d01470d92d0a3d5f26695e15c1d9b781733dfbe1fe09d505076c58f09ed74e02
   languageName: node
   linkType: hard
 
@@ -2950,6 +2968,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "fpl-ccd-configuration@workspace:."
   dependencies:
+    "@axe-core/playwright": ^4.8.5
     "@babel/core": ^7.11.0
     "@babel/eslint-parser": ^7.17.0
     "@playwright/test": ^1.40.1
