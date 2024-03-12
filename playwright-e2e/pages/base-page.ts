@@ -3,34 +3,38 @@ import { type Page, type Locator, expect } from "@playwright/test";
 export abstract class BasePage {
 
   readonly nextStep: Locator;
-  readonly go:Locator;
-  readonly page: Page ;
-  readonly saveAndContinue : Locator;
-  readonly continue :Locator;
+  readonly go: Locator;
+  readonly page: Page;
+  readonly saveAndContinue: Locator;
+  readonly continue: Locator;
+  readonly checkYourAnswersHeader: Locator;
   readonly signOut: Locator;
 
-  constructor(page : Page){
-    this.page=page;
-    this.nextStep = page.getByLabel('Next step');
-    this.go=  page.getByRole('button', { name: 'Go' });
-    this.saveAndContinue =  page.getByRole('button', { name: 'Save and continue' });
-    this.continue = page.getByRole('button', { name: 'Continue' });
+  constructor(page: Page) {
+    this.page = page;
+    this.nextStep = page.getByLabel("Next step");
+    this.go = page.getByRole("button", { name: "Go" });
+    this.saveAndContinue = page.getByRole("button", { name: "Save and continue" });
+    this.continueButton = page.getByRole("button", { name: "Continue" });
+    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.signOut = page.getByText('Sign out');
   }
-  async gotoNextStep(eventName:string)
-  {
+
+  async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
     await this.go.click();
   }
-  async checkYourAnsAndSubmit(){
+
+  async checkYourAnsAndSubmit() {
     await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName :string){
     await this.page.getByRole('tab', { name: tabName }).click();
   }
-  async clickContinue(){
-    await this.continue.click();
+
+  async clickContinue() {
+    await this.continueButton.click();
   }
 
   async clickSignOut() {
@@ -60,5 +64,3 @@ export abstract class BasePage {
     await this.page.getByText('Sign out').click();
   }
 }
-
-

@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 const e2ePw = process.env.E2E_TEST_PASSWORD || '';
