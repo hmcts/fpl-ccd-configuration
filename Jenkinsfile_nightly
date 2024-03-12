@@ -125,7 +125,7 @@ withNightlyPipeline(type, product, component) {
         }
         stage('Accessibility Tests Nightly') {
             try {
-                yarnBuilder.yarn('test:functional-nightly')
+                yarnBuilder.yarn('test:accessibility-nightly')
       } catch (Error) {
                 unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
