@@ -256,6 +256,38 @@ public class RecordFinalDecisionsServiceTest {
 
             assertThat(actualChildren).isEqualTo(expectedChildren);
         }
+
+        @Test
+        void shouldUpdateChildrenWhenNoFinalDecisionDetails() {
+            List<Element<Child>> allChildren = wrapElements(
+                buildChild("Bart", "Simpson", null, null),
+                buildChild("Lisa", "Simpson", null, null),
+                buildChild("Maggie", "Simpson", null, null)
+            );
+
+            List<Element<Child>> remainingChildren = allChildren.subList(0, 2);
+
+            RecordChildrenFinalDecisionsEventData eventData = RecordChildrenFinalDecisionsEventData.builder()
+                .finalDecisionDate(DATE)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .children1(allChildren)
+                .recordChildrenFinalDecisionsEventData(eventData)
+                .build();
+
+            given(childrenService.getRemainingChildren(caseData)).willReturn(remainingChildren);
+
+            List<Child> expectedChildren = List.of(
+                buildChild("Bart", "Simpson", null, null),
+                buildChild("Lisa", "Simpson", null, null),
+                buildChild("Maggie", "Simpson", null, null)
+            );
+
+            List<Child> actualChildren = unwrapElements(underTest.updateChildren(caseData));
+
+            assertThat(actualChildren).isEqualTo(expectedChildren);
+        }
     }
 
     Child buildChild(String firstName, String lastName, String decisionDate, String decisionReason) {
