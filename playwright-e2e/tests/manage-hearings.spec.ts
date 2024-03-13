@@ -2,12 +2,11 @@ import { test } from  '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
 import caseData from '../caseData/caseWithHearingDetails.json';
 import vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json';
-import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json'
+import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json';
 import {
   CTSCUser,
   newSwanseaLocalAuthorityUserOne,
-  judgeWalesUser,
-  secondJudgeWalesUser
+  judgeWalesUser
 } from "../settings/user-credentials";
 import {expect} from "@playwright/test";
 import {testConfig} from "../settings/test-config";
@@ -53,7 +52,7 @@ test.describe('manage hearings @nightly', () => {
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateTOCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
-      await manageHearings.editFutureHearingOnCase();
+      await manageHearings.editFutureHearingOnCase('Test type details hearing, 1 January 2050');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
     });
 
@@ -70,31 +69,26 @@ test.describe('manage hearings @nightly', () => {
       await gateKeepingListing.completeJudicialGatekeeping();
       await gateKeepingListing.gotoNextStep('List Gatekeeping Hearing');
       await gateKeepingListing.addAllocatedJudgeAndCompleteGatekeepingListing();
-      await gateKeepingListing.signOut();
+      await gateKeepingListing.clickSignOut();
       await signInPage.visit();
       await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
       await caseDetails.tabNavigation('Roles and access');
+      const todaysDate = new Date().toLocaleDateString('en-GB',
+        {day: 'numeric', month: 'long', year: 'numeric'});
       const expectedRows = [
-        ['District Judge (MC) Craig Taylor', 'Allocated Judge', '27 February 2024', ''],
+        ['District Judge (MC) Craig Taylor', 'Allocated Judge', todaysDate, ''],
         ['District Judge (MC) Craig Taylor', 'Hearing Judge', '1 June 2024', '1 January 2050']
       ];
-      await caseDetails.validateRolesAndAccessTab(expectedRows, 'District Judge (MC) Craig Taylor');
+      await caseDetails.validateRolesAndAccessTab(expectedRows, '1 June 2024');
       await manageHearings.gotoNextStep('Manage hearings')
       await page.getByText('Edit a future hearing').click();
-      await manageHearings.editFutureHearingOnCase('His Honour Judge Arthur Ramirez');
+      await manageHearings.editFutureHearingOnCase('Case management hearing, 1 June 2024',
+        'His Honour Judge Arthur Ramirez');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
-      const expectedRowsPostAmendHearingJudge = [
-        ['District Judge (MC) Craig Taylor', 'Allocated Judge', '27 February 2024', '']
-      ];
-      await caseDetails.validateRolesAndAccessTab(expectedRowsPostAmendHearingJudge,
-        'District Judge (MC) Craig Taylor');
-      await caseDetails.signOut();
-      await signInPage.visit();
-      await signInPage.login(secondJudgeWalesUser.email, secondJudgeWalesUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
       await caseDetails.tabNavigation('Roles and access');
-      const expectedRowsHearingJudge = [
+      const expectedRowsPostAmendHearingJudge = [
+        ['District Judge (MC) Craig Taylor', 'Allocated Judge', todaysDate, ''],
         ['His Honour Judge Arthur Ramirez', 'Hearing Judge', '1 June 2024', '1 January 2050']
       ];
       await caseDetails.validateRolesAndAccessTab(expectedRowsPostAmendHearingJudge,
