@@ -108,8 +108,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
         CaseData responseData = extractCaseData(callbackResponse);
 
         assertThat(responseData.getReviewCMODecision())
-            .isEqualTo(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER)
-                .build());
+            .isEqualTo(ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedReviewDraftOrdersData);
     }

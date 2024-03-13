@@ -191,8 +191,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"1*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"1*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,8 +243,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"12*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"12*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -297,8 +295,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"123*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"123*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -350,8 +347,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"1234*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"1234*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -403,8 +399,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"12345*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"12345*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -456,8 +451,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"123456*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"123456*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -509,8 +503,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"1234567*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"1234567*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -562,8 +555,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"12345678*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"12345678*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -615,8 +607,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"123456789*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"123456789*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -668,8 +659,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "draftBlankOrdersCount=\"12345678910*\"",
-    "Publish": "Y"
+    "FieldShowCondition": "draftBlankOrdersCount=\"12345678910*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -681,5 +671,18 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "PageShowCondition": "numDraftCMOs=\"NONE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "orderReviewUrgency",
+    "DisplayContext": "MANDATORY",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 50,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "reviewCMODecision.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision1.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision2.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision3.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision4.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision5.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision6.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision7.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision8.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision9.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision10.decision=\"SEND_TO_ALL_PARTIES\""
   }
 ]

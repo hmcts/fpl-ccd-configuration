@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -593,9 +594,10 @@ class DraftOrdersApprovedEventHandlerTest {
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
+            .orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.YES)).build())
             .build();
 
-        List<HearingOrder> orders = List.of(HearingOrder.builder().urgentReview(List.of(YesNo.YES)).build());
+        List<HearingOrder> orders = List.of(HearingOrder.builder().build());
 
         underTest.createWorkAllocationTask(new DraftOrdersApproved(caseData, orders));
 
