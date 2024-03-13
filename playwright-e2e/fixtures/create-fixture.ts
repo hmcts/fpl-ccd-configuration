@@ -12,7 +12,7 @@ import { AllocationProposal } from "../pages/allocation-proposal";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
-import {CaseDetails} from "../pages/case-details";
+import { CaseDetails } from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;

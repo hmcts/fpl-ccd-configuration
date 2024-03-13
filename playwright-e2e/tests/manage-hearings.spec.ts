@@ -12,7 +12,7 @@ import {
 import {expect} from "@playwright/test";
 import {testConfig} from "../settings/test-config";
 
-test.describe('manage hearings', () => {
+test.describe('manage hearings @nightly', () => {
   let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber : string;

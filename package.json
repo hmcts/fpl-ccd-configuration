@@ -37,7 +37,8 @@
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky|@nightlyOnly))' --reporter mocha-multi --verbose",
-    "test:functional-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test  && codeceptjs run --grep \"@fixed\"",
+    "test:functional-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --grep @nightly && codeceptjs run --grep \"@fixed\"",
+    "test:accessibility-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test  --grep @accessibility",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:local": "./bin/runtestlocal.sh",
     "prepare": "husky install",
@@ -57,6 +58,7 @@
   "packageManager": "yarn@3.6.4",
   "license": "MIT",
   "dependencies": {
+    "@axe-core/playwright": "^4.8.5",
     "@types/lodash": "^4.14.202",
     "dotenv": "^16.4.1"
   }
