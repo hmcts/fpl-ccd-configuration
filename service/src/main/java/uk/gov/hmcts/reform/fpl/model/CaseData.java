@@ -1022,7 +1022,10 @@ public class CaseData extends CaseDataParent {
     private final ApproveOrderUrgencyOption orderReviewUrgency;
 
     public boolean isOrderToBeReviewedUrgently() {
-        return Optional.ofNullable(orderReviewUrgency).orElse(List.of()).contains(YES);
+        return Optional.ofNullable(
+            Optional.ofNullable(orderReviewUrgency)
+                .orElse(ApproveOrderUrgencyOption.builder().urgency(List.of()).build()).getUrgency())
+            .orElse(List.of()).contains(YES);
     }
 
     @JsonUnwrapped
