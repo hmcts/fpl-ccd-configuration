@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-export abstract class BasePage {
+export class BasePage {
   readonly nextStep: Locator;
   readonly go: Locator;
   readonly page: Page;
