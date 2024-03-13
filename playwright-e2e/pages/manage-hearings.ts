@@ -85,9 +85,9 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.checkYourAnsAndSubmit();
   }
 
-  async editFutureHearingOnCase(updatedHearingJudge?: string) {
+  async editFutureHearingOnCase(hearingToEdit: string, updatedHearingJudge?: string) {
     await this.page.getByLabel('Edit a future hearing').check();
-    await this.page.locator('#futureHearingDateList').selectOption('Test type details hearing, 1 January 2050');
+    await this.page.locator('#futureHearingDateList').selectOption(hearingToEdit);
     await this.clickContinue();
     await this.page.getByLabel('Further case management', { exact: true }).check();
     await this.verifyHearingTypesSelection();
