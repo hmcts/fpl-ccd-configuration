@@ -4,6 +4,7 @@ import {expect} from "@playwright/test";
 export class CaseDetails extends BasePage
 {
   async validateRolesAndAccessTab(expectedRows: string[][], cellLookup: string) {
+    await this.waitForRoleAndAccessTab(`${cellLookup}`);
     const tableLookupCell = this.page.locator(`text="${cellLookup}"`);
     const rolesAndAccessTable = tableLookupCell.locator('xpath=ancestor::table/tbody');
 
