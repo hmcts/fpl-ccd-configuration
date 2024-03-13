@@ -36,16 +36,14 @@ public class DraftOrdersReviewDataBuilder {
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
                 data.put("draftCMOExists", "Y");
                 data.put("reviewCMODecision",
-                    ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER)
-                        .build());
+                    ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
             } else {
                 draftOrdersTitles.add(String.format("C21 Order%s", ordersBundle.getHearingId() != null
                     ? " - " + ordersBundle.getHearingName() : EMPTY));
                 data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
                 data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
                 data.put(String.format("reviewDecision%d", counter),
-                    ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER)
-                        .build());
+                    ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
                 counter++;
             }
         }
