@@ -1019,7 +1019,7 @@ public class CaseData extends CaseDataParent {
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
     private final List<Element<HearingOrder>> ordersToBeSent;
-    private final List<YesNo> orderReviewUrgency;
+    private final ApproveOrderUrgencyOption orderReviewUrgency;
 
     public boolean isOrderToBeReviewedUrgently() {
         return Optional.ofNullable(orderReviewUrgency).orElse(List.of()).contains(YES);

@@ -488,8 +488,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderReviewUrgency",
     "Label": "Does this order need to be reviewed urgently?",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ReviewUrgency",
+    "FieldType": "ApproveOrderUrgencyOption",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
