@@ -4,7 +4,6 @@ import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
 export class ManageHearings extends HearingDetailsMixin(BasePage)
 {
-  readonly hearingTypesLabelLocator: Locator;
   readonly hearingDetails: Locator;
   readonly hearingDay: Locator;
   readonly hearingMonth: Locator;
@@ -21,7 +20,6 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     this.hearingYear = this.page.getByRole('textbox', { name: 'Year' });
     this.hearingLengthInHours = this.page.getByLabel('Hearing length, in hours');
     this.hearingLengthInMinutes = this.page.getByLabel('Hearing length, in minutes');
-    this.hearingTypesLabelLocator = this.page.locator('#hearingType .multiple-choice > label');
     this.inpPersonCheckbox = this.page.getByText('In person');
   }
 
@@ -121,23 +119,4 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
   };
-
-  async verifyHearingTypesSelection() {
-    const expectedHearingTypes = [
-      'Emergency protection order',
-      'Interim care order',
-      'Case management',
-      'Further case management',
-      'Fact finding',
-      'Issue resolution',
-      'Full hearing',
-      'Judgment after hearing',
-      'Discharge of care',
-      'Family drug & alcohol court',
-      'Placement hearing',
-      'Other'
-    ];
-    const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
-    expect(hearingTypes).toEqual(expectedHearingTypes);
-  }
 }
