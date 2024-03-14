@@ -1021,13 +1021,6 @@ public class CaseData extends CaseDataParent {
     private final List<Element<HearingOrder>> ordersToBeSent;
     private final ApproveOrderUrgencyOption orderReviewUrgency;
 
-    public boolean isOrderToBeReviewedUrgently() {
-        return Optional.ofNullable(
-            Optional.ofNullable(orderReviewUrgency)
-                .orElse(ApproveOrderUrgencyOption.builder().urgency(List.of()).build()).getUrgency())
-            .orElse(List.of()).contains(YES);
-    }
-
     @JsonUnwrapped
     @Builder.Default
     private final ReviewDraftOrdersData reviewDraftOrdersData = ReviewDraftOrdersData.builder().build();

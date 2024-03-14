@@ -268,7 +268,6 @@ public class DraftOrdersApprovedEventHandler {
     @EventListener
     public void createWorkAllocationTask(DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        workAllocationTaskService.createWorkAllocationTask(caseData, caseData.isOrderToBeReviewedUrgently()
-            ? WorkAllocationTaskType.URGENT_CMO_REVIEWED : WorkAllocationTaskType.CMO_REVIEWED);
+        workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.CMO_REVIEWED);
     }
 }
