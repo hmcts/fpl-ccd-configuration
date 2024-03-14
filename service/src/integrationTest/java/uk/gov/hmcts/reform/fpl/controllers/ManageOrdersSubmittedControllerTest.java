@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
@@ -159,6 +161,9 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
     private NotificationClient notificationClient;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
 
     @MockBean
@@ -224,6 +229,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         when(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(docmosisHelper.extractPdfContent(any())).thenReturn("Some content");
+
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -358,6 +365,27 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
         ));
         verifyCafcassOrderNotification();
     }
+
+    @Test
+    void shouldNotNotifyAdminWhenOrderIssuedIfToggledOff() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+        CaseData caseData = caseData();
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(caseData);
+
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(0)).sendEmail(
+            eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN), eq(DEFAULT_ADMIN_EMAIL),
+            eqJson(NOTIFICATION_PARAMETERS), eq(NOTIFICATION_REFERENCE)
+        );
+        verifyCafcassOrderNotification();
+    }
+
 
     @Test
     void shouldNotifyCtscWhenEnabledWhenOrderIssued() {
