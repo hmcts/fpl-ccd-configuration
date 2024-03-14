@@ -21,10 +21,9 @@ public class WorkAllocationTaskService {
     private final CoreCaseDataService coreCaseDataService;
 
     public void createWorkAllocationTask(CaseData caseData, WorkAllocationTaskType taskType) {
-        log.info("Creating work allocation task - " + taskType.name());
-        coreCaseDataService.triggerEvent(caseData.getId(), WORK_ALLOCATION_DUMMY_EVENT, Map.of(
-            WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType
-        ));
+        log.info("Creating work allocation task {} on case {}", taskType.name(), caseData.getId());
+        coreCaseDataService.performPostSubmitCallback(caseData.getId(), WORK_ALLOCATION_DUMMY_EVENT,
+            caseDetails -> Map.of(WORK_ALLOCATION_DUMMY_CASE_FIELD, taskType));
     }
 
 }

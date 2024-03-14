@@ -305,29 +305,51 @@ cafcass:
       order: ORDER
       noticeOfHearing: ORDER
       noticeOfPlacement: ORDER
+      judgements: ORDER
+      transcripts: ORDER
       respondentStatement: COURT PAPER
+      respondentsStatements: COURT PAPER
+      respondentsWitnessStatements: COURT PAPER
       applicationStatement: COURT PAPER
+      documentsFiledOnIssue: COURT PAPER
       otherReports: COURT PAPER
       threshold: COURT PAPER
       swet: COURT PAPER
       carePlan: COURT PAPER
       socialWorkChronology: COURT PAPER
       socialWorkStatement: COURT PAPER
+      applicantsWitnessStatements: COURT PAPER
       genogram: COURT PAPER
       checklistDocument: COURT PAPER
       birthCertificate: COURT PAPER
       additionalApplications: COURT PAPER
+      skeletonArguments: COURT PAPER
+      caseSummary: COURT PAPER
+      positionStatements: COURT PAPER
+      noticeOfActingOrIssue: COURT PAPER
+      parentAssessments: EXPERT
+      familyAndViabilityAssessments: EXPERT
+      applicantsOtherDocuments: EXPERT
+      meetingNotes: EXPERT
+      contactNotes: EXPERT
       expertReports: EXPERT
+      drugAndAlcoholReports: EXPERT
+      letterOfInstruction: EXPERT
+      medicalRecords: EXPERT
       childsGuardianReports: REPORTING TO COURT
+      guardianEvidence: REPORTING TO COURT
       courtBundle: BUNDLE
-      caseSummary: BUNDLE
       positionStatementChild: BUNDLE
       positionStatementRespondent: BUNDLE
       other: CORRESPONDENCE
       correspondence: CORRESPONDENCE
+      courtCorrespondence: CORRESPONDENCE
       additionalDocument: APPLICATION
       newApplication: APPLICATION
       placementApplication: APPLICATION
+      policeDisclosure: POLICE INFORMATION
+      c1ApplicationDocuments: COURT PAPER
+      c2ApplicationDocuments: COURT PAPER
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}

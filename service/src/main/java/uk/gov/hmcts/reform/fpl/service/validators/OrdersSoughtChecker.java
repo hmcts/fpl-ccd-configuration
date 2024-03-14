@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -48,12 +49,15 @@ public class OrdersSoughtChecker extends PropertiesChecker {
     public boolean isCompleted(CaseData caseData) {
         final Orders orders = caseData.getOrders();
 
-        if (orders == null || anyEmpty(orders.getOrderType(), orders.getDirections())) {
+        if (orders == null || anyEmpty(orders.getOrderType(), orders.getDirections(), orders.getCourt())) {
             return false;
         }
 
         if (orders.orderContainsEPO()) {
             if (isEmpty(orders.getEpoType())) {
+                return false;
+            }
+            if (isEPOPreventRemovalNotCompleted(orders)) {
                 return false;
             }
             if (isEmergencyProtectionOtherNotCompleted(orders)) {
@@ -96,6 +100,14 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         return orders.getEmergencyProtectionOrders() != null
             && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
             && isEmpty(orders.getEmergencyProtectionOrderDetails());
+    }
+
+    private boolean isEPOPreventRemovalNotCompleted(Orders orders) {
+        return orders.getEmergencyProtectionOrders() != null
+               && EPOType.PREVENT_REMOVAL.equals(orders.getEpoType())
+               && (isEmpty(orders.getAddress())
+                   || isEmpty(orders.getAddress().getAddressLine1())
+                   || isEmpty(orders.getAddress().getPostcode()));
     }
 
     private boolean isSecureAccomodationOrderNotCompleted(Orders orders) {
