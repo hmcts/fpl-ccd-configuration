@@ -1019,7 +1019,7 @@ public class CaseData extends CaseDataParent {
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
     private final List<Element<HearingOrder>> ordersToBeSent;
-    private final ApproveOrderUrgencyOption orderReviewUrgency;
+    private ApproveOrderUrgencyOption orderReviewUrgency;
 
     @JsonUnwrapped
     @Builder.Default
