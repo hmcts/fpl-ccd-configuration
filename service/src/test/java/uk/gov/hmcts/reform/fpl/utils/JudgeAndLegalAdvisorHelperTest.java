@@ -262,6 +262,15 @@ class JudgeAndLegalAdvisorHelperTest {
         assertThat(judgeAndLegalAdvisor).isEqualTo(expectedJudgeAndLegalAdvisor);
     }
 
+    @Test
+    void shouldReturnEmptyObjectWhenBothAllocatedJudgeAndLegalAdvisorIsNulled() {
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
+
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(null, null);
+
+        assertThat(judgeAndLegalAdvisor).isEqualTo(expectedJudgeAndLegalAdvisor);
+    }
+
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
         return JudgeAndLegalAdvisor.builder()

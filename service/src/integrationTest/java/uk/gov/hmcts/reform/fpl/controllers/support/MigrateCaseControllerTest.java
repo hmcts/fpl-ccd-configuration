@@ -18,9 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
-import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
-import uk.gov.hmcts.reform.fpl.service.TaskListService;
-import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
@@ -41,15 +38,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
-
-    @MockBean
-    private TaskListService taskListService;
-
-    @MockBean
-    private TaskListRenderer taskListRenderer;
-
-    @MockBean
-    private CaseSubmissionChecker caseSubmissionChecker;
 
     @MockBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
@@ -298,4 +286,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
     }
+
 }

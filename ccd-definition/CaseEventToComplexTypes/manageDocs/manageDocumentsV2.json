@@ -1,0 +1,70 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "documentTypeDynamicList",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "placementList",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "uploadableDocumentBundle.documentTypeDynamicList=\"PLACEMENT_RESPONSES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "placementNoticeRecipientType",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "uploadableDocumentBundle.documentTypeDynamicList=\"PLACEMENT_RESPONSES\" AND askForPlacementNoticeRecipientType=\"YES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "confidential",
+    "FieldDisplayOrder": "6",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "allowMarkDocumentConfidential = \"YES\" AND uploadableDocumentBundle.documentTypeDynamicList!=\"PLACEMENT_RESPONSES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldDisplayOrder": "7",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "hasConfidentialParty = \"YES\" AND uploadableDocumentBundle.confidential = \"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageDocumentsV2_UploadableDocument",
+    "CaseEventID": "manageDocumentsV2",
+    "CaseFieldID": "uploadableDocumentBundle",
+    "ListElementCode": "translationRequirements",
+    "FieldDisplayOrder": "8",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "languageRequirement = \"Yes\""
+  }
+]

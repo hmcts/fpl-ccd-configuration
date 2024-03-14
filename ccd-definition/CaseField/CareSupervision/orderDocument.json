@@ -1,0 +1,82 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgementList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
+    "Label": "Judgements/facts and reasons",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgementListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
+    "Label": "Judgements/facts and reasons",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgementListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
+    "Label": "Judgements/facts and reasons",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgementListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "JudgementFactsAndReasons",
+    "Label": "Judgements/facts and reasons",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transcriptList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Transcript",
+    "Label": "Transcripts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transcriptListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "TranscriptConfidential",
+    "Label": "Transcripts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transcriptListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "TranscriptConfidential",
+    "Label": "Transcripts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "transcriptListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Transcript",
+    "Label": "Transcripts",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

@@ -4,8 +4,8 @@ const config = require('../config');
 const moment = require('moment');
 const apiHelper = require('../helpers/api_helper.js');
 
-const loginPage = require('../pages/login.page');
-const caseListPage = require('../pages/caseList.page');
+//const loginPage = require('../pages/login.page');
+//const caseListPage = require('../pages/caseList.page');
 const eventSummaryPage = require('../pages/eventSummary.page');
 const openApplicationEventPage = require('../pages/events/openApplicationEvent.page');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
@@ -13,8 +13,8 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
 const baseUrl = config.baseUrl;
-const signedInSelector = 'exui-header';
-const signedOutSelector = '#global-header';
+//const signedInSelector = 'exui-header';
+//const signedOutSelector = '#global-header';
 const maxRetries = 10;
 let currentUser = {};
 
@@ -31,22 +31,22 @@ module.exports = {
       currentUser = {}; // reset in case the login fails
 
       //await this.retryUntilExists(async () => {
-        //To mitigate situation when idam response with blank page
-        await this.goToPage(baseUrl, user);
-        I.grabCurrentUrl();
+      //To mitigate situation when idam response with blank page
+      await this.goToPage(baseUrl, user);
+      I.grabCurrentUrl();
 
-        // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-        //   await this.refreshPage();
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // if (await this.hasSelector(signedInSelector)) {
-        //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
-        //   I.grabCurrentUrl();
-        // }
-        //
-        // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
-        // I.grabCurrentUrl();
+      // if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
+      //   await this.refreshPage();
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // if (await this.hasSelector(signedInSelector)) {
+      //   await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
+      //   I.grabCurrentUrl();
+      // }
+      //
+      // await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+      // I.grabCurrentUrl();
 
       //}, signedInSelector, false, 10);
       //await this.rejectCookies();
@@ -70,14 +70,15 @@ module.exports = {
     if (!user.email || !user.password) {
       throw new Error('For environment requiring hmcts authentication please provide HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD environment variables');
     }
-   // await within(hmctsLoginIn, () => {
-      this.waitForElement('//input[@type="text"]', 20);
-      this.fillField('//input[@type="text"]', user.email);
-      this.wait(0.2);
-      this.fillField('//input[@type="password"]', user.password);
-      this.wait(0.5);
-      this.click('Sign in');
-   // });
+    // await within(hmctsLoginIn, () => {
+    this.waitForElement('//input[@type="text"]', 20);
+    this.fillField('//input[@type="text"]', user.email);
+    //this.wait(0.2);
+    this.fillField('//input[@type="password"]', user.password);
+    //this.wait(0.5);
+    this.click('Sign in');
+    // });
+    this.waitForText('Case list');
   },
 
   async rejectCookies() {
@@ -108,11 +109,20 @@ module.exports = {
 
     await openApplicationEventPage.populateForm(caseName, outsourcingLA);
     I.click('Submit');
-    this.waitForElement('.alert-message', 90);
-    const caseId = normalizeCaseId(await this.grabTextFrom('.alert-message'));
+    this.waitForElement('markdown[class=\'markdown\'] h2 strong', 90);
+    const caseId = normalizeCaseId(await this.grabTextFrom('markdown[class=\'markdown\'] h2 strong'));
     output.print(`Case created #${caseId}`);
     return caseId;
   },
+  //new function to CYA page and submit event
+  async submitEventWithCYA(button)
+  {
+    await this.click('Continue');
+    await this.waitForText('Check your answers');
+    await this.click(button);
+
+  },
+
 
   async completeEvent(button, changeDetails, confirmationPage = false, selector = '.mat-tab-list') {
     await this.retryUntilExists(() => this.click('submit'), '.check-your-answers');
@@ -212,7 +222,8 @@ module.exports = {
 
   async navigateToCaseDetails(caseId) {
     this.amOnPage(`${baseUrl}/cases/case-details/${caseId}`);
-    I.wait(0.5);
+    // I.wait(0.5);
+    I.waitForText('CCD ID');
     //await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
     // const currentUrl = await this.grabCurrentUrl();
     // if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
@@ -223,11 +234,7 @@ module.exports = {
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
-    await I.goToPage(config.baseUrl);
-    await I.goToPage(config.baseUrl, config.hmctsUser);
-
-    await this.signIn(user);
-    I.wait(10);
+    await I.goToPage(config.baseUrl, user);
     await this.navigateToCaseDetails(caseId);
   },
 
@@ -330,7 +337,7 @@ module.exports = {
   },
 
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
-    const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
+    const caseId = await this.submitNewCase(config.newSwanseaLocalAuthorityUserOne);
     let caseName = `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
     await apiHelper.populateWithData(caseId, data, caseName);
     output.print(`Case #${caseId} has been populated with data`);
@@ -339,7 +346,7 @@ module.exports = {
 
   async submitNewCase(user, name) {
     const caseName = name || `Test case (${moment().format('YYYY-MM-DD HH:MM')})`;
-    const creator = user || config.swanseaLocalAuthorityUserOne;
+    const creator = user || config.newSwanseaLocalAuthorityUserOne;
     const caseData = await apiHelper.createCase(creator, caseName);
     const caseId = caseData.id;
     output.print(`Case #${caseId} has been created`);

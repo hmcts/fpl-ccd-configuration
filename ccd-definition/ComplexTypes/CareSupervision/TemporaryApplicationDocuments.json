@@ -1,0 +1,158 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "documentType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ApplicationDocumentType",
+    "ElementLabel": "Type of document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "documentName",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "HintText": "Use a meaningful name. For example, medical report",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "documentType=\"OTHER\"",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "includedInSWET",
+    "FieldType": "TextArea",
+    "ElementLabel": "Included in SWET",
+    "HintText": "Use a meaningful name. For example, Genogram",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "documentType=\"SWET\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "confidentialWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "confidential",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ConfidentialDocument",
+    "ElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "confidentialWarningLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "removalReason",
+    "FieldType": "Text",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "allowMarkDocumentConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Allow marking document confidential",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TemporaryApplicationDocuments",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public"
+  }
+]

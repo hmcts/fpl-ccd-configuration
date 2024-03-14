@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
 import uk.gov.hmcts.reform.am.model.RoleCategory;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -21,9 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -46,22 +43,14 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADV
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-    private final CoreCaseDataApiV2 coreCaseDataApi;
-    private final RequestData requestData;
-    private final AuthTokenGenerator authToken;
-
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1813", this::run1813,
-        "DFPL-1802", this::run1802,
-        "DFPL-1810", this::run1810,
-        "DFPL-1837", this::run1837,
-        "DFPL-1883", this::run1883,
-        "DFPL-1850", this::run1850
+        "DFPL-AM-Rollback", this::runAmRollback
     );
 
     @PostMapping("/about-to-submit")
@@ -137,8 +126,8 @@ public class MigrateCaseController extends CallbackController {
                 HearingBooking booking = hearing.getValue();
 
                 booking.setJudgeAndLegalAdvisor(booking.getJudgeAndLegalAdvisor().toBuilder()
-                        .judgeEnterManually(null)
-                        .judgeJudicialUser(null)
+                    .judgeEnterManually(null)
+                    .judgeJudicialUser(null)
                     .build());
                 hearing.setValue(booking);
                 return hearing;
@@ -151,6 +140,14 @@ public class MigrateCaseController extends CallbackController {
 
         // delete all roles on the case - if this fails we WANT the migration to stop, as it has not been rolled back
         judicialService.deleteAllRolesOnCase(caseData.getId());
+    }
+
+    private void run2205(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2205";
+        var possibleCaseIds = List.of(1708678873141424L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void runAM(CaseDetails caseDetails) {
@@ -191,11 +188,11 @@ public class MigrateCaseController extends CallbackController {
                     Optional<String> uuid = judicialService.getJudgeUserIdFromEmail(email);
                     if (uuid.isPresent()) {
                         el.setValue(val.toBuilder()
-                                .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
-                                    .judgeJudicialUser(JudicialUser.builder()
-                                        .idamId(uuid.get())
-                                        .build())
+                            .judgeAndLegalAdvisor(val.getJudgeAndLegalAdvisor().toBuilder()
+                                .judgeJudicialUser(JudicialUser.builder()
+                                    .idamId(uuid.get())
                                     .build())
+                                .build())
                             .build());
                         return el;
                     } else {
@@ -207,7 +204,7 @@ public class MigrateCaseController extends CallbackController {
                 return el;
             }).toList();
 
-        if (hearings.size() > 0) {
+        if (!hearings.isEmpty()) {
             // don't add an empty array if there weren't any hearings beforehand
             caseDetails.getData().put("hearingDetails", modified);
         }
@@ -219,55 +216,4 @@ public class MigrateCaseController extends CallbackController {
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
     }
-
-    private void run1810(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1810";
-        var possibleCaseIds = List.of(1652188944970682L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeSkeletonArgument(getCaseData(caseDetails),
-            "fb4f5a39-b0af-44a9-9eb2-c7dd4cf06fa5", migrationId));
-    }
-
-    private void run1802(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1802";
-        var possibleCaseIds = List.of(1683295453455055L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeElementFromLocalAuthorities(caseData, migrationId,
-            UUID.fromString("d44b1079-9f55-48be-be6e-757b5e600f04")));
-    }
-
-    private void run1813(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
-    private void run1837(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1837";
-        var possibleCaseIds = List.of(1649154482198017L);
-        var expectedHearingId = UUID.fromString("6aa300bc-97b4-4c15-ac2c-6804f4fef3cb");
-        var expectedDocId = UUID.fromString("982dc7f7-11a7-4eb6-b1ab-7778d20dcf27");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeHearingFurtherEvidenceDocuments(caseData,
-            migrationId, expectedHearingId, expectedDocId));
-    }
-
-    private void run1883(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1883";
-        var possibleCaseIds = List.of(1686737004191900L);
-        var expectedPositionStatementId = UUID.fromString("b96b56e4-0bdd-41a4-b272-8bf2d9c349af");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removePositionStatementChild(caseData,
-            migrationId, expectedPositionStatementId));
-    }
-
-    private void run1850(CaseDetails caseDetails) {
-        migrateCaseService.clearChangeOrganisationRequest(caseDetails);
-    }
-
 }

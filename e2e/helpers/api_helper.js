@@ -53,7 +53,7 @@ const updateCaseDataWithPlaceholders = async (data, caseName) => {
     SWANSEA_ORG_ID: config.swanseaOrgId,
     TEST_DOCUMENT_URL: document_url,
     TEST_DOCUMENT_BINARY_URL: document_binary_url,
-    CASE_NAME: caseName
+    CASE_NAME: caseName,
   };
   const caseData = lodash.template(JSON.stringify(data.caseData))(placeholders);
   return {state: data.state, caseData: JSON.parse(caseData)};

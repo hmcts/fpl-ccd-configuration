@@ -1,9 +1,10 @@
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
+// eslint-disable-next-line no-unused-vars
 const config = {
-  WaitForTimeout: 5000,
-  WaitForAction: 350,
+  WaitForTimeout: 120000,
+  WaitForAction: 600,
 };
 
 exports.config = {
@@ -47,8 +48,8 @@ exports.config = {
     Playwright: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       waitForTimeout: config.WaitForTimeout,
-      waitForAction: 350,
-      timeout: config.WaitForTimeout,
+      //waitForAction: config.WaitForAction,
+      timeout: 60000,
       retries: 5,
       waitForNavigation: 'load',
       ignoreHTTPSErrors: true,
@@ -58,7 +59,7 @@ exports.config = {
         'ignore-certificate-errors': true,
         'defaultViewport': {
           'width': 1280,
-          'height': 960
+          'height': 960,
         },
         args: [
           // '--headless',
@@ -68,8 +69,8 @@ exports.config = {
           '--ignore-certificate-errors',
           // '--proxy-server=proxyout.reform.hmcts.net:8080',
           // '--proxy-bypass-list=*beta*LB.reform.hmcts.net',
-          '--window-size=1440,1400'
-        ]
+          '--window-size=1440,1400',
+        ],
       },
     },
     HooksHelper: {
@@ -160,7 +161,7 @@ exports.config = {
   plugins: {
 
     pauseOnFail: {
-      enabled: false
+      enabled: false,
     },
     retryFailedStep: {
       enabled: true,
@@ -186,10 +187,10 @@ exports.config = {
           mochaFile: process.env.REPORT_FILE || 'test-results/functional/result.xml',
         },
       },
-      'mochawesome': {
+      mochawesome: {
         stdout: '-',
         options: {
-          reportDir: process.env.REPORT_DIR || 'test-results/functional',
+          reportDir: './output',
           inlineAssets: true,
           json: false,
         },

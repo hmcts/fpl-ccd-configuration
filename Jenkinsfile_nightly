@@ -29,9 +29,14 @@ AppPipelineConfig pipelineConf;
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
   ]
 ]
+
 
 static Map<String, Object> secret(String secretName, String envVariable) {
   [ $class: 'AzureKeyVaultSecret',
@@ -77,18 +82,15 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  //enableMutationTest()
-  enableFullFunctionalTest(240)
-  // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
-  //enableCrossBrowserTest(['chrome', 'firefox'])
+  enableMutationTest()
   enableFortifyScan('fpl-aat')
-
+  enableFullFunctionalTest(240)
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
   }
 
-  after('mutationTest') {
+  afterAlways('mutationTest') {
     archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
@@ -104,26 +106,25 @@ withNightlyPipeline(type, product, component) {
     env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
   }
 
-  before('crossBrowserTest') {
-    yarnBuilder.yarn('yarn-update')
-    yarnBuilder.yarn('install-dependencies')
-    env.TEST_RETRIES = 5
-    env.TESTS_FOR_ACCESSIBILITY = false
-    env.ENV = 'aat'
-  }
-
   afterAlways('fullFunctionalTest') {
-    yarnBuilder.yarn('test:functional-nightly')
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    archiveArtifacts allowEmptyArchive: true, artifacts: '**/test-results/functionalTest/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    env.TESTS_FOR_ACCESSIBILITY = false
+    stage(' UI Functional Tests') {
+      try {
+        yarnBuilder.yarn('test:functional-nightly')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "../test-results/functionalTest",
+          reportFiles          : 'index.html',
+          reportName           : 'UI Functional Test Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/functionalTest/**/*'
+      }
+    }
   }
-
-  afterAlways('crossBrowserTest') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }

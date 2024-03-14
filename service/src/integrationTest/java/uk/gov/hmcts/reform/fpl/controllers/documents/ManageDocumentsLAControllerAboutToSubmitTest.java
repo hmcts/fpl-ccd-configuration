@@ -10,10 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -39,11 +41,14 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
@@ -90,6 +95,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     @BeforeEach
     void init() {
         givenCurrentUser(buildUserDetailsWithLARole());
+        when(userService.getCaseRoles(any())).thenReturn(Set.of(CaseRole.LASOLICITOR));
     }
 
     @Test
@@ -163,6 +169,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         applicationDocuments.get(0).getValue().setDateTimeUploaded(now());
         applicationDocuments.get(0).getValue().setUploadedBy("kurt@swansea.gov.uk");
+        applicationDocuments.get(0).getValue().setUploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY);
+        applicationDocuments.get(0).getValue().setUploaderCaseRoles(List.of(CaseRole.LASOLICITOR));
 
         assertThat(responseData.getApplicationDocuments()).isEqualTo(applicationDocuments);
         assertExpectedFieldsAreRemoved(responseData);
@@ -193,7 +201,6 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             HearingCourtBundle.builder()
                 .hearing(hearingBooking.toLabel())
                 .courtBundle(courtBundle)
-                .courtBundleNC(courtBundle)
                 .build()
         );
         assertThat(responseData.getHearingDocuments().getCourtBundleListV2()).first()

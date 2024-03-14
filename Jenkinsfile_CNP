@@ -5,7 +5,7 @@ import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
-
+def yarnBuilder = new uk.gov.hmcts.contino.YarnBuilder(this)
 def product = "fpl"
 def component = "case-service"
 
@@ -23,7 +23,11 @@ def serviceSecrets = [
 def integrationTestSecrets = [
   'fpl-aat': [
     secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
-    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY'),
+    secret('e2e-test-password', 'E2E_TEST_PASSWORD'),
+    secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
+    secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD'),
+    secret('e2e-test-judge-password', 'E2E_TEST_JUDGE_PASSWORD')
   ]
 ]
 
@@ -191,6 +195,37 @@ withPipeline(type, product, component) {
     teardownSecretsForIntegrationTests()
   }
 
+  before('fullFunctionalTest:preview'){
+      yarnBuilder.yarn('yarn-update')
+      yarnBuilder.yarn('install-dependencies')
+      env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net/"
+      env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
+      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
+      env.SWANSEA_ORG_ID = "62LYJRF"
+      env.MOCKED_PAYMENTS = false
+      env.FUNCTIONAL_TESTS_WORKERS = 1
+      env.TEST_RETRIES = 1
+
+  }
+  afterAlways('fullFunctionalTest:preview') {
+    stage('UIFunctionalTests') {
+      try {
+        yarnBuilder.yarn('test:functional-nightly')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "../test-results/functionalTest",
+          reportFiles          : 'index.html',
+          reportName           : 'UI Functional Test Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/functionalTest/**/*'
+      }
+    }
+      }
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
@@ -283,7 +318,7 @@ withPipeline(type, product, component) {
     env.TEST_CONF_FPL_URL = "https://fpl-case-service-staging.aat.platform.hmcts.net"
   }
 
-  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment this once testing in demo for WA completed
-  def branchesToSync = ['ithc']
+  //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
+  def branchesToSync = ['perftest','ithc']
   syncBranchesWithMaster(branchesToSync)
 }
