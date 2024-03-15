@@ -58,28 +58,6 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging on case {}", caseDetails.getId());
     }
 
-    private static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
-        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
-            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                && ((Collection) entrySet.getValue()).isEmpty())) {
-                caseDetails.getData().remove(entrySet.getKey());
-            } else {
-                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
-        newChanges.entrySet().forEach(entry -> {
-            if (target.containsKey(entry.getKey())) {
-                ((List) target.get(entry.getKey())).addAll((List) entry.getValue());
-            } else {
-                target.put(entry.getKey(), entry.getValue());
-            }
-        });
-    }
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
