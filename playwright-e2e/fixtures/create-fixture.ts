@@ -12,6 +12,10 @@ import { AllocationProposal } from "../pages/allocation-proposal";
 import { ManageDocuments } from "../pages/manage-documents";
 import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
+import { AddApplicationDocuments } from "../pages/add-application-documents";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import {CaseDetails} from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -23,9 +27,13 @@ type CreateFixtures = {
   judicialMessages: JudicialMessage;
   riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
-  allocationProposal: AllocationProposal;
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
+  allocationProposal : AllocationProposal;
+  addApplicationDocuments : AddApplicationDocuments;
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -74,6 +82,21 @@ export const test = base.extend<CreateFixtures>({
 
   caseFileView: async ({ page }, use) => {  
     await use(new CaseFileView(page));
-  }
+  },
 
+  addApplicationDocuments: async ({ page }, use) => {
+    await use(new AddApplicationDocuments(page));
+  },
+
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
+  },
 });
