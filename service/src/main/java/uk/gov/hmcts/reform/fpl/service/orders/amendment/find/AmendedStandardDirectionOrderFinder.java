@@ -15,8 +15,8 @@ public final class AmendedStandardDirectionOrderFinder implements AmendedOrderFi
         StandardDirectionOrder currentOrder = caseData.getStandardDirectionOrder();
         StandardDirectionOrder oldOrder = caseDataBefore.getStandardDirectionOrder();
 
-        return (currentOrder != null && oldOrder != null
-                && Objects.equals(currentOrder.getOrderDoc(), oldOrder.getOrderDoc()))
+        return (currentOrder == null || oldOrder == null
+                || Objects.equals(currentOrder.getOrderDoc(), oldOrder.getOrderDoc()))
             ? Optional.empty() : Optional.of(currentOrder);
     }
 }
