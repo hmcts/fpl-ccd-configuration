@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.amendment.find;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,16 +20,21 @@ class AmendedUrgentHearingOrderFinderTest {
 
     @Test
     void findOrderIfPresentAmended() {
-        when(caseData.getUrgentHearingOrder()).thenReturn((AMENDED_UHO));
-        when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
+        when(caseData.getUrgentHearingOrder()).thenReturn(AMENDED_UHO.toBuilder()
+            .order(mock(DocumentReference.class)).build());
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(ORIGINAL_UHO.toBuilder()
+            .order(mock(DocumentReference.class)).build());
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_UHO);
     }
 
     @Test
     void findOrderIfPresentNotAmended() {
-        when(caseData.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
-        when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
+        DocumentReference order = mock(DocumentReference.class);
+        when(caseData.getUrgentHearingOrder()).thenReturn(AMENDED_UHO.toBuilder()
+            .order(order).build());
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(ORIGINAL_UHO.toBuilder()
+            .order(order).build());
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.amendment.find;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -19,16 +20,21 @@ class AmendedStandardDirectionOrderFinderTest {
 
     @Test
     void findOrderIfPresentAmended() {
-        when(caseData.getStandardDirectionOrder()).thenReturn((AMENDED_SDO));
-        when(caseDataBefore.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));
+        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO.toBuilder()
+            .orderDoc(mock(DocumentReference.class)).build());
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO.toBuilder()
+                .orderDoc(mock(DocumentReference.class)).build());
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_SDO);
     }
 
     @Test
     void findOrderIfPresentNotAmended() {
-        when(caseData.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));
-        when(caseDataBefore.getStandardDirectionOrder()).thenReturn((ORIGINAL_SDO));
+        DocumentReference order = mock(DocumentReference.class);
+        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO.toBuilder()
+            .orderDoc(order).build());
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO.toBuilder()
+            .orderDoc(order).build());
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }
