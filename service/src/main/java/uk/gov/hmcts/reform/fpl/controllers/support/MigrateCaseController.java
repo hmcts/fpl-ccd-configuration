@@ -26,12 +26,10 @@ import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -51,8 +49,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-1978a", this::run1978a,
-        "DFPL-1978b", this::run1978b,
+        "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback
     );
@@ -172,24 +169,12 @@ public class MigrateCaseController extends CallbackController {
         judicialService.deleteAllRolesOnCase(caseData.getId());
     }
 
-    private void run1978a(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1978a";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1566483828191389L, migrationId);
+    private void run2205(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2205";
+        var possibleCaseIds = List.of(1708678873141424L);
 
-        UUID childId = UUID.fromString("47e723aa-4ee1-4898-bb9f-5b67ebf3e2f7");
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeSocialWorkerTelephone(caseData, migrationId, childId));
-    }
-
-    private void run1978b(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1978b";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1576755744090441L, migrationId);
-
-        UUID childId = UUID.fromString("5aa0e277-15c6-4cab-b575-252cb3115c96");
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeSocialWorkerTelephone(caseData, migrationId, childId));
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void runAM(CaseDetails caseDetails) {
