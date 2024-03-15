@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFr
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@EqualsAndHashCode
 public class StandardDirectionOrder implements IssuableOrder, RemovableOrder, AmendableOrder, TranslatableItem {
     public static final UUID COLLECTION_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 

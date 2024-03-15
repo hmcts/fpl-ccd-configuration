@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTi
 @Slf4j
 @Data
 @Builder(toBuilder = true)
-@EqualsAndHashCode
 public class GeneratedOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
 
     // this is the new type
