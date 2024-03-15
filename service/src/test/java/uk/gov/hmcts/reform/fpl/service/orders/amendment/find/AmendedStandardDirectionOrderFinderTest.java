@@ -20,10 +20,10 @@ class AmendedStandardDirectionOrderFinderTest {
 
     @Test
     void findOrderIfPresentAmended() {
-        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO.toBuilder()
-            .orderDoc(mock(DocumentReference.class)).build());
-        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO.toBuilder()
-                .orderDoc(mock(DocumentReference.class)).build());
+        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO);
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO);
+        when(AMENDED_SDO.getOrderDoc()).thenReturn(mock(DocumentReference.class));
+        when(ORIGINAL_SDO.getOrderDoc()).thenReturn(mock(DocumentReference.class));
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_SDO);
     }
@@ -31,10 +31,10 @@ class AmendedStandardDirectionOrderFinderTest {
     @Test
     void findOrderIfPresentNotAmended() {
         DocumentReference order = mock(DocumentReference.class);
-        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO.toBuilder()
-            .orderDoc(order).build());
-        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO.toBuilder()
-            .orderDoc(order).build());
+        when(caseData.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO);
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO);
+        when(AMENDED_SDO.getOrderDoc()).thenReturn(order);
+        when(ORIGINAL_SDO.getOrderDoc()).thenReturn(order);
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }

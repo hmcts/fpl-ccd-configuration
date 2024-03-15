@@ -20,10 +20,10 @@ class AmendedUrgentHearingOrderFinderTest {
 
     @Test
     void findOrderIfPresentAmended() {
-        when(caseData.getUrgentHearingOrder()).thenReturn(AMENDED_UHO.toBuilder()
-            .order(mock(DocumentReference.class)).build());
-        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(ORIGINAL_UHO.toBuilder()
-            .order(mock(DocumentReference.class)).build());
+        when(caseData.getUrgentHearingOrder()).thenReturn((AMENDED_UHO));
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
+        when(AMENDED_UHO.getOrder()).thenReturn(mock(DocumentReference.class));
+        when(ORIGINAL_UHO.getOrder()).thenReturn(mock(DocumentReference.class));
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).contains(AMENDED_UHO);
     }
@@ -31,10 +31,10 @@ class AmendedUrgentHearingOrderFinderTest {
     @Test
     void findOrderIfPresentNotAmended() {
         DocumentReference order = mock(DocumentReference.class);
-        when(caseData.getUrgentHearingOrder()).thenReturn(AMENDED_UHO.toBuilder()
-            .order(order).build());
-        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(ORIGINAL_UHO.toBuilder()
-            .order(order).build());
+        when(caseData.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn((ORIGINAL_UHO));
+        when(AMENDED_UHO.getOrder()).thenReturn(order);
+        when(ORIGINAL_UHO.getOrder()).thenReturn(order);
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }
