@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
