@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTi
 @Slf4j
 @Data
 @Builder(toBuilder = true)
+@EqualsAndHashCode
 public class GeneratedOrder implements RemovableOrder, AmendableOrder, TranslatableItem {
 
     // this is the new type
