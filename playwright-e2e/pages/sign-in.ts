@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import UrlConfig from "../settings/urls";
+import { urlConfig } from "../settings/urls";
 
 export class SignInPage {
   readonly page: Page;
@@ -12,7 +12,7 @@ export class SignInPage {
 
   public constructor(page: Page) {
     this.page = page;
-    this.url = UrlConfig.frontEndBaseURL;
+    this.url = urlConfig.frontEndBaseURL;
     this.emailInputLocator = page.getByLabel("Email address");
     this.passwordInputLocator = page.getByLabel("Password");
     this.signinButtonLocator = page.getByRole("button", { name: "Sign in" });
@@ -24,7 +24,7 @@ export class SignInPage {
     await this.page.goto(this.url);
   }
   async navigateTOCaseDetails(caseNumber:string) {
-    await this.page.goto(`${UrlConfig.frontEndBaseURL}case-details/${caseNumber}`);
+    await this.page.goto(`${urlConfig.frontEndBaseURL}case-details/${caseNumber}`);
   }
 
   async login(email: string, password: string) {

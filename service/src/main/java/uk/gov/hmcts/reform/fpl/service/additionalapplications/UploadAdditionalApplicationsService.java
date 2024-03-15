@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -24,26 +20,25 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -58,7 +53,6 @@ import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.REQUESTI
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
@@ -69,9 +63,8 @@ public class UploadAdditionalApplicationsService {
     private final UserService userService;
     private final ManageDocumentService manageDocumentService;
     private final DocumentUploadHelper documentUploadHelper;
+    private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
-    private final ApplicantLocalAuthorityService applicantLocalAuthorityService;
-    private final LocalAuthorityRecipientsService localAuthorityRecipients;
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
@@ -124,45 +117,26 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
-    @SuppressWarnings("unchecked")
     private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
                                       AdditionalApplicationsBundleBuilder builder) {
-        final Set<String> caseRoles = userService.getCaseRoles(caseData.getId()).stream()
-            .map(CaseRole::formattedName)
-            .collect(Collectors.toSet());
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
 
-        final BiConsumer<OrganisationPolicy, String> addBundleToList = (policy, fieldName) -> {
-            if (policy != null && caseRoles.contains(policy.getOrgPolicyCaseAssignedRole())) {
-                try {
-                    AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
-                        .invoke(builder, c2Bundle);
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
+        final Consumer<String> setConfidentialC2 = (fieldName) -> {
+            try {
+                AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
+                    .invoke(builder, c2Bundle);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
             }
         };
 
-        final TriConsumer<Object, String, String> addBundleByPolicy = (policyData, getterName, bundleField) -> {
-            if (policyData != null) {
-                Arrays.stream(policyData.getClass().getMethods())
-                    .filter(method -> method.getName().startsWith(getterName))
-                    .forEach(method -> {
-                        try {
-                            OrganisationPolicy policy = (OrganisationPolicy) method.invoke(policyData);
-                            String bundleFieldName = bundleField + method.getName().replace(getterName, "");
-                            addBundleToList.accept(policy, bundleFieldName);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-            }
-        };
-
-        addBundleByPolicy.accept(caseData.getRespondentPolicyData(), "getRespondentPolicy",
-            "c2DocumentBundleResp");
-        addBundleByPolicy.accept(caseData.getChildPolicyData(), "getChildPolicy",
-            "c2DocumentBundleChild");
-        addBundleToList.accept(caseData.getLocalAuthorityPolicy(), "c2DocumentBundleLA");
+        PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "c2DocumentBundleResp",
+            caseRoles, setConfidentialC2);
+        PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "c2DocumentBundleChild",
+            caseRoles, setConfidentialC2);
+        if (PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
+            setConfidentialC2.accept("c2DocumentBundleLA");
+        }
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> bundles) {
@@ -242,27 +216,27 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle) {
+    public OtherApplicationsBundle convertOtherBundle(OtherApplicationsBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
+            .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                  : List.of())
             .build();
     }
 
-    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle) {
+    public C2DocumentBundle convertC2Bundle(C2DocumentBundle bundle, CaseData caseData) {
         return bundle.toBuilder()
-            .document(getDocumentToStore(bundle.getDocument()))
+            .document(sealDocument(bundle.getDocument(), caseData))
             .supplementsBundle(!isEmpty(bundle.getSupplementsBundle())
-                ? getSupplementsBundleConverted(bundle.getSupplementsBundle())
+                ? getSupplementsBundleConverted(bundle.getSupplementsBundle(), caseData)
                 : List.of())
             .build();
     }
 
     public void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
                                             AdditionalApplicationsBundleBuilder builder) {
-        C2DocumentBundle convertedC2 = convertC2Bundle(bundle);
+        C2DocumentBundle convertedC2 = convertC2Bundle(bundle, caseData);
         builder.c2DocumentBundleConfidential(convertedC2);
         buildC2BundleByPolicy(caseData, convertedC2, builder);
     }
@@ -282,12 +256,13 @@ public class UploadAdditionalApplicationsService {
         return supportingEvidenceBundle;
     }
 
-    private List<Element<Supplement>> getSupplementsBundleConverted(List<Element<Supplement>> supplementsBundle) {
+    private List<Element<Supplement>> getSupplementsBundleConverted(List<Element<Supplement>> supplementsBundle,
+                                                                    CaseData caseData) {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(getDocumentToStore(incomingSupplement.getDocument()))
+                .document(documentConversionService.convertToPdf(incomingSupplement.getDocument()))
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
@@ -310,8 +285,8 @@ public class UploadAdditionalApplicationsService {
 
     }
 
-    private DocumentReference getDocumentToStore(DocumentReference originalDoc) {
-        return documentConversionService.convertToPdf(originalDoc);
+    private DocumentReference sealDocument(DocumentReference originalDoc, CaseData caseData) {
+        return documentSealingService.sealDocument(originalDoc, caseData.getCourt(), SealType.ENGLISH);
     }
 
     private boolean onlyApplyingForC2(CaseData caseData) {
@@ -336,29 +311,5 @@ public class UploadAdditionalApplicationsService {
     public boolean shouldSkipPayments(CaseData caseData, HearingBooking hearing, C2DocumentBundle temporaryC2Bundle) {
         return (Duration.between(LocalDateTime.now(), hearing.getStartDate()).toDays() >= 14L)
             && onlyApplyingForAnAdjournment(caseData, temporaryC2Bundle);
-    }
-
-    public List<String> getRecipientsOfConfidentialC2(CaseData caseData, AdditionalApplicationsBundle lastBundle) {
-        Set<String> recipients = new HashSet<>();
-
-        if (lastBundle.getC2DocumentBundleConfidential() != null) {
-            // only confidential c2 is uploaded
-            if (lastBundle.getC2DocumentBundleLA() != null) {
-                // the bundle is uploaded by la, send notification to la shared inbox
-                log.info("Confidential C2 uploaded by LA.");
-                LocalAuthority la = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
-                if (la != null) {
-                    localAuthorityRecipients.getShareInbox(la).ifPresent(recipients::add);
-                    recipients.add(la.getEmail());
-                } else {
-                    log.error("Organisation not found. Won't send notification to LA's shared/group inbox");
-                }
-            } else if (!userService.isHmctsAdminUser()) {
-                log.info("Confidential C2 uploaded by solicitor.");
-                recipients.add(lastBundle.getC2DocumentBundleConfidential().getAuthor());
-            }
-        }
-
-        return List.copyOf(recipients);
     }
 }

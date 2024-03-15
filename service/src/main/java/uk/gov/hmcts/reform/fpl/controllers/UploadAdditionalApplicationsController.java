@@ -183,7 +183,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-            draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
+            if (YES.equals(caseData.getIsC2Confidential())) {
+                draftOrderService.confidentialAdditionalApplicationUpdateCase(caseData, newDrafts,
+                    hearingOrdersBundles.getAgreedCmos());
+            } else {
+                draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
+            }
 
             caseDetails.getData().put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
         }
@@ -234,7 +239,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 // If we have a C2 application, do the conversion if needed
                 if (!isEmpty(lastBundle.getC2DocumentBundle())) {
                     bundleBuilder.c2DocumentBundle(
-                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle())
+                        uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle(),
+                            caseDataCurrent)
                     );
                 }
                 if (!isEmpty(lastBundle.getC2DocumentBundleConfidential())) {
@@ -245,7 +251,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 // If we have a other application, do conversion if needed
                 if (!isEmpty(lastBundle.getOtherApplicationsBundle())) {
                     bundleBuilder.otherApplicationsBundle(
-                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle())
+                        uploadAdditionalApplicationsService.convertOtherBundle(lastBundle.getOtherApplicationsBundle(),
+                            caseDataCurrent)
                     );
                 }
 
@@ -276,8 +283,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
         publishEvent(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore,
-            applicantsListGenerator.getApplicant(caseData, lastBundle),
-            uploadAdditionalApplicationsService.getRecipientsOfConfidentialC2(caseData, lastBundle)));
+            applicantsListGenerator.getApplicant(caseData, lastBundle)));
 
         publishEvent(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 

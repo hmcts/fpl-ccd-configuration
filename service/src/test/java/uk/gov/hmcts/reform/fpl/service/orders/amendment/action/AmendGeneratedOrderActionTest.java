@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.amendment.action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -52,7 +53,7 @@ class AmendGeneratedOrderActionTest {
     void acceptValid() {
         List<Element<GeneratedOrder>> orders = List.of(element(selectedOrderId, mock(GeneratedOrder.class)));
 
-        when(caseData.getOrderCollection()).thenReturn(orders);
+        when(caseData.getAllOrderCollections()).thenReturn(orders);
 
         assertThat(underTest.accept(caseData)).isTrue();
     }
@@ -61,7 +62,7 @@ class AmendGeneratedOrderActionTest {
     void acceptInvalid() {
         List<Element<GeneratedOrder>> orders = wrapElements(mock(GeneratedOrder.class));
 
-        when(caseData.getOrderCollection()).thenReturn(orders);
+        when(caseData.getAllOrderCollections()).thenReturn(orders);
 
         assertThat(underTest.accept(caseData)).isFalse();
     }
@@ -88,6 +89,33 @@ class AmendGeneratedOrderActionTest {
 
         assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
             Map.of("orderCollection", amendedOrders)
+        );
+    }
+
+    @Test
+    void applyAmendedConfidentialOrder() {
+        GeneratedOrder orderToAmend = GeneratedOrder.builder().document(ORIGINAL_DOCUMENT).build();
+        Element<GeneratedOrder> nonAmendedOrder1 = element(mock(GeneratedOrder.class));
+        Element<GeneratedOrder> nonAmendedOrder2 = element(mock(GeneratedOrder.class));
+
+        when(caseData.getOrderCollection()).thenReturn(List.of());
+        when(caseData.getConfidentialOrders()).thenReturn(ConfidentialGeneratedOrders.builder()
+            .orderCollectionCTSC(new ArrayList<>(List.of(
+                nonAmendedOrder1, element(selectedOrderId, orderToAmend), nonAmendedOrder2
+            ))).build());
+
+        GeneratedOrder amendedOrder = orderToAmend.toBuilder()
+            .document(AMENDED_DOCUMENT)
+            .amendedDate(AMENDED_DATE)
+            .others(Collections.emptyList())
+            .build();
+
+        List<Element<GeneratedOrder>> amendedOrders = List.of(
+            nonAmendedOrder1, element(selectedOrderId, amendedOrder), nonAmendedOrder2
+        );
+
+        assertThat(underTest.applyAmendedOrder(caseData, AMENDED_DOCUMENT, selectedOthers)).isEqualTo(
+            Map.of("orderCollectionCTSC", amendedOrders)
         );
     }
 }

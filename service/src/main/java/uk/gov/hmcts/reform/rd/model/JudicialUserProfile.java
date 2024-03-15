@@ -78,7 +78,7 @@ public class JudicialUserProfile {
     private String personalCode;
 
     public String getTitle() {
-        if (isEmpty(this.title)) {
+        if (isEmpty(this.title) || this.title.equalsIgnoreCase("Unknown")) {
             // if no title from JRD - pattern match it from the known list of titles in JRD full name fields
             // todo - test removal once elinks is deployed in prod.
             for (String title : TITLES) {

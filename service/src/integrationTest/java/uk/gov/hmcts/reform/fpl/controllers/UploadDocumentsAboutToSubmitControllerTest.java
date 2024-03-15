@@ -138,7 +138,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         CaseDetails caseDetailsBefore = CaseDetails.builder().data(
             Map.of(
-                "applicationDocuments", List.of(
+                "temporaryApplicationDocuments", List.of(
                     Map.of(
                         "id", UUID_1,
                         "value", Map.of(

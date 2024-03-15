@@ -11,10 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.updaters.ChildrenSmartFinalOrderUpdater;
+import uk.gov.hmcts.reform.fpl.utils.OrderHelper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 
@@ -41,21 +46,22 @@ public class ManageOrdersClosedCaseFieldGenerator {
         if (shouldCloseCase && isFinalOrder) {
 
             data.put("state", CLOSED);
-            data.put("closeCaseTabField", CloseCase.builder().date(getCloseCaseDate(manageOrdersEventData))
+            data.put("closeCaseTabField", CloseCase.builder().date(getCloseCaseDate(caseData, manageOrdersEventData))
                 .build());
         }
 
         return data;
     }
 
-    private LocalDate getCloseCaseDate(ManageOrdersEventData manageOrdersEventData) {
-        if (manageOrdersEventData.getManageOrdersApprovalDate() != null) {
-            return manageOrdersEventData.getManageOrdersApprovalDate();
-        } else if (manageOrdersEventData.getManageOrdersApprovalDateOrDateTime() != null) {
-            return manageOrdersEventData.getManageOrdersApprovalDateOrDateTime().toLocalDate();
-        } else {
-            return time.now().toLocalDate();
-        }
+    private LocalDate getCloseCaseDate(CaseData caseData, ManageOrdersEventData manageOrdersEventData) {
+        return Stream.of(
+                OrderHelper.getLatestApprovalDateOfFinalOrders(caseData),
+                Optional.ofNullable(manageOrdersEventData.getManageOrdersApprovalDate()),
+                Optional.ofNullable(manageOrdersEventData.getManageOrdersApprovalDateTime())
+                    .map(LocalDateTime::toLocalDate))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .max(Comparator.naturalOrder())
+            .orElse(time.now().toLocalDate());
     }
-
 }
