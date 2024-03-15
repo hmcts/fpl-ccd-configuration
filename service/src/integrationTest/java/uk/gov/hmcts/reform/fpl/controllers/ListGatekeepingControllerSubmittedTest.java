@@ -77,7 +77,6 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -523,7 +522,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     }
 
     @Test
-    void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -558,12 +557,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(caseDetails);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
-            eq(JUDGE_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE));
-
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
@@ -571,6 +564,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
+        verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -612,18 +606,14 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(caseDetails);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
-            eq(JUDGE_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE));
-
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         // start don't finish
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
