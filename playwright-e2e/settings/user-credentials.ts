@@ -20,6 +20,14 @@ export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
   password: defaultPwd,
 };
+export const CTSCTeamLeadUser = {
+  email: 'ctsc-team-leader@justice.gov.uk',
+  password: defaultPwd,
+};
+export const HighCourtAdminUser = {
+  email: 'high-court-admin@justice.gov.uk',
+  password: defaultPwd,
+};
 export const judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
   password: defaultPwd,
