@@ -42,7 +42,7 @@ export class BasePage {
     expect(await this.reloadAndCheckForText(taskName, 5000, 12)).toBeTruthy();
   }
 
-  async waitForRoleAndAccessTab(userName:string) {
+  async waitForRoleAndAccessTab(userName: string) {
     expect(await this.reloadAndCheckForText(userName, 10000, 3)).toBeTruthy();
   }
 
@@ -62,4 +62,12 @@ export class BasePage {
   async clickSignOut() {
     await this.signOut.click();
   }
+
+  async waitForAllUploadsToBeCompleted() {
+    let locs = await this.page.getByText('Cancel upload').all();
+    for (let i = 0; i < locs.length; i++) {
+      await expect(locs[i]).toBeDisabled();
+    }
+  }
+
 }
