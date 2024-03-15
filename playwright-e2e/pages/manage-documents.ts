@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { BasePage } from "./base-page";
+import config from "../settings/test-docs/config";
 
 export class ManageDocuments extends BasePage {
 
@@ -14,7 +15,7 @@ export class ManageDocuments extends BasePage {
         await this.clickContinue();
 
         await this.page.getByRole('textbox', { name: 'Upload a document' })
-            .setInputFiles('./playwright-e2e/files/textfile.txt');
+            .setInputFiles(config.testTextFile);
 
         await this.page.getByLabel('Document type').selectOption(type);
         // not confidential

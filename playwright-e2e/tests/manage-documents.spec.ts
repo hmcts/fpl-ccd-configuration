@@ -25,7 +25,7 @@ test.describe('Manage Documents', () => {
         // Check CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('textfile.txt');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         // If WA is enabled
         if (testConfig.waEnabled) {
