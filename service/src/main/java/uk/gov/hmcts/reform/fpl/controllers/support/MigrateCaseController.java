@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -48,35 +47,10 @@ public class MigrateCaseController extends CallbackController {
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1940", this::run1940,
+        "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback,
-        "DFPL-1882", this::run1882,
-        "DFPL-2148", this::run2148,
-        "DFPL-2149", this::run2149
+        "DFPL-AM-Rollback", this::runAmRollback
     );
-
-    protected static void pushChangesToCaseDetails(CaseDetails caseDetails, Map<String, Object> changes) {
-        for (Map.Entry<String, Object> entrySet : changes.entrySet()) {
-            if (entrySet.getValue() == null || (entrySet.getValue() instanceof Collection
-                && ((Collection) entrySet.getValue()).isEmpty())) {
-                caseDetails.getData().remove(entrySet.getKey());
-            } else {
-                caseDetails.getData().put(entrySet.getKey(), entrySet.getValue());
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static void mergeChanges(Map<String, Object> target, Map<String, Object> newChanges) {
-        newChanges.entrySet().forEach(entry -> {
-            if (target.containsKey(entry.getKey())) {
-                ((List) target.get(entry.getKey())).addAll((List) entry.getValue());
-            } else {
-                target.put(entry.getKey(), entry.getValue());
-            }
-        });
-    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -96,17 +70,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run1940(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1940";
-        var possibleCaseIds = List.of(1697791879605293L);
-        var expectedMessageId = UUID.fromString("29b3eab8-1e62-4aa2-86d1-17874d27933e");
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
     }
 
     private void migrateRoles(CaseData caseData) {
@@ -178,6 +141,14 @@ public class MigrateCaseController extends CallbackController {
         judicialService.deleteAllRolesOnCase(caseData.getId());
     }
 
+    private void run2205(CaseDetails caseDetails) {
+        var migrationId = "DFPL-2205";
+        var possibleCaseIds = List.of(1708678873141424L);
+
+        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
+    }
+
     private void runAM(CaseDetails caseDetails) {
         var migrationId = "DFPL-AM";
 
@@ -244,34 +215,4 @@ public class MigrateCaseController extends CallbackController {
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
     }
-
-    private void run1882(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1882";
-
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData,
-            migrationId));
-    }
-
-    private void run2148(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2148";
-        var possibleCaseIds = List.of(1706286062107610L);
-        UUID expectedDocumentFiledOnIssueId = UUID.fromString("22c72f17-76e4-4e9f-b76c-221f6ca7b029");
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        caseDetails.getData().putAll(migrateCaseService.removeDocumentFiledOnIssue(getCaseData(caseDetails),
-            expectedDocumentFiledOnIssueId, migrationId));
-    }
-
-    private void run2149(CaseDetails caseDetails) {
-        var migrationId = "DFPL-2149";
-        var possibleCaseIds = List.of(1689246804719172L);
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-        UUID returnApplicationDocId = UUID.fromString("472abae2-465b-4345-9fef-89b39a239397");
-
-        migrateCaseService.verifyReturnApplicationExists(caseData, migrationId, returnApplicationDocId);
-        caseDetails.getData().remove("returnApplication");
-    } 
 }

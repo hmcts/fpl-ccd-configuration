@@ -39,7 +39,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
 
-
     @MockBean
     private JudicialUsersConfiguration judicialUsersConfiguration;
 
