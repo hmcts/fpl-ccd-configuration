@@ -38,4 +38,18 @@ class AmendedStandardDirectionOrderFinderTest {
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }
+
+    @Test
+    void findOrderIfOriginalIsNull() {
+        when(caseData.getStandardDirectionOrder()).thenReturn(AMENDED_SDO);
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(null);
+        assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
+    }
+
+    @Test
+    void findOrderIfAmendedIsNull() {
+        when(caseData.getStandardDirectionOrder()).thenReturn(null);
+        when(caseDataBefore.getStandardDirectionOrder()).thenReturn(ORIGINAL_SDO);
+        assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
+    }
 }

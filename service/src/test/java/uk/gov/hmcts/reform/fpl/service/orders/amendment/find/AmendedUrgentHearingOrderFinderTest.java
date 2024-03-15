@@ -38,4 +38,18 @@ class AmendedUrgentHearingOrderFinderTest {
 
         assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
     }
+
+    @Test
+    void findOrderIfOriginalIsNull() {
+        when(caseData.getUrgentHearingOrder()).thenReturn(AMENDED_UHO);
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(null);
+        assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
+    }
+
+    @Test
+    void findOrderIfAmendedIsNull() {
+        when(caseData.getUrgentHearingOrder()).thenReturn(null);
+        when(caseDataBefore.getUrgentHearingOrder()).thenReturn(ORIGINAL_UHO);
+        assertThat(underTest.findOrderIfPresent(caseData, caseDataBefore)).isEmpty();
+    }
 }
