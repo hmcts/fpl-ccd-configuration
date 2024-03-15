@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -367,6 +370,24 @@ public class MigrateCaseService {
         }
     }
 
+    public void verifyReturnApplicationExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (isEmpty(caseData.getReturnApplication())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Returned Application not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getReturnApplication().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                    + " Returned Application document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
+        }
+    }
+
     public Map<String, Object> removeCaseSummaryByHearingId(CaseData caseData,
                                                             String migrationId,
                                                             UUID expectedHearingId) {
@@ -562,6 +583,31 @@ public class MigrateCaseService {
         }
 
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
+    }
+
+    public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<ManagedDocument>> documentsFiledOnIssueList = caseData.getDocumentsFiledOnIssueList();
+
+        if (documentsFiledOnIssueList.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, documentsFiledOnIssueList is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<ManagedDocument>> updatedDocumentsFiledOnIssueList =
+            ElementUtils.removeElementWithUUID(documentsFiledOnIssueList, documentFiledOnIssueId);
+
+        if (updatedDocumentsFiledOnIssueList.size() != documentsFiledOnIssueList.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, document filed on issue %s not found",
+                migrationId, caseId, documentFiledOnIssueId
+            ));
+        }
+
+        return Map.of("documentsFiledOnIssueList", updatedDocumentsFiledOnIssueList);
     }
 
     public Map<String, Object> addCourt(String courtId) {
@@ -861,6 +907,34 @@ public class MigrateCaseService {
         return Map.of("localAuthorities", localAuthorities);
     }
 
+    public Map<String, Object> removeSocialWorkerTelephone(CaseData caseData, String migrationId, UUID childId) {
+        List<Element<Child>> children = caseData.getAllChildren();
+        Element<Child> targetChild = ElementUtils.findElement(childId, children)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find child with UUID %s",
+                migrationId, caseData.getId(), childId))
+            );
+
+        final Child child = targetChild.getValue();
+
+        if (isEmpty(child.getParty().getSocialWorkerTelephoneNumber())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, child did not have social worker telephone",
+                migrationId, caseData.getId()));
+        }
+
+        Child updatedChild = child.toBuilder()
+            .party(child.getParty().toBuilder()
+                .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                    .telephoneNumber(null)
+                    .build())
+                .build())
+            .build();
+
+        targetChild.setValue(updatedChild);
+        return Map.of("children1", children);
+    }
+  
     public Map<String, Object> migrateCaseClosedDateToLatestFinalOrderApprovalDate(CaseData caseData,
                                                                                    String migrationId) {
         if (!State.CLOSED.equals(caseData.getState())) {
@@ -927,5 +1001,21 @@ public class MigrateCaseService {
     public Map<String, Object> clearCloseCaseTabBackupField(CaseData caseData) {
         CloseCase closeCaseField = caseData.getCloseCaseTabField();
         return Map.of("closeCaseTabField", closeCaseField.toBuilder().dateBackup(null).build());
+    }
+
+    public Map<String, Object> migrateCaseRemoveUnknownAllocatedJudgeTitle(CaseData caseData,
+                                                                           String migrationId) {
+
+        if (caseData.getAllocatedJudge().getJudgeTitle() == JudgeOrMagistrateTitle.OTHER
+            && caseData.getAllocatedJudge().getOtherTitle().equalsIgnoreCase("Unknown")) {
+            return Map.of("allocatedJudge", caseData.getAllocatedJudge().toBuilder()
+                .otherTitle(JudicialUserProfile.builder()
+                    .fullName(caseData.getAllocatedJudge().getJudgeFullName())
+                    .build().getTitle())
+                .build());
+        } else {
+            throw new AssertionError(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                migrationId, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
+        }
     }
 }

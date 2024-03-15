@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
@@ -55,16 +56,20 @@ public class JudgeAndLegalAdvisorHelper {
 
     private static JudgeAndLegalAdvisor migrateJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                                     Judge allocatedJudge) {
-        return JudgeAndLegalAdvisor.builder()
-            .judgeTitle(allocatedJudge.getJudgeTitle())
-            .otherTitle(allocatedJudge.getOtherTitle())
-            .judgeLastName(allocatedJudge.getJudgeLastName())
-            .judgeFullName(allocatedJudge.getJudgeFullName())
-            .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
+        JudgeAndLegalAdvisor.JudgeAndLegalAdvisorBuilder builder = JudgeAndLegalAdvisor.builder()
             .legalAdvisorName(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getLegalAdvisorName())
             .allocatedJudgeLabel(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getAllocatedJudgeLabel())
-            .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getUseAllocatedJudge())
-            .build();
+            .useAllocatedJudge(isEmpty(judgeAndLegalAdvisor) ? null : judgeAndLegalAdvisor.getUseAllocatedJudge());
+
+        if (isNotEmpty(allocatedJudge)) {
+            builder = builder.judgeTitle(allocatedJudge.getJudgeTitle())
+                .otherTitle(allocatedJudge.getOtherTitle())
+                .judgeLastName(allocatedJudge.getJudgeLastName())
+                .judgeFullName(allocatedJudge.getJudgeFullName())
+                .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress());
+        }
+
+        return builder.build();
     }
 
     public static void removeAllocatedJudgeProperties(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
