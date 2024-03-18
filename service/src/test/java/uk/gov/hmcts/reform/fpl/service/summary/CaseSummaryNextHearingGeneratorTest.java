@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.summary;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -40,7 +42,7 @@ class CaseSummaryNextHearingGeneratorTest {
 
     private final Time time = mock(Time.class);
 
-    CaseSummaryNextHearingGenerator underTest = new CaseSummaryNextHearingGenerator(time);
+    CaseSummaryNextHearingGenerator underTest = new CaseSummaryNextHearingGenerator(time, new ObjectMapper());
 
     private static final LocalDateTime NOW = LocalDateTime.of(2012, 10, 12, 13, 20, 44);
     private static final UUID CASE_MANAGEMENT_ORDER_ID = UUID.randomUUID();
@@ -256,6 +258,37 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryNextHearingType("Case management")
             .build());
     }
+
+    @Test
+    void testMultipleHearingsSelectsLatestInPastFields() {
+        Map<String, Object> actual = underTest.generateFields(CaseData.builder()
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.FURTHER_CASE_MANAGEMENT)
+                    .startDate(NOW.minusDays(1))
+                    .endDate(NOW.minusSeconds(1))
+                    .build()),
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(NOW)
+                    .endDate(NOW)
+                    .build()),
+                element(HearingBooking.builder()
+                    .type(HearingType.ISSUE_RESOLUTION)
+                    .startDate(NOW.plusSeconds(1))
+                    .endDate(NOW.plusMinutes(10))
+                    .build())
+            ))
+            .build());
+
+        assertThat(actual).isEqualTo(Map.of(
+            "caseSummaryHasNextHearing", "Yes",
+            "caseSummaryNextHearingDate", NOW.toLocalDate(),
+            "caseSummaryNextHearingDateTime", NOW,
+            "caseSummaryNextHearingType", "Case Management"
+        ));
+    }
+
 
     @Test
     void testNoHearingsIfAllInPast() {

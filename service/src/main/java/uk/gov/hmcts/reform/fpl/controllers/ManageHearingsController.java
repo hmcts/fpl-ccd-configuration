@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
+import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryNextHearingGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
@@ -90,6 +91,7 @@ public class ManageHearingsController extends CallbackController {
     private final ValidateEmailService validateEmailService;
     private final ManageHearingsOthersGenerator othersGenerator;
     private final JudicialService judicialService;
+    private final CaseSummaryNextHearingGenerator caseSummaryNextHearingGenerator;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -437,6 +439,10 @@ public class ManageHearingsController extends CallbackController {
         data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
+
+        // update the next hearing date summary tab fields if the next hearing date has changed
+        CaseData updatedCaseData = getCaseData(caseDetails, data);
+        data.putAll(caseSummaryNextHearingGenerator.generateFields(updatedCaseData));
 
         return respond(data);
     }
