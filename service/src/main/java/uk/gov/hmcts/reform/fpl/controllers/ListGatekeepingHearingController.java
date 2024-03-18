@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
-import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewAllocatedJudgeEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -53,7 +52,6 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -278,10 +276,10 @@ public class ListGatekeepingHearingController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
         final CaseData caseData = getCaseData(request);
 
-        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
         publishEvent(new NewAllocatedJudgeEvent(caseData.getAllocatedJudge(), caseData.getId()));
         triggerPostSubmissionHearingEvents(request);
         triggerPostSealingEvents(request);
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(request)));
     }
 
 
@@ -378,10 +376,6 @@ public class ListGatekeepingHearingController extends CallbackController {
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, true));
                     }
-
-                    if (needTemporaryHearingJudgeAllocated(caseData, hearingBooking)) {
-                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
-                    }
                 });
         }
     }
@@ -426,10 +420,4 @@ public class ListGatekeepingHearingController extends CallbackController {
             });
     }
 
-    private boolean needTemporaryHearingJudgeAllocated(CaseData caseData, HearingBooking hearingBooking) {
-        return nonNull(hearingBooking.getHearingJudgeLabel())
-            && (isNull(caseData.getHearingOption())
-            || NEW_HEARING.equals(caseData.getHearingOption())
-            || RE_LIST_NOW.equals(caseData.getHearingReListOption()));
-    }
 }

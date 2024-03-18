@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
-import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -131,6 +130,7 @@ public class ManageHearingsController extends CallbackController {
             return respond(caseDetails, errors);
         }
 
+        caseDetails.getData().putAll(hearingsService.clearPopulatedHearingFields());
         if (NEW_HEARING == caseData.getHearingOption()) {
             caseDetails.getData().putAll(hearingsService.initiateNewHearing(caseData));
 
@@ -272,8 +272,6 @@ public class ManageHearingsController extends CallbackController {
 
         return respond(caseDetails);
     }
-
-
 
     @PostMapping("/validate-hearing-dates/mid-event")
     public CallbackResponse validateHearingDatesMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -468,10 +466,6 @@ public class ManageHearingsController extends CallbackController {
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
-
-                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
-                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
-                    }
                 });
         }
     }
@@ -488,12 +482,4 @@ public class ManageHearingsController extends CallbackController {
         return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
     }
 
-    private boolean isNewOrReListedHearing(CaseData caseData) {
-        return caseData.getHearingOption() == null
-            || NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
-    }
-
-    private boolean isTemporaryHearingJudge(HearingBooking hearingBooking) {
-        return (hearingBooking.getHearingJudgeLabel() != null);
-    }
 }

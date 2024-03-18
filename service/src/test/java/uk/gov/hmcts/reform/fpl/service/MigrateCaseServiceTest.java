@@ -6,18 +6,23 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -25,17 +30,22 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -44,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -51,10 +62,13 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +133,65 @@ class MigrateCaseServiceTest {
     @Test
     void shouldThrowExceptionIfCaseIdListCheckFails() {
         assertThrows(AssertionError.class, () -> underTest.doCaseIdCheckList(1L, List.of(2L, 3L), MIGRATION_ID));
+    }
+
+    @Mock
+    private CaseConverter caseConverter;
+
+    @Nested
+    class FixIncorrectCaseManagementLocation {
+
+        private final long caseId = 1L;
+
+        @Test
+        public void shouldFixIncorrectCaseManagementLocation() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("270").build()).build());
+
+            assertThat(underTest.fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .extracting("caseManagementLocation", "court")
+                .satisfies(tuple -> {
+                    assertThat(tuple.get(0))
+                        .isInstanceOf(CaseLocation.class)
+                        .hasFieldOrPropertyWithValue("region", "3")
+                        .hasFieldOrPropertyWithValue("baseLocation", "195537");
+
+                    // Add assertions for 'court' if needed
+                    assertThat(tuple.get(1))
+                        .isInstanceOf(Court.class)
+                        .hasFieldOrPropertyWithValue("epimmsId", "195537");
+                });
+        }
+
+        @Test
+        public void shouldThrowExceptionIfTargetCourtDoesNotMatch() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of()).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("999").build()).build());
+
+            assertThatThrownBy(() -> underTest
+                .fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, Case data does not contain the target court: 270",
+                    MIGRATION_ID, caseId));
+        }
+
+        @Test
+        public void shouldThrowExceptionIfCaseHavingCorrectCaseManagmentLocation() {
+            CaseDetails caseDetails = CaseDetails.builder().data(Map.of("caseManagementLocation",
+                Map.of("baseLocation", "195537", "region", "3"))).build();
+            when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().id(caseId)
+                .court(Court.builder().code("270").build()).build());
+
+            assertThatThrownBy(() -> underTest
+                .fixIncorrectCaseManagementLocation(caseDetails, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format(
+                    "Migration {id = %s, case reference = %s}, `caseManagementLocation` is correct.",
+                    MIGRATION_ID, caseId));
+        }
     }
 
     @Nested
@@ -412,66 +485,125 @@ class MigrateCaseServiceTest {
     class RemovePositionStatementChild {
 
         private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID doc2IdToRemove = UUID.randomUUID();
         private final UUID docIdToKeep = UUID.randomUUID();
 
         private final Element<PositionStatementChild> docToRemove = element(docIdToRemove,
-            PositionStatementChild.builder()
-                .build());
+            PositionStatementChild.builder().build());
+        private final Element<PositionStatementChild> doc2ToRemove = element(doc2IdToRemove,
+            PositionStatementChild.builder().build());
 
         private final Element<PositionStatementChild> docToKeep = element(docIdToKeep,
-            PositionStatementChild.builder()
-                .build());
+            PositionStatementChild.builder().build());
 
-        @Test
-        void shouldClearPositionStatementChildWithNoDocumentsPostMigration() {
-            List<Element<PositionStatementChild>> positionStatementChilds = new ArrayList<>();
-            positionStatementChilds.add(docToRemove);
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(List.of(docToRemove))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementChildByUUID(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(List.of(docToRemove)).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(List.of(docToRemove)).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
-            assertThat(fields.get("positionStatementChildListV2")).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "" : "LA"))).isNull();
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementChildByUUIDs(boolean isInLaList) {
+            List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtChildList" + (isInLaList ? "" : "LA"))).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
         @SuppressWarnings("unchecked")
-        void shouldLeaveOtherDocsIntact() {
+        void shouldLeaveOtherDocsIntact(boolean isInLaList) {
             List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
             positionStatements.add(docToKeep);
             positionStatements.add(docToRemove);
 
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(positionStatements)
-                    .build())
-                .build();
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
             List<Element<PositionStatementChild>> resultsPositionStatements =
-                (List<Element<PositionStatementChild>>) fields.get("positionStatementChildListV2");
+                (List<Element<PositionStatementChild>>) fields.get("posStmtChildList" + (isInLaList ? "LA" : ""));
 
             assertThat(resultsPositionStatements).hasSize(1);
             assertThat(resultsPositionStatements).containsExactly(docToKeep);
         }
 
-        @Test
-        void shouldThrowExceptionIfNoDocumentFound() {
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementChildListV2(List.of(element(PositionStatementChild.builder().build())))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntactWhenRemovingMultipleTargets(boolean isInLaList) {
+            List<Element<PositionStatementChild>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtChildList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementChild(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            List<Element<PositionStatementChild>> resultsPositionStatements =
+                (List<Element<PositionStatementChild>>) fields.get("posStmtChildList" + (isInLaList ? "LA" : ""));
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldThrowExceptionIfDocumentNotFound(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtChildListLA(List.of(element(PositionStatementChild.builder().build()))).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtChildList(List.of(element(PositionStatementChild.builder().build()))).build());
+            }
+            CaseData caseData = builder.build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementChild(caseData, MIGRATION_ID,
-                    docIdToRemove));
+                underTest.removePositionStatementChild(caseData, MIGRATION_ID, false, docIdToRemove));
         }
     }
 
@@ -479,65 +611,125 @@ class MigrateCaseServiceTest {
     class RemovePositionStatementRespondent {
 
         private final UUID docIdToRemove = UUID.randomUUID();
+        private final UUID doc2IdToRemove = UUID.randomUUID();
         private final UUID docIdToKeep = UUID.randomUUID();
 
         private final Element<PositionStatementRespondent> docToRemove = element(docIdToRemove,
-            PositionStatementRespondent.builder()
-                .build());
+            PositionStatementRespondent.builder().build());
+        private final Element<PositionStatementRespondent> doc2ToRemove = element(doc2IdToRemove,
+            PositionStatementRespondent.builder().build());
 
         private final Element<PositionStatementRespondent> docToKeep = element(docIdToKeep,
-            PositionStatementRespondent.builder()
-                .build());
+            PositionStatementRespondent.builder().build());
 
-        @Test
-        void shouldClearPositionStatementRespondentWithNoDocumentsPostMigration() {
-            List<Element<PositionStatementRespondent>> positionStatementRespondents = new ArrayList<>();
-            positionStatementRespondents.add(docToRemove);
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(List.of(docToRemove))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementRespondentByUUID(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(List.of(docToRemove)).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(List.of(docToRemove)).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
-            assertThat(fields.get("positionStatementRespondentListV2")).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "" : "LA"))).isNull();
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldRemovePositionStatementRespondentByUUIDs(boolean isInLaList) {
+            List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "LA" : ""))).isEqualTo(List.of());
+            assertThat(fields.get("posStmtRespList" + (isInLaList ? "" : "LA"))).isNull();
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
         @SuppressWarnings("unchecked")
-        void shouldLeaveOtherDocsIntact() {
+        void shouldLeaveOtherDocsIntact(boolean isInLaList) {
             List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
             positionStatements.add(docToKeep);
             positionStatements.add(docToRemove);
 
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(positionStatements)
-                    .build())
-                .build();
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
 
-            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID,
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
                 docIdToRemove);
 
             List<Element<PositionStatementRespondent>> resultsPositionStatements =
-                (List<Element<PositionStatementRespondent>>) fields.get("positionStatementRespondentListV2");
+                (List<Element<PositionStatementRespondent>>) fields.get("posStmtRespList" + (isInLaList ? "LA" : ""));
 
             assertThat(resultsPositionStatements).hasSize(1);
             assertThat(resultsPositionStatements).containsExactly(docToKeep);
         }
 
-        @Test
-        void shouldThrowExceptionIfNoDocumentFound() {
-            CaseData caseData = CaseData.builder()
-                .hearingDocuments(HearingDocuments.builder()
-                    .positionStatementRespondentListV2(List.of(element(PositionStatementRespondent.builder().build())))
-                    .build())
-                .build();
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        @SuppressWarnings("unchecked")
+        void shouldLeaveOtherDocsIntactWhenRemovingMultipleTargets(boolean isInLaList) {
+            List<Element<PositionStatementRespondent>> positionStatements = new ArrayList<>();
+            positionStatements.add(docToKeep);
+            positionStatements.add(docToRemove);
+            positionStatements.add(doc2ToRemove);
+
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespListLA(positionStatements).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder().posStmtRespList(positionStatements).build());
+            }
+            CaseData caseData = builder.build();
+
+            Map<String, Object> fields = underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, isInLaList,
+                docIdToRemove, doc2IdToRemove);
+
+            List<Element<PositionStatementRespondent>> resultsPositionStatements =
+                (List<Element<PositionStatementRespondent>>) fields.get("posStmtRespList" + (isInLaList ? "LA" : ""));
+
+            assertThat(resultsPositionStatements).hasSize(1);
+            assertThat(resultsPositionStatements).containsExactly(docToKeep);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldThrowExceptionIfDocumentNotFound(boolean isInLaList) {
+            CaseData.CaseDataBuilder builder = CaseData.builder();
+            if (isInLaList) {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtRespListLA(List.of(element(PositionStatementRespondent.builder().build()))).build());
+            } else {
+                builder.hearingDocuments(HearingDocuments.builder()
+                    .posStmtRespList(List.of(element(PositionStatementRespondent.builder().build()))).build());
+            }
+            CaseData caseData = builder.build();
 
             assertThrows(AssertionError.class, () ->
-                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, docIdToRemove));
+                underTest.removePositionStatementRespondent(caseData, MIGRATION_ID, false, docIdToRemove));
         }
     }
 
@@ -697,6 +889,108 @@ class MigrateCaseServiceTest {
             assertDoesNotThrow(() ->
                 underTest.verifyGatekeepingOrderUrgentHearingOrderExistWithGivenFileName(caseData, MIGRATION_ID,
                     "test.pdf"));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveGatekeepingOrderStandardDirectionOrder {
+
+        private final long caseId = 1L;
+        private final String fileName = "Test Filname.pdf";
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionOrderIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfStandardDirectionOrderNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .standardDirectionOrder(
+                    StandardDirectionOrder.builder()
+                        .orderDoc(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveReturnApplication {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowExceptionIfReturnApplicationIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfReturnApplicationNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, document1Id));
+        }
+
+        @Test
+        void shouldNotThrowExceptionIfReturnApplicationIsMatching() {
+            UUID documentId = UUID.randomUUID();
+            String documentUrl = "http://dm-store-prod.service.core-compute-prod.internal/documents/" + documentId;
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(documentUrl)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
+                        .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
         }
     }
 
@@ -1505,6 +1799,18 @@ class MigrateCaseServiceTest {
                 .hasMessage("Migration {id = " + MIGRATION_ID + ", case reference = 1}, judicial message "
                             + mesageToBeRemoved.getId() + " not found");
         }
+
+        @Test
+        void shouldRemoveClosedJudicialMessage() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closedJudicialMessages(List.of(message1, message2, mesageToBeRemoved))
+                .build();
+
+            Map<String, Object> updates =
+                underTest.removeClosedJudicialMessage(caseData, MIGRATION_ID, mesageToBeRemoved.getId().toString());
+            assertThat(updates).extracting("closedJudicialMessages").asList().containsExactly(message1, message2);
+        }
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -1614,6 +1920,60 @@ class MigrateCaseServiceTest {
                 .hasMessage(format("Migration {id = %s, case reference = %s},"
                         + " notice of proceedings bundle %s not found",
                     MIGRATION_ID, 1, noticeOfProceedingsToBeRemoved.getId().toString()));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveDocumentFiledOnIssue {
+        private final Element<ManagedDocument> document1 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> document2 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> documentToBeRemoved =
+            element(ManagedDocument.builder().build());
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssue() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2,
+                    documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList()
+                .containsExactly(document1, document2);
+        }
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssueIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " document filed on issue %s not found",
+                    MIGRATION_ID, 1, documentToBeRemoved.getId()));
         }
     }
 
@@ -2109,6 +2469,612 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
                     MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class RemoveStringFromThresholdDetails {
+        private final String testThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\nFREDRICK (FRED) FREDERSON AND BOB BINS \n(By their Children’s Guardian)"
+            + "\n3rd-5th Respondents\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        private final String expectedThresholdDetails = "\nBETWEEN\n\nNON-DESCRIPT BOROUGH COUNCIL\nApplicant\n-and-\n"
+            + "\nJIM DAVIES\n1st Respondent\n-and-\n\nPETER PARKER (PUTATIVE FATHER)\n2nd Respondent\n-and-\n\nTIMOTHY"
+            + "\t\n3rd Respondent\n\n___________________________________________\n\nTHRESHOLD DOCUMENT";
+
+        @Test
+        void shouldRemoveSpecificStringFromThresholdDetails() {
+            var thresholdDetailsStartIndex = 167;
+            var thresholdDetailsEndIndex = 259;
+
+            final Grounds expectedGrounds = Grounds.builder()
+                .thresholdDetails(expectedThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .thresholdReason(List.of("noCare"))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            Map<String, Object> updatedGrounds = underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+
+            assertThat(updatedGrounds).extracting("grounds").isEqualTo(expectedGrounds);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoThresholdDetailsOrOutOfLimit() {
+            var thresholdDetailsStartIndex = 380;
+            var thresholdDetailsEndIndex = 389;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails(testThresholdDetails)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " threshold details is shorter than provided index",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfBlankText() {
+            var thresholdDetailsStartIndex = 8;
+            var thresholdDetailsEndIndex = 9;
+
+            final Grounds grounds = Grounds.builder()
+                .thresholdDetails("\nBETWEEN\n\n            ")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .grounds(grounds)
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeCharactersFromThresholdDetails(caseData, MIGRATION_ID,
+                thresholdDetailsStartIndex, thresholdDetailsEndIndex))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "threshold details does not contain provided text",
+                    MIGRATION_ID, 1));
+        }
+    }
+
+    @Nested
+    class RemoveSocialWorkerTelephone {
+
+        @Test
+        void shouldRemoveSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(Telephone.builder()
+                        .telephoneNumber("00000000000")
+                        .contactDirection("contact xyz")
+                        .build())
+                    .build())
+                .build();
+
+            Element<Child> unchangedChild = element(UUID.randomUUID(), Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jack")
+                    .lastName("Smith")
+                    .build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child), unchangedChild))
+                .build();
+
+            // should have the same child object, just missing a telephone number
+            Child updatedChild = child.toBuilder()
+                .party(child.getParty().toBuilder()
+                    .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                        .telephoneNumber(null)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, Object> response = underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId);
+
+            assertThat(response.get("children1")).asList()
+                .containsExactly(element(childId, updatedChild), unchangedChild);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "child did not have social worker telephone",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoChildWithId() {
+            UUID childId = UUID.randomUUID();
+            UUID expectedId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, expectedId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "could not find child with UUID %s",
+                    MIGRATION_ID, 1, expectedId));
+        }
+    }
+
+    @Nested  
+    class ClearHearingOption {
+      
+        @Test
+        void shouldClearHearingOption() {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("hearingOption", "EDIT_HEARING");
+            CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+            underTest.clearHearingOption(caseDetails);
+
+            assertThat(caseDetails.getData()).extracting("hearingOption").isNull();
+        }
+
+        @Test
+        void shouldDoNothingIfNoHearingOption() {
+            HashMap<String, Object> data = new HashMap<>();
+            CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+            assertThat(caseDetails.getData()).isEmpty();
+        }
+    }
+
+    @Nested
+    class MigrateCaseClosedDateToLatestFinalOrderApprovalDate {
+        private static final LocalDateTime LATEST_APPROVAL_DATE_TIME = LocalDateTime.now();
+        private static final LocalDate LATEST_APPROVAL_DATE = LATEST_APPROVAL_DATE_TIME.toLocalDate();
+        private static final LocalDate ORIGINAL_CLOSE_CASE_DATE = LATEST_APPROVAL_DATE.minusYears(1);
+        private static final CloseCase CLOSE_CASE_TAB_FIELD = CloseCase.builder()
+            .date(ORIGINAL_CLOSE_CASE_DATE).build();
+
+        @ParameterizedTest
+        @EnumSource(value = State.class, names = {"OPEN", "SUBMITTED", "GATEKEEPING", "GATEKEEPING_LISTING",
+            "CASE_MANAGEMENT", "DELETED", "RETURNED"})
+        void shouldThrowExceptionIfCaseNotClosed(State state) {
+            CaseData caseData = CaseData.builder().id(1L).state(state).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Case is not closed yet",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderCollectionIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfOrderCollectionIsEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED).orderCollection(List.of()).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} Order collection is null/empty",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfFinalOrderNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME)
+                        .markedFinal(YesNo.NO.getValue())
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Blank order (C21)")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Care order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Discharge of care order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Supervision order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim testing order")
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim testing order")
+                        .markedFinal(YesNo.YES.getValue())
+                        .build())
+                    )
+                ).build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} No final order found",
+                    MIGRATION_ID, 1));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Final Emergency protection order",
+            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
+            "Final Discharge of care order", "Final Supervision order", "Final testing order"})
+        void shouldUpdateCloseDateIfOldVersionOfOrderFound(String orderType) {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .type(orderType)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Final Emergency protection order",
+            "Interim Emergency protection order", "Final Blank order (C21)", "Final Care order",
+            "Final Discharge of care order", "Final Supervision order", "Final testing order", "Just an order"})
+        void shouldUpdateCloseDateIfNewVersionOfFinalOrderFound(String orderType) {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .type(orderType)
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsApprovalDateIfApprovalDateTimeIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .approvalDateTime(null)
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsApprovalDateTimeIfApprovalDateIsNull() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateIfApprovalDateIsTheLatestDate() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateIfApprovalDateTimeIsTheLatestDate() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(2))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(1))
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldUpdateCloseDateAsLatestApprovalDateIfMultipleFinalOrderExist() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CLOSE_CASE_TAB_FIELD)
+                .orderCollection(List.of(
+                    // not final order
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.NO.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE)
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Interim Care order")
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()),
+
+                    // no approval date
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(null)
+                        .build()),
+
+                    // approved final orders
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(2))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(3))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(LATEST_APPROVAL_DATE.minusDays(4))
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .build()),
+                    element(GeneratedOrder.builder()
+                        .type("Final Care order")
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME.minusDays(5))
+                        .build())
+                    )
+                ).build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE.minusDays(1), ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldOnlyUpdateCloseDateAndKeepDeprecatedFieldUnchanged() {
+            CloseCase closeCase = CLOSE_CASE_TAB_FIELD.toBuilder()
+                .details("details")
+                .fullReason("fullReason")
+                .partialReason("partialReason")
+                .showFullReason("showFullReason")
+                .build();
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(closeCase)
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(1))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDate(null)
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build()))
+                ).build();
+
+            Map<String, Object> actual =
+                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
+
+            assertThat(actual)
+                .isEqualTo(Map.of("closeCaseTabField", closeCase.toBuilder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build()));
+        }
+
+        @Test
+        void shouldRollbackCloseCaseTabFieldMigration() {
+            CaseData caseData = CaseData.builder()
+                .id(1L).state(State.CLOSED)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.rollbackCloseCaseTabFieldMigration(caseData, MIGRATION_ID);
+
+            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                .date(ORIGINAL_CLOSE_CASE_DATE)
+                .build()));
+        }
+
+        @Test
+        void shouldNotUpdateBackupFieldIfNotEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).state(State.CLOSED)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .orderCollection(List.of(
+                    element(GeneratedOrder.builder()
+                        .dateTimeIssued(LATEST_APPROVAL_DATE_TIME.minusDays(10))
+                        .markedFinal(YesNo.YES.getValue())
+                        .approvalDateTime(LATEST_APPROVAL_DATE_TIME)
+                        .build())))
+                .build();
+
+            assertCloseCaseDate(caseData, LATEST_APPROVAL_DATE, ORIGINAL_CLOSE_CASE_DATE);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCloseCaseTabFieldNotFound() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.rollbackCloseCaseTabFieldMigration(caseData,
+                MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} closeCaseField is null",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldClearCloseCaseTabBackupField() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .closeCaseTabField(CloseCase.builder()
+                    .date(LATEST_APPROVAL_DATE)
+                    .dateBackup(ORIGINAL_CLOSE_CASE_DATE)
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.clearCloseCaseTabBackupField(caseData);
+
+            assertThat(actual).isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                .date(LATEST_APPROVAL_DATE).build()));
+        }
+
+        private void assertCloseCaseDate(CaseData caseData, LocalDate expectedCloseDate, LocalDate expectedBackupDate) {
+            Map<String, Object> actual =
+                underTest.migrateCaseClosedDateToLatestFinalOrderApprovalDate(caseData, MIGRATION_ID);
+
+            assertThat(actual)
+                .isEqualTo(Map.of("closeCaseTabField", CloseCase.builder()
+                    .date(expectedCloseDate)
+                    .dateBackup(expectedBackupDate)
+                    .build()));
+        }
+
+        @Test
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleAsJudge() {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .otherTitle("Judge")
+                .judgeFullName("Random Title Here John Smith")
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        private static Stream<String> allJudgeTitlesStream() {
+            return JudicialUserProfile.TITLES.stream();
+        }
+
+        @ParameterizedTest
+        @MethodSource("allJudgeTitlesStream")
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleWithJudgeTitleEnum(String otherTitle) {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName(otherTitle + " John Smith")
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeFullName(otherTitle + " John Smith")
+                .otherTitle(otherTitle)
+                .build();
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        @Test
+        void shouldThrowExceptionWhenAllocationJudgeOtherTitleIsNotUknownAndSomethingElse() {
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Test")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                    MIGRATION_ID, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
         }
     }
 }

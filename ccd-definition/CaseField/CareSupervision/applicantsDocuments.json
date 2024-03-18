@@ -1,0 +1,322 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ParentAssessment",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ParentAssessmentConfidential",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ParentAssessmentConfidential",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parentAssessmentListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ParentAssessment",
+    "Label": "Parent assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyAndViabilityAssessmentConfidential",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyAndViabilityAssessmentConfidential",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famAndViabilityListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyAndViabilityAssessment",
+    "Label": "Family and viability assessments",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantOtherDocList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ApplicantsOtherDocument",
+    "Label": "Applicant's other documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantOtherDocListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ApplicantsOtherDocumentConfidential",
+    "Label": "Applicant's other documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantOtherDocListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ApplicantsOtherDocumentConfidential",
+    "Label": "Applicant's other documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantOtherDocListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ApplicantsOtherDocument",
+    "Label": "Applicant's other documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MeetingNote",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MeetingNoteConfidential",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MeetingNoteConfidential",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "meetingNoteListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MeetingNote",
+    "Label": "Meeting notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ContactNote",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ContactNoteConfidential",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ContactNoteConfidential",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "contactNoteListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ContactNote",
+    "Label": "Contact notes",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "thresholdList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Threshold",
+    "Label": "Threshold",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "thresholdListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ThresholdConfidential",
+    "Label": "Threshold",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "thresholdListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ThresholdConfidential",
+    "Label": "Threshold",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "thresholdListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Threshold",
+    "Label": "Threshold",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsFiledOnIssueList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Documents filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsFiledOnIssueListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssueConfidential",
+    "Label": "Documents filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsFiledOnIssueListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssueConfidential",
+    "Label": "Documents filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsFiledOnIssueListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentsFiledOnIssue",
+    "Label": "Documents filed on issue",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carePlanList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CarePlan",
+    "Label": "Care plan",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carePlanListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CarePlanConfidential",
+    "Label": "Care plan",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carePlanListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CarePlanConfidential",
+    "Label": "Care plan",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "carePlanListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CarePlan",
+    "Label": "Care plan",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

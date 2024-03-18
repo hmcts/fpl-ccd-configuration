@@ -5,9 +5,9 @@
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 0,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "submittedForm",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND showFurtherEvidenceTab=\"YES\"",
+    "TabShowCondition": "showFurtherEvidenceTab=\"DO_NOT_SHOW\"",
     "TabFieldDisplayOrder": 10
   },
   {
