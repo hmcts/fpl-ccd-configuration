@@ -31,11 +31,41 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await expect(this.page.getByText('has been updated with event: Judicial Gatekeeping')).toBeVisible();
   }
 
+  async  completeJudicialGatekeepingWithUploadedOrder() {
+    await this.page.getByLabel('Yes').check();
+    await this.clickContinue();
+    await this.page.getByLabel('Upload a prepared gatekeeping order').check();
+    await this.clickContinue();
+    await this.page.getByRole('textbox', { name: 'Attach prepared order' })
+    .setInputFiles('./playwright-e2e/files/textfile.txt');
+    await this.waitForAllUploadsToBeCompleted();
+    await this.clickContinue();
+    await this.page.getByRole('radio', { name: 'Yes' }).check();
+    await this.clickContinue();
+    await this.page.getByLabel('The local court admin completes the listing and serves the order').check();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
+    await expect(this.page.getByText('has been updated with event: Judicial Gatekeeping')).toBeVisible();
+  }
+
   async addAllocatedJudgeAndCompleteGatekeepingListing() {
     await this.page.getByLabel('Search for Judge (Optional)').click();
     await this.page.getByLabel('Search for Judge (Optional)').fill('Craig Taylor');
     await this.page.waitForSelector('span:text("District Judge (MC) Craig")');
     await this.page.getByText('District Judge (MC) Craig').click();
+    await this.clickContinue();
+    await this.completeHearingDetails();
+    await this.page.getByRole('radio', { name: 'Yes' }).check();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
+    await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
+  }
+
+  async addHighCourtJudgeAndCompleteGatekeepingLists() {
+    await this.page.getByLabel('Search for Judge (Optional)').click();
+    await this.page.getByLabel('Search for Judge (Optional)').fill('Arthur Ramirez');
+    await this.page.waitForSelector('span:text("His Honour Judge Arthur Ramirez (HHJ.Arthur.Ramirez@ejudiciary.net)")');
+    await this.page.getByText('His Honour Judge Arthur Ramirez (HHJ.Arthur.Ramirez@ejudiciary.net)').click();
     await this.clickContinue();
     await this.completeHearingDetails();
     await this.page.getByRole('radio', { name: 'Yes' }).check();

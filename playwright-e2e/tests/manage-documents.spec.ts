@@ -73,7 +73,6 @@ test.describe('Manage Documents', () => {
 
       await signInPage.navigateTOCaseDetails(caseNumber);
 
-      // Judge in Wales should see this Welsh case task + be able to assign it to themselves
       await manageDocuments.tabNavigation('Tasks');
       await manageDocuments.waitForTask('Review Correspondence (High Court)');
 

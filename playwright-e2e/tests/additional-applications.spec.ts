@@ -17,7 +17,7 @@ test.describe('Additional Applications', () => {
     });
 
 test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView }) => {
-    casename = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
+    casename = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
     setHighCourt(caseData);
     await apiDataSetup.updateCase(casename, caseNumber, caseData);
     await signInPage.visit();
