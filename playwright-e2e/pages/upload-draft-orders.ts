@@ -7,6 +7,7 @@ export class UploadDraftOrders extends BasePage {
     readonly uploadOrderLocator: Locator;
     readonly cmoOptionLocator: Locator;
     readonly otherOptionalLocator: Locator;
+    readonly attachCmoLocator: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -14,6 +15,7 @@ export class UploadDraftOrders extends BasePage {
         this.uploadOrderLocator = page.getByRole('textbox', { name: 'Upload the order' });
         this.cmoOptionLocator = page.getByLabel('Case Management (CMO)');
         this.otherOptionalLocator = page.getByLabel('Additional order (PDO ETC)');
+        this.attachCmoLocator = page.getByRole('textbox', { name: 'Attach CMO' });
     }
 
     //upload CMO
@@ -25,14 +27,14 @@ export class UploadDraftOrders extends BasePage {
         await this.page.locator('#pastHearingsForCMO').selectOption('Case management hearing, 3 November 2012');
         await this.clickContinue();
 
-        await this.uploadOrderLocator.setInputFiles('./playwright-e2e/files/draftOrder.docx');
+        await this.attachCmoLocator.setInputFiles('./playwright-e2e/files/draftOrder.docx');
         await this.waitForAllUploadsToBeCompleted();
         await this.page.getByLabel('Yes').check();
         await this.clickContinue();
 
-        await expect(this.page.getByText('draftOrder2.docx')).toBeVisible();
+        await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
         await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
+        await this.checkYourAnsAndSubmit('Submit');
     }
 
     // upload PDO
@@ -44,14 +46,14 @@ export class UploadDraftOrders extends BasePage {
         await this.clickContinue();
 
         await this.page.getByLabel('Order title').fill('Test');
-        await this.page.getByRole('textbox', { name: 'Upload the order' }).setInputFiles('./playwright-e2e/files/draftOrder2.docx');
+        await this.uploadOrderLocator.setInputFiles('./playwright-e2e/files/draftOrder2.docx');
         await this.page.getByLabel('Yes').nth(0).check();
         await this.waitForAllUploadsToBeCompleted();
         await this.addNewLocator.nth(1).click();
         await this.page.getByLabel('Order title').nth(1).fill('Test2');
         await this.uploadOrderLocator.nth(1).setInputFiles('./playwright-e2e/files/draftOrder.docx');
         await this.waitForAllUploadsToBeCompleted();
-        await this.page.getByLabel('Yes').nth(1).click();
+        await this.page.locator('#currentHearingOrderDrafts_1_documentAcknowledge-ACK_RELATED_TO_CASE').click();
         await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
 
@@ -59,6 +61,6 @@ export class UploadDraftOrders extends BasePage {
         await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
 
         await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
+        await this.checkYourAnsAndSubmit('Submit');
     }
 }

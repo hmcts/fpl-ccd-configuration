@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
 import { Apihelp } from '../utils/api-helper';
-import  caseData  from '../caseData/caseWithHearingDetails.json';
+import caseData from '../caseData/caseWithHearingDetails.json';
 import { expect } from '@playwright/test';
 
 test.describe('Upload draft orders', () => {
@@ -41,7 +41,7 @@ test.describe('Upload draft orders', () => {
 
             await uploadDraftOrders.tabNavigation('Draft orders');
             await expect(page.locator('#case-viewer-field-read--hearingOrdersBundlesDrafts')).toContainText('Case management hearing, 3 November 2012');
-            await expect(page.getByLabel('Draft orders').getByRole('link')).toContainText('draftOrder2.docx');
-            await expect(page.getByLabel('Draft orders').getByRole('link')).toContainText('draftOrder.docx');
+            await expect(page.getByRole('link', { name: 'draftOrder2.docx' })).toBeVisible();
+            await expect(page.getByRole('link', { name: 'draftOrder.docx' })).toBeVisible();
         });
 });
