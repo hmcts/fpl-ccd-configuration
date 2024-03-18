@@ -71,9 +71,8 @@ test("Smoke Test @smoke-test", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  await page.pause();
   // Add respondents' details
-  await startApplication.respondentsDetailsLink.isVisible();
+  //await startApplication.respondentsDetailsLink.isVisible();
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
 
