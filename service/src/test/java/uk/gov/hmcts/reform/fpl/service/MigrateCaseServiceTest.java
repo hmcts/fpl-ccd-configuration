@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -38,10 +39,13 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
@@ -50,6 +54,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
@@ -60,6 +65,7 @@ import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -924,6 +930,67 @@ class MigrateCaseServiceTest {
 
             assertThrows(AssertionError.class, () -> underTest
                 .verifyStandardDirectionOrderExists(caseData, MIGRATION_ID, document1Id));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveReturnApplication {
+
+        private final long caseId = 1L;
+
+        @Test
+        void shouldThrowExceptionIfReturnApplicationIsNullOrEmpty() {
+            UUID documentId = UUID.randomUUID();
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
+        }
+
+        @Test
+        void shouldThrowExceptionIfReturnApplicationNotMatching() {
+            UUID document1Id = UUID.randomUUID();
+            String document2Url = "http://dm-store-prod.service.core-compute-prod.internal/documents/"
+                + UUID.randomUUID();
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(document2Url)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
+                        .build())
+                .build();
+
+            assertThrows(AssertionError.class, () -> underTest
+                .verifyReturnApplicationExists(caseData, MIGRATION_ID, document1Id));
+        }
+
+        @Test
+        void shouldNotThrowExceptionIfReturnApplicationIsMatching() {
+            UUID documentId = UUID.randomUUID();
+            String documentUrl = "http://dm-store-prod.service.core-compute-prod.internal/documents/" + documentId;
+            DocumentReference documentReference = DocumentReference.builder()
+                .url(documentUrl)
+                .filename("Test Document")
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .returnApplication(
+                    ReturnApplication.builder()
+                        .document(documentReference)
+                        .build())
+                .build();
+
+            assertDoesNotThrow(() ->
+                underTest.verifyReturnApplicationExists(caseData, MIGRATION_ID, documentId));
         }
     }
 
@@ -1856,6 +1923,60 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveDocumentFiledOnIssue {
+        private final Element<ManagedDocument> document1 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> document2 =
+            element(ManagedDocument.builder().build());
+        private final Element<ManagedDocument> documentToBeRemoved =
+            element(ManagedDocument.builder().build());
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssue() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2,
+                    documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList()
+                .containsExactly(document1, document2);
+        }
+
+        @Test
+        void shouldRemoveDocumentFiledOnIssueIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("documentsFiledOnIssueList").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoticeOfProceedingsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .documentsFiledOnIssueList(List.of(document1, document2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeDocumentFiledOnIssue(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " document filed on issue %s not found",
+                    MIGRATION_ID, 1, documentToBeRemoved.getId()));
+        }
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_METHOD)
     @Nested
     class AddCourt {
@@ -2434,7 +2555,100 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
+    class RemoveSocialWorkerTelephone {
+
+        @Test
+        void shouldRemoveSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(Telephone.builder()
+                        .telephoneNumber("00000000000")
+                        .contactDirection("contact xyz")
+                        .build())
+                    .build())
+                .build();
+
+            Element<Child> unchangedChild = element(UUID.randomUUID(), Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Jack")
+                    .lastName("Smith")
+                    .build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child), unchangedChild))
+                .build();
+
+            // should have the same child object, just missing a telephone number
+            Child updatedChild = child.toBuilder()
+                .party(child.getParty().toBuilder()
+                    .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                        .telephoneNumber(null)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, Object> response = underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId);
+
+            assertThat(response.get("children1")).asList()
+                .containsExactly(element(childId, updatedChild), unchangedChild);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoSocialWorkerTelephone() {
+            UUID childId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, childId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "child did not have social worker telephone",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoChildWithId() {
+            UUID childId = UUID.randomUUID();
+            UUID expectedId = UUID.randomUUID();
+            Child child = Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .socialWorkerTelephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .children1(List.of(element(childId, child)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeSocialWorkerTelephone(caseData, MIGRATION_ID, expectedId))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "could not find child with UUID %s",
+                    MIGRATION_ID, 1, expectedId));
+        }
+    }
+
+    @Nested  
     class ClearHearingOption {
+      
         @Test
         void shouldClearHearingOption() {
             HashMap<String, Object> data = new HashMap<>();
@@ -2794,6 +3008,73 @@ class MigrateCaseServiceTest {
                     .date(expectedCloseDate)
                     .dateBackup(expectedBackupDate)
                     .build()));
+        }
+
+        @Test
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleAsJudge() {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .otherTitle("Judge")
+                .judgeFullName("Random Title Here John Smith")
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        private static Stream<String> allJudgeTitlesStream() {
+            return JudicialUserProfile.TITLES.stream();
+        }
+
+        @ParameterizedTest
+        @MethodSource("allJudgeTitlesStream")
+        void shouldReplaceUnknownAllocatedJudgeOtherTitleWithJudgeTitleEnum(String otherTitle) {
+
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Unknown")
+                    .judgeFullName(otherTitle + " John Smith")
+                    .build())
+                .build();
+
+            Map<String, Object> actual = underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID);
+
+            Judge expected = Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeFullName(otherTitle + " John Smith")
+                .otherTitle(otherTitle)
+                .build();
+
+            assertThat(actual).isEqualTo(Map.of("allocatedJudge", expected));
+        }
+
+
+        @Test
+        void shouldThrowExceptionWhenAllocationJudgeOtherTitleIsNotUknownAndSomethingElse() {
+            CaseData caseData = CaseData.builder()
+                .allocatedJudge(Judge.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .otherTitle("Test")
+                    .judgeFullName("Random Title Here John Smith")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.migrateCaseRemoveUnknownAllocatedJudgeTitle(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s} otherTitle is %s",
+                    MIGRATION_ID, caseData.getId(), caseData.getAllocatedJudge().getOtherTitle()));
         }
     }
 }

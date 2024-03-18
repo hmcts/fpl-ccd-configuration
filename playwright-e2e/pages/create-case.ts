@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { CreateCaseName } from "../utils/create-case-name";
 
 export class CreateCase {
   readonly page: Page;
@@ -23,42 +24,27 @@ export class CreateCase {
   async createCase() {
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.createCaseLink.click();
+
+    await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW").catch(
+      (error)=>{
+           this.page.waitForTimeout(500);
+           console.log(error);
+           console.log(" the page reloaded to ");
+           this.page.reload({timeout:3000,waitUntil:'load'});
+         }
+       )
     await this.caseJurisdictionFilterDropdown.selectOption("PUBLICLAW");
     await this.caseTypeFilterDropdown.selectOption("CARE_SUPERVISION_EPO");
     await this.page.getByLabel("Event").selectOption("openCase");
     await this.page.getByRole("button", { name: "Start" }).click();
   }
 
-  async caseName() {
-
-    var date = new Date();
-
-    let options: Intl.DateTimeFormatOptions = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-      timeZoneName: "short",
-    };
-
-    // Specify default date formatting for language (locale)
-    const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
-
-    // Append milliseconds to avoid duplicated case names with parallelisation
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-
-    // Create the case name using a timestamp string
-    const caseName = `Smoke Test ${formattedDate}.${milliseconds}`;
-    this.generatedCaseName = caseName;
-
-    console.log("Case name:", caseName);
-
+   caseName()  {
+    let formattedDate = CreateCaseName.getFormattedDate();
+    this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
-  async submitCase(caseName) {
+  async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page
@@ -71,7 +57,7 @@ export class CreateCase {
     await this.viewHistory.click();
   }
 
-  async checkCaseIsCreated(caseName) {
+  async checkCaseIsCreated(caseName: string) {
     await this.page.getByRole("link", { name: "Case list" }).click();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page
@@ -84,7 +70,7 @@ export class CreateCase {
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
     await this.page.getByLabel("Day").click();
-    await expect(this.page.getByText(caseName)).toBeVisible({ timeout: 75000 });
+    await expect(this.page.getByText(caseName)).toBeVisible;
     await this.page.getByText(caseName).click();
   }
 }

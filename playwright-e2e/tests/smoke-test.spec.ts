@@ -1,5 +1,6 @@
 import { test } from "../fixtures/create-fixture";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/userCredentials";
+import { BasePage } from "../pages/base-page";
+import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test", async ({
   signInPage,
@@ -8,8 +9,13 @@ test("Smoke Test @smoke-test", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren
+  riskAndHarmToChildren,
+  factorsAffectingParenting,
+  allocationProposal,
+  addApplicationDocuments,
+  page
 }) => {
+  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -19,17 +25,17 @@ test("Smoke Test @smoke-test", async ({
   await signInPage.isSignedIn();
 
   // Add application details
-  // 2. Start new case, get case id and assert case id is created
+  // Start new case, get case id and assert case id is created
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // 3. Orders and directions sought
+  // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // 4. Hearing urgency
+  // Hearing urgency
   await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
@@ -43,13 +49,28 @@ test("Smoke Test @smoke-test", async ({
   await hearingUrgency.saveAndContinueButton.click();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // 5. Grounds for the application
+  // Grounds for the application
   await startApplication.groundsForTheApplication();
   await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // 6. Risk and harm to children
+  // Risk and harm to children
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+
+  // Factors affecting parenting
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // Add application documents
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
+
+  // Allocation Proposal
+  await startApplication.allocationProposal();
+  await allocationProposal.allocationProposalSmokeTest();
+  await startApplication.allocationProposalHasBeenUpdated();
 });
