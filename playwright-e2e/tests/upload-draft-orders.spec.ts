@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
 import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/caseWithHearingDetails.json';
+import  caseData  from '../caseData/caseWithHearingDetails.json';
 import { expect } from '@playwright/test';
 
 test.describe('Upload draft orders', () => {

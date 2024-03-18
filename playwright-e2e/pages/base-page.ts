@@ -1,8 +1,4 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-
-export abstract class BasePage{
-import { type Page, type Locator } from "@playwright/test";
-import { type Page, type Locator, expect } from "@playwright/test";
 export class BasePage {
 
   readonly nextStep: Locator;
@@ -12,7 +8,7 @@ export class BasePage {
   readonly continue: Locator;
   readonly submit: Locator;
 
- constructor(page: Page) {
+  constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel('Next step');
     this.go = page.getByRole('button', { name: 'Go' });
@@ -24,16 +20,6 @@ export class BasePage {
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
 
-  constructor(page: Page) {
-    this.page = page;
-    this.nextStep = page.getByLabel("Next step");
-    this.go = page.getByRole("button", { name: "Go" });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and continue" });
-    this.continueButton = page.getByRole("button", { name: "Continue" });
-    this.signOut = page.getByText('Sign out');
-    this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-  }
-
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
     await this.go.click();
@@ -42,7 +28,7 @@ export class BasePage {
   async checkYourAnsAndSubmit() {
     await this.saveAndContinue.click();
   }
-  
+
   async clickSubmit() {
     await this.submit.click();
   }
@@ -50,11 +36,6 @@ export class BasePage {
   async tabNavigation(tabName: string) {
 
     await this.page.getByRole('tab', { name: tabName }).click();
-  }
-  
-  async clickContinue() {
-    await this.continue.click();
-    await this.page.getByText(tabName).click();
   }
 
   async clickContinue() {
@@ -73,7 +54,7 @@ export class BasePage {
     expect(await this.reloadAndCheckForText(taskName, 5000, 12)).toBeTruthy();
   }
 
-  async waitForRoleAndAccessTab(userName:string) {
+  async waitForRoleAndAccessTab(userName: string) {
     expect(await this.reloadAndCheckForText(userName, 10000, 3)).toBeTruthy();
   }
 
@@ -86,7 +67,7 @@ export class BasePage {
         return true;
       }
     }
-    
+
     return false;
   }
 
