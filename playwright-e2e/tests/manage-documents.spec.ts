@@ -69,7 +69,7 @@ test.describe('Manage Documents', () => {
       console.log('WA testing');
       await manageDocuments.clickSignOut();
       await signInPage.visit();
-      await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
+      await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
 
       await signInPage.navigateTOCaseDetails(caseNumber);
 
