@@ -1,19 +1,17 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
-
 export class UploadDraftOrders extends BasePage {
-    
+
     readonly addNewLocator: Locator;
     readonly uploadOrderLocator: Locator;
     readonly cmoOptionLocator: Locator;
     readonly otherOptionalLocator: Locator;
-    
 
     constructor(page: Page) {
         super(page);
         this.addNewLocator = page.getByRole('button', { name: 'Add new' });
-        this.uploadOrderLocator =page.getByRole('textbox', { name: 'Upload the order' });
+        this.uploadOrderLocator = page.getByRole('textbox', { name: 'Upload the order' });
         this.cmoOptionLocator = page.getByLabel('Case Management (CMO)');
         this.otherOptionalLocator = page.getByLabel('Additional order (PDO ETC)');
     }
@@ -34,9 +32,9 @@ export class UploadDraftOrders extends BasePage {
 
         await expect(this.page.getByText('draftOrder2.docx')).toBeVisible();
         await this.clickContinue();
-        await this.clickSubmit();
+        await this.checkYourAnsAndSubmit();
     }
-   
+
     // upload PDO
     async uploadAdditionalDraftOrders() {
         await this.otherOptionalLocator.check();
@@ -59,8 +57,8 @@ export class UploadDraftOrders extends BasePage {
 
         await expect(this.page.getByText('draftOrder2.docx')).toBeVisible();
         await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
-        
+
         await this.clickContinue();
-        await this.clickSubmit();
+        await this.checkYourAnsAndSubmit();
     }
 }
