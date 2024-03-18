@@ -27,6 +27,15 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-update-case-summary-overnight",
+    "Name": "Update case summary (overnight)",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
     "SecurityClassification": "Public",
     "Publish": "Y"
   },

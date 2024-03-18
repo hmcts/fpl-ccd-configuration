@@ -56,7 +56,7 @@ class UpdateSummaryCaseDetailsTest {
 
     private static final String JURISDICTION = "PUBLICLAW";
     private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
-    private static final String EVENT_NAME = "internal-update-case-summary";
+    private static final String EVENT_NAME = "internal-update-case-summary-overnight";
     private static final Long CASE_ID = 12345L;
     private static final int SEARCH_SIZE = 50;
     private static final String RANGE_FIELD = "data.caseSummaryNextHearingDate";
