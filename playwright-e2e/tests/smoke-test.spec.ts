@@ -11,8 +11,10 @@ test("Smoke Test @smoke-test", async ({
   groundsForTheApplication,
   riskAndHarmToChildren,
   factorsAffectingParenting,
+  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
+  
   page
 }) => {
   const basePage = new BasePage(page);
@@ -68,6 +70,10 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
+
+  // Add respondents' details
+  await startApplication.respondentDetails();
+  await respondentDetails.respondentDetailsNeeded();
 
   // Allocation Proposal
   await startApplication.allocationProposal();
