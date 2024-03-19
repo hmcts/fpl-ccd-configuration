@@ -1,6 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { BasePage } from "./base-page";
 
-export class ApplicantDetails {
+export class ApplicantDetails extends BasePage{
   readonly page: Page;
   readonly ApplicantDetailsHeading: Locator;
   readonly TeamManagerName: Locator;
@@ -8,7 +9,7 @@ export class ApplicantDetails {
   readonly CustomerReference: Locator;
   readonly ClientCode: Locator;
   readonly PhoneNumber: Locator;
-  readonly Continue: Locator; 
+  //readonly Continue: Locator; 
   readonly AddNew: Locator; 
   readonly ColleagueHeading: Locator;
   readonly ColleagueRole_SocialWorker: Locator;
@@ -17,10 +18,10 @@ export class ApplicantDetails {
   readonly ColleaguePhoneNumber: Locator;
   readonly CaseUpdateNotification_No: Locator;
   readonly CheckAnswersHeading: Locator;
-  readonly SaveAndContinue: Locator;
+  //readonly SaveAndContinue: Locator;
 
   public constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.ApplicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
     this.TeamManagerName = page.getByLabel('Legal team manager\'s name and');
     this.PBA_Number = page.getByLabel('*PBA number (Optional)');
@@ -34,9 +35,6 @@ export class ApplicantDetails {
     this.ColleagueEmail = page.getByLabel('*Email (Optional)');
     this.ColleaguePhoneNumber = page.getByLabel('Phone number (Optional)');
     this.CaseUpdateNotification_No = page.getByLabel('No');
-    this.Continue = page.getByRole('button', { name: 'Continue' });
-    this.CheckAnswersHeading = page.getByRole('heading', { name: 'Check your answers' });
-    this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
   async applicantDetailsNeeded() {
@@ -51,9 +49,9 @@ export class ApplicantDetails {
     await this.ClientCode.fill('1234567');
     await this.PhoneNumber.click();
     await this.PhoneNumber.fill('1234567890');
-    await this.Continue.click();
-
+    await this.clickContinue();
   }
+
   async colleagueDetailsNeeded(){
     await this.ColleagueHeading.isVisible;
     await this.AddNew.click();
@@ -65,8 +63,9 @@ export class ApplicantDetails {
     await this.ColleaguePhoneNumber.click();
     await this.ColleaguePhoneNumber.fill('0123456789');
     await this.CaseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
-    await this.Continue.click();
-    await this.CheckAnswersHeading.isVisible;
-    await this.SaveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnswersHeader.isVisible;
+    await this.checkYourAnsAndSubmit();
   }
+  
 }

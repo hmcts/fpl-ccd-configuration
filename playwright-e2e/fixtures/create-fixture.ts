@@ -17,11 +17,12 @@ import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
-import { CaseDetails } from "../pages/case-details";
 import { RespondentDetails } from "../pages/respondent-details";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
+  basePage: BasePage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
@@ -108,9 +109,11 @@ export const test = base.extend<CreateFixtures>({
   applicantDetails: async ({ page }, use) => {
     await use(new ApplicantDetails(page));
   },
-
   respondentDetails: async ({ page }, use) => {
     await use(new RespondentDetails(page));
   },
 
+  basePage: async ({ page }, use) => {
+    await use(new BasePage(page));
+  },
 });
