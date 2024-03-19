@@ -19,6 +19,7 @@ import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 
+
 type CreateFixtures = {
   signInPage: SignInPage;
   basePage: BasePage;

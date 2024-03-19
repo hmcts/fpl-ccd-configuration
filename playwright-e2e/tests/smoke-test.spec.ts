@@ -1,8 +1,8 @@
-import { test } from "../fixtures/create-fixture";
+import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test", async ({
+test("Smoke Test @smoke-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -15,8 +15,9 @@ test("Smoke Test @smoke-test", async ({
   respondentDetails,
   allocationProposal,
   addApplicationDocuments,
-  page
-}) => {
+  page,
+  makeAxeBuilder
+},testInfo) => {
   const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -84,4 +85,16 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  const accessibilityScanResults = await makeAxeBuilder()
+  // Automatically uses the shared AxeBuilder configuration,
+  // but supports additional test-specific configuration too
+  .analyze();
+
+  await testInfo.attach('accessibility-scan-results', {
+    body: JSON.stringify(accessibilityScanResults, null, 2),
+    contentType: 'application/json'
+  });
+
+expect(accessibilityScanResults.violations).toEqual([]);
 });
