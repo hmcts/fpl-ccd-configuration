@@ -247,7 +247,7 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
 
         verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(eq(SERVICE_AUTH_TOKEN),
             printRequest.capture());
-        verify(concurrencyHelper, times(2)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
+        verify(concurrencyHelper, times(3)).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
 
         LetterWithPdfsRequest expectedPrintRequest1 = printRequest(
             CASE_ID, ORDER, REPRESENTATIVE_POST.getValue(), COVERSHEET_REPRESENTATIVE_BINARY, ORDER_BINARY
@@ -261,7 +261,8 @@ class ManageOrdersSubmittedControllerTest extends AbstractCallbackTest {
             .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
 
         List<Element<SentDocuments>> documentsSent = mapper.convertValue(
-            caseDataDelta.getValue().get("documentsSentToParties"), new TypeReference<>() {}
+            caseDataDelta.getAllValues().stream().filter(el -> el.containsKey("documentsSentToParties"))
+                .findFirst().orElseThrow().get("documentsSentToParties"), new TypeReference<>() {}
         );
 
         SentDocument expectedRepresentativeDocument = documentSent(
