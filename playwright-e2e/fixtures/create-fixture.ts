@@ -26,11 +26,11 @@ type CreateFixtures = {
   riskAndHarmToChildren : RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
+  additionalApplications: AdditionalApplications;
   addApplicationDocuments : AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
-  additionalApplications: AdditionalApplications;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -73,6 +73,10 @@ export const test = base.extend<CreateFixtures>({
     await use(new AllocationProposal(page));
   },
 
+  additionalApplications: async ({ page }, use) => {
+    await use(new AdditionalApplications(page));
+  },
+
   addApplicationDocuments: async ({ page }, use) => {
     await use(new AddApplicationDocuments(page));
   },
@@ -88,9 +92,4 @@ export const test = base.extend<CreateFixtures>({
   caseDetails: async ({ page }, use) => {
     await use(new CaseDetails(page));
   },
-
-  additionalApplications: async ({ page }, use) => {
-    await use(new AdditionalApplications(page));
-  },
-
 });

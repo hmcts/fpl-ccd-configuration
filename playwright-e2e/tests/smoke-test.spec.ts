@@ -38,7 +38,7 @@ test("Smoke Test @smoke-test", async ({
   // Hearing urgency
   await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
-  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
+  await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days (deliberately added to throw error!)");
   await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
   await hearingUrgency.giveReasonTextBoxFill();
   await hearingUrgency.withoutNoticeHearing("No");
