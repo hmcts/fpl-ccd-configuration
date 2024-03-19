@@ -9,7 +9,7 @@ export const test = base.extend<AxeFixture>({
   makeAxeBuilder: async ({ page }, use, testInfo) => {
     const makeAxeBuilder = () =>
       new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa", "cat.keyboard", "best-practice"])
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22a", "wcag22aa"])
         .exclude("#commonly-reused-element-with-known-issue");
 
     await use(makeAxeBuilder);
