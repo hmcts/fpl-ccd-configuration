@@ -8,7 +8,7 @@ import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/
 import { expect } from '@playwright/test';
 
 
-test.describe('send and reply message @nightly',()=>{
+test.describe('send and reply message',()=>{
   let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber : string;
