@@ -11,6 +11,7 @@ test("Smoke Test @smoke-test", async ({
   groundsForTheApplication,
   riskAndHarmToChildren,
   factorsAffectingParenting,
+  applicantDetails,
   allocationProposal,
   addApplicationDocuments,
   page
@@ -68,6 +69,11 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
+
+  // Applicant Deatils
+  await startApplication.applicantDetails();
+  await applicantDetails.applicantDetailsNeeded();
+  await applicantDetails.colleagueDetailsNeeded();
 
   // Allocation Proposal
   await startApplication.allocationProposal();

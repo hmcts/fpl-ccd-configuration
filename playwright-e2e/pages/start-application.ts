@@ -19,6 +19,7 @@ export class StartApplication {
   readonly addApplicationDocsHeading: Locator;
   readonly uploadDocumentsLink: Locator;
   readonly upLoadDocsInProgress: Locator;
+  readonly applicantDetailsLink: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -37,6 +38,7 @@ export class StartApplication {
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
     this.upLoadDocsInProgress = page.locator('p:has(a[text()="Upload documents"]) > img[title="In progress"]');
+    this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
   }
 
   async addApplicationDetails() {
@@ -77,6 +79,11 @@ export class StartApplication {
 
   async addApplicationDocumentsInProgress() {
     await this.upLoadDocsInProgress.isVisible();
+  }
+
+  async applicantDetails(){
+    await this.applicantDetailsLink.isVisible();
+    await this.applicantDetailsLink.click();
   }
 
   async allocationProposal() {
