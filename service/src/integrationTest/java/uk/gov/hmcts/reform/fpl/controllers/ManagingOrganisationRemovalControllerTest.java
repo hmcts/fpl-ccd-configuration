@@ -254,11 +254,6 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
             .id(10L)
             .caseName("Smith case")
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
-                .id(LOCAL_AUTHORITY_1_CODE)
-                .designated(YES.getValue())
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .build()))
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .outsourcingPolicy(organisationPolicy)
             .solicitor(managingOrganisationSolicitor)
@@ -280,13 +275,6 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
             .build();
 
         checkUntil(() -> {
-            verify(notificationClient).sendEmail(
-                MANAGING_ORGANISATION_REMOVED_TEMPLATE,
-                LOCAL_AUTHORITY_1_INBOX,
-                toMap(expectedNotifyData),
-                notificationReference(caseData.getId())
-            );
-
             verify(notificationClient).sendEmail(
                 MANAGING_ORGANISATION_REMOVED_TEMPLATE,
                 managingOrganisationSolicitorEmail,

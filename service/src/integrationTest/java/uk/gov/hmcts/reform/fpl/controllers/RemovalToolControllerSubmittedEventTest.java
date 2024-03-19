@@ -458,11 +458,6 @@ class RemovalToolControllerSubmittedEventTest extends AbstractCallbackTest {
                 .designated(YES.getValue())
                 .email(LOCAL_AUTHORITY_1_INBOX)
                 .build()))
-            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
-                .id(LOCAL_AUTHORITY_1_CODE)
-                .designated(YES.getValue())
-                .email(LOCAL_AUTHORITY_1_INBOX)
-                .build()))
             .gatekeeperEmails(wrapElements(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build()))
             .build();
 
