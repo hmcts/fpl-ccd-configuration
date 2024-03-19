@@ -68,5 +68,3 @@ playwright-e2e/.env
 
 # Ignore .env file
 .env
-
-playwright-e2e/tests/accessibility.spec.ts
