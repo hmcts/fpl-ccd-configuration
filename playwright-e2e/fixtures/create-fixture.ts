@@ -10,6 +10,10 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { AdditionalApplications } from "../pages/additional-applications";
+import { AddApplicationDocuments } from "../pages/add-application-documents";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import { CaseDetails } from "../pages/case-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -22,6 +26,10 @@ type CreateFixtures = {
   riskAndHarmToChildren : RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   allocationProposal : AllocationProposal;
+  addApplicationDocuments : AddApplicationDocuments;
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
   additionalApplications: AdditionalApplications;
 };
 
@@ -63,6 +71,22 @@ export const test = base.extend<CreateFixtures>({
 
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
+  },
+
+  addApplicationDocuments: async ({ page }, use) => {
+    await use(new AddApplicationDocuments(page));
+  },
+
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
   },
 
   additionalApplications: async ({ page }, use) => {

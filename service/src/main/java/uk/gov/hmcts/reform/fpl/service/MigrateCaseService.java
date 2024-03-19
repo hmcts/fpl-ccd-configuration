@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -372,6 +373,24 @@ public class MigrateCaseService {
         }
     }
 
+    public void verifyReturnApplicationExists(CaseData caseData, String migrationId, UUID documentId) {
+        if (isEmpty(caseData.getReturnApplication())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, Returned Application not found",
+                migrationId, caseData.getId()));
+        }
+
+        String caseDocumentUrl = caseData.getReturnApplication().getDocument().getUrl();
+
+        if (!documentId
+            .equals(UUID.fromString(caseDocumentUrl.substring(caseDocumentUrl.length() - 36)))) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s},"
+                    + " Returned Application document with Id %s not found",
+                migrationId, caseData.getId(), documentId));
+        }
+    }
+
     public Map<String, Object> removeApplicationDocument(CaseData caseData,
                                                                  String migrationId,
                                                                  UUID expectedApplicationDocumentId) {
@@ -609,6 +628,31 @@ public class MigrateCaseService {
         }
 
         return Map.of("noticeOfProceedingsBundle", updatedNoticeOfProceedingsBundle);
+    }
+
+    public Map<String, Object> removeDocumentFiledOnIssue(CaseData caseData, UUID documentFiledOnIssueId,
+                                                      String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<ManagedDocument>> documentsFiledOnIssueList = caseData.getDocumentsFiledOnIssueList();
+
+        if (documentsFiledOnIssueList.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, documentsFiledOnIssueList is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<ManagedDocument>> updatedDocumentsFiledOnIssueList =
+            ElementUtils.removeElementWithUUID(documentsFiledOnIssueList, documentFiledOnIssueId);
+
+        if (updatedDocumentsFiledOnIssueList.size() != documentsFiledOnIssueList.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, document filed on issue %s not found",
+                migrationId, caseId, documentFiledOnIssueId
+            ));
+        }
+
+        return Map.of("documentsFiledOnIssueList", updatedDocumentsFiledOnIssueList);
     }
 
     public Map<String, Object> addCourt(String courtId) {
@@ -956,6 +1000,34 @@ public class MigrateCaseService {
         return Map.of("localAuthorities", localAuthorities);
     }
 
+    public Map<String, Object> removeSocialWorkerTelephone(CaseData caseData, String migrationId, UUID childId) {
+        List<Element<Child>> children = caseData.getAllChildren();
+        Element<Child> targetChild = ElementUtils.findElement(childId, children)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find child with UUID %s",
+                migrationId, caseData.getId(), childId))
+            );
+
+        final Child child = targetChild.getValue();
+
+        if (isEmpty(child.getParty().getSocialWorkerTelephoneNumber())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, child did not have social worker telephone",
+                migrationId, caseData.getId()));
+        }
+
+        Child updatedChild = child.toBuilder()
+            .party(child.getParty().toBuilder()
+                .socialWorkerTelephoneNumber(child.getParty().getSocialWorkerTelephoneNumber().toBuilder()
+                    .telephoneNumber(null)
+                    .build())
+                .build())
+            .build();
+
+        targetChild.setValue(updatedChild);
+        return Map.of("children1", children);
+    }
+  
     public Map<String, Object> migrateCaseClosedDateToLatestFinalOrderApprovalDate(CaseData caseData,
                                                                                    String migrationId) {
         if (!State.CLOSED.equals(caseData.getState())) {

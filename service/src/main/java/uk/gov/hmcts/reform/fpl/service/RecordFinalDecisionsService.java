@@ -81,7 +81,8 @@ public class RecordFinalDecisionsService {
         List<ChildFinalDecisionDetails> childFinalDecisionDetails = eventData.getAllChildrenDecisionDetails();
 
         for (int i = 0; i < updatedChildren.size(); i++) {
-            ChildFinalDecisionReason decisionReason = childFinalDecisionDetails.get(i).getFinalDecisionReason();
+            ChildFinalDecisionReason decisionReason = childFinalDecisionDetails.get(i) != null
+                ? childFinalDecisionDetails.get(i).getFinalDecisionReason() : null;
             if (decisionReason != null) {
                 updatedChildren.get(i).getValue()
                     .setFinalDecisionReason(decisionReason.getLabel());
