@@ -11,7 +11,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
 
-test.describe('gatekeeping', () => {
+test.describe('Gatekeeping Listing', () => {
   let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;
@@ -55,6 +55,6 @@ test.describe('gatekeeping', () => {
       await page.getByRole('button', { name: "Mark as done" }).click();
 
       // Should be no more tasks on the page
-      await expect(page.getByText('Review Correspondence (High Court')).toHaveCount(0);
+      await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
     });
 });

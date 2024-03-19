@@ -18,6 +18,7 @@ import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { AdditionalApplications } from "../pages/additional-applications";
 import { ApproveOrders} from "../pages/approve-orders";
+import { Placement } from "../pages/placement";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -38,6 +39,7 @@ type CreateFixtures = {
   caseDetails: CaseDetails;
   additionalApplications: AdditionalApplications;
   approveOrders: ApproveOrders;
+  placement: Placement;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -110,5 +112,9 @@ export const test = base.extend<CreateFixtures>({
 
   approveOrders: async ({ page }, use) => {
     await use(new ApproveOrders(page));
+  },
+
+  placement: async ({ page }, use) => {
+    await use(new Placement(page));
   }
 });
