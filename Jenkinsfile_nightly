@@ -111,7 +111,7 @@ withNightlyPipeline(type, product, component) {
       try {
         yarnBuilder.yarn('test:functional-nightly')
       } catch (Error) {
-        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())	
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
         publishHTML([
           allowMissing         : true,
