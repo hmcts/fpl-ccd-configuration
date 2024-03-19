@@ -4,9 +4,11 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
+import java.util.Date;
 import java.util.Locale;
 
 public class DateFormatterHelper {
@@ -34,7 +36,18 @@ public class DateFormatterHelper {
         return date.format(DateTimeFormatter.ofPattern(format, language.getLocale()));
     }
 
+    public static String formatDateUsingFormat(Date dateTime, String format) {
+        if (dateTime == null) {
+            return "";
+        }
+        return formatLocalDateTimeBaseUsingFormat(dateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+            format);
+    }
+
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
+        if (dateTime == null) {
+            return "";
+        }
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
     

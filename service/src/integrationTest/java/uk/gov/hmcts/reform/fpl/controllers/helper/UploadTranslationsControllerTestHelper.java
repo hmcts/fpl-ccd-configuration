@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -93,6 +94,13 @@ public class UploadTranslationsControllerTestHelper {
                 .build()
             )
         ))
+        .respStmtList(List.of(
+            element(UUID_8, RespondentStatementV2.builder()
+                .document(DocumentReference.builder()
+                    .filename("respStmt.pdf")
+                    .build())
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build())))
         .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6.pdf")
@@ -130,7 +138,7 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
             dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
             dlElement(C110A.COLLECTION_ID, "Application (C110A)"),
-            dlElement(UUID_8, "Expert reports - Document 1 - 3 January 2009")
+            dlElement(UUID_8, "Respondent Statement - respStmt.pdf")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();

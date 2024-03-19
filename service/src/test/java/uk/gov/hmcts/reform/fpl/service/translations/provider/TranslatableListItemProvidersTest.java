@@ -23,8 +23,8 @@ class TranslatableListItemProvidersTest {
         mock(TranslatableNoticeOfHearingProvider.class);
     private final TranslatableC110AProvider translatableC110AProvider =
         mock(TranslatableC110AProvider.class);
-    private final TranslatableHearingFurtherEvidenceProvider translatableHearingFurtherEvidenceProvider =
-        mock(TranslatableHearingFurtherEvidenceProvider.class);
+    private final TranslatableRespondentStatementsProvider translatableRespondentStatementsProvider =
+        mock(TranslatableRespondentStatementsProvider.class);
 
     TranslatableListItemProviders underTest = new TranslatableListItemProviders(
         translatableGeneratedOrderListItemProvider,
@@ -34,7 +34,7 @@ class TranslatableListItemProvidersTest {
         translatableUrgentHearingOrderProvider,
         translatableNoticeOfHearingProvider,
         translatableC110AProvider,
-        translatableHearingFurtherEvidenceProvider
+        translatableRespondentStatementsProvider
     );
 
     @Test
@@ -47,7 +47,7 @@ class TranslatableListItemProvidersTest {
             translatableUrgentHearingOrderProvider,
             translatableNoticeOfHearingProvider,
             translatableC110AProvider,
-            translatableHearingFurtherEvidenceProvider
+            translatableRespondentStatementsProvider
         ));
     }
 }
