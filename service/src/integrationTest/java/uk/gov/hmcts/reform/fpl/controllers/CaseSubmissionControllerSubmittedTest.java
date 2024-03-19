@@ -731,6 +731,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 "representativeType", RepresentativeType.LOCAL_AUTHORITY,
                 "localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
                     .id(LOCAL_AUTHORITY_1_CODE)
+                    .name(LOCAL_AUTHORITY_1_NAME)
                     .designated(YES.getValue())
                     .email(LOCAL_AUTHORITY_1_INBOX)
                     .build())

@@ -224,6 +224,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
