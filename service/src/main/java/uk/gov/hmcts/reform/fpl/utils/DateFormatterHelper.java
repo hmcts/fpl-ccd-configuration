@@ -36,14 +36,6 @@ public class DateFormatterHelper {
         return date.format(DateTimeFormatter.ofPattern(format, language.getLocale()));
     }
 
-    public static String formatDateUsingFormat(Date dateTime, String format) {
-        if (dateTime == null) {
-            return "";
-        }
-        return formatLocalDateTimeBaseUsingFormat(dateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-            format);
-    }
-
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         if (dateTime == null) {
             return "";
