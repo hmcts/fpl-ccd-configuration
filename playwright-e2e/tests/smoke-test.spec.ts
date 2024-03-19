@@ -11,8 +11,10 @@ test("Smoke Test @smoke-test @nightly @accessibility", async ({
   groundsForTheApplication,
   riskAndHarmToChildren,
   factorsAffectingParenting,
+  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
+
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -69,6 +71,10 @@ test("Smoke Test @smoke-test @nightly @accessibility", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
+
+  // Add respondents' details
+  await startApplication.respondentDetails();
+  await respondentDetails.respondentDetailsNeeded();
 
   // Allocation Proposal
   await startApplication.allocationProposal();
