@@ -23,8 +23,8 @@ export class BasePage {
     await this.go.click();
   }
 
-  async checkYourAnsAndSubmit() {
-    await this.saveAndContinue.click();
+  async checkYourAnsAndSubmit(submitLabel: string = "Save and continue") {
+    await this.page.getByRole("button", { name: submitLabel }).click();
   }
 
   async tabNavigation(tabName: string) {

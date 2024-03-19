@@ -1,7 +1,8 @@
-import {BasePage} from "./base-page";
-import {expect, Page} from "@playwright/test";
-import {ManageHearings} from "./manage-hearings";
-import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
+import { BasePage } from "./base-page";
+import { expect, Page } from "@playwright/test";
+import { ManageHearings } from "./manage-hearings";
+import { HearingDetailsMixin } from "./mixins/hearing-details-mixin";
+import config from "../settings/test-docs/config";
 
 export class GatekeepingListing extends HearingDetailsMixin(BasePage)
 {
@@ -9,7 +10,7 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     super(page);
   }
 
-  async  completeJudicialGatekeeping() {
+  async completeJudicialGatekeeping() {
     await this.page.getByLabel('Yes').check();
     await this.clickContinue();
     await this.page.getByLabel('Create the gatekeeping order').check();
@@ -31,13 +32,12 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await expect(this.page.getByText('has been updated with event: Judicial Gatekeeping')).toBeVisible();
   }
 
-  async  completeJudicialGatekeepingWithUploadedOrder() {
+  async completeJudicialGatekeepingWithUploadedOrder() {
     await this.page.getByLabel('Yes').check();
     await this.clickContinue();
     await this.page.getByLabel('Upload a prepared gatekeeping order').check();
     await this.clickContinue();
-    await this.page.getByRole('textbox', { name: 'Attach prepared order' })
-    .setInputFiles('./playwright-e2e/files/textfile.txt');
+    await this.page.getByRole('textbox', { name: 'Attach prepared order' }).setInputFiles(config.testWordFile);
     await this.waitForAllUploadsToBeCompleted();
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
@@ -61,7 +61,7 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
   }
 
-  async addHighCourtJudgeAndCompleteGatekeepingLists() {
+  async addHighCourtJudgeAndCompleteGatekeepingListing() {
     await this.page.getByLabel('Search for Judge (Optional)').click();
     await this.page.getByLabel('Search for Judge (Optional)').fill('Arthur Ramirez');
     await this.page.waitForSelector('span:text("His Honour Judge Arthur Ramirez (HHJ.Arthur.Ramirez@ejudiciary.net)")');

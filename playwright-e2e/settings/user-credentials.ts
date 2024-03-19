@@ -40,3 +40,7 @@ export const secondJudgeWalesUser = {
   email: 'EMP267006@ejudiciary.net',
   password: judgePwd,
 };
+export const judgeLondonUser = {
+  email: 'EMP264002@ejudiciary.net',
+  password: judgePwd,
+}
