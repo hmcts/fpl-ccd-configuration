@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
-import { CTSCTeamLeadUser, CTSCUser, HighCourtAdminUser, newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
+import { CTSCUser, HighCourtAdminUser, newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
 import { Apihelp } from '../utils/api-helper';
 import caseData from '../caseData/mandatorySubmissionFields.json';
 import { expect } from '@playwright/test';
@@ -85,5 +85,4 @@ test.describe('Manage Documents', () => {
       await expect(page.getByText('Review Correspondence (High Court)')).toHaveCount(0);
     }
   });
-
 });

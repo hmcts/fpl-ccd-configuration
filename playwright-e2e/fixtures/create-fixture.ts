@@ -26,10 +26,10 @@ type CreateFixtures = {
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
-  hearingUrgency : HearingUrgency;
-  groundsForTheApplication : GroundsForTheApplication;
-  judicialMessages : JudicialMessage;
-  riskAndHarmToChildren : RiskAndHarmToChildren;
+  hearingUrgency: HearingUrgency;
+  groundsForTheApplication: GroundsForTheApplication;
+  judicialMessages: JudicialMessage;
+  riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
