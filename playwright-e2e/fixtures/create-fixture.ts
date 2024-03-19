@@ -10,27 +10,34 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { AdditionalApplications } from "../pages/additional-applications";
+import { ManageDocuments } from "../pages/manage-documents";
+import { BasePage } from "../pages/base-page";
+import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
+import { RespondentDetails } from "../pages/respondent-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
-  hearingUrgency : HearingUrgency;
-  groundsForTheApplication : GroundsForTheApplication;
-  judicialMessages : JudicialMessage;
-  riskAndHarmToChildren : RiskAndHarmToChildren;
+  hearingUrgency: HearingUrgency;
+  groundsForTheApplication: GroundsForTheApplication;
+  judicialMessages: JudicialMessage;
+  riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
+  manageDocuments: ManageDocuments;
+  caseFileView: CaseFileView;
   allocationProposal : AllocationProposal;
   additionalApplications: AdditionalApplications;
   addApplicationDocuments : AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  respondentDetails: RespondentDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -77,6 +84,14 @@ export const test = base.extend<CreateFixtures>({
     await use(new AdditionalApplications(page));
   },
 
+  manageDocuments: async ({ page }, use) => {
+    await use(new ManageDocuments(page));
+  },
+
+  caseFileView: async ({ page }, use) => {  
+    await use(new CaseFileView(page));
+  },
+
   addApplicationDocuments: async ({ page }, use) => {
     await use(new AddApplicationDocuments(page));
   },
@@ -92,4 +107,9 @@ export const test = base.extend<CreateFixtures>({
   caseDetails: async ({ page }, use) => {
     await use(new CaseDetails(page));
   },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
+  },
+
 });
