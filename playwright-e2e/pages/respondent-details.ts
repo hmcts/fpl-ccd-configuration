@@ -69,6 +69,7 @@ export class RespondentDetails {
     await this.LitigationCapacity.getByLabel('Yes').check();
     await this.LitigationCapacityReason.click();
     await this.LitigationCapacityReason.fill('these are the details');
+    await this.LegalRepresentation.getByLabel('No').check();
     await this.Continue.click();
     await this.SaveAndContinue.click();
   }
