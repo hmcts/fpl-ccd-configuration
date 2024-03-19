@@ -9,7 +9,6 @@ export class ApplicantDetails extends BasePage{
   readonly CustomerReference: Locator;
   readonly ClientCode: Locator;
   readonly PhoneNumber: Locator;
-  //readonly Continue: Locator; 
   readonly AddNew: Locator; 
   readonly ColleagueHeading: Locator;
   readonly ColleagueRole_SocialWorker: Locator;
@@ -18,7 +17,6 @@ export class ApplicantDetails extends BasePage{
   readonly ColleaguePhoneNumber: Locator;
   readonly CaseUpdateNotification_No: Locator;
   readonly CheckAnswersHeading: Locator;
-  //readonly SaveAndContinue: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -67,5 +65,4 @@ export class ApplicantDetails extends BasePage{
     await this.checkYourAnswersHeader.isVisible;
     await this.checkYourAnsAndSubmit();
   }
-  
 }

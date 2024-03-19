@@ -15,7 +15,6 @@ test("Smoke Test @smoke-test", async ({
   respondentDetails,
   allocationProposal,
   addApplicationDocuments,
-  
   page
 }) => {
   const basePage = new BasePage(page);

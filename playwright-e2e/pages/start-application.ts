@@ -99,6 +99,7 @@ export class StartApplication {
     await expect(this.applicantDetailsHasBeenUpdatedFinished)
       .toBeVisible;
   }
+  
   async allocationProposal() {
     await this.allocationProposalLink.isVisible();
     await this.allocationProposalLink.click();

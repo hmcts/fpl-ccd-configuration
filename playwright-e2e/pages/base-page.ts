@@ -69,5 +69,4 @@ export class BasePage {
       await expect(locs[i]).toBeDisabled();
     }
   }
-
 }
