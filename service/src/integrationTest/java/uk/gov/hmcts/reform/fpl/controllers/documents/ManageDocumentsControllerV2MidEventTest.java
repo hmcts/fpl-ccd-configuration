@@ -446,7 +446,8 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = DocumentType.class, names = {"POSITION_STATEMENTS_CHILD", "POSITION_STATEMENTS_RESPONDENT"})
+    @EnumSource(value = DocumentType.class, names = {"POSITION_STATEMENTS_CHILD", "POSITION_STATEMENTS_RESPONDENT",
+        "ARCHIVED_DOCUMENTS"})
     void shouldPopulateDocumentsToBeRemovedAfterSelectingLegacyPositionStatement(DocumentType documentType) {
         CaseData caseData = CaseData.builder()
             .manageDocumentEventData(ManageDocumentEventData.builder()
