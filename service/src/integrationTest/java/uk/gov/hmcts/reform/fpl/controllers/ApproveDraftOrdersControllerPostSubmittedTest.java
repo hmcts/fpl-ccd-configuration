@@ -237,6 +237,11 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
+        caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+            .id(LOCAL_AUTHORITY_3_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_3_INBOX)
+            .build()));
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -315,6 +320,11 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
+        caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+            .id(LOCAL_AUTHORITY_3_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_3_INBOX)
+            .build()));
 
         final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
