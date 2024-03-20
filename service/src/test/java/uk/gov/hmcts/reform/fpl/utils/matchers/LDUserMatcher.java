@@ -43,6 +43,14 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
         return wanted != null && target != null && target.getClass() == wanted.getClass();
     }
 
+    public final Object getWanted() {
+        return this.wanted;
+    }
+
+    public String toStringWithType(String className) {
+        return "(" + className + ") " + this.describe(this.wanted);
+    }
+
     public static class LDUserBuilder {
         private Map<String, LDValue> attrs = new HashMap<>();
 
