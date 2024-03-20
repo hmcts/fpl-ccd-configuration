@@ -19,11 +19,11 @@ test.describe('Placement', () => {
     caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Check Placement Application (High Court) WA Task',
+  test('Check Placement Application High Court WA Task',
     async ({ page, signInPage, placement,
       caseFileView }) => {
       test.skip(!testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
-      caseName = 'Check Placement Application (High Court) WA Task ' + dateTime.slice(0, 10);
+      caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
       await apiDataSetup.updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
@@ -48,8 +48,7 @@ test.describe('Placement', () => {
       await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
       await placement.tabNavigation('Tasks');
-      await placement.waitForTask('Active tasksCheck Placement');
-      await page.getByText('Check Placement Application (High Court)', { exact: true }).click();
+      await placement.waitForTask('Check Placement Application (High Court)');
 
       // Assign and complete the task
       await page.locator('exui-case-task').filter({ hasText: 'Check Placement Application (' }).locator('#action_claim').click();
