@@ -19,7 +19,6 @@ import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 
-
 type CreateFixtures = {
   signInPage: SignInPage;
   basePage: BasePage;
@@ -70,6 +69,7 @@ export const test = base.extend<CreateFixtures>({
   judicialMessages: async ({ page }, use) => {
     await use(new JudicialMessage(page));
   },
+
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
   },
@@ -109,6 +109,7 @@ export const test = base.extend<CreateFixtures>({
   applicantDetails: async ({ page }, use) => {
     await use(new ApplicantDetails(page));
   },
+  
   respondentDetails: async ({ page }, use) => {
     await use(new RespondentDetails(page));
   },
