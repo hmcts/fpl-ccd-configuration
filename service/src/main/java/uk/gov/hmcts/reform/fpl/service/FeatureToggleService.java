@@ -31,9 +31,10 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
-    @Deprecated
+    @Deprecated(since = "DFPL-2208")
     /**
-     * @deprecated since DFPL-2208
+     * @deprecated no longer need to attach the shared inbox from the config in any circumstances
+     * (as it is autofilled during case creation, and then possibly overridden on cases
      */
     public boolean isRestrictedFromPrimaryApplicantEmails(String caseId) {
         return ldClient.boolVariation("restrict-primary-applicant-emails",
