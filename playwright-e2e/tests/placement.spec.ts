@@ -56,6 +56,6 @@ test.describe('Placement', () => {
       await page.getByRole('button', { name: "Mark as done" }).click();
 
       // Should be no more tasks on the page
-      await expect(page.getByText('Review Failed Payment (High Court)')).toHaveCount(1);
+      await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
     });
 });
