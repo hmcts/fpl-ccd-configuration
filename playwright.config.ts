@@ -34,7 +34,7 @@ export default defineConfig({
     // Record trace only when retrying a test for the first time.
     trace: 'on',
 
-    // Record video only when retrying a test for the first time
+    // Record video only when retrying a test for the first time.
     video: 'on-first-retry'
     
   },
@@ -56,7 +56,7 @@ export default defineConfig({
       use: { ...devices["Desktop Safari"] },
     },
     
-     /* Test against mobile viewports. */
+    /* Test against mobile viewports. */
     // {
     //   name: "Mobile Chrome",
     //   use: { ...devices["Pixel 5"] },
