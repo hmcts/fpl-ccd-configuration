@@ -14,10 +14,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   allocationProposal,
   addApplicationDocuments,
-  
-  page
-
-}) => {
 
   page,
   makeAxeBuilder
