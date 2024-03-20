@@ -16,8 +16,8 @@ import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
-import { BasePage } from "../pages/base-page";
 import { RespondentDetails } from "../pages/respondent-details";
+import { ChildDetails } from "../pages/child-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
