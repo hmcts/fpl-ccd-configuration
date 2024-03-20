@@ -32,10 +32,10 @@ public class FeatureToggleService {
     }
 
     /**
-     * @deprecated (no longer need to attach the shared inbox from the config in any circumstances,
+     * @deprecated (ticket DFPL-2208, no longer need to attach the shared inbox from the config in any circumstances,
      * as it is autofilled during case creation, and then possibly overridden on cases)
      */
-    @Deprecated(since = "DFPL-2208")
+    @Deprecated(since = "DFPL-2208", forRemoval = true)
     public boolean isRestrictedFromPrimaryApplicantEmails(String caseId) {
         return ldClient.boolVariation("restrict-primary-applicant-emails",
             createLDUser(Map.of("caseId", LDValue.of(caseId))), false);

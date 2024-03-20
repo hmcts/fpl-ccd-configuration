@@ -145,7 +145,6 @@ class LocalAuthorityRecipientsServiceTest {
 
             given(localAuthorityEmails.getSharedInbox(LA_1_CODE)).willReturn(Optional.of(LA_1_INBOX));
             given(featureToggles.emailsToSolicitorEnabled(LA_1_CODE)).willReturn(true);
-            given(featureToggles.isRestrictedFromPrimaryApplicantEmails("12345")).willReturn(true);
 
             assertThat(underTest.getRecipients(recipientsRequest))
                 .containsExactlyInAnyOrder(LA_2_INBOX, designatedLAColleague2.getEmail(),
