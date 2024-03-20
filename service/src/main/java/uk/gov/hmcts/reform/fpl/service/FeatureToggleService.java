@@ -31,7 +31,10 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
-    @Deprecated(since = "DFPL-2208")
+    @Deprecated
+    /**
+     * @deprecated since DFPL-2208
+     */
     public boolean isRestrictedFromPrimaryApplicantEmails(String caseId) {
         return ldClient.boolVariation("restrict-primary-applicant-emails",
             createLDUser(Map.of("caseId", LDValue.of(caseId))), false);
