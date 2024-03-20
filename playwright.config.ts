@@ -35,8 +35,7 @@ export default defineConfig({
     trace: 'on',
 
     // Record video only when retrying a test for the first time.
-    video: 'on-first-retry'
-    
+    video: 'on-first-retry'    
   },
 
   /* Configure projects for major browsers */
@@ -55,6 +54,7 @@ export default defineConfig({
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
     },
+      
     /* Test against mobile viewports. */
     // {
     //   name: "Mobile Chrome",
