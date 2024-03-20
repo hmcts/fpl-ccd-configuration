@@ -21,7 +21,7 @@ export class StartApplication {
   readonly upLoadDocsInProgress: Locator;
   readonly applicantDetailsLink: Locator;
   readonly respondentsDetailsLink: Locator;
-  readonly applicantDetailsHasBeenUpdatedFinished: Locator;
+  readonly applicantDetailsUpdated: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -42,7 +42,7 @@ export class StartApplication {
     this.upLoadDocsInProgress = page.locator('p:has(a[text()="Upload documents"]) > img[title="In progress"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
-    this.applicantDetailsHasBeenUpdatedFinished = page.locator( 'xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img', );
+    this.applicantDetailsUpdated = page.getByRole('img', { name: 'Information added' });
   }
 
   async addApplicationDetails() {
@@ -96,7 +96,7 @@ export class StartApplication {
   }
 
   async applicantDetailsHasBeenUpdated() {
-    await expect(this.applicantDetailsHasBeenUpdatedFinished)
+    await expect(this.applicantDetailsUpdated)
       .toBeVisible;
   }
   

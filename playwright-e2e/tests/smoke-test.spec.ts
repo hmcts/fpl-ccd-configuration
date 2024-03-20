@@ -76,7 +76,8 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
   await applicantDetails.colleagueDetailsNeeded();
-
+  await startApplication.applicantDetailsHasBeenUpdated();
+  
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
