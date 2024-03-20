@@ -66,6 +66,19 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsCaseRestrictedFromUsingOnboardingSharedInbox(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRestrictedFromPrimaryApplicantEmails(CASE_ID)).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("restrict-primary-applicant-emails"),
+            argThat(ldUser(ENVIRONMENT).with("caseId", CASE_ID).build()),
+            eq(false));
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
