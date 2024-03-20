@@ -158,15 +158,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseStateID": "Open",
-    "UserRoles": [
-      "GS_profile"
-    ],
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "Submitted",
     "UserRoles": [
       "GS_profile"
@@ -195,15 +186,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseStateID": "CLOSED",
-    "UserRoles": [
-      "GS_profile"
-    ],
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseStateID": "Deleted",
     "UserRoles": [
       "GS_profile"
     ],
