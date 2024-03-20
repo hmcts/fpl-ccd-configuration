@@ -30,7 +30,7 @@ export class Apihelp {
   async createCase(caseName = 'e2e UI Test', user: { email: string, password: string }) {
 
     let res: object;
-    const url = `${urlConfig.serviceUrl}testing-support/case/create`;
+    const url = `${urlConfig.serviceUrl}/testing-support/case/create`;
     const data = {
       caseName: caseName,
     };
