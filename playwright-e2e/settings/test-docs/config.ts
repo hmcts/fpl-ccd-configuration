@@ -15,9 +15,14 @@ const config: Config = {
     __dirname,
     "../test-docs/testWordDoc.docx",
   ),
+  testTextFile: path.resolve(
+    __dirname,
+    "../test-docs/testTextFile.txt",
+  ),
 };
 
 export default config as {
   testPdfFile: string;
   testWordFile: string;
+  testTextFile: string;
 };
