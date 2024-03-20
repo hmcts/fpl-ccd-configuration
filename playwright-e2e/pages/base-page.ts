@@ -7,7 +7,7 @@ export class BasePage {
   readonly continueButton: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
-
+  
   constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");

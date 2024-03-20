@@ -1,5 +1,6 @@
 import { test } from "../fixtures/create-fixture";
 import { BasePage } from "../pages/base-page";
+//import { ChildDetails } from "../pages/child-details";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test", async ({
@@ -13,6 +14,7 @@ test("Smoke Test @smoke-test", async ({
   factorsAffectingParenting,
   allocationProposal,
   addApplicationDocuments,
+  childDetails,
   page
 }) => {
   const basePage = new BasePage(page);
@@ -68,6 +70,10 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
+
+  //Child details
+  await startApplication.childDetails();
+  await childDetails.childDetailsNeeded();
 
   // Allocation Proposal
   await startApplication.allocationProposal();

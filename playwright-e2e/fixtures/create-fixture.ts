@@ -12,10 +12,13 @@ import { AllocationProposal } from "../pages/allocation-proposal";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
-import {CaseDetails} from "../pages/case-details";
+import { CaseDetails } from "../pages/case-details";
+import { ChildDetails } from "../pages/child-details";
+import { BasePage } from "../pages/base-page";
 
 type CreateFixtures = {
   signInPage: SignInPage;
+  basePage: BasePage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
@@ -29,6 +32,7 @@ type CreateFixtures = {
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  childDetails: ChildDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -85,5 +89,13 @@ export const test = base.extend<CreateFixtures>({
 
   caseDetails: async ({ page }, use) => {
     await use(new CaseDetails(page));
+  },
+
+  childDetails: async ({ page }, use) => {
+    await use(new ChildDetails(page));
+  },
+
+  basePage: async ({ page }, use) => {
+    await use(new BasePage(page));
   },
 });
