@@ -42,7 +42,7 @@ export class StartApplication {
     this.upLoadDocsInProgress = page.locator('p:has(a[text()="Upload documents"]) > img[title="In progress"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
-    this.applicantDetailsUpdated = page.getByRole('img', { name: 'Information added' });
+    this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' }); //code changed from: page.getByRole('img', { name: 'Information added' });
   }
 
   async addApplicationDetails() {
@@ -89,15 +89,13 @@ export class StartApplication {
     await this.applicantDetailsLink.isVisible();
     await this.applicantDetailsLink.click();
   }
-  
+  async applicantDetailsHasBeenUpdated() {
+    await expect(this.applicantDetailsUpdated) 
+      .toBeVisible;
+  }
   async respondentDetails() {
     await this.respondentsDetailsLink.isVisible();
     await this.respondentsDetailsLink.click();
-  }
-
-  async applicantDetailsHasBeenUpdated() {
-    await expect(this.applicantDetailsUpdated)
-      .toBeVisible;
   }
   
   async allocationProposal() {

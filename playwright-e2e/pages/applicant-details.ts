@@ -3,64 +3,65 @@ import { BasePage } from "./base-page";
 
 export class ApplicantDetails extends BasePage{
   readonly page: Page;
-  readonly ApplicantDetailsHeading: Locator;
-  readonly TeamManagerName: Locator;
-  readonly PBA_Number: Locator;
-  readonly CustomerReference: Locator;
-  readonly ClientCode: Locator;
-  readonly PhoneNumber: Locator;
-  readonly AddNew: Locator; 
-  readonly ColleagueHeading: Locator;
-  readonly ColleagueRole_SocialWorker: Locator;
-  readonly ColleagueName: Locator;
-  readonly ColleagueEmail: Locator;
-  readonly ColleaguePhoneNumber: Locator;
-  readonly CaseUpdateNotification_No: Locator;
-  readonly CheckAnswersHeading: Locator;
+  readonly applicantDetailsHeading: Locator;
+  readonly teamManagerName: Locator;
+  readonly pbaNumber: Locator;
+  readonly waitForAllUploadsToBeCompleted
+  readonly customerReference: Locator;
+  readonly clientCode: Locator;
+  readonly phoneNumber: Locator;
+  readonly addNew: Locator; 
+  readonly colleagueHeading: Locator;
+  readonly colleagueRole_SocialWorker: Locator;
+  readonly colleagueName: Locator;
+  readonly colleagueEmail: Locator;
+  readonly colleaguePhoneNumber: Locator;
+  readonly caseUpdateNotification_No: Locator;
+  readonly checkAnswersHeading: Locator;
 
   public constructor(page: Page) {
     super(page);
-    this.ApplicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
-    this.TeamManagerName = page.getByLabel('Legal team manager\'s name and');
-    this.PBA_Number = page.getByLabel('*PBA number (Optional)');
-    this.CustomerReference = page.getByLabel('Customer reference');
-    this.ClientCode = page.getByLabel('Client code (Optional)');
-    this.PhoneNumber = page.getByLabel('*Phone number');
-    this.AddNew = page.getByRole('button', { name: 'Add new' });
-    this.ColleagueHeading = page.locator('h2').filter({ hasText: 'Colleague' });
-    this.ColleagueRole_SocialWorker = page.getByLabel('Social worker');
-    this.ColleagueName = page.getByLabel('*Full name');
-    this.ColleagueEmail = page.getByLabel('*Email (Optional)');
-    this.ColleaguePhoneNumber = page.getByLabel('Phone number (Optional)');
-    this.CaseUpdateNotification_No = page.getByLabel('No');
+    this.applicantDetailsHeading = page.getByRole('heading', { name: 'Applicant details' });
+    this.teamManagerName = page.getByLabel('Legal team manager\'s name and');
+    this.pbaNumber = page.getByLabel('*PBA number (Optional)');
+    this.customerReference = page.getByLabel('Customer reference');
+    this.clientCode = page.getByLabel('Client code (Optional)');
+    this.phoneNumber = page.getByLabel('*Phone number');
+    this.addNew = page.getByRole('button', { name: 'Add new' });
+    this.colleagueHeading = page.locator('h2').filter({ hasText: 'Colleague' });
+    this.colleagueRole_SocialWorker = page.getByLabel('Social worker');
+    this.colleagueName = page.getByLabel('*Full name');
+    this.colleagueEmail = page.getByLabel('*Email (Optional)');
+    this.colleaguePhoneNumber = page.getByLabel('Phone number (Optional)');
+    this.caseUpdateNotification_No = page.getByLabel('No');
   }
 
   async applicantDetailsNeeded() {
-    await this.ApplicantDetailsHeading.isVisible;
-    await this.TeamManagerName.click();
-    await this.TeamManagerName.fill('Sarah Johnson');
-    await this.PBA_Number.click();
-    await this.PBA_Number.fill('PBA1234567');
-    await this.CustomerReference.click();
-    await this.CustomerReference.fill('1234567');
-    await this.ClientCode.click();
-    await this.ClientCode.fill('1234567');
-    await this.PhoneNumber.click();
-    await this.PhoneNumber.fill('1234567890');
+    await this.applicantDetailsHeading.isVisible;
+    await this.teamManagerName.click();
+    await this.teamManagerName.fill('Sarah Johnson');
+    await this.pbaNumber.click();
+    await this.pbaNumber.fill('PBA1234567');
+    await this.customerReference.click();
+    await this.customerReference.fill('1234567');
+    await this.clientCode.click();
+    await this.clientCode.fill('1234567');
+    await this.phoneNumber.click();
+    await this.phoneNumber.fill('1234567890');
     await this.clickContinue();
   }
 
   async colleagueDetailsNeeded(){
-    await this.ColleagueHeading.isVisible;
-    await this.AddNew.click();
-    await this.ColleagueRole_SocialWorker.check();
-    await this.ColleagueName.click();
-    await this.ColleagueName.fill('Peter Green');
-    await this.ColleagueEmail.click();
-    await this.ColleagueEmail.fill('petergreen@socialworker.com');
-    await this.ColleaguePhoneNumber.click();
-    await this.ColleaguePhoneNumber.fill('0123456789');
-    await this.CaseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
+    await this.colleagueHeading.isVisible;
+    await this.addNew.click();
+    await this.colleagueRole_SocialWorker.check();
+    await this.colleagueName.click();
+    await this.colleagueName.fill('Peter Green');
+    await this.colleagueEmail.click();
+    await this.colleagueEmail.fill('petergreen@socialworker.com');
+    await this.colleaguePhoneNumber.click();
+    await this.colleaguePhoneNumber.fill('0123456789');
+    await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
     await this.clickContinue();
     await this.checkYourAnswersHeader.isVisible;
     await this.checkYourAnsAndSubmit();
