@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.model.PolicyDatas;
+import uk.gov.hmcts.reform.fpl.model.PolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class PolicyHelperTest {
 
     @Test
     void shouldProcessFieldByPolicyDatasIfMatchingCaseRoles() {
-        PolicyDatas policyDatas = RespondentPolicyData.builder()
+        PolicyData policyData = RespondentPolicyData.builder()
             .respondentPolicy0(OrganisationPolicy.builder()
                 .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName())
                 .build())
@@ -51,7 +51,7 @@ public class PolicyHelperTest {
 
         List<String> actualResult = new ArrayList<>();
 
-        PolicyHelper.processFieldByPolicyDatas(policyDatas,
+        PolicyHelper.processFieldByPolicyDatas(policyData,
             "TestingField",
             Set.of(CaseRole.SOLICITORA, CaseRole.SOLICITORC),
             actualResult::add);

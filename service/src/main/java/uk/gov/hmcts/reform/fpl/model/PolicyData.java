@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public interface PolicyDatas {
+public interface PolicyData {
     @JsonIgnore
     OrganisationPolicy[] getAllPolicies();
 
