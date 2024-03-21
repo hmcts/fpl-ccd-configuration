@@ -182,6 +182,9 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     @Captor
     private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
 
+    @Captor
+    private ArgumentCaptor<String> eventIdCaptor;
+
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
 
@@ -656,11 +659,13 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), eventIdCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
+        assertThat(eventIdCaptor.getAllValues())
+            .containsExactlyInAnyOrder("internal-update-case-summary", "internal-change-add-gatekeeping");
         assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
             .containsExactly("internal-update-case-summary");
 
@@ -705,15 +710,15 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), eventIdCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
         assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
             .containsExactly("internal-update-case-summary");
+        assertThat(eventIdCaptor.getAllValues())
+            .containsExactlyInAnyOrder("internal-update-case-summary", "internal-change-add-gatekeeping");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }
