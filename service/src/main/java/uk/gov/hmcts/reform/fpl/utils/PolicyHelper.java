@@ -27,6 +27,4 @@ public class PolicyHelper {
                 processFunction.accept(fieldBaseName + policyNo));
         }
     }
-
-
 }
