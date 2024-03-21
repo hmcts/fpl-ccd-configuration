@@ -23,7 +23,7 @@ public class RespondentPolicyData implements PolicyDatas {
 
     @Override
     @JsonIgnore
-    public OrganisationPolicy[] getAllPolicy() {
+    public OrganisationPolicy[] getAllPolicies() {
         return new OrganisationPolicy[] {
             respondentPolicy0, respondentPolicy1, respondentPolicy2, respondentPolicy3, respondentPolicy4,
             respondentPolicy5, respondentPolicy6, respondentPolicy7, respondentPolicy8, respondentPolicy9

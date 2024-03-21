@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface PolicyDatas {
     @JsonIgnore
-    OrganisationPolicy[] getAllPolicy();
+    OrganisationPolicy[] getAllPolicies();
 
     @JsonIgnore
     default List<Integer> getPolicyNoByCaseRoles(Collection<CaseRole> caseRoles) {
-        OrganisationPolicy[] allPolicy = getAllPolicy();
+        OrganisationPolicy[] allPolicy = getAllPolicies();
 
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < allPolicy.length; i++) {
