@@ -300,9 +300,8 @@ public class ApproveDraftOrdersService {
             data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
         }
 
-        updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
+        data.putAll(updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle));
         data.put("orderCollection", orderCollection);
-        data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
     private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>
