@@ -35,8 +35,8 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
         return ValuePrinter.print(object);
     }
 
-    public String toStringWithType() {
-        return "(" + wanted.getClass().getSimpleName() + ") " + describe(wanted);
+    public String toStringWithType(String className) {
+        return "(" + className + ") " + this.describe(this.wanted);
     }
 
     public boolean typeMatches(Object target) {
@@ -45,10 +45,6 @@ public class LDUserMatcher implements ArgumentMatcher<LDUser>, ContainsExtraType
 
     public final Object getWanted() {
         return this.wanted;
-    }
-
-    public String toStringWithType(String className) {
-        return "(" + className + ") " + this.describe(this.wanted);
     }
 
     public static class LDUserBuilder {
