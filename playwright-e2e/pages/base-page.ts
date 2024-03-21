@@ -4,7 +4,6 @@ export class BasePage {
   readonly nextStep: Locator;
   readonly go: Locator;
   readonly page: Page;
-  readonly saveAndContinue: Locator;
   readonly continueButton: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
@@ -13,7 +12,6 @@ export class BasePage {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
     this.go = page.getByRole("button", { name: "Go" });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and continue" });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
@@ -24,16 +22,23 @@ export class BasePage {
     await this.go.click();
   }
 
-  async checkYourAnsAndSubmit() {
-    await this.saveAndContinue.click();
+  async checkYourAnsAndSubmit(submitLabel: string = "Save and continue") {
+    await this.page.getByRole("button", { name: submitLabel }).click();
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByText(tabName).click();
+    await this.page.getByRole('tab', { name: tabName }).click();
   }
 
   async clickContinue() {
     await this.continueButton.click();
+  }
+
+  async waitForAllUploadsToBeCompleted() {
+    let locs = await this.page.getByText('Cancel upload').all();
+    for (let i = 0; i < locs.length; i++) {
+      await expect(locs[i]).toBeDisabled();
+    }
   }
 
   async waitForTask(taskName: string) {
@@ -62,12 +67,6 @@ export class BasePage {
   async clickSignOut() {
     await this.signOut.click();
   }
-
-  async waitForAllUploadsToBeCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
-    for (let i = 0; i < locs.length; i++) {
-      await expect(locs[i]).toBeDisabled();
-    }
-  }
-
 }
+
+
