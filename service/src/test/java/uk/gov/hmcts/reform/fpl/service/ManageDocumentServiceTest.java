@@ -331,13 +331,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> updates = underTest.baseEventData(caseData);
 
-        assertThat(updates)
-            .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
-            .containsExactly(null, null, expectedManageDocument);
-
-        assertThat(updates).doesNotContainKeys(MANAGE_DOCUMENTS_HEARING_LIST_KEY);
-        assertThat(updates).doesNotContainKeys(SUPPORTING_C2_LIST_KEY);
-        assertThat(updates).doesNotContainKeys(RESPONDENTS_LIST_KEY);
+        assertThat(updates).doesNotContainKeys(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY,
+            RESPONDENTS_LIST_KEY);
         assertThat(updates).containsEntry(MANAGE_DOCUMENT_KEY, expectedManageDocument);
     }
 

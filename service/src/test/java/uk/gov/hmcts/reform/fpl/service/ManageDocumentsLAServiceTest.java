@@ -134,9 +134,10 @@ class ManageDocumentsLAServiceTest {
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
+        assertThat(listAndLabel).doesNotContainKeys(HEARING_DOCUMENT_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY);
         assertThat(listAndLabel)
-            .extracting(HEARING_DOCUMENT_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
-            .containsExactly(null, null, expectedManageDocument);
+            .extracting(MANAGE_DOCUMENT_LA_KEY)
+            .isEqualTo(expectedManageDocument);
     }
 
     @Test
@@ -151,9 +152,10 @@ class ManageDocumentsLAServiceTest {
 
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
+        assertThat(listAndLabel).doesNotContainKey(RESPONDENTS_LIST_KEY);
         assertThat(listAndLabel)
-            .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
-            .containsExactly(null, expectedManageDocument);
+            .extracting(MANAGE_DOCUMENT_LA_KEY)
+            .isEqualTo(expectedManageDocument);
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

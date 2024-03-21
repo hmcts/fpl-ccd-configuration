@@ -1059,7 +1059,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList()
                 .contains(
                     element(doc1Id, RespondentStatementV2.builder()
@@ -1105,7 +1105,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList()
                 .contains(
                     element(doc1Id, RespondentStatementV2.builder()
@@ -1146,7 +1146,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListLA").asList()
                 .contains(
@@ -1183,7 +1183,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListLA").asList()
                 .contains(
@@ -1221,7 +1221,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListCTSC").asList()
@@ -1260,7 +1260,7 @@ class MigrateCFVServiceTest {
 
             Map<String, Object> updatedFields = underTest.migrateRespondentStatement(caseData);
 
-            assertThat(updatedFields).extracting("respondentStatements").isNull();
+            assertThat(updatedFields).doesNotContainKey("respondentStatements");
             assertThat(updatedFields).extracting("respStmtList").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListLA").asList().isEmpty();
             assertThat(updatedFields).extracting("respStmtListCTSC").asList()
@@ -1937,7 +1937,7 @@ class MigrateCFVServiceTest {
                 .extracting("skeletonArgumentListLA").isEqualTo(List.of());
         }
     }
-  
+
     @Nested
     class MigrateCorrespondence {
         @Test
@@ -2486,7 +2486,7 @@ class MigrateCFVServiceTest {
                     ))
                     .build()
                 ).build();
-            
+
             assertThatThrownBy(() -> underTest.validateMigratedNumberOfDocuments(MIGRATION_ID, caseData,
                 Map.of(
                     "posStmtRespList", List.of(element(PositionStatementRespondent.builder()
