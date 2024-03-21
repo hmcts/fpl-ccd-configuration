@@ -48,10 +48,15 @@ public class MigrateCaseController extends CallbackController {
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-log", this::runLog,
         "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback
     );
+
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging on case {}", caseDetails.getId());
+    }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
