@@ -14,10 +14,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   allocationProposal,
   addApplicationDocuments,
+  uploadDocuments,
 
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
   const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -34,11 +35,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
-  // Orders and directions sought
+  // // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // Hearing urgency
+  // // Hearing urgency
   await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
@@ -52,7 +53,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await hearingUrgency.saveAndContinueButton.click();
   await startApplication.addApplicationDetailsHeading.isVisible();
 
-  // Grounds for the application
+  // // Grounds for the application
   await startApplication.groundsForTheApplication();
   await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
@@ -72,7 +73,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // Add respondents' details
+  // // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
 
@@ -81,15 +82,20 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
+  // Upload Documents
+  await uploadDocuments.uploadDocuments();
+  await startApplication.uploadDocumentsHasBeenUpdated();
+
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
+
 });

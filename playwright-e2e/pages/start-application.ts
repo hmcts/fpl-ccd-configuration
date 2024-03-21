@@ -1,6 +1,9 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
+  uploadDocumentsHasBeenUpdated() {
+    throw new Error("Method not implemented.");
+  }
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
@@ -20,6 +23,7 @@ export class StartApplication {
   readonly uploadDocumentsLink: Locator;
   readonly upLoadDocsInProgress: Locator;
   readonly respondentsDetailsLink: Locator;
+  
 
   public constructor(page: Page) {
     this.page = page;
