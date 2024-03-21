@@ -15,7 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
-public class ConfidentialOrderBundleTest {
+class ConfidentialOrderBundleTest {
 
     static ConfidentialGeneratedOrders buildTestConfidentialOrderBundle() {
         return ConfidentialGeneratedOrders.builder()
