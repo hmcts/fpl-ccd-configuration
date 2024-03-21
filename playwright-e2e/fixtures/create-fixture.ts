@@ -8,27 +8,36 @@ import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
 import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
+import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
+import { ManageDocuments } from "../pages/manage-documents";
+import { BasePage } from "../pages/base-page";
+import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
-import {CaseDetails} from "../pages/case-details";
+import { CaseDetails } from "../pages/case-details";
+import { RespondentDetails } from "../pages/respondent-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
-  hearingUrgency : HearingUrgency;
-  groundsForTheApplication : GroundsForTheApplication;
-  judicialMessages : JudicialMessage;
-  riskAndHarmToChildren : RiskAndHarmToChildren;
+  hearingUrgency: HearingUrgency;
+  groundsForTheApplication: GroundsForTheApplication;
+  judicialMessages: JudicialMessage;
+  riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
+  uploadDraftOrders: UploadDraftOrders;
+  manageDocuments: ManageDocuments;
+  caseFileView: CaseFileView;
   allocationProposal : AllocationProposal;
   addApplicationDocuments : AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  respondentDetails: RespondentDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -59,6 +68,7 @@ export const test = base.extend<CreateFixtures>({
   judicialMessages: async ({ page }, use) => {
     await use(new JudicialMessage(page));
   },
+
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
   },
@@ -69,6 +79,18 @@ export const test = base.extend<CreateFixtures>({
 
   allocationProposal: async ({ page }, use) => {
     await use(new AllocationProposal(page));
+  },
+
+  uploadDraftOrders: async ({ page }, use) => {
+    await use(new UploadDraftOrders(page));
+   },
+
+  manageDocuments: async ({ page }, use) => {
+    await use(new ManageDocuments(page));
+  },
+
+  caseFileView: async ({ page }, use) => {
+    await use(new CaseFileView(page));
   },
 
   addApplicationDocuments: async ({ page }, use) => {
@@ -86,4 +108,9 @@ export const test = base.extend<CreateFixtures>({
   caseDetails: async ({ page }, use) => {
     await use(new CaseDetails(page));
   },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
+  },
+
 });
