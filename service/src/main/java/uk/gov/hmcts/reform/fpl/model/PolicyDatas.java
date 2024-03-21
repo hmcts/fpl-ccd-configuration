@@ -26,9 +26,4 @@ public interface PolicyDatas {
 
         return result;
     }
-
-    @JsonIgnore
-    default OrganisationPolicy getOrganisationPolicyNo(int policyNo) {
-        return getAllPolicy()[policyNo];
-    }
 }
