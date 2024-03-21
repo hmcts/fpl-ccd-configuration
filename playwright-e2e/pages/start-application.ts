@@ -89,10 +89,11 @@ export class StartApplication {
     await this.applicantDetailsLink.isVisible();
     await this.applicantDetailsLink.click();
   }
+  
   async applicantDetailsHasBeenUpdated() {
-    await expect(this.applicantDetailsUpdated) 
-      .toBeVisible;
+    await this.applicantDetailsUpdated.isVisible();
   }
+
   async respondentDetails() {
     await this.respondentsDetailsLink.isVisible();
     await this.respondentsDetailsLink.click();
