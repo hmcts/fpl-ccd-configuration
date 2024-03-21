@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -97,6 +98,9 @@ class MigrateCaseServiceTest {
 
     @Mock
     private OrganisationService organisationService;
+
+    @Mock
+    private CourtLookUpService courtLookUpService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -2163,6 +2167,90 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
                     MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class SetCaseManagementLocation {
+
+        @BeforeEach
+        void beforeEach() {
+            when(courtLookUpService.getCourtByCode("167")).thenReturn(Optional.of(Court.builder()
+                .code("167")
+                .name("Family Court sitting at Chelmsford")
+                .regionId("5")
+                .region("South East")
+                .epimmsId("816875")
+                .build()));
+        }
+
+        @Test
+        void shouldSetCaseManagementLocationIfMismatched() {
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("incorrectLocation")
+                    .region("incorrectRegion")
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.setCaseManagementLocation(caseData, MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("caseManagementLocation")
+                .isEqualTo(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build());
+        }
+
+        @Test
+        void shouldLeaveCaseManagementAloneIfNoMismatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.setCaseManagementLocation(caseData, MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("caseManagementLocation")
+                .isEqualTo(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build());
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoCourtFound() {
+            when(courtLookUpService.getCourtByCode("167")).thenReturn(Optional.empty());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("incorrectLocation")
+                    .region("incorrectRegion")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.setCaseManagementLocation(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration, case reference = 1},"
+                    + " could not find correct caseManagementLocation");
         }
     }
 
