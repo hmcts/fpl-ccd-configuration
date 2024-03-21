@@ -10,7 +10,8 @@
           "caseworker-publiclaw-systemupdate",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper"
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CRU"
       },
@@ -71,6 +72,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[EPSMANAGING]",
           "[LABARRISTER]",
           "[LAMANAGING]",
@@ -133,6 +135,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORA]"
         ],
         "CRUD": "CRU"
@@ -195,6 +198,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORB]"
         ],
         "CRUD": "CRU"
@@ -257,6 +261,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORC]"
         ],
         "CRUD": "CRU"
@@ -319,6 +324,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORD]"
         ],
         "CRUD": "CRU"
@@ -381,6 +387,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORE]"
         ],
         "CRUD": "CRU"
@@ -443,6 +450,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORF]"
         ],
         "CRUD": "CRU"
@@ -505,6 +513,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORG]"
         ],
         "CRUD": "CRU"
@@ -567,6 +576,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORH]"
         ],
         "CRUD": "CRU"
@@ -629,6 +639,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORI]"
         ],
         "CRUD": "CRU"
@@ -691,6 +702,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[SOLICITORJ]"
         ],
         "CRUD": "CRU"
@@ -753,6 +765,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORA]"
         ],
         "CRUD": "CRU"
@@ -815,6 +828,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORB]"
         ],
         "CRUD": "CRU"
@@ -877,6 +891,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORC]"
         ],
         "CRUD": "CRU"
@@ -939,6 +954,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORD]"
         ],
         "CRUD": "CRU"
@@ -1001,6 +1017,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORE]"
         ],
         "CRUD": "CRU"
@@ -1063,6 +1080,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORF]"
         ],
         "CRUD": "CRU"
@@ -1125,6 +1143,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORG]"
         ],
         "CRUD": "CRU"
@@ -1187,6 +1206,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORH]"
         ],
         "CRUD": "CRU"
@@ -1249,6 +1269,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORI]"
         ],
         "CRUD": "CRU"
@@ -1311,6 +1332,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORJ]"
         ],
         "CRUD": "CRU"
@@ -1373,6 +1395,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORK]"
         ],
         "CRUD": "CRU"
@@ -1435,6 +1458,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORL]"
         ],
         "CRUD": "CRU"
@@ -1497,6 +1521,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORM]"
         ],
         "CRUD": "CRU"
@@ -1559,6 +1584,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORN]"
         ],
         "CRUD": "CRU"
@@ -1621,6 +1647,7 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-superuser",
           "[CHILDSOLICITORO]"
         ],
         "CRUD": "CRU"
