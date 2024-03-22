@@ -32,7 +32,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
-  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+  await createCase.checkCaseIsCreated(createCase.generatedCaseName)
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
@@ -72,7 +72,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // Applicant Deatils
+  // // Applicant Deatils
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
   await applicantDetails.colleagueDetailsNeeded();

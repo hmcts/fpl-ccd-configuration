@@ -6,7 +6,6 @@ export class ApplicantDetails extends BasePage{
   readonly applicantDetailsHeading: Locator;
   readonly teamManagerName: Locator;
   readonly pbaNumber: Locator;
-  readonly waitForAllUploadsToBeCompleted
   readonly customerReference: Locator;
   readonly clientCode: Locator;
   readonly phoneNumber: Locator;
