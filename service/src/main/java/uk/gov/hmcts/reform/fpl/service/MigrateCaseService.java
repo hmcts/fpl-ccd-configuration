@@ -74,6 +74,7 @@ public class MigrateCaseService {
     private static final String ORDER_TYPE = "orderType";
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
+    public final CourtLookUpService courtLookUpService;
 
     public Map<String, Object> removeHearingOrderBundleDraft(CaseData caseData, String migrationId, UUID bundleId,
                                                              UUID orderId) {
@@ -998,6 +999,22 @@ public class MigrateCaseService {
         );
 
         return Map.of("localAuthorities", localAuthorities);
+    }
+
+    public Map<String, Object> setCaseManagementLocation(CaseData caseData, String migrationId) {
+        String courtCode = caseData.getCourt().getCode();
+        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+
+        if (lookedUpCourt.isPresent()) {
+            return Map.of("caseManagementLocation", CaseLocation.builder()
+                .baseLocation(lookedUpCourt.get().getEpimmsId())
+                .region(lookedUpCourt.get().getRegionId())
+                .build());
+        } else {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find correct caseManagementLocation",
+                migrationId, caseData.getId()));
+        }
     }
 
     public Map<String, Object> removeSocialWorkerTelephone(CaseData caseData, String migrationId, UUID childId) {
