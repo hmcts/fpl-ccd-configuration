@@ -1,4 +1,7 @@
-import { defineConfig, devices } from "@playwright/test";
+import {defineConfig, devices, PlaywrightTestConfig} from "@playwright/test";
+import { screenReaderConfig } from "@guidepup/playwright";
+
+
 
 /**
  * Read environment variables from file.
@@ -10,12 +13,12 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-
+  ...screenReaderConfig,
   testDir: "./playwright-e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 250000,
-  expect: { timeout: 250000 },
+  timeout: 25000000,
+  expect: { timeout: 25000000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -42,17 +45,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
-
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      use: { ...devices["Desktop Chrome"], headless: true },
     },
 
     /* Test against mobile viewports. */

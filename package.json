@@ -8,7 +8,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.42.1",
     "@types/node": "^20.10.7",
     "@types/qs": "^6.9.11",
     "axios": "^1.6.7",
@@ -57,6 +57,8 @@
   "packageManager": "yarn@3.6.4",
   "license": "MIT",
   "dependencies": {
+    "@guidepup/guidepup": "^0.22.3",
+    "@guidepup/playwright": "^0.13.2",
     "@types/lodash": "^4.14.202",
     "dotenv": "^16.4.1"
   }
