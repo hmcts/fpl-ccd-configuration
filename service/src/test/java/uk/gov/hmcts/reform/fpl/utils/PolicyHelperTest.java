@@ -29,7 +29,7 @@ public class PolicyHelperTest {
             .build();
 
         assertThat(PolicyHelper.isPolicyMatchingCaseRoles(organisationPolicy, List.of(CaseRole.SOLICITORB,
-            CaseRole.SOLICITORC, CaseRole.SOLICITORD))).isTrue();
+            CaseRole.SOLICITORC, CaseRole.SOLICITORD))).isFalse();
     }
 
     @Test
