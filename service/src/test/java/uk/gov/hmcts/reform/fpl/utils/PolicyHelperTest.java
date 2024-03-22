@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PolicyHelperTest {
+class PolicyHelperTest {
     @Test
     void shouldReturnTrueIfPolicyIsMatchingCaseRoles() {
         OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
