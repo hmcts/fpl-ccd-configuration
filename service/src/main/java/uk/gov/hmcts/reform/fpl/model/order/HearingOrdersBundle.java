@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 
 @Data
 @Builder(toBuilder = true)
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder> {
     private UUID hearingId;
     String hearingName;
