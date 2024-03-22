@@ -56,15 +56,15 @@ public class TranslatableRespondentStatementsProvider implements TranslatableLis
                                                     UUID selectedOrderId) {
         return Map.of("respStmtList",
             nullSafeList(caseData.getRespStmtList()).stream()
-                .map(decorator.translatedBundle(document, selectedOrderId))
+                .map(decorator.translatedRespondentStatement(document, selectedOrderId))
                 .collect(Collectors.toList()),
         "respStmtListCTSC",
             nullSafeList(caseData.getRespStmtListCTSC()).stream()
-                .map(decorator.translatedBundle(document, selectedOrderId))
+                .map(decorator.translatedRespondentStatement(document, selectedOrderId))
                 .collect(Collectors.toList()),
         "respStmtListLA",
             nullSafeList(caseData.getRespStmtListLA()).stream()
-                .map(decorator.translatedBundle(document, selectedOrderId))
+                .map(decorator.translatedRespondentStatement(document, selectedOrderId))
                 .collect(Collectors.toList()));
     }
 

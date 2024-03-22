@@ -25,7 +25,7 @@ class SupportingEvidenceBundleTranslatorDecoratorTest {
 
     private final Time time = mock(Time.class);
 
-    private final Function<Element<? extends SupportingEvidenceBundle>, Element<? extends SupportingEvidenceBundle>>
+    private final Function<Element<SupportingEvidenceBundle>, Element<SupportingEvidenceBundle>>
         underTest = new SupportingEvidenceBundleTranslatorDecorator(time)
         .translatedBundle(DOCUMENT_REFERENCE, SELECTED_ORDER_ID);
 
