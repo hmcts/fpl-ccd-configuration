@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -126,6 +127,9 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
     @MockBean
     private WorkAllocationTaskService workAllocationTaskService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @BeforeEach
     void init() {
 
@@ -134,6 +138,7 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
         given(feesRegisterApi.findFee("default", "miscellaneous", "family", "family court", "Placement", "adoption"))
             .willReturn(feeResponse(FEE.doubleValue()));
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
     }
 
     @Test

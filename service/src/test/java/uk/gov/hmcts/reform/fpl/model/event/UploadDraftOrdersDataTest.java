@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
@@ -215,6 +216,35 @@ class UploadDraftOrdersDataTest {
                 .build();
 
             assertThat(uploadDraftOrdersData.getHearingDynamicList()).isNull();
+        }
+
+        @Test
+        void shouldReturnYesIfC21Order() {
+            final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(C21))
+                .build();
+
+            assertThat(uploadDraftOrdersData.hasDraftOrderBeenUploadedThatNeedsApproval()).isEqualTo(YesNo.YES);
+        }
+
+        @Test
+        void shouldReturnYesIfApprovedCMO() {
+            final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(CMO))
+                .cmoUploadType(AGREED)
+                .build();
+
+            assertThat(uploadDraftOrdersData.hasDraftOrderBeenUploadedThatNeedsApproval()).isEqualTo(YesNo.YES);
+        }
+
+        @Test
+        void shouldReturnNoIfDraftCMO() {
+            final UploadDraftOrdersData uploadDraftOrdersData = UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(CMO))
+                .cmoUploadType(DRAFT)
+                .build();
+
+            assertThat(uploadDraftOrdersData.hasDraftOrderBeenUploadedThatNeedsApproval()).isEqualTo(YesNo.NO);
         }
 
         private DynamicList dynamicList() {
