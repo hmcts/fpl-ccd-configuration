@@ -37,16 +37,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOrder",
-    "ListElementCode": "orderConfidential",
-    "FieldType": "Document",
-    "ElementLabel": "Order",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "status=\"DO_NOT_SHOW\"",
-    "Comment": "Can't upload draft CMO at the moment. Added this CCD config to avoid CCD field validation error"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingOrder",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
@@ -180,15 +170,5 @@
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingOrder",
-    "ListElementCode": "uploaderEmail",
-    "FieldType": "Text",
-    "ElementLabel": "Uploader email",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "status=\"DO_NOT_SHOW\"",
-    "Comment": "Can't upload draft CMO at the moment. Added this CCD config to avoid CCD field validation error"
   }
 ]
