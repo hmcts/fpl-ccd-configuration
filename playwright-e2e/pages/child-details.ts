@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 
@@ -74,7 +74,9 @@ export class ChildDetails extends BasePage{
         await this.dobYear.click();
         await this.dobYear.fill('2019');
         await this.gender.selectOption('2: Girl');
-        await this.page.getByLabel('Living with other family or friends').click();
+        await this.page.getByLabel('Living with respondents').click();
+        await this.page.getByLabel('Living with respondents').click(); //duplicated line is NOT an error - solves issue with checkbox not being able to be checked.
+        await expect(this.page.getByLabel('Living with respondents')).toBeChecked(); //needed due to flakiness of checking the box.
         await this.slDay.click();
         await this.slDay.fill('1');
         await this.slMonth.click();
@@ -83,6 +85,7 @@ export class ChildDetails extends BasePage{
         await this.slYear.fill('2022');
         await this.postcode.fill('BN26 6AL');
         await this.findAddress.click();
+        await this.selectAddress.selectOption('1: Object');
         await this.keyDates.click();
         await this.keyDates.fill('these are the key dates');
         await this.briefSummaryCare.click();
@@ -101,7 +104,7 @@ export class ChildDetails extends BasePage{
         await this.personToContact.fill('Jane Smith');
         await this.additionalNeeds.getByLabel('No').check();
         await this.contactDetailsHidden.getByLabel('No').check();
-        await this.litigationCapability.getByLabel('No', { exact: true }).check();
+        await this.litigationCapability.getByLabel('No', { exact: true }).click();
         await this.clickContinue();
         await this.checkYourAnswersHeader.isVisible;
         await this.checkYourAnsAndSubmit();

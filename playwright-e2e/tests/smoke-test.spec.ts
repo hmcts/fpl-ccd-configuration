@@ -78,6 +78,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   //Child details
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
+  await startApplication.childDetailsHasBeenUpdated();
   
   // Add respondents' details
   await startApplication.respondentDetails();
