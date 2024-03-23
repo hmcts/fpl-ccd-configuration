@@ -213,5 +213,23 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2SupportingEvidenceBundleConfidential",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2SupportingEvidenceBundleConfidential",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
   }
 ]

@@ -85,6 +85,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             caseDetails.getData().put("allowSelectDocumentTypeToRemoveDocument",
                 YesNo.from(allowSelectDocumentTypeToRemoveDocument));
             if (allowSelectDocumentTypeToRemoveDocument) {
+                // for HMCTS admin
                 DynamicList availableDocumentTypesForRemoval = manageDocumentService
                     .buildDocumentTypeDynamicListForRemoval(caseData);
                 if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
@@ -93,7 +94,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
                     return respond(caseDetails, List.of("There is no document to be removed."));
                 }
             } else {
-                // LA or Solicitor flow
+                // for LA or external solicitor
                 DynamicList availableDocumentsToBeRemoved = manageDocumentService
                     .buildAvailableDocumentsToBeRemoved(caseData);
                 if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {

@@ -2710,7 +2710,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c1ApplicationDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1ApplicationDocument",
+    "FieldTypeParameter": "C1ApplicationDocumentConfidential",
     "Label": "C1 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2720,7 +2720,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c1ApplicationDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1ApplicationDocument",
+    "FieldTypeParameter": "C1ApplicationDocumentConfidential",
     "Label": "C1 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2750,7 +2750,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2ApplicationDocument",
+    "FieldTypeParameter": "C2ApplicationDocumentConfidential",
     "Label": "C2 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2760,7 +2760,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2ApplicationDocument",
+    "FieldTypeParameter": "C2ApplicationDocumentConfidential",
     "Label": "C2 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
