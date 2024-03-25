@@ -627,46 +627,6 @@ public class MigrateCaseService {
             .replace(">", "");
     }
 
-    public Map<String, Object> removeHearingFurtherEvidenceDocuments(CaseData caseData,
-                                                                     String migrationId,
-                                                                     UUID expectedHearingId,
-                                                                     UUID expectedDocId) {
-        Long caseId = caseData.getId();
-
-        Element<HearingFurtherEvidenceBundle> elementToBeUpdated = caseData.getHearingFurtherEvidenceDocuments()
-            .stream()
-            .filter(hfed -> expectedHearingId.equals(hfed.getId()))
-            .findFirst().orElseThrow(() -> new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, hearing not found",
-                migrationId, caseId)));
-        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle =
-            elementToBeUpdated.getValue().getSupportingEvidenceBundle().stream()
-                .filter(el -> !expectedDocId.equals(el.getId()))
-                .toList();
-        if (newSupportingEvidenceBundle.size() != elementToBeUpdated.getValue().getSupportingEvidenceBundle()
-            .size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
-                migrationId, caseId));
-        }
-        elementToBeUpdated.getValue().setSupportingEvidenceBundle(newSupportingEvidenceBundle);
-
-        List<Element<HearingFurtherEvidenceBundle>> listOfHearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments().stream()
-                .filter(el -> !expectedHearingId.equals(el.getId()))
-                .collect(toList());
-        if (!newSupportingEvidenceBundle.isEmpty()) {
-            listOfHearingFurtherEvidenceBundle.add(elementToBeUpdated);
-        }
-        if (listOfHearingFurtherEvidenceBundle.isEmpty()) {
-            Map<String, Object> ret = new HashMap<>();
-            ret.put("hearingFurtherEvidenceDocuments", null);
-            return ret;
-        } else {
-            return Map.of("hearingFurtherEvidenceDocuments", listOfHearingFurtherEvidenceBundle);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public Map<String, Object> fixOrderTypeTypo(String migrationId, CaseDetails caseDetails) {
         String invalidOrderType = "EDUCATION_SUPERVISION__ORDER";
