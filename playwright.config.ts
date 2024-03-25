@@ -58,7 +58,7 @@ export default defineConfig({
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
       retries: 3,
-    }
+    },
 
     /* Test against mobile viewports. */
     // {
