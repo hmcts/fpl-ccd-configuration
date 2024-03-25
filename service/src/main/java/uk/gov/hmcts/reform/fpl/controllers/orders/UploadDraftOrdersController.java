@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
@@ -49,7 +48,6 @@ public class UploadDraftOrdersController extends CallbackController {
     private static final int MAX_ORDERS = 10;
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
-    private final DocumentListService documentListService;
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -106,7 +104,6 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
-        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
         return respond(caseDetails);

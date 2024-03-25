@@ -35,6 +35,9 @@ public class DateFormatterHelper {
     }
 
     public static String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
+        if (dateTime == null) {
+            return "";
+        }
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
     }
     

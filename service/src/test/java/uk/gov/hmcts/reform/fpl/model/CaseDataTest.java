@@ -77,7 +77,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.BILINGUAL;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
@@ -634,35 +633,6 @@ class CaseDataTest {
     }
 
     @Nested
-    class DocumentBundleContainsHearingId {
-        @Test
-        void shouldReturnTrueIfDocumentBundleContainsHearingId() {
-            UUID hearingId = randomUUID();
-            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
-                element(hearingId, HearingFurtherEvidenceBundle.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
-                .build();
-
-            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isTrue();
-        }
-
-        @Test
-        void shouldReturnFalseIfDocumentBundleDoesNotContainHearingId() {
-            UUID hearingId = randomUUID();
-            List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments = List.of(
-                element(randomUUID(), HearingFurtherEvidenceBundle.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .hearingFurtherEvidenceDocuments(hearingFurtherEvidenceDocuments)
-                .build();
-
-            assertThat(caseData.documentBundleContainsHearingId(hearingId)).isFalse();
-        }
-    }
-
-    @Nested
     class GetC2DocumentBundleByUUID {
         @Test
         void shouldReturnC2DocumentBundleWhenIdMatches() {
@@ -997,16 +967,9 @@ class CaseDataTest {
                     .otherApplicationsBundle(otherBundle)
                     .build()));
 
-            DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
-                Pair.of(futureC2Bundle.getId(), "C2, " + futureC2Bundle.getUploadedDateTime()),
-                Pair.of(pastC2Element.getId(), "C2, " + pastC2Element.getValue().getUploadedDateTime())
-            );
-
             CaseData caseData = CaseData.builder()
                 .c2DocumentBundle(List.of(pastC2Element))
                 .additionalApplicationsBundle(additionalBundles)
-                .manageDocumentsSupportingC2List(expectedDynamicList)
                 .build();
 
             assertThat(caseData.getApplicationBundleByUUID(pastC2Element.getId())).isEqualTo(pastC2Element.getValue());
@@ -1899,87 +1862,6 @@ class CaseDataTest {
                 caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
 
             assertThat(matchingHearingOrderBundle).isEmpty();
-        }
-    }
-
-    @Nested
-    class BuildRespondentStatementDynamicList {
-        @Test
-        void shouldBuildDynamicRespondentStatementListFromRespondents() {
-            List<Element<Respondent>> respondents = createRespondents();
-            CaseData caseData = CaseData.builder().respondents1(respondents).build();
-
-            DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(respondents, null,
-                    respondent -> respondent.getParty().getFullName());
-
-            assertThat(caseData.buildRespondentDynamicList())
-                .isEqualTo(expectedDynamicList);
-        }
-
-        @Test
-        void shouldBuildDynamicRespondentStatementListWithSelectorPropertyFromRespondents() {
-            UUID selectedRespondentId = randomUUID();
-
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("Sam")
-                        .lastName("Wilson")
-                        .relationshipToChild("Father")
-                        .build())
-                    .build()),
-                element(selectedRespondentId, Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("Megan")
-                        .lastName("Hannah")
-                        .relationshipToChild("Mother")
-                        .build())
-                    .build()));
-
-            CaseData caseData = CaseData.builder().respondents1(respondents).build();
-
-            DynamicList expectedDynamicList = ElementUtils
-                .asDynamicList(respondents, null,
-                    respondent -> respondent.getParty().getFullName());
-
-            assertThat(caseData.buildRespondentDynamicList()).isEqualTo(expectedDynamicList);
-        }
-    }
-
-    @Nested
-    class GetRespondentStatementByRespondentId {
-        UUID elementId = randomUUID();
-
-        @Test
-        void shouldReturnRespondentStatementWhenRespondentIdMatches() {
-            Element<RespondentStatement> respondentStatementElementOne
-                = element(RespondentStatement.builder().respondentId(elementId).build());
-
-            List<Element<RespondentStatement>> respondentStatements = List.of(
-                respondentStatementElementOne,
-                element(RespondentStatement.builder().build()));
-
-            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
-
-            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
-                = caseData.getRespondentStatementByRespondentId(elementId);
-
-            assertThat(optionalRespondentStatementElement).isPresent().contains(respondentStatementElementOne);
-        }
-
-        @Test
-        void shouldReturnNullWhenRespondentIdDidNotMatch() {
-            List<Element<RespondentStatement>> respondentStatements = List.of(
-                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
-                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()));
-
-            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
-
-            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
-                = caseData.getRespondentStatementByRespondentId(elementId);
-
-            assertThat(optionalRespondentStatementElement).isNotPresent();
         }
     }
 
