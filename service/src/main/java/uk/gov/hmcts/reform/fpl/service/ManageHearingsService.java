@@ -564,6 +564,7 @@ public class ManageHearingsService {
                                         UUID hearingId,
                                         HearingBooking hearingToBeReListed,
                                         HearingStatus hearingStatus) {
+        cancelHearing(caseData, hearingId, hearingStatus);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
         return reListedBooking.getId();
     }
