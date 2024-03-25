@@ -1,4 +1,4 @@
-import {systemUpdateUser} from '../settings/user-credentials';
+import {systemUpdateUser,privateSolicitorOrgUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 
 
@@ -44,7 +44,7 @@ export class Apihelp {
     return res.id;
   }
 
-  async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
+  async updateCase(caseName = 'e2e Test', caseID: string, caseData: any = {} ) {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with docuemnt url
     let docDetail = await this.apiRequest(urlConfig.serviceUrl + 'testing-support/test-document', systemUpdateUser);
@@ -54,11 +54,8 @@ export class Apihelp {
 
     };
     const dateTime = new Date().toISOString();
-    // @ts-ignore
     caseData.caseData.caseName = caseName;
-    // @ts-ignore
-    caseData.caseData.dateSubmitted = dateTime.slice(0, 10);
-    // @ts-ignore
+    caseData.caseData.dateSubmitted = dateTime.slice(0, 10); 
     caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseData))(docParameter);
     let postURL = `${urlConfig.serviceUrl}testing-support/case/populate/${caseID}`;
@@ -68,6 +65,22 @@ export class Apihelp {
       console.log(error);
     }
   }
+    async giveAccessToCase(caseID: string ){
+
+        let data = JSON.stringify({
+            'email': privateSolicitorOrgUser.email,
+            'password': privateSolicitorOrgUser.password,
+            'role': '[SOLICITORA]'
+        });
+
+        let postURL : string = `${urlConfig.serviceUrl}testing-support/case/${caseID}/access`;
+        try {
+          let res = await this.apiRequest(postURL, systemUpdateUser, 'post', data);
+        } catch (error) {
+          console.log(error);
+        }       
+
+    }
 
   async apiRequest(postURL: string, authUser: any, method: string = 'get', data: any = {}) {
     const systemUserAuthToke = await this.getAccessToken({user: authUser});

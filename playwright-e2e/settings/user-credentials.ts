@@ -1,8 +1,7 @@
-import dotenv from "dotenv";
-dotenv.config();
+import 'dotenv/config'
 
-const e2ePw = process.env.E2E_TEST_PASSWORD || '';
-const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
+const e2ePw = process.env.E2E_TEST_PASSWORD || 'Passowrd1234';
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || 'Password12';
 const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
 
 
@@ -31,4 +30,15 @@ export const judgeWalesUser = {
 export const secondJudgeWalesUser = {
   email: 'EMP267006@ejudiciary.net',
   password: judgePwd,
+};
+export const privateSolicitorOrgUser = {
+  email: process.env.PRIVATE_SOLICITOR_ORG_USER_USERNAME || 'private.solicitors@mailinator.com',
+  password: process.env.PRIVATE_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
+
+};
+
+export const FPLSolicitorOrg = {
+  email: process.env.FPL_SOLICITOR_ORG_USER_USERNAME || 'solicitoroneorg2@mailinator.com',
+  password: process.env.FPL_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
+
 };
