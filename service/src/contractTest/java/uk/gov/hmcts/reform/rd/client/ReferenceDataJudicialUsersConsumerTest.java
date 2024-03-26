@@ -15,6 +15,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 @PactTestFor(providerName = "referenceData_judicialv2", port = "8893")
 public class ReferenceDataJudicialUsersConsumerTest extends ReferenceDataConsumerTestBase {
@@ -41,9 +42,18 @@ public class ReferenceDataJudicialUsersConsumerTest extends ReferenceDataConsume
             ELINKS_ACCEPTS_VALUE, JudicialUserRequest.builder()
                     .ccdServiceName("PUBLICLAW")
                 .build());
+        JudicialUserProfile expected = JudicialUserProfile.builder()
+            .sidamId("sidam-id")
+            .knownAs("first last")
+            .title("mr")
+            .surname("last")
+            .fullName("first last")
+            .postNominals("post")
+            .emailId("email@email.com")
+            .personalCode("000")
+            .build();
         assertThat(profiles, is(notNullValue()));
-        assertThat(profiles.get(0).getSidamId(), is("sidam-id"));
-        // todo - check more things here
+        assertThat(profiles.get(0), samePropertyValuesAs(expected));
     }
 
     private HttpHeaders getHttpHeaders() {
