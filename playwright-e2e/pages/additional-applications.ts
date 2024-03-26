@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import config from "../settings/test-docs/config";
 import { BasePage } from "./base-page";
+import config from "../settings/test-docs/config";
 
 export class AdditionalApplications extends BasePage {
 
