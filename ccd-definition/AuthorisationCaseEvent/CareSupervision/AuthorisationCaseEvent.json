@@ -747,8 +747,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "CR"
       },
