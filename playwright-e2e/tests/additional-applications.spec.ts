@@ -130,7 +130,7 @@ test.describe('Upload additional applications', () => {
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Application');
         await caseFileView.openFolder('C2 applications');
-        await expect(page.getByRole('tree')).toContainText('textfile.pdf');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.pdf');
 
         // If WA is enabled
         if (testConfig.waEnabled) {

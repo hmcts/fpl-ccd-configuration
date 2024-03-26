@@ -10,7 +10,6 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
-import { AdditionalApplications } from "../pages/additional-applications";
 import { ManageDocuments } from "../pages/manage-documents";
 import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
@@ -37,7 +36,6 @@ type CreateFixtures = {
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
   allocationProposal : AllocationProposal;
-  additionalApplications: AdditionalApplications;
   addApplicationDocuments : AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
@@ -119,10 +117,6 @@ export const test = base.extend<CreateFixtures>({
 
   caseDetails: async ({ page }, use) => {
     await use(new CaseDetails(page));
-  },
-  
-  additionalApplications: async ({ page }, use) => {
-    await use(new AdditionalApplications(page));
   },
 
   approveOrders: async ({ page }, use) => {
