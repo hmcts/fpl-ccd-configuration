@@ -25,14 +25,15 @@ class SupportingEvidenceBundleTranslatorDecoratorTest {
 
     private final Time time = mock(Time.class);
 
-    private final Function<Element<SupportingEvidenceBundle>, Element<SupportingEvidenceBundle>> underTest =
-        new SupportingEvidenceBundleTranslatorDecorator(time).translatedBundle(DOCUMENT_REFERENCE, SELECTED_ORDER_ID);
+    private final Function<Element<SupportingEvidenceBundle>, Element<SupportingEvidenceBundle>>
+        underTest = new SupportingEvidenceBundleTranslatorDecorator(time)
+        .translatedBundle(DOCUMENT_REFERENCE, SELECTED_ORDER_ID);
 
     @Test
     void testWithMatchingId() {
 
         when(time.now()).thenReturn(NOW);
-        Element<SupportingEvidenceBundle> actual = underTest.apply(
+        Element<? extends SupportingEvidenceBundle> actual = underTest.apply(
             element(SELECTED_ORDER_ID, SupportingEvidenceBundle.builder()
                 .name(NAME)
                 .build())
@@ -50,7 +51,7 @@ class SupportingEvidenceBundleTranslatorDecoratorTest {
     void testWithAnotherIdLeaveUntouched() {
 
         when(time.now()).thenReturn(NOW);
-        Element<SupportingEvidenceBundle> actual = underTest.apply(
+        Element<? extends SupportingEvidenceBundle> actual = underTest.apply(
             element(ANOTHER_ID, SupportingEvidenceBundle.builder()
                 .name(NAME)
                 .build())
