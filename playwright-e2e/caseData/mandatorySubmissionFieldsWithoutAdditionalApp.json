@@ -1,7 +1,13 @@
-{
-  "state": "GATEKEEPING",
+
+  {
+  "state": "SUBMITTED",
   "caseData": {
-    "caseName": "e2e test case",
+    "caseName": "e2e test new case",
+    "court": {
+      "code": "344",
+      "name": "Family Court Sitting at Swansea",
+      "email": "contactfpl@justice.gov.uk"
+    },
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -17,57 +23,6 @@
       "reason": "test reason",
       "timeFrame": "Same day"
     },
-    "hearingDetails": [
-      {
-        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
-        "value": {
-          "endDate": "2050-01-02T16:30:00",
-          "hearingNeedsBooked": [
-            "INTERPRETER",
-            "SPOKEN_OR_WRITTEN_WELSH",
-            "SOMETHING_ELSE"
-          ],
-          "hearingNeedsDetails": "Some details",
-          "judgeAndLegalAdvisor": {
-            "judgeLastName": "Test",
-            "judgeTitle": "HER_HONOUR_JUDGE",
-            "legalAdvisorName": "Test Test"
-          },
-          "startDate": "2050-01-01T15:15:00",
-          "attendance": [
-            "IN_PERSON"
-          ],
-          "type": "OTHER",
-          "typeDetails": "test type details",
-          "venue": "96",
-          "venueCustomAddress": {}
-        }
-      },
-      {
-        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
-        "value": {
-          "endDate": "2012-11-03T14:34:00",
-          "hearingNeedsBooked": [
-            "INTERPRETER",
-            "SPOKEN_OR_WRITTEN_WELSH",
-            "SOMETHING_ELSE"
-          ],
-          "hearingNeedsDetails": "Some details",
-          "judgeAndLegalAdvisor": {
-            "judgeLastName": "Test",
-            "judgeTitle": "HER_HONOUR_JUDGE",
-            "legalAdvisorName": "Test Test",
-            "judgeEmailAddress": "test@judge.com"
-          },
-          "startDate": "2012-11-03T13:34:00",
-          "attendance": [
-            "IN_PERSON"
-          ],
-          "type": "CASE_MANAGEMENT",
-          "venueCustomAddress": {}
-        }
-      }
-    ],
     "children1": [
       {
         "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
@@ -260,79 +215,10 @@
       "judgeLastName": "Moley",
       "judgeEmailAddress": "moley@example.com"
     },
-    "judicialMessages": [
-      {
-        "id": "c09eb60e-facc-4af6-9761-3e23f6748673",
-        "value": {
-          "applicationType": "C2, 25 March 2021, 3:16pm",
-          "dateSent": "16 November 2023 at 4:51pm",
-          "latestMessage": "Some note",
-          "messageHistory": "FamilyPublicLaw+ctsc@gmail.com - Some note",
-          "recipient": "recipient@fpla.com",
-          "recipientType": "HEARING_JUDGE",
-          "relatedDocumentFileNames": "Test.txt",
-          "relatedDocuments": [
-            {
-              "id": "156f8d6d-7be5-4417-9d5c-81d6dd7f6cdd",
-              "value": {
-                "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-                "document_filename": "Test.txt",
-                "document_url": "${TEST_DOCUMENT_URL}"
-              }
-            }
-          ],
-          "requestedBy": "Subject 1",
-          "sender": "FamilyPublicLaw+ctsc@gmail.com",
-          "senderType": "CTSC",
-          "status": "OPEN",
-          "urgency": "High"
-        }
-      }
-    ],
-    "additionalApplicationsBundle": [
-      {
-        "id": "4ae96392-b71d-40a6-9e59-a66d3fd279a5",
-        "value": {
-          "author": "HMCTS",
-          "pbaPayment": {
-            "usePbaPayment": "No"
-          },
-          "c2DocumentBundle": {
-            "id": "2c3d7329-8206-44a1-b1b4-7502ab253b0f",
-            "type": "WITHOUT_NOTICE",
-            "author": "HMCTS",
-            "document": {
-              "document_url": "${TEST_DOCUMENT_URL}",
-              "document_filename": "Test.txt",
-              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-            },
-            "uploadedDateTime": "25 March 2021, 3:16pm",
-            "supplementsBundle": [],
-            "supportingEvidenceLA": [],
-            "supportingEvidenceNC": [],
-            "supportingEvidenceBundle": [],
-            "c2AdditionalOrdersRequested": [
-              "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
-            ]
-          },
-          "uploadedDateTime": "25 March 2021, 3:16pm",
-          "otherApplicationsBundle": {
-            "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
-            "author": "HMCTS",
-            "document": {
-              "document_url": "${TEST_DOCUMENT_URL}",
-              "document_filename": "Test.txt",
-              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-            },
-            "applicationType": "C100_CHILD_ARRANGEMENTS",
-            "uploadedDateTime": "25 March 2021, 3:16pm",
-            "supplementsBundle": [],
-            "supportingEvidenceLA": [],
-            "supportingEvidenceNC": [],
-            "supportingEvidenceBundle": []
-          }
-        }
-      }
-    ]
+    "caseManagementLocation": {
+      "region": "7",
+      "baseLocation": "234946"
+    }
   }
 }
+

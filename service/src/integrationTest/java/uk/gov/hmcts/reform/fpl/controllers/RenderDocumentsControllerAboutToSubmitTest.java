@@ -33,7 +33,7 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRenderIfDocumentsAreUpdatedInTheCase() {
+    void shouldNotRenderIfDocumentsAreUpdatedInTheCase() {
         when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
 
@@ -45,14 +45,14 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
-        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
-        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
-        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
+        assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
+        assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNull();
+        assertThat((String) callbackResponse.getData().get("documentViewNC")).isNull();
+        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     @Test
-    void shouldRenderIfNoDocuments() {
+    void shouldNotRenderIfNoDocuments() {
         when(identityService.generateId()).thenReturn(UUID.randomUUID()).thenReturn(UUID.randomUUID());
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("siva@swansea.gov.uk");
 
@@ -67,7 +67,7 @@ class RenderDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat((String) callbackResponse.getData().get("documentViewLA")).isNull();
         assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNull();
         assertThat((String) callbackResponse.getData().get("documentViewNC")).isNull();
-        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("NO");
+        assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     private Map<String, Object> someCaseDataWithDocuments() {
