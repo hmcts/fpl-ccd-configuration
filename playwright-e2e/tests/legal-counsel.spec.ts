@@ -88,19 +88,4 @@ test.describe('Respondent solicitor counsel ',
                  await signInPage.navigateTOCaseDetails(caseNumber);  
                  await expect(page.getByRole('heading', { name: casename })).toBeHidden;
             });
-            test('Legal counsel removed when child representation removed',
-            async ({page, signInPage, legalCounsel}) => {
-                casename = 'Child representative removed 2' + dateTime.slice(0, 10);
-                await apiDataSetup.updateCase(casename, caseNumber, caseWithMandatory);
-                 await apiDataSetup.updateCase(casename, caseNumber, caseWithChildSolCounsel);
-                  await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
-                  await apiDataSetup.giveAccessToCase(caseNumber,FPLSolicitorOrgUser,'[BARRISTER]');
-                  console.log ("case" + caseNumber);
-                  await signInPage.visit();
-                  await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password)
-                  await signInPage.navigateTOCaseDetails(caseNumber);
-          
-
-
-            });
-    });
+         });
