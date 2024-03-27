@@ -1,10 +1,10 @@
 import { test} from '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
 //import {urlConfig} from "../settings/urls";
+// @ts-ignore
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
+// @ts-ignore
 import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json';
-import caseWithChildSolCounsel from '../caseData/caseWithChildSolicitorAndCounsel.json';
-import caseWithMandatory from '../caseData/mandatorySubmissionFields.json';
 import { newSwanseaLocalAuthorityUserOne,CTSCUser,privateSolicitorOrgUser,FPLSolicitorOrgUser, CTSCTeamLeadUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 
@@ -38,9 +38,9 @@ test.describe('Respondent solicitor counsel ',
                  await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('FPLSolicitorOrg');
                  await legalCounsel.clickSignOut();
                  await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
-                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await signInPage.navigateTOCaseDetails(caseNumber);
                  await expect(page.getByRole('heading', { name: casename })).toBeVisible();
-                 await expect(page.locator('h1')).toContainText(casename);           
+                 await expect(page.locator('h1')).toContainText(casename);
                 });
         test('Respondent solicitor remove counsel',
             async ({page, signInPage, legalCounsel}) => {
@@ -64,7 +64,7 @@ test.describe('Respondent solicitor counsel ',
                  await expect(page.getByText('Counsel', { exact: true })).toBeHidden;
                  await legalCounsel.clickSignOut();
                  await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
-                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await signInPage.navigateTOCaseDetails(caseNumber);
                  await expect(page.getByRole('heading', { name: casename })).toBeHidden;
             });
             test('Legal counsel removed when respondent representation removed',
@@ -81,11 +81,11 @@ test.describe('Respondent solicitor counsel ',
                  await legalCounsel.removeRepresentative();
                  await legalCounsel.clickContinue();
                  await legalCounsel.checkYourAnsAndSubmit();
-                 await legalCounsel.tabNavigation('People in the case');  
+                 await legalCounsel.tabNavigation('People in the case');
                  await expect(page.getByRole('row', { name: 'Do they have legal representation? No', exact: true })).toBeVisible;
                  await legalCounsel.clickSignOut();
                  await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
-                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await signInPage.navigateTOCaseDetails(caseNumber);
                  await expect(page.getByRole('heading', { name: casename })).toBeHidden;
             });
          });
