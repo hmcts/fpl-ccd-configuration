@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "RefusedOrdersTab",
     "TabLabel": "Refused Orders",
-    "TabDisplayOrder": 21,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "refusedOrdersTabHeading",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "refusedHearingOrders!=\"\""
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "RefusedOrdersTab",
     "TabLabel": "Refused Orders",
-    "TabDisplayOrder": 21,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "refusedHearingOrders",
     "TabFieldDisplayOrder": 2
   }
