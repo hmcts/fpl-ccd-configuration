@@ -1,15 +1,15 @@
 import { test} from '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
 //import {urlConfig} from "../settings/urls";
-import caseData from '../caseData/mandatorySubmissionFields.json';
-import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
-import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json';
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
-import { newSwanseaLocalAuthorityUserOne,CTSCUser,privateSolicitorOrgUser} from '../settings/user-credentials';
+import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json';
+import caseWithChildSolCounsel from '../caseData/caseWithChildSolicitorAndCounsel.json';
+import caseWithMandatory from '../caseData/mandatorySubmissionFields.json';
+import { newSwanseaLocalAuthorityUserOne,CTSCUser,privateSolicitorOrgUser,FPLSolicitorOrgUser, CTSCTeamLeadUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 
 
-test.describe('Respondent solicitor legal counsel ',
+test.describe('Respondent solicitor counsel ',
     () => {
         let apiDataSetup = new Apihelp();
         const dateTime = new Date().toISOString();
@@ -19,45 +19,88 @@ test.describe('Respondent solicitor legal counsel ',
             caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
         });
 
-        test('Respondent solicitor add legal council',
+        test('Respondent solicitor add counsel',
             async ({page, signInPage, legalCounsel}) => {
-                casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
+                casename = 'Respondent Solicitor add Counsel ' + dateTime.slice(0, 10);
                  await apiDataSetup.updateCase(casename, caseNumber, caseWithResSolicitor);
-                 await apiDataSetup.giveAccessToCase(caseNumber);
-                 console.log ("case" + caseNumber);
+                 await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
                  await signInPage.visit();
                  await signInPage.login(privateSolicitorOrgUser.email,privateSolicitorOrgUser.password)
-                 await signInPage.navigateTOCaseDetails('1711405300614392');
+                 await signInPage.navigateTOCaseDetails(caseNumber);
                  await legalCounsel.gotoNextStep('Add or remove counsel');
                  await legalCounsel.clickContinue();
-                 await legalCounsel.addLegalCounsel();
+                 await legalCounsel.toAddLegalCounsel();
                  await legalCounsel.enterLegalCounselDetails();
                  await legalCounsel.clickContinue();
                  await legalCounsel.checkYourAnsAndSubmit();
                  await legalCounsel.tabNavigation('People in the case');
                  await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('Counsel 1');
                  await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('FPLSolicitorOrg');
-        
-           
+                 await legalCounsel.clickSignOut();
+                 await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
+                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await expect(page.getByRole('heading', { name: casename })).toBeVisible();
+                 await expect(page.locator('h1')).toContainText(casename);           
                 });
-           test('Respondent solicitor remove legal council',
+        test('Respondent solicitor remove counsel',
             async ({page, signInPage, legalCounsel}) => {
-                casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
-                // await apiDataSetup.updateCase(casename, caseNumber, caseWithResSolicitor);
-                 await apiDataSetup.giveAccessToCase('1711405300614392');
+                casename = 'Respondent solicitor remove counsel ' + dateTime.slice(0, 10);
+                 await apiDataSetup.updateCase(casename, caseNumber, caseWithResSolCounsel);
+                 await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
+                 await apiDataSetup.giveAccessToCase(caseNumber,FPLSolicitorOrgUser,'[BARRISTER]');
+               //  await apiDataSetup.updateCase(casename,caseNumber,caseWithResSolCounsel);
                  console.log ("case" + caseNumber);
                  await signInPage.visit();
                  await signInPage.login(privateSolicitorOrgUser.email,privateSolicitorOrgUser.password)
-                 await signInPage.navigateTOCaseDetails('1711405300614392');
+                 await signInPage.navigateTOCaseDetails(caseNumber);
                  await legalCounsel.gotoNextStep('Add or remove counsel');
                  await legalCounsel.clickContinue();
-                 await legalCounsel.addLegalCounsel();
-                 await legalCounsel.enterLegalCounselDetails();
+                 await legalCounsel.toRemoveLegalCounsel();
                  await legalCounsel.clickContinue();
                  await legalCounsel.checkYourAnsAndSubmit();
                  await legalCounsel.tabNavigation('People in the case');
-                 await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('Counsel 1');
-                 await expect(page.locator('#case-viewer-field-read--respondents1')).toContainText('FPLSolicitorOrg');
-        
-           });
+                 const  text = page.locator('#case-viewer-field-read--respondents1').locator(':scope').allInnerTexts;
+                 console.log('text' + text);
+                 await expect(page.getByText('Counsel', { exact: true })).toBeHidden;
+                 await legalCounsel.clickSignOut();
+                 await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
+                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await expect(page.getByRole('heading', { name: casename })).toBeHidden;
+            });
+            test('Legal counsel removed when respondent representation removed',
+            async ({page, signInPage, legalCounsel}) => {
+                casename = 'Respondent representative removed ' + dateTime.slice(0, 10);
+                 await apiDataSetup.updateCase(casename, caseNumber, caseWithResSolCounsel);
+                 await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
+                 await apiDataSetup.giveAccessToCase(caseNumber,FPLSolicitorOrgUser,'[BARRISTER]');
+                 console.log ("case" + caseNumber);
+                 await signInPage.visit();
+                 await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password)
+                 await signInPage.navigateTOCaseDetails(caseNumber);
+                 await legalCounsel.gotoNextStep('Respondents');
+                 await legalCounsel.removeRepresentative();
+                 await legalCounsel.clickContinue();
+                 await legalCounsel.checkYourAnsAndSubmit();
+                 await legalCounsel.tabNavigation('People in the case');  
+                 await expect(page.getByRole('row', { name: 'Do they have legal representation? No', exact: true })).toBeVisible;
+                 await legalCounsel.clickSignOut();
+                 await signInPage.login(FPLSolicitorOrgUser.email,FPLSolicitorOrgUser.password)
+                 await signInPage.navigateTOCaseDetails(caseNumber);  
+                 await expect(page.getByRole('heading', { name: casename })).toBeHidden;
+            });
+            test('Legal counsel removed when child representation removed',
+            async ({page, signInPage, legalCounsel}) => {
+                casename = 'Child representative removed 2' + dateTime.slice(0, 10);
+                await apiDataSetup.updateCase(casename, caseNumber, caseWithMandatory);
+                 await apiDataSetup.updateCase(casename, caseNumber, caseWithChildSolCounsel);
+                  await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
+                  await apiDataSetup.giveAccessToCase(caseNumber,FPLSolicitorOrgUser,'[BARRISTER]');
+                  console.log ("case" + caseNumber);
+                  await signInPage.visit();
+                  await signInPage.login(CTSCTeamLeadUser.email,CTSCTeamLeadUser.password)
+                  await signInPage.navigateTOCaseDetails(caseNumber);
+          
+
+
+            });
     });

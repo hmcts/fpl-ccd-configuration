@@ -9,6 +9,9 @@ readonly lastName: Locator;
 readonly email: Locator;
 readonly organisation: Locator;
 readonly selectOrg: Locator;
+readonly removeCounsel:Locator;
+readonly removeCounselAlert: Locator;
+readonly isRepresented: Locator;
 
 
     constructor(page:Page){
@@ -19,12 +22,19 @@ readonly selectOrg: Locator;
         this.email = page.getByLabel('Email address');
         this.organisation = page.getByLabel('You can only search for');
         this.selectOrg = page.getByRole('link', { name: 'Select' });
+        this.removeCounsel = page.getByLabel('Remove Counsel');
+        this.removeCounselAlert = page.getByRole('button', { name: 'Remove' });
+        this.isRepresented =page.getByRole('group', { name: 'Do they have legal' });
         
     }
 
-    async addLegalCounsel(){
+    async toAddLegalCounsel(){
         await this.addCounsel.click();
+    }
+    async toRemoveLegalCounsel(){
 
+       await  this.removeCounsel.click();
+       await this.removeCounselAlert.click();
     }
 
     async enterLegalCounselDetails(){
@@ -35,6 +45,9 @@ readonly selectOrg: Locator;
         await this.organisation.fill('FPLSolicitorOrg');
         await this.selectOrg.click();
        
+    }
+    async removeRepresentative(){
+        await this.isRepresented.getByLabel('No').check();
     }
 
 

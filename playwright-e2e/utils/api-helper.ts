@@ -65,12 +65,12 @@ export class Apihelp {
       console.log(error);
     }
   }
-    async giveAccessToCase(caseID: string ){
+    async giveAccessToCase(caseID: string,user: {email: string ,password: string},role: string ){
 
         let data = JSON.stringify({
-            'email': privateSolicitorOrgUser.email,
-            'password': privateSolicitorOrgUser.password,
-            'role': '[SOLICITORA]'
+            'email': user.email,
+            'password': user.password,
+            'role': role
         });
 
         let postURL : string = `${urlConfig.serviceUrl}testing-support/case/${caseID}/access`;
