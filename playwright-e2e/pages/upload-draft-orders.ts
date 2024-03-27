@@ -34,7 +34,7 @@ export class UploadDraftOrders extends BasePage {
 
         await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
         await this.clickContinue();
-        await this.checkYourAnsAndSubmit('Submit');
+        await this.clickSubmit();
     }
 
     // upload PDO
