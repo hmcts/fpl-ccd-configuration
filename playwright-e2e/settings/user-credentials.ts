@@ -1,4 +1,5 @@
-import 'dotenv/config'
+import dotenv from "dotenv";
+dotenv.config();
 
 const e2ePw = process.env.E2E_TEST_PASSWORD || '';
 const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
