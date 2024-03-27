@@ -54,7 +54,7 @@ test('Respondent solicitor remove counsel', async ({page, signInPage, legalCouns
      await signInPage.navigateTOCaseDetails(caseNumber);
      await expect(page.getByRole('heading', { name: casename })).toBeHidden;
     });
-    test('Legal counsel removed when respondent representation removed', async ({page, signInPage, legalCounsel}) => {
+test('Legal counsel removed when respondent representation removed', async ({page, signInPage, legalCounsel}) => {
      casename = 'Respondent representative removed ' + dateTime.slice(0, 10);
      await apiDataSetup.updateCase(casename, caseNumber, caseWithResSolCounsel);
      await apiDataSetup.giveAccessToCase(caseNumber,privateSolicitorOrgUser,'[SOLICITORA]');
