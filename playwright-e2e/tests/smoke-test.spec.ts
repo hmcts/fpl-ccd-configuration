@@ -1,6 +1,5 @@
 import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
-//import { ChildDetails } from "../pages/child-details";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
