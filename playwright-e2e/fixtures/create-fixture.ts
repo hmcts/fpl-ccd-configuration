@@ -12,7 +12,6 @@ import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { AdditionalApplications } from "../pages/additional-applications";
 import { ManageDocuments } from "../pages/manage-documents";
-import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
@@ -23,7 +22,6 @@ import { ChildDetails } from "../pages/child-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
-  basePage: BasePage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
@@ -120,10 +118,6 @@ export const test = base.extend<CreateFixtures>({
 
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
-  },
-
-  basePage: async ({ page }, use) => {
-    await use(new BasePage(page));
   },
 
   respondentDetails: async ({ page }, use) => {
