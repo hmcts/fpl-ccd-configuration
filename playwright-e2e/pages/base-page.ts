@@ -8,6 +8,8 @@ export class BasePage {
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
+  readonly submit: Locator;
+
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +19,7 @@ export class BasePage {
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.submit = page.getByRole('button', { name: 'Submit' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -72,6 +75,10 @@ export class BasePage {
 
   async clickSignOut() {
     await this.signOut.click();
+  }
+
+  async clickSubmit() {
+    await this.submit.click();
   }
 }
 
