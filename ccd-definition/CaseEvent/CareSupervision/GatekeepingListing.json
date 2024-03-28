@@ -37,7 +37,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "listGatekeepingHearing",
-    "Name": "List Gatekeeping Hearing",
+    "Name": "List Initial Hearing",
     "Description": "Manage hearing booking details and add allocated judge to a case",
     "DisplayOrder": 1,
     "PreConditionState(s)": "GATEKEEPING_LISTING",
