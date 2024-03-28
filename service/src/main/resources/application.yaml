@@ -30,9 +30,6 @@ spring:
         - local
         - user-mappings
         - feature-toggle
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 
 feign:
   client:

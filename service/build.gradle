@@ -284,7 +284,6 @@ repositories {
 def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '3.0.0',
   log4j           : '2.21.1',
   pdfbox          : '2.0.29',
   mockito         : '4.5.1',
@@ -337,9 +336,6 @@ dependencies {
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.1'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
-
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
