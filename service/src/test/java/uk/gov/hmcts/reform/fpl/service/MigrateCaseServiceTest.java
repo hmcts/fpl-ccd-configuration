@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.CaseSummary;
@@ -63,7 +63,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
@@ -82,7 +81,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -93,11 +91,6 @@ class MigrateCaseServiceTest {
     private static final String MIGRATION_ID = "test-migration";
 
     @Mock
-    private CaseNoteService caseNoteService;
-    @Mock
-    private DocumentListService documentListService;
-
-    @Mock
     private CourtService courtService;
 
     @Mock
@@ -105,6 +98,9 @@ class MigrateCaseServiceTest {
 
     @Mock
     private OrganisationService organisationService;
+
+    @Mock
+    private CourtLookUpService courtLookUpService;
 
     @InjectMocks
     private MigrateCaseService underTest;
@@ -994,62 +990,6 @@ class MigrateCaseServiceTest {
         }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class RemoveApplicationDocument {
-
-        private final UUID applicationDocumentIdToRemove = UUID.randomUUID();
-
-        @Test
-        void shouldThrowExceptionWhenApplicationDocumentNotPresent() {
-            UUID otherApplicationDocumentId1 = UUID.randomUUID();
-            UUID otherApplicationDocumentId2 = UUID.randomUUID();
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(
-                    element(otherApplicationDocumentId1, ApplicationDocument.builder().documentName("1").build()),
-                    element(otherApplicationDocumentId2, ApplicationDocument.builder().documentName("2").build())
-                ))
-                .build();
-
-            assertThrows(AssertionError.class, () -> underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove));
-        }
-
-        @Test
-        void shouldRemoveApplicationDocument() {
-            UUID otherApplicationDocumentId1 = UUID.randomUUID();
-            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
-            applicationDocuments.add(element(otherApplicationDocumentId1, ApplicationDocument.builder().build()));
-            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(applicationDocuments)
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove);
-
-            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(1);
-            assertThat(updatedFields).extracting("applicationDocuments").asList()
-                .doesNotContainAnyElementsOf(List.of(applicationDocumentIdToRemove));
-        }
-
-        @Test
-        void shouldRemoveSingleApplicationDocument() {
-            List<Element<ApplicationDocument>> applicationDocuments = new ArrayList<>();
-            applicationDocuments.add(element(applicationDocumentIdToRemove, ApplicationDocument.builder().build()));
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(applicationDocuments)
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeApplicationDocument(caseData, MIGRATION_ID,
-                applicationDocumentIdToRemove);
-
-            assertThat(updatedFields).extracting("applicationDocuments").asList().hasSize(0);
-        }
-    }
-
     @Nested
     class UpdateIncorrectCourtCodes {
 
@@ -1409,52 +1349,6 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class RefreshDocumentView {
-        @Test
-        void shouldInvokeDocumentListServiceForRefreshingDocumentViews() {
-            CaseData data  = CaseData.builder().build();
-            underTest.refreshDocumentViews(data);
-            verify(documentListService).getDocumentView(data);
-        }
-    }
-
-    @Test
-    void shouldNotThrowWhenNoConfidentialDocumentInDocumentViewNC() {
-        assertDoesNotThrow(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
-            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
-                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
-                + "Applicant's statements and application documents</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<dt class=\\\"govuk-summary-list__key\\\">"
-                + "<img height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/"
-                + "master/resources/confidential.png' title='Confidential'/></dt>"
-                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
-                + "<div class=\\\"govuk-summary-list__row\\\">")).build()));
-    }
-
-    @Test
-    void shouldThrowWhenNoConfidentialDocumentInDocumentViewNC() {
-        assertThatThrownBy(() -> underTest.doDocumentViewNCCheck(1L, MIGRATION_ID,
-            CaseDetails.builder().data(Map.of("documentViewNC", "\"<p><div class='width-50'>\\n"
-                + "\\n<details class=\\\"govuk-details\\\"><summary class=\\\"govuk-details__summary\\\">"
-                + "Applicant's statements and application documents</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">Genogram</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><details class=\\\"govuk-details\\\">"
-                + "<summary class=\\\"govuk-details__summary\\\">complete guide to fpla-ccd-configuration.pdf</summary>"
-                + "<div class=\\\"govuk-details__text\\\"><dl class=\\\"govuk-summary-list\\\">"
-                + "<div class=\\\"govuk-summary-list__row\\\">")).build()))
-            .isInstanceOf(AssertionError.class)
-            .hasMessage(format(
-                "Migration {id = %s, case reference = %s}, expected documentViewNC contains confidential doc.",
-                MIGRATION_ID, 1L));
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class RemovePlacementApplication {
         private final UUID placementToRemove = UUID.randomUUID();
         private final UUID placementToRemain = UUID.randomUUID();
@@ -1618,73 +1512,6 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () ->
                 underTest.removeHearingOrdersBundlesDrafts(caseData, MIGRATION_ID,
                     orderIdToRemove));
-        }
-    }
-
-    @Nested
-    class RenameApplicationDocuments {
-
-        @Test
-        void shouldRemoveAngularBracketsFromDocumentNames() {
-            UUID docId = UUID.randomUUID();
-            Element<ApplicationDocument> appDoc = element(docId, ApplicationDocument.builder()
-                .documentName("PA>S")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc = element(docId, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc);
-        }
-
-        @Test
-        void shouldDoNothingIfNoAngularBrackets() {
-            Element<ApplicationDocument> appDoc = element(ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(appDoc);
-        }
-
-        @Test
-        void shouldRenameMultipleDocsIfAngularBrackets() {
-            UUID docId1 = UUID.randomUUID();
-            UUID docId2 = UUID.randomUUID();
-            Element<ApplicationDocument> appDoc1 = element(docId1, ApplicationDocument.builder()
-                .documentName("PA>S")
-                .build());
-            Element<ApplicationDocument> appDoc2 = element(docId2, ApplicationDocument.builder()
-                .documentName("PA<S")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc1 = element(docId1, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            Element<ApplicationDocument> expectedDoc2 = element(docId2, ApplicationDocument.builder()
-                .documentName("PAS")
-                .build());
-
-            CaseData caseData = CaseData.builder()
-                .applicationDocuments(List.of(appDoc1, appDoc2))
-                .build();
-
-            Map<String, Object> updates = underTest.renameApplicationDocuments(caseData);
-
-            assertThat(updates).extracting("applicationDocuments").asList().containsExactly(expectedDoc1, expectedDoc2);
         }
     }
 
@@ -2091,61 +1918,6 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class RemoveFurtherEvidenceSolicitorDocuments {
-        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
-            .build());
-        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
-            .build());
-        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
-            element(SupportingEvidenceBundle.builder().build());
-
-        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
-
-        @Test
-        void shouldRemoveTargetSupportingEvidenceBundle() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2, sebToBeRemoved))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
-                MIGRATION_ID, sebToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").asList()
-                .containsExactly(seb1, seb2);
-        }
-
-        @Test
-        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .furtherEvidenceDocumentsSolicitor(List.of(sebToBeRemoved))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
-                MIGRATION_ID, sebToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("furtherEvidenceDocumentsSolicitor").isNull();
-        }
-
-        @Test
-        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .furtherEvidenceDocumentsSolicitor(List.of(seb1, seb2))
-                .build();
-
-            assertThatThrownBy(() -> underTest.removeFurtherEvidenceSolicitorDocuments(caseData,
-                MIGRATION_ID, sebToBeRemoved.getId()))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format(
-                    "Migration {id = %s, case reference = %s}, further evidence documents solicitor not found",
-                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class RemoveCourtBundleByBundleId {
 
         private UUID hearingId = UUID.randomUUID();
@@ -2236,80 +2008,6 @@ class MigrateCaseServiceTest {
                 .hasMessage(format(
                     "Migration {id = %s, case reference = %s}, hearing court bundle not found",
                     MIGRATION_ID, 1, targetBundleId));
-        }
-    }
-
-    @Nested
-    class RemoveCorrespondenceDocument {
-        private final Element<SupportingEvidenceBundle> correspondenceDocument1 =
-            element(SupportingEvidenceBundle.builder().build());
-        private final Element<SupportingEvidenceBundle> correspondenceDocument2 =
-            element(SupportingEvidenceBundle.builder().build());
-        private final Element<SupportingEvidenceBundle> correspondenceDocumentToBeRemoved =
-            element(SupportingEvidenceBundle.builder().build());
-        private final Element<SupportingEvidenceBundle> correspondenceDocumentConfidential =
-            element(SupportingEvidenceBundle.builder().hasConfidentialAddress("Yes").build());
-
-        @Test
-        void shouldRemoveCorrespondenceDocument() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .correspondenceDocuments(
-                    List.of(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentToBeRemoved))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
-                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
-                .containsExactly(correspondenceDocument1, correspondenceDocument2);
-            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
-                .containsExactly(correspondenceDocument1, correspondenceDocument2);
-        }
-
-        @Test
-        void shouldRemoveCorrespondenceDocumentIfOnlyOneExist() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .correspondenceDocuments(List.of(correspondenceDocumentToBeRemoved))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
-                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("correspondenceDocuments").asList().isEmpty();
-            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList().isEmpty();
-        }
-
-        @Test
-        void shouldThrowExceptionIfCorrespondenceDocumentNotExist() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2))
-                .build();
-
-            assertThatThrownBy(() -> underTest.removeCorrespondenceDocument(caseData,
-                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId()))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s}, correspondence document not found",
-                    MIGRATION_ID, 1));
-        }
-
-        @Test
-        void shouldNotPutConfidentialDocsInNc() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .correspondenceDocuments(List.of(correspondenceDocument1, correspondenceDocument2,
-                    correspondenceDocumentToBeRemoved, correspondenceDocumentConfidential))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeCorrespondenceDocument(caseData,
-                MIGRATION_ID, correspondenceDocumentToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("correspondenceDocuments").asList()
-                .containsExactly(correspondenceDocument1, correspondenceDocument2, correspondenceDocumentConfidential);
-            assertThat(updatedFields).extracting("correspondenceDocumentsNC").asList()
-                .containsExactly(correspondenceDocument1, correspondenceDocument2);
         }
     }
 
@@ -2469,6 +2167,90 @@ class MigrateCaseServiceTest {
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s, case reference = %s}, invalid local authorities",
                     MIGRATION_ID, 1, localAuthorityToBeRemoved.getId().toString()));
+        }
+    }
+
+    @Nested
+    class SetCaseManagementLocation {
+
+        @BeforeEach
+        void beforeEach() {
+            when(courtLookUpService.getCourtByCode("167")).thenReturn(Optional.of(Court.builder()
+                .code("167")
+                .name("Family Court sitting at Chelmsford")
+                .regionId("5")
+                .region("South East")
+                .epimmsId("816875")
+                .build()));
+        }
+
+        @Test
+        void shouldSetCaseManagementLocationIfMismatched() {
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("incorrectLocation")
+                    .region("incorrectRegion")
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.setCaseManagementLocation(caseData, MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("caseManagementLocation")
+                .isEqualTo(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build());
+        }
+
+        @Test
+        void shouldLeaveCaseManagementAloneIfNoMismatch() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build())
+                .build();
+
+            Map<String, Object> updatedFields = underTest.setCaseManagementLocation(caseData, MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("caseManagementLocation")
+                .isEqualTo(CaseLocation.builder()
+                    .baseLocation("816875")
+                    .region("5")
+                    .build());
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoCourtFound() {
+            when(courtLookUpService.getCourtByCode("167")).thenReturn(Optional.empty());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .court(Court.builder()
+                    .name("Family Court sitting at Chelmsford")
+                    .code("167")
+                    .build())
+                .caseManagementLocation(CaseLocation.builder()
+                    .baseLocation("incorrectLocation")
+                    .region("incorrectRegion")
+                    .build())
+                .build();
+
+            assertThatThrownBy(() -> underTest.setCaseManagementLocation(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration {id = test-migration, case reference = 1},"
+                    + " could not find correct caseManagementLocation");
         }
     }
 
