@@ -17,6 +17,7 @@ import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
+import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
 
@@ -39,6 +40,7 @@ type CreateFixtures = {
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  applicantDetails: ApplicantDetails;
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
 };
@@ -116,6 +118,10 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseDetails(page));
   },
 
+  applicantDetails: async ({ page }, use) => {
+    await use(new ApplicantDetails(page));
+  },
+  
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
   },
