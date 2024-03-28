@@ -4,12 +4,10 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -26,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -114,17 +111,6 @@ public class UploadTranslationsControllerTestHelper {
                 .translationRequirements(ENGLISH_TO_WELSH)
                 .build()
             )
-        ))
-        .hearingFurtherEvidenceDocuments(List.of(
-            element(UUID_7, HearingFurtherEvidenceBundle.builder()
-                .supportingEvidenceBundle(List.of(
-                    element(UUID_8, SupportingEvidenceBundle.builder()
-                        .name("Document 1")
-                        .type(EXPERT_REPORTS)
-                        .translationRequirements(ENGLISH_TO_WELSH)
-                        .dateTimeUploaded(LocalDateTime.of(2009, 1, 3, 12, 1, 2))
-                        .build())
-                )).build())
         ))
         .build();
     public static final DynamicList RENDERED_DYNAMIC_LIST = DynamicList.builder()
