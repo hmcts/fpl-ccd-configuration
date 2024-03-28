@@ -12,7 +12,6 @@ import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { AdditionalApplications } from "../pages/additional-applications";
 import { ManageDocuments } from "../pages/manage-documents";
-import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
@@ -20,6 +19,8 @@ import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { RespondentDetails } from "../pages/respondent-details";
 import {LegalCounsel } from "../pages/legal-counsel";
+import { ChildDetails } from "../pages/child-details";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -40,6 +41,7 @@ type CreateFixtures = {
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
   legalCounsel: LegalCounsel;
 };
@@ -117,9 +119,14 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseDetails(page));
   },
 
+  childDetails: async ({ page }, use) => {
+    await use(new ChildDetails(page));
+  },
+
   respondentDetails: async ({ page }, use) => {
     await use(new RespondentDetails(page));
   },
+
   legalCounsel: async ({ page }, use) => {
     await use(new LegalCounsel(page));
   },
