@@ -68,5 +68,3 @@ export class BasePage {
     await this.signOut.click();
   }
 }
-
-

@@ -10,7 +10,6 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
-import { AdditionalApplications } from "../pages/additional-applications";
 import { ManageDocuments } from "../pages/manage-documents";
 import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
@@ -18,6 +17,9 @@ import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
+import { AdditionalApplications } from "../pages/additional-applications";
+import { ApproveOrders} from "../pages/approve-orders";
+import { Placement } from "../pages/placement";
 import { RespondentDetails } from "../pages/respondent-details";
 
 type CreateFixtures = {
@@ -34,11 +36,13 @@ type CreateFixtures = {
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
   allocationProposal : AllocationProposal;
-  additionalApplications: AdditionalApplications;
   addApplicationDocuments : AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  additionalApplications: AdditionalApplications;
+  approveOrders: ApproveOrders;
+  placement: Placement;
   respondentDetails: RespondentDetails;
 };
 
@@ -115,8 +119,15 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseDetails(page));
   },
 
-  respondentDetails: async ({ page }, use) => {
-    await use(new RespondentDetails(page));
+  approveOrders: async ({ page }, use) => {
+    await use(new ApproveOrders(page));
   },
 
+  placement: async ({ page }, use) => {
+    await use(new Placement(page));
+  },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
+  }
 });
