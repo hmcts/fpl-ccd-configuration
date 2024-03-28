@@ -49,7 +49,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1930", this::run1930,
         "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback
+        "DFPL-AM-Rollback", this::runAmRollback,
+        "DFPL-1233", this::run1233,
+        "DFPL-1233Rollback", this::run1233Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -219,5 +221,13 @@ public class MigrateCaseController extends CallbackController {
 
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
+    }
+
+    private void run1233Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run1233(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }

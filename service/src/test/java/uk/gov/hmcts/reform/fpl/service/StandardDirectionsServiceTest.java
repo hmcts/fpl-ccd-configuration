@@ -50,8 +50,8 @@ class StandardDirectionsServiceTest {
 
     @Test
     void shouldPopulateDirectionsWithCaseManagementHearingDate() {
-        HearingBooking otherHearing = HearingBooking.builder()
-            .type(HearingType.OTHER)
+        HearingBooking placementHearing = HearingBooking.builder()
+            .type(HearingType.PLACEMENT_HEARING)
             .startDate(LocalDateTime.now().plusDays(1))
             .build();
 
@@ -70,7 +70,7 @@ class StandardDirectionsServiceTest {
 
 
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(otherHearing), element(caseManagementHearing)))
+            .hearingDetails(List.of(element(placementHearing), element(caseManagementHearing)))
             .build();
 
         //test data in test/resources/ordersConfig.json
@@ -89,13 +89,13 @@ class StandardDirectionsServiceTest {
 
     @Test
     void shouldPopulateDirectionsWithEmptyDate() {
-        HearingBooking otherHearing = HearingBooking.builder()
-            .type(HearingType.OTHER)
+        HearingBooking placementHearing = HearingBooking.builder()
+            .type(HearingType.PLACEMENT_HEARING)
             .startDate(LocalDateTime.now().plusDays(1))
             .build();
 
         CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(otherHearing)))
+            .hearingDetails(List.of(element(placementHearing)))
             .build();
 
         //test data in test/resources/ordersConfig.json
