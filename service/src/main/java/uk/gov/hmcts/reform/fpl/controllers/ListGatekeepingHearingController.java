@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
-@Api
 @RestController
 @RequestMapping("/callback/list-gatekeeping-hearing")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

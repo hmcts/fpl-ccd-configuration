@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,6 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-@Api
 @RestController
 @RequestMapping("/callback/upload-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

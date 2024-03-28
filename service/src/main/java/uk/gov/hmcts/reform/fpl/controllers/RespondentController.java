@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Slf4j
-@Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

@@ -199,8 +199,8 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         Map<String, Object> caseDetails = postAboutToSubmitEvent(caseData).getData();
 
-        assertThat(caseDetails).extracting("outsourcingType", "outsourcingLAs", "sharingWithUsers",
-            "isOutsourcedCase").containsOnlyNulls();
+        assertThat(caseDetails).doesNotContainKeys("outsourcingType", "outsourcingLAs", "sharingWithUsers",
+            "isOutsourcedCase");
     }
 
     private Map<String, Object> orgPolicy(String id, String role) {

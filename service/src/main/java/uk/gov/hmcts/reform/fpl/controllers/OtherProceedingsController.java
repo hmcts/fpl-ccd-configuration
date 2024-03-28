@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@Api
 @RestController
 @RequestMapping("callback/enter-other-proceedings")
 public class OtherProceedingsController extends CallbackController {

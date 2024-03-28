@@ -53,7 +53,7 @@ class IdamClientTest {
     @Test
     void shouldRetryWhen5XXResponseReturned() throws IOException {
         when(httpClient.execute(any(), any()))
-            .thenReturn(response(500), response(504), response(204));
+            .thenReturn(response(500), response(504), response(200));
 
         UserDetails details = idamClient.getUserDetails("details");
 
@@ -75,7 +75,7 @@ class IdamClientTest {
     @Test
     void shouldNotRetryGivenSuccessfulResponse() throws IOException {
         when(httpClient.execute(any(), any()))
-            .thenReturn(response(204));
+            .thenReturn(response(200));
 
         UserDetails details = idamClient.getUserDetails("details");
 

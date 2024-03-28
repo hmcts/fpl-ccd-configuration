@@ -109,9 +109,10 @@ class NoticeOfProceedingsServiceTest {
 
         Map<String, Object> listAndLabel = noticeOfProceedingService.initNoticeOfProceeding(caseData);
 
+        assertThat(listAndLabel).doesNotContainKey("proceedingLabel");
         assertThat(listAndLabel)
-            .extracting("proceedingLabel", "noticeOfProceedings")
-            .containsExactly(null, buildExpectedNoticeOfProceedingData());
+            .extracting("noticeOfProceedings")
+            .isEqualTo(buildExpectedNoticeOfProceedingData());
     }
 
     @Test
@@ -122,9 +123,10 @@ class NoticeOfProceedingsServiceTest {
 
         Map<String, Object> listAndLabel = noticeOfProceedingService.initNoticeOfProceeding(caseData);
 
+        assertThat(listAndLabel).doesNotContainKey("noticeOfProceedings");
         assertThat(listAndLabel)
-            .extracting("proceedingLabel", "noticeOfProceedings")
-            .containsExactly(buildExpectedHearingLabel(), null);
+            .extracting("proceedingLabel")
+            .isEqualTo(buildExpectedHearingLabel());
     }
 
     @Test
