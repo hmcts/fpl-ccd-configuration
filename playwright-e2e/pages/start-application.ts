@@ -20,6 +20,8 @@ export class StartApplication {
   readonly uploadDocumentsLink: Locator;
   readonly upLoadDocsInProgress: Locator;
   readonly applicantDetailsLink: Locator;
+  readonly childDetailsLink: Locator;
+  readonly childDetailsUpdated: Locator;
   readonly respondentsDetailsLink: Locator;
   readonly applicantDetailsUpdated: Locator;
 
@@ -42,7 +44,10 @@ export class StartApplication {
     this.upLoadDocsInProgress = page.locator('p:has(a[text()="Upload documents"]) > img[title="In progress"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
-    this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' }); //code changed from: page.getByRole('img', { name: 'Information added' });
+    this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' }); 
+    this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
+    this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
+    this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
   }
 
   async addApplicationDetails() {
@@ -92,6 +97,15 @@ export class StartApplication {
 
   async applicantDetailsHasBeenUpdated() {
     await expect(this.applicantDetailsUpdated).toBeVisible();
+  }
+
+  async childDetails() {
+    await this.childDetailsLink.isVisible();
+    await this.childDetailsLink.click();
+  }
+
+  async childDetailsHasBeenUpdated(){
+    await expect(this.childDetailsUpdated).toBeVisible();
   }
 
   async respondentDetails() {

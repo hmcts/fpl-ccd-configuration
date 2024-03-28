@@ -10,7 +10,6 @@ export class BasePage {
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
 
-
   constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
@@ -26,10 +25,6 @@ export class BasePage {
     await this.nextStep.selectOption(eventName);
     await this.go.click();
   }
-
-  // async checkYourAnsAndSubmit(submitLabel: string = "Save and continue") {
-  //   await this.page.getByRole("button", { name: submitLabel }).click();
-  // }
 
   async checkYourAnsAndSubmit(){
     await this.saveAndContinue.click();
