@@ -289,7 +289,7 @@ def versions = [
   pdfbox          : '2.0.29',
   mockito         : '3.7.7',
   serenity        : '2.6.0',
-  pact_version    : '4.1.7',
+  pact_version    : '4.6.8',
   junit_jupiter   : '5.7.1',
   lombok          : '1.18.30',
   pitest          : '1.15.0',
