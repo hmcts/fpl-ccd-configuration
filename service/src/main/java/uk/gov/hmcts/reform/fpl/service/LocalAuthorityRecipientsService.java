@@ -63,11 +63,6 @@ public class LocalAuthorityRecipientsService {
     public List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
-        // from onboarding config
-        if (!featureToggles.isRestrictedFromPrimaryApplicantEmails(caseData.getId().toString())) {
-            localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority()).ifPresent(recipients::add);
-        }
-
         if (isNotEmpty(caseData.getLocalAuthorities())) {
             Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
 

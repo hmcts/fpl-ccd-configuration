@@ -275,13 +275,6 @@ class ManagingOrganisationRemovalControllerTest extends AbstractCallbackTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 MANAGING_ORGANISATION_REMOVED_TEMPLATE,
-                LOCAL_AUTHORITY_1_INBOX,
-                toMap(expectedNotifyData),
-                notificationReference(caseData.getId())
-            );
-
-            verify(notificationClient).sendEmail(
-                MANAGING_ORGANISATION_REMOVED_TEMPLATE,
                 managingOrganisationSolicitorEmail,
                 toMap(expectedNotifyData),
                 notificationReference(caseData.getId())
