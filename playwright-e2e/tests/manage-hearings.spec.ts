@@ -52,7 +52,7 @@ test.describe('manage hearings', () => {
       await signInPage.login(CTSCUser.email, CTSCUser.password)
       await signInPage.navigateTOCaseDetails(caseNumber);
       await manageHearings.gotoNextStep('Manage hearings')
-      await manageHearings.editFutureHearingOnCase('Test type details hearing, 1 January 2050');
+      await manageHearings.editFutureHearingOnCase('Further case management hearing, 1 January 2050');
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
     });
 

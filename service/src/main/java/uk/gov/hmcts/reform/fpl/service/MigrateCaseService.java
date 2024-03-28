@@ -951,7 +951,7 @@ public class MigrateCaseService {
         targetChild.setValue(updatedChild);
         return Map.of("children1", children);
     }
-  
+
     public Map<String, Object> migrateCaseClosedDateToLatestFinalOrderApprovalDate(CaseData caseData,
                                                                                    String migrationId) {
         if (!State.CLOSED.equals(caseData.getState())) {
