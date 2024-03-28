@@ -14,10 +14,12 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   allocationProposal,
   addApplicationDocuments,
+  childDetails,
 
   page,
   makeAxeBuilder
 },testInfo) => {
+
   const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -72,6 +74,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
+  //Child details
+  await startApplication.childDetails();
+  await childDetails.childDetailsNeeded();
+  await startApplication.childDetailsHasBeenUpdated();
+  
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
