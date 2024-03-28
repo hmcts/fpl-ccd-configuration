@@ -45,10 +45,9 @@ public class BlankOrderGenerator {
 
         HearingOrder order = sealedOrder.getValue();
 
-        return element(sealedOrder.getId(), GeneratedOrder.builder()
+        GeneratedOrder.GeneratedOrderBuilder builder = GeneratedOrder.builder()
             .type(BLANK_ORDER.getLabel())
             .title(order.getTitle())
-            .document(order.getOrder())
             .dateOfIssue(order.getDateIssued() != null ? formatLocalDateToString(order.getDateIssued(), DATE) : null)
             .judgeAndLegalAdvisor(hearingElement != null
                 ? getSelectedJudge(hearingElement.getValue().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge())
@@ -57,7 +56,13 @@ public class BlankOrderGenerator {
             .children(caseData.getAllChildren())
             .others(selectedOthers)
             .othersNotified(othersNotified)
-            .translationRequirements(order.getTranslationRequirements())
-            .build());
+            .translationRequirements(order.getTranslationRequirements());
+
+        if (order.isConfidentialOrder()) {
+            builder.documentConfidential(order.getOrderConfidential());
+        } else {
+            builder.document(order.getOrder());
+        }
+        return element(sealedOrder.getId(), builder.build());
     }
 }

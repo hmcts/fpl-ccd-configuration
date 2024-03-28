@@ -81,7 +81,7 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
 
     @Test
     void notifyLAAndAdmin() {
-        underTest.sendNotificationToAdminAndLA(buildEvent());
+        underTest.sendNotificationToAdmin(buildEvent());
 
         allResponses().forEach(response ->
             assertThat(response)
@@ -257,6 +257,6 @@ class DraftOrdersApprovedEventHandlerEmailTemplateTest extends EmailTemplateTest
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
 
-        return new DraftOrdersApproved(caseData, List.of(cmo, c21));
+        return new DraftOrdersApproved(caseData, List.of(cmo, c21), List.of());
     }
 }

@@ -13,6 +13,6 @@ import static java.util.Collections.unmodifiableList;
 public class AmendableGeneratedOrderProvider implements AmendableListItemProvider {
     @Override
     public List<Element<? extends AmendableOrder>> provideListItems(CaseData caseData) {
-        return unmodifiableList(caseData.getOrderCollection());
+        return unmodifiableList(caseData.getAllOrderCollections());
     }
 }

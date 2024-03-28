@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -47,6 +48,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String title;
     private HearingOrderType type;
     private DocumentReference order;
+    private DocumentReference orderConfidential;
     private DocumentReference translatedOrder;
     private DocumentReference lastUploadedOrder;
     private String hearing;
@@ -66,6 +68,7 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
     private String removalReason;
     private final List<Element<Other>> others;
     private String othersNotified;
+    private String uploaderEmail;
 
     public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
         return from(order, hearing, date, AGREED_CMO, null, null, null);
@@ -196,5 +199,10 @@ public class HearingOrder implements RemovableOrder, AmendableOrder, Translatabl
             this.documentAcknowledge.add(DOCUMENT_ACKNOWLEDGEMENT_KEY);
         }
         return this.documentAcknowledge;
+    }
+
+    @JsonIgnore
+    public boolean isConfidentialOrder() {
+        return isNotEmpty(orderConfidential);
     }
 }

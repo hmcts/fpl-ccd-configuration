@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"supportingEvidenceLA", "supportingEvidenceNC"})
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
     private C2ApplicationType type;
@@ -79,6 +79,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
+    @Deprecated
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
@@ -86,6 +87,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
             .collect(Collectors.toList());
     }
 
+    @Deprecated
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()

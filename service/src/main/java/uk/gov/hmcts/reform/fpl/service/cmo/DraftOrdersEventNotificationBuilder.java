@@ -51,20 +51,21 @@ public class DraftOrdersEventNotificationBuilder {
             }
         }
 
-        Map<CMOStatus, List<HearingOrder>> statusToOrder = orders.stream()
-            .map(Element::getValue)
-            .collect(groupingBy(HearingOrder::getStatus));
+        Map<CMOStatus, List<Element<HearingOrder>>> statusToOrder = orders.stream()
+            .collect(groupingBy(element -> element.getValue().getStatus()));
 
-        List<HearingOrder> approvedOrders = statusToOrder.getOrDefault(APPROVED, emptyList());
-        List<HearingOrder> rejectedOrders = statusToOrder.getOrDefault(RETURNED, emptyList());
+        List<Element<HearingOrder>> approvedOrders = statusToOrder.getOrDefault(APPROVED, emptyList());
+        List<Element<HearingOrder>> rejectedOrders = statusToOrder.getOrDefault(RETURNED, emptyList());
         List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
 
         if (!approvedOrders.isEmpty()) {
-            eventsToPublish.add(new DraftOrdersApproved(caseData, approvedOrders));
+            eventsToPublish.add(new DraftOrdersApproved(caseData,
+                unwrapElements(approvedOrders).stream().filter(order -> !order.isConfidentialOrder()).toList(),
+                approvedOrders.stream().filter(order -> order.getValue().isConfidentialOrder()).toList()));
         }
 
         if (!rejectedOrders.isEmpty()) {
-            eventsToPublish.add(new DraftOrdersRejected(caseData, rejectedOrders));
+            eventsToPublish.add(new DraftOrdersRejected(caseData, unwrapElements(rejectedOrders)));
         }
 
         return eventsToPublish;
@@ -78,7 +79,7 @@ public class DraftOrdersEventNotificationBuilder {
         eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         if (anyC21sHaveStatus(c21s, APPROVED)) {
-            eventsToPublish.add(new DraftOrdersApproved(caseData, unwrapElements(c21s)));
+            eventsToPublish.add(new DraftOrdersApproved(caseData, unwrapElements(c21s), List.of()));
         }
 
         return eventsToPublish;
