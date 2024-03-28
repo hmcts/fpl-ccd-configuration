@@ -7,7 +7,9 @@ export class BasePage {
   readonly continueButton: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
-  
+  readonly saveAndContinue: Locator;
+  readonly submit: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
@@ -15,6 +17,8 @@ export class BasePage {
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
+    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.submit = page.getByRole('button', { name: 'Submit' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -22,8 +26,8 @@ export class BasePage {
     await this.go.click();
   }
 
-  async checkYourAnsAndSubmit(submitLabel: string = "Save and continue") {
-    await this.page.getByRole("button", { name: submitLabel }).click();
+  async checkYourAnsAndSubmit(){
+    await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {
@@ -67,6 +71,9 @@ export class BasePage {
   async clickSignOut() {
     await this.signOut.click();
   }
-}
 
+  async clickSubmit() {
+    await this.submit.click();
+  }
+}
 
