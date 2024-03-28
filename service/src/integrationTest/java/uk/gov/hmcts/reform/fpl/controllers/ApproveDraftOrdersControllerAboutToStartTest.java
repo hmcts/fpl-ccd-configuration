@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -133,6 +136,22 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractCallbackTest 
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
+    }
+
+    @Test
+    void shouldClearOrderReviewUrgencyField() {
+        CaseData caseData = CaseData.builder()
+            .orderReviewUrgency(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.YES))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
+        CaseData responseData = extractCaseData(callbackResponse);
+
+        assertThat(Optional.ofNullable(Optional.ofNullable(responseData.getOrderReviewUrgency())
+            .orElse(ApproveOrderUrgencyOption.builder().build()).getUrgency()).orElse(List.of()))
+            .asList().isEmpty();
     }
 
     private Element<HearingOrdersBundle> buildHearingDraftOrdersBundles(
