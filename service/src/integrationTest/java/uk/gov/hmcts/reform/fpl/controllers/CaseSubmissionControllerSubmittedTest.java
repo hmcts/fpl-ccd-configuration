@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.representative.UnregisteredRepresent
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -45,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -142,6 +144,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private EmailService emailService;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     DocmosisHelper docmosisHelper;
 
     @MockBean
@@ -165,7 +170,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
-
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -412,6 +417,25 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 notificationReference(CASE_ID)
             ));
         verifyCafcassOrderNotification();
+    }
+
+    @Test
+    void shouldNotSendNotificationToCtscAdminWhenToggledOff() throws NotificationClientException {
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+        CaseDetails caseDetails = enableSendToCtscOnCaseDetails(YES);
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetails, OPEN);
+
+        postSubmittedEvent(callbackRequest);
+
+        Map<String, Object> expectedIncompleteHmctsParameters =
+            toMap(getExpectedHmctsParameters(false, DEFAULT_LA_COURT, LOCAL_AUTHORITY_1_NAME));
+
+        verify(notificationClient, never()).sendEmail(
+            HMCTS_COURT_SUBMISSION_TEMPLATE,
+            CTSC_EMAIL,
+            expectedIncompleteHmctsParameters,
+            notificationReference(CASE_ID)
+        );
     }
 
     @Test

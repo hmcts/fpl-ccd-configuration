@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -73,6 +74,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
     @MockBean
     private WorkAllocationTaskService workAllocationTaskService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     UploadC2DocumentsSubmittedControllerTest() {
         super("upload-c2");
     }
@@ -85,6 +89,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractCallbackTest {
         latestC2Document = testDocumentReference();
         when(documentDownloadService.downloadDocument(latestC2Document.getBinaryUrl()))
             .thenReturn(C2_BINARY);
+
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test
