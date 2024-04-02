@@ -109,7 +109,6 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("draftOrderNeedsReviewUploaded",
             eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
-        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
         return respond(caseDetails);
