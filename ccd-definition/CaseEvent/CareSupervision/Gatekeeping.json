@@ -35,7 +35,7 @@
     "Name": "Manage hearings",
     "Description": "Manage hearing booking details on a case",
     "DisplayOrder": 3,
-    "PreConditionState(s)": "GATEKEEPING_LISTING;",
+    "PreConditionState(s)": "GATEKEEPING_LISTING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
