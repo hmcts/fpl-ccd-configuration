@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -250,8 +253,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     void shouldSetWATaskFieldIfAgreedCMOUploaded() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
-        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
-            .flatMap(Collection::stream)
+        List<Element<HearingBooking>> allHearings = Stream.concat(hearings.stream(), futureHearings.stream())
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftCMOs = List.of();
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
@@ -287,8 +289,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     void shouldSetWATaskFieldIfC21Uploaded() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
-        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
-            .flatMap(Collection::stream)
+        List<Element<HearingBooking>> allHearings = Stream.concat(hearings.stream(), futureHearings.stream())
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftOrders = List.of();
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
@@ -319,8 +320,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     void shouldSetWATaskFieldToNoIfDraftCMOUploaded() {
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
         List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
-        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
-            .flatMap(Collection::stream)
+        List<Element<HearingBooking>> allHearings = Stream.concat(hearings.stream(), futureHearings.stream())
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftCMOs = List.of();
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
