@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.utils.GrammarHelper;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.nonNull;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,7 +27,9 @@ public class ManageOrderDocumentService {
         context.put("childOrChildren", getChildGrammar(numOfChildren));
         context.put("childIsOrAre", getChildIsOrAreGrammar(numOfChildren));
         context.put("childWasOrWere", getChildWasOrWereGrammar(numOfChildren));
-        context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        context.put("localAuthorityName", nonNull(caseData.getCaseLocalAuthority())
+            ? laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority())
+            : caseData.getApplicantName().orElse(null));
         context.put("courtName", caseData.getCourt() != null ? caseData.getCourt().getName() : null);
         return context;
     }

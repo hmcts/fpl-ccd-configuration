@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
@@ -161,4 +162,6 @@ public class CaseDataParent {
     protected final GroundsForEducationSupervisionOrder groundsForEducationSupervisionOrder;
 
     protected final YesNo shouldSendOrderReminder;
+
+    protected final CaseLocation caseManagementLocation;
 }

@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_O
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class C33InterimCareOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -88,6 +90,28 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
     void shouldReturnContentForChildAndSpecifiedDateWithExclusion() {
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
         CaseData caseData = buildCaseDataWithDateSpecified(true);
+
+        String formattedDate = formatLocalDateTimeBaseUsingFormat(
+            NEXT_WEEK_DATE_TIME,
+            String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
+
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(courtOrderMessage)
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnContentForChildAndSpecifiedDateWithExclusionEvenWhenCaseLocalAuthorityDoesntExist() {
+        dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithNoCaseLocalAuthority();
 
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
@@ -378,6 +402,22 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .build())
                 .build();
         }
+    }
+
+    private CaseData buildCaseDataWithNoCaseLocalAuthority() {
+        return CaseData.builder()
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LA_NAME)
+                .build()))
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(time.now().toLocalDate())
+                .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .manageOrdersExclusionDetails(EXCLUSION_DETAILS)
+                .manageOrdersType(C33_INTERIM_CARE_ORDER)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
+                .build())
+            .build();
     }
 
     private CaseData buildCaseDataWithDateTimeSpecified(boolean hasExclusionDetails) {

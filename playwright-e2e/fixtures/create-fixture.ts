@@ -8,21 +8,43 @@ import { GroundsForTheApplication } from "../pages/grounds-for-the-application";
 import { JudicialMessage } from "../pages/judicial-message";
 import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
+import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { ChallengedAccess } from "../pages/challenged-access";
+import { AdditionalApplications } from "../pages/additional-applications";
+import { ManageDocuments } from "../pages/manage-documents";
+import { CaseFileView } from "../pages/case-file-view";
+import { AddApplicationDocuments } from "../pages/add-application-documents";
+import { ManageHearings } from "../pages/manage-hearings";
+import { GatekeepingListing } from "../pages/gatekeeping-listing";
+import { CaseDetails } from "../pages/case-details";
+import { ApplicantDetails } from "../pages/applicant-details";
+import { RespondentDetails } from "../pages/respondent-details";
+import { ChildDetails } from "../pages/child-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
   createCase: CreateCase;
   startApplication: StartApplication;
   ordersAndDirectionSought: OrdersAndDirectionSought;
-  hearingUrgency : HearingUrgency;
-  groundsForTheApplication : GroundsForTheApplication;
-  judicialMessages : JudicialMessage;
-  riskAndHarmToChildren : RiskAndHarmToChildren;
+  hearingUrgency: HearingUrgency;
+  groundsForTheApplication: GroundsForTheApplication;
+  judicialMessages: JudicialMessage;
+  riskAndHarmToChildren: RiskAndHarmToChildren;
   factorsAffectingParenting: FactorsAffectingParenting;
+  uploadDraftOrders: UploadDraftOrders;
+  manageDocuments: ManageDocuments;
+  caseFileView: CaseFileView;
   allocationProposal : AllocationProposal;
   challengedAccess: ChallengedAccess;
+  additionalApplications: AdditionalApplications;
+  addApplicationDocuments : AddApplicationDocuments;
+  manageHearings: ManageHearings;
+  gateKeepingListing: GatekeepingListing;
+  caseDetails: CaseDetails;
+  applicantDetails: ApplicantDetails;
+  childDetails: ChildDetails;
+  respondentDetails: RespondentDetails;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -53,6 +75,7 @@ export const test = base.extend<CreateFixtures>({
   judicialMessages: async ({ page }, use) => {
     await use(new JudicialMessage(page));
   },
+
   riskAndHarmToChildren: async ({ page }, use) => {
     await use(new RiskAndHarmToChildren(page));
   },
@@ -67,5 +90,49 @@ export const test = base.extend<CreateFixtures>({
 
   challengedAccess: async ({ page }, use) => {
     await use(new ChallengedAccess(page));
+  },
+  
+  additionalApplications: async ({ page }, use) => {
+    await use(new AdditionalApplications(page));
+  },
+  
+  uploadDraftOrders: async ({ page }, use) => {
+    await use(new UploadDraftOrders(page));
+   },
+
+  manageDocuments: async ({ page }, use) => {
+    await use(new ManageDocuments(page));
+  },
+
+  caseFileView: async ({ page }, use) => {
+    await use(new CaseFileView(page));
+  },
+
+  addApplicationDocuments: async ({ page }, use) => {
+    await use(new AddApplicationDocuments(page));
+  },
+
+  manageHearings: async ({ page }, use) => {
+    await use(new ManageHearings(page));
+  },
+
+  gateKeepingListing: async ({ page }, use) => {
+    await use(new GatekeepingListing(page));
+  },
+
+  caseDetails: async ({ page }, use) => {
+    await use(new CaseDetails(page));
+  },
+
+  applicantDetails: async ({ page }, use) => {
+    await use(new ApplicantDetails(page));
+  },
+  
+  childDetails: async ({ page }, use) => {
+    await use(new ChildDetails(page));
+  },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
   },
 });
