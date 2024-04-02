@@ -110,6 +110,7 @@ public class SecureDocStoreHelper {
 
             document = secureDocStoreService.getDocumentMetadata(documentUrlString);
         } catch (Exception t) {
+            log.error("Docstore exception caught (metadata)", t);
             if (!featureToggleService.isSecureDocstoreEnabled()) {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN DOWNLOADING METADATA (SECURE DOC STORE: DISABLED)"
                     + " ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);
@@ -150,6 +151,7 @@ public class SecureDocStoreHelper {
                 return ret;
             }
         } catch (Exception t) {
+            log.error("Docstore exception caught (uploading)", t);
             if (!featureToggleService.isSecureDocstoreEnabled()) {
                 log.error("↑ ↑ ↑ ↑ ↑ ↑ ↑ EXCEPTION CAUGHT WHEN UPLOADING DOCUMENT (SECURE DOC STORE: DISABLED)"
                     + " ↑ ↑ ↑ ↑ ↑ ↑ ↑", t);

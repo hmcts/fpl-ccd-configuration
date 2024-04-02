@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -44,6 +44,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -89,6 +90,9 @@ class PlacementEventsHandlerNotificationTest {
     @Mock
     RepresentativesInbox representativesInbox;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private PlacementEventsHandler underTest;
 
@@ -127,33 +131,59 @@ class PlacementEventsHandlerNotificationTest {
 
         private final String courtEmail = "court@test.com";
 
-        @BeforeEach
-        void init() {
-            when(contentProvider.getApplicationChangedCourtData(caseData, placement)).thenReturn(notifyData);
-            when(courtService.getCourtEmail(caseData)).thenReturn(courtEmail);
-        }
-
         @Test
         void shouldSendNotificationToCourtWhenNewPlacementApplicationSubmitted() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+            when(contentProvider.getApplicationChangedCourtData(caseData, placement)).thenReturn(notifyData);
+            when(courtService.getCourtEmail(caseData)).thenReturn(courtEmail);
 
             final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
 
-            underTest.notifyCourt(event);
+            underTest.notifyCourtOfNewApplication(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
         }
 
         @Test
+        void shouldNotSendNotificationToCourtWhenNewPlacementApplicationSubmittedIfToggleOff() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+            final PlacementApplicationSubmitted event = new PlacementApplicationSubmitted(caseData, placement);
+
+            underTest.notifyCourtOfNewApplication(event);
+
+            verify(notificationService, never())
+                .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
+        }
+
+
+        @Test
         void shouldSendNotificationToCourtWhenPlacementApplicationChanged() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+            when(contentProvider.getApplicationChangedCourtData(caseData, placement)).thenReturn(notifyData);
+            when(courtService.getCourtEmail(caseData)).thenReturn(courtEmail);
 
             final PlacementApplicationChanged event = new PlacementApplicationChanged(caseData, placement);
 
-            underTest.notifyCourt(event);
+            underTest.notifyCourtOfChangedApplication(event);
 
             verify(notificationService)
                 .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
         }
+
+        @Test
+        void shouldNotSendNotificationToCourtWhenPlacementApplicationChangedIfToggledOff() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+            final PlacementApplicationChanged event = new PlacementApplicationChanged(caseData, placement);
+
+            underTest.notifyCourtOfChangedApplication(event);
+
+            verify(notificationService, never())
+                .sendEmail(PLACEMENT_APPLICATION_UPLOADED_COURT_TEMPLATE, courtEmail, notifyData, CASE_ID);
+        }
+
+
     }
 
     @Nested

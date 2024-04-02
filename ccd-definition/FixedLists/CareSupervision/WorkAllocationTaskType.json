@@ -33,5 +33,12 @@
     "ListElementCode": "CMO_REVIEWED",
     "ListElement": "Case Management Order reviewed",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "URGENT_CMO_REVIEWED",
+    "ListElement": "Case Management Order reviewed (Urgent)",
+    "DisplayOrder": 5
   }
 ]
