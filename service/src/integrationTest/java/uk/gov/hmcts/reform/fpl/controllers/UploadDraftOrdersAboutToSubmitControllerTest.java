@@ -408,7 +408,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .build())
         );
     }
-
+  
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
                                        List<Element<SupportingEvidenceBundle>> supportingDocs, UUID hearingId) {
         return HearingOrder.builder()
