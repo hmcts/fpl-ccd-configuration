@@ -11,7 +11,6 @@ import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting"
 import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
 import { ManageDocuments } from "../pages/manage-documents";
-import { BasePage } from "../pages/base-page";
 import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
@@ -20,7 +19,9 @@ import { CaseDetails } from "../pages/case-details";
 import { AdditionalApplications } from "../pages/additional-applications";
 import { ApproveOrders} from "../pages/approve-orders";
 import { Placement } from "../pages/placement";
+import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
+import { ChildDetails } from "../pages/child-details";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -43,6 +44,8 @@ type CreateFixtures = {
   additionalApplications: AdditionalApplications;
   approveOrders: ApproveOrders;
   placement: Placement;
+  applicantDetails: ApplicantDetails;
+  childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
 };
 
@@ -130,4 +133,15 @@ export const test = base.extend<CreateFixtures>({
   respondentDetails: async ({ page }, use) => {
     await use(new RespondentDetails(page));
   }
+  applicantDetails: async ({ page }, use) => {
+    await use(new ApplicantDetails(page));
+  },
+  
+  childDetails: async ({ page }, use) => {
+    await use(new ChildDetails(page));
+  },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
+  },
 });
