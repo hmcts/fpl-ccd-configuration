@@ -41,6 +41,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
@@ -292,6 +293,7 @@ public class DraftOrderService {
             .contains(draft.getId());
     }
 
+    @SuppressWarnings("unchecked")
     public HearingOrdersBundles migrateCmoDraftToOrdersBundles(CaseData caseData) {
 
         List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
@@ -302,8 +304,8 @@ public class DraftOrderService {
             defaultIfNull(caseData.getHearingOrdersBundlesDraftReview(), new ArrayList<>());
 
         Stream.concat(bundles.stream(), bundlesForReview.stream())
-            .forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
-                || isInCmoDrafts(draft, cmoDrafts)));
+            .forEach(bundle -> bundle.getValue().getListOfOrders().forEach(o -> o.removeIf(draft -> draft.getValue().getType().isCmo()
+                    || isInCmoDrafts(draft, cmoDrafts))));
 
         unwrapElements(cmoDrafts).forEach(draft -> {
             HearingOrderType type = draft.getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO;

@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public interface ConfidentialOrderBundle<T> {
     String SUFFIX_CTSC = "CTSC";
@@ -82,12 +83,34 @@ public interface ConfidentialOrderBundle<T> {
 
     @JsonIgnore
     @SuppressWarnings("unchecked")
+    default List<List<Element<T>>> getListOfOrders() {
+        final String getterBaseName = getGetterBaseName();
+        List<List<Element<T>>> ret = new ArrayList<>();
+        Arrays.stream(this.getClass().getMethods())
+            .filter(method -> method.getName().contains(getterBaseName) && method.getParameters().length == 0)
+            .map(method -> {
+                try {
+                    return method.invoke(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            })
+            .filter(Objects::nonNull)
+            .map(field -> (List<Element<T>>) field)
+            .forEach(r -> ret.add(r));
+
+        return ret;
+    }
+
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
     default List<Element<T>> getAllConfidentialOrders() {
         final String getterBaseName = getGetterBaseName();
         Set<UUID> orderIdAdded = new HashSet<>();
         List<Element<T>> confidentialOrders = new ArrayList<>();
         Arrays.stream(this.getClass().getMethods())
-            .filter(method -> method.getName().contains(getterBaseName) && !method.getName().equals(getterBaseName))
+            .filter(method -> method.getName().contains(getterBaseName) && !method.getName().equals(getterBaseName)
+                && method.getParameters().length == 0)
             .map(method -> {
                 try {
                     return method.invoke(this);

@@ -799,6 +799,24 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldPreserveOriginalOrdersBundleIfNoUpdatedCMOWithOrdersLA() {
+            HearingOrdersBundle originalOrdersBundle = HearingOrdersBundle.builder()
+                .hearingId(randomUUID())
+                .ordersLA(wrapElements(HearingOrder.builder().title("test").type(C21).build()))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(wrapElements(originalOrdersBundle))
+                .build();
+
+            HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
+
+            assertThat(hearingOrdersBundles.getAgreedCmos()).extracting(Element::getValue)
+                .containsExactly(originalOrdersBundle);
+            assertThat(hearingOrdersBundles.getDraftCmos()).isEmpty();
+        }
+
+        @Test
         void shouldAddCmoOrderToExistingOrdersBundle() {
 
             Element<HearingOrder> newHearing1CmoOrder = randomHearingOrder(AGREED_CMO);
@@ -890,6 +908,39 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldUpdateCmoOrderInExistingOrdersBundleWithOrdersLA() {
+            Element<HearingOrder> hearing1CmoOrder = randomHearingOrder(AGREED_CMO);
+            Element<HearingOrder> newHearing1CmoOrder = randomHearingOrder(AGREED_CMO);
+            Element<HearingOrder> hearing1C21Order = randomHearingOrder(C21);
+            Element<HearingOrder> hearing2C21Order = randomHearingOrder(C21);
+
+            Element<HearingBooking> hearing1 = randomHearing(newHearing1CmoOrder.getId());
+            Element<HearingBooking> hearing2 = randomHearing();
+
+            HearingOrdersBundle originalHearing1OrdersBundle = ordersLABundle(hearing1, hearing1CmoOrder,
+                hearing1C21Order);
+            HearingOrdersBundle originalHearing2OrdersBundle = ordersBundle(hearing2, hearing2C21Order);
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(wrapElements(originalHearing1OrdersBundle, originalHearing2OrdersBundle))
+                .hearingDetails(List.of(hearing1, hearing2))
+                .draftUploadedCMOs(List.of(newHearing1CmoOrder))
+                .build();
+
+            HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
+
+            List<Element<HearingOrdersBundle>> actualOrdersBundles = hearingOrdersBundles.getAgreedCmos();
+
+            HearingOrdersBundle expectedOrderBundle = originalHearing1OrdersBundle.toBuilder()
+                .ordersLA(newArrayList(hearing1C21Order))
+                .orders(newArrayList(newHearing1CmoOrder))
+                .build();
+
+            assertThat(actualOrdersBundles).extracting(Element::getValue)
+                .containsExactly(expectedOrderBundle, originalHearing2OrdersBundle);
+        }
+
+        @Test
         void shouldRemoveCmoOrderFromBundle() {
 
             Element<HearingOrder> hearing1CmoOrder = randomHearingOrder(DRAFT_CMO);
@@ -955,6 +1006,14 @@ class DraftOrderServiceTest {
         private HearingOrdersBundle ordersBundle(Element<HearingBooking> hearing, Element<HearingOrder>... orders) {
             return HearingOrdersBundle.builder()
                 .orders(newArrayList(orders))
+                .build()
+                .updateHearing(hearing.getId(), hearing.getValue());
+        }
+
+        @SafeVarargs
+        private HearingOrdersBundle ordersLABundle(Element<HearingBooking> hearing, Element<HearingOrder>... orders) {
+            return HearingOrdersBundle.builder()
+                .ordersLA(newArrayList(orders))
                 .build()
                 .updateHearing(hearing.getId(), hearing.getValue());
         }

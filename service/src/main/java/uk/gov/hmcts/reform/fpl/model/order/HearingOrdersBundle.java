@@ -106,6 +106,9 @@ public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder
         if (isNotEmpty(orders)) {
             orders.sort(comparingInt(order -> order.getValue().getType().ordinal()));
         }
+        if (orders == null) {
+            orders = newArrayList();
+        }
         return orders;
     }
 
