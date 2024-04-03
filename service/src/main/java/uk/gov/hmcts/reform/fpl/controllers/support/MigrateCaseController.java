@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
@@ -43,11 +42,11 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADV
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final JudicialService judicialService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-1930", this::run1930,
         "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback
@@ -148,6 +147,11 @@ public class MigrateCaseController extends CallbackController {
 
         migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
         caseDetails.getData().remove("urgentDirectionsOrder");
+    }
+
+    private void run1930(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, "DFPL-1930"));
     }
 
     private void runAM(CaseDetails caseDetails) {
