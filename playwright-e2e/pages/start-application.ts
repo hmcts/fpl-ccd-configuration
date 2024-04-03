@@ -19,7 +19,13 @@ export class StartApplication {
   readonly addApplicationDocsHeading: Locator;
   readonly uploadDocumentsLink: Locator;
   readonly upLoadDocsInProgress: Locator;
+  readonly applicantDetailsLink: Locator;
+  readonly childDetailsLink: Locator;
+  readonly childDetailsUpdated: Locator;
   readonly respondentsDetailsLink: Locator;
+  readonly applicantDetailsUpdated: Locator;
+  readonly welshLanguageRequirements: Locator;
+  readonly welshLanguageReqFinished: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -38,7 +44,14 @@ export class StartApplication {
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
     this.upLoadDocsInProgress = page.locator('p:has(a[text()="Upload documents"]) > img[title="In progress"]');
+    this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
+    this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' }); 
+    this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
+    this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
+    this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
+    this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
+    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]'); 
   }
 
   async addApplicationDetails() {
@@ -81,11 +94,29 @@ export class StartApplication {
     await this.upLoadDocsInProgress.isVisible();
   }
 
+  async applicantDetails(){
+    await this.applicantDetailsLink.isVisible();
+    await this.applicantDetailsLink.click();
+  }
+
+  async applicantDetailsHasBeenUpdated() {
+    await expect(this.applicantDetailsUpdated).toBeVisible();
+  }
+
+  async childDetails() {
+    await this.childDetailsLink.isVisible();
+    await this.childDetailsLink.click();
+  }
+
+  async childDetailsHasBeenUpdated(){
+    await expect(this.childDetailsUpdated).toBeVisible();
+  }
+
   async respondentDetails() {
     await this.respondentsDetailsLink.isVisible();
     await this.respondentsDetailsLink.click();
   }
-
+  
   async allocationProposal() {
     await this.allocationProposalLink.isVisible();
     await this.allocationProposalLink.click();
@@ -93,5 +124,13 @@ export class StartApplication {
 
   async allocationProposalHasBeenUpdated() {
     await expect(this.allocationProposalFinished).toBeVisible;
+  }
+
+  async welshLanguageReq() {
+    await this.welshLanguageRequirements.click();
+  }
+
+  async welshLanguageReqUpdated() {
+    await expect(this.welshLanguageReqFinished).toBeVisible;
   }
 }
