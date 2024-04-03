@@ -330,6 +330,7 @@ public class DraftOrderService {
                         .updateOrders(List.of(hearingCmoDrafts.get()), status == DRAFT ? DRAFT_CMO : AGREED_CMO))
                     );
                 } else {
+                    // TODO setting to the right orders
                     bundle.get().getValue().getOrders().add(0, hearingCmoDrafts.get());
                 }
             }
