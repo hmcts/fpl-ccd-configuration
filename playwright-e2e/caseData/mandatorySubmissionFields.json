@@ -3,6 +3,15 @@
   "state": "SUBMITTED",
   "caseData": {
     "caseName": "e2e test new case",
+    "court": {
+      "code": "344",
+      "name": "Family Court Sitting at Swansea",
+      "email": "contactfpl@justice.gov.uk"
+    },
+    "caseManagementLocation": {
+      "region": "7",
+      "baseLocation": "234946"
+    },
     "orders": {
       "orderType": [
         "CARE_ORDER"
