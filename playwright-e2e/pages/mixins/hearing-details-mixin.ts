@@ -39,8 +39,7 @@ export function HearingDetailsMixin(BasePage) {
         'Judgment after hearing',
         'Discharge of care',
         'Family drug & alcohol court',
-        'Placement hearing',
-        'Other'
+        'Placement hearing'
       ];
       const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
       expect(hearingTypes).toEqual(expectedHearingTypes);
