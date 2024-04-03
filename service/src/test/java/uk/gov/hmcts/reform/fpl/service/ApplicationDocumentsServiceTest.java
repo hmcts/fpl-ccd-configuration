@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
 import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -91,24 +90,6 @@ class ApplicationDocumentsServiceTest {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(HMCTS_USER);
         when(userService.getCaseRoles(any())).thenReturn(Set.of());
         when(manageDocumentService.getUploaderType(any())).thenReturn(HMCTS);
-    }
-
-    @Test
-    void shouldSetUploadedByAndDateTimeOnNewApplicationDocument() {
-        CaseData caseData = caseData();
-
-        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getApplicationDocuments();
-        List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
-
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(caseData, documents,
-            previousDocuments);
-        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
-
-        ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
-        ApplicationDocument expectedDocument = buildExpectedDocument(caseData.getApplicationDocuments(), HMCTS_USER,
-            time.now(), HMCTS, List.of());
-
-        assertThat(actualDocument).isEqualTo(expectedDocument);
     }
 
     @Test
@@ -278,13 +259,8 @@ class ApplicationDocumentsServiceTest {
                 .document(document1)
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(element(doc1Id, ad1)))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+            Map<String, Object> updatedFields = applicationDocumentsService
+                .synchroniseToNewFields(List.of(element(doc1Id, ad1)));
 
             assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
                 .isEmpty();
@@ -308,13 +284,8 @@ class ApplicationDocumentsServiceTest {
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(element(doc1Id, ad1)))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(
+                List.of(element(doc1Id, ad1)));
 
             assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
                 .isEmpty();
@@ -396,17 +367,13 @@ class ApplicationDocumentsServiceTest {
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(
+            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(
+                List.of(
                     element(doc1Id, ad1), element(doc2Id, ad2), element(doc3Id, ad3), element(doc4Id, ad4),
                     element(doc5Id, ad5), element(doc6Id, ad6), element(doc7Id, ad7), element(doc8Id, ad8),
                     element(doc9Id, ad9), element(doc10Id, ad10), element(doc11Id, ad11)
-                ))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+                )
+            );
 
             assertThat(updatedFields).extracting("thresholdListLA").asList().contains(
                 element(doc1Id, ManagedDocument.builder().document(document1).build()));
