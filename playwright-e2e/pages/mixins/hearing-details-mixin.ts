@@ -2,6 +2,7 @@ import {expect, type Locator, Page} from "@playwright/test";
 
 export function HearingDetailsMixin(BasePage) {
   return class extends BasePage {
+    readonly hearingTypesLabelLocator: Locator;
 
     constructor(page: Page) {
       super(page);
