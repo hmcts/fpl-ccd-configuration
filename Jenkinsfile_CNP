@@ -210,7 +210,9 @@ withPipeline(type, product, component) {
   afterAlways('fullFunctionalTest:preview') {
     stage('UIFunctionalTests') {
       try {
-        yarnBuilder.yarn('test:functional-nightly-preview')
+        if (env.ENV == 'preview') {
+          yarnBuilder.yarn('test:functional-nightly-preview')
+        }
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {
