@@ -24,6 +24,8 @@ export class StartApplication {
   readonly childDetailsUpdated: Locator;
   readonly respondentsDetailsLink: Locator;
   readonly applicantDetailsUpdated: Locator;
+  readonly welshLanguageRequirements: Locator;
+  readonly welshLanguageReqFinished: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -48,6 +50,8 @@ export class StartApplication {
     this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
+    this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
+    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]'); 
   }
 
   async addApplicationDetails() {
@@ -120,5 +124,13 @@ export class StartApplication {
 
   async allocationProposalHasBeenUpdated() {
     await expect(this.allocationProposalFinished).toBeVisible;
+  }
+
+  async welshLanguageReq() {
+    await this.welshLanguageRequirements.click();
+  }
+
+  async welshLanguageReqUpdated() {
+    await expect(this.welshLanguageReqFinished).toBeVisible;
   }
 }
