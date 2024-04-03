@@ -102,6 +102,13 @@ public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder
         return Optional.empty();
     }
 
+    @JsonIgnore
+    public List<Element<HearingOrder>> getAllOrders() {
+        List<Element<HearingOrder>> ret = defaultIfNull(getAllConfidentialOrders(), newArrayList());
+        ret.addAll(defaultIfNull(getOrders(), newArrayList()));
+        return ret;
+    }
+
     public List<Element<HearingOrder>> getOrders() {
         if (isNotEmpty(orders)) {
             orders.sort(comparingInt(order -> order.getValue().getType().ordinal()));
