@@ -93,7 +93,7 @@ export const test = base.extend<CreateFixtures>({
   additionalApplications: async ({ page }, use) => {
     await use(new AdditionalApplications(page));
   },
-  
+
   uploadDraftOrders: async ({ page }, use) => {
     await use(new UploadDraftOrders(page));
    },
@@ -132,16 +132,13 @@ export const test = base.extend<CreateFixtures>({
 
   respondentDetails: async ({ page }, use) => {
     await use(new RespondentDetails(page));
-  }
+  },
+
   applicantDetails: async ({ page }, use) => {
     await use(new ApplicantDetails(page));
   },
-  
+
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
-  },
-
-  respondentDetails: async ({ page }, use) => {
-    await use(new RespondentDetails(page));
   },
 });
