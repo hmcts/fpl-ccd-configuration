@@ -302,7 +302,7 @@ public class DraftOrderService {
             defaultIfNull(caseData.getHearingOrdersBundlesDraftReview(), new ArrayList<>());
 
         Stream.concat(bundles.stream(), bundlesForReview.stream())
-            .forEach(bundle -> bundle.getValue().getAllOrders().removeIf(draft -> draft.getValue().getType().isCmo()
+            .forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
                 || isInCmoDrafts(draft, cmoDrafts)));
 
         unwrapElements(cmoDrafts).forEach(draft -> {
@@ -330,7 +330,6 @@ public class DraftOrderService {
                         .updateOrders(List.of(hearingCmoDrafts.get()), status == DRAFT ? DRAFT_CMO : AGREED_CMO))
                     );
                 } else {
-                    // TODO setting to the right orders
                     bundle.get().getValue().getOrders().add(0, hearingCmoDrafts.get());
                 }
             }
@@ -343,7 +342,7 @@ public class DraftOrderService {
         filterOrders(bundlesForReview, not(DRAFT_CMO::equals));
         filterOrders(bundles, DRAFT_CMO::equals);
 
-        bundles.removeIf(b -> isEmpty(b.getValue().getAllOrders()) && isEmpty(b.getValue().getAllConfidentialOrders()));
+        bundles.removeIf(b -> isEmpty(b.getValue().getOrders()) && isEmpty(b.getValue().getAllConfidentialOrders()));
         bundlesForReview.removeIf(b -> isEmpty(b.getValue().getOrders()));
 
         return HearingOrdersBundles.builder()
@@ -370,13 +369,13 @@ public class DraftOrderService {
 
     private void filterOrders(List<Element<HearingOrdersBundle>> bundlesForReview, Predicate<HearingOrderType> filter) {
         bundlesForReview.forEach(
-            hearingOrdersBundleElement -> hearingOrdersBundleElement.getValue().getAllOrders()
+            hearingOrdersBundleElement -> hearingOrdersBundleElement.getValue().getOrders()
                 .removeIf(hearingOrderElement -> filter.test(hearingOrderElement.getValue().getType()))
         );
     }
 
     private boolean containsHearingDraftCmo(Element<HearingOrdersBundle> bundle) {
-        return bundle.getValue().getAllOrders().stream()
+        return bundle.getValue().getOrders().stream()
                 .map(Element::getValue)
                 .anyMatch(hearingOrder -> hearingOrder.getType().equals(DRAFT_CMO));
     }
