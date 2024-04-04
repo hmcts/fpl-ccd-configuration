@@ -15,7 +15,7 @@ export class Apihelp {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       };
-      let url = `https://idam-api.aat.platform.hmcts.net/loginUser?username=${user.email}&password=${user.password}`;
+      let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
       return await axios.post(url, qs.stringify(axiosConfig));
     } catch (error) {
       if (axios.isAxiosError(error)) {
