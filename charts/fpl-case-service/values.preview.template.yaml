@@ -66,9 +66,6 @@ java:
         - ld-sdk-key
         - ctsc-inbox
         - ctsc-team-lead-inbox
-        - AppInsightsInstrumentationKey
-        - name: app-insights-connection-string
-          alias: app-insights-connection-string
         - rcj-family-high-court-inbox
         - court-to-court-admin-mapping
 
