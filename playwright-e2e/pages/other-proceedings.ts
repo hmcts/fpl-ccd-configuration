@@ -17,7 +17,7 @@ export class OtherProceedings {
   }
   async otherProceedingsSmokeTest() {
     await this.otherProceedingsHeading.isVisible();
-    await this.page.getByRole('radio', { name: 'No', exact: true }).check();
+    await this.page.getByRole('radio',  { name: 'No', exact: true }).check();
     await this.page.getByRole('button', { name: 'Continue' }).click();
     await this.page.getByRole('button', { name: 'Save and continue' }).click();
   }
