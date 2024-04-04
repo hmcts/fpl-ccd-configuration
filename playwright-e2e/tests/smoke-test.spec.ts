@@ -17,9 +17,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   addApplicationDocuments,
   childDetails,
   welshLangRequirements,
+  otherProceedings,
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
 
   const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
@@ -86,7 +87,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
-  
+
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
@@ -101,15 +102,19 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await welshLangRequirements.welshLanguageSmokeTest();
   await startApplication.welshLanguageReqUpdated();
 
+  // Other Proceedings
+  await startApplication.otherProceedingsNeeded();
+  await otherProceedings.otherProceedingsSmokeTest();
+
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 });
