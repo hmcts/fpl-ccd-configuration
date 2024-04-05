@@ -22,6 +22,7 @@ import { Placement } from "../pages/placement";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
+import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -47,6 +48,7 @@ type CreateFixtures = {
   applicantDetails: ApplicantDetails;
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
+  welshLangRequirements: WelshLangRequirements;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -140,5 +142,9 @@ export const test = base.extend<CreateFixtures>({
 
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
+  },
+  
+  welshLangRequirements: async ({ page }, use) => {
+    await use(new WelshLangRequirements(page));
   },
 });

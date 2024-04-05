@@ -27,6 +27,7 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
+    await this.checkYourAnswersHeader.isVisible();
     await this.saveAndContinue.click();
   }
 
