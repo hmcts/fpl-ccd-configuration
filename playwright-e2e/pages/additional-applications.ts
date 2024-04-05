@@ -39,7 +39,7 @@ export class AdditionalApplications extends BasePage {
 
   public async chooseC2ApplicationType() {
         // added hard wait due to EXUI-1194
-        await this.page.waitForTimeout(6000);
+    await this.page.waitForTimeout(6000);
     await this.c2Order.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
@@ -60,14 +60,14 @@ export class AdditionalApplications extends BasePage {
     // upload application form
     await this.applicationForm.setInputFiles(config.testTextFile);
     await this.expectAllUploadsCompleted();
-
+    await this.page.waitForTimeout(6000);
     await this.acknowledgeOtherApplicationForm.check();
     await this.sameDay.click();
 
     // upload supplements, supporting evidence
     await this.uploadOtherSupplement();
+      await this.page.waitForTimeout(6000);
     await this.uploadOtherSupportingEvidence();
-
     await this.clickContinue();
   }
 
@@ -81,7 +81,7 @@ export class AdditionalApplications extends BasePage {
   public async fillC2ApplicationDetails() {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
-    
+
     await this.expectAllUploadsCompleted();
 
     await this.acknowledgeC2ApplicationForm.check();
@@ -112,7 +112,7 @@ export class AdditionalApplications extends BasePage {
     await this.page.getByLabel('Notes (Optional)').fill('Notes');
     await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_document').setInputFiles(config.testTextFile);
     // added hard wait due to EXUI-1194
-    await this.page.waitForTimeout(6000);
+    //await this.page.waitForTimeout(6000);
     await this.page.locator('#temporaryOtherApplicationsBundle_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').click();
     await this.expectAllUploadsCompleted();
   }
