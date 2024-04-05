@@ -4,6 +4,7 @@ import { Apihelp } from '../utils/api-helper';
 import caseData from '../caseData/caseWithDraftOrder.json';
 import { expect } from '@playwright/test';
 import { setHighCourt } from '../utils/update-case-details';
+import { testConfig } from '../settings/test-config';
 
 test.describe('Approve Orders', () => {
   let apiDataSetup = new Apihelp();
@@ -29,20 +30,23 @@ test.describe('Approve Orders', () => {
       await caseFileView.goToCFVTab();
       await caseFileView.openFolder('Orders');
       await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
-      await approveOrders.clickSignOut();
+      
+      if (testConfig.waEnabled) {
+        await approveOrders.clickSignOut();
 
-      await signInPage.visit();
-      await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
-      await approveOrders.tabNavigation('Tasks');
-      await approveOrders.waitForTask('Review Order (High Court)');
+        await signInPage.visit();
+        await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await approveOrders.tabNavigation('Tasks');
+        await approveOrders.waitForTask('Review Order (High Court)');
 
-      // Assign and complete the task
-      await page.getByText('Assign to me').click();
-      await page.getByText('Mark as done').click();
-      await page.getByRole('button', { name: "Mark as done" }).click();
+        // Assign and complete the task
+        await page.getByText('Assign to me').click();
+        await page.getByText('Mark as done').click();
+        await page.getByRole('button', { name: "Mark as done" }).click();
 
-      // Should be no more tasks on the page
-      await expect(page.getByText('Review Order (High Court)')).toHaveCount(0);
+        // Should be no more tasks on the page
+        await expect(page.getByText('Review Order (High Court)')).toHaveCount(0);
+      }
     });
 });
