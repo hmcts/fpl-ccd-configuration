@@ -22,7 +22,6 @@ test.describe('Placement', () => {
   test('Check Placement Application High Court WA Task',
     async ({ page, signInPage, placement,
       caseFileView }) => {
-      test.skip(!testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
       caseName = 'Placement Application High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
       await apiDataSetup.updateCase(caseName, caseNumber, caseData);
@@ -43,19 +42,21 @@ test.describe('Placement', () => {
       await expect(page.getByRole('tree')).toContainText('testPdf4.pdf');
       await placement.clickSignOut();
 
-      //Test WA Task exists
-      await signInPage.visit();
-      await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
-      await placement.tabNavigation('Tasks');
-      await placement.waitForTask('Check Placement Application (High Court)');
+      if (testConfig.waEnabled) {
+        //Test WA Task exists
+        await signInPage.visit();
+        await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await placement.tabNavigation('Tasks');
+        await placement.waitForTask('Check Placement Application (High Court)');
 
-      // Assign and complete the task
-      await page.locator('exui-case-task').filter({ hasText: 'Check Placement Application (' }).locator('#action_claim').click();
-      await page.getByText('Mark as done').click();
-      await page.getByRole('button', { name: "Mark as done" }).click();
+        // Assign and complete the task
+        await page.locator('exui-case-task').filter({ hasText: 'Check Placement Application (' }).locator('#action_claim').click();
+        await page.getByText('Mark as done').click();
+        await page.getByRole('button', { name: "Mark as done" }).click();
 
-      // Should be no more tasks on the page
-      await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
+        // Should be no more tasks on the page
+        await expect(page.getByText('Check Placement Application (High Court)')).toHaveCount(0);
+      }
     });
 });

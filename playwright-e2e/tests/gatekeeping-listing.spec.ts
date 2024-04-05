@@ -23,7 +23,6 @@ test.describe('Gatekeeping Listing', () => {
   test('Review Standard Direction Order High Court WA Task',
     async ({ page, signInPage, gateKeepingListing,
       caseFileView }) => {
-      test.skip(!testConfig.waEnabled, 'This test should only run when work allocation has been enabled');
       caseName = 'Review Standard Direction Order High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
       await apiDataSetup.updateCase(caseName, caseNumber, caseData);
@@ -42,19 +41,21 @@ test.describe('Gatekeeping Listing', () => {
       await expect(page.getByRole('tree')).toContainText('testWordDoc.pdf');
       await gateKeepingListing.clickSignOut();
 
-      //Test WA Task exists
-      await signInPage.visit();
-      await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-      await signInPage.navigateTOCaseDetails(caseNumber);
-      await gateKeepingListing.tabNavigation('Tasks');
-      await gateKeepingListing.waitForTask('Review Standard Direction Order (High Court)');
+      if (testConfig.waEnabled) {
+        //Test WA Task exists
+        await signInPage.visit();
+        await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await gateKeepingListing.tabNavigation('Tasks');
+        await gateKeepingListing.waitForTask('Review Standard Direction Order (High Court)');
 
-      // Assign and complete the task
-      await page.getByText('Assign to me').click();
-      await page.getByText('Mark as done').click();
-      await page.getByRole('button', { name: "Mark as done" }).click();
+        // Assign and complete the task
+        await page.getByText('Assign to me').click();
+        await page.getByText('Mark as done').click();
+        await page.getByRole('button', { name: "Mark as done" }).click();
 
-      // Should be no more tasks on the page
-      await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
+        // Should be no more tasks on the page
+        await expect(page.getByText('Review Standard Direction Order (High Court)')).toHaveCount(0);
+      }
     });
 });
