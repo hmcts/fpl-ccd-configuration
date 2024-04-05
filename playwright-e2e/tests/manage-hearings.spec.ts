@@ -3,6 +3,7 @@ import {Apihelp} from '../utils/api-helper';
 import caseData from '../caseData/caseWithHearingDetails.json';
 import vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json';
 import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json';
+import caseSentToGatekeeper from '../caseData/caseSentToGatekeeper.json';
 import {
   CTSCUser,
   newSwanseaLocalAuthorityUserOne,
@@ -129,5 +130,25 @@ test.describe('manage hearings', () => {
       await manageHearings.gotoNextStep('Manage hearings')
       await manageHearings.reListHearing();
       await expect(page.getByText('has been updated with event: Manage hearings')).toBeVisible();
+    });
+
+  test('Judge cannot access Manage Hearings during Gatekeeping state',
+    async({page,signInPage}) => {
+      caseName = 'Judge cannot access Manage Hearings during Gatekeeping state ' + dateTime.slice(0, 10);
+      await apiDataSetup.updateCase(caseName, caseNumber, caseSentToGatekeeper);
+      await signInPage.visit();
+      await signInPage.login(judgeWalesUser.email, judgeWalesUser.password)
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await expect(page.getByText('Manage hearings')).toHaveCount(0);
+    });
+
+  test('CTSC can access Manage Hearings during Gatekeeping state',
+    async({page,signInPage,manageHearings}) => {
+      caseName = 'CTSC can access Manage Hearings during Gatekeeping state ' + dateTime.slice(0, 10);
+      await apiDataSetup.updateCase(caseName, caseNumber, caseSentToGatekeeper);
+      await signInPage.visit();
+      await signInPage.login(CTSCUser.email, CTSCUser.password)
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      await manageHearings.gotoNextStep('Manage hearings')
     });
 });
