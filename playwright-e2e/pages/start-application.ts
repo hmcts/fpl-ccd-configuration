@@ -1,5 +1,4 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { CaseSubmission } from "./submit-case";
 
 export class StartApplication {
   readonly page: Page;
