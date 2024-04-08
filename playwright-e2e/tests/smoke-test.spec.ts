@@ -17,6 +17,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   addApplicationDocuments,
   childDetails,
   welshLangRequirements,
+  submitCase,
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -100,6 +101,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.welshLanguageReq();
   await welshLangRequirements.welshLanguageSmokeTest();
   await startApplication.welshLanguageReqUpdated();
+
+  // Submit the case
+  await startApplication.submitCase();
+  await submitCase.submitCaseSmokeTest();
+
 
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,

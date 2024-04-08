@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { CaseSubmission } from "./submit-case";
 
 export class StartApplication {
   readonly page: Page;
@@ -26,6 +27,7 @@ export class StartApplication {
   readonly applicantDetailsUpdated: Locator;
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
+  readonly submitApplicationLink: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -52,6 +54,7 @@ export class StartApplication {
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]'); 
+    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
   }
 
   async addApplicationDetails() {
@@ -133,4 +136,9 @@ export class StartApplication {
   async welshLanguageReqUpdated() {
     await expect(this.welshLanguageReqFinished).toBeVisible;
   }
+
+  async submitCase() {
+    await this.submitApplicationLink.click();
+  }
+
 }
