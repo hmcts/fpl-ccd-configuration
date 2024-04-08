@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -53,12 +54,14 @@ import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLI
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -341,6 +344,11 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
                 .build())))
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .orderCollection(wrapElements(GeneratedOrder.builder()
                 .orderType("C32A_CARE_ORDER")
                 .type(ORDER_TYPE)
