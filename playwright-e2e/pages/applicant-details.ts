@@ -16,7 +16,6 @@ export class ApplicantDetails extends BasePage{
   readonly colleagueEmail: Locator;
   readonly colleaguePhoneNumber: Locator;
   readonly caseUpdateNotification_No: Locator;
-  readonly checkAnswersHeading: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -48,10 +47,14 @@ export class ApplicantDetails extends BasePage{
     await this.phoneNumber.click();
     await this.phoneNumber.fill('1234567890');
     await this.clickContinue();
+    // clickContinue is required twice
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
 
   async colleagueDetailsNeeded(){
     await this.colleagueHeading.isVisible;
+    await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();
     await this.colleagueName.click();
@@ -62,7 +65,6 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
     await this.clickContinue();
-    await this.checkYourAnswersHeader.isVisible;
     await this.checkYourAnsAndSubmit();
   }
 }

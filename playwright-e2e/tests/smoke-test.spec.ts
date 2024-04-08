@@ -16,6 +16,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   allocationProposal,
   addApplicationDocuments,
   childDetails,
+  welshLangRequirements,
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -74,13 +75,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // // Applicant Deatils
+  // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
+  await startApplication.applicantDetails();
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
-  //Child details
+  // Child details
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
@@ -93,6 +95,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
 
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
