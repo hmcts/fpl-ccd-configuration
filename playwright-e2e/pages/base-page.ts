@@ -23,7 +23,7 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
-    await this.goButton.click();
+    await this.goButton.dblclick();
   }
 
   async checkYourAnsAndSubmit(){
