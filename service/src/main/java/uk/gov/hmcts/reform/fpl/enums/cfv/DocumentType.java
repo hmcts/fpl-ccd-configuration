@@ -204,7 +204,7 @@ public enum DocumentType {
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
         false, false, false, 
         defaultWithDocumentBuilder(),
-        null, 330, DEFAULT_NOTIFICATION_CONFIG),
+        null, 330, NO_CAFCASS_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false,
         null,

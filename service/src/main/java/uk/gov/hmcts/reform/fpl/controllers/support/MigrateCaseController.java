@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
-import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
@@ -43,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADV
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final MigrateCaseService migrateCaseService;
     private final JudicialService judicialService;
 
@@ -51,7 +49,9 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-1930", this::run1930,
         "DFPL-2205", this::run2205,
         "DFPL-AM", this::runAM,
-        "DFPL-AM-Rollback", this::runAmRollback
+        "DFPL-AM-Rollback", this::runAmRollback,
+        "DFPL-1233", this::run1233,
+        "DFPL-1233Rollback", this::run1233Rollback
     );
 
     @PostMapping("/about-to-submit")
@@ -221,5 +221,13 @@ public class MigrateCaseController extends CallbackController {
 
         // 3. Attempt to assign the new roles in AM
         migrateRoles(newCaseData);
+    }
+
+    private void run1233Rollback(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.rollbackHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run1233(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
     }
 }
