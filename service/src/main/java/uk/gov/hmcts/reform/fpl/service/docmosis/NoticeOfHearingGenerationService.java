@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -49,15 +48,10 @@ public class NoticeOfHearingGenerationService {
 
     private DocmosisHearingBooking getHearingBooking(HearingBooking hearingBooking) {
         return dataService.getHearingBookingData(hearingBooking).toBuilder()
-            .hearingType(getHearingType(hearingBooking))
+            .hearingType(hearingBooking.getType().getLabel().toLowerCase())
             .hearingJudgeTitleAndName(null) // wipe unnecessary fields
             .hearingLegalAdvisorName(null)
             .build();
-    }
-
-    private String getHearingType(HearingBooking hearingBooking) {
-        return hearingBooking.getType() != OTHER ? hearingBooking.getType().getLabel().toLowerCase() :
-            hearingBooking.getTypeDetails();
     }
 
 }
