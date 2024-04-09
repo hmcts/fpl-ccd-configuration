@@ -15,6 +15,8 @@ public final class AmendedUrgentHearingOrderFinder implements AmendedOrderFinder
         UrgentHearingOrder currentOrder = caseData.getUrgentHearingOrder();
         UrgentHearingOrder oldOrder = caseDataBefore.getUrgentHearingOrder();
 
-        return Objects.equals(currentOrder, oldOrder) ? Optional.empty() : Optional.of(currentOrder);
+        return (currentOrder == null || oldOrder == null
+                || Objects.equals(currentOrder.getOrder(), oldOrder.getOrder()))
+            ? Optional.empty() : Optional.of(currentOrder);
     }
 }
