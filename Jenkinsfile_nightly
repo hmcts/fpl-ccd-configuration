@@ -71,7 +71,7 @@ def teardownSecretsForIntegrationTests() {
 
 withNightlyPipeline(type, product, component) {
     pipelineConf = config;
-  
+
     env.URL = params.FRONTEND_URL
     env.URL_FOR_SECURITY_SCAN = params.CASE_SERVICE_URL
     env.IDAM_API_URL = params.IDAM_API_URL
