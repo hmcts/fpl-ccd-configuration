@@ -106,7 +106,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
 
-
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
   // but supports additional test-specific configuration too
