@@ -62,6 +62,7 @@ export class Apihelp {
     caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseData))(docParameter);
     let postURL = `${urlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
+    console.log("Submitting request to postURL " + postURL);
     try {
       let res = await this.apiRequest(postURL, systemUpdateUser, 'post', data);
     } catch (error) {
