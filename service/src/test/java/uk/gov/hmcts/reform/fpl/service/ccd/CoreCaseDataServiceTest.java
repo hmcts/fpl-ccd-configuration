@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -22,10 +24,12 @@ import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +55,9 @@ class CoreCaseDataServiceTest {
     private CCDConcurrencyHelper concurrencyHelper;
     @Mock
     private RequestData requestData;
+
+    @Captor
+    private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionArgumentCaptor;
 
     @Spy
     @InjectMocks
@@ -102,10 +109,11 @@ class CoreCaseDataServiceTest {
 
         @Test
         void shouldPerformPostSubmitCallbackWithoutChange() {
-            StartEventResponse startEventResponse = buildStartEventResponse(eventId, eventToken);
-            when(concurrencyHelper.startEvent(CASE_ID, eventId)).thenReturn(startEventResponse);
             service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
-            verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
+            verify(concurrencyHelper)
+                .performPostSubmitCallback(eq(CASE_ID), eq(eventId), changeFunctionArgumentCaptor.capture(), eq(true));
+            // confirm it's an empty change function
+            assertThat(changeFunctionArgumentCaptor.getValue().apply(CaseDetails.builder().build())).isEmpty();
         }
     }
 
