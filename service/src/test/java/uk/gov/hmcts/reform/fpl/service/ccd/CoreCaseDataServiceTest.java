@@ -51,6 +51,7 @@ class CoreCaseDataServiceTest {
     private CCDConcurrencyHelper concurrencyHelper;
     @Mock
     private RequestData requestData;
+
     @Spy
     @InjectMocks
     private CoreCaseDataService service;
