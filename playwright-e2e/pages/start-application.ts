@@ -1,9 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
 export class StartApplication {
-  internationalElementReqFinished: any;
-  internationalElementLink: any;
-
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
   readonly changeCaseNameLink: Locator;
