@@ -15,7 +15,7 @@ export class Apihelp {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       };
-      let url = `${urlConfig.idamUrl}loginUser?username=${user.email}&password=${user.password}`;
+      let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
       return await axios.post(url, qs.stringify(axiosConfig));
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -30,7 +30,7 @@ export class Apihelp {
   async createCase(caseName = 'e2e UI Test', user: { email: string, password: string }) {
 
     let res: object;
-    const url = `${urlConfig.serviceUrl}testing-support/case/create`;
+    const url = `${urlConfig.serviceUrl}/testing-support/case/create`;
     const data = {
       caseName: caseName,
     };
