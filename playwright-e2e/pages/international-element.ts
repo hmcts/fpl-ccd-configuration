@@ -11,7 +11,7 @@ export class InternationalElement extends BasePage {
 
   public constructor(page: Page) {
     super(page);
-    this.internationalElementHeading = page.getByRole('heading', { name: 'International element' });
+    this.internationalElementHeading = page.getByRole('heading', { name: 'International element', exact: true });
     this.areThereAnySuitableCarers = page.getByRole('group', { name: 'Are there any suitable carers' });
     this.anySignificantEventsOutsideUk = page.getByRole('group', { name: 'Are you aware of any significant events that have happened outside the UK? (' });
     this.anyIssueWithJurisdictionOfThisCase = page.getByRole('group', { name: 'Are you aware of any issues' });
