@@ -8,29 +8,25 @@ export class InternationalElement extends BasePage {
   readonly anyIssueWithJurisdictionOfThisCase: Locator;
   readonly awareOfAnyProceedingsOutsideTheUk: Locator;
   readonly aGovtOrCentralAuthorityOutsideUkInvolvedInCase: Locator;
-  readonly continueButton: Locator;
-  readonly saveAndContinueButton: Locator;
-  readonly checkYourAnswers: Locator;
 
   public constructor(page: Page) {
     super(page);
     this.internationalElementHeading = page.getByRole('heading', { name: 'International element' });
-    this.areThereAnySuitableCarers = page.getByRole('button', { name: 'No' });
-    this.anySignificantEventsOutsideUk = page.getByRole('button', { name: 'No' });
-    this.awareOfAnyProceedingsOutsideTheUk = page.getByRole('button', { name: 'No' });
-    this.aGovtOrCentralAuthorityOutsideUkInvolvedInCase = page.getByRole('button', { name: 'No' });
-    this.awareOfAnyProceedingsOutsideTheUk = page.getByRole('button', { name: 'No' });
-    this.continueButton = page.getByRole('button', { name: 'Continue' });
-    this.checkYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
+    this.areThereAnySuitableCarers = page.getByRole('group', { name: 'Are there any suitable carers' });
+    this.anySignificantEventsOutsideUk = page.getByRole('group', { name: 'Are you aware of any significant events that have happened outside the UK? (' });
+    this.anyIssueWithJurisdictionOfThisCase = page.getByRole('group', { name: 'Are you aware of any issues' });
+    this.aGovtOrCentralAuthorityOutsideUkInvolvedInCase = page.getByRole('group', { name: 'Has, or should, a government' });
+    this.awareOfAnyProceedingsOutsideTheUk = page.getByRole('group', { name: 'Are you aware of any proceedings outside the UK? (Optional)' });
+
   }
-    async internationalElementSmokeTest(){
-      await this.page.getByRole('group', { name: 'Are there any suitable carers' }).getByLabel('No').check();
-      await this.page.getByRole('group', { name: 'Are you aware of any significant events that have happened outside the UK? (' }).getByLabel('No').check();
-      await this.page.getByRole('group', { name: 'Are you aware of any issues' }).getByLabel('No').check();
-      await this.page.getByRole('group', { name: 'Are you aware of any proceedings outside the UK? (Optional)' }).getByLabel('No').check();
-      await this.page.getByRole('group', { name: 'Has, or should, a government' }).getByLabel('No').check();
-      await this.clickContinue();
-      await this.checkYourAnsAndSubmit();
-    }
+  async internationalElementSmokeTest() {
+    await this.internationalElementHeading.isVisible();
+    await this.areThereAnySuitableCarers.getByLabel('No').check();
+    await this.anySignificantEventsOutsideUk.getByLabel('No').check();
+    await this.anyIssueWithJurisdictionOfThisCase.getByLabel('No').check();
+    await this.awareOfAnyProceedingsOutsideTheUk.getByLabel('No').check();
+    await this.aGovtOrCentralAuthorityOutsideUkInvolvedInCase.getByLabel('No').check();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
+}
