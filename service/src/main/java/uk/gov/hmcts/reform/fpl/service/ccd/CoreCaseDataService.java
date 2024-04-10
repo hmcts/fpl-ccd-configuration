@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.service.ccd;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -15,6 +18,8 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -28,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 public class CoreCaseDataService {
 
     public static final String UPDATE_CASE_EVENT = "internal-change-UPDATE_CASE";
-    private static final int RETRIES = 3;
 
     private final AuthTokenGenerator authTokenGenerator;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -36,21 +40,50 @@ public class CoreCaseDataService {
     private final SystemUserService systemUserService;
     private final CCDConcurrencyHelper concurrencyHelper;
 
+    // Required so calls to the same class get proxied correctly and have the retry annotation applied
+    @Resource(name = "coreCaseDataService")
+    private CoreCaseDataService self;
+
     public CaseDetails performPostSubmitCallbackWithoutChange(Long caseId, String eventName) {
-        return concurrencyHelper.performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
+        return self.performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
     }
 
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction) {
-        return concurrencyHelper.performPostSubmitCallback(caseId, eventName, changeFunction, false);
+        return self.performPostSubmitCallback(caseId, eventName, changeFunction, false);
     }
 
+
+    @Retryable(recover = "recover", backoff = @Backoff(delay = 100))
     public CaseDetails performPostSubmitCallback(Long caseId,
                                           String eventName,
                                           Function<CaseDetails, Map<String, Object>> changeFunction,
                                           boolean submitIfEmpty) {
-        return concurrencyHelper.performPostSubmitCallback(caseId, eventName, changeFunction, submitIfEmpty);
+
+        StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
+        CaseDetails caseDetails = startEventResponse.getCaseDetails();
+        // Work around immutable maps
+        HashMap<String, Object> caseDetailsMap = new HashMap<>(caseDetails.getData());
+        caseDetails.setData(caseDetailsMap);
+
+        Map<String, Object> updates = changeFunction.apply(caseDetails);
+
+        if (!updates.isEmpty() || submitIfEmpty) {
+            log.info("Submitting event {} on case {}", eventName, caseId);
+            concurrencyHelper.submitEvent(startEventResponse, caseId, updates);
+        } else {
+            log.info("No updates, skipping submit event");
+        }
+        caseDetails.getData().putAll(updates);
+        return caseDetails;
+    }
+
+    @Recover
+    void recover(Exception e, Long caseId, String eventName,
+                 Function<CaseDetails, Map<String, Object>> changeFunction,
+                 boolean submitIfEmpty) {
+        log.error("All 3 retries failed to create event {} on ccd for case {}", eventName, caseId);
     }
 
     /**
