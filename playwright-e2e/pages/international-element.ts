@@ -30,8 +30,7 @@ export class InternationalElement extends BasePage {
       await this.page.getByRole('group', { name: 'Are you aware of any issues' }).getByLabel('No').check();
       await this.page.getByRole('group', { name: 'Are you aware of any proceedings outside the UK? (Optional)' }).getByLabel('No').check();
       await this.page.getByRole('group', { name: 'Has, or should, a government' }).getByLabel('No').check();
-      await this.page.getByRole('button', { name: 'Continue' }).click();
-      await expect(this.checkYourAnswersHeader).toBeVisible();
-      await this.page.getByRole('button', { name: 'Save and continue' }).click();
+      await this.clickContinue();
+      await this.checkYourAnsAndSubmit();
     }
   }
