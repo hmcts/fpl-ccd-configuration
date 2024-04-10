@@ -57,9 +57,9 @@ public class CoreCaseDataService {
 
     @Retryable(recover = "recover", backoff = @Backoff(delay = 100))
     public CaseDetails performPostSubmitCallback(Long caseId,
-                                          String eventName,
-                                          Function<CaseDetails, Map<String, Object>> changeFunction,
-                                          boolean submitIfEmpty) {
+                                                 String eventName,
+                                                 Function<CaseDetails, Map<String, Object>> changeFunction,
+                                                 boolean submitIfEmpty) {
 
         StartEventResponse startEventResponse = concurrencyHelper.startEvent(caseId, eventName);
         CaseDetails caseDetails = startEventResponse.getCaseDetails();
@@ -92,7 +92,7 @@ public class CoreCaseDataService {
      * @param caseId  Case to update.
      * @param updates Map of fields to update.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
+     * data then submitEvent to submit it to avoid concurrency issues.
      */
     @Deprecated(since = "February 2023", forRemoval = false)
     public void updateCase(Long caseId, Map<String, Object> updates) {
@@ -106,7 +106,7 @@ public class CoreCaseDataService {
      * @param event   CCD event name to create and submit.
      * @param updates Map of fields to update.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
+     * data then submitEvent to submit it to avoid concurrency issues.
      */
     @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
@@ -121,7 +121,7 @@ public class CoreCaseDataService {
      * @param caseId       Case to update.
      * @param event        CCD event name to create and submit.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
+     * data then submitEvent to submit it to avoid concurrency issues.
      */
     @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
@@ -137,7 +137,7 @@ public class CoreCaseDataService {
      * @param eventName    CCD event name to create and submit.
      * @param eventData    Map of fields to update.
      * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
+     * data then submitEvent to submit it to avoid concurrency issues.
      */
     @Deprecated(since = "February 2023", forRemoval = false)
     public void triggerEvent(String jurisdiction,
