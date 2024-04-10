@@ -106,7 +106,6 @@ page,
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
-  await startApplication.internationalElementReqUpdated();
 
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
