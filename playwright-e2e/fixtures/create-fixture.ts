@@ -22,6 +22,7 @@ import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
+import { InternationalElement } from "../pages/international-element";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -47,6 +48,7 @@ type CreateFixtures = {
   respondentDetails: RespondentDetails;
   welshLangRequirements: WelshLangRequirements;
   otherProceedings: OtherProceedings;
+  internationalElement: InternationalElement;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -140,5 +142,9 @@ export const test = base.extend<CreateFixtures>({
 
   otherProceedings: async ({ page }, use) => {
     await use(new OtherProceedings(page));
+  },
+  
+  internationalElement: async ({ page }, use) => {
+    await use(new InternationalElement(page));
   },
 });

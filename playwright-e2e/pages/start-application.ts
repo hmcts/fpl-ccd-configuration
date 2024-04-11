@@ -27,6 +27,7 @@ export class StartApplication {
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
   readonly otherProceedingsLink: Locator;
+  readonly internationalElementsHeading: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -54,6 +55,7 @@ export class StartApplication {
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]');
     this.otherProceedingsLink = page.getByRole("link", { name: "Other Proceedings", });
+    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
   }
 
   async addApplicationDetails() {
@@ -138,5 +140,10 @@ export class StartApplication {
 
   async welshLanguageReqUpdated() {
     await expect(this.welshLanguageReqFinished).toBeVisible;
+  }
+
+  async internationalElementReqUpdated() {
+    await this.internationalElementsHeading.isVisible();
+    await this.internationalElementsHeading.click();
   }
 }
