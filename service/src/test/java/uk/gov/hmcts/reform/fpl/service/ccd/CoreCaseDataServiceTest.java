@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.exceptions.RetryFailureException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -60,6 +62,13 @@ class CoreCaseDataServiceTest {
     @BeforeEach
     void setup() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
+    }
+
+    @Test
+    void shouldThrowExceptionInRecoverMethod() {
+        assertThatThrownBy(() ->
+            service.recover(new Exception(), 1L, "test-event", caseDetails -> Map.of(), false))
+            .isInstanceOf(RetryFailureException.class);
     }
 
     @Nested
