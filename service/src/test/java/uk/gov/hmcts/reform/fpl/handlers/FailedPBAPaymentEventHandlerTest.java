@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.payment.FailedPBANotificationData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
@@ -73,6 +75,9 @@ class FailedPBAPaymentEventHandlerTest {
     @MockBean
     private WorkAllocationTaskService workAllocationTaskService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Autowired
     private FailedPBAPaymentEventHandler failedPBAPaymentEventHandler;
 
@@ -104,6 +109,8 @@ class FailedPBAPaymentEventHandlerTest {
             .build();
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
 
         given(localAuthorityRecipients.getRecipients(
             builder()
@@ -301,6 +308,27 @@ class FailedPBAPaymentEventHandlerTest {
     }
 
     @Test
+    void shouldNotNotifyCtscWhenInterlocutoryApplicationPBAPaymentFailsAndToggledOff() {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C2_APPLICATION.getType())
+            .caseUrl("caseUrl")
+            .applicant(LOCAL_AUTHORITY_NAME)
+            .build();
+
+        failedPBAPaymentEventHandler.notifyCTSC(
+            new FailedPBAPaymentEvent(caseData, List.of(C2_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
+
+        verify(notificationService, never()).sendEmail(
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            CTSC_INBOX,
+            expectedParameters,
+            caseData.getId());
+    }
+
+    @Test
     void shouldNotifyCtscWhenPBAPaymentFailsForOtherApplication() {
         final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
@@ -322,6 +350,28 @@ class FailedPBAPaymentEventHandlerTest {
             expectedParameters,
             caseData.getId());
     }
+
+    @Test
+    void shouldNotNotifyCtscWhenPBAPaymentFailsForOtherApplicationAndToggledOff() {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN.getType())
+            .caseUrl("caseUrl")
+            .applicant(LOCAL_AUTHORITY_NAME)
+            .build();
+
+        failedPBAPaymentEventHandler.notifyCTSC(
+            new FailedPBAPaymentEvent(caseData, List.of(C1_APPOINTMENT_OF_A_GUARDIAN),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
+
+        verify(notificationService, never()).sendEmail(
+            INTERLOCUTORY_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            CTSC_INBOX,
+            expectedParameters,
+            caseData.getId());
+    }
+
 
     @ParameterizedTest
     @MethodSource("otherApplicantsData")
@@ -371,6 +421,28 @@ class FailedPBAPaymentEventHandlerTest {
             expectedParameters,
             caseData.getId());
     }
+
+    @Test
+    void shouldNotNotifyCtscWhenApplicationPBAPaymentFailsAndToggledOff() {
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        final FailedPBANotificationData expectedParameters = FailedPBANotificationData.builder()
+            .applicationType(C110A_APPLICATION.getType())
+            .caseUrl("caseUrl")
+            .build();
+
+
+        failedPBAPaymentEventHandler.notifyCTSC(
+            new FailedPBAPaymentEvent(caseData, List.of(C110A_APPLICATION),
+                OrderApplicant.builder().type(LOCAL_AUTHORITY).name(caseData.getCaseLocalAuthorityName()).build()));
+
+        verify(notificationService, never()).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            CTSC_INBOX,
+            expectedParameters,
+            caseData.getId());
+    }
+
 
     @Test
     void shouldCreateWorkAllocationTaskForFailedPBAPayment() {

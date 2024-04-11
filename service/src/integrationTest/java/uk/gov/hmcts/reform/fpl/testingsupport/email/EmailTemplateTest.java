@@ -104,6 +104,7 @@ public class EmailTemplateTest {
     void notificationMocks() throws NotificationClientException {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
     }

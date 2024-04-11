@@ -503,7 +503,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "listGatekeepingHearingLabel",
-    "Label": "You must now complete the \"List gatekeeping hearing\" event to allocate the judge, list the hearing and serve the order",
+    "Label": "You must now complete the \"List initial hearing\" event to allocate the judge, list the hearing and serve the order",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
