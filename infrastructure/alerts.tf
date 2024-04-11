@@ -38,7 +38,7 @@ module "fpl-exceptions-alert" {
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-exceptions"
   alert_desc                 = "All exceptions within FPL"
-  app_insights_query         = "exceptions | where operation_Name !contains 'health' and outerMessage !contains '[403 Forbidden] during [GET] to [http://rd-professional-api-prod.service.core-compute-prod.internal/refdata/external/v1/organisations]'  | project timestamp, operation_Id, outerMessage, operation_Name"
+  app_insights_query         = "exceptions | where operation_Name !contains 'health' and outerMessage !contains '[403 Forbidden] during [GET] to [http://rd-professional-api-prod.service.core-compute-prod.internal/refdata/external/v1/organisations]' and outerMessage !contains '[409 Conflict during [POST] to [http://ccd-data-store' | project timestamp, operation_Id, outerMessage, operation_Name"
   custom_email_subject       = "Alert: FPL all exceptions"
   frequency_in_minutes       = "5"
   time_window_in_minutes     = "5"
