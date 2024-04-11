@@ -21,7 +21,7 @@ test.describe('Approve Orders', () => {
     await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
     await signInPage.navigateTOCaseDetails(caseNumber);
     await approveOrders.gotoNextStep('Approve orders')
-    await approveOrders.approveNonUrgentDraftCMO();
+    await approveOrders.approveDraftCMO(false);
 
     //Check CFV
     await caseFileView.goToCFVTab();
@@ -54,7 +54,7 @@ test.describe('Approve Orders', () => {
     await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
     await signInPage.navigateTOCaseDetails(caseNumber);
     await approveOrders.gotoNextStep('Approve orders')
-    await approveOrders.approveUrgentDraftCMO();
+    await approveOrders.approveDraftCMO(true);
 
     //Check CFV
     await caseFileView.goToCFVTab();
