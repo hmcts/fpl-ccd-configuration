@@ -6,7 +6,6 @@ export class OtherProceedings {
   readonly areThereAnyPastOrOngoingProccedingsReleventToCase: Locator;
   readonly continueButton: Locator;
   readonly saveAndContinueButton: Locator;
-  readonly radioButton: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -18,7 +17,7 @@ export class OtherProceedings {
   async otherProceedingsSmokeTest() {
     await this.otherProceedingsHeading.isVisible();
     await this.areThereAnyPastOrOngoingProccedingsReleventToCase.check();
-    await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.getByRole('button', { name: 'Save and continue' }).click();
+    await this.continueButton.click();
+    await this.saveAndContinueButton.click();
   }
 }
