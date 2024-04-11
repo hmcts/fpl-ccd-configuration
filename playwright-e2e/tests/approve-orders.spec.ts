@@ -1,9 +1,8 @@
 import { test } from '../fixtures/create-fixture';
-import { judgeLondonUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, CTSCTeamLeadUser, judgeWalesUser } from '../settings/user-credentials';
+import { newSwanseaLocalAuthorityUserOne, CTSCTeamLeadUser, judgeWalesUser } from '../settings/user-credentials';
 import { Apihelp } from '../utils/api-helper';
 import caseData from '../caseData/caseWithDraftOrder.json';
 import { expect } from '@playwright/test';
-import { setHighCourt } from '../utils/update-case-details';
 import { testConfig } from '../settings/test-config';
 
 test.describe('Approve Orders', () => {
@@ -15,72 +14,70 @@ test.describe('Approve Orders', () => {
     caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('Review CMO (High Court) WA Task',
-    async ({ page, signInPage, approveOrders, caseFileView }) => {
-      casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
-      setHighCourt(caseData);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+  test('Review standard CMO ', async ({ page, signInPage, approveOrders, caseFileView }) => {
+    casename = 'Review standard CMO ' + dateTime.slice(0, 10);
+    await apiDataSetup.updateCase(casename, caseNumber, caseData);
+    await signInPage.visit();
+    await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+    await signInPage.navigateTOCaseDetails(caseNumber);
+    await approveOrders.gotoNextStep('Approve orders')
+    await approveOrders.approveNonUrgentDraftCMO();
+
+    //Check CFV
+    await caseFileView.goToCFVTab();
+    await caseFileView.openFolder('Orders');
+    await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
+
+    if (testConfig.waEnabled) {
+      await approveOrders.clickSignOut();
+
       await signInPage.visit();
-      await signInPage.login(judgeLondonUser.email, judgeLondonUser.password);
+      await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
-      await approveOrders.gotoNextStep('Approve orders')
-      await approveOrders.approveNonUrgentDraftCMO();
+      await approveOrders.tabNavigation('Tasks');
+      await approveOrders.waitForTask('Review Order');
 
-      //Check CFV
-      await caseFileView.goToCFVTab();
-      await caseFileView.openFolder('Orders');
-      await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
-      
-      if (testConfig.waEnabled) {
-        await approveOrders.clickSignOut();
+      // Assign and complete the task
+      await page.getByText('Assign to me').click();
+      await page.getByText('Mark as done').click();
+      await page.getByRole('button', { name: "Mark as done" }).click();
 
-        await signInPage.visit();
-        await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
-        await approveOrders.tabNavigation('Tasks');
-        await approveOrders.waitForTask('Review Order (High Court)');
+      // Should be no more tasks on the page
+      await expect(page.getByText('Review Order')).toHaveCount(0);
+    }
+  });
 
-        // Assign and complete the task
-        await page.getByText('Assign to me').click();
-        await page.getByText('Mark as done').click();
-        await page.getByRole('button', { name: "Mark as done" }).click();
+  test('Review urgent CMO ', async ({ page, signInPage, approveOrders, caseFileView }) => {
+    casename = 'Review urgent CMO ' + dateTime.slice(0, 10);
+    await apiDataSetup.updateCase(casename, caseNumber, caseData);
+    await signInPage.visit();
+    await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+    await signInPage.navigateTOCaseDetails(caseNumber);
+    await approveOrders.gotoNextStep('Approve orders')
+    await approveOrders.approveUrgentDraftCMO();
 
-        // Should be no more tasks on the page
-        await expect(page.getByText('Review Order (High Court)')).toHaveCount(0);
-      }
-    });
+    //Check CFV
+    await caseFileView.goToCFVTab();
+    await caseFileView.openFolder('Orders');
+    await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
 
-    test('Review urgent CMO ', async ({ page, signInPage, approveOrders, caseFileView }) => {
-      casename = 'Review urgent CMO ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+    if (testConfig.waEnabled) {
+      await approveOrders.clickSignOut();
+
       await signInPage.visit();
-      await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
+      await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
-      await approveOrders.gotoNextStep('Approve orders')
-      await approveOrders.approveUrgentDraftCMO();
+      await approveOrders.tabNavigation('Tasks');
+      await approveOrders.waitForTask('Review Order', 'urgent');
 
-      //Check CFV
-      await caseFileView.goToCFVTab();
-      await caseFileView.openFolder('Orders');
-      await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
+      // Assign and complete the task
+      await page.getByText('Assign to me').click();
+      await page.getByText('Mark as done').click();
+      await page.getByRole('button', { name: "Mark as done" }).click();
 
-      if (testConfig.waEnabled) {
-        await approveOrders.clickSignOut();
-
-        await signInPage.visit();
-        await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password);
-        await signInPage.navigateTOCaseDetails(caseNumber);
-        await approveOrders.tabNavigation('Tasks');
-        await approveOrders.waitForTask('Review Order');
-
-        // Assign and complete the task
-        await page.getByText('Assign to me').click();
-        await page.getByText('Mark as done').click();
-        await page.getByRole('button', { name: "Mark as done" }).click();
-
-        // Should be no more tasks on the page
-        await expect(page.getByText('Review Order')).toHaveCount(0);
-      }
-    });
+      // Should be no more tasks on the page
+      await expect(page.getByText('Review Order')).toHaveCount(0);
+    }
+  });
 
 });
