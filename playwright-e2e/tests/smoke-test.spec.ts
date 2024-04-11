@@ -16,7 +16,9 @@ test("Smoke Test @smoke-test @accessibility", async ({
   allocationProposal,
   addApplicationDocuments,
   childDetails,
-  page,
+  welshLangRequirements,
+  internationalElement,
+page,
   makeAxeBuilder
 },testInfo) => {
 
@@ -27,8 +29,9 @@ test("Smoke Test @smoke-test @accessibility", async ({
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
   );
+  //sign in page
   await signInPage.isSignedIn();
-
+  
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -74,13 +77,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
-  // // Applicant Deatils
+  // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
+  await startApplication.applicantDetails();
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
-  //Child details
+  // Child details
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
@@ -94,6 +98,15 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
+
+  // International element
+  await startApplication.internationalElementReqUpdated();
+  await internationalElement.internationalElementSmokeTest();
+
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
   // but supports additional test-specific configuration too
@@ -105,4 +118,5 @@ test("Smoke Test @smoke-test @accessibility", async ({
   });
 
 expect(accessibilityScanResults.violations).toEqual([]);
-});
+}
+);
