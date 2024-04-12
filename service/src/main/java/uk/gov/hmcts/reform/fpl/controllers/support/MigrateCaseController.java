@@ -13,14 +13,19 @@ import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.RoleAssignmentUtils;
 
 import java.time.ZonedDateTime;
@@ -32,8 +37,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole.ALLOCATED_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.LegalAdviserRole.ALLOCATED_LEGAL_ADVISER;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 
 @Api
 @Slf4j
@@ -72,6 +79,11 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        migrateCaseService.performNoticeOfChange(callbackRequest.getCaseDetails().getId());
     }
 
     private void migrateRoles(CaseData caseData) {
@@ -229,5 +241,11 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1233(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run2284(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(
+            migrateCaseService.generateChangeOrganisationRequest("", "", SOLICITORA));
+        // submitted callback - perform call to updateRepresentation, which will perform the call to AAC to finalize it
     }
 }

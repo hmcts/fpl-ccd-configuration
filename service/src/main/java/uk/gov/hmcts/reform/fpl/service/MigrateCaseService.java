@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -33,10 +35,14 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
@@ -60,6 +66,8 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
+import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.EMERGENCY_PROTECTION_ORDER;
@@ -72,6 +80,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -90,6 +99,8 @@ public class MigrateCaseService {
     public final MigrateRelatingLAService migrateRelatingLAService;
     public final OrganisationService organisationService;
     public final CourtLookUpService courtLookUpService;
+    public final CoreCaseDataService coreCaseDataService;
+    private final Time time;
 
     private static final Map<String, HearingType>  HEARING_TYPE_DETAILS_MAPPING = initialiseHearingMapping();
 
@@ -1214,5 +1225,33 @@ public class MigrateCaseService {
                     booking.setType(OTHER);
                 }
             });
+    }
+
+    public Map<String, Object> generateChangeOrganisationRequest(String newOrganisation,
+                                                   String oldOrganisation,
+                                                   SolicitorRole solicitorRole) {
+        final DynamicListElement roleItem = DynamicListElement.builder()
+            .code(solicitorRole.getCaseRoleLabel())
+            .label(solicitorRole.getCaseRoleLabel())
+            .build();
+
+        ChangeOrganisationRequest request = ChangeOrganisationRequest.builder()
+            .approvalStatus(APPROVED)
+            .requestTimestamp(time.now())
+            .caseRoleId(DynamicList.builder()
+                .value(roleItem)
+                .listItems(List.of(roleItem))
+                .build())
+            .organisationToRemove(organisation(oldOrganisation))
+            .organisationToAdd(organisation(newOrganisation))
+            .build();
+
+        return Map.of("changeOrganisationRequestField", request);
+    }
+
+    public void performNoticeOfChange(Long caseId) {
+        coreCaseDataService.performPostSubmitCallback(caseId, "updateRepresentation",
+            caseDetails -> Map.of(), true
+        );
     }
 }
