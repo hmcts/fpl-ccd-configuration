@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -69,6 +74,7 @@ public class DraftOrderService {
     private final ObjectMapper mapper;
     private final Time time;
     private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
+    private final UserService userService;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -225,7 +231,6 @@ public class DraftOrderService {
         return selectedHearingId;
     }
 
-
     public void additionalApplicationUpdateCase(List<Element<HearingOrder>> draftOrders,
                                                  List<Element<HearingOrdersBundle>> bundles) {
 
@@ -243,6 +248,43 @@ public class DraftOrderService {
         );
     }
 
+    public void confidentialAdditionalApplicationUpdateCase(CaseData caseData,
+                                                            List<Element<HearingOrder>> draftOrders,
+                                                            List<Element<HearingOrdersBundle>> bundles) {
+        for (Element<HearingOrder> hearingOrder : draftOrders) {
+            hearingOrder.getValue().setDateSent(time.now().toLocalDate());
+            hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+            hearingOrder.getValue().setTranslationRequirements(LanguageTranslationRequirement.NO);
+            if (isNotEmpty(hearingOrder.getValue().getOrder())) {
+                hearingOrder.getValue().setOrderConfidential(hearingOrder.getValue().getOrder());
+                hearingOrder.getValue().setOrder(null);
+            }
+            hearingOrder.getValue().setUploaderEmail(userService.getUserEmail());
+        }
+
+        HearingOrdersBundle hearingOrdersBundle = bundles.stream()
+            .filter(bundle -> isEmpty(bundle.getValue().getHearingId()))
+            .map(Element::getValue)
+            .findFirst()
+            .orElseGet(() -> addNewDraftBundle(bundles));
+
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+
+        List<String> suffixes = new ArrayList<>();
+        if (userService.isHmctsUser()) {
+            suffixes.add(ConfidentialOrderBundle.SUFFIX_CTSC);
+        } else {
+            if (PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
+                suffixes.add(ConfidentialOrderBundle.SUFFIX_LA);
+            }
+            PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(),
+                ConfidentialOrderBundle.SUFFIX_RESPONDENT, caseRoles, suffixes::add);
+            PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(),
+                ConfidentialOrderBundle.SUFFIX_CHILD, caseRoles, suffixes::add);
+        }
+        hearingOrdersBundle.updateConfidentialOrders(draftOrders, C21, suffixes);
+    }
+
     private boolean isInCmoDrafts(Element<HearingOrder> draft, List<Element<HearingOrder>> cmoDrafts) {
         return cmoDrafts.stream()
             .map(Element::getId)
@@ -250,6 +292,7 @@ public class DraftOrderService {
             .contains(draft.getId());
     }
 
+    @SuppressWarnings("unchecked")
     public HearingOrdersBundles migrateCmoDraftToOrdersBundles(CaseData caseData) {
 
         List<Element<HearingOrder>> cmoDrafts = caseData.getDraftUploadedCMOs();
@@ -260,8 +303,9 @@ public class DraftOrderService {
             defaultIfNull(caseData.getHearingOrdersBundlesDraftReview(), new ArrayList<>());
 
         Stream.concat(bundles.stream(), bundlesForReview.stream())
-            .forEach(bundle -> bundle.getValue().getOrders().removeIf(draft -> draft.getValue().getType().isCmo()
-                || isInCmoDrafts(draft, cmoDrafts)));
+            .forEach(bundle -> bundle.getValue().getListOfOrders()
+                .forEach(o -> o.removeIf(draft -> draft.getValue().getType().isCmo()
+                    || isInCmoDrafts(draft, cmoDrafts))));
 
         unwrapElements(cmoDrafts).forEach(draft -> {
             HearingOrderType type = draft.getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO;
@@ -300,7 +344,7 @@ public class DraftOrderService {
         filterOrders(bundlesForReview, not(DRAFT_CMO::equals));
         filterOrders(bundles, DRAFT_CMO::equals);
 
-        bundles.removeIf(b -> isEmpty(b.getValue().getOrders()));
+        bundles.removeIf(b -> isEmpty(b.getValue().getOrders()) && isEmpty(b.getValue().getAllConfidentialOrders()));
         bundlesForReview.removeIf(b -> isEmpty(b.getValue().getOrders()));
 
         return HearingOrdersBundles.builder()

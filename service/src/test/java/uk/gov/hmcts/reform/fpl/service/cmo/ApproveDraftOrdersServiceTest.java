@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.cmo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -40,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -723,6 +726,116 @@ class ApproveDraftOrdersServiceTest {
         CaseData caseData = CaseData.builder().sealedCMOs(List.of()).build();
         assertThatExceptionOfType(CMONotFoundException.class).isThrownBy(
             () -> underTest.getLatestSealedCMO(caseData));
+    }
+
+    @Nested
+    class ConfidentialOrders {
+        @Test
+        void shouldSealTheConfidentialDraftOrderAndCreateBlankOrderWhenJudgeApproves() {
+            Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", hearing1);
+
+            Element<HearingOrdersBundle> ordersBundleElement = buildConfidentialDraftOrdersBundle(hearing1,
+                newArrayList(draftOrder1), ConfidentialOrderBundle.SUFFIX_CTSC);
+
+            ReviewDecision reviewDecision = ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("reviewDecision1", Map.of("decision", reviewDecision));
+
+            CaseData caseData = CaseData.builder()
+                .court(Court.builder()
+                    .code("999")
+                    .build())
+                .state(State.CASE_MANAGEMENT)
+                .draftUploadedCMOs(newArrayList(draftOrder1))
+                .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+                .reviewCMODecision(reviewDecision)
+                .orderCollection(newArrayList())
+                .build();
+
+            given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
+
+            Element<HearingOrder> expectedSealedOrder = element(
+                draftOrder1.getId(), draftOrder1.getValue().toBuilder().status(APPROVED).build());
+
+            Element<GeneratedOrder> expectedBlankOrder = element(UUID.randomUUID(),
+                GeneratedOrder.builder().type(String.valueOf(C21)).build());
+
+            given(hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, draftOrder1, emptyList(), "",
+                SealType.ENGLISH, caseData.getCourt()))
+                .willReturn(expectedSealedOrder);
+            given(blankOrderGenerator.buildBlankOrder(
+                caseData, ordersBundleElement, expectedSealedOrder, emptyList(), ""))
+                .willReturn(expectedBlankOrder);
+
+            Map<String, Object> expectedData = Map.of(
+                "orderCollectionCTSC", List.of(expectedBlankOrder),
+                "hearingOrdersBundlesDrafts", emptyList(),
+                "ordersToBeSent", List.of(expectedSealedOrder)
+            );
+
+            underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+            assertThat(data).containsAllEntriesOf(expectedData);
+        }
+
+
+        @Test
+        void shouldNotCreateBlankOrderWhenJudgeRequestsChangesOnConfidentialOrder() {
+            Element<HearingOrder> draftOrder1 = buildConfidentialBlankOrder("test order1", hearing1);
+
+            Element<HearingOrdersBundle> ordersBundleElement = buildConfidentialDraftOrdersBundle(hearing1,
+                newArrayList(draftOrder1), ConfidentialOrderBundle.SUFFIX_CTSC);
+
+            ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REQUESTED_CHANGES)
+                .changesRequestedByJudge("some change").build();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("reviewDecision1", Map.of("decision", JUDGE_REQUESTED_CHANGES));
+
+            CaseData caseData = CaseData.builder()
+                .state(State.CASE_MANAGEMENT)
+                .draftUploadedCMOs(newArrayList(draftOrder1))
+                .hearingOrdersBundlesDrafts(newArrayList(ordersBundleElement))
+                .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
+                .orderCollection(newArrayList())
+                .build();
+
+            given(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).willReturn(reviewDecision);
+
+            Element<HearingOrder> rejectedOrderToReturn = element(draftOrder1.getId(),
+                draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build());
+
+            given(hearingOrderGenerator.buildRejectedHearingOrder(
+                draftOrder1, reviewDecision.getChangesRequestedByJudge())).willReturn(rejectedOrderToReturn);
+
+            Map<String, Object> expectedData = Map.of(
+                "orderCollection", emptyList(),
+                "hearingOrdersBundlesDrafts", emptyList(),
+                "ordersToBeSent", List.of(rejectedOrderToReturn),
+                "refusedHearingOrdersCTSC", List.of(rejectedOrderToReturn)
+            );
+
+            underTest.reviewC21Orders(caseData, data, ordersBundleElement);
+            assertThat(data).containsAllEntriesOf(expectedData);
+            verifyNoInteractions(blankOrderGenerator);
+        }
+
+        private static Element<HearingOrdersBundle> buildConfidentialDraftOrdersBundle(
+            String hearing, List<Element<HearingOrder>> draftOrders, String suffix) {
+            HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder()
+                .orders(new ArrayList<>())
+                .hearingName(hearing)
+                .judgeTitleAndName("Her Honour Judge Judy").build();
+            hearingOrdersBundle.setConfidentialOrdersBySuffix(suffix, draftOrders);
+            return element(hearingOrdersBundle);
+        }
+
+        private static Element<HearingOrder> buildConfidentialBlankOrder(String title, String hearing) {
+            Element<HearingOrder> order = buildBlankOrder(title, hearing);
+            order.getValue().setOrderConfidential(order.getValue().getOrder());
+            order.getValue().setOrder(null);
+            return order;
+        }
     }
 
     private static Element<HearingOrder> draftCMO(String hearing) {

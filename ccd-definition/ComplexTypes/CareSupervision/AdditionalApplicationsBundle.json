@@ -2,8 +2,271 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "hasConfidentialC2",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "hasConfidentialC2",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "confidentialC2RestrictedLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This is a confidential application and restricted viewing applies",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "hasConfidentialC2=\"YES\" AND c2DocumentBundleConfidential!=\"*\" AND c2DocumentBundleLA!=\"*\" AND c2DocumentBundleResp0!=\"*\" AND c2DocumentBundleResp1!=\"*\" AND c2DocumentBundleResp2!=\"*\" AND c2DocumentBundleResp3!=\"*\" AND c2DocumentBundleResp4!=\"*\" AND c2DocumentBundleResp5!=\"*\" AND c2DocumentBundleResp6!=\"*\" AND c2DocumentBundleResp7!=\"*\" AND c2DocumentBundleResp8!=\"*\" AND c2DocumentBundleResp9!=\"*\" AND c2DocumentBundleChild0!=\"*\" AND c2DocumentBundleChild1!=\"*\" AND c2DocumentBundleChild2!=\"*\" AND c2DocumentBundleChild3!=\"*\" AND c2DocumentBundleChild4!=\"*\" AND c2DocumentBundleChild5!=\"*\" AND c2DocumentBundleChild6!=\"*\" AND c2DocumentBundleChild7!=\"*\" AND c2DocumentBundleChild8!=\"*\" AND c2DocumentBundleChild9!=\"*\" AND c2DocumentBundleChild10!=\"*\" AND c2DocumentBundleChild11!=\"*\" AND c2DocumentBundleChild12!=\"*\" AND c2DocumentBundleChild13!=\"*\" AND c2DocumentBundleChild14!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
     "ListElementCode": "c2DocumentBundle",
     "FieldType": "C2DocumentBundle",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleConfidential",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleLA",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp0",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp1",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp2",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp3",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp4",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp5",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp6",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp7",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp8",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleResp9",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild0",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild1",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild2",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild3",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild4",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild5",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild6",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild7",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild8",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild9",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild10",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild11",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild12",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild13",
+    "FieldType": "C2DocumentBundleConfidential",
+    "ElementLabel": "C2 application",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "c2DocumentBundleChild14",
+    "FieldType": "C2DocumentBundleConfidential",
     "ElementLabel": "C2 application",
     "SecurityClassification": "Public",
     "Searchable": "N"

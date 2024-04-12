@@ -34,20 +34,27 @@ public class HearingOrderGenerator {
                                                          Court court) {
         DocumentReference order;
 
+        boolean isConfidentialOrder = hearingOrderElement.getValue().isConfidentialOrder();
+
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
             order = reviewDecision.getJudgeAmendedDocument();
         } else {
-            order = hearingOrderElement.getValue().getOrder();
+            order = (isConfidentialOrder) ? hearingOrderElement.getValue().getOrderConfidential()
+                : hearingOrderElement.getValue().getOrder();
         }
 
-        return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
+        HearingOrder.HearingOrderBuilder builder = hearingOrderElement.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order, court, sealType))
             .lastUploadedOrder(order)
             .others(selectedOthers)
-            .othersNotified(othersNotified)
-            .build());
+            .othersNotified(othersNotified);
+
+        builder = (isConfidentialOrder)
+            ? builder.orderConfidential(documentSealingService.sealDocument(order, court, sealType))
+            : builder.order(documentSealingService.sealDocument(order, court, sealType));
+
+        return element(hearingOrderElement.getId(), builder.build());
     }
 
     public Element<HearingOrder> buildRejectedHearingOrder(

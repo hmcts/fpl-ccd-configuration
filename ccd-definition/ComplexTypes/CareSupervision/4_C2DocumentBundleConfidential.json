@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "applicantName",
     "FieldType": "Text",
     "ElementLabel": "Applicant",
@@ -10,17 +10,17 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
     "RegularExpression": ".doc,.docx,.pdf",
     "SecurityClassification": "Public",
-    "CategoryID": "c2Applications"
+    "CategoryID": "c2ApplicationsConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
@@ -29,7 +29,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "uploadedDateTime",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -37,7 +37,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "author",
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
@@ -45,7 +45,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "othersNotified",
     "Comment": "Deprecated",
     "FieldType": "Text",
@@ -54,7 +54,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "description",
     "FieldType": "TextArea",
     "ElementLabel": "Notes",
@@ -62,7 +62,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "nameOfRepresentative",
     "FieldType": "Text",
     "ElementLabel": "Name of representative",
@@ -70,7 +70,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "usePbaPayment",
     "FieldType": "YesOrNo",
     "ElementLabel": "Paid with PBA",
@@ -78,7 +78,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "pbaNumber",
     "HintText": "For example, PBA1234567",
     "FieldType": "Text",
@@ -87,7 +87,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "clientCode",
     "FieldType": "Text",
     "ElementLabel": "Client code",
@@ -95,7 +95,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "fileReference",
     "FieldType": "Text",
     "ElementLabel": "Customer reference",
@@ -103,56 +103,34 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "draftOrdersBundle",
     "ElementLabel": "Draft Orders",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2DraftOrder",
+    "FieldTypeParameter": "C2DraftOrderConfidential",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2Supplement",
+    "FieldTypeParameter": "C2SupplementConfidential",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
+    "FieldTypeParameter": "C2SupportingEvidenceBundleConfidential",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated after CFV"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated after CFV"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "c2AdditionalOrdersRequested",
     "ElementLabel": "Additional orders requested",
     "HintText": "Select all that apply",
@@ -163,7 +141,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "parentalResponsibilityType",
     "ElementLabel": "Who's seeking parental responsibility?",
     "FieldType": "FixedRadioList",
@@ -173,7 +151,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "hearingList",
     "ElementLabel": "Which hearing?",
     "FieldType": "DynamicList",
@@ -182,7 +160,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "requestedHearingToAdjourn",
     "ElementLabel": "Requested hearing to adjourn",
     "FieldType": "Text",
@@ -191,7 +169,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "urgencyTimeFrameType",
     "ElementLabel": "Please state how soon you want the judge to consider your application?",
     "FieldType": "FixedRadioList",
@@ -201,7 +179,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "id",
     "FieldType": "Text",
     "ElementLabel": " ",
@@ -210,7 +188,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "others",
     "Comment": "Deprecated",
     "FieldType": "Collection",
@@ -222,7 +200,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
@@ -233,7 +211,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "documentAcknowledgeLabel",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -243,7 +221,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "documentAcknowledgeLabelForCYA",
     "FieldType": "Label",
     "ElementLabel": " ",
@@ -253,7 +231,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "C2DocumentBundleConfidential",
     "ListElementCode": "documentAcknowledge",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DocumentAcknowledge",

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -78,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
@@ -1680,6 +1682,30 @@ class CaseDataTest {
             assertThat(caseData.getBundlesForApproval()).isEmpty();
         }
 
+        @Test
+        void shouldReturnAllHearingOrdersBundlesForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .ordersCTSC(newArrayList(
+                        element(HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build())))
+                    .build());
+
+            Element<HearingOrdersBundle> bundle2 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build()),
+                        element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1, bundle2))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval())
+                .extracting(Element::getId)
+                .containsExactly(bundle1.getId(), bundle2.getId());
+        }
+
         private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
             return List.of(
                 element(emailRepOne),
@@ -2056,6 +2082,21 @@ class CaseDataTest {
             assertThat(underTest.isDischargeOfCareApplication()).isTrue();
         }
 
+    }
+
+    @Test
+    void shouldReturnAllOrderCollection() {
+        List<Element<GeneratedOrder>> orders = wrapElementsWithUUIDs(GeneratedOrder.builder().title("order").build());
+        List<Element<GeneratedOrder>> ordersCTSC =
+            wrapElementsWithUUIDs(GeneratedOrder.builder().title("orderCTSC").build());
+        CaseData caseData = CaseData.builder()
+            .orderCollection(orders)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder().orderCollectionCTSC(ordersCTSC).build())
+            .build();
+
+        List<Element<GeneratedOrder>> expected = Stream.of(orders, ordersCTSC).flatMap(List::stream).toList();
+
+        assertThat(caseData.getAllOrderCollections()).isEqualTo(expected);
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {

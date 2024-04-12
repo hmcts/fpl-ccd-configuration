@@ -6,16 +6,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -27,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -35,9 +44,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,6 +59,8 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -64,6 +77,7 @@ import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DE
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.defaultListItem;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -76,11 +90,14 @@ class DraftOrderServiceTest {
 
     private DraftOrderService service;
 
+    @Mock
+    private UserService userService;
+
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
-            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder())
+            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()), userService
         );
     }
 
@@ -782,6 +799,24 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldPreserveOriginalOrdersBundleIfNoUpdatedCMOWithOrdersLA() {
+            HearingOrdersBundle originalOrdersBundle = HearingOrdersBundle.builder()
+                .hearingId(randomUUID())
+                .ordersLA(wrapElements(HearingOrder.builder().title("test").type(C21).build()))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(wrapElements(originalOrdersBundle))
+                .build();
+
+            HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
+
+            assertThat(hearingOrdersBundles.getAgreedCmos()).extracting(Element::getValue)
+                .containsExactly(originalOrdersBundle);
+            assertThat(hearingOrdersBundles.getDraftCmos()).isEmpty();
+        }
+
+        @Test
         void shouldAddCmoOrderToExistingOrdersBundle() {
 
             Element<HearingOrder> newHearing1CmoOrder = randomHearingOrder(AGREED_CMO);
@@ -873,6 +908,39 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldUpdateCmoOrderInExistingOrdersBundleWithOrdersLA() {
+            Element<HearingOrder> hearing1CmoOrder = randomHearingOrder(AGREED_CMO);
+            Element<HearingOrder> newHearing1CmoOrder = randomHearingOrder(AGREED_CMO);
+            Element<HearingOrder> hearing1C21Order = randomHearingOrder(C21);
+            Element<HearingOrder> hearing2C21Order = randomHearingOrder(C21);
+
+            Element<HearingBooking> hearing1 = randomHearing(newHearing1CmoOrder.getId());
+            Element<HearingBooking> hearing2 = randomHearing();
+
+            HearingOrdersBundle originalHearing1OrdersBundle = ordersLABundle(hearing1, hearing1CmoOrder,
+                hearing1C21Order);
+            HearingOrdersBundle originalHearing2OrdersBundle = ordersBundle(hearing2, hearing2C21Order);
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(wrapElements(originalHearing1OrdersBundle, originalHearing2OrdersBundle))
+                .hearingDetails(List.of(hearing1, hearing2))
+                .draftUploadedCMOs(List.of(newHearing1CmoOrder))
+                .build();
+
+            HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
+
+            List<Element<HearingOrdersBundle>> actualOrdersBundles = hearingOrdersBundles.getAgreedCmos();
+
+            HearingOrdersBundle expectedOrderBundle = originalHearing1OrdersBundle.toBuilder()
+                .ordersLA(newArrayList(hearing1C21Order))
+                .orders(newArrayList(newHearing1CmoOrder))
+                .build();
+
+            assertThat(actualOrdersBundles).extracting(Element::getValue)
+                .containsExactly(expectedOrderBundle, originalHearing2OrdersBundle);
+        }
+
+        @Test
         void shouldRemoveCmoOrderFromBundle() {
 
             Element<HearingOrder> hearing1CmoOrder = randomHearingOrder(DRAFT_CMO);
@@ -942,6 +1010,86 @@ class DraftOrderServiceTest {
                 .updateHearing(hearing.getId(), hearing.getValue());
         }
 
+        @SafeVarargs
+        private HearingOrdersBundle ordersLABundle(Element<HearingBooking> hearing, Element<HearingOrder>... orders) {
+            return HearingOrdersBundle.builder()
+                .ordersLA(newArrayList(orders))
+                .build()
+                .updateHearing(hearing.getId(), hearing.getValue());
+        }
+
+    }
+
+    @Nested
+    class ConfidentialAdditionalApplication {
+        private static final OrganisationPolicy LA_POLICY = OrganisationPolicy.builder()
+            .orgPolicyCaseAssignedRole(CaseRole.LASOLICITOR.formattedName()).build();
+        private static final RespondentPolicyData RESPONDENT_POLICY_DATA = RespondentPolicyData.builder()
+            .respondentPolicy0(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build()).build();
+        private static final ChildPolicyData CHILD_POLICY_DATA = ChildPolicyData.builder()
+            .childPolicy0(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole(CaseRole.CHILDSOLICITORA.formattedName()).build()).build();
+
+        private static final CaseData CASE_DATA_WITH_POLICY = CaseData.builder()
+            .localAuthorityPolicy(LA_POLICY)
+            .respondentPolicyData(RESPONDENT_POLICY_DATA)
+            .childPolicyData(CHILD_POLICY_DATA)
+            .build();
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            ConfidentialOrderBundle.SUFFIX_CTSC, ConfidentialOrderBundle.SUFFIX_LA,
+            ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0", ConfidentialOrderBundle.SUFFIX_CHILD + "0"
+        })
+        void shouldUpdateDraftHearingBundlesWhenUserUploadConfidentialDraftOrders(String suffix) {
+            if (ConfidentialOrderBundle.SUFFIX_CTSC.equals(suffix)) {
+                given(userService.isHmctsUser()).willReturn(true);
+            } else if (ConfidentialOrderBundle.SUFFIX_LA.equals(suffix)) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.LASOLICITOR));
+            } else if (suffix.equals(ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0")) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
+            } else if (suffix.equals(ConfidentialOrderBundle.SUFFIX_CHILD + "0")) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
+            }
+
+            final DocumentReference newDraftDocument = testDocumentReference();
+            final List<Element<HearingOrder>> newDraftOrders = wrapElements(
+                HearingOrder.builder().order(newDraftDocument).build());
+            List<Element<HearingOrdersBundle>> bundles = new ArrayList<>();
+
+            service.confidentialAdditionalApplicationUpdateCase(CASE_DATA_WITH_POLICY, newDraftOrders, bundles);
+
+            HearingOrdersBundle resultBundle = unwrapElements(bundles).get(0);
+            assertThat(resultBundle.getConfidentialOrdersBySuffix(suffix)).isEqualTo(newDraftOrders);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            ConfidentialOrderBundle.SUFFIX_CTSC, ConfidentialOrderBundle.SUFFIX_LA,
+            ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0", ConfidentialOrderBundle.SUFFIX_CHILD + "0"
+        })
+        void shouldAddToExisitingDraftHearingBundlesWhenUserUploadConfidentialDraftOrders(String suffix) {
+            if (ConfidentialOrderBundle.SUFFIX_CTSC.equals(suffix)) {
+                given(userService.isHmctsUser()).willReturn(true);
+            } else if (ConfidentialOrderBundle.SUFFIX_LA.equals(suffix)) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.LASOLICITOR));
+            } else if (suffix.equals(ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0")) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
+            } else if (suffix.equals(ConfidentialOrderBundle.SUFFIX_CHILD + "0")) {
+                given(userService.getCaseRoles(any())).willReturn(Set.of(CaseRole.CHILDSOLICITORA));
+            }
+
+            final DocumentReference newDraftDocument = testDocumentReference();
+            final List<Element<HearingOrder>> newDraftOrders = wrapElements(
+                HearingOrder.builder().order(newDraftDocument).build());
+            HearingOrdersBundle existingBundle = HearingOrdersBundle.builder().build();
+
+            service.confidentialAdditionalApplicationUpdateCase(CASE_DATA_WITH_POLICY, newDraftOrders,
+                wrapElements(existingBundle));
+
+            assertThat(existingBundle.getConfidentialOrdersBySuffix(suffix)).isEqualTo(newDraftOrders);
+        }
     }
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings, DynamicListElement... additional) {
