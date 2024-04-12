@@ -9,6 +9,8 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
+  teamManagerNameString = 'Sarah Johnson';
+  storeCaseName;
 
   constructor(page: Page) {
     this.page = page;
