@@ -51,7 +51,8 @@ public class MigrateCaseController extends CallbackController {
         "DFPL-AM", this::runAM,
         "DFPL-AM-Rollback", this::runAmRollback,
         "DFPL-1233", this::run1233,
-        "DFPL-1233Rollback", this::run1233Rollback
+        "DFPL-1233Rollback", this::run1233Rollback,
+        "DFPL-2283", this::run2283
     );
 
     @PostMapping("/about-to-submit")
@@ -229,5 +230,10 @@ public class MigrateCaseController extends CallbackController {
 
     private void run1233(CaseDetails caseDetails) {
         caseDetails.getData().putAll(migrateCaseService.migrateHearingType(getCaseData(caseDetails)));
+    }
+
+    private void run2283(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(
+            getCaseData(caseDetails), "DFPL-2283", "2a2254f6-25fa-4b56-9e46-76d568e53d3d"));
     }
 }
