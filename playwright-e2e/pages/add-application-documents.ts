@@ -1,6 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import config from "../settings/test-docs/config";
-import path from "path";
 
 export class AddApplicationDocuments {
 
