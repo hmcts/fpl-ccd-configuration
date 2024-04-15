@@ -52,7 +52,6 @@ export class Apihelp {
     const serviceUrl = await this.getServiceUrl();
     const testDoc = '/test-document';
     const apiRequestUrl = new URL(`${serviceUrl}${testDoc}`).href;
-    //const postUrl = urlConfig.serviceUrl + '/testing-support/test-document';
     let docDetail = await this.apiRequest(apiRequestUrl, systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
@@ -70,7 +69,6 @@ export class Apihelp {
     let postUrlString = await this.getServiceUrl();
     let populateCase = '/case/populate/';
     let postURL = new URL(`${postUrlString}${populateCase}${caseID}`);
-    //postURL.pathname = 'case/populate/' + `${caseID}`;
     try {
       let res = await this.apiRequest(postURL.href, systemUpdateUser, 'post', data);
     } catch (error) {
@@ -79,7 +77,6 @@ export class Apihelp {
   }
 
   async getServiceUrl()  {
-     //const testingSupport = '/testing-support';
      const url1 = new URL(`${urlConfig.serviceUrl}` );
      url1.pathname = 'testing-support';
      return url1.href;
