@@ -1,6 +1,8 @@
 import { test } from '../fixtures/create-fixture';
 import { Apihelp } from '../utils/api-helper';
-import { caseData } from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+//import { caseData } from "../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json";
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
@@ -10,8 +12,11 @@ test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let casename: string;
+  const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
 
-  test.beforeEach(async () => {
+
+
+    test.beforeEach(async () => {
     caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
