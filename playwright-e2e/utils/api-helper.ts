@@ -30,9 +30,7 @@ export class Apihelp {
   async createCase(caseName = 'e2e UI Test', user: { email: string, password: string }) {
 
     let res: object;
-    const caseCreate = '/case/create';
-    const serviceUrl = await this.getServiceUrl();
-    const url = new URL(`${serviceUrl}${caseCreate}`).href;
+    const url = new URL(await this.getServiceUrl() + '/case/create').href;
     const data = {
       caseName: caseName,
     };
@@ -49,9 +47,7 @@ export class Apihelp {
   async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with document url
-    const serviceUrl = await this.getServiceUrl();
-    const testDoc = '/test-document';
-    const apiRequestUrl = new URL(`${serviceUrl}${testDoc}`).href;
+    const apiRequestUrl = new URL(await this.getServiceUrl() + '/test-document').href;
     let docDetail = await this.apiRequest(apiRequestUrl, systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
@@ -66,9 +62,7 @@ export class Apihelp {
     // @ts-ignore
     caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseData))(docParameter);
-    let postUrlString = await this.getServiceUrl();
-    let populateCase = '/case/populate/';
-    let postURL = new URL(`${postUrlString}${populateCase}${caseID}`);
+    let postURL = new URL(await this.getServiceUrl() + '/case/populate/' + `${caseID}`);
     try {
       let res = await this.apiRequest(postURL.href, systemUpdateUser, 'post', data);
     } catch (error) {
