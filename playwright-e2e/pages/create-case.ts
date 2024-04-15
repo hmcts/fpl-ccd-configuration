@@ -9,7 +9,6 @@ export class CreateCase{
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
   generatedCaseName: any;
-  storeCaseName;
 
   public constructor(page: Page) {
     this.page = page;

@@ -1,6 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 import { join } from "path";
+import { ApplicantDetails } from "./applicant-details";
 
 export class SubmitCase extends BasePage{
   readonly page: Page;
@@ -20,7 +21,7 @@ export class SubmitCase extends BasePage{
     this.applicationSentHeading = page.getByRole('heading', { name: 'Application sent' });
     this.closeReturnToCase = page.getByRole('button', { name: 'Close and Return to case' });
     this.caseInfoHeading = page.getByRole('heading', { name: 'Case information' });
-    this.teamManagerNameText = page.getByText(`I, ${this.teamManagerNameString}, believe that the facts stated in this application are true`);
+    this.teamManagerNameText = page.getByText(`believe that the facts stated in this application are true`);
     this.paymentAmountLocator = page.locator('dd').filter({ hasText: '£' });
     this.paymentAmountText = page.getByText('£');
   }

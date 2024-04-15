@@ -77,11 +77,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
-
+ 
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
-  await startApplication.applicantDetails();
+  await startApplication.applicantDetails(); 
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
