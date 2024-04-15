@@ -47,8 +47,7 @@ export class Apihelp {
   async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
     //This can be moved to before test hook to as same document URL will be used for all test data
     //replace the documents placeholder with document url
-    const apiRequestUrl = new URL(await this.getServiceUrl() + '/test-document').href;
-    let docDetail = await this.apiRequest(apiRequestUrl, systemUpdateUser);
+    let docDetail = await this.apiRequest(new URL(await this.getServiceUrl() + '/test-document').href, systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
       TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url
