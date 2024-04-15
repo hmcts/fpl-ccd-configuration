@@ -1,15 +1,14 @@
 import { test} from '../fixtures/create-fixture';
-import {Apihelp} from '../utils/api-helper';
-//import {urlConfig} from "../settings/urls";
-import caseData from '../caseData/mandatorySubmissionFields.json';
-import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json';
-import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json';
+import { Apihelp } from '../utils/api-helper';
+import * as caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import * as caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json' assert { type: 'json' };
+import * as caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json' assert { type: 'json' };
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 
 
 test.describe('send and reply message',()=>{
-  let apiDataSetup = new Apihelp();
+  const apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber : string;
   let casename : string;

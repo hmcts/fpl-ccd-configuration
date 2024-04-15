@@ -1,12 +1,12 @@
 import { test } from '../fixtures/create-fixture';
 import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json';
+import { caseData } from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json';
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 
 test.describe('Upload additional applications', () => {
-  let apiDataSetup = new Apihelp();
+  const apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let casename: string;

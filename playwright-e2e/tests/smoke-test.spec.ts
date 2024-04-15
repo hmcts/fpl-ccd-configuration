@@ -1,5 +1,4 @@
 import { test, expect } from "../fixtures/fixtures";
-import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -18,11 +17,9 @@ test("Smoke Test @smoke-test @accessibility", async ({
   childDetails,
   welshLangRequirements,
   internationalElement,
-page,
   makeAxeBuilder
 },testInfo) => {
 
-  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(

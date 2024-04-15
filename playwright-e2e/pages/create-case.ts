@@ -8,7 +8,7 @@ export class CreateCase {
   readonly createCaseLink: Locator;
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
-  generatedCaseName: any;
+  generatedCaseName: String;
 
   public constructor(page: Page) {
     this.page = page;
@@ -40,7 +40,7 @@ export class CreateCase {
   }
 
    caseName()  {
-    let formattedDate = CreateCaseName.getFormattedDate();
+    const formattedDate = CreateCaseName.getFormattedDate();
     this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 

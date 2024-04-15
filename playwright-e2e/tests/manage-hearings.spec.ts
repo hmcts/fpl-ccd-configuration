@@ -1,8 +1,8 @@
 import { test } from  '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
-import caseData from '../caseData/caseWithHearingDetails.json';
-import vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json';
-import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json';
+import * as caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
+import * as vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json' assert { type: 'json' };
+import * as preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json' assert { type: 'json' };
 import {
   CTSCUser,
   newSwanseaLocalAuthorityUserOne,
@@ -12,7 +12,7 @@ import {expect} from "@playwright/test";
 import {testConfig} from "../settings/test-config";
 
 test.describe('manage hearings', () => {
-  let apiDataSetup = new Apihelp();
+  const  apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber : string;
   let caseName : string;

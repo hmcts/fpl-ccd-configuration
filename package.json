@@ -1,7 +1,7 @@
 {
   "name": "fpl-ccd-configuration",
   "version": "1.0.0",
-  "type": "module",
+  
   "description": "FPL CCD e2e tests",
   "engines": {
     "node": ">=18.0.0"
