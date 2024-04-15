@@ -5,7 +5,6 @@ import {urlConfig} from '../settings/urls';
 import axios from 'axios';
 import * as qs from 'qs';
 import * as lodash from 'lodash'
-import * as path from 'path';
 
 export class Apihelp {
 
@@ -31,7 +30,9 @@ export class Apihelp {
   async createCase(caseName = 'e2e UI Test', user: { email: string, password: string }) {
 
     let res: object;
-    const url = path.join(await this.getServiceUrl(), 'case/create');
+    const caseCreate = '/case/create';
+    const serviceUrl = await this.getServiceUrl();
+    const url = new URL(`${serviceUrl}${caseCreate}`).href;
     const data = {
       caseName: caseName,
     };
@@ -47,8 +48,12 @@ export class Apihelp {
 
   async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
     //This can be moved to before test hook to as same document URL will be used for all test data
-    //replace the documents placeholder with docuemnt url
-    let docDetail = await this.apiRequest(path.join(await this.getServiceUrl(), 'test-document'), systemUpdateUser);
+    //replace the documents placeholder with document url
+    const serviceUrl = await this.getServiceUrl();
+    const testDoc = '/test-document';
+    const apiRequestUrl = new URL(`${serviceUrl}${testDoc}`).href;
+    //const postUrl = urlConfig.serviceUrl + '/testing-support/test-document';
+    let docDetail = await this.apiRequest(apiRequestUrl, systemUpdateUser);
     let docParameter = {
       TEST_DOCUMENT_URL: docDetail.document_url,
       TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url
@@ -62,17 +67,24 @@ export class Apihelp {
     // @ts-ignore
     caseData.caseData.dateAndTimeSubmitted = dateTime.slice(0, -1);
     let data = lodash.template(JSON.stringify(caseData))(docParameter);
-    let postURL = path.join(await this.getServiceUrl(), 'case/populate', caseID);
+    let postUrlString = await this.getServiceUrl();
+    let populateCase = '/case/populate/';
+    let postURL = new URL(`${postUrlString}${populateCase}${caseID}`);
+    //postURL.pathname = 'case/populate/' + `${caseID}`;
     try {
-      let res = await this.apiRequest(postURL, systemUpdateUser, 'post', data);
+      let res = await this.apiRequest(postURL.href, systemUpdateUser, 'post', data);
     } catch (error) {
       console.log(error);
     }
   }
 
   async getServiceUrl()  {
-      return path.join(urlConfig.serviceUrl, 'testing-support');
+     //const testingSupport = '/testing-support';
+     const url1 = new URL(`${urlConfig.serviceUrl}` );
+     url1.pathname = 'testing-support';
+     return url1.href;
   }
+
 
 
   async apiRequest(postURL: string, authUser: any, method: string = 'get', data: any = {}) {
