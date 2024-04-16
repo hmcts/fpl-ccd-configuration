@@ -13,14 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -60,19 +57,17 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+    private void run2284(CaseDetails caseDetails) {
+        caseDetails.getData().putAll(
+            migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails), "5ZZ1FJX"));
+
+        // Remove the user roles
         String idsToRemove = featureToggleService.getUserIdsToRemoveRolesFrom();
         if (!idsToRemove.isBlank()) {
             Arrays.stream(idsToRemove.split(";")).forEach(id -> {
                 caseAccessService.revokeCaseRoleFromUser(
-                    callbackRequest.getCaseDetails().getId(), id, CaseRole.SOLICITORA);
+                    caseDetails.getId(), id, CaseRole.SOLICITORA);
             });
         }
-    }
-
-    private void run2284(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(
-            migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails), "5ZZ1FJX"));
     }
 }

@@ -7,17 +7,20 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
-import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,25 +37,36 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     private static final String INVALID_MIGRATION_ID = "invalid id";
 
     @MockBean
-    private JudicialUsersConfiguration judicialUsersConfiguration;
-
-    @MockBean
-    private LegalAdviserUsersConfiguration legalAdviserUsersConfiguration;
-
-    @MockBean
     private CaseAccessService caseAccessService;
 
     @MockBean
     private FeatureToggleService featureToggleService;
 
+    @MockBean
+    private OrganisationService organisationService;
+
     @Nested
-    class ApplicantRoleRemoval {
+    class Dfpl2284 {
+
+        final CaseData caseData = CaseData.builder()
+            .id(1L)
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole("[SOLICITORA]")
+                .build())
+            .build();
+
+        @BeforeEach
+        void beforeEach() {
+            when(organisationService.findOrganisation(any())).thenReturn(Optional.of(Organisation.builder()
+                    .name("Test organisation")
+                    .organisationIdentifier("TEST")
+                .build()));
+        }
 
         @Test
         void shouldPerformRoleMigrationWhenToggleHasOneUser() {
             when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("abc-def");
-            CaseData caseData = CaseData.builder().id(1L).build();
-            postSubmittedEvent(asCaseDetails(caseData));
+            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
 
             verify(caseAccessService).revokeCaseRoleFromUser(1L,"abc-def", CaseRole.SOLICITORA);
             verifyNoMoreInteractions(caseAccessService);
@@ -61,8 +75,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldPerformRoleMigrationWhenToggleHasMultipleUsers() {
             when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("123;456;789");
-            CaseData caseData = CaseData.builder().id(1L).build();
-            postSubmittedEvent(asCaseDetails(caseData));
+            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
 
             verify(caseAccessService).revokeCaseRoleFromUser(1L,"123", CaseRole.SOLICITORA);
             verify(caseAccessService).revokeCaseRoleFromUser(1L,"456", CaseRole.SOLICITORA);
@@ -73,8 +86,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotPerformRoleMigrationWhenToggledOff() {
             when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("");
-            CaseData caseData = CaseData.builder().id(1L).build();
-            postSubmittedEvent(asCaseDetails(caseData));
+            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
 
             verifyNoInteractions(caseAccessService);
         }
