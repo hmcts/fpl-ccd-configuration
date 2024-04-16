@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
@@ -410,8 +409,8 @@ public class ManageHearingsController extends CallbackController {
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
-                hearingsService.vacateHearing(caseData, vacatedHearingId);
-                data.remove(SELECTED_HEARING_ID);
+                Element<HearingBooking> cancelledHearing =  hearingsService.vacateHearing(caseData, vacatedHearingId);
+                data.put(SELECTED_HEARING_ID, cancelledHearing.getId());
             }
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             final UUID cancelledHearingId = hearingsService.getSelectedHearingId(caseData);
@@ -469,19 +468,13 @@ public class ManageHearingsController extends CallbackController {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
                 });
-        } else {
-            CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-            Optional<HearingBooking> vacatedHearingOptional = caseData.getCancelledHearingDetails().stream()
-                .filter(hearingElement -> ElementUtils.findElement(hearingElement.getId(),
-                    caseDataBefore.getCancelledHearingDetails()).isPresent())
-                .map(Element::getValue)
-                .findFirst();
-            if (vacatedHearingOptional.isPresent()) {
-                HearingBooking vacatedHearing = vacatedHearingOptional.get();
-                if (!isEmpty(vacatedHearing.getCancellationReason())) {
-                    publishEvent(new SendNoticeOfHearingVacated(caseData, vacatedHearing));
-                }
-            }
+
+            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getCancelledHearingDetails())
+                .ifPresent(cancelledHearing -> {
+                    if (!isEmpty(cancelledHearing.getCancellationReason())) {
+                        publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing));
+                    }
+                });
         }
     }
 

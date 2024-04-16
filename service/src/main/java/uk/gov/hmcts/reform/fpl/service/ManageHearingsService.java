@@ -10,7 +10,14 @@ import uk.gov.hmcts.reform.fpl.enums.HearingHousekeepReason;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.ManageHearingHousekeepEventData;
+import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -196,11 +203,11 @@ public class ManageHearingsService {
         cancelHearing(caseData, hearingToBeAdjourned, hearingStatus);
     }
 
-    public void vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
+    public Element<HearingBooking> vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
         final HearingReListOption reListOption = caseData.getHearingReListOption();
         final HearingStatus hearingStatus = RE_LIST_LATER == reListOption ? VACATED_TO_BE_RE_LISTED : VACATED;
 
-        cancelHearing(caseData, hearingToBeVacated, hearingStatus);
+        return cancelHearing(caseData, hearingToBeVacated, hearingStatus);
     }
 
     public UUID reListHearing(CaseData caseData, UUID cancelledHearingId, HearingBooking newHearing) {

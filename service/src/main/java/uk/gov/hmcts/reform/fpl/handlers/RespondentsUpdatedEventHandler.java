@@ -92,5 +92,4 @@ public class RespondentsUpdatedEventHandler {
                 recipient.getSolicitor().getEmail(), notifyData, caseData.getId());
         });
     }
-
 }
