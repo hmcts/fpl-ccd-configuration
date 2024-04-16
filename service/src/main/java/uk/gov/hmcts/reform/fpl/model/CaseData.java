@@ -968,6 +968,10 @@ public class CaseData extends CaseDataParent {
     private final String hearingAttendanceDetails;
     private final String preHearingAttendanceDetails;
 
+    @Builder.Default
+    @JsonUnwrapped
+    private final ManageHearingHousekeepEventData manageHearingHousekeepEventData = ManageHearingHousekeepEventData.builder().build();
+
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)
     private final LocalDateTime hearingStartDate;

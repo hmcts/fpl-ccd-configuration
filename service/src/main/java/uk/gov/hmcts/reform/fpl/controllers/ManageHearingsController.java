@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.hearing.ManageHearingsOthersGenerator;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
@@ -467,6 +469,19 @@ public class ManageHearingsController extends CallbackController {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
                 });
+        } else {
+            CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+            Optional<HearingBooking> vacatedHearingOptional = caseData.getCancelledHearingDetails().stream()
+                .filter(hearingElement -> ElementUtils.findElement(hearingElement.getId(),
+                    caseDataBefore.getCancelledHearingDetails()).isPresent())
+                .map(Element::getValue)
+                .findFirst();
+            if (vacatedHearingOptional.isPresent()) {
+                HearingBooking vacatedHearing = vacatedHearingOptional.get();
+                if (!isEmpty(vacatedHearing.getCancellationReason())) {
+                    publishEvent(new SendNoticeOfHearingVacated(caseData, vacatedHearing));
+                }
+            }
         }
     }
 
