@@ -66,7 +66,7 @@ export class Apihelp {
         'password': user.password,
         'role': role
     });
-    let postURL : string = `${urlConfig.serviceUrl}testing-support/case/${caseID}/access`;
+    let postURL : string = `${urlConfig.serviceUrl}/testing-support/case/${caseID}/access`;
     try {
       let res = await this.apiRequest(postURL, systemUpdateUser, 'post', data);
     } catch (error) {
