@@ -12,14 +12,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   applicantDetails,
-  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
+  respondentDetails,
   welshLangRequirements,
-  c1WithSupplement,
   internationalElement,
-page,
+  c1WithSupplement,
+  page,
   makeAxeBuilder
 },testInfo) => {
 
@@ -32,10 +32,10 @@ page,
   );
   //sign in page
   await signInPage.isSignedIn();
-  
+
   // Add application details
   // Start new case, get case id and assert case id is created
-  createCase.caseName();
+  await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -104,14 +104,14 @@ page,
   await welshLangRequirements.welshLanguageSmokeTest();
   await startApplication.welshLanguageReqUpdated();
 
-    // C1 With Supplement
-    await startApplication.c1WithSupp();
-    await c1WithSupplement.c1WithSupplementSmokeTest();
-    await startApplication.c1WithSuppFinished();
-  
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
+
+  // C1 With Supplement
+  await startApplication.c1WithSupp();
+  await c1WithSupplement.c1WithSupplementSmokeTest();
+  await startApplication.c1WithSuppFinished();
 
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,

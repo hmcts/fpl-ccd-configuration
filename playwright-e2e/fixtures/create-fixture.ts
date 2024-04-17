@@ -48,8 +48,8 @@ type CreateFixtures = {
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
   welshLangRequirements: WelshLangRequirements;
-  c1WithSupplement: C1WithSupplement;
   internationalElement: InternationalElement;
+  c1WithSupplement: C1WithSupplement;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -140,11 +140,13 @@ export const test = base.extend<CreateFixtures>({
   welshLangRequirements: async ({ page }, use) => {
     await use(new WelshLangRequirements(page));
   },
-    c1WithSupplement: async ({ page }, use) => {
-        await use(new C1WithSupplement(page));
-    },
-  
+
+
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
+  },
+
+  c1WithSupplement: async ({ page }, use) => {
+     await use(new C1WithSupplement(page));
   },
 });
