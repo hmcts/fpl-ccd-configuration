@@ -6,8 +6,10 @@ import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 
@@ -15,9 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -75,8 +78,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
 
     @Test
     void shouldTriggerSendNoticeOfHearingVacatedEventWhenBeingRelisted() {
-        HearingBooking hearingRelisted =
-            testHearing(HEARING_START_DATE, "Hearing Venue", HearingStatus.VACATED_TO_BE_RE_LISTED);
+        HearingBooking hearingRelisted = testHearing(HEARING_START_DATE, "Hearing Venue");
 
         HearingBooking hearingVacated =
             testHearing(HEARING_START_DATE, "Hearing Venue", HearingStatus.VACATED_TO_BE_RE_LISTED).toBuilder()
@@ -103,7 +105,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
 
         postSubmittedEvent(caseDetails);
 
-        verify(eventPublisher, times(3)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
+        verify(eventPublisher, times(4)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
 
         SendNoticeOfHearingVacated actualSendNoticeOfHearingVacated = sendNoticeOfHearingVacatedCaptor.getValue();
         assertThat(actualSendNoticeOfHearingVacated.getVacatedHearing()).isEqualTo(hearingVacated);
@@ -136,7 +138,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
 
         verify(eventPublisher, times(2)).publishEvent(anyObjectCaptor.capture());
         assertThat(anyObjectCaptor.getAllValues().stream()
-            .map(eventPublished -> SendNoticeOfHearingVacated.class.equals(eventPublished.getClass()))
+            .map(eventPublished -> eventPublished instanceof SendNoticeOfHearingVacated)
             .toList()).containsOnly(false);
     }
 }
