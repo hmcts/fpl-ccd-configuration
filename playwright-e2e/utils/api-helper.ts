@@ -27,7 +27,7 @@ import lodash from 'lodash';
 
    export const createCase = async (caseName = 'e2e UI Test', user: { email: string, password: string }) => {
 
-        let res: object;
+        let res: any;
         const url = `${urlConfig.serviceUrl}/testing-support/case/create`;
         const data = {
             caseName: caseName,
@@ -38,7 +38,6 @@ import lodash from 'lodash';
             console.log(error);
         }
 
-        // @ts-ignore
         return res.id;
     }
 

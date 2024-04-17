@@ -10,7 +10,7 @@ export class WelshLangRequirements extends BasePage {
     readonly englishLangRadio: Locator;
     readonly needToBeTranslatedQuestion: Locator;
     readonly needToBeInWelshYesRadio: Locator;
-    
+
     constructor(page: Page) {
         super(page);
         this.welshLangHeading = page.getByRole('heading', { name: 'Welsh language requirements' });
@@ -30,7 +30,7 @@ export class WelshLangRequirements extends BasePage {
         await this.needToBeTranslatedQuestion.isVisible();
         await this.needToBeInWelshYesRadio.click();
         await this.clickContinue();
-        await this.checkYourAnswersHeader.isVisible;
+        await this.checkYourAnswersHeader.isVisible();
         await this.checkYourAnsAndSubmit();
     }
 }
