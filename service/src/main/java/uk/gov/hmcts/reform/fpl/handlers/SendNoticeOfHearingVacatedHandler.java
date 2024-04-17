@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -79,7 +80,8 @@ public class SendNoticeOfHearingVacatedHandler {
             final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
             notificationService.sendEmail(VACATE_HEARING, recipient, notifyData, caseData.getId());
         } else if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            cafcassNotificationService.sendEmail(caseData, VACATE_OF_HEARING, notifyData);
+            cafcassNotificationService.sendEmail(caseData, VACATE_OF_HEARING, new CafcassData() {
+            });
         }
     }
 }

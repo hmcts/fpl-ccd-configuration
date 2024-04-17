@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder(toBuilder = true)
-public class HearingVacatedTemplate extends BaseCaseNotifyData implements CafcassData {
+public class HearingVacatedTemplate extends BaseCaseNotifyData {
     private LocalDateTime hearingDate;
     private String hearingDateFormatted;
     private String hearingVenue;
