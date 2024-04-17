@@ -28,7 +28,6 @@ export class C1WithSupplement extends BasePage {
     }
     async c1WithSupplementSmokeTest() {
         await this.yesRadio.check();
-        await this.uploadApplicationTextbox.click();
         await this.uploadApplicationTextbox.setInputFiles(config.testTextFile);
         await this.page.waitForTimeout(6000);
         await this.onTheSameDay.check();
@@ -36,7 +35,6 @@ export class C1WithSupplement extends BasePage {
         await this.documentName.selectOption('2: C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD');
         await this.notes.click();
         await this.notes.fill('notes');
-        await this.uploadDocument.click();
         await this.uploadDocument.setInputFiles(config.testPdfFile);
         await this.ackRelatedToCase.check();
         await this.continueButton.click();
