@@ -73,9 +73,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/eslint-parser@npm:^7.17.0":
-  version: 7.22.15
-  resolution: "@babel/eslint-parser@npm:7.22.15"
+"@babel/eslint-parser@npm:^7.22.15":
+  version: 7.24.1
+  resolution: "@babel/eslint-parser@npm:7.24.1"
   dependencies:
     "@nicolo-ribaudo/eslint-scope-5-internals": 5.1.1-v1
     eslint-visitor-keys: ^2.1.0
@@ -83,7 +83,7 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.11.0
     eslint: ^7.5.0 || ^8.0.0
-  checksum: efdc749164a40de1b68e3ed395f441dfb7864c85d0a2ee3e4bc4f06dd0b7f675acb9be97cdc9025b88b3e80d38749a2b30e392ce7f6a79313c3aaf82ba8ccd68
+  checksum: 962ffa98629f76234d7fd75134848bea040137c8534c602c73ed9ad6bdd3be0d2e7eaebd2ad496e81ab87220176170fd805e6fdc98464af6907ac66e1da7fc9a
   languageName: node
   linkType: hard
 
@@ -3142,7 +3142,7 @@ __metadata:
   dependencies:
     "@axe-core/playwright": ^4.8.5
     "@babel/core": ^7.11.0
-    "@babel/eslint-parser": ^7.17.0
+    "@babel/eslint-parser": ^7.22.15
     "@eslint/js": ^9.0.0
     "@playwright/test": ^1.43.1
     "@types/lodash": ^4.14.202
