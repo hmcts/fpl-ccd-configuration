@@ -28,6 +28,7 @@ export class StartApplication {
   readonly welshLanguageReqFinished: Locator;
   readonly c1WithSupplement: Locator;
   readonly c1WithSupplementFinished: Locator;
+  readonly internationalElementsHeading: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -38,7 +39,7 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
-    this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator( 'xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img', );
+    this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
     this.allocationProposalFinished = page.locator('p:has(a[text="Allocation proposal"]) > img[title="Finished"]');
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
@@ -53,9 +54,11 @@ export class StartApplication {
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
-    this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
+    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]');
+    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.c1WithSupplement = page.getByRole('link', { name: 'C1 with supplement' });
     this.c1WithSupplementFinished = page.locator('p:has(a[text="C1 with supplement"]) > img[title="Finished"]');
+
   }
 
   async addApplicationDetails() {
@@ -98,7 +101,7 @@ export class StartApplication {
     await this.upLoadDocsInProgress.isVisible();
   }
 
-  async applicantDetails(){
+  async applicantDetails() {
     await this.applicantDetailsLink.isVisible();
     await this.applicantDetailsLink.click();
   }
@@ -112,7 +115,7 @@ export class StartApplication {
     await this.childDetailsLink.click();
   }
 
-  async childDetailsHasBeenUpdated(){
+  async childDetailsHasBeenUpdated() {
     await expect(this.childDetailsUpdated).toBeVisible();
   }
 
@@ -137,12 +140,15 @@ export class StartApplication {
   async welshLanguageReqUpdated() {
     await expect(this.welshLanguageReqFinished).toBeVisible;
   }
+  async c1WithSupp() {
+     await this.c1WithSupplement.click();
+  }
 
-    async c1WithSupp() {
-        await this.c1WithSupplement.click();
-    }
-
-    async c1WithSuppFinished() {
-        await expect(this.c1WithSupplementFinished).toBeVisible;
-    }
+  async c1WithSuppFinished() {
+     await expect(this.c1WithSupplementFinished).toBeVisible;
+  }
+  async internationalElementReqUpdated() {
+    await this.internationalElementsHeading.isVisible();
+    await this.internationalElementsHeading.click();
+  }
 }
