@@ -432,6 +432,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getHearingDetails()).isNull();
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
+        assertThat(updatedCaseData.getCancelledHearingId()).isEqualTo(expectedVacatedHearing.getId());
     }
 
 }

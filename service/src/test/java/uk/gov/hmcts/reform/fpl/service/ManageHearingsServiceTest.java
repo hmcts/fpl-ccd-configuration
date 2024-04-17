@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.HearingHousekeepReason;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.ManageHearingHousekeepEventData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -82,6 +84,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -1692,6 +1695,45 @@ class ManageHearingsServiceTest {
                     .build()));
         }
 
+        @Test
+        void shouldHousekeepHearing() {
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+
+            Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
+                hearingElement1.getValue().toBuilder()
+                    .status(VACATED)
+                    .housekeepReason(HearingHousekeepReason.DUPLICATE.getLabel())
+                    .vacatedDate(vacatedDate)
+                    .build());
+
+            final Element<HearingFurtherEvidenceBundle> vacatedHearingBundle = randomDocumentBundle(hearingElement1);
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .hearingReListOption(NONE)
+                .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
+                    .hearingHousekeepOptions(YES)
+                    .hearingHousekeepReason(HearingHousekeepReason.DUPLICATE)
+                    .build())
+                .vacatedHearingDate(vacatedDate)
+                .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
+                .build();
+
+            final String documentBundleName = vacatedHearingBundle.getValue().getHearingName();
+            final String updatedDocumentBundleName = String.format("%s - %s", documentBundleName, "vacated");
+
+            service.vacateHearing(caseData, hearingElement1.getId());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+            assertThat(vacatedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
+        }
+
         void shouldVacateHearing(HearingReListOption reListOption, HearingStatus expectedStatus) {
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
@@ -1716,6 +1758,8 @@ class ManageHearingsServiceTest {
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
                 .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
+                .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
+                    .hearingHousekeepOptions(NO).build())
                 .build();
 
             final String documentBundleName = vacatedHearingBundle.getValue().getHearingName();

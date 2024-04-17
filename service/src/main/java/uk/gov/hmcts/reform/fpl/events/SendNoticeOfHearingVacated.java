@@ -10,5 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 public class SendNoticeOfHearingVacated {
     private final CaseData caseData;
     private final HearingBooking vacatedHearing;
+    private final boolean isRelisted;
 
 }

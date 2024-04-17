@@ -964,6 +964,7 @@ public class CaseData extends CaseDataParent {
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
+    private final UUID cancelledHearingId;
     private final List<HearingAttendance> hearingAttendance;
     private final String hearingAttendanceDetails;
     private final String preHearingAttendanceDetails;

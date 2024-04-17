@@ -203,11 +203,11 @@ public class ManageHearingsService {
         cancelHearing(caseData, hearingToBeAdjourned, hearingStatus);
     }
 
-    public Element<HearingBooking> vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
+    public void vacateHearing(CaseData caseData, UUID hearingToBeVacated) {
         final HearingReListOption reListOption = caseData.getHearingReListOption();
         final HearingStatus hearingStatus = RE_LIST_LATER == reListOption ? VACATED_TO_BE_RE_LISTED : VACATED;
 
-        return cancelHearing(caseData, hearingToBeVacated, hearingStatus);
+        cancelHearing(caseData, hearingToBeVacated, hearingStatus);
     }
 
     public UUID reListHearing(CaseData caseData, UUID cancelledHearingId, HearingBooking newHearing) {

@@ -76,6 +76,7 @@ public class ManageHearingsController extends CallbackController {
 
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
+    private static final String CANCELLED_HEARING_ID = "cancelledHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
@@ -351,6 +352,8 @@ public class ManageHearingsController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap data = caseDetailsMap(caseDetails);
 
+        data.remove(CANCELLED_HEARING_ID);
+
         hearingsService.findAndSetPreviousVenueId(caseData);
 
         if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
@@ -409,9 +412,10 @@ public class ManageHearingsController extends CallbackController {
 
                 data.put(SELECTED_HEARING_ID, reListedHearingId);
             } else {
-                Element<HearingBooking> cancelledHearing =  hearingsService.vacateHearing(caseData, vacatedHearingId);
-                data.put(SELECTED_HEARING_ID, cancelledHearing.getId());
+                hearingsService.vacateHearing(caseData, vacatedHearingId);
+                data.remove(SELECTED_HEARING_ID);
             }
+            data.put(CANCELLED_HEARING_ID, vacatedHearingId);
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             final UUID cancelledHearingId = hearingsService.getSelectedHearingId(caseData);
 
@@ -460,19 +464,22 @@ public class ManageHearingsController extends CallbackController {
             Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
                 getCaseDataBefore(callbackRequest).getAllNonCancelledHearings());
 
-            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
-                .ifPresent(hearingBooking -> {
-                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
+            Optional<HearingBooking> hearingBookings =
+                hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails());
 
-                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
-                    }
-                });
+            hearingBookings.ifPresent(hearingBooking -> {
+                publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
 
-            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getCancelledHearingDetails())
+                if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
+                    publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
+                }
+            });
+
+            hearingsService.findHearingBooking(caseData.getCancelledHearingId(), caseData.getCancelledHearingDetails())
                 .ifPresent(cancelledHearing -> {
                     if (!isEmpty(cancelledHearing.getCancellationReason())) {
-                        publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing));
+                        publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing,
+                            hearingBookings.isPresent()));
                     }
                 });
         }

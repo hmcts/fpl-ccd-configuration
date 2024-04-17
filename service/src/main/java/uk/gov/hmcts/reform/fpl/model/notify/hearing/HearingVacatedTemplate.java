@@ -18,4 +18,5 @@ public class HearingVacatedTemplate extends BaseCaseNotifyData implements Cafcas
     private String hearingTime;
     private String vacatedDate;
     private String vacatedReason;
+    private String relistAction;
 }

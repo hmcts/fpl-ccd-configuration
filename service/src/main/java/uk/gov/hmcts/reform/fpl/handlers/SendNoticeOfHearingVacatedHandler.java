@@ -48,7 +48,8 @@ public class SendNoticeOfHearingVacatedHandler {
         final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(VACATE_HEARING, recipients,
-            hearingVacatedEmailContentProvider.buildHearingVacatedNotification(caseData, event.getVacatedHearing()),
+            hearingVacatedEmailContentProvider.buildHearingVacatedNotification(caseData,
+                event.getVacatedHearing(), event.isRelisted()),
             caseData.getId());
     }
 
@@ -58,7 +59,7 @@ public class SendNoticeOfHearingVacatedHandler {
         final CaseData caseData = event.getCaseData();
 
         HearingVacatedTemplate notifyData = hearingVacatedEmailContentProvider
-            .buildHearingVacatedNotification(caseData, event.getVacatedHearing());
+            .buildHearingVacatedNotification(caseData, event.getVacatedHearing(), event.isRelisted());
 
         SERVING_PREFERENCES.forEach(servingPreference -> {
             representativeNotificationService.sendToRepresentativesExceptOthersByServedPreference(
@@ -73,7 +74,7 @@ public class SendNoticeOfHearingVacatedHandler {
         final CaseData caseData = event.getCaseData();
 
         HearingVacatedTemplate notifyData = hearingVacatedEmailContentProvider
-            .buildHearingVacatedNotification(caseData, event.getVacatedHearing());
+            .buildHearingVacatedNotification(caseData, event.getVacatedHearing(), event.isRelisted());
         if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
             final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
             notificationService.sendEmail(VACATE_HEARING, recipient, notifyData, caseData.getId());

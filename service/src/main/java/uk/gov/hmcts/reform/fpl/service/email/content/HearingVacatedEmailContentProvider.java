@@ -22,7 +22,8 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
     public HearingVacatedTemplate buildHearingVacatedNotification(CaseData caseData,
-                                                                  HearingBooking hearingBooking) {
+                                                                  HearingBooking hearingBooking,
+                                                                  boolean isRelisted) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
         return HearingVacatedTemplate.builder()
             .hearingDate(hearingBooking.getStartDate())
@@ -32,6 +33,7 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
             .vacatedReason(hearingBooking.getCancellationReason())
+            .relistAction(isRelisted ? "be relisted" : "not be relisted")
             .build();
     }
 }
