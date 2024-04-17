@@ -286,8 +286,8 @@ public enum CafcassRequestEmailContentProvider {
                 hearingVacatedTemplate.getHearingDateFormatted(), hearingVacatedTemplate.getHearingVenue(),
                 hearingVacatedTemplate.getHearingTime()),
             System.lineSeparator(),
-            "This hearing has been vacated on", hearingVacatedTemplate.getVacatedDate(), "for",
-            hearingVacatedTemplate.getVacatedReason());
+            "This hearing has been vacated on", hearingVacatedTemplate.getVacatedDate(), "due to",
+            hearingVacatedTemplate.getVacatedReason(), "and will", hearingVacatedTemplate.getRelistAction());
     }
 
     private static String getSubject() {

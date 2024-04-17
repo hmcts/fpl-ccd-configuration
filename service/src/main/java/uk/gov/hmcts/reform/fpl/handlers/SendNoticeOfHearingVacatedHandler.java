@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.VacateOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
@@ -80,8 +81,15 @@ public class SendNoticeOfHearingVacatedHandler {
             final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
             notificationService.sendEmail(VACATE_HEARING, recipient, notifyData, caseData.getId());
         } else if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            cafcassNotificationService.sendEmail(caseData, VACATE_OF_HEARING, new CafcassData() {
-            });
+            cafcassNotificationService.sendEmail(caseData, VACATE_OF_HEARING,
+                VacateOfHearingCafcassData.builder()
+                    .hearingDateFormatted(notifyData.getHearingDateFormatted())
+                    .hearingVenue(notifyData.getHearingVenue())
+                    .hearingTime(notifyData.getHearingTime())
+                    .vacatedDate(notifyData.getVacatedDate())
+                    .vacatedReason(notifyData.getVacatedReason())
+                    .relistAction(notifyData.getRelistAction())
+                    .build());
         }
     }
 }

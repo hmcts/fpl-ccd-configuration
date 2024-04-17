@@ -18,6 +18,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingVacatedEmailContentProvider extends AbstractEmailContentProvider {
+    public static final String RELIST_ACTION_RELISTED = "be relisted.";
+    public static final String RELIST_ACTION_NOT_RELISTED = "not be relisted.";
+
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
@@ -33,7 +36,7 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
             .vacatedReason(hearingBooking.getCancellationReason())
-            .relistAction(isRelisted ? "be relisted" : "not be relisted")
+            .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
             .build();
     }
 }
