@@ -45,20 +45,20 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], headless: false},
     },
 
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
-    //
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
-    // },
-    // {
-    //   name: "preview",
-    //   use: { ...devices["Desktop Chrome"] },
-    //   retries: 3,
-    // },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "preview",
+      use: { ...devices["Desktop Chrome"] },
+      retries: 3,
+    },
 
     /* Test against mobile viewports. */
     // {
