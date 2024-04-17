@@ -464,25 +464,23 @@ public class ManageHearingsController extends CallbackController {
             Optional<HearingBooking> oldHearing = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
                 getCaseDataBefore(callbackRequest).getAllNonCancelledHearings());
 
-            Optional<HearingBooking> hearingBookings =
-                hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails());
+            hearingsService.findHearingBooking(caseData.getSelectedHearingId(), caseData.getHearingDetails())
+                .ifPresent(hearingBooking -> {
+                    publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
 
-            hearingBookings.ifPresent(hearingBooking -> {
-                publishEvent(new NewHearingJudgeEvent(hearingBooking, caseData, oldHearing));
-
-                if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
-                    publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
-                }
-            });
-
-            hearingsService.findHearingBooking(caseData.getCancelledHearingId(), caseData.getCancelledHearingDetails())
-                .ifPresent(cancelledHearing -> {
-                    if (!isEmpty(cancelledHearing.getCancellationReason())) {
-                        publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing,
-                            hearingBookings.isPresent()));
+                    if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
+                        publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
                 });
         }
+
+        hearingsService.findHearingBooking(caseData.getCancelledHearingId(), caseData.getCancelledHearingDetails())
+            .ifPresent(cancelledHearing -> {
+                if (!isEmpty(cancelledHearing.getCancellationReason())) {
+                    publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing,
+                        isNotEmpty(caseData.getSelectedHearingId())));
+                }
+            });
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
