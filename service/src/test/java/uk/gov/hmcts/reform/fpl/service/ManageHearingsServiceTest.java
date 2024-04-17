@@ -80,7 +80,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
@@ -488,7 +488,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .typeReason("Reason")
             .venue("OTHER")
@@ -506,7 +506,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingTypeReason", "Reason"),
             Map.entry("hearingStartDate", startDate),
@@ -533,7 +533,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .venue("OTHER")
             .typeReason("Reason")
@@ -553,7 +553,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingStartDate", startDate),
             Map.entry("hearingEndDate", endDate),
@@ -581,7 +581,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .venue("OTHER")
             .typeReason("Reason")
@@ -602,7 +602,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingStartDate", startDate),
             Map.entry("hearingEndDate", endDate),
