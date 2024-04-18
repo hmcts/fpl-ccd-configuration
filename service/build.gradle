@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1138'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1173'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -287,11 +287,11 @@ def versions = [
   springfoxSwagger: '3.0.0',
   log4j           : '2.21.1',
   pdfbox          : '2.0.29',
-  mockito         : '3.7.7',
+  mockito         : '3.12.4',
   serenity        : '2.6.0',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
-  lombok          : '1.18.30',
+  lombok          : '1.18.32',
   pitest          : '1.15.0',
   gradlePitest    : '1.3.0',
   sonarPitest     : '0.5'
