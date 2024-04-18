@@ -35,8 +35,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.*;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
@@ -93,8 +92,9 @@ public class DraftOrdersUploadedEventHandler {
                 .map(HearingBooking::getStartDate)
                 .orElse(null);
 
-            Set<DocumentReference> documentReferences = getOrders(caseData).stream()
+            Set<DocumentReference> documentReferences = getHearingOrdersBundlesDrafts(caseData).stream()
                 .filter(hearingOrder -> hearingOrder.getDateSent().equals(LocalDate.now()))
+                .filter(hearingOrder -> !hearingOrder.equals(DRAFT_CMO))
                 .map(HearingOrder::getDocument)
                 .collect(toSet());
 
