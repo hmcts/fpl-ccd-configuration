@@ -123,7 +123,7 @@ class PaymentClientTest {
         when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
             new FeignException.UnprocessableEntity("",
                 Request.create(GET, "", Map.of(), new byte[]{}, UTF_8, null),
-                responseBodyContent.getBytes()));
+                responseBodyContent.getBytes(), Map.of()));
 
         assertThatThrownBy(() -> paymentClient.callPaymentsApi(paymentRequest))
             .isInstanceOf(PaymentsApiException.class)
