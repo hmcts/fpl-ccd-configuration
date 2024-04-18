@@ -285,7 +285,7 @@ def versions = [
   reformLogging   : '5.1.7',
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '3.0.0',
-  log4j           : '2.21.1',
+  log4j           : '2.23.1',
   pdfbox          : '2.0.29',
   mockito         : '3.12.4',
   serenity        : '2.6.0',
@@ -333,7 +333,7 @@ dependencies {
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.10'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.1'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
