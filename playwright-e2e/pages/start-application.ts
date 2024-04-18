@@ -3,11 +3,9 @@ import { type Page, type Locator, expect } from "@playwright/test";
 export class StartApplication {
   readonly page: Page;
   readonly addApplicationDetailsHeading: Locator;
-  readonly changeCaseNameLink: Locator;
   readonly ordersAndDirectionsSoughtLink: Locator;
   readonly factorsAffectingParentingLink: Locator;
   readonly hearingUrgencyLink: Locator;
-  readonly addGroundsForTheApplicationHeading: Locator;
   readonly groundsForTheApplicationLink: Locator;
   readonly riskAndHarmToChildrenLink: Locator;
   readonly hearingUrgencyHeader: Locator;
@@ -54,7 +52,7 @@ export class StartApplication {
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
-    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]');
+    this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.c1WithSupplement = page.getByRole('link', { name: 'C1 with supplement' });
     this.c1WithSupplementFinished = page.locator('p:has(a[text="C1 with supplement"]) > img[title="Finished"]');
