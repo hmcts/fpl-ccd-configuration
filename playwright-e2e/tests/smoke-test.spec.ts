@@ -17,7 +17,8 @@ test("Smoke Test @smoke-test @accessibility", async ({
   addApplicationDocuments,
   childDetails,
   welshLangRequirements,
-  page,
+  internationalElement,
+page,
   makeAxeBuilder
 },testInfo) => {
 
@@ -28,8 +29,9 @@ test("Smoke Test @smoke-test @accessibility", async ({
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
   );
+  //sign in page
   await signInPage.isSignedIn();
-
+  
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -101,6 +103,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await welshLangRequirements.welshLanguageSmokeTest();
   await startApplication.welshLanguageReqUpdated();
 
+  // International element
+  await startApplication.internationalElementReqUpdated();
+  await internationalElement.internationalElementSmokeTest();
+
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
   // but supports additional test-specific configuration too
@@ -112,4 +118,5 @@ test("Smoke Test @smoke-test @accessibility", async ({
   });
 
 expect(accessibilityScanResults.violations).toEqual([]);
-});
+}
+);
