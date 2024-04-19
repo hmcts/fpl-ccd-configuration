@@ -5,7 +5,9 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.DraftOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -70,6 +72,16 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
             .value(DynamicListElement.EMPTY).build();
 
         assertThat(actualDynamicList).isEqualTo(expectedDynamicList);
+    }
+
+    @Test
+    void shouldClearDraftOrderUrgencyProperty() {
+        CaseData caseData = CaseData.builder()
+            .draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.YES)).build())
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+        assertThat(updatedCaseData.getDraftOrderUrgency()).isNull();
     }
 
 }
