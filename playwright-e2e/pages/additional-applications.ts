@@ -41,6 +41,7 @@ export class AdditionalApplications extends BasePage {
     await this.c2Order.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
     await this.clickContinue();
   }
 
@@ -49,6 +50,7 @@ export class AdditionalApplications extends BasePage {
     await this.otherSpecificOrder.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
     await this.clickContinue();
   }
 
