@@ -18,6 +18,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   childDetails,
   welshLangRequirements,
   internationalElement,
+  courtServicesNeeded,
 page,
   makeAxeBuilder
 },testInfo) => {
@@ -106,6 +107,10 @@ page,
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
+
+  // Court Services Needed
+  await startApplication.courtServicesNeededReqUpdated();
+  await courtServicesNeeded.CourtServicesSmoketest();
 
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
