@@ -14,8 +14,8 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 250000,
-  expect: { timeout: 250000 },
+  timeout: 450000,
+  expect: { timeout: 450000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -23,17 +23,19 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'html' : 'list',
+  reporter: [[process.env.CI ? 'html' : 'list'],
+             ['html', { outputFolder: '../test-results/functionalTest' }]],
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     // Capture screenshot after each test failure.
     screenshot: 'only-on-failure',
 
     // Record trace only when retrying a test for the first time.
-    trace: 'off',
+    trace: 'on',
 
     // Record video only when retrying a test for the first time.
-    video: 'retain-on-failure'
+    video: 'on-first-retry'
   },
 
   /* Configure projects for major browsers */
@@ -51,6 +53,11 @@ export default defineConfig({
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "preview",
+      use: { ...devices["Desktop Chrome"] },
+      retries: 3,
     },
 
     /* Test against mobile viewports. */

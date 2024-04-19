@@ -1,7 +1,8 @@
-import { test } from "../fixtures/create-fixture";
+import { test, expect } from "../fixtures/fixtures";
+import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test", async ({
+test("Smoke Test @smoke-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -10,16 +11,27 @@ test("Smoke Test @smoke-test", async ({
   groundsForTheApplication,
   riskAndHarmToChildren,
   factorsAffectingParenting,
+  applicantDetails,
+  respondentDetails,
   allocationProposal,
-}) => {
+  addApplicationDocuments,
+  childDetails,
+  welshLangRequirements,
+  internationalElement,
+page,
+  makeAxeBuilder
+},testInfo) => {
+
+  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
   );
+  //sign in page
   await signInPage.isSignedIn();
-
+  
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -55,11 +67,56 @@ test("Smoke Test @smoke-test", async ({
   await startApplication.riskAndHarmToChildren();
   await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
 
-  // 9. Factors affecting parenting
+  // Factors affecting parenting
   await factorsAffectingParenting.addFactorsAffectingParenting();
   await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // Add application documents
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
+
+  // Applicant Details
+  await startApplication.applicantDetails();
+  await applicantDetails.applicantDetailsNeeded();
+  await startApplication.applicantDetails();
+  await applicantDetails.colleagueDetailsNeeded();
+  await startApplication.applicantDetailsHasBeenUpdated();
+
+  // Child details
+  await startApplication.childDetails();
+  await childDetails.childDetailsNeeded();
+  await startApplication.childDetailsHasBeenUpdated();
+  
+  // Add respondents' details
+  await startApplication.respondentDetails();
+  await respondentDetails.respondentDetailsNeeded();
+
   // Allocation Proposal
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
-});
+
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
+
+  // International element
+  await startApplication.internationalElementReqUpdated();
+  await internationalElement.internationalElementSmokeTest();
+
+  const accessibilityScanResults = await makeAxeBuilder()
+  // Automatically uses the shared AxeBuilder configuration,
+  // but supports additional test-specific configuration too
+  .analyze();
+
+  await testInfo.attach('accessibility-scan-results', {
+    body: JSON.stringify(accessibilityScanResults, null, 2),
+    contentType: 'application/json'
+  });
+
+expect(accessibilityScanResults.violations).toEqual([]);
+}
+);

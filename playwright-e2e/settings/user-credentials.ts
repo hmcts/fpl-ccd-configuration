@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 const e2ePw = process.env.E2E_TEST_PASSWORD || '';
@@ -18,6 +18,10 @@ export const systemUpdateUser = {
 };
 export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
+  password: defaultPwd,
+};
+export const CTSCTeamLeadUser = {
+  email: process.env.CTSC_TL_USERNAME || 'fpl-ctsc-team-leader@justice.gov.uk',
   password: defaultPwd,
 };
 export const judgeUser = {

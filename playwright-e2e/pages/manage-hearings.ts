@@ -4,7 +4,6 @@ import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
 export class ManageHearings extends HearingDetailsMixin(BasePage)
 {
-  readonly hearingTypesLabelLocator: Locator;
   readonly hearingDetails: Locator;
   readonly hearingDay: Locator;
   readonly hearingMonth: Locator;
@@ -21,7 +20,6 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     this.hearingYear = this.page.getByRole('textbox', { name: 'Year' });
     this.hearingLengthInHours = this.page.getByLabel('Hearing length, in hours');
     this.hearingLengthInMinutes = this.page.getByLabel('Hearing length, in minutes');
-    this.hearingTypesLabelLocator = this.page.locator('#hearingType .multiple-choice > label');
     this.inpPersonCheckbox = this.page.getByText('In person');
   }
 
@@ -85,9 +83,9 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.checkYourAnsAndSubmit();
   }
 
-  async editFutureHearingOnCase(updatedHearingJudge?: string) {
+  async editFutureHearingOnCase(hearingToEdit: string, updatedHearingJudge?: string) {
     await this.page.getByLabel('Edit a future hearing').check();
-    await this.page.locator('#futureHearingDateList').selectOption('Test type details hearing, 1 January 2050');
+    await this.page.locator('#futureHearingDateList').selectOption(hearingToEdit);
     await this.clickContinue();
     await this.page.getByLabel('Further case management', { exact: true }).check();
     await this.verifyHearingTypesSelection();
@@ -121,18 +119,4 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
   };
-
-  async verifyHearingTypesSelection() {
-    const expectedHearingTypes = [
-      'Case management',
-      'Further case management',
-      'Issue resolution',
-      'Final',
-      'Interim care order',
-      'Accelerated discharge of care',
-      'Other'
-    ];
-    const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
-    expect(hearingTypes).toEqual(expectedHearingTypes);
-  }
 }

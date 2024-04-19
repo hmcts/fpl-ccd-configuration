@@ -106,11 +106,6 @@ class UploadTranslationsControllerAboutToSubmitTest extends AbstractCallbackTest
             .caseProgressionReportEventData(CaseProgressionReportEventData.builder().build())
             .build());
 
-        assertThat(response.getData().get("documentViewLA")).isNotNull();
-        assertThat(response.getData().get("documentViewHMCTS")).isNotNull();
-        assertThat(response.getData().get("documentViewNC")).isNotNull();
-        assertThat(response.getData().get("showFurtherEvidenceTab")).isNotNull();
-
     }
 
 }

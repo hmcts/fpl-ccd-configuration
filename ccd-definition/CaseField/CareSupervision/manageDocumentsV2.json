@@ -157,5 +157,15 @@
     "HintText": "Tell us why you are removing this document",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "placementNoticeResponses",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PlacementNoticeDocument",
+    "Label": "Notice of placement response",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
