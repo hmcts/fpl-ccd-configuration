@@ -331,7 +331,7 @@ dependencies {
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
 
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.3.0'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.10'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
