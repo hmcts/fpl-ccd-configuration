@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class UploadDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, DRAFT_ORDER_URGENCY);
+        caseDetails.getData().put(DRAFT_ORDER_URGENCY, null); // clear draftOrderUrgency and accept new value from UI
         return respond(caseDetails);
     }
 
