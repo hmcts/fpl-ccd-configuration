@@ -43,6 +43,12 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
         template.setNonUrgentHearing(timeFrame.isPresent() && !timeFrame.get().equals("Same day")
                                      ? YES.getValue() : NO.getValue()
         );
+
+        if (template.getUrgentHearing().equals(NO.getValue()) && template.getNonUrgentHearing().equals(NO.getValue())){
+            template.setTimeFrameValue("Other");
+            template.setNonUrgentHearing(YES.getValue());
+        }
+
         template.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setReference(String.valueOf(caseId));
         template.setCaseUrl(getCaseUrl(caseId));
