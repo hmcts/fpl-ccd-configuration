@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalAp
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, DRAFT_ORDER_URGENCY);
+        caseDetails.getData().put(DRAFT_ORDER_URGENCY, null); // clear draftOrderUrgency and accept new value from UI
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
