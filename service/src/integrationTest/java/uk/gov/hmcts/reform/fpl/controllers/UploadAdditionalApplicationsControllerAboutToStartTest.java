@@ -81,7 +81,7 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
-        assertThat(updatedCaseData.getDraftOrderUrgency().getUrgency()).isEmpty();
+        assertThat(updatedCaseData.getDraftOrderUrgency()).isNull();
     }
 
 }
