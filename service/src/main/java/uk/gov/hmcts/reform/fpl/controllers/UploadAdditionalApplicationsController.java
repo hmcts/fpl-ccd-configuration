@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.DraftOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -91,7 +92,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(DRAFT_ORDER_URGENCY, null); // clear draftOrderUrgency and accept new value from UI
+        caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of()).build());
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
