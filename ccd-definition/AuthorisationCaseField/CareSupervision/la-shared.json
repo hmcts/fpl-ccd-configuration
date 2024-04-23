@@ -2179,6 +2179,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[LASHARED]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]

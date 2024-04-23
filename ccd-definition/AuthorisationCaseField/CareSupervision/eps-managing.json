@@ -2118,6 +2118,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]

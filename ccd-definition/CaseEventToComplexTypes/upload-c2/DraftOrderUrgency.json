@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PBAPaymentComplexType",
+    "ID": "DraftOrderUrgency",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "draftOrderUrgency",
     "DisplayContext": "OPTIONAL",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PBAPaymentComplexType",
+    "ID": "DraftOrderUrgency",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "draftOrderUrgency",
     "DisplayContext": "READONLY",

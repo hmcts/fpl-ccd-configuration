@@ -1119,6 +1119,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[BARRISTER]",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]
