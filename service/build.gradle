@@ -286,7 +286,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   springfoxSwagger: '3.0.0',
   log4j           : '2.23.1',
-  pdfbox          : '2.0.29',
+  pdfbox          : '2.0.31',
   mockito         : '3.12.4',
   serenity        : '2.6.0',
   pact_version    : '4.1.7',
