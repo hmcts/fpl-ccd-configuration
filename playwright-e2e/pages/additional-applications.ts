@@ -6,6 +6,7 @@ export class AdditionalApplications extends BasePage {
 
   readonly otherSpecificOrder: Locator;
   readonly c2Order: Locator;
+  readonly confidentialC2Order: Locator;
   readonly nonConfidentialC2Order: Locator;
   readonly applicant: Locator;
   readonly c1ApplicationType: Locator;
@@ -20,6 +21,7 @@ export class AdditionalApplications extends BasePage {
     super(page);
     this.otherSpecificOrder = page.getByText('Other specific order - including C1 and C100 orders, and supplements');
     this.c2Order = page.getByText('C2 - to add or remove someone on a case, or for a specific request to the judge');
+    this.confidentialC2Order = page.locator('[for="isC2Confidential_Yes"]');
     this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
@@ -42,6 +44,14 @@ export class AdditionalApplications extends BasePage {
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
     await this.nonConfidentialC2Order.click();
+    await this.clickContinue();
+  }
+
+  public async chooseConfidentialC2ApplicationType() {
+    await this.c2Order.click();
+    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.confidentialC2Order.click();
     await this.clickContinue();
   }
 
