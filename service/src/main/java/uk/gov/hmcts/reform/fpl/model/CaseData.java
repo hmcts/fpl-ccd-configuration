@@ -924,7 +924,6 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
-    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;

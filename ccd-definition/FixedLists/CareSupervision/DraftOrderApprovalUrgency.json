@@ -1,9 +1,0 @@
-[
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DraftOrderApprovalUrgency",
-    "ListElementCode": "YES",
-    "ListElement": "One or more orders to be approved is on this list and needs to be prioritised due to the urgent nature of it:",
-    "DisplayOrder": 1
-  }
-]
