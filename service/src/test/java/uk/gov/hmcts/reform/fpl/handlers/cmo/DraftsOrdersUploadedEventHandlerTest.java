@@ -134,6 +134,43 @@ class DraftsOrdersUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotNotifyCafcassWhenHearingOrdersBundlesDraftReviewIsUploaded() {
+        when(cafcassLookupConfiguration.getCafcassEngland(any()))
+            .thenReturn(
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
+            );
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO, C21);
+        final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21, C21);
+
+        Set<DocumentReference> documentReferences = unwrapElements(selectedHearingBundle.getOrders()).stream()
+            .map(HearingOrder::getOrder)
+            .collect(Collectors.toSet());
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDraftReview(wrapElements(bundle, selectedHearingBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+            .build();
+
+        underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
+
+        verify(cafcassNotificationService, never()).sendEmail(
+            same(caseData),
+            any(),
+            same(ORDER),
+            any()
+        );
+    }
+
+    @Test
     void shouldNotNotifyCafcassWhenHearingOrderIsNotCurrent() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
