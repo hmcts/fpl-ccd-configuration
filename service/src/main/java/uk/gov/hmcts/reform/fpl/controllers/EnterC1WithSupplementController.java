@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.Optional;
 
-@Api
 @RestController
 @RequestMapping("/callback/enter-c1-with-supplement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
