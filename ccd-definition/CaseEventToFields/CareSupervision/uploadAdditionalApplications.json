@@ -162,7 +162,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryPbaPayment",
-    "PageFieldDisplayOrder": 4,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": 5,
     "PageDisplayOrder": 5,
