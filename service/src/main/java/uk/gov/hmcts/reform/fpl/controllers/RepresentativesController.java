@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,6 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-representatives")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
