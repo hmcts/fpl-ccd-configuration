@@ -95,7 +95,6 @@ public class DraftOrdersUploadedEventHandler {
 
             Set<DocumentReference> documentReferences = getHearingOrdersBundlesDrafts(caseData).stream()
                 .filter(hearingOrder -> hearingOrder.getDateSent().equals(LocalDate.now()))
-                .filter(hearingOrder -> !hearingOrder.equals(DRAFT_CMO))
                 .map(HearingOrder::getDocument)
                 .collect(toSet());
 
