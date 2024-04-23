@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.11.0",
-    "@babel/eslint-parser": "^7.22.15",
     "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.43.1",
     "@types/node": "^20.10.7",
@@ -31,9 +30,9 @@
     "moment": "2.29.4",
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
+    "playwright-core": "^1.43.1",
     "qs": "^6.11.2",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.6.0",
     "webdriverio": "8.26.3"
   },
   "scripts": {
