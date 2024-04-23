@@ -28,6 +28,10 @@ export const judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
   password: defaultPwd,
 };
+export const judgeUserWithAdminRole = {
+    email: process.env.JUDGE_USER_WITH_ADMIN || 'judiciary@mailnesia.com',
+    password: defaultPwd,
+};
 export const judgeWalesUser = {
   email: 'judge-wales@ejudiciary.net',
   password: judgePwd,

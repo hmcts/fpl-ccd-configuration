@@ -22,7 +22,7 @@ import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { InternationalElement } from "../pages/international-element";
-import {AddAdminCaseFlag} from "../pages/add-admin-case-flag";
+import {AddAndRemoveAdminCaseFlag} from "../pages/add-and-remove-admin-case-flag";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -48,7 +48,7 @@ type CreateFixtures = {
   respondentDetails: RespondentDetails;
   welshLangRequirements: WelshLangRequirements;
   internationalElement: InternationalElement;
-  addAdminCaseFlag: AddAdminCaseFlag;
+  addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -145,6 +145,6 @@ export const test = base.extend<CreateFixtures>({
   },
 
     addAdminCaseFlag: async ({ page }, use) => {
-        await use(new AddAdminCaseFlag(page));
+        await use(new AddAndRemoveAdminCaseFlag(page));
     },
 });

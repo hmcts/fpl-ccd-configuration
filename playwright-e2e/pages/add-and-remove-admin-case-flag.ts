@@ -2,7 +2,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import { BasePage } from "./base-page";
 import config from "../settings/test-docs/config";
 
-export class AddAdminCaseFlag extends BasePage {
+export class AddAndRemoveAdminCaseFlag extends BasePage {
 
     readonly uploadAssessmentForm: Locator;
     readonly additionalNotes: Locator;
@@ -27,6 +27,18 @@ export class AddAdminCaseFlag extends BasePage {
         await this.continueButton.click();
         await this.saveAndContinue.click();
     }
+
+    async runAddCaseFlagTest() {
+        await this.gotoNextStep('Add case flag');
+        await this.addCaseFlag();
+        await this.tabNavigation('Summary');
+    }
+
+    async runRemoveCaseFlagTest() {
+        await this.removeCaseFlag();
+        await this.tabNavigation('Summary');
+    }
+
 
     public async removeCaseFlag() {
         await this.addOrRemoveFlag.click();
