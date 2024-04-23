@@ -1991,7 +1991,7 @@ class MigrateCaseServiceTest {
             List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
             assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
-            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
+            assertThat(updatedFields).doesNotContainKey("ordersToBeSent");
         }
 
         @Test
@@ -2357,7 +2357,7 @@ class MigrateCaseServiceTest {
 
             underTest.clearHearingOption(caseDetails);
 
-            assertThat(caseDetails.getData()).extracting("hearingOption").isNull();
+            assertThat(caseDetails.getData()).doesNotContainKey("hearingOption");
         }
 
         @Test
