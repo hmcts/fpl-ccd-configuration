@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -72,8 +70,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
-    private static final String DRAFT_ORDER_URGENCY = "draftOrderUrgency";
-    private static final String SKIP_DRAFT_ORDER_URGENCY_PAGE = "skipDraftOrderUrgencyPage";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -90,7 +86,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(DRAFT_ORDER_URGENCY, null); // clear draftOrderUrgency and accept new value from UI
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
@@ -118,7 +113,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         boolean skipPayment = false;
-        boolean skipDraftOrderUrgencyPage = true;
         if (!isNull(caseData.getTemporaryC2Document())) {
             C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
             temporaryC2Document.setType(caseData.getC2Type());
@@ -139,8 +133,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     temporaryC2Document);
             }
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
-            skipDraftOrderUrgencyPage = Optional.ofNullable(temporaryC2Document.getDraftOrdersBundle())
-                .orElse(List.of()).isEmpty();
         }
 
         if (!skipPayment) {
@@ -150,7 +142,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, YES.getValue());
         }
-        caseDetails.getData().put(SKIP_DRAFT_ORDER_URGENCY_PAGE, YesNo.from(skipDraftOrderUrgencyPage).getValue());
 
         return respond(caseDetails);
     }

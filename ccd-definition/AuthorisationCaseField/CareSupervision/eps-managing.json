@@ -527,13 +527,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "skipDraftOrderUrgencyPage",
-    "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
