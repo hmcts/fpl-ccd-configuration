@@ -566,6 +566,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "cmoUploadType=\"AGREED\" OR hearingOrderDraftKind CONTAINS \"C21\""
   }
 ]
