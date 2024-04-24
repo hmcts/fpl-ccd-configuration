@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.annotation.Resource;
-
 import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -34,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 public class CoreCaseDataService {
 
     public static final String UPDATE_CASE_EVENT = "internal-change-UPDATE_CASE";
+    private static final int RETRIES = 3;
 
     private final AuthTokenGenerator authTokenGenerator;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -41,22 +40,17 @@ public class CoreCaseDataService {
     private final SystemUserService systemUserService;
     private final CCDConcurrencyHelper concurrencyHelper;
 
-    // Required so calls to the same class get proxied correctly and have the retry annotation applied
-    @Resource(name = "coreCaseDataService")
-    private CoreCaseDataService self;
-
     public CaseDetails performPostSubmitCallbackWithoutChange(Long caseId, String eventName) {
-        return self.performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
+        return performPostSubmitCallback(caseId, eventName, (caseDetails) -> Map.of(), true);
     }
 
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction) {
-        return self.performPostSubmitCallback(caseId, eventName, changeFunction, false);
+        return performPostSubmitCallback(caseId, eventName, changeFunction, false);
     }
 
-
-    @Retryable(recover = "recover", backoff = @Backoff(delay = 100))
+    @Retryable(recover = "Exception.class", maxAttempts = 3, backoff = @Backoff(delay = 100))
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction,
@@ -80,11 +74,8 @@ public class CoreCaseDataService {
         return caseDetails;
     }
 
-    @Recover
-    void recover(Exception e, Long caseId, String eventName,
-                 Function<CaseDetails, Map<String, Object>> changeFunction,
-                 boolean submitIfEmpty) {
-        log.error("All 3 retries failed to create event {} on ccd for case {}", eventName, caseId);
+    @Recover void recover(Exception e, String caseId) {
+        log.error("All 3 retries failed to create event on ccd for case {}", caseId);
     }
 
     /**

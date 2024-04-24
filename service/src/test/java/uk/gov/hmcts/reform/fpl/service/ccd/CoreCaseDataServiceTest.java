@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -76,8 +75,6 @@ class CoreCaseDataServiceTest {
             when(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(CASE_ID), eventId))
                 .thenReturn(buildStartEventResponse(eventId, eventToken));
-
-            ReflectionTestUtils.setField(service, "self", service);
         }
 
         @Test
