@@ -65,6 +65,8 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+        caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of())
+            .build());
         caseDetailsMap.remove("draftOrderNeedsReviewUploaded"); // cleanup transient field
 
         return respond(caseDetailsMap);
