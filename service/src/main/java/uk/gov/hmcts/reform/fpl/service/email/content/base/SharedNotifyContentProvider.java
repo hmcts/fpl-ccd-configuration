@@ -28,7 +28,7 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
     protected EmailNotificationHelper helper;
 
     protected <T extends SharedNotifyTemplate> T buildNotifyTemplate(T template, CaseData caseData) {
-        Long caseId = caseData.getId();
+        final Long caseId = caseData.getId();
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
             .map(Hearing::getTimeFrame)
