@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.ccd;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -43,6 +44,7 @@ public class CoreCaseDataService {
     private final CCDConcurrencyHelper concurrencyHelper;
 
     // Required so calls to the same class get proxied correctly and have the retry annotation applied
+    @Lazy
     @Resource(name = "coreCaseDataService")
     private CoreCaseDataService self;
 
