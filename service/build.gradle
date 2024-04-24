@@ -325,7 +325,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
@@ -364,7 +364,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.0'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
   testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.1'
 
@@ -376,7 +376,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.1'
 
