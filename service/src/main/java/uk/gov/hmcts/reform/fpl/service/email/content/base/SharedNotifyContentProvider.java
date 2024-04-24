@@ -45,10 +45,9 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
         );
 
         //When hearing is not filled in put make the subject line Application Received - hearing other
-        if (template.getUrgentHearing().equals(NO.getValue())
-            && template.getNonUrgentHearing().equals(NO.getValue())) {
-                template.setTimeFrameValue("Other");
-                template.setNonUrgentHearing(YES.getValue());
+        if (template.getUrgentHearing().equals(NO.getValue()) && template.getNonUrgentHearing().equals(NO.getValue())) {
+            template.setTimeFrameValue("Other");
+            template.setNonUrgentHearing(YES.getValue());
         }
 
         template.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
