@@ -50,7 +50,7 @@ public class CoreCaseDataService {
         return performPostSubmitCallback(caseId, eventName, changeFunction, false);
     }
 
-    @Retryable(recover = "Exception.class", maxAttempts = 5, backoff = @Backoff(delay = 200))
+    @Retryable(recover = "Exception.class", maxAttempts = 5, backoff = @Backoff(delay = 2000))
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction,
