@@ -807,9 +807,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         setSharedTemplateParameters(template);
 
         template.setTimeFramePresent(NO.getValue());
-        template.setTimeFrameValue("");
+        template.setTimeFrameValue("Other");
         template.setUrgentHearing(NO.getValue());
-        template.setNonUrgentHearing(NO.getValue());
+        template.setNonUrgentHearing(YES.getValue());
         template.setFirstRespondentName("");
 
         return template;
