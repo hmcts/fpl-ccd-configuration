@@ -65,6 +65,6 @@ test.describe('Approve Orders', () => {
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
-            await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
+            await expect(page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
 });
