@@ -36,13 +36,11 @@ let caseID: string
       caseName: caseName,
     };
     try {
-      caseID = await this.apiRequest(url, user, 'post', data).then((res)=>{ return res.id});
-        return caseID;
+      res = await this.apiRequest(url, user, 'post', data);
+        return res.id;
     } catch (error) {
       console.log(error);
     }
-
-
   }
 
   async updateCase(caseName = 'e2e Test', caseID: string, caseData: {} | undefined) {
