@@ -6,12 +6,12 @@ export class ApproveOrders extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.yesApproveOrder = page.getByText("Yes")
+        this.yesApproveOrder = page.getByRole('radio', { name: 'Yes' });
     }
 
     async navigateToPageViaNextStep() {
         await this.gotoNextStep('Approve orders');
-        await expect(this.page.getByText('Is this order ready to be sealed and issued? (Optional)')).toBeVisible();
+        await expect(this.page.getByRole('group', { name: 'Is this order ready to be sealed and issued' }).locator('span')).toBeVisible();
     }
 
     async approveOrders() {

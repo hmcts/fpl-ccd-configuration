@@ -28,15 +28,14 @@ test.describe('Approve Orders', () => {
             await approveOrders.approveOrders();
 
             await approveOrders.tabNavigation('Orders');
-
-            await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Confidential order uploaded by LA');
+            await expect(page.getByText('Confidential order uploaded by LA')).toBeVisible();
 
             // LA able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
-            await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Confidential order uploaded by LA');
+            await expect(page.getByText('Confidential order uploaded by LA')).toBeVisible();
         });
 
 
@@ -52,15 +51,14 @@ test.describe('Approve Orders', () => {
             await approveOrders.approveOrders();
 
             await approveOrders.tabNavigation('Orders');
-
-            await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Confidential order uploaded by CTSC');
+            await expect(page.getByText('Confidential order uploaded by CTSC')).toBeVisible();
 
             // CTSC able to view the approved order
             await approveOrders.clickSignOut();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
             await approveOrders.tabNavigation('Orders');
-            await expect(page.locator('#case-viewer-field-read--orderCollection')).toContainText('Confidential order uploaded by CTSC');
+            await expect(page.getByText('Confidential order uploaded by CTSC')).toBeVisible();
 
             // LA cannot view the approved order
             await approveOrders.clickSignOut();
