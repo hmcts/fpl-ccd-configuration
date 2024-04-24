@@ -102,7 +102,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line()
                 .callout("Will Smith " + FAMILY_MAN_CASE_NUMBER)
                 .line()
-                .h1("What we asked the local authority to change")
+                .h1("What we asked the applicant to change")
                 .line("Application incomplete")
                 .line()
                 .line("please fill section 1")
