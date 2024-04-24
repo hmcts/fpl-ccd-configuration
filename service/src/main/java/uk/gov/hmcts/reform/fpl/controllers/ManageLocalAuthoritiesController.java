@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER;
 import static uk.gov.hmcts.reform.fpl.enums.LocalAuthorityAction.TRANSFER_COURT;
 import static uk.gov.hmcts.reform.fpl.service.CourtLookUpService.RCJ_HIGH_COURT_CODE;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-local-authorities")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
