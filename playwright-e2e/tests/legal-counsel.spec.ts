@@ -1,8 +1,8 @@
-import { test} from '../fixtures/create-fixture';
-import {Apihelp} from '../utils/api-helper';
+import { test } from '../fixtures/create-fixture';
+import { Apihelp } from '../utils/api-helper';
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
 import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json';
-import { newSwanseaLocalAuthorityUserOne,CTSCUser,privateSolicitorOrgUser,FPLSolicitorOrgUser, CTSCTeamLeadUser} from '../settings/user-credentials';
+import { newSwanseaLocalAuthorityUserOne,CTSCUser,privateSolicitorOrgUser,FPLSolicitorOrgUser, CTSCTeamLeadUser } from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 test.describe('Respondent solicitor counsel ', () => {
     let apiDataSetup = new Apihelp();
