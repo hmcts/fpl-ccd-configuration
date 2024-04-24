@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.exceptions.RetryFailureException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
@@ -85,8 +84,7 @@ public class CoreCaseDataService {
     void recover(Exception e, Long caseId, String eventName,
                  Function<CaseDetails, Map<String, Object>> changeFunction,
                  boolean submitIfEmpty) {
-        throw new RetryFailureException(
-            String.format("All 3 retries failed to create event %s on ccd for case %d", eventName, caseId), e);
+        log.error("All 3 retries failed to create event {} on ccd for case {}", eventName, caseId);
     }
 
     /**
