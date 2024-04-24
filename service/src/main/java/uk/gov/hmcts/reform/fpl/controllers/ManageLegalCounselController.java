@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.legalcounsel.ManageLegalCounselService;
 
 import java.util.List;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-legal-counsel")
 @RequiredArgsConstructor
