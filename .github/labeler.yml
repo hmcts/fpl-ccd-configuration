@@ -11,4 +11,5 @@ workflow:
   - any: ['.github/**/*']
 
 enable_full_functional_tests:
-  - any: ['package.json', 'yarn.lock']
+  - package.json
+  - yarn.lock
