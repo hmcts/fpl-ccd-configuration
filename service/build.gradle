@@ -325,7 +325,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
@@ -376,7 +376,7 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
   testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.1'
 
