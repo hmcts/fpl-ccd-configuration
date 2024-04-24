@@ -19,7 +19,7 @@ import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
-import {LegalCounsel } from "../pages/legal-counsel";
+import { LegalCounsel } from "../pages/legal-counsel";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { InternationalElement } from "../pages/international-element";
