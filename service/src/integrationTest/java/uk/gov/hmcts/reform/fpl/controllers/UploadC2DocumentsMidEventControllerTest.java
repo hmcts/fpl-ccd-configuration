@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -64,7 +65,9 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
                 Map.of("document", Map.of()), "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
-        assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();
+        CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
+        assertThat(updatedCaseData).extracting("temporaryC2Document").extracting("document")
+            .isNull();
     }
 
     @Test

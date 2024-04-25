@@ -280,9 +280,13 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
                     .build())
                 .build();
 
-            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData),
+                "populate-data");
 
-            assertThat(response.getData().get("temporaryC2Document")).extracting("requestedHearingToAdjourn").isNull();
+            CaseData updatedCaseData = extractCaseData(CaseDetails.builder().data(response.getData()).build());
+
+            assertThat(updatedCaseData.getTemporaryC2Document()).extracting("requestedHearingToAdjourn")
+                .isNull();
             assertThat(response.getData().get("skipPaymentPage")).isEqualTo(NO.getValue());
         }
 
