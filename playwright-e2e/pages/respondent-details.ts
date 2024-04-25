@@ -46,8 +46,8 @@ export class RespondentDetails {
 
   async respondentDetailsNeeded() {
     await this.respondentDetailsHeading.isVisible;
-    await this.firstName.click()
-    await this.firstName.fill('John')
+    await this.firstName.click();
+    await this.firstName.fill('John');
     await this.lastName.click();
     await this.lastName.fill('Smith');
     await this.dobDay.click();

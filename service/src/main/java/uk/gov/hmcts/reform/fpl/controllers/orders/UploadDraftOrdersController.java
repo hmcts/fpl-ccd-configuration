@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
