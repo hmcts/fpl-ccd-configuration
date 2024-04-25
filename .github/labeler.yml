@@ -9,3 +9,7 @@ onboarding:
 
 workflow:
   - any: ['.github/**/*']
+
+enable_full_functional_tests:
+  - package.json
+  - yarn.lock
