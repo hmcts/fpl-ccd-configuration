@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.DraftOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -54,8 +53,7 @@ public class UploadDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of())
-            .build());
+        caseDetails.getData().remove(DRAFT_ORDER_URGENCY);
         log.info("ASHLEY-DEBUGGING (about-to-start) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
         return respond(caseDetails);
     }
@@ -90,6 +88,7 @@ public class UploadDraftOrdersController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
+        log.info("ASHLEY-DEBUGGING (about-to-submit1) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
         CaseData caseData = getCaseData(caseDetails);
 
         UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -123,7 +122,7 @@ public class UploadDraftOrdersController extends CallbackController {
             eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
-        log.info("ASHLEY-DEBUGGING (about-to-submit) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
+        log.info("ASHLEY-DEBUGGING (about-to-submit2) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
 
         return respond(caseDetails);
     }
