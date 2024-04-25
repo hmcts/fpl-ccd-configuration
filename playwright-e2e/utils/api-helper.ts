@@ -30,7 +30,7 @@ export class Apihelp {
   async createCase(caseName = 'e2e UI Test', user: { email: string, password: string }) {
 
     let res : any
-let caseID: string
+    let caseID: string
     const url = new URL(await this.getServiceUrl() + '/case/create').href;
     const data = {
       caseName: caseName,
@@ -76,7 +76,7 @@ let caseID: string
             TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url,
             LINKED_CASE_01: case1,
             LINKED_CASE_02: case2,
-            LINKED_CASE_03: case3,
+            LINKED_CASE_03: case3
 
         };
         const dateTime = new Date().toISOString();

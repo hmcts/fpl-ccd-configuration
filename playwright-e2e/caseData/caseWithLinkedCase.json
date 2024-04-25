@@ -105,7 +105,7 @@
         }
       },
       {
-        "id": "$LINKED_CASE_02",
+        "id": "${LINKED_CASE_02}",
         "value": {
           "CaseType": "CARE_SUPERVISION_EPO",
           "ReasonForLink": [
@@ -122,7 +122,7 @@
         }
       },
       {
-        "id": "$LINKED_CASE_03",
+        "id": "${LINKED_CASE_03}",
         "value": {
           "CaseType": "CARE_SUPERVISION_EPO",
           "ReasonForLink": [
@@ -302,6 +302,23 @@
             "c2AdditionalOrdersRequested": [
               "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
             ]
+          },
+          "caseManagementCategory": {
+            "list_items": [
+              {
+                "code": "FPL",
+                "label": "Family Public Law"
+              }
+            ],
+            "value": {
+              "code": "FPL",
+              "label": "Family Public Law"
+            }
+          },
+          "caseNameHmctsInternal": "e2e case",
+          "caseManagementLocation": {
+            "baseLocation": "234946",
+            "region": "7"
           },
           "uploadedDateTime": "25 March 2021, 3:16pm",
           "otherApplicationsBundle": {

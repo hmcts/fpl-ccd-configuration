@@ -22,7 +22,7 @@ import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { InternationalElement } from "../pages/international-element";
-import { CaseLink } from "../pages/link-cases"
+import { CaseLink } from "../pages/link-cases";
 
 type CreateFixtures = {
   signInPage: SignInPage;

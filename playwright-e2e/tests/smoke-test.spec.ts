@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test @accessibility", async ({
+test("Smoke Test @smoke-test  @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -31,7 +31,7 @@ page,
   );
   //sign in page
   await signInPage.isSignedIn();
-  
+
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -88,7 +88,7 @@ page,
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
-  
+
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
