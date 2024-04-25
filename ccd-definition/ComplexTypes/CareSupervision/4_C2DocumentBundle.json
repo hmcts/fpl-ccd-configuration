@@ -113,14 +113,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "draftOrderUrgency",
-    "ElementLabel": "Does this order need to be approved urgently?",
-    "FieldType": "DraftOrderUrgencyOption",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
