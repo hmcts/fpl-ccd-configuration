@@ -50,7 +50,7 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
             .build();
 
         CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
-        assertThat(responseData.getDraftOrderUrgency()).isNull();
+        assertThat(responseData.getDraftOrderUrgency().getUrgency()).isEmpty();
     }
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
