@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,14 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,8 +82,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
@@ -182,8 +176,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
@@ -215,8 +207,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         Set<String> keys = new HashSet<>(
             mapper.convertValue(caseData, new TypeReference<Map<String, Object>>() {
             }).keySet());
-        // document tab fields are populated in the about-to-submit callback
-        keys.addAll(List.of("documentViewLA", "documentViewHMCTS", "documentViewNC", "showFurtherEvidenceTab"));
 
         keys.removeAll(List.of(
             "showCMOsSentToJudge", "cmosSentToJudge", "cmoUploadType", "pastHearingsForCMO", "futureHearingsForCMO",
@@ -249,61 +239,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);
-    }
-
-    @Test
-    void shouldUpdateDocumentViews() {
-        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
-        List<Element<HearingBooking>> futureHearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2050, 3, 15, 10, 7));
-        List<Element<HearingBooking>> allHearings = Stream.of(hearings, futureHearings)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
-        List<Element<HearingOrder>> draftCMOs = List.of();
-        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
-
-        CaseData caseData = CaseData.builder()
-            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
-                .hearingOrderDraftKind(List.of(CMO))
-                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
-                .pastHearingsForCMO(dynamicList(hearings))
-                .futureHearingsForCMO(dynamicList(futureHearings))
-                .cmoJudgeInfo("DUMMY DATA")
-                .cmoHearingInfo("DUMMY DATA")
-                .showReplacementCMO(YesNo.NO)
-                .replacementCMO(DOCUMENT_REFERENCE)
-                .previousCMO(DOCUMENT_REFERENCE)
-                .cmoToSend(DOCUMENT_REFERENCE)
-                .showCMOsSentToJudge(YesNo.NO)
-                .cmosSentToJudge("DUMMY DATA")
-                .cmoUploadType(CMOType.DRAFT).build())
-            .hearingDetails(allHearings)
-            .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
-            .draftUploadedCMOs(draftCMOs)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
-
-        assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
-        assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
-        assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
-        assertThat(response.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
-    }
-
-    private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(
-        List<Element<HearingBooking>> hearings) {
-        List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(UUID.randomUUID(),
-            SupportingEvidenceBundle.builder()
-                .name("case summary")
-                .uploadedBy("Test LA")
-                .document(testDocumentReference())
-                .dateTimeUploaded(now())
-                .build()));
-
-        return List.of(element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-            .hearingName(hearings.get(0).getValue().toLabel())
-            .supportingEvidenceBundle(hearingDocsBundles)
-            .build())
-        );
     }
 
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,

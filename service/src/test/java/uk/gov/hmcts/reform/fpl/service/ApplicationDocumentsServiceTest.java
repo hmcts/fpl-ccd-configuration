@@ -13,11 +13,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -25,9 +28,11 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.BIRTH_CERTIFICATE;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.CARE_PLAN;
@@ -38,15 +43,17 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.THRESHOLD;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class,
     ApplicationDocumentsService.class,
-    FixedTimeConfiguration.class
+    ManageDocumentService.class,
+    FixedTimeConfiguration.class,
+    UserService.class
 })
 class ApplicationDocumentsServiceTest {
 
@@ -66,6 +73,12 @@ class ApplicationDocumentsServiceTest {
     @Autowired
     private ApplicationDocumentsService applicationDocumentsService;
 
+    @MockBean
+    private ManageDocumentService manageDocumentService;
+
+    @MockBean
+    private UserService userService;
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -75,23 +88,8 @@ class ApplicationDocumentsServiceTest {
     @BeforeEach
     void setup() {
         when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn(HMCTS_USER);
-    }
-
-    @Test
-    void shouldSetUploadedByAndDateTimeOnNewApplicationDocument() {
-        CaseData caseData = caseData();
-
-        List<Element<ApplicationDocument>> previousDocuments = emptyCaseData().getApplicationDocuments();
-        List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
-
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(documents, previousDocuments);
-        CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
-
-        ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
-        ApplicationDocument expectedDocument = buildExpectedDocument(caseData.getApplicationDocuments(), HMCTS_USER,
-            time.now());
-
-        assertThat(actualDocument).isEqualTo(expectedDocument);
+        when(userService.getCaseRoles(any())).thenReturn(Set.of());
+        when(manageDocumentService.getUploaderType(any())).thenReturn(HMCTS);
     }
 
     @Test
@@ -109,12 +107,13 @@ class ApplicationDocumentsServiceTest {
             previousDocumentId,
             updatedDocument));
 
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
-            previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(caseData(),
+            currentDocuments, previousDocuments);
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
         ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
-        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, HMCTS_USER, time.now());
+        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, HMCTS_USER, time.now(), HMCTS,
+            List.of());
 
         assertThat(actualDocument).isEqualTo(expectedDocument);
     }
@@ -130,10 +129,11 @@ class ApplicationDocumentsServiceTest {
             .documentType(DOCUMENT_TYPE)
             .documentName(DOCUMENT_NAME)
             .includedInSWET(INCLUDED_IN_SWET)
+            .uploaderCaseRoles(List.of())
             .build();
 
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(List.of(
-            buildApplicationDocumentElement(previousDocumentId,
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(caseData(),
+            List.of(buildApplicationDocumentElement(previousDocumentId,
                 pastDocument.toBuilder()
                     .document(buildDocumentReference(NEW_FILENAME))
                     .build())
@@ -148,6 +148,8 @@ class ApplicationDocumentsServiceTest {
                 .uploadedBy(HMCTS_USER)
                 .dateTimeUploaded(time.now())
                 .document(buildDocumentReference(NEW_FILENAME))
+                .uploaderType(HMCTS)
+                .uploaderCaseRoles(List.of())
                 .build()
             )
         ));
@@ -163,12 +165,13 @@ class ApplicationDocumentsServiceTest {
         List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
             document));
 
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
-            previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(caseData(),
+            currentDocuments, previousDocuments);
         CaseData actualCaseData = mapper.convertValue(map, CaseData.class);
 
         ApplicationDocument actualDocument = actualCaseData.getTemporaryApplicationDocuments().get(0).getValue();
-        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, LA_USER, PAST_DATE);
+        ApplicationDocument expectedDocument = buildExpectedDocument(currentDocuments, LA_USER, PAST_DATE, HMCTS,
+            List.of());
 
         assertThat(actualDocument).isEqualTo(expectedDocument);
     }
@@ -187,8 +190,8 @@ class ApplicationDocumentsServiceTest {
         List<Element<ApplicationDocument>> previousDocuments = List.of(buildApplicationDocumentElement(DOCUMENT_ID,
             firstDocument));
 
-        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(currentDocuments,
-            previousDocuments);
+        Map<String, Object> map = applicationDocumentsService.updateApplicationDocuments(caseData(),
+            currentDocuments, previousDocuments);
         CaseData caseData = mapper.convertValue(map, CaseData.class);
 
         assertThat(caseData.getTemporaryApplicationDocuments().get(0).getValue()).isEqualTo(firstDocument);
@@ -215,10 +218,14 @@ class ApplicationDocumentsServiceTest {
     }
 
     private ApplicationDocument buildExpectedDocument(List<Element<ApplicationDocument>> documents, String uploadedBy,
-                                                      LocalDateTime dateTimeUploaded) {
+                                                      LocalDateTime dateTimeUploaded,
+                                                      DocumentUploaderType uploaderType,
+                                                      List<CaseRole> uploaderCaseRoles) {
         ApplicationDocument expectedDocument = documents.get(0).getValue();
         expectedDocument.setUploadedBy(uploadedBy);
         expectedDocument.setDateTimeUploaded(dateTimeUploaded);
+        expectedDocument.setUploaderType(uploaderType);
+        expectedDocument.setUploaderCaseRoles(uploaderCaseRoles);
 
         return expectedDocument;
     }
@@ -252,13 +259,8 @@ class ApplicationDocumentsServiceTest {
                 .document(document1)
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(element(doc1Id, ad1)))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+            Map<String, Object> updatedFields = applicationDocumentsService
+                .synchroniseToNewFields(List.of(element(doc1Id, ad1)));
 
             assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type) + "LA").asList()
                 .isEmpty();
@@ -282,13 +284,8 @@ class ApplicationDocumentsServiceTest {
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(element(doc1Id, ad1)))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(
+                List.of(element(doc1Id, ad1)));
 
             assertThat(updatedFields).extracting(applicationDocumentTypeFieldNameMap.get(type)).asList()
                 .isEmpty();
@@ -370,17 +367,13 @@ class ApplicationDocumentsServiceTest {
                 .confidential(List.of("CONFIDENTIAL"))
                 .build();
 
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .applicationDocuments(List.of(
+            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(
+                List.of(
                     element(doc1Id, ad1), element(doc2Id, ad2), element(doc3Id, ad3), element(doc4Id, ad4),
                     element(doc5Id, ad5), element(doc6Id, ad6), element(doc7Id, ad7), element(doc8Id, ad8),
                     element(doc9Id, ad9), element(doc10Id, ad10), element(doc11Id, ad11)
-                ))
-                .build();
-
-            Map<String, Object> updatedFields = applicationDocumentsService.synchroniseToNewFields(caseData
-                .getApplicationDocuments());
+                )
+            );
 
             assertThat(updatedFields).extracting("thresholdListLA").asList().contains(
                 element(doc1Id, ManagedDocument.builder().document(document1).build()));

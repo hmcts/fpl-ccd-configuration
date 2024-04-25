@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -37,6 +39,8 @@ public class ApplicationDocumentsService {
 
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
+    private final ManageDocumentService manageDocumentService;
+    private final UserService userService;
 
     private Map<String, Object> synchroniseToNewFields(List<Element<ApplicationDocument>> applicationDocuments,
                                                        List<ApplicationDocumentType> applicationDocumentTypes,
@@ -47,6 +51,8 @@ public class ApplicationDocumentsService {
                 .filter(fed -> fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
+                    .uploaderCaseRoles(fed.getValue().getUploaderCaseRoles())
+                    .uploaderType(fed.getValue().getUploaderType())
                     .build()))
                 .collect(toList());
 
@@ -56,6 +62,8 @@ public class ApplicationDocumentsService {
                 .filter(fed -> !fed.getValue().isConfidentialDocument())
                 .map(fed -> element(fed.getId(), ManagedDocument.builder()
                     .document(fed.getValue().getDocument())
+                    .uploaderCaseRoles(fed.getValue().getUploaderCaseRoles())
+                    .uploaderType(fed.getValue().getUploaderType())
                     .build()))
                 .collect(toList());
 
@@ -76,15 +84,18 @@ public class ApplicationDocumentsService {
         return ret;
     }
 
-    public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
+    public Map<String, Object> updateApplicationDocuments(CaseData caseData,
+                                                          List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments) {
-        return updateApplicationDocuments(currentDocuments, previousDocuments, "temporaryApplicationDocuments");
+        return updateApplicationDocuments(caseData, currentDocuments, previousDocuments,
+            "temporaryApplicationDocuments");
     }
 
-    public Map<String, Object> updateApplicationDocuments(List<Element<ApplicationDocument>> currentDocuments,
+    private Map<String, Object> updateApplicationDocuments(CaseData caseData,
+                                                          List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments,
                                                           String populatedField) {
-        List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(
+        List<Element<ApplicationDocument>> updatedDocuments = setUpdatedByAndDateAndTimeOnDocuments(caseData,
             currentDocuments, previousDocuments);
 
         Map<String, Object> data = new HashMap<>();
@@ -95,12 +106,13 @@ public class ApplicationDocumentsService {
         return data;
     }
 
-    private List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(
+
+    private List<Element<ApplicationDocument>> setUpdatedByAndDateAndTimeOnDocuments(CaseData caseData,
         List<Element<ApplicationDocument>> currentDocuments,
         List<Element<ApplicationDocument>> previousDocuments) {
 
         if (isEmpty(previousDocuments) && !isEmpty(currentDocuments)) {
-            currentDocuments.forEach(this::setUpdatedByAndDateAndTimeOnDocumentToCurrent);
+            currentDocuments.forEach(d ->  setUpdatedByAndDateAndTimeOnDocumentToCurrent(caseData, d));
             return currentDocuments;
         }
 
@@ -112,35 +124,40 @@ public class ApplicationDocumentsService {
                 // in the old flow, we allowed other documents with just title and no file
                 if (documentBefore.map(doc -> doc.getValue().hasDocument()).orElse(false)) {
                     Element<ApplicationDocument> oldDocument = documentBefore.get();
-                    handleExistingDocuments(document, oldDocument);
+                    handleExistingDocuments(caseData, document, oldDocument);
 
                 } else {
                     // New document was added
-                    setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
+                    setUpdatedByAndDateAndTimeOnDocumentToCurrent(caseData, document);
                 }
                 return document;
             }).collect(Collectors.toList());
     }
 
-    private void handleExistingDocuments(Element<ApplicationDocument> document,
+    private void handleExistingDocuments(CaseData caseData,
+                                         Element<ApplicationDocument> document,
                                          Element<ApplicationDocument> documentBefore) {
         if (documentBefore.getId().equals(document.getId())) {
             if (documentBefore.getValue().getDocument().equals(document.getValue().getDocument())) {
                 // Document wasn't modified so persist old values
                 document.getValue().setDateTimeUploaded(documentBefore.getValue().getDateTimeUploaded());
                 document.getValue().setUploadedBy(documentBefore.getValue().getUploadedBy());
+                document.getValue().setUploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())));
+                document.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
             } else {
                 // Document was modified so update
-                setUpdatedByAndDateAndTimeOnDocumentToCurrent(document);
+                setUpdatedByAndDateAndTimeOnDocumentToCurrent(caseData, document);
             }
         }
     }
 
-    private void setUpdatedByAndDateAndTimeOnDocumentToCurrent(
+    private void setUpdatedByAndDateAndTimeOnDocumentToCurrent(CaseData caseData,
         Element<ApplicationDocument> document) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         document.getValue().setDateTimeUploaded(time.now());
         document.getValue().setUploadedBy(uploadedBy);
+        document.getValue().setUploaderCaseRoles(new ArrayList<>(userService.getCaseRoles(caseData.getId())));
+        document.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
     }
 }

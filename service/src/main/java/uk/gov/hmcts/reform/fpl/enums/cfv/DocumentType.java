@@ -28,12 +28,10 @@ import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotifi
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.DEFAULT_ORDER_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_CAFCASS_NOTIFICATION_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.NO_TRANSLATION_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.POSITION_STATEMENT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.SKELETON_ARGUMENT_NOTIFICATION_CONFIG;
-import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.THRESHOLD_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @AllArgsConstructor
@@ -78,7 +76,7 @@ public enum DocumentType {
     THRESHOLD("Threshold", standardResolver("thresholdList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        null, 40, THRESHOLD_NOTIFICATION_CONFIG),
+        null, 40, DEFAULT_NOTIFICATION_CONFIG),
     SKELETON_ARGUMENTS("Skeleton arguments", standardResolver("hearingDocuments.skeletonArgumentList"),
         false, false, false,
         (bundle) -> SkeletonArgument.builder()
@@ -96,11 +94,11 @@ public enum DocumentType {
     JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 70, DEFAULT_ORDER_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 70, DEFAULT_NOTIFICATION_CONFIG),
     TRANSCRIPTS("└─ Transcripts", standardResolver("transcriptList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_ORDERS, 80, DEFAULT_ORDER_NOTIFICATION_CONFIG),
+        AA_PARENT_ORDERS, 80, NO_TRANSLATION_NOTIFICATION_CONFIG),
     AA_PARENT_APPLICANTS_DOCUMENTS("Applicant's documents", null,
         false, false, false,
         null,
@@ -166,7 +164,7 @@ public enum DocumentType {
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 230, RESPONDENTS_WITNESS_STATEMENTS_NOTIFICATION_CONFIG),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 230, DEFAULT_NOTIFICATION_CONFIG),
     GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"),
         false, false, false,
         defaultWithDocumentBuilder(),
@@ -206,7 +204,7 @@ public enum DocumentType {
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
         false, false, false, 
         defaultWithDocumentBuilder(),
-        null, 330, DEFAULT_NOTIFICATION_CONFIG),
+        null, 330, NO_CAFCASS_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false,
         null,

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -65,6 +66,7 @@ public class EventsChecker {
     private AllocationProposalChecker allocationProposalChecker;
 
     @Autowired
+    @Lazy
     private CaseSubmissionChecker caseSubmissionChecker;
 
     @Autowired
@@ -120,14 +122,10 @@ public class EventsChecker {
         eventCheckers.put(LANGUAGE_REQUIREMENTS, languageRequirementsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
         eventCheckers.put(SELECT_COURT, courtChecker);
-    }
-
-    private void addCheckersBasedOnToggle() {
         eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
     }
 
     public List<String> validate(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.validate(caseData))
             .orElse(emptyList());
@@ -152,7 +150,6 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.isAvailable(caseData))
             .orElse(true);

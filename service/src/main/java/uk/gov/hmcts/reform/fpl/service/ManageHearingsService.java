@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
@@ -38,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -60,7 +60,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LIS
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -220,8 +219,6 @@ public class ManageHearingsService {
 
         Element<HearingBooking> reListedBooking = reList(caseData, newHearing);
 
-        reassignDocumentsBundle(caseData, cancelledHearing, reListedBooking);
-
         return reListedBooking.getId();
     }
 
@@ -291,7 +288,7 @@ public class ManageHearingsService {
             judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
         }
 
-        if (OTHER.equals(hearingBooking.getType())) {
+        if (Objects.nonNull(hearingBooking.getTypeDetails())) {
             caseFields.put(HEARING_TYPE_DETAILS, hearingBooking.getTypeDetails());
         }
 
@@ -567,10 +564,8 @@ public class ManageHearingsService {
                                         UUID hearingId,
                                         HearingBooking hearingToBeReListed,
                                         HearingStatus hearingStatus) {
-        Element<HearingBooking> cancelledBooking = cancelHearing(caseData, hearingId, hearingStatus);
+        cancelHearing(caseData, hearingId, hearingStatus);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
-
-        reassignDocumentsBundle(caseData, cancelledBooking, reListedBooking);
         return reListedBooking.getId();
     }
 
@@ -694,8 +689,6 @@ public class ManageHearingsService {
         caseData.addCancelledHearingBooking(cancelledHearing);
         caseData.removeHearingDetails(originalHearingBooking);
 
-        updateDocumentsBundleName(caseData, cancelledHearing);
-
         if (isNotEmpty(cancelledHearing.getValue().getCaseManagementOrderId())) {
             updateHearingOrderBundles(caseData, cancelledHearing);
             updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
@@ -715,12 +708,6 @@ public class ManageHearingsService {
         }
 
         return null;
-    }
-
-    private void updateDocumentsBundleName(CaseData caseData, Element<HearingBooking> hearing) {
-        findElement(hearing.getId(), caseData.getHearingFurtherEvidenceDocuments())
-            .map(Element::getValue)
-            .ifPresent(bundle -> bundle.setHearingName(hearing.getValue().toLabel()));
     }
 
     private void updateDraftUploadedCaseManagementOrders(CaseData caseData, Element<HearingBooking> hearing) {
@@ -756,21 +743,6 @@ public class ManageHearingsService {
                         }
                     }
                 ));
-    }
-
-    private void reassignDocumentsBundle(CaseData caseData,
-                                         Element<HearingBooking> sourceHearing,
-                                         Element<HearingBooking> targetHearing) {
-        findElement(sourceHearing.getId(), caseData.getHearingFurtherEvidenceDocuments()).ifPresent(
-            sourceHearingBundle -> {
-                Element<HearingFurtherEvidenceBundle> targetHearingBundle = element(targetHearing.getId(),
-                    sourceHearingBundle.getValue().toBuilder()
-                        .hearingName(targetHearing.getValue().toLabel())
-                        .build());
-
-                caseData.getHearingFurtherEvidenceDocuments().remove(sourceHearingBundle);
-                caseData.getHearingFurtherEvidenceDocuments().add(targetHearingBundle);
-            });
     }
 
     private String hearingLabels(List<Element<HearingBooking>> hearings) {

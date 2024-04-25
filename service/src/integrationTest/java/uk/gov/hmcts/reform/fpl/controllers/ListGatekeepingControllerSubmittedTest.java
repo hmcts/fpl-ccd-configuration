@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -76,7 +77,6 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -92,6 +92,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.GatekeepingOrderRoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.NOTICE_OF_HEARING;
@@ -100,6 +101,7 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.CO
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -180,6 +182,9 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> eventDataCaptor;
+
+    @Captor
+    private ArgumentCaptor<String> eventIdCaptor;
 
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
@@ -309,6 +314,11 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
             .id(CASE_ID)
             .familyManCaseNumber(FAMILY_MAN_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_3_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_3_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_3_INBOX)
+                .build()))
             .hearingDetails(List.of(existingHearing))
             .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
             .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
@@ -521,7 +531,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
     }
 
     @Test
-    void shouldTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
+    void shouldNotTriggerTemporaryHearingJudgeEventWhenCreatingANewHearingWithTemporaryJudgeAllocated()
         throws NotificationClientException {
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
@@ -556,12 +566,6 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(caseDetails);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
-            eq(JUDGE_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE));
-
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
@@ -569,6 +573,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
+        verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -610,18 +615,14 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         postSubmittedEvent(caseDetails);
 
-        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
-            eq(TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE),
-            eq(JUDGE_EMAIL),
-            anyMap(),
-            eq(NOTIFICATION_REFERENCE));
-
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
 
         // start don't finish
         verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
+
+        verifyNoInteractions(notificationClient);
         verifyNoMoreInteractions(concurrencyHelper);
     }
 
@@ -664,11 +665,13 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), eventIdCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
-        verify(concurrencyHelper).startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
+        assertThat(eventIdCaptor.getAllValues())
+            .containsExactlyInAnyOrder("internal-update-case-summary", "internal-change-add-gatekeeping");
         assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
             .containsExactly("internal-update-case-summary");
 
@@ -713,15 +716,15 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
 
         verifyNoInteractions(notificationClient);
 
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .startEvent(eq(CASE_ID), eq("internal-update-case-summary"));
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .startEvent(eq(CASE_ID), eventIdCaptor.capture());
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), eventDataCaptor.capture());
-        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
-            .startEvent(eq(CASE_ID), eq("internal-change-add-gatekeeping"));
 
         assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
             .containsExactly("internal-update-case-summary");
+        assertThat(eventIdCaptor.getAllValues())
+            .containsExactlyInAnyOrder("internal-update-case-summary", "internal-change-add-gatekeeping");
 
         verifyNoMoreInteractions(concurrencyHelper);
     }

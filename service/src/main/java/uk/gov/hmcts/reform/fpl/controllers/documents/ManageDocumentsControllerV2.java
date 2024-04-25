@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +27,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.REMOVE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentAction.UPLOAD_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ARCHIVED_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.event.ManageDocumentEventData.temporaryFields;
@@ -37,8 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-
-@Api
 @RestController
 @RequestMapping("/callback/manage-documentsv2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -56,7 +54,8 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         if (REMOVE_DOCUMENTS.equals(eventData.getManageDocumentAction())) {
             DocumentType documentTypeSelected = DocumentType.valueOf(eventData.getAvailableDocumentTypesForRemoval()
                 .getValue().getCode());
-            if (!List.of(POSITION_STATEMENTS_RESPONDENT, POSITION_STATEMENTS_CHILD).contains(documentTypeSelected)
+            if (!List.of(POSITION_STATEMENTS_RESPONDENT, POSITION_STATEMENTS_CHILD, ARCHIVED_DOCUMENTS)
+                .contains(documentTypeSelected)
                 && !documentTypeSelected.isUploadable()) {
                 return respond(caseDetails, List.of("You are trying to remove a document from a parent folder, "
                     + "you need to choose one of the available sub folders."));
@@ -152,8 +151,6 @@ public class ManageDocumentsControllerV2 extends CallbackController {
         }
         caseDetailsMap.putAll(updatedData);
         removeTemporaryFields(caseDetailsMap, temporaryFields());
-        removeTemporaryFields(caseDetailsMap, ManageDocumentsLAController.TEMPORARY_FIELDS);
-        removeTemporaryFields(caseDetailsMap, ManageDocumentsController.TEMPORARY_FIELDS);
 
         return respond(caseDetailsMap);
     }

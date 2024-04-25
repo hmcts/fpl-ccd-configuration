@@ -15,14 +15,5 @@
     "FieldTypeParameter": "CourtBundleV2Confidential",
     "ElementLabel": "Documents",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingCourtBundleConfidential",
-    "ListElementCode": "courtBundleNC",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "CourtBundleV2Confidential",
-    "ElementLabel": "Documents",
-    "SecurityClassification": "Public"
   }
 ]

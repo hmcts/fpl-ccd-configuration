@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/placement")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -171,9 +169,6 @@ public class PlacementController extends CallbackController {
                     if (isNotEmpty(sealedEventData.getPlacements())) {
                         updates.put("placements", sealedEventData.getPlacements());
                     }
-                    if (isNotEmpty(sealedEventData.getPlacement())) {
-                        updates.put(PLACEMENT, sealedEventData.getPlacement());
-                    }
                 }
                 return updates;
             });
@@ -193,7 +188,6 @@ public class PlacementController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
 
         caseDetails.getData().remove("placementIdToBeSealed");
-        caseDetails.getData().remove(PLACEMENT);
 
         return respond(caseDetails);
     }
