@@ -565,7 +565,7 @@
     "PageFieldDisplayOrder": 31,
     "PageColumnNumber": 1,
     "PageDisplayOrder": 6,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "cmoUploadType=\"AGREED\" OR hearingOrderDraftKind CONTAINS \"C21\""
   }
