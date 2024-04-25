@@ -56,7 +56,6 @@ public class UploadDraftOrdersController extends CallbackController {
 
         caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of())
             .build());
-        log.info("ASHLEY-DEBUGGING (about-to-start) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
         return respond(caseDetails);
     }
 
@@ -67,9 +66,9 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+        caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of())
+            .build());
         caseDetailsMap.remove("draftOrderNeedsReviewUploaded"); // cleanup transient field
-        log.info("ASHLEY-DEBUGGING (populate-initial-data/mid-event) ==>  "
-            + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
 
         return respond(caseDetailsMap);
     }
@@ -81,8 +80,6 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getDraftsInfo(caseData)));
-        log.info("ASHLEY-DEBUGGING (populate-drafts-info/mid-event) ==>  "
-            + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
 
         return respond(caseDetailsMap);
     }
@@ -123,7 +120,7 @@ public class UploadDraftOrdersController extends CallbackController {
             eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
-        log.info("ASHLEY-DEBUGGING (about-to-submit) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
+        log.info("ASHLEY-DEBUGGING ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
 
         return respond(caseDetails);
     }
