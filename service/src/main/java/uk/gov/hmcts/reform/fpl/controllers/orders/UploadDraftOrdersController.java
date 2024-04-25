@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.DraftOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -54,7 +53,7 @@ public class UploadDraftOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        caseDetails.getData().put(DRAFT_ORDER_URGENCY, DraftOrderUrgencyOption.builder().urgency(List.of()).build());
+        caseDetails.getData().remove(DRAFT_ORDER_URGENCY);
         log.info("ASHLEY-DEBUGGING (about-to-start) ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
         return respond(caseDetails);
     }
