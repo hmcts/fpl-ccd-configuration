@@ -409,14 +409,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "UserRole": "[BARRISTER]",
-    "CRUD": "RU",
-    "Comment": "Added update perms so it can be effectively hidden internally in the auth complex type"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respStmtList",
     "UserRole": "[BARRISTER]",
     "CRUD": "RU",

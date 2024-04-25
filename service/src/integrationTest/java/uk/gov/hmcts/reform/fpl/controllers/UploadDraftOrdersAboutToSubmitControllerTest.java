@@ -86,8 +86,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
@@ -182,8 +180,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         hearings.get(0).getValue().setCaseManagementOrderId(unsealedCMOs.get(0).getId());
 
         assertThat(responseData.getHearingDetails()).isEqualTo(hearings);
-
-        assertThat(responseData.getHearingFurtherEvidenceDocuments()).isEmpty();
     }
 
     @Test
