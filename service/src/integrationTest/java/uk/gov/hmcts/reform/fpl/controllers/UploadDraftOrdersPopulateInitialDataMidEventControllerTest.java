@@ -24,6 +24,6 @@ class UploadDraftOrdersPopulateInitialDataMidEventControllerTest extends Abstrac
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, "populate-initial-data");
 
-        assertThat(callbackResponse.getData()).extracting("draftOrderNeedsReviewUploaded").isNull();
+        assertThat(callbackResponse.getData()).doesNotContainKey("draftOrderNeedsReviewUploaded");
     }
 }
