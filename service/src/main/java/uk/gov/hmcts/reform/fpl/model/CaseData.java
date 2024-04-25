@@ -697,7 +697,6 @@ public class CaseData extends CaseDataParent {
     @JsonUnwrapped
     @Builder.Default
     private final ManageDocumentEventData manageDocumentEventData = ManageDocumentEventData.builder().build();
-    private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
     private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
     private final List<Element<ScannedDocument>> scannedDocuments;
 
@@ -712,10 +711,6 @@ public class CaseData extends CaseDataParent {
 
     public DynamicList buildDynamicChildrenList(List<Element<Child>> children, UUID selected) {
         return asDynamicList(children, selected, child -> child.getParty().getFullName());
-    }
-
-    public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
-        return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
     }
 
     @JsonIgnore
@@ -1250,9 +1245,5 @@ public class CaseData extends CaseDataParent {
         } else {
             return Optional.empty();
         }
-    }
-
-    public void setPlacementNoticeResponses(List<Element<PlacementNoticeDocument>> placementNoticeResponses) {
-        this.placementNoticeResponses = placementNoticeResponses;
     }
 }
