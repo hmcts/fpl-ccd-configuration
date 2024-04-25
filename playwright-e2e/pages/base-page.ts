@@ -2,7 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;
-  readonly go: Locator;
+  readonly goButton: Locator;
   readonly page: Page;
   readonly continueButton: Locator;
   readonly signOut: Locator;
@@ -13,7 +13,7 @@ export class BasePage {
   constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
-    this.go = page.getByRole("button", { name: "Go" });
+    this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
@@ -23,10 +23,15 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
-    await this.go.click();
+    await this.goButton.dblclick();
+    await this.page.waitForTimeout(20000);
+    if (await  this.goButton.isVisible()) {
+       await this.goButton.click();
+    }
   }
 
   async checkYourAnsAndSubmit(){
+    await this.checkYourAnswersHeader.isVisible();
     await this.saveAndContinue.click();
   }
 
