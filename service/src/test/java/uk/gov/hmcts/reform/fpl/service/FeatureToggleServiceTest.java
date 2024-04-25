@@ -1,17 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.launchdarkly.sdk.LDUser;
-import com.launchdarkly.sdk.UserAttribute;
 import com.launchdarkly.sdk.server.LDClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -144,18 +139,6 @@ class FeatureToggleServiceTest {
             eq("cafcass-subject-category"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
-    }
-
-    private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
-        List<UserAttribute> attributes = new ArrayList<>();
-
-        attributes.add(UserAttribute.forName("timestamp"));
-        attributes.add(UserAttribute.forName("environment"));
-        Arrays.stream(additionalAttributes)
-            .map(UserAttribute::forName)
-            .forEach(attributes::add);
-
-        return attributes;
     }
 
     private void givenToggle(boolean state) {
