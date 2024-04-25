@@ -4,7 +4,6 @@ import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
 import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json';
 import {
     newSwanseaLocalAuthorityUserOne,
-    CTSCUser,
     privateSolicitorOrgUser,
     FPLSolicitorOrgUser,
     CTSCTeamLeadUser
