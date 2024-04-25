@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -40,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Slf4j
 @RestController
 @RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -121,7 +118,6 @@ public class UploadDraftOrdersController extends CallbackController {
             eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
-        log.info("ASHLEY-DEBUGGING ==>  " + caseDetails.getData().get(DRAFT_ORDER_URGENCY));
 
         return respond(caseDetails);
     }
