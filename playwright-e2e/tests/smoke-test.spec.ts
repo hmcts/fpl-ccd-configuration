@@ -12,13 +12,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   applicantDetails,
-  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
+  respondentDetails,
   welshLangRequirements,
   submitCase,
   internationalElement,
+  c1WithSupplement,
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -32,7 +33,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   );
   //sign in page
   await signInPage.isSignedIn();
-  
+
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -89,7 +90,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
-  
+
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
@@ -107,6 +108,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
+
+  // C1 With Supplement
+  await startApplication.c1WithSupp();
+  await c1WithSupplement.c1WithSupplementSmokeTest();
+  await startApplication.c1WithSuppFinished();
 
   // Submit the case
   await startApplication.submitCase();
