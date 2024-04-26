@@ -130,12 +130,6 @@ public class DraftOrdersUploadedEventHandler {
         return judge;
     }
 
-    private List<HearingOrder> getOrders(CaseData caseData) {
-        return getDraftOrdersByHearingId(caseData,
-            Stream.concat(nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream(),
-                nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream()));
-    }
-
     private List<HearingOrder> getHearingOrdersBundlesDrafts(CaseData caseData) {
         return getDraftOrdersByHearingId(caseData,
             nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream());
