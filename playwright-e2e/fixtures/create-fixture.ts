@@ -19,6 +19,7 @@ import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
+import { LegalCounsel } from "../pages/legal-counsel";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
@@ -48,6 +49,7 @@ type CreateFixtures = {
   applicantDetails: ApplicantDetails;
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
+  legalCounsel: LegalCounsel;
   welshLangRequirements: WelshLangRequirements;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
@@ -139,10 +141,13 @@ export const test = base.extend<CreateFixtures>({
     await use(new RespondentDetails(page));
   },
 
+  legalCounsel: async ({ page }, use) => {
+    await use(new LegalCounsel(page));
+  },
+
   welshLangRequirements: async ({ page }, use) => {
     await use(new WelshLangRequirements(page));
   },
-
 
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
@@ -155,4 +160,5 @@ export const test = base.extend<CreateFixtures>({
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
   },
+
 });
