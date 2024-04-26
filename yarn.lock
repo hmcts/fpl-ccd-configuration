@@ -23,13 +23,13 @@ __metadata:
   linkType: hard
 
 "@axe-core/playwright@npm:^4.8.5":
-  version: 4.8.5
-  resolution: "@axe-core/playwright@npm:4.8.5"
+  version: 4.9.0
+  resolution: "@axe-core/playwright@npm:4.9.0"
   dependencies:
-    axe-core: ~4.8.4
+    axe-core: ~4.9.0
   peerDependencies:
     playwright-core: ">= 1.0.0"
-  checksum: 004045ceaf7fd72f6756a8a6bc40e09f3f61249a7a97f90c2f514f19096c89a8b11a7696db199bfe3f2d541a841504b2bc594410a5d6eab907a4bf40b1d5fad9
+  checksum: 6e58d01048669418ada99588d424ee14a49d025a508327ecbf290161f04f7ead04ecff81ce28bd95b677c4b43b3e13582c42542e58d192fdf38beaca115ed112
   languageName: node
   linkType: hard
 
@@ -727,18 +727,18 @@ __metadata:
   linkType: hard
 
 "@types/lodash@npm:^4.14.202":
-  version: 4.14.202
-  resolution: "@types/lodash@npm:4.14.202"
-  checksum: a91acf3564a568c6f199912f3eb2c76c99c5a0d7e219394294213b3f2d54f672619f0fde4da22b29dc5d4c31457cd799acc2e5cb6bd90f9af04a1578483b6ff7
+  version: 4.17.0
+  resolution: "@types/lodash@npm:4.17.0"
+  checksum: 3f98c0b67a93994cbc3403d4fa9dbaf52b0b6bb7f07a764d73875c2dcd5ef91222621bd5bcf8eee7b417a74d175c2f7191b9f595f8603956fd06f0674c0cba93
   languageName: node
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^20.1.0, @types/node@npm:^20.10.7":
-  version: 20.10.7
-  resolution: "@types/node@npm:20.10.7"
+  version: 20.12.7
+  resolution: "@types/node@npm:20.12.7"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 86f4f96f5169538f47bbd652ab8e3712cd307701481ff3e9ce0c1ea7d8424a38b5ac4a1d33088cdd9ea1bfe68fd27bbae005a21969aa6d9a36295904da6f09f2
+  checksum: 7cc979f7e2ca9a339ec71318c3901b9978555257929ef3666987f3e447123bc6dc92afcc89f6347e09e07d602fde7d51bcddea626c23aa2bb74aeaacfd1e1686
   languageName: node
   linkType: hard
 
@@ -1185,10 +1185,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:~4.8.4":
-  version: 4.8.4
-  resolution: "axe-core@npm:4.8.4"
-  checksum: 644da2fec17bcf6f834edaab1baa5a75a9a3ee370c323215c73da6d7e45fac11d01470d92d0a3d5f26695e15c1d9b781733dfbe1fe09d505076c58f09ed74e02
+"axe-core@npm:~4.9.0":
+  version: 4.9.0
+  resolution: "axe-core@npm:4.9.0"
+  checksum: cabaa07586a92510f4befc742744b548c30033dfda99dd439c21d736f51913d52022c8836180084b13f2098f06a01c716dc42d8e91599c43c9db25905ba5403f
   languageName: node
   linkType: hard
 
