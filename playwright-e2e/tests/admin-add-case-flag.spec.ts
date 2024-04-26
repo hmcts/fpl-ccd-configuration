@@ -1,7 +1,11 @@
 import { test } from '../fixtures/create-fixture';
 import { Apihelp } from '../utils/api-helper';
 import caseData from '../caseData/mandatoryWithMultipleChildren.json';
-import {newSwanseaLocalAuthorityUserOne, CTSCUser, judgeUserWithAdminRole} from '../settings/user-credentials';
+import {
+    newSwanseaLocalAuthorityUserOne,
+    CTSCUser,
+    judgeWalesUser
+} from '../settings/user-credentials';
 import { Page, expect} from "@playwright/test";
 import {AddAndRemoveAdminCaseFlag} from '../pages/add-and-remove-admin-case-flag';
 import {SignInPage} from '../pages/sign-in';
@@ -25,12 +29,12 @@ test.describe('Add a case flag', () => {
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
-    test('Add and remove a case flag as judicial admin user',
+    test('Add and remove a case flag as judicial user',
         async ({page, signInPage, addAdminCaseFlag}) => {
             caseName = 'Add and remove a case flag' + dateTime.slice(0, 10);
             await apiDataSetup.updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
-            await signInPage.login(judgeUserWithAdminRole.email, judgeUserWithAdminRole.password);
+            await signInPage.login(judgeWalesUser.email, judgeWalesUser.password);
             await runTest(signInPage, addAdminCaseFlag, page);
         });
 
