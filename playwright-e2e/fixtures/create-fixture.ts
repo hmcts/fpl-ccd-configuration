@@ -21,8 +21,10 @@ import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
+import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
 import { ApproveOrders } from "../pages/approve-orders";
+import { SubmitCase } from "../pages/submit-case";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -47,8 +49,10 @@ type CreateFixtures = {
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
   welshLangRequirements: WelshLangRequirements;
+  submitCase: SubmitCase;
   internationalElement: InternationalElement;
   approveOrders: ApproveOrders;
+  c1WithSupplement: C1WithSupplement;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -95,7 +99,7 @@ export const test = base.extend<CreateFixtures>({
   additionalApplications: async ({ page }, use) => {
     await use(new AdditionalApplications(page));
   },
-  
+
   uploadDraftOrders: async ({ page }, use) => {
     await use(new UploadDraftOrders(page));
    },
@@ -127,7 +131,7 @@ export const test = base.extend<CreateFixtures>({
   applicantDetails: async ({ page }, use) => {
     await use(new ApplicantDetails(page));
   },
-  
+
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
   },
@@ -139,12 +143,21 @@ export const test = base.extend<CreateFixtures>({
   welshLangRequirements: async ({ page }, use) => {
     await use(new WelshLangRequirements(page));
   },
-  
+
+
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
 
   approveOrders: async ({ page }, use) => {
     await use(new ApproveOrders(page));
+  },
+
+  c1WithSupplement: async ({ page }, use) => {
+     await use(new C1WithSupplement(page));
+  },
+  
+  submitCase: async ({ page }, use) => {
+    await use(new SubmitCase(page));
   },
 });

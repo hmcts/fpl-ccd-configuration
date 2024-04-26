@@ -146,6 +146,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"", "123;456"})
+    void shouldMakeCorrectCallForGetUserIdsToRemoveRolesFrom(String toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.getUserIdsToRemoveRolesFrom()).isEqualTo(toggleState);
+        verify(ldClient).stringVariation(
+            eq("migrate-user-roles"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(""));
+    }
+
     private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
         List<UserAttribute> attributes = new ArrayList<>();
 
@@ -160,5 +172,9 @@ class FeatureToggleServiceTest {
 
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
+    }
+
+    private void givenToggle(String state) {
+        when(ldClient.stringVariation(anyString(), any(), anyString())).thenReturn(state);
     }
 }
