@@ -66,7 +66,7 @@ test.describe('Manage case linking',()=>{
         linkedCase3='1714035768920374';
 
         // await apiDataSetup.updatelinkedCaseDetails(linkedCaseData, '1713888444305662', '1713888444305662', '1713888444305662');
-        // await apiDataSetup.updateLinkedCase(casename,caseNumber,linkedCaseData,linkedCase1,linkedCase2,linkedCase3);
+         await apiDataSetup.updateLinkedCase(casename,caseNumber,linkedCaseData,linkedCase1,linkedCase2,linkedCase3);
 
         // console.log ("\nlinkedCase1 =" + linkedCase1);
         // console.log ("\nlinkedCase2 =" + linkedCase2);
