@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -48,6 +50,9 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -58,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
@@ -75,12 +81,15 @@ class DraftOrderServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
     private DraftOrderService service;
+    @Mock
+    private ManageDocumentService manageDocumentService;
 
     @BeforeEach
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
-            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder())
+            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()),
+            manageDocumentService
         );
     }
 
@@ -545,7 +554,8 @@ class DraftOrderServiceTest {
                     DRAFT_CMO, newArrayList(),
                     AGREED_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             assertThat(unsealedOrders).hasSize(1)
                 .first()
@@ -598,7 +608,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -635,7 +646,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, emptyList(), bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings, emptyList(),
+                bundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder2, hearingOrder3))
@@ -671,7 +683,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, emptyList(), bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings, emptyList(),
+                bundles);
 
             assertThat(ordersBundles).isEqualTo(
                 wrapElements(selectedHearingOrderBundle, otherOrdersBundle));
@@ -706,7 +719,8 @@ class DraftOrderServiceTest {
                     C21, c21OrdersBundles
             );
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -737,7 +751,8 @@ class DraftOrderServiceTest {
                 .build();
 
             Exception exception = assertThrows(Exception.class,
-                () -> service.updateCase(eventData, hearings, newArrayList(), of()));
+                () -> service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(),
+                    hearings, newArrayList(), of()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
         }

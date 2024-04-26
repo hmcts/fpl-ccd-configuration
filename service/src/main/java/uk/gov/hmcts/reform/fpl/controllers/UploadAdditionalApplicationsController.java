@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCal
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -78,6 +80,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final ApplicantsListGenerator applicantsListGenerator;
     private final PeopleInCaseService peopleInCaseService;
     private final CoreCaseDataService coreCaseDataService;
+    private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -172,6 +175,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             && !caseData.getTemporaryC2Document().getDraftOrdersBundle().isEmpty()) {
 
             List<Element<DraftOrder>> draftOrders = caseData.getTemporaryC2Document().getDraftOrdersBundle();
+            draftOrders.forEach(order -> {
+                order.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
+                order.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
+            });
             List<Element<HearingOrder>> newDrafts = draftOrders.stream()
                 .map(Element::getValue)
                 .map(HearingOrder::from)
