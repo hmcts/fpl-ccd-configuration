@@ -1,5 +1,5 @@
-import {test} from '../fixtures/create-fixture';
-import {Apihelp} from '../utils/api-helper';
+import { test } from '../fixtures/create-fixture';
+import { Apihelp } from '../utils/api-helper';
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
 import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json';
 import {
@@ -8,7 +8,7 @@ import {
     FPLSolicitorOrgUser,
     CTSCTeamLeadUser
 } from '../settings/user-credentials';
-import {expect} from '@playwright/test';
+import { expect } from '@playwright/test';
 
 test.describe('Respondent solicitor counsel ', () => {
     let apiDataSetup = new Apihelp();
@@ -18,6 +18,7 @@ test.describe('Respondent solicitor counsel ', () => {
     test.beforeEach(async () => {
         caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
+
     test('Respondent solicitor add counsel',
         async ({page, signInPage, legalCounsel}) => {
             casename = 'Respondent Solicitor add Counsel ' + dateTime.slice(0, 10);
@@ -41,6 +42,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.getByRole('heading', {name: casename})).toBeVisible();
             await expect(page.locator('h1')).toContainText(casename);
         });
+
     test('Respondent solicitor remove counsel',
         async ({page, signInPage, legalCounsel}) => {
             casename = 'Respondent solicitor remove counsel ' + dateTime.slice(0, 10);
@@ -62,6 +64,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: casename})).toBeHidden;
         });
+
     test('Legal counsel removed when respondent representation removed',
         async ({page, signInPage, legalCounsel}) => {
             casename = 'Respondent representative removed ' + dateTime.slice(0, 10);
@@ -85,4 +88,5 @@ test.describe('Respondent solicitor counsel ', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
             await expect(page.getByRole('heading', {name: casename})).toBeHidden;
         });
+
 });
