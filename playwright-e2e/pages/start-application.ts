@@ -27,7 +27,8 @@ export class StartApplication {
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
   readonly internationalElementsHeading: Locator;
-
+  readonly submitApplicationLink: Locator;
+  
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
@@ -52,9 +53,10 @@ export class StartApplication {
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
+    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]'); 
+    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-
   }
 
   async addApplicationDetails() {
@@ -140,5 +142,9 @@ export class StartApplication {
   async internationalElementReqUpdated() {
     await this.internationalElementsHeading.isVisible();
     await this.internationalElementsHeading.click();
+  }
+  
+  async submitCase() {
+    await this.submitApplicationLink.click();
   }
 }
