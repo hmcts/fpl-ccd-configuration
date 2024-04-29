@@ -112,7 +112,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).contains("There is no one this user is representing on this case.");
-        assertThat(callbackResponse.getData()).extracting("respondentName").isNull();
+        assertThat(callbackResponse.getData()).doesNotContainKey("respondentName");
         assertThat(callbackResponse.getData()).extracting("colleaguesToNotify").isEqualTo(emptyList());
     }
 }
