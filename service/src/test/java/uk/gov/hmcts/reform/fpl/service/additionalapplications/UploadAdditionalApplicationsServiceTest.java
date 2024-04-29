@@ -582,7 +582,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
@@ -598,7 +598,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test

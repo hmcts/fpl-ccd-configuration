@@ -19,10 +19,12 @@ import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
+import { LegalCounsel } from "../pages/legal-counsel";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
+import {AddAndRemoveAdminCaseFlag} from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
 
 
@@ -48,9 +50,11 @@ type CreateFixtures = {
   applicantDetails: ApplicantDetails;
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
+  legalCounsel: LegalCounsel;
   welshLangRequirements: WelshLangRequirements;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
+  addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
 };
 
@@ -139,15 +143,21 @@ export const test = base.extend<CreateFixtures>({
     await use(new RespondentDetails(page));
   },
 
+  legalCounsel: async ({ page }, use) => {
+    await use(new LegalCounsel(page));
+  },
+
   welshLangRequirements: async ({ page }, use) => {
     await use(new WelshLangRequirements(page));
   },
-
 
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
 
+    addAdminCaseFlag: async ({ page }, use) => {
+        await use(new AddAndRemoveAdminCaseFlag(page));
+    },
   c1WithSupplement: async ({ page }, use) => {
      await use(new C1WithSupplement(page));
   },
@@ -155,4 +165,5 @@ export const test = base.extend<CreateFixtures>({
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
   },
+
 });
