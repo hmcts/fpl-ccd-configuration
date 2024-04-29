@@ -100,7 +100,7 @@ public class RecordFinalDecisionsController extends CallbackController {
         final CaseData caseData = getCaseData(request);
 
         // only delete all allocated/hearing roles on the case when case is completely closed
-        if (caseData.getState().equals(CLOSED)) {
+        if (CLOSED.equals(caseData.getState())) {
             judicialService.deleteAllRolesOnCase(caseData.getId());
         }
     }

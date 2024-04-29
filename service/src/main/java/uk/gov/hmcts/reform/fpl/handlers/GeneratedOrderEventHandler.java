@@ -154,7 +154,7 @@ public class GeneratedOrderEventHandler {
     @EventListener
     public void cleanupRoles(GeneratedOrderEvent event) {
         // If the case is now closed, we should cleanup any AM roles
-        if (event.getCaseData().getState().equals(State.CLOSED)) {
+        if (State.CLOSED.equals(event.getCaseData().getState())) {
             judicialService.deleteAllRolesOnCase(event.getCaseData().getId());
         }
     }
