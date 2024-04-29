@@ -1,4 +1,4 @@
-import {systemUpdateUser} from '../settings/user-credentials';
+import {systemUpdateUser,privateSolicitorOrgUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
 
 
@@ -90,3 +90,4 @@ import lodash from 'lodash';
         }
 
     }
+
