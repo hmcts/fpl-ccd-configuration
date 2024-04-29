@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.RecordFinalDecisionsService;
 
 import java.time.LocalDate;
@@ -35,6 +36,7 @@ public class RecordFinalDecisionsController extends CallbackController {
     public static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
     private final ChildrenService childrenService;
     private final RecordFinalDecisionsService recordFinalDecisionService;
+    private final JudicialService judicialService;
 
 
     @PostMapping("/about-to-start")
@@ -91,5 +93,15 @@ public class RecordFinalDecisionsController extends CallbackController {
         removeTemporaryFields(caseDetails, eventData.getTransientFields());
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
+        final CaseData caseData = getCaseData(request);
+
+        // only delete all allocated/hearing roles on the case when case is completely closed
+        if (caseData.getState().equals(CLOSED)) {
+            judicialService.deleteAllRolesOnCase(caseData.getId());
+        }
     }
 }
