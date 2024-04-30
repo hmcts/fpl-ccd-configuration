@@ -53,7 +53,7 @@ type CreateFixtures = {
   legalCounsel: LegalCounsel;
   welshLangRequirements: WelshLangRequirements;
   otherProceedings: OtherProceedings;
-  submitCase: SubmitCase
+  submitCase: SubmitCase;
   internationalElement: InternationalElement;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
@@ -159,10 +159,11 @@ export const test = base.extend<CreateFixtures>({
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
-
+    
     addAdminCaseFlag: async ({ page }, use) => {
         await use(new AddAndRemoveAdminCaseFlag(page));
     },
+    
   c1WithSupplement: async ({ page }, use) => {
      await use(new C1WithSupplement(page));
   },
