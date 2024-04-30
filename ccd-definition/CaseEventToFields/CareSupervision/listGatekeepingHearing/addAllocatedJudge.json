@@ -88,5 +88,18 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "enterManually = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "listGatekeepingHearing",
+    "CaseFieldID": "court",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "READONLY",
+    "PageID": "ListGatekeepingHearingAllocatedJudge",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "Publish": "Y",
+    "FieldShowCondition": "enterManually = \"DO_NOT_SHOW\""
   }
 ]
