@@ -74,5 +74,23 @@
     "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "currentHearingOrderDrafts=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderUrgency",
+    "ListElementCode": "urgency",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderUrgency",
+    "ListElementCode": "urgencyLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
   }
 ]
