@@ -256,8 +256,11 @@ public class UploadAdditionalApplicationsService {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                caseData.getCourt(), SealType.ENGLISH);
+
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(documentConversionService.convertToPdf(incomingSupplement.getDocument()))
+                .document(sealedDocument)
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();
