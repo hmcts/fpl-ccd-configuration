@@ -17,7 +17,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   welshLangRequirements,
   otherProceedings,
-  submitCase,
   internationalElement,
   courtServicesNeeded,
   c1WithSupplement,
