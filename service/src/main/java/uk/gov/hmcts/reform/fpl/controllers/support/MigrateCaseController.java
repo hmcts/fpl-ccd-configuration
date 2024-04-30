@@ -74,7 +74,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2311(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2311";
 
-        // migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1711554908021037L, migrationId);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1711554908021037L, migrationId);
 
         CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.removeSubmittedC1Document(caseData, migrationId));
