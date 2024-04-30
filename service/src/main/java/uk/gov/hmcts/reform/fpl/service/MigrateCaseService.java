@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -1172,5 +1173,21 @@ public class MigrateCaseService {
                     booking.setType(OTHER);
                 }
             });
+    }
+
+    public Map<String, Object> removeSubmittedC1Document(CaseData caseData, String migrationId) {
+        SubmittedC1WithSupplementBundle submittedC1WithSupplement = caseData.getSubmittedC1WithSupplement();
+
+        if (submittedC1WithSupplement == null) {
+            throw new AssertionError(format("Migration {id = %s}, submittedC1WithSupplement not found", migrationId));
+        }
+
+        return Map.of("submittedC1WithSupplement", SubmittedC1WithSupplementBundle.builder()
+                .urgencyTimeFrameType(submittedC1WithSupplement.getUrgencyTimeFrameType())
+                .supportingEvidenceBundle(submittedC1WithSupplement.getSupportingEvidenceBundle())
+                .supplementsBundle(submittedC1WithSupplement.getSupplementsBundle())
+                .clearSubmittedC1WithSupplement(submittedC1WithSupplement.getClearSubmittedC1WithSupplement())
+                .isDocumentUploaded(submittedC1WithSupplement.getIsDocumentUploaded())
+            .build());
     }
 }
