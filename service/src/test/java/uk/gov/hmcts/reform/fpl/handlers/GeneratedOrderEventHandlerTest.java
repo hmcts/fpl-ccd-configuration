@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -13,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
@@ -28,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -129,6 +133,8 @@ class GeneratedOrderEventHandlerTest {
     private UserService userService;
     @Mock
     private WorkAllocationTaskService workAllocationTaskService;
+    @Mock
+    private JudicialService judicialService;
 
     @InjectMocks
     private GeneratedOrderEventHandler underTest;
@@ -153,6 +159,21 @@ class GeneratedOrderEventHandlerTest {
             DIGITAL_REPS);
         given(othersService.getSelectedOthers(CASE_DATA)).willReturn(Collections.emptyList());
         given(sealedOrderHistoryService.lastGeneratedOrder(any())).willReturn(lastGeneratedOrder);
+    }
+
+    @Test
+    void shouldCleanupRolesIfCaseClosed() {
+        given(CASE_DATA.getState()).willReturn(State.CLOSED);
+        underTest.cleanupRoles(EVENT);
+        verify(judicialService).deleteAllRolesOnCase(CASE_ID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = { "CLOSED" }, mode = EnumSource.Mode.EXCLUDE)
+    void shouldNotCleanupRolesIfCaseIsNotClosed(State state) {
+        given(CASE_DATA.getState()).willReturn(state);
+        underTest.cleanupRoles(EVENT);
+        verify(judicialService, never()).deleteAllRolesOnCase(CASE_ID);
     }
 
     @Test
