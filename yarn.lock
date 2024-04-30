@@ -23,13 +23,13 @@ __metadata:
   linkType: hard
 
 "@axe-core/playwright@npm:^4.8.5":
-  version: 4.8.5
-  resolution: "@axe-core/playwright@npm:4.8.5"
+  version: 4.9.0
+  resolution: "@axe-core/playwright@npm:4.9.0"
   dependencies:
-    axe-core: ~4.8.4
+    axe-core: ~4.9.0
   peerDependencies:
     playwright-core: ">= 1.0.0"
-  checksum: 004045ceaf7fd72f6756a8a6bc40e09f3f61249a7a97f90c2f514f19096c89a8b11a7696db199bfe3f2d541a841504b2bc594410a5d6eab907a4bf40b1d5fad9
+  checksum: 6e58d01048669418ada99588d424ee14a49d025a508327ecbf290161f04f7ead04ecff81ce28bd95b677c4b43b3e13582c42542e58d192fdf38beaca115ed112
   languageName: node
   linkType: hard
 
@@ -734,11 +734,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^20.1.0, @types/node@npm:^20.10.7":
-  version: 20.10.7
-  resolution: "@types/node@npm:20.10.7"
+  version: 20.12.7
+  resolution: "@types/node@npm:20.12.7"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 86f4f96f5169538f47bbd652ab8e3712cd307701481ff3e9ce0c1ea7d8424a38b5ac4a1d33088cdd9ea1bfe68fd27bbae005a21969aa6d9a36295904da6f09f2
+  checksum: 7cc979f7e2ca9a339ec71318c3901b9978555257929ef3666987f3e447123bc6dc92afcc89f6347e09e07d602fde7d51bcddea626c23aa2bb74aeaacfd1e1686
   languageName: node
   linkType: hard
 
@@ -1185,10 +1185,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:~4.8.4":
-  version: 4.8.4
-  resolution: "axe-core@npm:4.8.4"
-  checksum: 644da2fec17bcf6f834edaab1baa5a75a9a3ee370c323215c73da6d7e45fac11d01470d92d0a3d5f26695e15c1d9b781733dfbe1fe09d505076c58f09ed74e02
+"axe-core@npm:~4.9.0":
+  version: 4.9.0
+  resolution: "axe-core@npm:4.9.0"
+  checksum: cabaa07586a92510f4befc742744b548c30033dfda99dd439c21d736f51913d52022c8836180084b13f2098f06a01c716dc42d8e91599c43c9db25905ba5403f
   languageName: node
   linkType: hard
 
@@ -3379,6 +3379,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:8.1.0, glob@npm:^8.0.0, glob@npm:^8.0.1":
+  version: 8.1.0
+  resolution: "glob@npm:8.1.0"
+  dependencies:
+    fs.realpath: ^1.0.0
+    inflight: ^1.0.4
+    inherits: 2
+    minimatch: ^5.0.1
+    once: ^1.3.0
+  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
+  languageName: node
+  linkType: hard
+
 "glob@npm:^10.2.2, glob@npm:^10.3.10, glob@npm:^10.3.3":
   version: 10.3.10
   resolution: "glob@npm:10.3.10"
@@ -3418,19 +3431,6 @@ __metadata:
     once: ^1.3.0
     path-is-absolute: ^1.0.0
   checksum: 29452e97b38fa704dabb1d1045350fb2467cf0277e155aa9ff7077e90ad81d1ea9d53d3ee63bd37c05b09a065e90f16aec4a65f5b8de401d1dac40bc5605d133
-  languageName: node
-  linkType: hard
-
-"glob@npm:^8.0.0, glob@npm:^8.0.1":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
-  dependencies:
-    fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^5.0.1
-    once: ^1.3.0
-  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
   languageName: node
   linkType: hard
 
@@ -4739,7 +4739,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.2.0, mocha@npm:^10.2.0":
+"mocha@npm:10.2.0":
   version: 10.2.0
   resolution: "mocha@npm:10.2.0"
   dependencies:
@@ -4768,6 +4768,37 @@ __metadata:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
   checksum: 406c45eab122ffd6ea2003c2f108b2bc35ba036225eee78e0c784b6fa2c7f34e2b13f1dbacef55a4fdf523255d76e4f22d1b5aacda2394bd11666febec17c719
+  languageName: node
+  linkType: hard
+
+"mocha@npm:^10.2.0":
+  version: 10.4.0
+  resolution: "mocha@npm:10.4.0"
+  dependencies:
+    ansi-colors: 4.1.1
+    browser-stdout: 1.3.1
+    chokidar: 3.5.3
+    debug: 4.3.4
+    diff: 5.0.0
+    escape-string-regexp: 4.0.0
+    find-up: 5.0.0
+    glob: 8.1.0
+    he: 1.2.0
+    js-yaml: 4.1.0
+    log-symbols: 4.1.0
+    minimatch: 5.0.1
+    ms: 2.1.3
+    serialize-javascript: 6.0.0
+    strip-json-comments: 3.1.1
+    supports-color: 8.1.1
+    workerpool: 6.2.1
+    yargs: 16.2.0
+    yargs-parser: 20.2.4
+    yargs-unparser: 2.0.0
+  bin:
+    _mocha: bin/_mocha
+    mocha: bin/mocha.js
+  checksum: 090771d6d42a65a934c7ed448d524bcc663836351af9f0678578caa69943b01a9535a73192d24fd625b3fdb5979cce5834dfe65e3e1ee982444d65e19975b81c
   languageName: node
   linkType: hard
 
