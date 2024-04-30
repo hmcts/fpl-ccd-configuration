@@ -12,15 +12,16 @@ test("Smoke Test @smoke-test @accessibility", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   applicantDetails,
-  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
+  respondentDetails,
   welshLangRequirements,
   otherProceedings,
-  page,
+  submitCase
   internationalElement,
-page,
+  c1WithSupplement,
+  page,
   makeAxeBuilder
 }, testInfo) => {
 
@@ -33,7 +34,7 @@ page,
   );
   //sign in page
   await signInPage.isSignedIn();
-  
+
   // Add application details
   // Start new case, get case id and assert case id is created
   await createCase.caseName();
@@ -78,11 +79,11 @@ page,
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
-
+ 
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
-  await startApplication.applicantDetails();
+  await startApplication.applicantDetails(); 
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
@@ -113,16 +114,19 @@ page,
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
 
+  // C1 With Supplement
+  await startApplication.c1WithSupp();
+  await c1WithSupplement.c1WithSupplementSmokeTest();
+  await startApplication.c1WithSuppFinished();
+
+  // Submit the case
+  await startApplication.submitCase();
+  await submitCase.submitCaseSmokeTest();
+  
   const accessibilityScanResults = await makeAxeBuilder()
     // Automatically uses the shared AxeBuilder configuration,
     // but supports additional test-specific configuration too
     .analyze();
 
-  await testInfo.attach('accessibility-scan-results', {
-    body: JSON.stringify(accessibilityScanResults, null, 2),
-    contentType: 'application/json'
-  });
-
 expect(accessibilityScanResults.violations).toEqual([]);
-}
-);
+});
