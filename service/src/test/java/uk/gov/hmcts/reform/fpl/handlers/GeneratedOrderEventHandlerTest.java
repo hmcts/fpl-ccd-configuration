@@ -176,7 +176,6 @@ class GeneratedOrderEventHandlerTest {
         verify(judicialService, never()).deleteAllRolesOnCase(CASE_ID);
     }
 
-
     @Test
     void shouldNotifyPartiesOnOrderSubmissionWhenOldOrdersEvent() {
         given(lastGeneratedOrder.isNewVersion()).willReturn(false);
