@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -738,46 +736,6 @@ public class MigrateCaseService {
         }
         return str.replace("<", "")
             .replace(">", "");
-    }
-
-    public Map<String, Object> removeHearingFurtherEvidenceDocuments(CaseData caseData,
-                                                                     String migrationId,
-                                                                     UUID expectedHearingId,
-                                                                     UUID expectedDocId) {
-        Long caseId = caseData.getId();
-
-        Element<HearingFurtherEvidenceBundle> elementToBeUpdated = caseData.getHearingFurtherEvidenceDocuments()
-            .stream()
-            .filter(hfed -> expectedHearingId.equals(hfed.getId()))
-            .findFirst().orElseThrow(() -> new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, hearing not found",
-                migrationId, caseId)));
-        List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle =
-            elementToBeUpdated.getValue().getSupportingEvidenceBundle().stream()
-                .filter(el -> !expectedDocId.equals(el.getId()))
-                .toList();
-        if (newSupportingEvidenceBundle.size() != elementToBeUpdated.getValue().getSupportingEvidenceBundle()
-            .size() - 1) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
-                migrationId, caseId));
-        }
-        elementToBeUpdated.getValue().setSupportingEvidenceBundle(newSupportingEvidenceBundle);
-
-        List<Element<HearingFurtherEvidenceBundle>> listOfHearingFurtherEvidenceBundle =
-            caseData.getHearingFurtherEvidenceDocuments().stream()
-                .filter(el -> !expectedHearingId.equals(el.getId()))
-                .collect(toList());
-        if (!newSupportingEvidenceBundle.isEmpty()) {
-            listOfHearingFurtherEvidenceBundle.add(elementToBeUpdated);
-        }
-        if (listOfHearingFurtherEvidenceBundle.isEmpty()) {
-            Map<String, Object> ret = new HashMap<>();
-            ret.put("hearingFurtherEvidenceDocuments", null);
-            return ret;
-        } else {
-            return Map.of("hearingFurtherEvidenceDocuments", listOfHearingFurtherEvidenceBundle);
-        }
     }
 
     @SuppressWarnings("unchecked")

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -84,7 +83,6 @@ public class UploadDraftOrdersController extends CallbackController {
 
         List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
-        List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
         HearingOrdersBundles hearingOrdersBundles = service.migrateCmoDraftToOrdersBundles(caseData);
 
         Map<HearingOrderType, List<Element<HearingOrdersBundle>>> bundles = Map.of(
@@ -98,7 +96,6 @@ public class UploadDraftOrdersController extends CallbackController {
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
         caseDetails.getData().put("hearingDetails", hearings);
-        caseDetails.getData().put("hearingFurtherEvidenceDocuments", evidenceDocuments);
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);

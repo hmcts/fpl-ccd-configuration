@@ -67,18 +67,11 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
-  public async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
-    for (let i = 0; i < locs.length; i++) {
-      await expect(locs[i]).toBeDisabled();
-    }
-  }
-
   public async fillC2ApplicationDetails() {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
-      await this.page.waitForTimeout(6000);
-      await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
+    await this.expectAllUploadsCompleted();
 
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();

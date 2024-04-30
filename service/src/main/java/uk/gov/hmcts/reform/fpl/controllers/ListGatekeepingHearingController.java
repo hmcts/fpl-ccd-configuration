@@ -74,7 +74,6 @@ public class ListGatekeepingHearingController extends CallbackController {
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
-    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
     private static final String HAS_PREVIOUS_VENUE_HEARING = "hasPreviousHearingVenue";
@@ -321,7 +320,6 @@ public class ListGatekeepingHearingController extends CallbackController {
         caseData.put(SELECTED_HEARING_ID, hearingBookingElement.getId());
 
         caseData.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, eventData.getCancelledHearingDetails());
-        caseData.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, eventData.getHearingFurtherEvidenceDocuments());
         caseData.putIfNotEmpty(HEARING_DETAILS_KEY, eventData.getHearingDetails());
         caseData.put(HEARING_ORDERS_BUNDLES_DRAFTS, eventData.getHearingOrdersBundlesDrafts());
         caseData.put(DRAFT_UPLOADED_CMOS, eventData.getDraftUploadedCMOs());
