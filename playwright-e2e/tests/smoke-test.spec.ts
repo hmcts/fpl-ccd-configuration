@@ -123,9 +123,6 @@ page,
     contentType: 'application/json'
   });
 
-  expect(accessibilityScanResults.violations).toEqual([]);
-});
-
 expect(accessibilityScanResults.violations).toEqual([]);
 }
 );
