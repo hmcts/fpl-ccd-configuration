@@ -159,6 +159,7 @@ export class StartApplication {
   async courtServicesNeededReqUpdated() {
     await this.courtServicesNeeded.isVisible();
     await this.courtServicesNeeded.click();
+  }
   
   async submitCase() {
     await this.submitApplicationLink.click();
