@@ -18,7 +18,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   welshLangRequirements,
   otherProceedings,
-  submitCase,
+  submitCase
   internationalElement,
   c1WithSupplement,
   page,
@@ -133,5 +133,5 @@ test("Smoke Test @smoke-test @accessibility", async ({
     contentType: 'application/json'
   });
     
-  expect(accessibilityScanResults.violations).toEqual([]);
+expect(accessibilityScanResults.violations).toEqual([]);
 });
