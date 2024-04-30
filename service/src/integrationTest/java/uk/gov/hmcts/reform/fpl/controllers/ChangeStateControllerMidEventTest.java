@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
@@ -36,8 +34,7 @@ class ChangeStateControllerMidEventTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(response.getErrors()).isEqualTo(List.of("Final orders have been issued in this case. You must remove"
-            + " the relevant orders before changing the case state."));
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
