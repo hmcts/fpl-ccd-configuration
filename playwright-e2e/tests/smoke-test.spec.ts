@@ -132,6 +132,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
+
+    const accessibilityScanResults = await makeAxeBuilder()
+  // Automatically uses the shared AxeBuilder configuration,
+  // but supports additional test-specific configuration too
+  .analyze();
     
 expect(accessibilityScanResults.violations).toEqual([]);
 });
