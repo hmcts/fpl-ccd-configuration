@@ -10,10 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -44,6 +46,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static java.util.Collections.emptyList;
 import static java.util.Map.of;
 import static java.util.UUID.randomUUID;
@@ -533,6 +537,9 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldAddNewCMOToListAndUpdateHearingIfCMOWasNotAlreadyInList() {
+            when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+            when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType
+                .DESIGNATED_LOCAL_AUTHORITY);
 
             List<Element<HearingBooking>> hearings = hearings();
 
@@ -567,6 +574,8 @@ class DraftOrderServiceTest {
                     .translationRequirements(TRANSLATION_REQUIREMENTS)
                     .order(eventData.getUploadedCaseManagementOrder())
                     .status(DRAFT)
+                    .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                    .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
                     .build());
 
             assertThat(hearings).hasSize(2)
@@ -688,6 +697,10 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldRemoveDraftCMOIfExistingWhenUploadingAgreedCMOForTheSameHearing() {
+            when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+            when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType
+                .DESIGNATED_LOCAL_AUTHORITY);
+
             List<Element<HearingBooking>> hearings = hearings();
 
             Element<HearingBooking> selectedHearing = hearings.get(0);
@@ -727,6 +740,8 @@ class DraftOrderServiceTest {
                 .hearing("Case management hearing, 2 March 2020")
                 .hearingId(selectedHearing.getId())
                 .judgeTitleAndName("His Honour Judge Dredd")
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
                 .build();
 
             assertThat(c21OrdersBundles).hasSize(1);
