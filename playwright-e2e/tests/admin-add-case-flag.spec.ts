@@ -44,7 +44,6 @@ test.describe('Add a case flag', () => {
         await expect(page.getByText('POTENTIALLY VIOLENT PERSON',{exact: true})).toBeVisible();
         await expect(page.getByText('Case Flag Added')).toBeVisible();
         await  addAdminCaseFlag.runRemoveCaseFlagTest();
-        await page.pause();
         await expect(page.getByText('POTENTIALLY VIOLENT PERSON',{exact: true})).toHaveCount(0);
     }
 
