@@ -2,7 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 
-export class ChildDetails extends BasePage{   
+export class ChildDetails extends BasePage{
     readonly firstName: Locator;
     readonly lastName: Locator;
     readonly dobDay: Locator;
@@ -30,6 +30,15 @@ export class ChildDetails extends BasePage{
     readonly additionalNeeds: Locator;
     readonly contactDetailsHidden: Locator;
     readonly litigationCapability: Locator;
+    readonly childHaveRepresentative: Locator;
+    readonly representativeFirstName: Locator;
+    readonly  representativeLastName: Locator;
+    readonly representativeTelephone: Locator;
+    readonly representativeOrganisation: Locator;
+    readonly representativeEmail: Locator;
+    readonly representativeOrgSearch: Locator;
+    readonly applyToAllChildren: Locator;
+
 
     constructor(page:Page){
         super(page);
@@ -60,6 +69,19 @@ export class ChildDetails extends BasePage{
         this.additionalNeeds = page.getByRole('group', { name: 'Does the child have any additional needs? (Optional)' });
         this.contactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details hidden from other parties? (Optional)' });
         this.litigationCapability = page.getByRole('group', { name: 'Do you believe this child' });
+        this.childHaveRepresentative = page.locator('#childrenHaveRepresentation');
+        this.representativeFirstName =page.getByLabel('Representative\'s first name');
+        this.representativeLastName =page.getByLabel('Representative\'s last name');
+        this.representativeEmail=page.getByLabel('Email address');
+        this.representativeOrgSearch=page.getByLabel('You can only search for');
+        this.representativeOrganisation = page.getByTitle('Select the organisation Private solicitors', { exact: true });
+        this.representativeTelephone = page.getByRole('group', { name: 'Telephone number' });
+        this.applyToAllChildren = page.getByRole('group', { name: 'Do all the children have this' });
+       // this.applyToAllChildren = page.getByRole('radio', { name: 'Yes' });
+
+
+
+
     }
 
     async childDetailsNeeded(){
@@ -108,5 +130,22 @@ export class ChildDetails extends BasePage{
         await this.clickContinue();
         await this.checkYourAnswersHeader.isVisible;
         await this.checkYourAnsAndSubmit();
+    }
+
+    async AddSingleSolicitor(){
+        await this.childHaveRepresentative.getByText('Yes').click();
+        await this.representativeFirstName.fill('Child Solicitor');
+        await this.representativeLastName.fill('One');
+        await this.representativeEmail.fill('solicitor@email.com');
+        await this.representativeOrgSearch.fill('Private solicitors');
+        await this.representativeOrganisation.click();
+        await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
+        // await this.clickContinue();
+        // await this.applyToAllChildren.getByRole('radio', { name: 'Yes' });
+
+    }
+
+    async  newassignToAllChild(){
+        await this.applyToAllChildren.getByRole('radio', { name: 'Yes' }).check();
     }
 }

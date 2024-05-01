@@ -1,7 +1,7 @@
 {
-  "state": "PREPARE_FOR_HEARING",
+  "state": "Open",
   "caseData": {
-    "caseName": "e2e test case",
+    "caseName": "e2e test case max children",
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -61,6 +61,127 @@
             "dateOfBirth": "2010-05-02"
           }
         }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b07",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Susy",
+            "dateOfBirth": "2012-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b06",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Manny",
+            "dateOfBirth": "2011-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b08",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Jenny",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b18",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Gemma",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b28",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Kelly",
+            "dateOfBirth": "2013-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b38",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Kendall",
+            "dateOfBirth": "2014-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b48",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Clivea",
+            "dateOfBirth": "2014-05-02"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b58",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Surimi",
+            "dateOfBirth": "2015-05-02"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb4",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Belzarian",
+            "dateOfBirth": "2015-09-01"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb5",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Yoshi",
+            "dateOfBirth": "2015-09-04"
+          }
+        }
+      },
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Mario",
+            "dateOfBirth": "2015-10-04"
+          }
+        }
       }
     ],
     "solicitor": {
@@ -73,28 +194,29 @@
     },
     "localAuthorities": [
       {
-        "id": "105409c7-9ec5-4c3a-9182-ad05d5290243",
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
         "value": {
           "name": "Swansea City Council",
-          "email": "swansea@test.com",
-          "pbaNumber": "PBA0082848",
+          "email": "test@test.com",
           "phone": "02027725772",
           "address": {
-            "County": "United Kingdom",
+            "County": "Swansea",
+            "Country": "United Kingdom",
             "PostCode": "CR0 2GE",
-            "PostTown": "London",
-            "AddressLine1": "Flat 12, Pinnacle Apartments",
-            "AddressLine2": "Saffron Central Square 11"
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
           },
+          "pbaNumber": "PBA1234567",
           "colleagues": [
             {
               "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
               "value": {
                 "role": "SOLICITOR",
-                "email": "alex@test.com",
-                "fullName": "Alex Brown",
-                "notificationRecipient": "Yes",
-                "mainContact": "Yes"
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
               }
             }
           ],
@@ -104,38 +226,46 @@
     ],
     "applicants": [
       {
-        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
         "value": {
           "party": {
             "email": {
-              "email": "swansea@test.com"
+              "email": "test@test.com"
             },
             "address": {
-              "County": "United Kingdom",
+              "County": "Swansea",
+              "Country": "United Kingdom",
               "PostCode": "CR0 2GE",
-              "PostTown": "London",
-              "AddressLine1": "Flat 12, Pinnacle Apartments",
-              "AddressLine2": "Saffron Central Square 11"
+              "PostTown": "Swansea",
+              "AddressLine1": "Flat 1, Swansea Apartments",
+              "AddressLine2": "Swansea Central Square 11",
+              "AddressLine3": "40 Fleet street"
             },
-            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
-            "jobTitle": "Legal adviser",
-            "partyType": "ORGANISATION",
-            "pbaNumber": "PBA0082848",
-            "clientCode": "8888",
+            "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+            "jobTitle": "Solicitor",
+            "pbaNumber": "PBA1234567",
             "mobileNumber": {
-              "telephoneNumber": "07000000000"
+              "telephoneNumber": "02027725772"
             },
             "telephoneNumber": {
-              "telephoneNumber": "00000000000",
-              "contactDirection": "Jonathon Walker"
+              "telephoneNumber": "02027725772",
+              "contactDirection": "John"
             },
-            "organisationName": "Swansea City Council",
-            "customerReference": "Example reference"
+            "organisationName": "Swansea City Council"
           },
           "leadApplicantIndicator": "Yes"
         }
       }
     ],
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
     "sendToCtsc": "Yes",
     "respondents1": [
       {
@@ -159,7 +289,7 @@
             "telephoneNumber": {
               "telephoneNumber": "00000 000000"
             },
-            "relationshipToChild": "Father"
+            "relationshipToChild": "Uncle"
           },
           "legalRepresentation": "No"
         }
@@ -178,44 +308,18 @@
               "AddressLine2": "Heron House 8"
             },
             "lastName": "Bloggs",
-            "firstName": "Emma",
+            "firstName": "George",
             "dateOfBirth": "1990-02-03",
             "placeOfBirth": "London",
             "telephoneNumber": {
               "telephoneNumber": "07000 654321"
             },
-            "relationshipToChild": "Mother"
+            "relationshipToChild": "Uncle"
           },
           "legalRepresentation": "No"
         }
       }
     ],
-    "others": {
-      "firstOther": {
-        "DOB": "1980-03-31",
-        "name": "Noah King",
-        "gender": "Male",
-        "address": {
-          "County": "",
-          "Country": "United Kingdom",
-          "PostCode": "SE16 6BA",
-          "PostTown": "London",
-          "AddressLine1": "Flat 20",
-          "AddressLine2": "Heron House 8",
-          "AddressLine3": ""
-        },
-        "telephone": "07000 654321",
-        "birthPlace": "London",
-        "detailsHidden": "No",
-        "representedBy": [],
-        "childInformation": null,
-        "litigationIssues": "NO",
-        "detailsHiddenReason": null,
-        "genderIdentification": null,
-        "litigationIssuesDetails": ""
-      },
-      "additionalOthers": []
-    },
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",
     "submittedForm": {
       "document_url": "${TEST_DOCUMENT_URL}",
@@ -226,17 +330,9 @@
       "agree"
     ],
     "allocationProposal": {
-      "proposal": "District judge"
+      "proposal": "District judge",
+      "proposalReason": "test"
     },
-    "caseLocalAuthority": "SA",
-    "localAuthorityPolicy": {
-      "Organisation": {
-        "OrganisationID": "ORGSA",
-        "OrganisationName": "Swansea City Council"
-      },
-      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
-    },
-    "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
