@@ -264,6 +264,20 @@ public enum Order {
             REVIEW_DRAFT_ORDER
         )
     ),
+    TRANSPARENCY_ORDER(
+        DIGITAL,
+        "Transparency Order",
+        "The Children Act 1989",
+        "Transparency Order",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            ORDER_BY_CONSENT,
+            TRANSPARENCY_ORDER,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
 
     /* MANUAL UPLOADS */
     C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(

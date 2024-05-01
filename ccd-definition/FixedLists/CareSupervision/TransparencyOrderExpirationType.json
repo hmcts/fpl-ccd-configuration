@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TransparencyOrderExpirationType",
+    "ListElementCode": "DATE_TO_BE_CHOSEN",
+    "ListElement": "Date to be chosen",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TransparencyOrderExpirationType",
+    "ListElementCode": "18TH_BDAY_YOUNGEST_CHILD",
+    "ListElement": "The 18th birthday of the youngest child",
+    "DisplayOrder": 2
+  }
+]
