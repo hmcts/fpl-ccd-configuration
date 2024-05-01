@@ -3194,14 +3194,9 @@ class MigrateCaseServiceTest {
 
         @Test
         void testShouldRemoveDocument() {
-            SubmittedC1WithSupplementBundle expected = SubmittedC1WithSupplementBundle.builder()
-                .urgencyTimeFrameType(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.getUrgencyTimeFrameType())
-                .supportingEvidenceBundle(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.getSupportingEvidenceBundle())
-                .supplementsBundle(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.getSupplementsBundle())
-                .clearSubmittedC1WithSupplement(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.getClearSubmittedC1WithSupplement())
-                .isDocumentUploaded(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.getIsDocumentUploaded())
+            SubmittedC1WithSupplementBundle expected = SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.toBuilder()
+                .document(null)
                 .build();
-
 
             CaseData caseData = CaseData.builder()
                 .submittedC1WithSupplement(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE)

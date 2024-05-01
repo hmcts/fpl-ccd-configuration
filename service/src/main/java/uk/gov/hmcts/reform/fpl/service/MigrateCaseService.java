@@ -1182,12 +1182,6 @@ public class MigrateCaseService {
             throw new AssertionError(format("Migration {id = %s}, submittedC1WithSupplement not found", migrationId));
         }
 
-        return Map.of("submittedC1WithSupplement", SubmittedC1WithSupplementBundle.builder()
-                .urgencyTimeFrameType(submittedC1WithSupplement.getUrgencyTimeFrameType())
-                .supportingEvidenceBundle(submittedC1WithSupplement.getSupportingEvidenceBundle())
-                .supplementsBundle(submittedC1WithSupplement.getSupplementsBundle())
-                .clearSubmittedC1WithSupplement(submittedC1WithSupplement.getClearSubmittedC1WithSupplement())
-                .isDocumentUploaded(submittedC1WithSupplement.getIsDocumentUploaded())
-            .build());
+        return Map.of("submittedC1WithSupplement", submittedC1WithSupplement.toBuilder().document(null).build());
     }
 }
