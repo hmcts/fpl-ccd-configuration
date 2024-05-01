@@ -34,10 +34,14 @@ export class ChildDetails extends BasePage{
     readonly representativeFirstName: Locator;
     readonly  representativeLastName: Locator;
     readonly representativeTelephone: Locator;
-    readonly representativeOrganisation: Locator;
     readonly representativeEmail: Locator;
     readonly representativeOrgSearch: Locator;
     readonly applyToAllChildren: Locator;
+    private childgroup: any;
+    private child: any;
+    private selectFPLSolicitorOrganisation: Locator;
+    private selectPrivateOrganisation: Locator;
+    readonly unregisteredOrganisation: Locator;
 
 
     constructor(page:Page){
@@ -74,12 +78,13 @@ export class ChildDetails extends BasePage{
         this.representativeLastName =page.getByLabel('Representative\'s last name');
         this.representativeEmail=page.getByLabel('Email address');
         this.representativeOrgSearch=page.getByLabel('You can only search for');
-        this.representativeOrganisation = page.getByTitle('Select the organisation Private solicitors', { exact: true });
+        this.selectPrivateOrganisation = page.getByTitle('Select the organisation Private solicitors', { exact: true });
+        this.selectFPLSolicitorOrganisation = page.getByTitle('Select the organisation FPLSolicitorOrg', { exact: true });
         this.representativeTelephone = page.getByRole('group', { name: 'Telephone number' });
         this.applyToAllChildren = page.getByRole('group', { name: 'Do all the children have this' });
        // this.applyToAllChildren = page.getByRole('radio', { name: 'Yes' });
-
-
+        this.childgroup =page.getByRole('group', { name: `${(this.child)}`});
+        this.unregisteredOrganisation =page.getByLabel('Organisation name (Optional)');
 
 
     }
@@ -132,20 +137,49 @@ export class ChildDetails extends BasePage{
         await this.checkYourAnsAndSubmit();
     }
 
-    async AddSingleSolicitor(){
+    async addRegisteredSOlOrg(){
         await this.childHaveRepresentative.getByText('Yes').click();
         await this.representativeFirstName.fill('Child Solicitor');
         await this.representativeLastName.fill('One');
         await this.representativeEmail.fill('solicitor@email.com');
         await this.representativeOrgSearch.fill('Private solicitors');
-        await this.representativeOrganisation.click();
+        await this.selectPrivateOrganisation.click();
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
-        // await this.clickContinue();
-        // await this.applyToAllChildren.getByRole('radio', { name: 'Yes' });
+    }
+
+    async addUnregisteredSolOrg(){
+        await this.childHaveRepresentative.getByText('Yes').click();
+        await this.representativeFirstName.fill('Child Solicitor');
+        await this.representativeLastName.fill('One');
+        await this.representativeEmail.fill('solicitor@email.com');
+        await this.unregisteredOrganisation.fill('NewOrganisation');
+        await this.postcode.fill('TW7');
+        await this.findAddress.click();
+        await this.selectAddress.selectOption('1: Object');
+        await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
 
     }
 
-    async  newassignToAllChild(){
+    async  assignSolicitorToAllChildren(){
         await this.applyToAllChildren.getByRole('radio', { name: 'Yes' }).check();
     }
+
+    async  assignDifferrentChildSolicitor(){
+        await this.applyToAllChildren.getByRole('radio', { name: 'No' }).check();
+    }
+
+    async addDifferentSolicitorForChild(child:string){
+        await this.page.getByRole('group', { name: `${(child)}`}).getByLabel('No').check();
+        await this.page.getByRole('group', { name: `${(child)}`}).getByLabel('Representative\'s first name (').fill('child1');
+        await this.page.getByRole('group', { name: `${(child)}`}).getByLabel('Representative\'s last name (').fill('private solicitor');
+        await this.page.getByRole('group', { name: `${(child)}`}).getByLabel('Email address (Optional)').fill('FPLSolOrg@email.com');
+        await this.representativeOrgSearch.fill('FPLSolicitorOrg');
+        await this.selectFPLSolicitorOrganisation.click();
+
+    }
+
+    async addCafcassSolicitorForChild(child:string){
+        await this.page.getByRole('group', { name: `${(child)}`}).getByLabel('Yes').check();
+    }
+
 }

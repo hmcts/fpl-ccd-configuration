@@ -47,10 +47,9 @@ test.describe('Manage child solicitor representatives ', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
             await childDetails.clickContinue();
-            await childDetails.AddSingleSolicitor();
+            await childDetails.addRegisteredSOlOrg();
             await childDetails.clickContinue();
-            await page.pause();
-            await childDetails.newassignToAllChild();
+            await childDetails.assignSolicitorToAllChildren();
             await childDetails.clickContinue();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
@@ -60,88 +59,61 @@ test.describe('Manage child solicitor representatives ', () => {
 
         });
 
-    test(' CTSC user can add different legal representative to each children',
-        async ({page, signInPage, legalCounsel}) => {
-            casename = 'CTSC add multiple Child solicitor ' + dateTime.slice(0, 10);
+    test(' @local CTSC user can add different legal representative to each children',
+        async ({page, signInPage, childDetails}) => {
+            casename = 'CTSC different Child solicitors ' + dateTime.slice(0, 10);
             await apiDataSetup.updateCase(casename, caseNumber, caseWithMultipleChild);
-            console.log("casenumber " + caseNumber);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
-            await page.pause();
-            await page.getByLabel('Next step').selectOption('12: Object');
-            await page.getByRole('button', { name: 'Go' }).click();
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByLabel('Yes').check();
-            await page.getByLabel('Representative\'s first name').click();
-            await page.getByLabel('Representative\'s first name').fill('child ');
-            await page.getByLabel('Representative\'s first name').press('Tab');
-            await page.getByLabel('Representative\'s last name').fill('solicitor1');
-            await page.getByLabel('Representative\'s last name').press('Tab');
-            await page.getByLabel('Email address').fill('private.solictor@mailinator.com');
-            await page.getByLabel('You can only search for').click();
-            await page.getByLabel('You can only search for').fill('private');
-            await page.getByTitle('Select the organisation Private solicitors', { exact: true }).click();
-            await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').click();
-            await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('845789900');
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByRole('radio', { name: 'No' }).check();
-            await page.getByRole('group', { name: 'Child 1' }).getByLabel('Representative\'s first name (').click();
-            await page.getByRole('group', { name: 'Child 1' }).getByLabel('Representative\'s first name (').click();
-            await page.getByRole('group', { name: 'Child 1' }).getByLabel('Representative\'s first name (').fill('child1');
-            await page.getByRole('group', { name: 'Child 1' }).getByLabel('Representative\'s first name (').press('Tab');
-            await page.getByRole('group', { name: 'Child 1' }).getByLabel('Representative\'s last name (').fill('private solicitor');
-            await page.getByLabel('You can only search for').click();
-            await page.getByLabel('You can only search for').fill('fpls');
-            await page.getByTitle('Select the organisation FPLSolicitorOrg').click();
-            await page.getByRole('group', { name: 'Child 2' }).getByLabel('Yes').check();
-            await page.getByRole('group', { name: 'Child 3' }).getByLabel('Yes').check();
-            await page.getByRole('group', { name: 'Child 4' }).getByLabel('Yes').check();
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByRole('textbox', { name: 'Email address (Optional)' }).click();
-            await page.getByRole('textbox', { name: 'Email address (Optional)' }).fill('privatechild1solicitor@email.com');
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByRole('button', { name: 'Save and continue' }).click();
-            await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1714465774935316');
-            await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1714465774935316#Summary');
-            await page.getByRole('tab', { name: 'People in the case' }).locator('div').click();
-            await page.getByRole('cell', { name: 'FPLSolicitorOrg', exact: true }).click();
-            // await expect(page.getByText('FPLSolicitorOrg')).toBeVisible();
-            // await expect(page.locator('#case-viewer-field-read--children1')).toContainText('FPLSolicitorOrg');
-            // await expect(page.locator('#case-viewer-field-read--children1')).toContainText('Private solicitors');
-            await page.getByText('Private solicitors', { exact: true }).nth(1).click();
-            // await expect(page.getByText('Private solicitors', { exact: true }).nth(1)).toBeVisible();
-
+            await childDetails.gotoNextStep("Children");
+            await childDetails.clickContinue();
+            await childDetails.addRegisteredSOlOrg();
+            await childDetails.clickContinue();
+            await childDetails.assignDifferrentChildSolicitor();
+            await childDetails.addDifferentSolicitorForChild('Child 1');
+            await childDetails.addCafcassSolicitorForChild('Child 2');
+            await childDetails.addCafcassSolicitorForChild('Child 3');
+            await childDetails.addCafcassSolicitorForChild('Child 4');
+            await childDetails.clickContinue();
+            await childDetails.checkYourAnsAndSubmit();
+            await childDetails.tabNavigation('People in the case');
+            await expect(page.getByText('Private solicitors', { exact: true })).toHaveCount(3);
+            await expect(page.getByText('FPLSolicitorOrg', { exact: true })).toHaveCount(1);
+            await childDetails.tabNavigation('Change of representatives')
+            await expect(page.getByText('Added representative',{ exact: true })).toHaveCount(4);
         });
 
     // this can be handled in the Noc tests.
     test(' CTSC user able to add unregistered solicitor to a child ',
-        async ({page, signInPage, legalCounsel}) => {
-            casename = 'Child solicitor access case by NoC ' + dateTime.slice(0, 10);
+        async ({page, signInPage, childDetails}) => {
+            casename = 'CTSC add unregistered child solicitor ' + dateTime.slice(0, 10);
             await apiDataSetup.updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
-            await page.pause();
-            await page.getByLabel('Next step').selectOption('12: Object');
-            await page.getByRole('button', { name: 'Go' }).click();
-            await page.locator('ccd-case-event-trigger div').filter({ hasText: 'ChildrenChild solicitor' }).click();
-            await page.getByRole('button', { name: 'Continue' }).click();
-            await page.getByLabel('Yes').check();
-            await page.getByLabel('Representative\'s first name').click();
-            await page.getByLabel('Representative\'s first name').fill('ChildSolicitor');
-            await page.getByLabel('Representative\'s first name').press('Tab');
-            await page.getByLabel('Representative\'s last name').fill('UnRegistered');
-            await page.getByLabel('Email address').click();
-            await page.getByLabel('Email address').fill('unregisteredSolicitor@email.com');
-            await page.getByLabel('Organisation name (Optional)').click();
-            await page.getByLabel('Organisation name (Optional)').fill('NewOrganisation');
-            await page.getByRole('textbox', { name: 'Enter a UK postcode' }).click();
-            await page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill('Tw7');
-            await page.getByRole('button', { name: 'Find address' }).click();
-            await page.getByLabel('Select an address').selectOption('12: Object');
-            await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').click();
-            await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('04668789708908');
+            await childDetails.gotoNextStep("Children");
+            await childDetails.clickContinue();
+            await childDetails.addUnregisteredSolOrg();
+
+
+
+
+            //await page.getByLabel('Yes').check();
+            // await page.getByLabel('Representative\'s first name').click();
+            // await page.getByLabel('Representative\'s first name').fill('ChildSolicitor');
+            // await page.getByLabel('Representative\'s first name').press('Tab');
+            // await page.getByLabel('Representative\'s last name').fill('UnRegistered');
+            // await page.getByLabel('Email address').click();
+            // await page.getByLabel('Email address').fill('unregisteredSolicitor@email.com');
+            // await page.getByLabel('Organisation name (Optional)').click();
+            // await page.getByLabel('Organisation name (Optional)').fill('NewOrganisation');
+            // await page.getByRole('textbox', { name: 'Enter a UK postcode' }).click();
+            // await page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill('Tw7');
+            // await page.getByRole('button', { name: 'Find address' }).click();
+            // await page.getByLabel('Select an address').selectOption('12: Object');
+            // await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').click();
+            // await page.getByRole('group', { name: 'Telephone number' }).locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('04668789708908');
             await page.getByRole('button', { name: 'Continue' }).click();
             await page.getByRole('radio', { name: 'Yes' }).check();
             await page.getByRole('button', { name: 'Continue' }).click();
