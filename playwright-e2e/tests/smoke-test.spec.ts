@@ -134,4 +134,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   });
 
 expect(accessibilityScanResults.violations).toEqual([]);
+    // Automatically uses the shared AxeBuilder configuration,
+  // but supports additional test-specific configuration too
+  .analyze();
 });
