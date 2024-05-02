@@ -33,6 +33,7 @@ public class MigrateCaseController extends CallbackController {
     private final FeatureToggleService featureToggleService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-log", this::runLog,
         "DFPL-2284", this::run2284,
         "DFPL-2296", this::run2296
     );
@@ -55,6 +56,10 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging migration, {}", caseDetails.getId());
     }
 
     private void run2284(CaseDetails caseDetails) {
