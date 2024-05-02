@@ -154,6 +154,10 @@ public class ManageOrdersEventData {
 
     TransparencyOrderExpirationType manageOrdersTransparencyOrderExpiration;
     LocalDate manageOrdersTransparencyOrderEndDate;
+    String manageOrdersTransparencyOrderPublishInformationDetails;
+    String manageOrdersTransparencyOrderPublishIdentityDetails;
+    String manageOrdersTransparencyOrderPublishDocumentsDetails;
+    LocalDate manageOrdersTransparencyOrderPermissionToReportEffectiveDate;
 
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {
