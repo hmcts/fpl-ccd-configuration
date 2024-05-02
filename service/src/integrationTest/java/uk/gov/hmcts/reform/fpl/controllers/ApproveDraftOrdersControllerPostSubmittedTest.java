@@ -34,12 +34,14 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -131,6 +133,9 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     @MockBean
     DocmosisHelper docmosisHelper;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Captor
     private ArgumentCaptor<OrderCafcassData> orderCafcassDataArgumentCaptor;
     @Captor
@@ -146,6 +151,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -308,6 +314,23 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         verifyEmailSentToTranslation(1);
         verifyNoMoreNotificationsSentToTraslation();
+    }
+
+    @Test
+    void shouldNotSendCMOIssuedNotificationIfToggledOff() throws NotificationClientException {
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
+
+        CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient, never()).sendEmail(eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+            any(), any(), any());
     }
 
     @Test

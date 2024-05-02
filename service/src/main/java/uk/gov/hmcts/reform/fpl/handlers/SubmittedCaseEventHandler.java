@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -64,18 +65,23 @@ public class SubmittedCaseEventHandler {
     private final EventService eventService;
     private final TranslationRequestService translationRequestService;
     private final CafcassNotificationService cafcassNotificationService;
+    private final FeatureToggleService featureToggleService;
 
     @Async
     @EventListener
     public void notifyAdmin(final SubmittedCaseEvent event) {
-        CaseData caseData = event.getCaseData();
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            CaseData caseData = event.getCaseData();
 
-        NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
-        String recipient = courtService.getCourtEmail(caseData);
+            NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
+            String recipient = courtService.getCourtEmail(caseData);
 
-        notificationService.sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId()
-        );
+            notificationService.sendEmail(
+                HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId()
+            );
+        } else {
+            log.info("WA EMAIL SKIPPED - case submitted - {}", event.getCaseData().getId());
+        }
     }
 
     @Async

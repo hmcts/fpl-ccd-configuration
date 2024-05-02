@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTempl
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -88,11 +89,14 @@ class SubmittedCaseEventHandlerTest {
     @Mock
     private CafcassNotificationService cafcassNotificationService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
     @Test
-    void shouldSendEmailToHmctsAdmin() {
+    void shouldSendEmailToHmctsAdminIfToggleOn() {
         final CaseData caseData = mock(CaseData.class);
         final CaseData caseDataBefore = mock(CaseData.class);
 
@@ -100,12 +104,29 @@ class SubmittedCaseEventHandlerTest {
         final SubmitCaseHmctsTemplate parameters = mock(SubmitCaseHmctsTemplate.class);
 
         when(caseData.getId()).thenReturn(CASE_ID);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
         when(courtService.getCourtEmail(caseData)).thenReturn(email);
         when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData)).thenReturn(parameters);
 
         submittedCaseEventHandler.notifyAdmin(new SubmittedCaseEvent(caseData, caseDataBefore));
 
         verify(notificationService).sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, CASE_ID);
+    }
+
+    @Test
+    void shouldNotSendEmailToHmctsAdminIfToggleOff() {
+        final CaseData caseData = mock(CaseData.class);
+        final CaseData caseDataBefore = mock(CaseData.class);
+
+        final String email = "test@test.com";
+        final SubmitCaseHmctsTemplate parameters = mock(SubmitCaseHmctsTemplate.class);
+
+        when(caseData.getId()).thenReturn(CASE_ID);
+        when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
+
+        submittedCaseEventHandler.notifyAdmin(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        verify(notificationService, never()).sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, CASE_ID);
     }
 
     @Test
