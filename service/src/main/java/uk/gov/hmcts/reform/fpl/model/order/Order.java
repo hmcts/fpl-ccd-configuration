@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSPARENCY_ORDER_BLOCK;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
@@ -274,7 +275,7 @@ public enum Order {
             APPROVER,
             APPROVAL_DATE,
             ORDER_BY_CONSENT,
-            TRANSPARENCY_ORDER,
+            TRANSPARENCY_ORDER_BLOCK,
             REVIEW_DRAFT_ORDER
         )
     ),
