@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-2284", this::run2284,
-        "DFPL-2311", this::run2311
+        "DFPL-2299", this::run2299
     );
 
     @PostMapping("/about-to-submit")
@@ -71,12 +72,14 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run2311(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2311";
+    private void run2299(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2299";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1711554908021037L, migrationId);
+//        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712908356292590L, migrationId);
 
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeSubmittedC1Document(caseData, migrationId));
+//        migrateCaseService.verifyUrgentDirectionsOrderExists(getCaseData(caseDetails), migrationId,
+//            UUID.fromString(""));
+
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }
