@@ -91,3 +91,18 @@ import lodash from 'lodash';
 
     }
 
+export const giveAccessToCase = async (caseID: string,user: {email: string ,password: string},role: string ) => {
+    let data = JSON.stringify({
+        'email': user.email,
+        'password': user.password,
+        'role': role
+    });
+    let postURL : string = `${urlConfig.serviceUrl}/testing-support/case/${caseID}/access`;
+    try {
+        let res = await apiRequest(postURL, systemUpdateUser, 'post', data);
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
