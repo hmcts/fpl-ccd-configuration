@@ -9,83 +9,23 @@
     },
     "changeOfRepresentatives": [
       {
-        "id": "6228c47d-9695-4050-97cc-e9c5caa4993a",
+        "id": "525aeb0d-79d8-4b60-808a-14ab4f92a421",
         "value": {
-          "date": "2024-05-02",
+          "date": "2024-05-03",
           "removed": {},
           "added": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
+            "firstName": "ChilKenny",
+            "lastName": "Solicitor",
             "organisation": {
               "OrganisationID": "D25VR7V",
               "OrganisationName": "Private solicitors"
             },
-            "email": "solicitor@email.com"
+            "email": "fr_applicant_sol@sharklasers.com"
           },
           "by": "HMCTS",
           "respondent": null,
-          "via": "FPL",
-          "child": "Timothy Jones"
-        }
-      },
-      {
-        "id": "30228578-7bc2-41bf-8fe6-8b96b65d1de5",
-        "value": {
-          "date": "2024-05-02",
-          "removed": {},
-          "added": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "email": "solicitor@email.com"
-          },
-          "by": "HMCTS",
-          "respondent": null,
-          "via": "FPL",
-          "child": "John Black"
-        }
-      },
-      {
-        "id": "96b7dc89-24fe-4f89-9ff8-99bdd780d539",
-        "value": {
-          "date": "2024-05-02",
-          "removed": {},
-          "added": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "email": "solicitor@email.com"
-          },
-          "by": "HMCTS",
-          "respondent": null,
-          "via": "FPL",
-          "child": "William Black"
-        }
-      },
-      {
-        "id": "6bd5248c-2cd3-4b49-97db-994e8662be7b",
-        "value": {
-          "date": "2024-05-02",
-          "removed": {},
-          "added": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "email": "solicitor@email.com"
-          },
-          "by": "HMCTS",
-          "respondent": null,
-          "via": "FPL",
-          "child": "Sarah Black"
+          "child": "Susan Brown",
+          "via": "FPL"
         }
       }
     ],
@@ -101,14 +41,14 @@
     },
     "children1": [
       {
-        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "id": "f2d78d5b-cbab-414c-9fb4-c85dabf90dd8",
         "value": {
           "legalCounsellors": [],
           "solicitor": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
+            "firstName": "Child",
+            "lastName": "Kenny",
             "telephoneNumber": {
-              "telephoneNumber": "012345678"
+              "telephoneNumber": "5654674568"
             },
             "colleaguesToBeNotified": [],
             "organisation": {
@@ -116,95 +56,38 @@
               "OrganisationName": "Private solicitors"
             },
             "unregisteredOrganisation": {},
-            "email": "solicitor@email.com",
+            "email": "fr_applicant_sol@sharklasers.com",
             "regionalOfficeAddress": {}
           },
           "party": {
-            "lastName": "Jones",
-            "firstName": "Timothy",
-            "gender": "Boy",
-            "dateOfBirth": "2015-08-01"
-          }
-        }
-      },
-      {
-        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
-        "value": {
-          "legalCounsellors": [],
-          "solicitor": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "telephoneNumber": {
-              "telephoneNumber": "012345678"
+            "lastName": "Brown",
+            "address": {
+              "AddressLine2": "55 High Street",
+              "AddressLine1": "Hart Reade",
+              "Country": "United Kingdom",
+              "PostTown": "Polegate",
+              "PostCode": "BN26 6AL"
             },
-            "colleaguesToBeNotified": [],
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "unregisteredOrganisation": {},
-            "email": "solicitor@email.com",
-            "regionalOfficeAddress": {}
-          },
-          "party": {
-            "lastName": "Black",
-            "firstName": "John",
-            "gender": "Boy",
-            "dateOfBirth": "2016-09-02"
-          }
-        }
-      },
-      {
-        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
-        "value": {
-          "legalCounsellors": [],
-          "solicitor": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "telephoneNumber": {
-              "telephoneNumber": "012345678"
-            },
-            "colleaguesToBeNotified": [],
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "unregisteredOrganisation": {},
-            "email": "solicitor@email.com",
-            "regionalOfficeAddress": {}
-          },
-          "party": {
-            "lastName": "Black",
-            "firstName": "William",
-            "gender": "Boy",
-            "dateOfBirth": "2017-10-01"
-          }
-        }
-      },
-      {
-        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
-        "value": {
-          "legalCounsellors": [],
-          "solicitor": {
-            "lastName": "One",
-            "firstName": "Child Solicitor",
-            "telephoneNumber": {
-              "telephoneNumber": "012345678"
-            },
-            "colleaguesToBeNotified": [],
-            "organisation": {
-              "OrganisationID": "D25VR7V",
-              "OrganisationName": "Private solicitors"
-            },
-            "unregisteredOrganisation": {},
-            "email": "solicitor@email.com",
-            "regionalOfficeAddress": {}
-          },
-          "party": {
-            "lastName": "Black",
-            "firstName": "Sarah",
             "gender": "Girl",
-            "dateOfBirth": "2010-05-02"
+            "fathersName": "Charles Brown",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "0123456789",
+              "contactDirection": "Jane Smith"
+            },
+            "careAndContactPlan": "this is the brief summary of care and contact plan",
+            "detailsHidden": "No",
+            "socialWorkerName": "Robert Taylor",
+            "dateOfBirth": "2019-01-10",
+            "fathersResponsibility": "Yes",
+            "litigationIssues": "NO",
+            "firstName": "Susan",
+            "adoption": "No",
+            "addressChangeDate": "2022-02-01",
+            "mothersName": "Claire Brown",
+            "additionalNeeds": "No",
+            "livingSituation": "Living with respondents",
+            "partyId": "0a36cd74-6d26-4e4e-b4dc-5e81439f262b",
+            "keyDates": "these are the key dates"
           }
         }
       }
