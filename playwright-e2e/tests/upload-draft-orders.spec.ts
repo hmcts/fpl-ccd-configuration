@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
-import * as caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
+import caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
 import { expect } from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
 

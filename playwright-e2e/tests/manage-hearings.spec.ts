@@ -1,7 +1,7 @@
 import { test } from  '../fixtures/create-fixture';
-import * as caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
-import * as vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json' assert { type: 'json' };
-import * as preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json' assert { type: 'json' };
+import caseData from '../caseData/caseWithHearingDetails.json' assert { type: 'json' };
+import vacatedHearingCaseData from '../caseData/caseWithVacatedHearing.json' assert { type: 'json' };
+import preJudgeAllocationCaseData from '../caseData/casePreAllocationDecision.json' assert { type: 'json' };
 import {
   CTSCUser,
   newSwanseaLocalAuthorityUserOne,

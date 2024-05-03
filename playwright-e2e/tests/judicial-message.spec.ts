@@ -1,7 +1,7 @@
 import { test} from '../fixtures/create-fixture';
-import * as caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
-import * as caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json' assert { type: 'json' };
-import * as caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json' assert { type: 'json' };
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import caseDataJudgeMessage from '../caseData/caseWithJudgeMessage.json' assert { type: 'json' };
+import caseDataCloseMessage from '../caseData/caseWithJudicialMessageReply.json' assert { type: 'json' };
 import { newSwanseaLocalAuthorityUserOne,CTSCUser ,judgeUser} from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 import {createCase, updateCase} from "../utils/api-helper";
