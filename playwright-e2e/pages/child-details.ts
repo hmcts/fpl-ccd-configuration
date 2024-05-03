@@ -1,8 +1,8 @@
-import {expect, type Locator, type Page} from "@playwright/test";
-import {BasePage} from "./base-page";
+import { expect, type Locator, type Page } from "@playwright/test";
+import { BasePage } from "./base-page";
 
 
-export class ChildDetails extends BasePage {
+export class ChildDetails extends BasePage{
     readonly firstName: Locator;
     readonly lastName: Locator;
     readonly dobDay: Locator;
@@ -43,7 +43,7 @@ export class ChildDetails extends BasePage {
     private selectFPLSolicitorOrganisation: Locator;
     private selectPrivateOrganisation: Locator;
 
-    constructor(page: Page) {
+    constructor(page: Page){
         super(page);
         this.firstName = page.getByLabel('*First name (Optional)');
         this.lastName = page.getByLabel('*Last name (Optional)');
@@ -87,7 +87,7 @@ export class ChildDetails extends BasePage {
 
     }
 
-    async childDetailsNeeded() {
+    async childDetailsNeeded(){
         await this.firstName.click();
         await this.firstName.fill('Susan');
         await this.lastName.click();
@@ -135,7 +135,7 @@ export class ChildDetails extends BasePage {
         await this.checkYourAnsAndSubmit();
     }
 
-    async addRegisteredSOlOrg() {
+    async addRegisteredSOlOrg(){
         await this.childHaveRepresentative.getByText('Yes').click();
         await this.representativeFirstName.fill('Child Solicitor');
         await this.representativeLastName.fill('One');
@@ -145,7 +145,7 @@ export class ChildDetails extends BasePage {
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
     }
 
-    async addUnregisteredSolOrg() {
+    async addUnregisteredSolOrg(){
         await this.childHaveRepresentative.getByText('Yes', { exact: true }).click();
         await this.representativeFirstName.fill('Child Solicitor');
         await this.representativeLastName.fill('One');
@@ -158,15 +158,15 @@ export class ChildDetails extends BasePage {
 
     }
 
-    async assignSolicitorToAllChildren() {
+    async assignSolicitorToAllChildren(){
         await this.applyToAllChildren.getByRole('radio', { name: 'Yes' }).check();
     }
 
-    async assignDifferrentChildSolicitor() {
+    async assignDifferrentChildSolicitor(){
         await this.applyToAllChildren.getByRole('radio', { name: 'No' }).check();
     }
 
-    async addDifferentSolicitorForChild(child: string) {
+    async addDifferentSolicitorForChild(child: string){
         await this.page.getByRole('group', { name: `${(child)}` }).getByLabel('No').check();
         await this.page.getByRole('group', { name: `${(child)}` }).getByLabel('Representative\'s first name (').fill('child1');
         await this.page.getByRole('group', { name: `${(child)}` }).getByLabel('Representative\'s last name (').fill('private solicitor');
@@ -176,11 +176,11 @@ export class ChildDetails extends BasePage {
 
     }
 
-    async addCafcassSolicitorForChild(child: string) {
+    async addCafcassSolicitorForChild(child: string){
         await this.page.getByRole('group', { name: `${(child)}` }).getByLabel('Yes').check();
     }
 
-    async removeSolicitor() {
+    async removeSolicitor(){
         await this.childHaveRepresentative.getByText('No', { exact: true }).click();
     }
 
