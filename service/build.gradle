@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1196'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1205'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -334,7 +334,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.10'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.1'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
