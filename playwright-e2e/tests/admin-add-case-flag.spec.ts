@@ -1,4 +1,4 @@
-import { test } from '../fixtures/create-fixture' assert { type: "json" };
+import { test } from '../fixtures/create-fixture';
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: "json" };
 import {
     newSwanseaLocalAuthorityUserOne,
