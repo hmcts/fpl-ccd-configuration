@@ -7,40 +7,32 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
-import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
-import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration;
-import uk.gov.hmcts.reform.fpl.model.configuration.DraftOrderUploadedNotificationConfiguration;
-import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
-import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_2ND_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_CHILD_SOL;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_DESIGNATED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_RESP_SOL;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.childSolicitors;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.respondentSolicitors;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
@@ -51,43 +43,51 @@ public class DraftOrdersRejectedEventHandler {
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
-
-//    @Async
-//    @EventListener
-//    public void sendNotificationToLA(final DraftOrdersRejected event) {
-//        CaseData caseData = event.getCaseData();
-//        List<HearingOrder> rejectedOrders = event.getRejectedOrders();
-//
-//        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-//            caseData.getHearingDetails())
-//            .map(Element::getValue)
-//            .orElse(null);
-//
-//        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-//            .caseData(caseData)
-//            .secondaryLocalAuthorityExcluded(true)
-//            .build();
-//
-//        final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
-//
-//        final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(
-//            caseData, hearing, rejectedOrders
-//        );
-//
-//        notificationService.sendEmail(JUDGE_REJECTS_DRAFT_ORDERS, recipients, content, caseData.getId());
-//    }
+    private static final Predicate<HearingOrder> DESIGNATED_LA_SOLICITOR_FILTER =
+        f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.designatedLASolicitors());
+    private static final Predicate<HearingOrder> SECONDARY_LA_SOLICITOR_FILTER =
+        f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.secondaryLASolicitors());
 
     @Async
     @EventListener
     public void sendNotifications(final DraftOrdersRejected event) {
+        final CaseData caseData = event.getCaseData();
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+
         buildConfigurationMapGroupedByRecipient(event)
             .forEach((recipients, theirDraftOrderRejected) -> {
                 if (isNotEmpty(recipients)) {
-                    // TODO replacing logging to notificationService.
-                    recipients.forEach(r -> theirDraftOrderRejected.stream().forEach(d ->
-                        log.info(d.getOrder().getFilename() + " rejected. Notifying " + r)));
+                    final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(
+                        caseData, hearing, theirDraftOrderRejected);
+                    String templateId = getTemplateIdByRejectedHearingOrder(theirDraftOrderRejected);
+                    if (templateId != null) {
+                        notificationService.sendEmail(templateId, recipients, content,
+                            caseData.getId());
+                    }
                 }
             });
+    }
+
+    private String getTemplateIdByRejectedHearingOrder(List<HearingOrder> rejectedOrders) {
+        if (rejectedOrders.stream().anyMatch(DESIGNATED_LA_SOLICITOR_FILTER)) {
+            return JUDGE_REJECTS_DRAFT_ORDERS_DESIGNATED_LA;
+        } else if (rejectedOrders.stream().anyMatch(SECONDARY_LA_SOLICITOR_FILTER)) {
+            return JUDGE_REJECTS_DRAFT_ORDERS_2ND_LA;
+        } else if (rejectedOrders.stream().anyMatch(f -> CollectionUtils
+            .containsAny(f.getUploaderCaseRoles(), childSolicitors()))) {
+            return JUDGE_REJECTS_DRAFT_ORDERS_CHILD_SOL;
+        } else if (rejectedOrders.stream().anyMatch(f -> CollectionUtils
+            .containsAny(f.getUploaderCaseRoles(), respondentSolicitors()))) {
+            return JUDGE_REJECTS_DRAFT_ORDERS_RESP_SOL;
+        } else {
+            rejectedOrders.forEach(ro ->
+                log.info("Not sending notification for rejected orders: " + ro.getOrder().getFilename()
+                    + "  uploaded by " + ro.getUploaderCaseRoles()));
+            return null;
+        }
     }
 
     private Map<Set<String>, List<HearingOrder>> buildConfigurationMapGroupedByRecipient(
@@ -103,9 +103,7 @@ public class DraftOrdersRejectedEventHandler {
             log.info("No recipient found for designated LA");
         } else {
             resultMap.put(designatedLA,
-                event.getRejectedOrders().stream().filter(
-                    f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.designatedLASolicitors())
-                ).toList());
+                event.getRejectedOrders().stream().filter(DESIGNATED_LA_SOLICITOR_FILTER).toList());
         }
 
         // secondary LA
@@ -114,21 +112,25 @@ public class DraftOrdersRejectedEventHandler {
             log.info("No recipient found for secondary LA");
         } else {
             resultMap.put(secondaryLA,
-                event.getRejectedOrders().stream().filter(
-                    f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.secondaryLASolicitors())
-                ).toList());
+                event.getRejectedOrders().stream().filter(SECONDARY_LA_SOLICITOR_FILTER).toList());
         }
 
-        // TODO respondent solicitor
-//        Set<String> respondentSolicitor = furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData);
-//        if (respondentSolicitor.isEmpty()) {
-//            log.info("No recipient found for respondent solicitor");
-//        } else {
-//            resultMap.put(respondentSolicitor,
-//                DocumentUploadedNotificationConfiguration::getSendToRespondentSolicitor);
-//        }
-//
-        for (CaseRole caseRole : CaseRole.childSolicitors()) {
+        // respondent solicitors
+        for (CaseRole caseRole : respondentSolicitors()) {
+            Set<String> childSolicitor = furtherEvidenceNotificationService.getRespondentSolicitorEmails(caseData,
+                caseRole);
+            if (childSolicitor.isEmpty()) {
+                log.info("No recipient found for " + caseRole);
+            } else {
+                resultMap.put(childSolicitor,
+                    event.getRejectedOrders().stream().filter(
+                        f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), List.of(caseRole))
+                    ).toList());
+            }
+        }
+
+        // child solicitors
+        for (CaseRole caseRole : childSolicitors()) {
             Set<String> childSolicitor = furtherEvidenceNotificationService.getChildSolicitorEmails(caseData,
                 caseRole);
             if (childSolicitor.isEmpty()) {

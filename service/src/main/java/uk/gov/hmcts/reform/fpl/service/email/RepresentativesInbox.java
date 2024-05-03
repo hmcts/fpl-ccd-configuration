@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;

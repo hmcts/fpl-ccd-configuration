@@ -62,7 +62,10 @@ public final class NotifyTemplates {
     public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
     public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "ad724f72-eae8-4774-b12a-0c3c658b7095";
-    public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
+    public static final String JUDGE_REJECTS_DRAFT_ORDERS_DESIGNATED_LA = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
+    public static final String JUDGE_REJECTS_DRAFT_ORDERS_2ND_LA = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
+    public static final String JUDGE_REJECTS_DRAFT_ORDERS_CHILD_SOL = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
+    public static final String JUDGE_REJECTS_DRAFT_ORDERS_RESP_SOL = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";
     public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "53c3f7dd-1dc6-4f8c-8567-f232099cbf5f";
