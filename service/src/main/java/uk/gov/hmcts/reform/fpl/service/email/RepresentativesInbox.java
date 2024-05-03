@@ -55,7 +55,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public HashSet<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
+    public Set<String> getRepresentativeEmailsFilteredByRole(CaseData caseData,
                                                                  RepresentativeServingPreferences preference,
                                                                  List<RepresentativeRole.Type> roles) {
         return caseData.getRepresentativesByServedPreference(preference)
@@ -66,7 +66,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public HashSet<String> getRespondentSolicitorEmails(CaseData caseData,
+    public Set<String> getRespondentSolicitorEmails(CaseData caseData,
                                                         RepresentativeServingPreferences preference) {
         return caseData.getAllRespondents().stream()
             .filter(respondent -> shouldSend(preference, respondent))
@@ -77,7 +77,7 @@ public class RepresentativesInbox {
             .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public Set<String> getChildrenSolicitorEmails(CaseData caseData, CaseRole caseRole,
+    public Set<String> getRepresentedSolicitorEmails(CaseData caseData, CaseRole caseRole,
                                                   RepresentativeServingPreferences preference) {
         List<Element<WithSolicitor>> locatedChild = Stream.of(caseRole)
             .map(CaseRole::formattedName)
@@ -99,7 +99,7 @@ public class RepresentativesInbox {
     }
 
     public Set<String> getChildrenSolicitorEmails(CaseData caseData,
-                                                      RepresentativeServingPreferences preference) {
+                                                  RepresentativeServingPreferences preference) {
         return caseData.getAllChildren().stream()
             .filter(child -> shouldSend(preference, child))
             .map(this::extractEmailsForSolicitorAndColleagues)

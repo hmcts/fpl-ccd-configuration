@@ -77,7 +77,8 @@ class DraftOrdersRejectedEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .requestedChanges("Please change ABC")
                 .build());
 
-        underTest.sendNotificationToLA(new DraftOrdersRejected(caseData, rejectedOrders));
+        // TODO
+        underTest.sendNotifications(new DraftOrdersRejected(caseData, rejectedOrders));
 
         assertThat(response())
             .hasSubject("Changes needed on draft orders, " + CHILD_LAST_NAME)

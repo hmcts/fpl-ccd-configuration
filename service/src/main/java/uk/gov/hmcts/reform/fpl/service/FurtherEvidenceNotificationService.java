@@ -80,7 +80,7 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getRepresentativeEmails(CaseData caseData) {
-        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+        Set<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, List.of(CAFCASS, RESPONDENT));
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         emails.addAll(representativesInbox.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE));
@@ -97,15 +97,20 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getChildSolicitorEmails(CaseData caseData, CaseRole caseRole) {
-        return new LinkedHashSet<>(representativesInbox.getChildrenSolicitorEmails(caseData, caseRole,
+        return new LinkedHashSet<>(representativesInbox.getRepresentedSolicitorEmails(caseData, caseRole,
             DIGITAL_SERVICE));
     }
 
     public Set<String> getRespondentSolicitorEmails(CaseData caseData) {
-        HashSet<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
+        Set<String> emails = representativesInbox.getRepresentativeEmailsFilteredByRole(caseData,
             DIGITAL_SERVICE, List.of(RESPONDENT));
         emails.addAll(representativesInbox.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE));
         return emails;
+    }
+
+    public Set<String> getRespondentSolicitorEmails(CaseData caseData, CaseRole caseRole) {
+        return new LinkedHashSet<>(representativesInbox.getRepresentedSolicitorEmails(caseData, caseRole,
+            DIGITAL_SERVICE));
     }
 
     public void sendNotificationForCourtBundleUploaded(CaseData caseData, Set<String> recipients,
