@@ -1,6 +1,5 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
-
 
 export class ChildDetails extends BasePage{
     readonly firstName: Locator;
@@ -155,7 +154,6 @@ export class ChildDetails extends BasePage{
         await this.findAddress.click();
         await this.selectAddress.selectOption('1: Object');
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
-
     }
 
     async assignSolicitorToAllChildren(){
@@ -173,7 +171,6 @@ export class ChildDetails extends BasePage{
         await this.page.getByRole('group', { name: `${(child)}` }).getByLabel('Email address (Optional)').fill('FPLSolOrg@email.com');
         await this.representativeOrgSearch.fill('FPLSolicitorOrg');
         await this.selectFPLSolicitorOrganisation.click();
-
     }
 
     async addCafcassSolicitorForChild(child: string){
