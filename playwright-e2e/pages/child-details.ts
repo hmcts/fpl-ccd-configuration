@@ -1,6 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
+
 export class ChildDetails extends BasePage{
     readonly firstName: Locator;
     readonly lastName: Locator;
@@ -42,7 +43,7 @@ export class ChildDetails extends BasePage{
     private selectFPLSolicitorOrganisation: Locator;
     private selectPrivateOrganisation: Locator;
 
-    constructor(page: Page){
+    constructor(page:Page){
         super(page);
         this.firstName = page.getByLabel('*First name (Optional)');
         this.lastName = page.getByLabel('*Last name (Optional)');
