@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/mandatoryWithMultipleChildren.json';
+import caseData from '../caseData/mandatorySubmissionFields.json';
 import {
     newSwanseaLocalAuthorityUserOne,
     CTSCUser,
@@ -41,11 +41,10 @@ test.describe('Add a case flag', () => {
     async function runTest(signInPage: SignInPage, addAdminCaseFlag: AddAndRemoveAdminCaseFlag, page: Page) {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await addAdminCaseFlag.runAddCaseFlagTest();
-        await expect(page.getByText('Potentially violent person')).toBeVisible();
-        await expect(page.getByText('additional notes')).toBeVisible();
+        await expect(page.getByText('Potentially violent person',{exact: true})).toBeVisible();
+        await expect(page.getByText('Case Flag Added')).toBeVisible();
         await  addAdminCaseFlag.runRemoveCaseFlagTest();
-        await expect(page.getByText('Potentially violent person')).toHaveCount(0);
-        await expect(page.getByText('additional notes')).toHaveCount(0);
+        await expect(page.getByText('Potentially violent person',{exact: true})).toBeHidden();
     }
 
 
