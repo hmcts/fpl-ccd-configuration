@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-documentsv2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

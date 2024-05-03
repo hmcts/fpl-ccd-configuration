@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { CreateCaseName } from "../utils/create-case-name";
 
-export class CreateCase {
+export class CreateCase{
   readonly page: Page;
   readonly caseJurisdictionFilterDropdown: Locator;
   readonly caseTypeFilterDropdown: Locator;
@@ -43,7 +43,7 @@ export class CreateCase {
     let formattedDate = CreateCaseName.getFormattedDate();
     this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
-
+  
   async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);

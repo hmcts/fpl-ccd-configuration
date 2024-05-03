@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
 
 import java.util.List;
 
-@Api
 @RestController
 @RequestMapping("/callback/add-note")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

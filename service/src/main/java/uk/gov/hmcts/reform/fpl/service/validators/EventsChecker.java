@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -65,6 +66,7 @@ public class EventsChecker {
     private AllocationProposalChecker allocationProposalChecker;
 
     @Autowired
+    @Lazy
     private CaseSubmissionChecker caseSubmissionChecker;
 
     @Autowired
