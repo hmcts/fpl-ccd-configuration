@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -72,6 +74,10 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2299(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2299";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712908356292590L, migrationId);
+        migrateCaseService.verifyUrgentDirectionsOrderExists(getCaseData(caseDetails), migrationId,
+            UUID.fromString("78dee4d9-f542-442b-a36a-c83b037e6f27"));
 
         caseDetails.getData().remove("urgentDirectionsOrder");
     }
