@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -32,7 +33,8 @@ public class MigrateCaseController extends CallbackController {
     private final FeatureToggleService featureToggleService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-2284", this::run2284
+        "DFPL-2284", this::run2284,
+        "DFPL-2311", this::run2311
     );
 
     @PostMapping("/about-to-submit")
@@ -67,5 +69,14 @@ public class MigrateCaseController extends CallbackController {
                     caseDetails.getId(), id, CaseRole.SOLICITORA);
             });
         }
+    }
+
+    private void run2311(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2311";
+
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1711554908021037L, migrationId);
+
+        CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeSubmittedC1Document(caseData, migrationId));
     }
 }
