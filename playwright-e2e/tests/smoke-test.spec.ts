@@ -20,6 +20,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   otherProceedings,
   submitCase,
   internationalElement,
+  courtServicesNeeded,
   c1WithSupplement,
   page,
   makeAxeBuilder
@@ -113,6 +114,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
+
+  // Court Services Needed
+  await startApplication.courtServicesNeededReqUpdated();
+  await courtServicesNeeded.CourtServicesSmoketest();
 
   // C1 With Supplement
   await startApplication.c1WithSupp();

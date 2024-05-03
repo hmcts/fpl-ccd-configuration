@@ -30,7 +30,7 @@
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
     "qs": "^6.11.2",
-    "webdriverio": "8.26.3"
+    "webdriverio": "8.36.1"
   },
   "scripts": {
     "lint": "eslint e2e",
