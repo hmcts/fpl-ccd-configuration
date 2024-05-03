@@ -34,7 +34,7 @@
     "playwright-core": "^1.43.1",
     "qs": "^6.11.2",
     "typescript": "^5.4.5",
-    "webdriverio": "8.26.3"
+    "webdriverio": "8.36.1"
   },
   "scripts": {
     "lint": "yarn eslint .",
