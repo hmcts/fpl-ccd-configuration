@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_2ND_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_CHILD_SOL;
@@ -44,7 +45,8 @@ public class DraftOrdersRejectedEventHandler {
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private static final Predicate<HearingOrder> DESIGNATED_LA_SOLICITOR_FILTER =
-        f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.designatedLASolicitors());
+        f -> f.getUploaderCaseRoles() == null || isEmpty(f.getUploaderCaseRoles())
+            || CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.designatedLASolicitors());
     private static final Predicate<HearingOrder> SECONDARY_LA_SOLICITOR_FILTER =
         f -> CollectionUtils.containsAny(f.getUploaderCaseRoles(), CaseRole.secondaryLASolicitors());
 
@@ -59,7 +61,7 @@ public class DraftOrdersRejectedEventHandler {
 
         buildConfigurationMapGroupedByRecipient(event)
             .forEach((recipients, theirDraftOrderRejected) -> {
-                if (isNotEmpty(recipients)) {
+                if (isNotEmpty(recipients) && isNotEmpty(theirDraftOrderRejected)) {
                     final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(
                         caseData, hearing, theirDraftOrderRejected);
                     String templateId = getTemplateIdByRejectedHearingOrder(theirDraftOrderRejected);
