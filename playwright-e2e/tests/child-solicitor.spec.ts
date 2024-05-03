@@ -10,7 +10,7 @@ import {
 } from '../settings/user-credentials';
 import {expect} from '@playwright/test';
 
-test.describe('@local Manage child solicitor representatives ', () => {
+test.describe('Manage child representatives ', () => {
     let apiDataSetup = new Apihelp();
     const dateTime = new Date().toISOString();
     let caseNumber: string;
