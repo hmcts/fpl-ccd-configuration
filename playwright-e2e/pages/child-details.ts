@@ -56,8 +56,9 @@ export class ChildDetails extends BasePage{
         this.slDay = this.startLiving.getByLabel('Day');
         this.slMonth = this.startLiving.getByLabel('Month');
         this.slYear = this.startLiving.getByLabel('Year');
-        this.postcode = page.getByLabel('Enter a UK postcode');
+        this.postcode = page.getByRole('textbox', { name: 'Enter a UK postcode' })
         this.findAddress = page.getByRole('button', { name: 'Find address' });
+       // this.selectAddress = page.getByRole('list',{name:'Select an address'})
         this.selectAddress = page.getByLabel('Select an address');
         this.keyDates = page.getByLabel('Key dates for this child (Optional)');
         this.briefSummaryCare = page.getByLabel('Brief summary of care and');
@@ -153,6 +154,8 @@ export class ChildDetails extends BasePage{
         await this.representativeLastName.fill('One');
         await this.representativeEmail.fill('solicitor@email.com');
         await this.unregisteredOrganisation.fill('NewOrganisation');
+        //await this.page.getByRole('group', { name: 'Organisation (unregistered) (' }).p
+        //locator('#childrenMainRepresentative_unregisteredOrganisation_address_address_postcodeLookup')
         await this.postcode.fill('TW7');
         await this.findAddress.click();
         await this.selectAddress.selectOption('1: Object');

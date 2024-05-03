@@ -1,0 +1,372 @@
+{
+  "state": "Submitted",
+  "caseData": {
+    "caseName": "e2e test case max children",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "changeOfRepresentatives": [
+      {
+        "id": "6228c47d-9695-4050-97cc-e9c5caa4993a",
+        "value": {
+          "date": "2024-05-02",
+          "removed": {},
+          "added": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "solicitor@email.com"
+          },
+          "by": "HMCTS",
+          "respondent": null,
+          "via": "FPL",
+          "child": "Timothy Jones"
+        }
+      },
+      {
+        "id": "30228578-7bc2-41bf-8fe6-8b96b65d1de5",
+        "value": {
+          "date": "2024-05-02",
+          "removed": {},
+          "added": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "solicitor@email.com"
+          },
+          "by": "HMCTS",
+          "respondent": null,
+          "via": "FPL",
+          "child": "John Black"
+        }
+      },
+      {
+        "id": "96b7dc89-24fe-4f89-9ff8-99bdd780d539",
+        "value": {
+          "date": "2024-05-02",
+          "removed": {},
+          "added": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "solicitor@email.com"
+          },
+          "by": "HMCTS",
+          "respondent": null,
+          "via": "FPL",
+          "child": "William Black"
+        }
+      },
+      {
+        "id": "6bd5248c-2cd3-4b49-97db-994e8662be7b",
+        "value": {
+          "date": "2024-05-02",
+          "removed": {},
+          "added": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "solicitor@email.com"
+          },
+          "by": "HMCTS",
+          "respondent": null,
+          "via": "FPL",
+          "child": "Sarah Black"
+        }
+      }
+    ],
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "telephoneNumber": {
+              "telephoneNumber": "012345678"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "unregisteredOrganisation": {},
+            "email": "solicitor@email.com",
+            "regionalOfficeAddress": {}
+          },
+          "party": {
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "gender": "Boy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "telephoneNumber": {
+              "telephoneNumber": "012345678"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "unregisteredOrganisation": {},
+            "email": "solicitor@email.com",
+            "regionalOfficeAddress": {}
+          },
+          "party": {
+            "lastName": "Black",
+            "firstName": "John",
+            "gender": "Boy",
+            "dateOfBirth": "2016-09-02"
+          }
+        }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "telephoneNumber": {
+              "telephoneNumber": "012345678"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "unregisteredOrganisation": {},
+            "email": "solicitor@email.com",
+            "regionalOfficeAddress": {}
+          },
+          "party": {
+            "lastName": "Black",
+            "firstName": "William",
+            "gender": "Boy",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "legalCounsellors": [],
+          "solicitor": {
+            "lastName": "One",
+            "firstName": "Child Solicitor",
+            "telephoneNumber": {
+              "telephoneNumber": "012345678"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "unregisteredOrganisation": {},
+            "email": "solicitor@email.com",
+            "regionalOfficeAddress": {}
+          },
+          "party": {
+            "lastName": "Black",
+            "firstName": "Sarah",
+            "gender": "Girl",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
+    "applicants": [
+      {
+        "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+        "value": {
+          "party": {
+            "email": {
+              "email": "test@test.com"
+            },
+            "address": {
+              "County": "Swansea",
+              "Country": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "Swansea",
+              "AddressLine1": "Flat 1, Swansea Apartments",
+              "AddressLine2": "Swansea Central Square 11",
+              "AddressLine3": "40 Fleet street"
+            },
+            "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+            "jobTitle": "Solicitor",
+            "pbaNumber": "PBA1234567",
+            "mobileNumber": {
+              "telephoneNumber": "02027725772"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02027725772",
+              "contactDirection": "John"
+            },
+            "organisationName": "Swansea City Council"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "2bfdecbf-26fa-429a-bcf3-0b5cba21a588",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SE16 6BA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 20",
+              "AddressLine2": "Heron House 8"
+            },
+            "lastName": "Bloggs",
+            "firstName": "George",
+            "dateOfBirth": "1990-02-03",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "07000 654321"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge",
+      "proposalReason": "test"
+    },
+    "displayAmountToPay": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    }
+  }
+}
+
