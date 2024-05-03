@@ -286,7 +286,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.23.1',
   pdfbox          : '2.0.31',
-  mockito         : '4.5.1',
+  mockito         : '4.11.0',
   serenity        : '2.6.0',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
