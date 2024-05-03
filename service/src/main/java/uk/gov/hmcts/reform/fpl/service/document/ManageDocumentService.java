@@ -56,7 +56,7 @@ import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedSolicitors;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.designatedLASolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.representativeSolicitors;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
@@ -138,7 +138,7 @@ public class ManageDocumentService {
         if (userService.isHmctsUser()) {
             return HMCTS;
         }
-        if (caseRoles.stream().anyMatch(designatedSolicitors()::contains)) {
+        if (caseRoles.stream().anyMatch(designatedLASolicitors()::contains)) {
             return DESIGNATED_LOCAL_AUTHORITY;
         }
         if (caseRoles.contains(CaseRole.LASHARED)) {

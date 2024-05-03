@@ -76,8 +76,12 @@ public enum CaseRole {
             CHILDSOLICITORL, CHILDSOLICITORM, CHILDSOLICITORN, CHILDSOLICITORO);
     }
 
-    public static List<CaseRole> designatedSolicitors() {
+    public static List<CaseRole> designatedLASolicitors() {
         return List.of(LASOLICITOR, EPSMANAGING, LAMANAGING, LABARRISTER);
+    }
+
+    public static List<CaseRole> secondaryLASolicitors() {
+        return List.of(LASHARED);
     }
 
     private static String formatName(String name) {
