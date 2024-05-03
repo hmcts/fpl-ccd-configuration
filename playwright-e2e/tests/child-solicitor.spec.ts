@@ -1,8 +1,6 @@
 import {test} from '../fixtures/create-fixture';
 import {Apihelp} from '../utils/api-helper';
-import caseWithMaxChildern from '../caseData/caseWithMaxChildren.json';
 import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json'
-
 import caseWithMultipleChild from '../caseData/mandatorySubmissionFields.json'
 import {
     newSwanseaLocalAuthorityUserOne,
