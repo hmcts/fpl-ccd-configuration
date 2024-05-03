@@ -1,5 +1,5 @@
-import {test} from '../fixtures/create-fixture';
-import {Apihelp} from '../utils/api-helper';
+import { test } from '../fixtures/create-fixture';
+import { Apihelp } from '../utils/api-helper';
 import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json'
 import caseWithMultipleChild from '../caseData/mandatorySubmissionFields.json'
 import {
@@ -8,7 +8,7 @@ import {
     FPLSolicitorOrgUser,
     CTSCTeamLeadUser
 } from '../settings/user-credentials';
-import {expect} from '@playwright/test';
+import { expect } from '@playwright/test';
 
 test.describe('Manage child representatives ', () => {
     let apiDataSetup = new Apihelp();
@@ -37,7 +37,6 @@ test.describe('Manage child representatives ', () => {
             await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(4);
             await childDetails.tabNavigation('Change of representatives')
             await expect(page.getByText('Added representative', {exact: true})).toHaveCount(4);
-
         });
 
     test(' CTSC user can add different legal representative to each children',
