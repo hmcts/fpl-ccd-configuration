@@ -161,12 +161,8 @@ export const test = base.extend<CreateFixtures>({
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
-    
-    addAdminCaseFlag: async ({ page }, use) => {
-        await use(new AddAndRemoveAdminCaseFlag(page));
-    },
-    
-  courtServicesNeeded: async ({ page }, use) => {
+
+    courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
   
