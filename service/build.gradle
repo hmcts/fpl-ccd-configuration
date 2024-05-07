@@ -416,6 +416,7 @@ dependencies {
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.8.2'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.5'
+  contractTestImplementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.5'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.10.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
