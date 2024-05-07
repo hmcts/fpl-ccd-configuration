@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.am.model.RoleType;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -64,6 +65,8 @@ public class RoleAssignmentServiceConsumerTest {
             .body(objectMapper.writeValueAsString(buildAssignmentRequest()))
             .willRespondWith()
             .status(HttpStatus.SC_CREATED)
+            .headers(Map.of(
+                "Content-Type", "application/vnd.uk.gov.hmcts.role-assignment-service.create-assignments+json"))
             .body(buildCreateResponsePactDsl())
             .toPact();
     }
@@ -82,21 +85,22 @@ public class RoleAssignmentServiceConsumerTest {
         return AssignmentRequest.builder()
             .roleRequest(RoleRequest.builder()
                 .assignerId("assignerId")
-                .process("process")
+                .process("fpl-case-service")
                 .reference("reference")
                 .replaceExisting(false)
                 .build())
             .requestedRoles(List.of(
                 RoleAssignment.builder()
                     .actorId("actorId")
-                    .actorIdType("actorIdType")
-                    .status("status")
+                    .actorIdType("IDAM")
                     .beginTime(now)
                     .endTime(now.plusDays(1))
+                    .attributes(Map.of("jurisdiction", "PUBLICLAW", "caseId", "1234567890123456"))
                     .grantType(GrantType.STANDARD)
-                    .roleName("roleName")
+                    .readOnly(false)
+                    .roleName("allocated-judge")
                     .roleType(RoleType.CASE)
-                    .roleCategory(RoleCategory.LEGAL_OPERATIONS)
+                    .roleCategory(RoleCategory.JUDICIAL)
                     .build()
             ))
             .build();
@@ -108,12 +112,16 @@ public class RoleAssignmentServiceConsumerTest {
                 .array("requestedRoles", ra -> ra
                     .object(r -> r
                         .stringType("actorId", "actorId")
-                        .stringType("actorIdType", "actorIdType")
-                        .stringType("roleName", "roleName")
+                        .stringType("actorIdType", "IDAM")
+                        .stringType("roleName", "allocated-judge")
                         .stringType("roleType", "CASE")
                         .stringType("classification", "PUBLIC")
                         .stringType("grantType", "STANDARD")
-                        .stringType("roleCategory", "LEGAL_OPERATIONS")
+                        .stringType("roleCategory", "JUDICIAL")
+                        .object("attributes", at -> at
+                            .stringType("jurisdiction", "PUBLICLAW")
+                            .stringType("caseId", "1234567890123456"))
+                        .booleanType("readOnly", false)
                         .stringType("status", "APPROVED")
                         .stringType("beginTime", now.toString())
                         .stringType("endTime", now.plusDays(1).toString())
