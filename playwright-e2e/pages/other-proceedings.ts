@@ -13,6 +13,7 @@ export class OtherProceedings {
     this.areThereAnyPastOrOngoingProccedingsReleventToCase = page.getByRole('radio',  { name: 'No', exact: true });
     this.continueButton = page.getByRole('button', { name: 'Continue' });
     this.saveAndContinueButton = page.getByRole('button', { name: 'Save and continue' });
+      
   }
   async otherProceedingsSmokeTest() {
     await this.otherProceedingsHeading.isVisible();
