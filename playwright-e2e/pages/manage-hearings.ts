@@ -1,4 +1,4 @@
-import {type Page, type Locator, expect} from "@playwright/test";
+import {type Page, type Locator } from "@playwright/test";
 import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
