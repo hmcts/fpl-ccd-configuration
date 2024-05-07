@@ -25,8 +25,6 @@ export class StartApplication {
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
   readonly otherProceedingsLink: Locator;
-  readonly c1WithSupplement: Locator;
-  readonly c1WithSupplementFinished: Locator;
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
