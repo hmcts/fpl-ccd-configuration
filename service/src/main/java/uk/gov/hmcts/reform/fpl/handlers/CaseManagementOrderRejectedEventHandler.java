@@ -46,9 +46,7 @@ public class CaseManagementOrderRejectedEventHandler {
 
     @EventListener
     public void sendNotifications(final CaseManagementOrderRejectedEvent event) {
-        final CaseData caseData = event.getCaseData();;
-
-
+        final CaseData caseData = event.getCaseData();
 
         buildConfigurationMapGroupedByRecipient(event)
             .forEach((recipients, cmoRejected) -> {
@@ -65,9 +63,9 @@ public class CaseManagementOrderRejectedEventHandler {
     }
 
     private String getTemplateIdByRejectedHearingOrder(HearingOrder cmoRejected) {
-        if (Stream.of(cmoRejected).anyMatch(DESIGNATED_LA_SOLICITOR_FILTER)) {
+        if (DESIGNATED_LA_SOLICITOR_FILTER.test(cmoRejected)) {
             return CMO_REJECTED_BY_JUDGE_DESIGNATED_LA;
-        } else if (Stream.of(cmoRejected).anyMatch(SECONDARY_LA_SOLICITOR_FILTER)) {
+        } else if (SECONDARY_LA_SOLICITOR_FILTER.test(cmoRejected)) {
             return CMO_REJECTED_BY_JUDGE_2ND_LA;
         } else if (Stream.of(cmoRejected).anyMatch(f -> CollectionUtils
             .containsAny(f.getUploaderCaseRoles(), childSolicitors()))) {
