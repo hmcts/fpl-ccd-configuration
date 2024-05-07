@@ -57,36 +57,20 @@ export class StartApplication {
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
+    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole("link", { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' 
 
   }
 
-  async addApplicationDetails() {
-    await expect(this.addApplicationDetailsHeading).toBeVisible();
-  }
-
-  async ordersAndDirectionsSought() {
-    await this.ordersAndDirectionsSoughtLink.isVisible();
-    await this.ordersAndDirectionsSoughtLink.click();
-  }
-
-  async hearingUrgency() {
-    await this.hearingUrgencyLink.isVisible();
-    await this.hearingUrgencyLink.click();
-    await expect(this.hearingUrgencyHeader).toBeVisible();
-  }
-
-  async groundsForTheApplication() {
+ async groundsForTheApplication() {
     await this.groundsForTheApplicationLink.isVisible();
     await this.groundsForTheApplicationLink.click();
     await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
-    await expect(this.groundsForTheApplicationHasBeenUpdatedFinished)
-      .toBeVisible;
+    await this.groundsForTheApplicationHasBeenUpdatedFinished.isVisible;
   }
 
   async riskAndHarmToChildren() {
