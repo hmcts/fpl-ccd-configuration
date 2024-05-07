@@ -38,7 +38,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
-  await createCase.caseName();
+    createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -80,11 +80,11 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
- 
+
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
-  await startApplication.applicantDetails(); 
+  await startApplication.applicantDetails();
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
@@ -120,14 +120,12 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await courtServicesNeeded.CourtServicesSmoketest();
 
   // C1 With Supplement
-  await startApplication.c1WithSupp();
   await c1WithSupplement.c1WithSupplementSmokeTest();
-  await startApplication.c1WithSuppFinished();
 
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
-    
+
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
   // but supports additional test-specific configuration too
