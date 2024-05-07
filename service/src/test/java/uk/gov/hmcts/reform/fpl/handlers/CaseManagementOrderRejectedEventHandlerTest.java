@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_DESIGNATED_LA;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +37,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
     @InjectMocks
     private CaseManagementOrderRejectedEventHandler underTest;
 
+    // TODO
     @Test
     void shouldNotifyLocalAuthorityOfCMORejected() {
         CaseData caseData = mock(CaseData.class);
@@ -50,7 +51,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
         given(caseData.getId()).willReturn(CASE_ID);
 
-        underTest.notifyLocalAuthority(new CaseManagementOrderRejectedEvent(caseData, cmo));
+        underTest.sendNotifications(new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         final RecipientsRequest expectedRecipientsRequest = RecipientsRequest.builder()
             .caseData(caseData)
@@ -58,9 +59,9 @@ class CaseManagementOrderRejectedEventHandlerTest {
             .build();
 
         verify(notificationService)
-            .sendEmail(CMO_REJECTED_BY_JUDGE_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS), notiftyData, CASE_ID);
+            .sendEmail(CMO_REJECTED_BY_JUDGE_DESIGNATED_LA, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                notiftyData, CASE_ID);
 
         verify(localAuthorityRecipients).getRecipients(expectedRecipientsRequest);
-
     }
 }

@@ -14,8 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -69,10 +71,13 @@ import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_3A;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_2ND_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_DESIGNATED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS_DESIGNATED_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -84,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
@@ -307,7 +313,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         postSubmittedEvent(callbackRequest);
 
         verifyEmailSentToTranslation(1);
-        verifyNoMoreNotificationsSentToTraslation();
+        verifyNoMoreNotificationsSentToTranslation();
     }
 
     @Test
@@ -390,7 +396,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);
         });
-        verifyNoMoreNotificationsSentToTraslation();
+        verifyNoMoreNotificationsSentToTranslation();
     }
 
     @Test
@@ -489,7 +495,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
             verifyNoMoreInteractions(notificationClient);
             verifyNoMoreInteractions(sendLetters);
         });
-        verifyNoMoreNotificationsSentToTraslation();
+        verifyNoMoreNotificationsSentToTranslation();
     }
 
 
@@ -532,7 +538,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         assertThat(orderCafcassDataArgumentCaptor.getAllValues())
             .extracting("documentName")
             .contains("Agreed CMO discussed at hearing", "C21 test order");
-        verifyNoMoreNotificationsSentToTraslation();
+        verifyNoMoreNotificationsSentToTranslation();
     }
 
     @Test
@@ -545,7 +551,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         postSubmittedEvent(callbackRequest);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
+            eq(CMO_REJECTED_BY_JUDGE_DESIGNATED_LA),
             eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(notificationReference(CASE_ID))
@@ -574,6 +580,26 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         verifyNoMoreInteractions(notificationClient);
     }
 
+    @Test
+    void shouldSendDraftOrdersRejectedNotificationBasedOnUploaderInfo() {
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo,
+                DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY, List.of(CaseRole.LASHARED)));
+        caseDetails.setId(CASE_ID);
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(CMO_REJECTED_BY_JUDGE_2ND_LA),
+            eq(LOCAL_AUTHORITY_2_INBOX),
+            anyMap(),
+            eq(notificationReference(CASE_ID))
+        ));
+
+        verifyNoMoreInteractions(notificationClient);
+    }
+
     private CaseDetails buildCaseDetails(HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
         UUID hearingId = UUID.randomUUID();
@@ -588,7 +614,13 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
                 .id(LOCAL_AUTHORITY_1_CODE)
                 .designated(YES.getValue())
                 .email(LOCAL_AUTHORITY_1_INBOX)
-                .build()))
+                .build(),
+                // secondary local authority
+                LocalAuthority.builder()
+                    .id(LOCAL_AUTHORITY_2_CODE)
+                    .designated(NO.getValue())
+                    .email(LOCAL_AUTHORITY_2_INBOX)
+                    .build()))
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
@@ -610,12 +642,19 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     }
 
     private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument) {
+        return buildOrder(type, status, orderDocument, null, null);
+    }
+
+    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument,
+                                    DocumentUploaderType uploaderType, List<CaseRole> uploaderCaseRoles) {
         return HearingOrder.builder()
             .type(type)
             .status(status)
             .order(orderDocument)
             .others(wrapElements(createOther()))
             .dateIssued(LocalDate.of(2012, 3, 1))
+            .uploaderType(uploaderType)
+            .uploaderCaseRoles(uploaderCaseRoles)
             .build();
     }
 
@@ -665,7 +704,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         checkUntil(() -> verify(emailService, times(timesCalled)).sendEmail(eq("sender@example.com"), any()));
     }
 
-    private void verifyNoMoreNotificationsSentToTraslation() {
+    private void verifyNoMoreNotificationsSentToTranslation() {
         checkThat(() -> verifyNoMoreInteractions(emailService), Duration.ofSeconds(2));
     }
 

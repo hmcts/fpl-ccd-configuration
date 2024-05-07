@@ -34,7 +34,7 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
     private CaseManagementOrderRejectedEventHandler underTest;
 
     @Test
-    void notifyLocalAuthority() {
+    void sendNotifications() {
         String familyManCaseNumber = "fam_num";
         long caseId = 12345L;
         CaseData caseData = CaseData.builder()
@@ -55,7 +55,7 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
             .hearing(hearing)
             .build();
 
-        underTest.notifyLocalAuthority(new CaseManagementOrderRejectedEvent(caseData, cmo));
+        underTest.sendNotifications(new CaseManagementOrderRejectedEvent(caseData, cmo));
 
         assertThat(response())
             .hasSubject("Changes needed on CMO, " + CHILD_LAST_NAME)

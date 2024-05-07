@@ -448,7 +448,7 @@ class RepresentativesInboxTest {
     }
 
     @Test
-    void shouldGetChildSolicitorColleagueEmailsAsWellByCaseRole_CHILDSOLICITORA() {
+    void shouldGetChildSolicitorColleagueEmailsAsWellByChildSolicitorCaseRoleA() {
         CaseData caseData = CaseData.builder()
             .children1(List.of(
                 element(REGISTERED_CHILD_WITH_COLLEAGUES), // A
@@ -463,7 +463,7 @@ class RepresentativesInboxTest {
     }
 
     @Test
-    void shouldGetChildSolicitorColleagueEmailsAsWellByCaseRole_CHILDSOLICITORB() {
+    void shouldGetChildSolicitorColleagueEmailsAsWellByChildSolicitorCaseRoleB() {
         CaseData caseData = CaseData.builder()
             .children1(List.of(
                 element(REGISTERED_CHILD_WITH_COLLEAGUES), // A
@@ -478,7 +478,7 @@ class RepresentativesInboxTest {
     }
 
     @Test
-    void shouldGetRespondentSolicitorColleagueEmailsAsWellByCaseRole_SOLICITORA() {
+    void shouldGetRespondentSolicitorColleagueEmailsAsWellByRespondentSolicitorCaseRoleA() {
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(
                 element(REGISTERED_RESPONDENT_WITH_COLLEAGUES), // A
@@ -493,7 +493,7 @@ class RepresentativesInboxTest {
     }
 
     @Test
-    void shouldGetRespondentSolicitorColleagueEmailsAsWellByCaseRole_SOLICITORB() {
+    void shouldGetRespondentSolicitorColleagueEmailsAsWellByRespondentSolicitorCaseRoleB() {
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(
                 element(REGISTERED_RESPONDENT_WITH_COLLEAGUES), // A
