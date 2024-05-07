@@ -88,7 +88,7 @@ test.describe('Upload additional applications', () => {
       // can see some basic properties of the application
       await expect(page.getByText('PBA1234567')).toBeVisible();
       await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
-      await expect(page.getByText('Within 2 days')).toBeVisible();
+      await expect(page.getByText('Within days')).toBeVisible();
 
       // can see the draft order to be approved
       await additionalApplications.tabNavigation('Draft orders');
