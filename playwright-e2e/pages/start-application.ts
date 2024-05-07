@@ -24,12 +24,10 @@ export class StartApplication {
   readonly applicantDetailsUpdated: Locator;
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
-  readonly c1WithSupplement: Locator;
-  readonly c1WithSupplementFinished: Locator;
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
-  
+
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
@@ -55,30 +53,15 @@ export class StartApplication {
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
+    
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-    this.c1WithSupplement = page.getByRole('link', { name: 'C1 with supplement' });
-    this.c1WithSupplementFinished = page.locator('p:has(a[text="C1 with supplement"]) > img[title="Finished"]');
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
-    this.welshLanguageReqFinished = page.locator('p:has(a[text()="Welsh language requirements"]) > img[title="Finished"]');
-    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
+
+
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
 
   }
 
-  async addApplicationDetails() {
-    await expect(this.addApplicationDetailsHeading).toBeVisible();
-  }
-
-  async ordersAndDirectionsSought() {
-    await this.ordersAndDirectionsSoughtLink.isVisible();
-    await this.ordersAndDirectionsSoughtLink.click();
-  }
-
-  async hearingUrgency() {
-    await this.hearingUrgencyLink.isVisible();
-    await this.hearingUrgencyLink.click();
-    await expect(this.hearingUrgencyHeader).toBeVisible();
-  }
 
   async groundsForTheApplication() {
     await this.groundsForTheApplicationLink.isVisible();
@@ -87,8 +70,7 @@ export class StartApplication {
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
-    await expect(this.groundsForTheApplicationHasBeenUpdatedFinished)
-      .toBeVisible;
+    await this.groundsForTheApplicationHasBeenUpdatedFinished.isVisible;
   }
 
   async riskAndHarmToChildren() {
@@ -144,13 +126,7 @@ export class StartApplication {
   async welshLanguageReqUpdated() {
     await expect(this.welshLanguageReqFinished).toBeVisible;
   }
-  async c1WithSupp() {
-     await this.c1WithSupplement.click();
-  }
 
-  async c1WithSuppFinished() {
-     await expect(this.c1WithSupplementFinished).toBeVisible;
-  }
   async internationalElementReqUpdated() {
     await this.internationalElementsHeading.isVisible();
     await this.internationalElementsHeading.click();
@@ -160,7 +136,7 @@ export class StartApplication {
     await this.courtServicesNeeded.isVisible();
     await this.courtServicesNeeded.click();
   }
-  
+
   async submitCase() {
     await this.submitApplicationLink.click();
   }
