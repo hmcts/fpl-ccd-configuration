@@ -1,24 +1,27 @@
 import { test } from '../fixtures/create-fixture';
-import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
+import {createCase, updateCase} from "../utils/api-helper";
 
 test.describe('Upload additional applications', () => {
-  let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;
-  let casename: string;
+  let caseName: string;
+  const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
 
-  test.beforeEach(async () => {
-    caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+
+
+    test.beforeEach(async () => {
+    caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
   test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
@@ -64,8 +67,8 @@ test.describe('Upload additional applications', () => {
 
   test('LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
@@ -94,8 +97,8 @@ test.describe('Upload additional applications', () => {
 
   test('LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
