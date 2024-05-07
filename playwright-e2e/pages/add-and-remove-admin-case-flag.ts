@@ -24,7 +24,7 @@ export class AddAndRemoveAdminCaseFlag extends BasePage {
         await this.uploadAssessmentForm.setInputFiles(config.testPdfFile);
         await this.waitForAllUploadsToBeCompleted();
         await this.additionalNotes.click();
-        await this.additionalNotes.fill('additional notes');
+        await this.additionalNotes.fill('Case Flag Added');
         await this.continueButton.click();
         await this.saveAndContinue.click();
     }
