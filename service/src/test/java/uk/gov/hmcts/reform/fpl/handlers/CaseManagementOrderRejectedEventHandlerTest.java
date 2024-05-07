@@ -29,6 +29,7 @@ import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_2ND_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_CHILD_SOL;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_DESIGNATED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_RESP_SOL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.SOLICITOR_EMAIL_ADDRESS;
 
@@ -126,5 +127,28 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
         verify(notificationService)
             .sendEmail(CMO_REJECTED_BY_JUDGE_CHILD_SOL, Set.of(SOLICITOR_EMAIL_ADDRESS), notifyData, CASE_ID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseRole.class, names = {
+        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE", "SOLICITORF" ,"SOLICITORG", "SOLICITORH",
+        "SOLICITORI", "SOLICITORJ"
+    })
+    void shouldNotifyRespondentSolicitorIfCMORejected(CaseRole uploaderCaseRole) {
+        CaseData caseData = mock(CaseData.class);
+        HearingOrder cmo = HearingOrder.builder().uploaderCaseRoles(List.of(uploaderCaseRole)).build();
+        RejectedCMOTemplate notifyData = mock(RejectedCMOTemplate.class);
+
+        given(furtherEvidenceNotificationService.getRespondentSolicitorEmails(any(), eq(uploaderCaseRole)))
+            .willReturn(Set.of(SOLICITOR_EMAIL_ADDRESS));
+        given(contentProvider.buildCMORejectedByJudgeNotificationParameters(caseData, cmo))
+            .willReturn(notifyData);
+
+        given(caseData.getId()).willReturn(CASE_ID);
+
+        underTest.sendNotifications(new CaseManagementOrderRejectedEvent(caseData, cmo));
+
+        verify(notificationService)
+            .sendEmail(CMO_REJECTED_BY_JUDGE_RESP_SOL, Set.of(SOLICITOR_EMAIL_ADDRESS), notifyData, CASE_ID);
     }
 }
