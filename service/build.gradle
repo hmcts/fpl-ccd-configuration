@@ -18,12 +18,12 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '2.7.18'
-  id 'com.github.ben-manes.versions' version '0.49.0'
+  id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '3.5.0.2730'
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1193'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1208'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -286,7 +286,7 @@ def versions = [
   springBoot      : springBoot.class.package.implementationVersion,
   log4j           : '2.23.1',
   pdfbox          : '2.0.31',
-  mockito         : '4.5.1',
+  mockito         : '4.11.0',
   serenity        : '2.6.0',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1',
@@ -326,7 +326,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
-  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.11.0'
 
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
 
@@ -334,7 +334,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.10'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.1'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
@@ -358,7 +358,7 @@ dependencies {
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.0'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.1'
 
   implementation group: 'net.minidev', name: 'json-smart', version: '2.5.1'
 
