@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
-import { Apihelp } from '../utils/api-helper';
-import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json'
-import caseWithMultipleChild from '../caseData/mandatorySubmissionFields.json'
+import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
+import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert { type: "json" }
+import caseWithMultipleChild from '../caseData/mandatorySubmissionFields.json' assert { type: "json" }
 import {
     newSwanseaLocalAuthorityUserOne,
     privateSolicitorOrgUser,
@@ -11,18 +11,17 @@ import {
 import { expect } from '@playwright/test';
 
 test.describe('Manage child representatives ', () => {
-    let apiDataSetup = new Apihelp();
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
     test.beforeEach(async () => {
-        caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
     test('CTSC user can add one legal representative to all children ',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC add one solicitor to represent all children ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseWithMultipleChild);
+            await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -42,7 +41,7 @@ test.describe('Manage child representatives ', () => {
     test(' CTSC user can add different legal representative to each children',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC different Child solicitors ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseWithMultipleChild);
+            await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -67,7 +66,7 @@ test.describe('Manage child representatives ', () => {
     test('CTSC user able to add unregistered solicitor to a child ',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC add unregistered child solicitor ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseWithMultipleChild);
+            await updateCase(casename, caseNumber, caseWithMultipleChild);
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -87,8 +86,8 @@ test.describe('Manage child representatives ', () => {
     test('CTSC user remove child solicitors',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC change child solicitor ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
-            await apiDataSetup.giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
+            await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
+            await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
