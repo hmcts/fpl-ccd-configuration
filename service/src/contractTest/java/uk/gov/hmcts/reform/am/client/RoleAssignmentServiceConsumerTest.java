@@ -123,8 +123,7 @@ public class RoleAssignmentServiceConsumerTest {
                             .stringType("caseId", "1234567890123456"))
                         .booleanType("readOnly", false)
                         .stringType("status", "APPROVED")
-                        .stringType("beginTime", now.toString())
-                        .stringType("endTime", now.plusDays(1).toString())
+                        .decimalType("beginTime", "endTime")
                     )
                 )
                 .object("roleRequest", rr -> rr
