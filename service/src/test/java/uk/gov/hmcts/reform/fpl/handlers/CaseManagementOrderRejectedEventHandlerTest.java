@@ -108,8 +108,8 @@ class CaseManagementOrderRejectedEventHandlerTest {
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {
         "CHILDSOLICITORA", "CHILDSOLICITORB", "CHILDSOLICITORC", "CHILDSOLICITORD", "CHILDSOLICITORE",
-        "CHILDSOLICITORF" ,"CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
-        "CHILDSOLICITORK" ,"CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
+        "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
+        "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
     })
     void shouldNotifyChildSolicitorIfCMORejected(CaseRole uploaderCaseRole) {
         CaseData caseData = mock(CaseData.class);
@@ -131,7 +131,7 @@ class CaseManagementOrderRejectedEventHandlerTest {
 
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {
-        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE", "SOLICITORF" ,"SOLICITORG", "SOLICITORH",
+        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE", "SOLICITORF", "SOLICITORG", "SOLICITORH",
         "SOLICITORI", "SOLICITORJ"
     })
     void shouldNotifyRespondentSolicitorIfCMORejected(CaseRole uploaderCaseRole) {
