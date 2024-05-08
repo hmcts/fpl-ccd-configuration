@@ -31,9 +31,9 @@ public final class NotifyTemplates {
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_REJECTED_BY_JUDGE_DESIGNATED_LA = "acb99554-4806-41f9-a95b-df7ee9b9b878";
-    public static final String CMO_REJECTED_BY_JUDGE_2ND_LA = "bcb99554-4806-41f9-a95b-df7ee9b9b878";
-    public static final String CMO_REJECTED_BY_JUDGE_CHILD_SOL = "ccb99554-4806-41f9-a95b-df7ee9b9b878";
-    public static final String CMO_REJECTED_BY_JUDGE_RESP_SOL = "dcb99554-4806-41f9-a95b-df7ee9b9b878";
+    public static final String CMO_REJECTED_BY_JUDGE_2ND_LA = "b8c12baf-9e6b-43a4-8fab-6d4f74b58fb1";
+    public static final String CMO_REJECTED_BY_JUDGE_CHILD_SOL = "ccc06bc8-beed-4e9e-8510-d1b12503e600";
+    public static final String CMO_REJECTED_BY_JUDGE_RESP_SOL = "d9bc62a8-17b7-40e5-9b79-c573f8a9b6b2";
     public static final String PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE
         = "38a4dba9-ab05-4a40-b72b-f26b05ea6e7b";
     public static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE
