@@ -582,7 +582,7 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
     @Test
     void shouldSendDraftOrdersRejectedNotificationBasedOnUploaderInfo() {
-        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo,
+        CaseDetails caseDetails = buildCaseDetails(true, buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo,
                 DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY, List.of(CaseRole.LASHARED)));
         caseDetails.setId(CASE_ID);
 
@@ -601,6 +601,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     }
 
     private CaseDetails buildCaseDetails(HearingOrder... caseManagementOrders) {
+        return buildCaseDetails(false, caseManagementOrders);
+    }
+
+    private CaseDetails buildCaseDetails(boolean with2ndLa, HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
         UUID hearingId = UUID.randomUUID();
 
@@ -615,12 +619,15 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
                 .designated(YES.getValue())
                 .email(LOCAL_AUTHORITY_1_INBOX)
                 .build(),
-                // secondary local authority
-                LocalAuthority.builder()
-                    .id(LOCAL_AUTHORITY_2_CODE)
-                    .designated(NO.getValue())
-                    .email(LOCAL_AUTHORITY_2_INBOX)
-                    .build()))
+                with2ndLa
+                    ? // secondary local authority
+                    LocalAuthority.builder()
+                        .id(LOCAL_AUTHORITY_2_CODE)
+                        .designated(NO.getValue())
+                        .email(LOCAL_AUTHORITY_2_INBOX)
+                        .build()
+                    : null)
+            )
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
@@ -642,7 +649,13 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     }
 
     private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument) {
-        return buildOrder(type, status, orderDocument, null, null);
+        return HearingOrder.builder()
+            .type(type)
+            .status(status)
+            .order(orderDocument)
+            .others(wrapElements(createOther()))
+            .dateIssued(LocalDate.of(2012, 3, 1))
+            .build();
     }
 
     private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument,

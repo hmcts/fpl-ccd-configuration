@@ -107,8 +107,8 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {
         "CHILDSOLICITORA", "CHILDSOLICITORB", "CHILDSOLICITORC", "CHILDSOLICITORD", "CHILDSOLICITORE",
-        "CHILDSOLICITORF" ,"CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
-        "CHILDSOLICITORK" ,"CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
+        "CHILDSOLICITORF", "CHILDSOLICITORG", "CHILDSOLICITORH", "CHILDSOLICITORI", "CHILDSOLICITORJ",
+        "CHILDSOLICITORK", "CHILDSOLICITORL", "CHILDSOLICITORM", "CHILDSOLICITORN", "CHILDSOLICITORO"
     })
     void sendNotificationsIfUploadedByChildSolicitor(CaseRole childCaseRole) {
         when(furtherEvidenceNotificationService.getChildSolicitorEmails(any(), eq(childCaseRole)))
@@ -163,7 +163,7 @@ class CaseManagementOrderRejectedEventHandlerEmailTemplateTest extends EmailTemp
 
     @ParameterizedTest
     @EnumSource(value = CaseRole.class, names = {
-        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE", "SOLICITORF" ,"SOLICITORG", "SOLICITORH",
+        "SOLICITORA", "SOLICITORB", "SOLICITORC", "SOLICITORD", "SOLICITORE", "SOLICITORF", "SOLICITORG", "SOLICITORH",
         "SOLICITORI", "SOLICITORJ"
     })
     void sendNotificationsIfUploadedByRespondentSolicitor(CaseRole respCaseRole) {
