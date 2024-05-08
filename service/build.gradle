@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1208'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1209'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -348,8 +348,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.88'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.88'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.89'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.89'
 
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
