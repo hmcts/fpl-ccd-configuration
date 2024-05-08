@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 
@@ -42,7 +41,6 @@ public class DraftOrdersRejectedEventHandler {
 
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
-    private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private static final Predicate<HearingOrder> DESIGNATED_LA_SOLICITOR_FILTER =
         f -> f.getUploaderCaseRoles() == null || isEmpty(f.getUploaderCaseRoles())
