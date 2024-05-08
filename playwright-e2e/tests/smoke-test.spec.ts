@@ -1,5 +1,4 @@
 import { test, expect } from "../fixtures/fixtures";
-import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -12,17 +11,19 @@ test("Smoke Test @smoke-test @accessibility", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   applicantDetails,
-  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
+  respondentDetails,
   welshLangRequirements,
+  submitCase,
   internationalElement,
-page,
+  courtServicesNeeded,
+  c1WithSupplement,
+  page,
   makeAxeBuilder
 },testInfo) => {
 
-  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -31,10 +32,11 @@ page,
   );
   //sign in page
   await signInPage.isSignedIn();
-  
+
   // Add application details
   // Start new case, get case id and assert case id is created
-  await createCase.caseName();
+
+    createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -88,7 +90,7 @@ page,
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
-  
+
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
@@ -107,6 +109,17 @@ page,
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
 
+  // Court Services Needed
+  await startApplication.courtServicesNeededReqUpdated();
+  await courtServicesNeeded.CourtServicesSmoketest();
+
+  // C1 With Supplement
+  await c1WithSupplement.c1WithSupplementSmokeTest();
+
+  // Submit the case
+  await startApplication.submitCase();
+  await submitCase.submitCaseSmokeTest();
+
   const accessibilityScanResults = await makeAxeBuilder()
   // Automatically uses the shared AxeBuilder configuration,
   // but supports additional test-specific configuration too
@@ -118,5 +131,4 @@ page,
   });
 
 expect(accessibilityScanResults.violations).toEqual([]);
-}
-);
+});
