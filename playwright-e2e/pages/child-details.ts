@@ -153,7 +153,7 @@ export class ChildDetails extends BasePage{
         await this.unregisteredOrganisation.fill('NewOrganisation');
         await this.postcode.fill('TW7');
         await this.findAddress.click();
-        await this.selectAddress.selectOption('1: Object');
+        await this.selectAddress.selectOption({index: 1});
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
     }
 
@@ -181,5 +181,4 @@ export class ChildDetails extends BasePage{
     async removeSolicitor(){
         await this.childHaveRepresentative.getByText('No', { exact: true }).click();
     }
-
 }
