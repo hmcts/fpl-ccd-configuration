@@ -53,7 +53,7 @@ export class BasePage {
   }
 
   async waitForAllUploadsToBeCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -69,7 +69,7 @@ export class BasePage {
     expect(await this.reloadAndCheckForText(userName, 10000, 3)).toBeTruthy();
   }
 
-  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<Boolean> {
+  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
       await this.page.reload();
