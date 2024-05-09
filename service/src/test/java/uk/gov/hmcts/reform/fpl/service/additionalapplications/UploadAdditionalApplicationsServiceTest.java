@@ -631,14 +631,14 @@ class UploadAdditionalApplicationsServiceTest {
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
                 .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
 
             assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
                 .getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
                 .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
     }
 
