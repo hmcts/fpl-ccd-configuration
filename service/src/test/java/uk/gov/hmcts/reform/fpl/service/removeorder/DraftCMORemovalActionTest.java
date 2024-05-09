@@ -277,10 +277,6 @@ class DraftCMORemovalActionTest {
 
         when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
             .thenReturn(updatedHearings);
-        when(draftOrderService.migrateCmoDraftToOrdersBundles(caseData))
-                .thenReturn(HearingOrdersBundles.builder()
-                        .draftCmos(hearingOrdersBundlesDrafts)
-                        .build());
 
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
 
