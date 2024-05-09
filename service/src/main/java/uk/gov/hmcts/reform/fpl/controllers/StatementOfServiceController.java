@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.StatementOfServiceService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-@Api
 @RestController
 @RequestMapping("/callback/statement-of-service")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
