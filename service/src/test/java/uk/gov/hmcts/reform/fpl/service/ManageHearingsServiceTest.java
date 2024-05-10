@@ -82,7 +82,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -1655,8 +1654,6 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> vacatedHearingBundle = randomDocumentBundle(hearingElement1);
-
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .hearingReListOption(NONE)
@@ -1665,17 +1662,12 @@ class ManageHearingsServiceTest {
                     .hearingHousekeepReason(HearingHousekeepReason.DUPLICATE)
                     .build())
                 .vacatedHearingDate(vacatedDate)
-                .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
                 .build();
-
-            final String documentBundleName = vacatedHearingBundle.getValue().getHearingName();
-            final String updatedDocumentBundleName = String.format("%s - %s", documentBundleName, "vacated");
 
             service.vacateHearing(caseData, hearingElement1.getId());
 
             assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(vacatedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
         }
 
         void shouldVacateHearing(HearingReListOption reListOption, HearingStatus expectedStatus) {

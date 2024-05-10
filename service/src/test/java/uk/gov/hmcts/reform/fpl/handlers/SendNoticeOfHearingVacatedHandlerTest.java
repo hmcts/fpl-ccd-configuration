@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,28 +10,23 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.cafcass.VacateOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HearingVacatedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
-import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.VACATE_OF_HEARING;
 
 @ExtendWith(MockitoExtension.class)
 public class SendNoticeOfHearingVacatedHandlerTest {
@@ -139,51 +133,4 @@ public class SendNoticeOfHearingVacatedHandlerTest {
             .sendToRepresentativesExceptOthersByServedPreference(DIGITAL_SERVICE, VACATE_HEARING,
                 HEARING_VACATED_EMAIL_CONTENT, caseData);
     }
-
-    @Test
-    void shouldNotifyCafcassEngland() {
-        CaseData caseData = CaseData.builder()
-            .id(1L)
-            .caseLocalAuthority("HN")
-            .build();
-        SendNoticeOfHearingVacated sendNoticeOfHearingVacatedEvent = new SendNoticeOfHearingVacated(caseData,
-            VACATED_HEARING, false);
-
-        when(cafcassLookupConfiguration.getCafcassEngland(any())).thenReturn(Optional.of(CAFCASS));
-        when(hearingVacatedEmailContentProvider.buildHearingVacatedNotification(any(), any(), eq(false)))
-            .thenReturn(HEARING_VACATED_EMAIL_CONTENT);
-
-        underTest.notifyCafcass(sendNoticeOfHearingVacatedEvent);
-
-        verify(cafcassNotificationService).sendEmail(caseData, VACATE_OF_HEARING,
-            VacateOfHearingCafcassData.builder()
-                .hearingDateFormatted(HEARING_VACATED_EMAIL_CONTENT.getHearingDateFormatted())
-                .hearingVenue(HEARING_VACATED_EMAIL_CONTENT.getHearingVenue())
-                .hearingTime(HEARING_VACATED_EMAIL_CONTENT.getHearingTime())
-                .vacatedDate(HEARING_VACATED_EMAIL_CONTENT.getVacatedDate())
-                .vacatedReason(HEARING_VACATED_EMAIL_CONTENT.getVacatedReason())
-                .relistAction(HEARING_VACATED_EMAIL_CONTENT.getRelistAction())
-                .build());
-    }
-    @Test
-    void shouldNotifyCafcassWales() {
-        CaseData caseData = CaseData.builder()
-            .id(1L)
-            .caseLocalAuthority("SA")
-            .build();
-        SendNoticeOfHearingVacated sendNoticeOfHearingVacatedEvent = new SendNoticeOfHearingVacated(caseData,
-            VACATED_HEARING, false);
-
-        when(cafcassLookupConfiguration.getCafcassWelsh(any())).thenReturn(Optional.of(CAFCASS));
-        when(cafcassLookupConfiguration.getCafcass(any()))
-            .thenReturn(new CafcassLookupConfiguration.Cafcass("Cafcass", CAFCASS_RECIPIENT));
-        when(hearingVacatedEmailContentProvider.buildHearingVacatedNotification(any(), any(), eq(false)))
-            .thenReturn(HEARING_VACATED_EMAIL_CONTENT);
-
-        underTest.notifyCafcass(sendNoticeOfHearingVacatedEvent);
-
-        verify(notificationService).sendEmail(VACATE_HEARING, CAFCASS_RECIPIENT, HEARING_VACATED_EMAIL_CONTENT,
-            caseData.getId());
-    }
-
 }

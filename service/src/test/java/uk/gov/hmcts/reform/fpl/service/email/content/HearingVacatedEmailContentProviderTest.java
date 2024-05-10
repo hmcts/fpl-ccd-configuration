@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.annotation.Testable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
@@ -15,15 +13,13 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-public class HearingVacatedEmailContentProviderTest extends AbstractEmailContentProviderTest{
+public class HearingVacatedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2024, 01, 01, 10, 30);

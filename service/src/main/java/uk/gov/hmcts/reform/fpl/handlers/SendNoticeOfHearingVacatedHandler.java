@@ -6,20 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
-import uk.gov.hmcts.reform.fpl.model.cafcass.VacateOfHearingCafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HearingVacatedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
-import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +22,6 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.VACATE_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.VACATE_OF_HEARING;
 
 @Slf4j
 @Service
@@ -39,8 +33,6 @@ public class SendNoticeOfHearingVacatedHandler {
 
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final CafcassNotificationService cafcassNotificationService;
 
     @Async
     @EventListener
@@ -69,27 +61,5 @@ public class SendNoticeOfHearingVacatedHandler {
             );
         });
     }
-
-    @Async
-    @EventListener
-    public void notifyCafcass(final SendNoticeOfHearingVacated event) {
-        final CaseData caseData = event.getCaseData();
-
-        HearingVacatedTemplate notifyData = hearingVacatedEmailContentProvider
-            .buildHearingVacatedNotification(caseData, event.getVacatedHearing(), event.isRelisted());
-        if (CafcassHelper.isNotifyingCafcassWelsh(caseData, cafcassLookupConfiguration)) {
-            final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
-            notificationService.sendEmail(VACATE_HEARING, recipient, notifyData, caseData.getId());
-        } else if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
-            cafcassNotificationService.sendEmail(caseData, VACATE_OF_HEARING,
-                VacateOfHearingCafcassData.builder()
-                    .hearingDateFormatted(notifyData.getHearingDateFormatted())
-                    .hearingVenue(notifyData.getHearingVenue())
-                    .hearingTime(notifyData.getHearingTime())
-                    .vacatedDate(notifyData.getVacatedDate())
-                    .vacatedReason(notifyData.getVacatedReason())
-                    .relistAction(notifyData.getRelistAction())
-                    .build());
-        }
-    }
 }
+

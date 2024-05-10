@@ -158,14 +158,6 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
             true),
 
-    VACATE_OF_HEARING("Vacate of hearing",
-        (caseData, cafcassData) -> String.format(getSubject(),
-            caseData.getFamilyManCaseNumber(),
-            "Hearing vacated"),
-        CafcassRequestEmailContentProvider::getVacateOfHearingMessage,
-        CafcassEmailConfiguration::getRecipientForNoticeOfHearing,
-        true),
-
     PLACEMENT_APPLICATION("Placement Application",
         (caseData, cafcassData) ->  String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
