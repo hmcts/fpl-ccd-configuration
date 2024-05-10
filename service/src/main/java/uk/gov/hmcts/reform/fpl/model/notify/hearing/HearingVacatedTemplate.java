@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.notify.hearing;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 
 import java.time.LocalDateTime;
