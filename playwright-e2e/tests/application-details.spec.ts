@@ -71,7 +71,7 @@ test.describe(' Add non mandatory application details', () => {
         await c1WithSupplement.c1WithSupplementSmokeTest();
     })
 
-    test('@local Court Service',async({signInPage,startApplication,courtServicesNeeded})=>{
+    test(' Court Service',async({signInPage,startApplication,courtServicesNeeded})=>{
         // Court Services Needed
         caseNumber =  await createCase('Court services '+dateTime.slice(0, 10),newSwanseaLocalAuthorityUserOne);
         await signInPage.visit();
