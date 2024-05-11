@@ -1,6 +1,7 @@
-import { type Page, type Locator } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
+import {BasePage} from "./base-page";
 
-export class RespondentDetails {
+export class RespondentDetails extends BasePage{
 
   readonly page: Page;
   readonly respondentDetailsHeading: Locator;
@@ -15,7 +16,7 @@ export class RespondentDetails {
   readonly relationToChild: Locator;
   readonly relationToChildContact: Locator; //corresponds to yes or no radio feature: 'Do you need contact details hidden from other parties? (Optional)'
   readonly relationToChildContactReason: Locator;
-  readonly litigationCapacity: Locator; //ie Ability to take part in proceedings 
+  readonly litigationCapacity: Locator; //ie Ability to take part in proceedings
   readonly litigationCapacityReason: Locator;
   readonly legalRepresentation: Locator;
   readonly continue: Locator;
@@ -23,7 +24,8 @@ export class RespondentDetails {
   readonly addressNotKnownReason: Locator;
 
   public constructor(page: Page) {
-    this.page = page;
+      super(page);
+      this.page = page;
     this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
     this.firstName = page.getByLabel('*First name (Optional)');
     this.lastName = page.getByLabel('*Last name (Optional)');
@@ -45,32 +47,32 @@ export class RespondentDetails {
   }
 
   async respondentDetailsNeeded() {
-    await this.respondentDetailsHeading.isVisible;
-    await this.firstName.click();
+    await expect(this.respondentDetailsHeading).toBeVisible();
+   // await this.firstName.click();
     await this.firstName.fill('John');
-    await this.lastName.click();
+   // await this.lastName.click();
     await this.lastName.fill('Smith');
-    await this.dobDay.click();
+   // await this.dobDay.click();
     await this.dobDay.fill('10');
-    await this.dobMonth.click();
+   // await this.dobMonth.click();
     await this.dobMonth.fill('11');
-    await this.dobYear.click();
+  //  await this.dobYear.click();
     await this.dobYear.fill('2001');
     await this.gender.click(); //not sure if click needed
     await this.gender.selectOption('1: Male');
     await this.currentAddress.getByLabel('No').check();
     await this.addressNotKnownReason.selectOption('2: Person deceased');
     await this.telephone.fill('01234567890');
-    await this.relationToChild.click();
+   // await this.relationToChild.click();
     await this.relationToChild.fill('aunt');
     await this.relationToChildContact.getByLabel('Yes').check();
-    await this.relationToChildContactReason.click();
+   // await this.relationToChildContactReason.click();
     await this.relationToChildContactReason.fill('this is the reason');
     await this.litigationCapacity.getByLabel('Yes').check();
-    await this.litigationCapacityReason.click();
+   // await this.litigationCapacityReason.click();
     await this.litigationCapacityReason.fill('these are the details');
     await this.legalRepresentation.getByLabel('No').check();
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
 }

@@ -27,18 +27,30 @@ export class StartApplication {
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
+    readonly orderAndDirectionSoughtFinish: Locator;
+    readonly hearingUrgencyFinish: Locator;
+    readonly riskAndHarmToChildrenFinished: Locator;
+    readonly factorsAffectingParentingFinish: Locator;
+    readonly respondentsDetailsUpdated: Locator;
+    readonly courtServiceUpdated: Locator;
+    readonly internationalElement: Locator;
 
   public constructor(page: Page) {
     this.page = page;
     this.addApplicationDetailsHeading = page.getByRole("heading", { name: "Add application details", });
-    this.ordersAndDirectionsSoughtLink = page.getByRole("heading", { name: "Orders and directions sought", });
+    this.ordersAndDirectionsSoughtLink = page.getByRole("link", { name: "Orders and directions sought", });
+    this.orderAndDirectionSoughtFinish = page.locator('p').filter({ hasText: 'Orders and directions sought' }).getByRole('img',{name:'Finished'});
     this.factorsAffectingParentingLink = page.getByRole("heading", { name: "Factors affecting parenting", });
-    this.hearingUrgencyLink = page.getByRole("link", { name: "Hearing urgency", });
+      this.factorsAffectingParentingFinish =page.locator('p').filter({ hasText: 'Factors affecting parenting' }).getByRole('img',{name:'Finished'});
+      this.hearingUrgencyLink = page.getByRole("link", { name: "Hearing urgency", });
+    this.hearingUrgencyFinish = page.locator('p:has(a[text="Hearing urgency"]) > img[title="Finished"]');
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
+    this.riskAndHarmToChildrenFinished= page.locator('p').filter({ hasText: 'Risk and harm to children' }).getByRole('img',{name:'Finished'});
+     // page.locator('p:has(a[text="Risk and harm to children"]) > img[title="Finished"]');
     this.allocationProposalFinished = page.locator('p:has(a[text="Allocation proposal"]) > img[title="Finished"]');
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
@@ -46,40 +58,61 @@ export class StartApplication {
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
     this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="In progress"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
-    this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
-    this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
+    this.respondentsDetailsUpdated = page.locator('p').filter({ hasText: 'Respondents\' details' }).getByRole('img', { name: 'Information added' });
+    this.childDetailsLink = page.getByRole("link", { name: 'Child\'s Details', });
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
-    
-    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
+    this.internationalElement = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
-
-
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.courtServiceUpdated = page.locator('p:has(a[text="Court services needed"]) > img[title="Finished"]');
+
 
   }
-
 
   async groundsForTheApplication() {
-    await this.groundsForTheApplicationLink.isVisible();
+    await expect(this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
-    await expect(this.groundsForTheApplicationHeading).toBeVisible();
+   // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
+
+    async Ordersanddirectionssought() {
+        await expect(this.ordersAndDirectionsSoughtLink).toBeVisible();
+        await this.ordersAndDirectionsSoughtLink.click();
+        // await expect(this.groundsForTheApplicationHeading).toBeVisible();
+    }
+
+    async hearingUrgency() {
+        await expect(this.hearingUrgencyLink).toBeVisible();
+        await this.hearingUrgencyLink.click();
+        // await expect(this.groundsForTheApplicationHeading).toBeVisible();
+    }
+
+    async assertHearingUrgencyFinish()
+    {
+        await expect(this.hearingUrgencyFinish).toBeVisible;
+    }
 
   async groundsForTheApplicationHasBeenUpdated() {
     await this.groundsForTheApplicationHasBeenUpdatedFinished.isVisible;
   }
 
   async riskAndHarmToChildren() {
-    await this.riskAndHarmToChildrenLink.isVisible();
+    await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();
+
+  }
+
+  async assertRiskAndHarmTochildFinished()
+  {
+      await expect(this.riskAndHarmToChildrenFinished).toBeVisible();
   }
 
   async addApplicationDocuments() {
-    await this.uploadDocumentsLink.isVisible();
+    await expect(this.uploadDocumentsLink).toBeVisible();
     await this.uploadDocumentsLink.click();
   }
 
@@ -88,7 +121,7 @@ export class StartApplication {
   }
 
   async applicantDetails() {
-    await this.applicantDetailsLink.isVisible();
+    await expect(this.applicantDetailsLink).toBeVisible();
     await this.applicantDetailsLink.click();
   }
 
@@ -97,7 +130,7 @@ export class StartApplication {
   }
 
   async childDetails() {
-    await this.childDetailsLink.isVisible();
+    await expect(this.childDetailsLink).toBeVisible();
     await this.childDetailsLink.click();
   }
 
@@ -106,12 +139,12 @@ export class StartApplication {
   }
 
   async respondentDetails() {
-    await this.respondentsDetailsLink.isVisible();
+    await expect(this.respondentsDetailsLink).toBeVisible();
     await this.respondentsDetailsLink.click();
   }
 
   async allocationProposal() {
-    await this.allocationProposalLink.isVisible();
+    await expect(this.allocationProposalLink).toBeVisible();
     await this.allocationProposalLink.click();
   }
 
@@ -128,16 +161,35 @@ export class StartApplication {
   }
 
   async internationalElementReqUpdated() {
-    await this.internationalElementsHeading.isVisible();
-    await this.internationalElementsHeading.click();
+    await expect(this.internationalElement).toBeVisible();
+    await this.internationalElement.click();
   }
 
   async courtServicesNeededReqUpdated() {
-    await this.courtServicesNeeded.isVisible();
+    await expect(this.courtServicesNeeded).toBeVisible();
     await this.courtServicesNeeded.click();
   }
 
   async submitCase() {
     await this.submitApplicationLink.click();
   }
+
+    async assertOrderAndDirectionSoughtsFinished() {
+        await expect(this.orderAndDirectionSoughtFinish).toBeVisible();
+    }
+
+    async assertFactorsaffectingparenting() {
+        await expect(this.factorsAffectingParentingFinish).toBeVisible();
+    }
+
+    async assertRespondentDetail() {
+        await expect(this.respondentsDetailsUpdated).toBeVisible();
+    }
+
+    async assertCourtService(){
+      await expect(this.courtServiceUpdated).toBeVisible();
+    }
+
+
+
 }

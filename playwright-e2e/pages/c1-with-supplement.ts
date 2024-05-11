@@ -31,17 +31,19 @@ export class C1WithSupplement extends BasePage {
         await this.yesRadio.check();
         await this.uploadApplicationTextbox.setInputFiles(config.testTextFile);
         await this.expectAllUploadsCompleted();
+        //wait for adding the next document.
         await this.page.waitForTimeout(6000);
         await this.onTheSameDay.check();
         await this.addNewSupplementBundle.click();
         await this.documentName.selectOption('2: C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD');
-        await this.notes.click();
+       // await this.notes.click();
         await this.notes.fill('notes');
         await this.uploadDocument.setInputFiles(config.testPdfFile);
         await this.page.waitForTimeout(6000);
         await this.ackRelatedToCase.check();
-        await this.continueButton.click();
-        await this.saveAndContinue.click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+
     }
 }
 

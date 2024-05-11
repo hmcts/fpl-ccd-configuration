@@ -34,7 +34,7 @@ export class SignInPage {
   }
 
   async isSignedIn() {
-    await this.applyLocator.click();
+    //await this.applyLocator.click();
     await expect(this.applyLocator).toBeVisible();
   }
 }

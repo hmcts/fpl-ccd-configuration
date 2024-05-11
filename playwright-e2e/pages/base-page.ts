@@ -9,8 +9,8 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
- 
-  
+
+
 
   constructor(page: Page) {
     this.page = page;
@@ -40,7 +40,8 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-    await this.checkYourAnswersHeader.isVisible();
+      await expect(this.checkYourAnswersHeader).toBeVisible();
+   // await this.checkYourAnswersHeader.isVisible();
     await this.saveAndContinue.click();
   }
 

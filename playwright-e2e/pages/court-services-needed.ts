@@ -13,7 +13,7 @@ export class CourtServicesNeeded extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.courtServicesNeededHeading = page.getByRole('heading', { name: 'Court services Needed', exact: true });
+        this.courtServicesNeededHeading = page.getByRole('heading', { name: 'Court services needed', exact: true });
         this.interpreterOptional = page.getByRole('group', { name: 'Interpreter (Optional)' });
         this.giveDetailsIncludingPerson = page.getByRole('group', { name: 'Give details including person' });
         this.SpokenOrWrittenWelsh = page.getByRole('group', { name: 'Spoken or written Welsh (' });
@@ -23,9 +23,9 @@ export class CourtServicesNeeded extends BasePage {
         this.somethingElse = page.getByRole('group', { name: 'Something else (Optional)' });
     }
     async CourtServicesSmoketest() {
-        await this.courtServicesNeededHeading.isVisible();
+        await expect(this.courtServicesNeededHeading).toBeVisible();
         await this.interpreterOptional.getByLabel('Yes').check();
-        await this.giveDetailsIncludingPerson.isVisible();
+       // await this.giveDetailsIncludingPerson.isVisible();
         await this.page.getByLabel('Give details including person').fill('Test');
         await this.SpokenOrWrittenWelsh.getByLabel('No').check();
         await this.intermediaryOptional.getByLabel('No').check();

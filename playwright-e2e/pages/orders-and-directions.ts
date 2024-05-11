@@ -1,37 +1,40 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {BasePage} from "./base-page";
 
-export class OrdersAndDirectionSought {
+export class OrdersAndDirectionSought extends BasePage{
   readonly page: Page;
-  readonly OrdersAndDirectionsLink: Locator;
   readonly OrdersAndDirectionsHeading: Locator;
   readonly OrdersAndDirectionsSought: Locator;
   readonly WhichOrdersDoYouNeedCareOrder: Locator;
   readonly DoYouNeedAnyOtherDirectionsRadioNo: Locator;
   readonly WhichCourtAreYouIssuingFor: Locator;
-  readonly Continue: Locator;
-  readonly CheckYourAnswers: Locator;
-  readonly SaveAndContinue: Locator;
+  // readonly Continue: Locator;
+  // readonly CheckYourAnswers: Locator;
+  // readonly SaveAndContinue: Locator;
 
   public constructor(page: Page) {
+      super(page);
     this.page = page;
     this.OrdersAndDirectionsHeading = page.getByRole("heading", {name: "Orders and directions needed"});
     this.OrdersAndDirectionsSought = page.getByRole("link", { name: "Orders and directions sought" });
     this.WhichOrdersDoYouNeedCareOrder = page.getByLabel("Care order", { exact: true });
     this.DoYouNeedAnyOtherDirectionsRadioNo = page.getByRole('radio', { name: 'No' });
     this.WhichCourtAreYouIssuingFor = page.getByRole('group', { name: 'Orders and directions needed' }).getByLabel('*Which court are you issuing');
-    this.Continue = page.getByRole('button', { name: 'Continue' });
-    this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
-    this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
+    // this.Continue = page.getByRole('button', { name: 'Continue' });
+    // this.CheckYourAnswers = page.getByRole('heading', { name: 'Check your answers' });
+    // this.SaveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
   async ordersAndDirectionsNeeded() {
-    await this.OrdersAndDirectionsHeading.isVisible;
-    await this.OrdersAndDirectionsSought.click();
+    await expect(this.OrdersAndDirectionsHeading).toBeVisible();
+   // await this.OrdersAndDirectionsSought.click();
     await this.WhichOrdersDoYouNeedCareOrder.check();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');
-    await this.Continue.click();
-    await expect(this.CheckYourAnswers).toBeVisible;
-    await this.SaveAndContinue.click();
+    //await this.Continue.click();
+      await  this.clickContinue();
+      await this.checkYourAnsAndSubmit();
+    // await expect(this.CheckYourAnswers).toBeVisible;
+    // await this.SaveAndContinue.click();
   }
 }

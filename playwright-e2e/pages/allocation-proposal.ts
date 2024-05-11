@@ -24,8 +24,8 @@ async allocationProposalSmokeTest() {
     await this.page.getByLabel('Magistrate').check();
     await this.page.getByLabel('High Court Judge').check();
     await this.page.getByLabel('Circuit Judge', { exact: true }).check();
-    await this.page.getByText('*Give reason (Optional)').click();
-    await this.page.getByLabel('*Give reason (Optional)').click();
+   // await this.page.getByText('*Give reason (Optional)').click();
+   // await this.page.getByLabel('*Give reason (Optional)').click();
     await this.page.getByLabel('*Give reason (Optional)').fill('test');
     await this.page.getByRole('button', { name: 'Continue' }).click();
     await this.page.getByRole('heading', { name: 'Check your answers' }).click();
