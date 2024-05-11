@@ -9,6 +9,7 @@ export class CreateCase{
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
   generatedCaseName: string;
+    readonly applyLocator: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -20,6 +21,8 @@ export class CreateCase{
     });
     this.viewHistory = page.getByText("History");
     this.generatedCaseName = "";
+      this.applyLocator = page.getByRole("button", { name: "Apply" });
+
   }
 
   async createCase() {
@@ -60,6 +63,7 @@ export class CreateCase{
 
   async checkCaseIsCreated(caseName: string) {
     await this.page.getByRole("link", { name: "Case list" }).click();
+    await expect(this.applyLocator).toBeVisible();
     await this.page.getByLabel("Jurisdiction").selectOption("Public Law");
     await this.page
       .getByLabel("Case type")

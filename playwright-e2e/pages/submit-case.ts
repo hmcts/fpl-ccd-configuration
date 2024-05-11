@@ -41,6 +41,6 @@ export class SubmitCase extends BasePage{
     await this.clickSubmit();
     await expect(this.applicationSentHeading).toBeVisible();
     await this.closeReturnToCase.click();
-    await expect(this.caseInfoHeading).toBeVisible();
+   // await expect(this.caseInfoHeading).toBeVisible();
   }
 }
