@@ -9,10 +9,10 @@ export class RiskAndHarmToChildren extends BasePage{
     readonly neglectRadio: Locator;
     readonly futureRiskOfHarmCheckbox: Locator;
     readonly pastHarmCheckbox: Locator;
-    readonly continueButton: Locator;
-    readonly checkYourAnswersHeader: Locator;
-    readonly saveAndContinueButton: Locator;
-    readonly riskAndHarmToChildrenHeader: Locator;
+    // readonly continueButton: Locator;
+    // readonly checkYourAnswersHeader: Locator;
+    // readonly saveAndContinueButton: Locator;
+     readonly riskAndHarmToChildrenHeader: Locator;
 
     public constructor(page: Page) {
         super(page);
@@ -36,7 +36,7 @@ export class RiskAndHarmToChildren extends BasePage{
         await this.emotionalHarmRadio.getByLabel('No').check();
         await this.sexualAbuseRadio.getByLabel('No').check();
         await this.neglectRadio.getByLabel('Yes').check();
-        await this.pastHarmCheckbox.check();
+        await this.pastHarmCheckbox.setChecked(true);
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
         // await this.continueButton.click();
