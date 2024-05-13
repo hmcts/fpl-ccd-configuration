@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import uk.gov.hmcts.reform.fpl.enums.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
@@ -65,6 +66,17 @@ public class HearingVacatedEmailContentProviderTest extends AbstractEmailContent
             underTest.buildHearingVacatedNotification(CASE_DATA, VACATED_HEARING, false);
 
         assertThat(actualEmailTemplate).isEqualTo(buildExpectedHearingVacatedTemplate(CANCELLATION_REASON, false));
+    }
+
+    @Test
+    void shouldGetCancellationReasonLabelIfValid() {
+        HearingVacatedTemplate actualEmailTemplate =
+            underTest.buildHearingVacatedNotification(CASE_DATA,
+                VACATED_HEARING.toBuilder().cancellationReason("LA1").build(),
+                false);
+
+        assertThat(actualEmailTemplate)
+            .isEqualTo(buildExpectedHearingVacatedTemplate(HearingCancellationReason.LA1.getLabel(), false));
     }
 
     private HearingVacatedTemplate buildExpectedHearingVacatedTemplate(String cancelReason, boolean isRelisted) {

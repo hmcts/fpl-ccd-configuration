@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
@@ -17,9 +19,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class HearingVacatedEmailContentProvider extends AbstractEmailContentProvider {
-    public static final String RELIST_ACTION_RELISTED = "be relisted.";
-    public static final String RELIST_ACTION_NOT_RELISTED = "not be relisted.";
+    public static final String RELIST_ACTION_RELISTED = "be relisted";
+    public static final String RELIST_ACTION_NOT_RELISTED = "not be relisted";
 
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
@@ -35,8 +38,17 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
-            .vacatedReason(hearingBooking.getCancellationReason())
+            .vacatedReason(getVacateReason(hearingBooking))
             .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
             .build();
+    }
+
+    private String getVacateReason(HearingBooking hearingBooking) {
+        try {
+            return HearingCancellationReason.valueOf(hearingBooking.getCancellationReason()).getLabel();
+        } catch (IllegalArgumentException e) {
+            log.warn("CancellationReason invalid : {}", hearingBooking.getCancellationReason());
+            return hearingBooking.getCancellationReason();
+        }
     }
 }
