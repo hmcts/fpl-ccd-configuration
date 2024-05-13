@@ -12,7 +12,7 @@ public enum HearingType {
     CASE_MANAGEMENT("Case management"),
     FURTHER_CASE_MANAGEMENT("Further case management"),
     ISSUE_RESOLUTION("Issue resolution"),
-    FINAL("Full hearing"),
+    FINAL("Final"),
     JUDGMENT_AFTER_HEARING("Judgment after hearing"),
     INTERIM_CARE_ORDER("Interim care order"),
     ACCELERATED_DISCHARGE_OF_CARE("Discharge of care"),
