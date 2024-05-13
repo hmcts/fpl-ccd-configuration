@@ -24,7 +24,6 @@ export class StartApplication {
   readonly applicantDetailsUpdated: Locator;
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
-  readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
     readonly orderAndDirectionSoughtFinish: Locator;
@@ -117,7 +116,7 @@ export class StartApplication {
   }
 
   async addApplicationDocumentsInProgress() {
-    await this.upLoadDocsInProgress.isVisible();
+    await expect(this.upLoadDocsInProgress).toBeVisible();
   }
 
   async applicantDetails() {

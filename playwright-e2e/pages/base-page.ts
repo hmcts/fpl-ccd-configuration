@@ -24,12 +24,14 @@ export class BasePage {
   }
 
   async gotoNextStep(eventName: string) {
-    await this.nextStep.selectOption(eventName);
-    await this.goButton.dblclick();
-    await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
-       await this.goButton.click();
-    }
+      await expect(this.goButton).toBeVisible()
+      await this.nextStep.selectOption(eventName);
+      await this.goButton.click();
+    // await this.goButton.dblclick();
+    // await this.page.waitForTimeout(20000);
+    // if (await this.goButton.isVisible() ) {
+    //     await this.goButton.click();
+    // }
   }
 
   async expectAllUploadsCompleted() {

@@ -75,7 +75,7 @@ export class CreateCase{
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
    // await this.page.getByLabel("Day").click();
-    expect(this.page.getByText(caseName).isVisible());
+    expect(this.page.getByText(caseName)).toBeVisible();
     await this.page.getByText(caseName).click();
   }
 }
