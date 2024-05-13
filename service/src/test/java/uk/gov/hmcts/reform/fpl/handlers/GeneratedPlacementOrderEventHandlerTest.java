@@ -3,10 +3,13 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.PlacementOrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -97,6 +101,9 @@ class GeneratedPlacementOrderEventHandlerTest {
     @Mock
     private WorkAllocationTaskService workAllocationTaskService;
 
+    @Mock
+    private JudicialService judicialService;
+
     @InjectMocks
     private GeneratedPlacementOrderEventHandler underTest;
 
@@ -109,6 +116,21 @@ class GeneratedPlacementOrderEventHandlerTest {
             .familyManCaseNumber(TEST_FAMILY_MAN_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
+    }
+
+    @Test
+    void shouldCleanupRolesIfCaseClosed() {
+        CaseData data = basicCaseData.toBuilder().state(State.CLOSED).build();
+        underTest.cleanupRoles(new GeneratedPlacementOrderEvent(data, ORDER_DOCUMENT, ORDER_NOTIFICATION_DOCUMENT));
+        verify(judicialService).deleteAllRolesOnCase(TEST_CASE_ID);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = { "CLOSED" }, mode = EnumSource.Mode.EXCLUDE)
+    void shouldNotCleanupRolesIfCaseIsNotClosed(State state) {
+        CaseData data = basicCaseData.toBuilder().state(state).build();
+        underTest.cleanupRoles(new GeneratedPlacementOrderEvent(data, ORDER_DOCUMENT, ORDER_NOTIFICATION_DOCUMENT));
+        verify(judicialService, never()).deleteAllRolesOnCase(TEST_CASE_ID);
     }
 
     @Test
