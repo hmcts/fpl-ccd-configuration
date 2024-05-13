@@ -242,6 +242,43 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void shouldRemoveCaseManagementOrderWhenBundleIsInReview() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        Element<HearingOrdersBundle> selectedBundle = element(HEARING_ORDER_BUNDLE_ID_ONE,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(
+                    element(TO_REMOVE_ORDER_ID, draftCMO)
+                )).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(selectedBundle);
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDraftReview(hearingOrdersBundlesDrafts)
+            .draftUploadedCMOs(newArrayList(
+                element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .hearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID))
+            )).build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
+
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(HEARING_ID, hearing(null)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedHearings);
+
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+
+        Map<String, List<?>> expectedData = Map.of(
+            "hearingDetails", updatedHearings
+        );
+
+        assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
+    }
+
+    @Test
     void shouldRemoveCaseManagementOrderWhenOtherCMOisPresent() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
