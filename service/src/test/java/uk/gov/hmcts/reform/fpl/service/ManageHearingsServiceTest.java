@@ -1965,7 +1965,10 @@ class ManageHearingsServiceTest {
             "allocatedJudgeLabel",
             "judicialUser",
             "enterManually",
-            "judicialUserHearingJudge"
+            "judicialUserHearingJudge",
+            "hearingHousekeepReasonOther",
+            "hearingHousekeepOption",
+            "hearingHousekeepReason"
         );
     }
 
