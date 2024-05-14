@@ -1,4 +1,4 @@
-import {type Page, type Locator, expect} from "@playwright/test";
+import {type Page, type Locator } from "@playwright/test";
 import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
@@ -36,7 +36,7 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
 
   async editPastHearingOnCase() {
     await this.page.getByLabel('Edit a hearing that has taken').check();
-    await this.page.getByLabel('Which draft hearing do you').selectOption('Case management hearing, 3 November 2012');
+    await this.page.getByLabel('Which hearing do you want to edit?').selectOption('Case management hearing, 3 November 2012');
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
