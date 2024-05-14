@@ -1,6 +1,7 @@
 {
   "name": "fpl-ccd-configuration",
   "version": "1.0.0",
+  "type": "module",
   "description": "FPL CCD e2e tests",
   "engines": {
     "node": ">=18.0.0"
@@ -8,14 +9,15 @@
   "devDependencies": {
     "@babel/core": "^7.11.0",
     "@babel/eslint-parser": "^7.17.0",
-    "@playwright/test": "^1.40.1",
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.43.1",
     "@types/node": "^20.10.7",
     "@types/qs": "^6.9.11",
     "axios": "^1.6.7",
-    "codeceptjs": "3.5.10",
+    "codeceptjs": "3.6.2",
     "dateformat": "^4.6.3",
     "debug": "4.3.4",
-    "eslint": "7.32.0",
+    "eslint": "^8.0.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.2.3",
     "html_codesniffer": "^2.5.1",
@@ -26,14 +28,16 @@
     "mocha-junit-reporter": "^2.2.0",
     "mocha-multi": "^1.1.7",
     "mochawesome": "^6.3.1",
-    "moment": "2.29.4",
+    "moment": "2.30.1",
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
+    "playwright-core": "^1.43.1",
     "qs": "^6.11.2",
-    "webdriverio": "8.26.3"
+    "typescript": "^5.4.5",
+    "webdriverio": "8.36.1"
   },
   "scripts": {
-    "lint": "eslint e2e",
+    "lint": "yarn eslint .",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky|@nightlyOnly))' --reporter mocha-multi --verbose",
@@ -41,7 +45,7 @@
     "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview",
     "test:accessibility-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --grep @accessibility",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
-    "test:local": "yarn playwright test --grep @local",
+    "test:local": "yarn playwright test --headed --debug --project=preview --retries=1 --grep @local",
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
@@ -56,7 +60,7 @@
   "resolutions": {
     "yargs-parser": "^20.2.9"
   },
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@3.8.2",
   "license": "MIT",
   "dependencies": {
     "@axe-core/playwright": "^4.8.5",

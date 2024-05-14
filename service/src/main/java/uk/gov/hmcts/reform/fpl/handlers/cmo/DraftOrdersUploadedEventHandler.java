@@ -93,7 +93,7 @@ public class DraftOrdersUploadedEventHandler {
                 .map(HearingBooking::getStartDate)
                 .orElse(null);
 
-            Set<DocumentReference> documentReferences = getOrders(caseData).stream()
+            Set<DocumentReference> documentReferences = getHearingOrdersBundlesDrafts(caseData).stream()
                 .filter(hearingOrder -> hearingOrder.getDateSent().equals(LocalDate.now()))
                 .map(HearingOrder::getDocument)
                 .collect(toSet());
@@ -128,12 +128,6 @@ public class DraftOrdersUploadedEventHandler {
             judge = caseData.getAllocatedJudge();
         }
         return judge;
-    }
-
-    private List<HearingOrder> getOrders(CaseData caseData) {
-        return getDraftOrdersByHearingId(caseData,
-            Stream.concat(nullSafeList(caseData.getHearingOrdersBundlesDrafts()).stream(),
-                nullSafeList(caseData.getHearingOrdersBundlesDraftReview()).stream()));
     }
 
     private List<HearingOrder> getHearingOrdersBundlesDrafts(CaseData caseData) {

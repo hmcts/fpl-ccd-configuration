@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -33,8 +33,9 @@ public class MigrateCaseController extends CallbackController {
     private final FeatureToggleService featureToggleService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
+        "DFPL-log", this::runLog,
         "DFPL-2284", this::run2284,
-        "DFPL-2296", this::run2296
+        "DFPL-2299", this::run2299
     );
 
     @PostMapping("/about-to-submit")
@@ -57,6 +58,10 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging migration on case {}", caseDetails.getId());
+    }
+
     private void run2284(CaseDetails caseDetails) {
         caseDetails.getData().putAll(
             migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails), "5ZZ1FJX"));
@@ -71,14 +76,13 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run2296(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2296";
+    private void run2299(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2299";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712752336809945L, migrationId);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712908356292590L, migrationId);
+        migrateCaseService.verifyUrgentDirectionsOrderExists(getCaseData(caseDetails), migrationId,
+            UUID.fromString("78dee4d9-f542-442b-a36a-c83b037e6f27"));
 
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(
-            migrateCaseService.removeCharactersFromThresholdDetails(caseData, migrationId, 0,
-                caseData.getGrounds().getThresholdDetails().length()));
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 }
