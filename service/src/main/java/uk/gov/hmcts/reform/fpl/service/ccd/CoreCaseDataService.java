@@ -58,8 +58,7 @@ public class CoreCaseDataService {
         return self.performPostSubmitCallback(caseId, eventName, changeFunction, false);
     }
 
-
-    @Retryable(recover = "recover", backoff = @Backoff(delay = 100))
+    @Retryable(recover = "recover", maxAttempts = 5, backoff = @Backoff(delay = 2000))
     public CaseDetails performPostSubmitCallback(Long caseId,
                                                  String eventName,
                                                  Function<CaseDetails, Map<String, Object>> changeFunction,
@@ -88,7 +87,7 @@ public class CoreCaseDataService {
                  Function<CaseDetails, Map<String, Object>> changeFunction,
                  boolean submitIfEmpty) {
         throw new RetryFailureException(
-            String.format("All 3 retries failed to create event %s on ccd for case %d", eventName, caseId), e);
+            String.format("All retries failed to create event %s on ccd for case %d", eventName, caseId), e);
     }
 
     /**
