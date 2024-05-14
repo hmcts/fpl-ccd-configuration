@@ -113,14 +113,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "draftOrderUrgency",
-    "ElementLabel": "Do one or more orders need priority approval from the judge?",
-    "FieldType": "DraftOrderUrgencyOption",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
