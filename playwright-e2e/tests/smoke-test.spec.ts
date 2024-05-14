@@ -1,5 +1,4 @@
 import { test, expect } from "../fixtures/fixtures";
-import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -25,7 +24,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   makeAxeBuilder
 },testInfo) => {
 
-  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -37,6 +35,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
+
     createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);

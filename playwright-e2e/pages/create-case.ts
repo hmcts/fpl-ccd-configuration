@@ -8,7 +8,7 @@ export class CreateCase{
   readonly createCaseLink: Locator;
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
-  generatedCaseName: any;
+  generatedCaseName: string;
 
   public constructor(page: Page) {
     this.page = page;
@@ -19,6 +19,7 @@ export class CreateCase{
       name: "Add application details",
     });
     this.viewHistory = page.getByText("History");
+    this.generatedCaseName = "";
   }
 
   async createCase() {
@@ -40,7 +41,7 @@ export class CreateCase{
   }
 
    caseName()  {
-    let formattedDate = CreateCaseName.getFormattedDate();
+    const formattedDate = CreateCaseName.getFormattedDate();
     this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
   
@@ -70,7 +71,7 @@ export class CreateCase{
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
     await this.page.getByLabel("Day").click();
-    await expect(this.page.getByText(caseName)).toBeVisible;
+    expect(this.page.getByText(caseName).isVisible());
     await this.page.getByText(caseName).click();
   }
 }

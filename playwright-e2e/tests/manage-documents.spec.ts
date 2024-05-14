@@ -6,19 +6,22 @@ import caseData from '../caseData/mandatorySubmissionFields.json';
 import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
 import { expect } from '@playwright/test'
 import { POSITION_STATEMENTS } from '../pages/manage-documents-tests';
+import { CTSCUser, newSwanseaLocalAuthorityUserOne } from '../settings/user-credentials';
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import { expect } from '@playwright/test';
+import {createCase, updateCase} from "../utils/api-helper";
 
 test.describe('Manage Documents', () => {
-    let apiDataSetup = new Apihelp();
     const dateTime = new Date().toISOString();
     let caseNumber: string;
-    let casename: string;
+    let caseName: string;
     test.beforeEach(async () => {
-        caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
     test('LA uploads correspondence documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
-        casename = 'LA uploads correspondence documents ' + dateTime.slice(0, 10);
-        await apiDataSetup.updateCase(casename, caseNumber, caseData);
+        caseName = 'LA uploads correspondence documents ' + dateTime.slice(0, 10);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
