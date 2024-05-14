@@ -27,6 +27,7 @@ export class BasePage {
       await expect(this.goButton).toBeVisible()
       await this.nextStep.selectOption(eventName);
       await this.goButton.click();
+      await expect(this.page.getByText(`${eventName}`)).toBeVisible();
     // await this.goButton.dblclick();
     // await this.page.waitForTimeout(20000);
     // if (await this.goButton.isVisible() ) {
