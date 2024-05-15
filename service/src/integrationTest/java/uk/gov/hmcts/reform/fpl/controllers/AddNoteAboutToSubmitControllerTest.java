@@ -4,18 +4,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(AddNoteController.class)
 @OverrideAutoConfiguration(enabled = true)
+@Import({CaseNoteService.class})
 class AddNoteAboutToSubmitControllerTest extends AbstractCallbackTest {
+
+    @MockBean
+    private RequestData requestData;
 
     AddNoteAboutToSubmitControllerTest() {
         super("add-note");
@@ -23,9 +35,12 @@ class AddNoteAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @BeforeEach
     void setup() {
+        super.setUp();
         givenCurrentUserWithName("John Smith");
+        given(idamClient.getUserInfo(any())).willReturn(UserInfo.builder().name("John Smith").build());
     }
 
+    @WithMockUser
     @Test
     void shouldAddCaseNoteToList() {
         CaseNote caseNote = caseNote(LocalDate.of(2019, 11, 12), "John Doe", "Existing note");

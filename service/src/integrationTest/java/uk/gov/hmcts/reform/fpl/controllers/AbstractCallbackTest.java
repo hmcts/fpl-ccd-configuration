@@ -1,7 +1,13 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -9,18 +15,29 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.logging.HeaderInformationExtractor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
+@Import({EventService.class})
 public abstract class AbstractCallbackTest extends AbstractTest {
 
     @Autowired
@@ -29,7 +46,45 @@ public abstract class AbstractCallbackTest extends AbstractTest {
     private final String eventName;
     private final String eventId;
 
+    @MockBean
+    protected Time time;
+
+    @MockBean
+    protected CaseConverter caseConverter;
+
+    @MockBean
+    protected SystemUpdateUserConfiguration systemUpdateUserConfiguration;
+
+    @MockBean
+    protected DynamicListHelper dynamicListHelper;
+
+    @MockBean
+    protected HeaderInformationExtractor headerInformationExtractor;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
+
     protected static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
+
+    @BeforeEach
+    void setUp() {
+        when(caseConverter.convert(any(CaseDetails.class))).thenAnswer(new Answer<CaseData>() {
+            @Override
+            public CaseData answer(InvocationOnMock invocation) throws Throwable {
+                CaseDetails details = invocation.getArgument(0);
+                if (details == null) {
+                    return null;
+                }
+                CaseData caseData = objectMapper.convertValue(details.getData(), CaseData.class);
+                return caseData.toBuilder()
+                    .state(State.tryFromValue(details.getState()).orElse(null))
+                    .id(details.getId())
+                    .build();
+            }
+        });
+
+        when(time.now()).thenReturn(LocalDateTime.now());
+    }
 
     protected AbstractCallbackTest(String eventName) {
         this.eventName = eventName;
@@ -288,6 +343,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
+                    .with(csrf())
                     .header("authorization", USER_AUTH_TOKEN)
                     .header("user-id", USER_ID)
                     .header("user-roles", String.join(",", userRoles))
