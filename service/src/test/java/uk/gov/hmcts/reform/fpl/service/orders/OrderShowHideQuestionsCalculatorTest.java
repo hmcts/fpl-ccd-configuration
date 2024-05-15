@@ -1112,10 +1112,10 @@ class OrderShowHideQuestionsCalculatorTest {
         transparencyOrder.put("childArrangementSpecificIssueProhibitedSteps", "NO");
         transparencyOrder.put("whichOthers", "NO");
         transparencyOrder.put("dischargeOfCareDetails", "NO");
-        transparencyOrder.put("closeCase", "YES");
-        transparencyOrder.put("whichChildren", "YES");
+        transparencyOrder.put("closeCase", "NO");
+        transparencyOrder.put("whichChildren", "NO");
         transparencyOrder.put("orderIsByConsent", "YES");
-        transparencyOrder.put("furtherDirections", "YES");
+        transparencyOrder.put("furtherDirections", "NO");
         transparencyOrder.put("isFinalOrder", "YES");
         transparencyOrder.put("appointedGuardian", "NO");
         transparencyOrder.put("parentResponsible", "NO");
