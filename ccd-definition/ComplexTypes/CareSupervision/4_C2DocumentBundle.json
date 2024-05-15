@@ -144,7 +144,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "C2SupportingEvidenceBundle",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated after CFV"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,7 +155,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "C2SupportingEvidenceBundle",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Deprecated after CFV"
   },
   {
     "LiveFrom": "01/01/2017",

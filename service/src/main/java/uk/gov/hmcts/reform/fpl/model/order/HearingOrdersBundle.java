@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.model.ConfidentialOrderBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -19,15 +21,45 @@ import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.removeElementWithUUID;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
 @Builder(toBuilder = true)
-public class HearingOrdersBundle {
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public class HearingOrdersBundle implements ConfidentialOrderBundle<HearingOrder> {
     private UUID hearingId;
     String hearingName;
     private String judgeTitleAndName;
     private List<Element<HearingOrder>> orders;
+    private List<Element<HearingOrder>> ordersCTSC;
+    private List<Element<HearingOrder>> ordersLA;
+    private List<Element<HearingOrder>> ordersResp0;
+    private List<Element<HearingOrder>> ordersResp1;
+    private List<Element<HearingOrder>> ordersResp2;
+    private List<Element<HearingOrder>> ordersResp3;
+    private List<Element<HearingOrder>> ordersResp4;
+    private List<Element<HearingOrder>> ordersResp5;
+    private List<Element<HearingOrder>> ordersResp6;
+    private List<Element<HearingOrder>> ordersResp7;
+    private List<Element<HearingOrder>> ordersResp8;
+    private List<Element<HearingOrder>> ordersResp9;
+    private List<Element<HearingOrder>> ordersChild0;
+    private List<Element<HearingOrder>> ordersChild1;
+    private List<Element<HearingOrder>> ordersChild2;
+    private List<Element<HearingOrder>> ordersChild3;
+    private List<Element<HearingOrder>> ordersChild4;
+    private List<Element<HearingOrder>> ordersChild5;
+    private List<Element<HearingOrder>> ordersChild6;
+    private List<Element<HearingOrder>> ordersChild7;
+    private List<Element<HearingOrder>> ordersChild8;
+    private List<Element<HearingOrder>> ordersChild9;
+    private List<Element<HearingOrder>> ordersChild10;
+    private List<Element<HearingOrder>> ordersChild11;
+    private List<Element<HearingOrder>> ordersChild12;
+    private List<Element<HearingOrder>> ordersChild13;
+    private List<Element<HearingOrder>> ordersChild14;
 
     public HearingOrdersBundle updateHearing(UUID hearingId, HearingBooking hearing) {
         if (!isNull(hearing)) {
@@ -74,11 +106,22 @@ public class HearingOrdersBundle {
         if (isNotEmpty(orders)) {
             orders.sort(comparingInt(order -> order.getValue().getType().ordinal()));
         }
+        if (orders == null) {
+            orders = newArrayList();
+        }
         return orders;
     }
 
     public List<Element<HearingOrder>> getOrders(CMOStatus status) {
         List<Element<HearingOrder>> hearingOrders = defaultIfNull(getOrders(), newArrayList());
+
+        return hearingOrders.stream()
+            .filter(order -> status.equals(order.getValue().getStatus()))
+            .collect(Collectors.toList());
+    }
+
+    public List<Element<HearingOrder>> getAllConfidentialOrdersByStatus(CMOStatus status) {
+        List<Element<HearingOrder>> hearingOrders = defaultIfNull(getAllConfidentialOrders(), newArrayList());
 
         return hearingOrders.stream()
             .filter(order -> status.equals(order.getValue().getStatus()))
@@ -94,5 +137,44 @@ public class HearingOrdersBundle {
         }
 
         return List.of();
+    }
+
+    @JsonIgnore
+    public void updateConfidentialOrders(List<Element<HearingOrder>> newOrders,
+                                         HearingOrderType type,
+                                         List<String> suffixList) {
+        suffixList.forEach(suffix -> {
+            List<Element<HearingOrder>> confidentialOrders =
+                defaultIfNull(getConfidentialOrdersBySuffix(suffix), new ArrayList<>());
+
+            newOrders.forEach(newOrder -> {
+                newOrder.getValue().setType(type);
+                Optional<Integer> orderIndex = checkForExistingOrders(confidentialOrders, newOrder.getId());
+                if (orderIndex.isEmpty()) {
+                    confidentialOrders.add(newOrder);
+                } else {
+                    confidentialOrders.set(orderIndex.get(), newOrder);
+                }
+            });
+            setConfidentialOrdersBySuffix(suffix, confidentialOrders);
+        });
+    }
+
+    @Override
+    public String getFieldBaseName() {
+        return "orders";
+    }
+
+    public void removeOrderElement(Element<HearingOrder> orderToBeRemoved) {
+        if (findElement(orderToBeRemoved.getId(), orders).isPresent()) {
+            orders = removeElementWithUUID(orders, orderToBeRemoved.getId());
+        } else {
+            processAllConfidentialOrders((suffix, confidentialOrders) -> {
+                if (findElement(orderToBeRemoved.getId(), confidentialOrders).isPresent()) {
+                    setConfidentialOrdersBySuffix(suffix,
+                        removeElementWithUUID(confidentialOrders, orderToBeRemoved.getId()));
+                }
+            });
+        }
     }
 }
