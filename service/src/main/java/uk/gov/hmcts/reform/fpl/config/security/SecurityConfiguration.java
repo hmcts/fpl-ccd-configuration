@@ -1,70 +1,76 @@
 package uk.gov.hmcts.reform.fpl.config.security;
 
+import jakarta.servlet.Filter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
 @Configuration
+@EnableWebSecurity
 @SuppressWarnings("java:S1118")
 public class SecurityConfiguration {
 
-    @Configuration
-    @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
-    static class SecurityConfigurationWithUserTokenValidator extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .authorizeRequests()
-                    .antMatchers("/callback/**")
-                    .authenticated();
-        }
+    private final RequestAuthorizer<User> userRequestAuthorizer;
+
+    private final AuthenticationManager authenticationManager;
+
+    public SecurityConfiguration(
+        RequestAuthorizer<User> userRequestAuthorizer,
+        AuthenticationManager authenticationManager
+    ) {
+        this.userRequestAuthorizer = userRequestAuthorizer;
+        this.authenticationManager = authenticationManager;
     }
 
-    @Configuration
+    @Bean
+    @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true")
+    public SecurityFilterChain securityFilterChainWithJwt(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+        http
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.decoder(jwtDecoder)))
+            .authorizeRequests()
+            .requestMatchers("/callback/**")
+            .authenticated();
+        return http.build();
+    }
+
+    @Bean
     @ConditionalOnProperty(value = "spring.security.enabled", havingValue = "false", matchIfMissing = true)
-    static class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeRequests()
-                    .anyRequest()
-                    .permitAll();
-        }
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeRequests(auth -> auth
+                .anyRequest().permitAll());
+        return http.build();
     }
 
     @Order(2)
-    @Configuration
-    static class RoboticsSecurityConfiguration extends WebSecurityConfigurerAdapter {
-        private AuthCheckerUserOnlyFilter<User> authCheckerUserOnlyFilter;
+    @Bean
+    public SecurityFilterChain roboticsSecurityFilterChain(HttpSecurity http) throws Exception {
+        AuthCheckerUserOnlyFilter<User> authCheckerUserOnlyFilter =
+            new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
+        authCheckerUserOnlyFilter.setAuthenticationManager(authenticationManager);
 
-        public RoboticsSecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
-                                             AuthenticationManager authenticationManager) {
-            authCheckerUserOnlyFilter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
-            authCheckerUserOnlyFilter.setAuthenticationManager(authenticationManager);
-        }
+        http
+            .authorizeRequests(authorize -> authorize
+                .requestMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**/*")
+                .authenticated())
+            .csrf(csrf -> csrf.disable())
+            .addFilter(authCheckerUserOnlyFilter);
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**/*")
-                .and()
-                .addFilter(authCheckerUserOnlyFilter)
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeRequests()
-                .anyRequest()
-                .authenticated();
-        }
-
+        return http.build();
     }
 }

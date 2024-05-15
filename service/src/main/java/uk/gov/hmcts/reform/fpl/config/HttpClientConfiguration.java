@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.config;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -14,23 +16,22 @@ public class HttpClientConfiguration {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(getHttpClient()));
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(userTokenParserHttpClient()));
         return restTemplate;
     }
 
-    private CloseableHttpClient getHttpClient() {
-        int timeout = 10000;
+    @Bean
+    @Qualifier("userTokenParserHttpClient")
+    public CloseableHttpClient userTokenParserHttpClient() {
         RequestConfig config = RequestConfig.custom()
-            .setConnectTimeout(timeout)
-            .setConnectionRequestTimeout(timeout)
-            .setSocketTimeout(timeout)
+            .setConnectTimeout(Timeout.ofMilliseconds(10000))
+            .setConnectionRequestTimeout(Timeout.ofMilliseconds(10000))
+            .setResponseTimeout(Timeout.ofMilliseconds(10000))
             .build();
 
-        return HttpClientBuilder
-            .create()
+        return HttpClients.custom()
             .useSystemProperties()
             .setDefaultRequestConfig(config)
             .build();
     }
-
 }
