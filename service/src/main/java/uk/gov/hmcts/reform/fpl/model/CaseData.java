@@ -463,6 +463,7 @@ public class CaseData extends CaseDataParent {
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final C2ApplicationType c2Type;
+    private final YesNo isC2Confidential;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 
@@ -503,9 +504,19 @@ public class CaseData extends CaseDataParent {
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ConfidentialGeneratedOrders confidentialOrders = ConfidentialGeneratedOrders.builder().build();
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public List<Element<GeneratedOrder>> getAllOrderCollections() {
+        return Stream.of(getOrderCollection(), confidentialOrders.getAllConfidentialOrders())
+            .flatMap(List::stream)
+            .toList();
     }
 
     @JsonUnwrapped
@@ -809,12 +820,16 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @JsonUnwrapped
+    @Builder.Default
+    private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE))
+                                       || isNotEmpty(bundle.getValue().getAllConfidentialOrdersByStatus(SEND_TO_JUDGE)))
             .collect(toList());
     }
 
