@@ -5,6 +5,7 @@ import feign.Request;
 import feign.RetryableException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static feign.Request.HttpMethod.GET;
@@ -18,7 +19,7 @@ class FPLRetryerTest {
     private static final byte[] EMPTY_BODY = {};
     private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), EMPTY_BODY, UTF_8, null);
     private static final RetryableException EXCEPTION = new RetryableException(
-        500, "", GET, new FeignException.InternalServerError("test", REQUEST, EMPTY_BODY), null, REQUEST
+        500, "", GET, new FeignException.InternalServerError("test", REQUEST, EMPTY_BODY, Collections.emptyMap()), (Long) null, REQUEST
     );
 
     @Test

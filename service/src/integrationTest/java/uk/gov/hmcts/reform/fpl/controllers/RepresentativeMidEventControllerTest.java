@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static feign.Request.HttpMethod.GET;
@@ -63,7 +64,7 @@ class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail))
             .willThrow(new FeignException.NotFound("User not found",
                 Request.create(GET, "", Map.of(), new byte[]{}, UTF_8),
-                new byte[]{}));
+                new byte[]{}, Collections.emptyMap()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
