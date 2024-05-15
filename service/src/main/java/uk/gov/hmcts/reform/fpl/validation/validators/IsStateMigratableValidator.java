@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.IsStateMigratable;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 
