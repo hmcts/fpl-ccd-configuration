@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -25,14 +26,18 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -54,7 +59,7 @@ public class UploadAdditionalApplicationsService {
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
 
     private final Time time;
-    private final UserService user;
+    private final UserService userService;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
     private final DocumentConversionService documentConversionService;
@@ -91,9 +96,14 @@ public class UploadAdditionalApplicationsService {
 
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
-            additionalApplicationsBundleBuilder.c2DocumentBundle(buildC2DocumentBundle(
-                caseData, applicantName, respondentsInCase, uploadedBy, now
-            ));
+            C2DocumentBundle c2DocumentBundle = buildC2DocumentBundle(
+                caseData, applicantName, respondentsInCase, uploadedBy, now);
+            if (YesNo.YES.equals(caseData.getIsC2Confidential())) {
+                additionalApplicationsBundleBuilder.c2DocumentBundleConfidential(c2DocumentBundle);
+                buildC2BundleByPolicy(caseData, c2DocumentBundle, additionalApplicationsBundleBuilder);
+            } else {
+                additionalApplicationsBundleBuilder.c2DocumentBundle(c2DocumentBundle);
+            }
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
@@ -103,6 +113,28 @@ public class UploadAdditionalApplicationsService {
         }
 
         return additionalApplicationsBundleBuilder.build();
+    }
+
+    private void buildC2BundleByPolicy(CaseData caseData, C2DocumentBundle c2Bundle,
+                                      AdditionalApplicationsBundleBuilder builder) {
+        final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
+
+        final Consumer<String> setConfidentialC2 = fieldName -> {
+            try {
+                AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
+                    .invoke(builder, c2Bundle);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        PolicyHelper.processFieldByPolicyDatas(caseData.getRespondentPolicyData(), "c2DocumentBundleResp",
+            caseRoles, setConfidentialC2);
+        PolicyHelper.processFieldByPolicyDatas(caseData.getChildPolicyData(), "c2DocumentBundleChild",
+            caseRoles, setConfidentialC2);
+        if (PolicyHelper.isPolicyMatchingCaseRoles(caseData.getLocalAuthorityPolicy(), caseRoles)) {
+            setConfidentialC2.accept("c2DocumentBundleLA");
+        }
     }
 
     public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> bundles) {
@@ -200,6 +232,13 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
+    public void convertConfidentialC2Bundle(CaseData caseData, C2DocumentBundle bundle,
+                                            AdditionalApplicationsBundleBuilder builder) {
+        C2DocumentBundle convertedC2 = convertC2Bundle(bundle, caseData);
+        builder.c2DocumentBundleConfidential(convertedC2);
+        buildC2BundleByPolicy(caseData, convertedC2, builder);
+    }
+
     private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
         String uploadedBy, LocalDateTime uploadedDateTime) {
@@ -217,8 +256,11 @@ public class UploadAdditionalApplicationsService {
         return supplementsBundle.stream().map(supplementElement -> {
             Supplement incomingSupplement = supplementElement.getValue();
 
+            DocumentReference sealedDocument = documentSealingService.sealDocument(incomingSupplement.getDocument(),
+                caseData.getCourt(), SealType.ENGLISH);
+
             Supplement modifiedSupplement = incomingSupplement.toBuilder()
-                .document(documentConversionService.convertToPdf(incomingSupplement.getDocument()))
+                .document(sealedDocument)
                 .build();
 
             return supplementElement.toBuilder().value(modifiedSupplement).build();

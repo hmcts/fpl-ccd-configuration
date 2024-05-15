@@ -86,7 +86,8 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
 
     public List<String> getApplicationTypes(AdditionalApplicationsBundle additionalApplicationsBundle) {
         List<String> applicationTypes = new ArrayList<>();
-        C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
+        C2DocumentBundle c2DocumentBundle = Optional.ofNullable(additionalApplicationsBundle.getC2DocumentBundle())
+            .orElse(additionalApplicationsBundle.getC2DocumentBundleConfidential());
         OtherApplicationsBundle otherDocumentBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
 
         addC2DocumentBundleApplicationTypes(applicationTypes, c2DocumentBundle);
