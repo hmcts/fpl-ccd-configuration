@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.UndeliveredEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationList;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -35,7 +38,8 @@ public class UndeliveredEmailsFinder implements Job {
         log.info("Job '{}' started", jobName);
 
         try {
-            DateTime reportFrom = DateTime.now().minusDays(REPORT_PERIOD_IN_DAYS);
+            ChronoZonedDateTime<?> reportFrom = Instant.ofEpochMilli(DateTime.now().minusDays(REPORT_PERIOD_IN_DAYS)
+                .getMillis()).atZone(ZoneId.systemDefault());
 
             NotificationList undeliveredEmailsReport = notifications.getNotifications("failed", "email", null, null);
 
