@@ -36,10 +36,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   // Add application details
   // Start new case, get case id and assert case id is created
 
-    createCase.caseName();
-  await createCase.createCase();
-  await createCase.submitCase(createCase.generatedCaseName);
-  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+     createCase.caseName();
+   await createCase.createCase();
+   await createCase.submitCase(createCase.generatedCaseName);
+   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();

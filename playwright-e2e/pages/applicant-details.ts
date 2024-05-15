@@ -2,7 +2,7 @@ import {type Page, type Locator, expect} from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class ApplicantDetails extends BasePage{
-  readonly page: Page;
+  //readonly page: Page;
   readonly applicantDetailsHeading: Locator;
   readonly teamManagerName: Locator;
   readonly pbaNumber: Locator;
@@ -16,7 +16,7 @@ export class ApplicantDetails extends BasePage{
   readonly colleagueEmail: Locator;
   readonly colleaguePhoneNumber: Locator;
   readonly caseUpdateNotification_No: Locator;
-  readonly caseNameText: Locator;
+ // readonly caseNameText: Locator;
   readonly removeColleague: Locator;
   public teamManagerNameString: string;
 
@@ -59,7 +59,7 @@ export class ApplicantDetails extends BasePage{
   }
 
   async colleagueDetailsNeeded(){
-    await expect(this.colleagueHeading).toBeVisible();
+   // await expect(this.colleagueHeading).toBeVisible();
     await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();

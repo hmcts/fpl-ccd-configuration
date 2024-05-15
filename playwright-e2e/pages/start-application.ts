@@ -44,7 +44,8 @@ export class StartApplication {
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
-    this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="In progress"]');
+      this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img',{name:'Finished'})
+    //this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="Finished"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });

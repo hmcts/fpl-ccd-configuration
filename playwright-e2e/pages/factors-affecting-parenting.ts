@@ -16,7 +16,7 @@ export class FactorsAffectingParenting {
 
   public constructor(page: Page) {
     this.page = page;
-    this.factorsAffectingParentingHeading = page.getByRole("heading", {name: "Factors affecting parenting"});
+    this.factorsAffectingParentingHeading = page.getByRole("heading", {name: "Factors affecting parenting",exact:true});
     this.factorsAffectingParentingLink = page.getByRole("link", { name: "Factors affecting parenting" });
     this.alcoholOrDrugAbuse = page.getByRole('group', { name: 'Alcohol or drug abuse (Optional)' });
     this.detailsAlcoholOrDrugAbuse = page.locator('#factorsParenting_alcoholDrugAbuseReason');
@@ -30,8 +30,8 @@ export class FactorsAffectingParenting {
   }
 
   async addFactorsAffectingParenting() {
-    await expect(this.factorsAffectingParentingHeading).toBeVisible();
     await this.factorsAffectingParentingLink.click();
+      await expect(this.factorsAffectingParentingHeading).toBeVisible();
     await this.alcoholOrDrugAbuse.getByLabel('Yes').check();
     await this.detailsAlcoholOrDrugAbuse.fill('details alcohol abuse');
     await this.domesticViolence.check();
