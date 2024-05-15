@@ -9,10 +9,14 @@ import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvider;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -24,6 +28,8 @@ class NewJudicialMessageEventHandlerTest {
 
     @Mock
     private JudicialMessageContentProvider newJudicialMessageContentProvider;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private NewJudicialMessageEventHandler newJudicialMessageEventHandler;
@@ -43,6 +49,7 @@ class NewJudicialMessageEventHandlerTest {
 
         given(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
 
         newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
             new NewJudicialMessageEvent(caseData, judicialMessage)
@@ -54,4 +61,29 @@ class NewJudicialMessageEventHandlerTest {
             expectedParameters,
             caseData.getId());
     }
+
+    @Test
+    void shouldNotSendEmailIfWAEmailsAreDisabled() {
+        String recipient = "David@fpla.com";
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .sender("Paul@fpla.com")
+            .recipient(recipient)
+            .build();
+
+        CaseData caseData = caseData();
+
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
+            new NewJudicialMessageEvent(caseData, judicialMessage)
+        );
+
+        verify(notificationService, never()).sendEmail(
+            eq(JUDICIAL_MESSAGE_ADDED_TEMPLATE),
+            eq(recipient),
+            any(),
+            eq(caseData.getId()));
+    }
+
 }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
@@ -74,6 +75,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     private final SendDocumentService sendDocumentService;
     private final CafcassNotificationService cafcassNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final FeatureToggleService featureToggleService;
     private static final String LIST = "•";
 
     @EventListener
@@ -128,14 +130,18 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
-        List<String> roles = new ArrayList<>(requestData.userRoles());
-        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
-            CaseData caseData = event.getCaseData();
+        if (featureToggleService.isWATaskEmailsEnabled()) {
+            List<String> roles = new ArrayList<>(requestData.userRoles());
+            if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
+                CaseData caseData = event.getCaseData();
 
-            NotifyData notifyData = contentProvider.getNotifyData(caseData);
-            String recipient = courtService.getCourtEmail(caseData);
-            notificationService.sendEmail(
-                INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
+                NotifyData notifyData = contentProvider.getNotifyData(caseData);
+                String recipient = courtService.getCourtEmail(caseData);
+                notificationService.sendEmail(
+                    INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, recipient, notifyData, caseData.getId());
+            }
+        } else {
+            log.info("WA EMAIL SKIPPED - additional application uploaded - {}", event.getCaseData().getId());
         }
     }
 

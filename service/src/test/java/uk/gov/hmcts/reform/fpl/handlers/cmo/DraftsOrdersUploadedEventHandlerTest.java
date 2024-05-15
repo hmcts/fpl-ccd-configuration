@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -83,6 +86,8 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documentsToSend;
@@ -244,224 +249,260 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+    @Nested
+    class SendNotificationToJudge {
 
-        final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
+        @BeforeEach
+        void before() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(true);
+        }
 
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+        @Test
+        void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
+            final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
 
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(draftCMOBundle.getOrders()),
-            DRAFT_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+            final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
 
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
+            when(draftOrdersContentProvider.buildContent(
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(draftCMOBundle.getOrders()),
+                DRAFT_CMO
+            )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
-        verifyNoMoreInteractions(notificationService);
-    }
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploadedWithAgreedCMOExist() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+            verify(notificationService).sendEmail(
+                DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+                judge.getJudgeEmailAddress(),
+                DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+                CASE_ID
+            );
 
-        final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(hearing.getId(), AGREED_CMO, C21, C21);
+            verifyNoMoreInteractions(notificationService);
+        }
 
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+        @Test
+        void shouldSendNotificationToHearingJudgeWhenDraftCMOUploadedWithAgreedCMOExist() {
+            final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
+            final HearingOrdersBundle agreedCmoBundle = ordersBundle(hearing.getId(), AGREED_CMO, C21, C21);
 
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(draftCMOBundle.getOrders()),
-            DRAFT_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+            final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+                .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
 
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
+            when(draftOrdersContentProvider.buildContent(
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(draftCMOBundle.getOrders()),
+                DRAFT_CMO
+            )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
-        verifyNoMoreInteractions(notificationService);
-    }
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+            verify(notificationService).sendEmail(
+                DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+                judge.getJudgeEmailAddress(),
+                DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+                CASE_ID
+            );
 
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
+            verifyNoMoreInteractions(notificationService);
+        }
 
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+        @Test
+        void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded() {
+            final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
 
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(agreedCmoBundle.getOrders()),
-            AGREED_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+            final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
 
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
+            when(draftOrdersContentProvider.buildContent(
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(agreedCmoBundle.getOrders()),
+                AGREED_CMO
+            )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
-        verifyNoMoreInteractions(notificationService);
-    }
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploadedWithDraftCMOExist() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+            verify(notificationService).sendEmail(
+                DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+                judge.getJudgeEmailAddress(),
+                DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+                CASE_ID
+            );
 
-        final HearingOrdersBundle draftCMOBundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
+            verifyNoMoreInteractions(notificationService);
+        }
 
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+        @Test
+        void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploadedWithDraftCMOExist() {
+            final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            final HearingOrdersBundle draftCMOBundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
+            final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
 
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(agreedCmoBundle.getOrders()),
-            AGREED_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+            final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+                .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
 
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
+            when(draftOrdersContentProvider.buildContent(
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(agreedCmoBundle.getOrders()),
+                AGREED_CMO
+            )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
-        verifyNoMoreInteractions(notificationService);
-    }
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldSendNotificationToAllocatedJudgeIfNoHearingJudgeEmailPresent(String hearingJudgeEmail) {
+            verify(notificationService).sendEmail(
+                DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+                judge.getJudgeEmailAddress(),
+                DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+                CASE_ID
+            );
 
-        final Element<HearingBooking> hearing1 = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail(hearingJudgeEmail);
+            verifyNoMoreInteractions(notificationService);
+        }
 
-        final HearingOrdersBundle bundle1 = ordersBundle(hearing1.getId(), AGREED_CMO, C21);
-        final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21, C21);
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldSendNotificationToAllocatedJudgeIfNoHearingJudgeEmailPresent(String hearingJudgeEmail) {
 
-        final Judge judge = allocatedJudge();
+            final Element<HearingBooking> hearing1 = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail(hearingJudgeEmail);
 
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(judge)
-            .hearingDetails(List.of(hearing1, selectedHearing))
-            .hearingOrdersBundlesDraftReview(wrapElements(bundle1, selectedHearingBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            final HearingOrdersBundle bundle1 = ordersBundle(hearing1.getId(), AGREED_CMO, C21);
+            final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(),
+                DRAFT_CMO, C21, C21);
 
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge, unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+            final Judge judge = allocatedJudge();
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(judge)
+                .hearingDetails(List.of(hearing1, selectedHearing))
+                .hearingOrdersBundlesDraftReview(wrapElements(bundle1, selectedHearingBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
 
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
+            when(draftOrdersContentProvider.buildContent(
+                caseData, selectedHearing.getValue(), judge,
+                unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
+            )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
-        verifyNoMoreInteractions(notificationService);
-    }
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-    @Test
-    void shouldNotSendEmailIfNoHearingOrders() {
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingOrdersBundlesDrafts(null)
-            .build();
+            verify(notificationService).sendEmail(
+                DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+                judge.getJudgeEmailAddress(),
+                DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+                CASE_ID
+            );
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            verifyNoMoreInteractions(notificationService);
+        }
 
-        verifyNoInteractions(notificationService);
-    }
+        @Test
+        void shouldNotSendEmailIfNoHearingOrders() {
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingOrdersBundlesDrafts(null)
+                .build();
 
-    @Test
-    void shouldNotSendEmailIfNoJudgeEmail() {
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
-        final Element<HearingBooking> hearing1 = hearingWithJudgeEmail(null);
+            verifyNoInteractions(notificationService);
+        }
 
-        final HearingOrdersBundle bundle = ordersBundle(hearing1.getId(), C21);
+        @Test
+        void shouldNotSendEmailIfToggledOff() {
+            when(featureToggleService.isWATaskEmailsEnabled()).thenReturn(false);
 
-        CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .hearingDetails(List.of(hearing1))
-            .hearingOrdersBundlesDrafts(ElementUtils.wrapElements(bundle))
-            .lastHearingOrderDraftsHearingId(hearing1.getId())
-            .allocatedJudge(null)
-            .build();
+            final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+            final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+            final HearingOrdersBundle draftCMOBundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
+            final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
 
-        verifyNoInteractions(notificationService);
+            final CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .allocatedJudge(allocatedJudge())
+                .hearingDetails(List.of(hearing, selectedHearing))
+                .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+                .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+                .build();
+
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+            verifyNoInteractions(notificationService);
+        }
+
+        @Test
+        void shouldNotSendEmailIfNoJudgeEmail() {
+
+            final Element<HearingBooking> hearing1 = hearingWithJudgeEmail(null);
+
+            final HearingOrdersBundle bundle = ordersBundle(hearing1.getId(), C21);
+
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .hearingDetails(List.of(hearing1))
+                .hearingOrdersBundlesDrafts(ElementUtils.wrapElements(bundle))
+                .lastHearingOrderDraftsHearingId(hearing1.getId())
+                .allocatedJudge(null)
+                .build();
+
+            underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+            verifyNoInteractions(notificationService);
+        }
     }
 
     private Element<HearingBooking> hearingWithJudgeEmail(String email) {
