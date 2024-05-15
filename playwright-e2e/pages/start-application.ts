@@ -53,7 +53,7 @@ export class StartApplication {
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
-    
+
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
 
@@ -64,31 +64,31 @@ export class StartApplication {
 
 
   async groundsForTheApplication() {
-    await this.groundsForTheApplicationLink.isVisible();
+    expect(await this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
     await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
 
   async groundsForTheApplicationHasBeenUpdated() {
-    await this.groundsForTheApplicationHasBeenUpdatedFinished.isVisible;
+    await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
   }
 
   async riskAndHarmToChildren() {
-    await this.riskAndHarmToChildrenLink.isVisible();
+    await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();
   }
 
   async addApplicationDocuments() {
-    await this.uploadDocumentsLink.isVisible();
+    await expect(this.uploadDocumentsLink).toBeVisible();
     await this.uploadDocumentsLink.click();
   }
 
   async addApplicationDocumentsInProgress() {
-    await this.upLoadDocsInProgress.isVisible();
+    await expect(this.upLoadDocsInProgress).toBeVisible();
   }
 
   async applicantDetails() {
-    await this.applicantDetailsLink.isVisible();
+    await expect(this.applicantDetailsLink).toBeVisible();
     await this.applicantDetailsLink.click();
   }
 
@@ -97,7 +97,7 @@ export class StartApplication {
   }
 
   async childDetails() {
-    await this.childDetailsLink.isVisible();
+    await expect(this.childDetailsLink).toBeVisible();
     await this.childDetailsLink.click();
   }
 
@@ -106,12 +106,12 @@ export class StartApplication {
   }
 
   async respondentDetails() {
-    await this.respondentsDetailsLink.isVisible();
+    await expect(this.respondentsDetailsLink).toBeVisible();
     await this.respondentsDetailsLink.click();
   }
 
   async allocationProposal() {
-    await this.allocationProposalLink.isVisible();
+    await expect(this.allocationProposalLink).toBeVisible();
     await this.allocationProposalLink.click();
   }
 
@@ -128,12 +128,12 @@ export class StartApplication {
   }
 
   async internationalElementReqUpdated() {
-    await this.internationalElementsHeading.isVisible();
+    await expect(this.internationalElementsHeading).toBeVisible();
     await this.internationalElementsHeading.click();
   }
 
   async courtServicesNeededReqUpdated() {
-    await this.courtServicesNeeded.isVisible();
+    await expect(this.courtServicesNeeded).toBeVisible();
     await this.courtServicesNeeded.click();
   }
 

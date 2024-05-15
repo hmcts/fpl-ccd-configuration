@@ -23,9 +23,9 @@ export class CourtServicesNeeded extends BasePage {
         this.somethingElse = page.getByRole('group', { name: 'Something else (Optional)' });
     }
     async CourtServicesSmoketest() {
-        await this.courtServicesNeededHeading.isVisible();
+        await expect(this.courtServicesNeededHeading).toBeVisible();
         await this.interpreterOptional.getByLabel('Yes').check();
-        await this.giveDetailsIncludingPerson.isVisible();
+        await expect(this.giveDetailsIncludingPerson).toBeVisible();
         await this.page.getByLabel('Give details including person').fill('Test');
         await this.SpokenOrWrittenWelsh.getByLabel('No').check();
         await this.intermediaryOptional.getByLabel('No').check();

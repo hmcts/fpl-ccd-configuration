@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
 
 export class AllocationProposal {
 
@@ -17,7 +17,7 @@ export class AllocationProposal {
   }
 
 async allocationProposalSmokeTest() {
-    await this.page.getByRole('heading', { name: 'Add application details' }).isVisible();
+    await expect(this.page.getByRole('heading', { name: 'Add application details' })).toBeVisible();
     await this.page.getByLabel('Circuit Judge', { exact: true }).check();
     await this.page.getByLabel('Circuit Judge (Section 9)').check();
     await this.page.getByLabel('District Judge').check();

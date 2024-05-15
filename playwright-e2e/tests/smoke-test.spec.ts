@@ -43,10 +43,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  await startApplication.addApplicationDetailsHeading.isVisible();
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
 
   // Hearing urgency
-  await startApplication.hearingUrgencyLink.isVisible();
+  await expect(startApplication.hearingUrgencyLink).toBeVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
   await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
@@ -55,13 +55,13 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await hearingUrgency.needAHearingWithReducedNoise("No");
   await hearingUrgency.respondentsAwareOfProceedings("No");
   await hearingUrgency.continueButton.click();
-  await hearingUrgency.checkYourAnswers.isVisible();
+  await expect(hearingUrgency.checkYourAnswers).toBeVisible();
   await hearingUrgency.saveAndContinueButton.click();
-  await startApplication.addApplicationDetailsHeading.isVisible();
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
 
   // Grounds for the application
   await startApplication.groundsForTheApplication();
-  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
+  await expect(groundsForTheApplication.groundsForTheApplicationHeading).toBeVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
@@ -71,10 +71,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Factors affecting parenting
   await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
 
   // Add application documents
-  await startApplication.addApplicationDetailsHeading.isVisible();
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();

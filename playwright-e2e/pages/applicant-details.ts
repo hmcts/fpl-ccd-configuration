@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class ApplicantDetails extends BasePage{
@@ -9,7 +9,7 @@ export class ApplicantDetails extends BasePage{
   readonly customerReference: Locator;
   readonly clientCode: Locator;
   readonly phoneNumber: Locator;
-  readonly addNew: Locator; 
+  readonly addNew: Locator;
   readonly colleagueHeading: Locator;
   readonly colleagueRole_SocialWorker: Locator;
   readonly colleagueName: Locator;
@@ -37,11 +37,11 @@ export class ApplicantDetails extends BasePage{
     this.caseUpdateNotification_No = page.getByLabel('No');
     this.removeColleague = page.getByLabel('Remove Colleague');
     this.teamManagerNameString = 'Sarah Johnson';
-    
+
   }
 
   async applicantDetailsNeeded() {
-    await this.applicantDetailsHeading.isVisible;
+    await expect(this.applicantDetailsHeading).toBeVisible();
     await this.teamManagerName.click();
     await this.teamManagerName.fill(this.teamManagerNameString);
     await this.pbaNumber.click();
@@ -59,7 +59,7 @@ export class ApplicantDetails extends BasePage{
   }
 
   async colleagueDetailsNeeded(){
-    await this.colleagueHeading.isVisible;
+    await expect(this.colleagueHeading).toBeVisible();
     await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();
@@ -70,7 +70,7 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.click();
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
-    await this.removeColleague.isVisible();
+    await expect(this.removeColleague).toBeVisible();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
   }

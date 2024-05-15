@@ -30,7 +30,7 @@ export class FactorsAffectingParenting {
   }
 
   async addFactorsAffectingParenting() {
-    await this.factorsAffectingParentingHeading.isVisible();
+    await expect(this.factorsAffectingParentingHeading).toBeVisible();
     await this.factorsAffectingParentingLink.click();
     await this.alcoholOrDrugAbuse.getByLabel('Yes').check();
     await this.detailsAlcoholOrDrugAbuse.fill('details alcohol abuse');
