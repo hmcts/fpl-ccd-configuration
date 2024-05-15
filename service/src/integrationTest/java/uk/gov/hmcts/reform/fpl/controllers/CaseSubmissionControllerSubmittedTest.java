@@ -806,8 +806,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private <T extends SharedNotifyTemplate> T getIncompleteParameters(T template) {
         setSharedTemplateParameters(template);
 
-        template.setTimeFramePresent(NO.getValue());
-        template.setTimeFrameValue("Other");
+        template.setTimeFramePresent(YES.getValue());
+        template.setTimeFrameValue("other");
         template.setUrgentHearing(NO.getValue());
         template.setNonUrgentHearing(YES.getValue());
         template.setFirstRespondentName("");
