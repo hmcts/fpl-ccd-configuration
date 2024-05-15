@@ -15,4 +15,5 @@ public class TransparencyOrderDocmosisParameters extends DocmosisParameters {
     String publishInformationDetails;
     String publishIdentityDetails;
     String publishDocumentsDetails;
+    String permissionToReportEffectiveDate;
 }

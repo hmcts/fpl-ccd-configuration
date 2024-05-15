@@ -42,6 +42,7 @@ public class TransparencyOrderParameterGenerator implements DocmosisParameterGen
             .publishInformationDetails(eventData.getManageOrdersTransparencyOrderPublishInformationDetails())
             .publishIdentityDetails(eventData.getManageOrdersTransparencyOrderPublishIdentityDetails())
             .publishDocumentsDetails(eventData.getManageOrdersTransparencyOrderPublishDocumentsDetails())
+            .permissionToReportEffectiveDate(buildPermissionToReportEffectiveDate(caseData))
             .build();
     }
 
@@ -59,6 +60,17 @@ public class TransparencyOrderParameterGenerator implements DocmosisParameterGen
                     .append(".");
                 break;
         }
+
+        return stringBuilder.toString();
+    }
+
+    private String buildPermissionToReportEffectiveDate(CaseData caseData) {
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder
+            .append(dateBuilder(eventData.getManageOrdersTransparencyOrderPermissionToReportEffectiveDate()))
+            .append(".");
 
         return stringBuilder.toString();
     }
