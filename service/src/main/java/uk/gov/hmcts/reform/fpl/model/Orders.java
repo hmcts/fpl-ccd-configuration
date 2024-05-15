@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -16,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
