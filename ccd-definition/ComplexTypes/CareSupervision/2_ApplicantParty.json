@@ -83,7 +83,7 @@
     "ListElementCode": "jobTitle",
     "FieldType": "Text",
     "ElementLabel": "Job title",
-    "HintText": "For example, legal advisor",
+    "HintText": "For example, legal adviser",
     "SecurityClassification": "Public"
   },
   {

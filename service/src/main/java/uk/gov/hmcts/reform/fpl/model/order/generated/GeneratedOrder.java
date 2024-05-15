@@ -29,6 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -50,6 +51,7 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private final String title;
     private final String details;
     private final DocumentReference document;
+    private final DocumentReference documentConfidential;
     private final DocumentReference translatedDocument;
     private final DocumentReference unsealedDocumentCopy;
     private final LocalDateTime translationUploadDateTime;
@@ -184,5 +186,10 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     @Override
     public List<Element<Other>> getSelectedOthers() {
         return this.getOthers();
+    }
+
+    @JsonIgnore
+    public boolean isConfidential() {
+        return isNotEmpty(documentConfidential);
     }
 }
