@@ -44,7 +44,7 @@ export class CreateCase{
     const formattedDate = CreateCaseName.getFormattedDate();
     this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
-  
+
   async submitCase(caseName: string) {
     await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
@@ -52,7 +52,7 @@ export class CreateCase{
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
       .click();
-    await this.addApplicationTitle.isVisible();
+    //await this.addApplicationTitle.isVisible();
 
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.viewHistory.click();
@@ -71,7 +71,7 @@ export class CreateCase{
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
     await this.page.getByLabel("Day").click();
-    expect(this.page.getByText(caseName).isVisible());
+    expect(this.page.getByText(caseName)).toBeVisible();
     await this.page.getByText(caseName).click();
   }
 }
