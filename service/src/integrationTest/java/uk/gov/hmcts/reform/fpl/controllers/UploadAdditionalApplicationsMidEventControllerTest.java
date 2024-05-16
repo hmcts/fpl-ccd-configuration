@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -192,6 +193,49 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         void beforeEach() {
             given(feeService.getFeesDataForAdditionalApplications(any()))
                 .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
+        }
+
+        @Test
+        void shouldPopulateSkipDraftOrderUrgencyPageFlagToYes() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("skipDraftOrderUrgencyPage")).isEqualTo(YES.getValue());
+        }
+
+        @Test
+        void shouldPopulateSkipDraftOrderUrgencyPageFlagToNo() {
+            List<Element<HearingBooking>> hearings = wrapElements(HearingBooking.builder()
+                .startDate(now().plusDays(15))
+                .type(HearingType.CASE_MANAGEMENT)
+                .build());
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearings)
+                .additionalApplicationType(List.of(C2_ORDER))
+                .c2Type(WITH_NOTICE)
+                .temporaryC2Document(C2DocumentBundle.builder()
+                    .c2AdditionalOrdersRequested(List.of(REQUESTING_ADJOURNMENT))
+                    .hearingList(asDynamicList(hearings, hearings.get(0).getId(), HearingBooking::toLabel))
+                    .draftOrdersBundle(List.of(element(DraftOrder.builder().build())))
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "populate-data");
+
+            assertThat(response.getData().get("skipDraftOrderUrgencyPage")).isEqualTo(NO.getValue());
         }
 
         @Test
