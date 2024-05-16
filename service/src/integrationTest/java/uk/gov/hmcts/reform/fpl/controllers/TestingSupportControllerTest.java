@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(TestingSupportController.class)
+@ComponentScan(basePackages = "uk.gov.hmcts.reform.fpl", lazyInit = true)
 @OverrideAutoConfiguration(enabled = true)
 class TestingSupportControllerTest {
 
@@ -97,6 +101,12 @@ class TestingSupportControllerTest {
     @MockBean
     private DocumentUploadClientApi uploadClient;
 
+    @MockBean
+    protected IdamClient idamClient;
+
+    @MockBean
+    protected DocumentDownloadClientApi documentDownloadClientApi;
+
     @BeforeEach
     void init() {
         when(requestData.authorisation()).thenReturn(USER_AUTH_TOKEN);
@@ -106,7 +116,7 @@ class TestingSupportControllerTest {
 
     @Test
     void shouldThrowExceptionForInvalidState() {
-        Exception thrownException = assertThrows(NestedServletException.class,
+        Exception thrownException = assertThrows(ServletException.class,
             () -> makePostRequest(POPULATE_CASE_PATH, Map.of("state", "NOT_A_REAL_STATE")));
 
         assertThat(thrownException.getMessage()).contains("Unable to map NOT_A_REAL_STATE to a case state");
