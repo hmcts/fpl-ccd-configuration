@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 import config from "../settings/test-docs/config";
 
@@ -64,6 +64,7 @@ export class ManageDocuments extends BasePage {
     }
     async uploadedDocuments(type: string) {
         await this.manageDocumentsTest.isVisible();
+        await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
         await this.InputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
@@ -75,6 +76,7 @@ export class ManageDocuments extends BasePage {
     }
     async uploadConfidentialDocuments(type: string) {
         await this.manageDocumentsTest.isVisible();
+        await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
         await this.InputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
@@ -86,6 +88,7 @@ export class ManageDocuments extends BasePage {
     }
     async RemoveDocuments(type: string) {
         await this.manageDocumentsTest.isVisible();
+        await expect(this.manageDocumentsTest).toBeVisible();
         await this.RemoveDocumentsTest.check();
         await this.clickContinue();
         await this.uploadedDocumentsTest.check();
