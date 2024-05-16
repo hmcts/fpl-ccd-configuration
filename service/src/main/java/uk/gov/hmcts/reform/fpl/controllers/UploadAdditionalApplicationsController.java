@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -135,7 +136,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             }
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
 
-            if (!temporaryC2Document.getDraftOrdersBundle().isEmpty()) {
+            if (!Optional.ofNullable(temporaryC2Document.getDraftOrdersBundle()).orElse(List.of()).isEmpty()) {
                 skipDraftOrderUrgencyPage = false;
             }
         }
