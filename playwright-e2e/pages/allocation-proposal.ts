@@ -3,10 +3,6 @@ import {type Page, type Locator, expect} from "@playwright/test";
 export class AllocationProposal {
 
   readonly page: Page;
-  // readonly continue: Locator;
-  // readonly checkYourAnswers: Locator;
-  // readonly saveAndContinue: Locator;
-  // readonly giveReasonTextBox: Locator;
   readonly allocationProposalLink: Locator;
   readonly allocationProposalHeading: Locator;
 
