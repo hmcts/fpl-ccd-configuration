@@ -95,7 +95,7 @@ public class OrderChasingEmailJob implements Job {
                             skipped++;
                         }
                     } catch (Exception e) {
-                        log.error("Job '{}' could not create WA task on {} due to {}", jobName, caseId, e.getMessage(),
+                        log.error("Job '{}' could not send Email on {} due to {}", jobName, caseId, e.getMessage(),
                             e);
                         failed++;
                         Thread.sleep(2000); // If CCD is overwhelmed, stop for 2s before continuing
