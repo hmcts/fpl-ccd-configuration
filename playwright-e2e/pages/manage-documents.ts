@@ -42,7 +42,6 @@ export class ManageDocuments extends BasePage {
         this.threshold = page.getByLabel('Threshold', { exact: true });
 
     }
-
     async uploadDocuments(type: string) {
         await this.gotoNextStep('Manage documents');
 
@@ -52,7 +51,7 @@ export class ManageDocuments extends BasePage {
         await this.page.getByRole('textbox', { name: 'Upload a document' })
             .setInputFiles(config.testTextFile);
 
-        await this.page.getByLabel('Document type').selectOption(type);
+        await this.page.getByLabel('Document type').selectOption('positionStatement');
         // not confidential
         await this.page.getByRole('radio', { name: 'No' }).check();
         // is on right case
