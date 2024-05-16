@@ -27,6 +27,7 @@ export class C1WithSupplement extends BasePage {
         this.ackRelatedToCase = page.locator('#submittedC1WithSupplement_supplementsBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE');
     }
     async c1WithSupplementSmokeTest() {
+        await this.gotoNextStep('C1 with supplement');
         await this.yesRadio.check();
         await this.uploadApplicationTextbox.setInputFiles(config.testTextFile);
         await this.expectAllUploadsCompleted();
