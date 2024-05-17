@@ -121,7 +121,7 @@ public class UploadAdditionalApplicationsService {
                                       AdditionalApplicationsBundleBuilder builder) {
         final Set<CaseRole> caseRoles = userService.getCaseRoles(caseData.getId());
 
-        final Consumer<String> setConfidentialC2 = (fieldName) -> {
+        final Consumer<String> setConfidentialC2 = fieldName -> {
             try {
                 AdditionalApplicationsBundleBuilder.class.getMethod(fieldName, C2DocumentBundle.class)
                     .invoke(builder, c2Bundle);
