@@ -69,6 +69,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
+    private static final String IS_C2_CONFIDENTIAL = "isC2Confidential";
 
     private final ObjectMapper mapper;
     private final DraftOrderService draftOrderService;
@@ -186,7 +187,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
             HearingOrdersBundles hearingOrdersBundles = draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
 
-            draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
+            if (YES.equals(caseData.getIsC2Confidential())) {
+                draftOrderService.confidentialAdditionalApplicationUpdateCase(caseData, newDrafts,
+                    hearingOrdersBundles.getAgreedCmos());
+            } else {
+                draftOrderService.additionalApplicationUpdateCase(newDrafts, hearingOrdersBundles.getAgreedCmos());
+            }
 
             caseDetails.getData().put("hearingOrdersBundlesDrafts", hearingOrdersBundles.getAgreedCmos());
         }
@@ -210,7 +216,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type",
             "additionalApplicationType", AMOUNT_TO_PAY, "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE);
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList", "otherApplicant", SKIP_PAYMENT_PAGE,
+            IS_C2_CONFIDENTIAL);
 
         return respond(caseDetails);
     }
@@ -239,6 +246,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                         uploadAdditionalApplicationsService.convertC2Bundle(lastBundle.getC2DocumentBundle(),
                             caseDataCurrent)
                     );
+                }
+                if (!isEmpty(lastBundle.getC2DocumentBundleConfidential())) {
+                    uploadAdditionalApplicationsService.convertConfidentialC2Bundle(caseDataCurrent,
+                        lastBundle.getC2DocumentBundleConfidential(), bundleBuilder);
                 }
 
                 // If we have a other application, do conversion if needed

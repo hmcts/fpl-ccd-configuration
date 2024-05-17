@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.OrderApplicant;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.InterlocutoryApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -54,9 +55,11 @@ public class ApplicantsListGenerator {
     }
 
     private String getApplicantNameFromBundle(AdditionalApplicationsBundle bundle) {
-        return !isNull(bundle.getC2DocumentBundle())
+        C2DocumentBundle c2DocumentBundle = defaultIfNull(bundle.getC2DocumentBundle(),
+            bundle.getC2DocumentBundleConfidential());
+        return !isNull(c2DocumentBundle)
             ? StringUtils.substringBefore(
-            defaultIfNull(bundle.getC2DocumentBundle().getApplicantName(), EMPTY), SEPARATOR)
+            defaultIfNull(c2DocumentBundle.getApplicantName(), EMPTY), SEPARATOR)
             : StringUtils.substringBefore(
             defaultIfNull(bundle.getOtherApplicationsBundle().getApplicantName(), EMPTY), SEPARATOR);
     }

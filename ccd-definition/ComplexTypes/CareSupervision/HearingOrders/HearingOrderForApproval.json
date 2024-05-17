@@ -39,6 +39,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingOrderForApproval",
+    "ListElementCode": "orderConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "CategoryID": "draftOrdersConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
     "ListElementCode": "hearing",
     "FieldType": "Text",
     "ElementLabel": "Hearing",
@@ -170,6 +179,15 @@
     "ListElementCode": "hearingId",
     "FieldType": "Text",
     "ElementLabel": "Hearing UUID",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingOrderForApproval",
+    "ListElementCode": "uploaderEmail",
+    "FieldType": "Text",
+    "ElementLabel": "Uploader email",
     "SecurityClassification": "Public",
     "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   },
