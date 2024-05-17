@@ -386,15 +386,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "courtBundle",
-    "Label": "8. Court bundle",
-    "FieldType": "CourtBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "localAuthorities",
     "Label": "Applicant",
     "FieldType": "Collection",
@@ -2094,33 +2085,6 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentTabFurtherEvidenceHeading",
-    "Label": "## Further evidence documents",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentTabBulkScanHeading",
-    "Label": "## Bulk scan documents",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentTabApplicationHeading",
-    "Label": "## Application documents",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadApplicationDocumentsLabel",
@@ -2318,69 +2282,6 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentViewHMCTS",
-    "Label": "Case name",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentViewLA",
-    "Label": "Case name",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentViewNC",
-    "Label": "Case name",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentListPageHMCTS",
-    "Label": "${documentViewHMCTS}",
-    "FieldType": "Label",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentListPageLA",
-    "Label": "${documentViewLA}",
-    "FieldType": "Label",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentListPageNC",
-    "Label": "${documentViewNC}",
-    "FieldType": "Label",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "showFurtherEvidenceTab",
-    "Label": " ",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionRequiredFieldsInfo",
@@ -2473,16 +2374,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "people_label",
-    "Label": " ",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Displays a list of names for respondents and others"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hasRespondentsOrOthers",
     "FieldType": "YesOrNo",
     "Label": " ",
@@ -2551,16 +2442,6 @@
     "FieldType": "Label",
     "Label": "You must check to see if there are restrictions on who should be notified about the placement application.",
     "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsWithConfidentialAddress",
-    "Label": "Document with confidential address",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "DocumentWithConfidentialAddress",
-    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -2643,15 +2524,6 @@
     "ID": "caseManagementCategory",
     "Label": " ",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public",
-    "Searchable": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasBeenCFVMigrated",
-    "Label": "Has been migrated in the CFV migration",
-    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "Y"
   },

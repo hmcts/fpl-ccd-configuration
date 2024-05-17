@@ -91,7 +91,7 @@ public class ApplicationDocumentsService {
             "temporaryApplicationDocuments");
     }
 
-    public Map<String, Object> updateApplicationDocuments(CaseData caseData,
+    private Map<String, Object> updateApplicationDocuments(CaseData caseData,
                                                           List<Element<ApplicationDocument>> currentDocuments,
                                                           List<Element<ApplicationDocument>> previousDocuments,
                                                           String populatedField) {

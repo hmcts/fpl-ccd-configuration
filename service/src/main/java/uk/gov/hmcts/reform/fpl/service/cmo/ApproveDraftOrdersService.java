@@ -300,9 +300,32 @@ public class ApproveDraftOrdersService {
             data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
         }
 
-        updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
+        data.putAll(updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle));
         data.put("orderCollection", orderCollection);
-        data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
+    }
+
+    private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>
+                                                                               selectedDraftOrdersBundle,
+                                                                           Element<HearingOrder>
+                                                                               draftOrderElement,
+                                                                           ConfidentialOrderBundle<T>
+                                                                               confidentialOrderBundle,
+                                                                           Element<T> orderToBeAdded) {
+        Map<String, List<Element<T>>> updates = new HashMap<>();
+
+        selectedDraftOrdersBundle.getValue().processAllConfidentialOrders((suffix, selectedDraftOrders) -> {
+            if (isNotEmpty(selectedDraftOrders)
+                && ElementUtils.findElement(draftOrderElement.getId(), selectedDraftOrders).isPresent()) {
+                List<Element<T>> confidentialOrders =
+                    defaultIfNull(confidentialOrderBundle.getConfidentialOrdersBySuffix(suffix),
+                        new ArrayList<>());
+                confidentialOrders.add(orderToBeAdded);
+                updates.put(confidentialOrderBundle.getFieldBaseName() + suffix, confidentialOrders);
+                confidentialOrderBundle.setConfidentialOrdersBySuffix(suffix, confidentialOrders);
+            }
+        });
+
+        return updates;
     }
 
     private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>

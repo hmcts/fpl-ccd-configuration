@@ -387,9 +387,11 @@ public class JudicialService {
         if (!isEmpty(hearing.getJudgeAndLegalAdvisor())
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser())
             && !isEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
+
             roleAssignmentService.deleteRoleAssignmentOnCaseAtTime(caseId,
                 hearing.getStartDate().atZone(ZoneId.systemDefault()),
-                hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId());
+                hearing.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId(),
+                List.of(HEARING_JUDGE.getRoleName(), HEARING_LEGAL_ADVISER.getRoleName()));
         }
     }
 

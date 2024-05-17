@@ -68,4 +68,3 @@ playwright-e2e/.env
 
 # Ignore .env file
 .env
-

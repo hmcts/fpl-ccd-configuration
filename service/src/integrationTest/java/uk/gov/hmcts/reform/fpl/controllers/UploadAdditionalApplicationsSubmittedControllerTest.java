@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -222,6 +223,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
@@ -676,6 +682,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildCommonNotificationParameters() {
         return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()),
             "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
             "familyManCaseNumber", String.valueOf(CASE_ID),
             "respondents1", List.of(element(Respondent.builder()

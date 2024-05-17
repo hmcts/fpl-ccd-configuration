@@ -407,6 +407,89 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    void shouldBuildBundleWhenLAUploadConfidentialC2Application() {
+        Supplement c2Supplement = createSupplementsBundle();
+        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS).build();
+
+        List<Element<Respondent>> respondentsInCase = wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder().firstName("First").lastName("Respondent")
+                    .address(Address.builder().postcode("SE1").build()).build()).build());
+
+        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
+            .additionalApplicationType(List.of(C2_ORDER))
+            .c2Type(WITH_NOTICE)
+            .isC2Confidential(YesNo.YES)
+            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+            .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
+            .respondents1(respondentsInCase)
+            .localAuthorityPolicy(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole(CaseRole.LASOLICITOR.formattedName())
+                .build())
+            .build();
+
+        given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.LASOLICITOR));
+
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
+
+        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle()).isNull();
+        assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getC2DocumentBundleLA().getApplicantName()).isEqualTo(APPLICANT_NAME);
+
+        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundleLA(), c2Supplement, c2SupportingDocument);
+    }
+
+    @Test
+    void shouldBuildBundleWhenSolicitorUploadConfidentialC2Application() {
+        Supplement c2Supplement = createSupplementsBundle();
+        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
+
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS).build();
+
+        List<Element<Respondent>> respondentsInCase = wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder().firstName("First").lastName("Respondent")
+                    .address(Address.builder().postcode("SE1").build()).build()).build());
+
+        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
+            .additionalApplicationType(List.of(C2_ORDER))
+            .c2Type(WITH_NOTICE)
+            .isC2Confidential(YesNo.YES)
+            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+            .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
+            .respondents1(respondentsInCase)
+            .respondentPolicyData(RespondentPolicyData.builder()
+                .respondentPolicy0(OrganisationPolicy.builder()
+                    .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
+                .build())
+            .build();
+
+        given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
+
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
+
+        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle()).isNull();
+        assertThat(actual.getC2DocumentBundleConfidential().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getC2DocumentBundleResp0().getApplicantName()).isEqualTo(APPLICANT_NAME);
+
+        assertC2DocumentBundle(actual.getC2DocumentBundleConfidential(), c2Supplement, c2SupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundleResp0(), c2Supplement, c2SupportingDocument);
+    }
+
+    @Test
     void shouldSortOldC2DocumentBundlesToDateDescending() {
         C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
             .type(WITHOUT_NOTICE)
@@ -619,7 +702,7 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test
@@ -635,7 +718,47 @@ class UploadAdditionalApplicationsServiceTest {
             assertThat(converted.getDocument())
                 .isEqualTo(SEALED_DOCUMENT);
             assertThat(converted.getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+        }
+
+        @Test
+        void shouldSealConfidentialC2Document() {
+            C2DocumentBundle bundle = C2DocumentBundle.builder()
+                .document(DOCUMENT)
+                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
+                    .document(SUPPLEMENT_DOCUMENT)
+                    .build()))
+                .build();
+
+            CaseData caseData = CASE_DATA.toBuilder()
+                .isC2Confidential(YesNo.YES)
+                .respondentPolicyData(RespondentPolicyData.builder()
+                    .respondentPolicy0(OrganisationPolicy.builder()
+                        .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
+                    .build())
+                .build();
+
+            AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder builder =
+                AdditionalApplicationsBundle.builder();
+
+            given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
+            underTest.convertConfidentialC2Bundle(caseData, bundle, builder);
+
+            AdditionalApplicationsBundle additionalApplicationsBundle = builder.build();
+
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
+                .getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
+                .getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
+
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
+                .getDocument())
+                .isEqualTo(SEALED_DOCUMENT);
+            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
+                .getSupplementsBundle().get(0).getValue().getDocument())
+                .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
 
         @Test

@@ -198,8 +198,8 @@ withPipeline(type, product, component) {
   before('fullFunctionalTest:preview'){
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
-      env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net/"
-      env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
+      env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+      env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
       env.SWANSEA_ORG_ID = "62LYJRF"
       env.MOCKED_PAYMENTS = false
@@ -210,7 +210,7 @@ withPipeline(type, product, component) {
   afterAlways('fullFunctionalTest:preview') {
     stage('UIFunctionalTests') {
       try {
-        yarnBuilder.yarn('test:functional-nightly')
+          yarnBuilder.yarn('test:functional-nightly-preview')
       } catch (Error) {
         unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
       } finally {

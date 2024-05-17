@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -25,13 +23,12 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-@Api
 @RestController
 @RequestMapping("/callback/upload-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController extends CallbackController {
     private final ApplicationDocumentsService applicationDocumentsService;
-    private final DocumentListService documentListService;
+
     private final ManageDocumentService manageDocumentService;
 
     @PostMapping("/about-to-start")
@@ -72,8 +69,6 @@ public class UploadDocumentsController extends CallbackController {
 
         caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(caseData,
             currentDocuments, previousDocuments));
-
-        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         return respond(caseDetails);
     }
 }

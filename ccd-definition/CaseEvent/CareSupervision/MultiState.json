@@ -27,8 +27,7 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "Publish": "Y"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -513,23 +512,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsLA",
-    "Name": "(OLD) Manage documents",
-    "Description": "Manage documents",
-    "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "ShowSummary": "Y",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/submitted"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "changeCaseName",
     "Name": "Change case name",
     "Description": "Change case name",
@@ -734,41 +716,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocuments",
-    "Name": "(OLD) Manage documents",
-    "Description": "Manage documents",
-    "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "ShowSummary": "Y",
-    "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue",
-    "Comment": "Recreated due to differing permissions in this state compared to other states",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/submitted"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsSolicitor",
-    "Name": "(OLD) Manage documents",
-    "Description": "Manage documents",
-    "DisplayOrder": 14,
-    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
-    "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "ShowSummary": "Y",
-    "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/submitted"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "editFamilyManCaseNumber",
     "Name": "Add case number",
     "Description": "Add case number",
@@ -966,6 +913,7 @@
     "PostConditionState": "*",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
@@ -1148,6 +1096,7 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted",
+    "Publish":  "Y"
   }
 ]

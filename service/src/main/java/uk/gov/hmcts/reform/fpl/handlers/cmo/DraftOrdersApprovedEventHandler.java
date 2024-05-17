@@ -231,7 +231,7 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
         if (event.getApprovedOrders().isEmpty()) {
-            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            log.info("No non-confidential approved orders. skip sendNotificationToDigitalRepresentatives");
             return;
         }
 
@@ -267,7 +267,7 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
         if (event.getApprovedOrders().isEmpty()) {
-            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            log.info("No non-confidential approved orders. skip sendNotificationToEmailRepresentatives");
             return;
         }
 

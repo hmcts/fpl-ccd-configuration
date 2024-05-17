@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 @Value
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ChildPolicyData implements PolicyDatas {
+public class ChildPolicyData implements PolicyData {
     OrganisationPolicy childPolicy0;
     OrganisationPolicy childPolicy1;
     OrganisationPolicy childPolicy2;
@@ -28,7 +28,7 @@ public class ChildPolicyData implements PolicyDatas {
 
     @Override
     @JsonIgnore
-    public OrganisationPolicy[] getAllPolicy() {
+    public OrganisationPolicy[] getAllPolicies() {
         return new OrganisationPolicy[] {
             childPolicy0, childPolicy1, childPolicy2, childPolicy3, childPolicy4, childPolicy5, childPolicy6,
             childPolicy7, childPolicy8, childPolicy9, childPolicy10, childPolicy11, childPolicy12, childPolicy13,

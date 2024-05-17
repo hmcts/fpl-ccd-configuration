@@ -32,6 +32,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -285,20 +286,46 @@ class RoleAssignmentServiceTest {
             when(systemUserService.getSysUserToken()).thenReturn("token");
             when(authTokenGenerator.generate()).thenReturn("auth");
             when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
-                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").build()))
+                .roleAssignmentResponse(List.of(RoleAssignment.builder().id("role-1").roleName("role-A").build()))
                 .build());
 
             ZonedDateTime now = ZonedDateTime.now();
-            underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId");
+            underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
 
             verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
                 .validAt(now)
                 .attributes(Map.of("caseId", List.of("12345")))
                 .actorId(List.of("idamId"))
+                .roleName(List.of("role-A"))
                 .build()));
 
             verify(amApi).deleteRoleAssignment(eq("token"), eq("auth"), eq("role-1"));
         }
+
+        @Test
+        void shouldOnlyDeleteARoleAssignmentIfOneOfRequestedRoles() {
+            when(systemUserService.getSysUserToken()).thenReturn("token");
+            when(authTokenGenerator.generate()).thenReturn("auth");
+            when(amApi.queryRoleAssignments(eq("token"), eq("auth"), any())).thenReturn(QueryResponse.builder()
+                .roleAssignmentResponse(List.of(
+                    RoleAssignment.builder().id("role-1").roleName("role-A").build()
+                ))
+                .build());
+
+            ZonedDateTime now = ZonedDateTime.now();
+            underTest.deleteRoleAssignmentOnCaseAtTime(12345L, now, "idamId", List.of("role-A"));
+
+            verify(amApi).queryRoleAssignments(eq("token"), eq("auth"), eq(QueryRequest.builder()
+                .validAt(now)
+                .attributes(Map.of("caseId", List.of("12345")))
+                .actorId(List.of("idamId"))
+                .roleName(List.of("role-A"))
+                .build()));
+
+            verify(amApi, times(1)).deleteRoleAssignment(eq("token"), eq("auth"), eq("role-1"));
+            verify(amApi, never()).deleteRoleAssignment(eq("token"), eq("auth"), eq("role-2"));
+        }
+
 
         @Test
         void shouldDeleteAllRolesOnCase() {
