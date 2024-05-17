@@ -81,6 +81,14 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
+
+  public async expectAllUploadsCompleted() {
+    const locs = await this.page.getByText('Cancel upload').all();
+    for (let i = 0; i < locs.length; i++) {
+      await expect(locs[i]).toBeDisabled();
+    }
+  }
+
   public async fillC2ApplicationDetails() {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
