@@ -56,8 +56,6 @@ class OrderChasingEmailJobTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private CoreCaseDataService ccdService;
-    @Mock
     private JobExecutionContext executionContext;
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -110,8 +108,6 @@ class OrderChasingEmailJobTest {
             .id(CASE_ID)
             .data(mapper.convertValue(caseData, new TypeReference<>() {}))
             .build());
-
-        caseData = caseData.toBuilder().id(CASE_ID).build();
 
         when(searchService.search(any(), eq(SEARCH_SIZE), eq(0))).thenReturn(caseDetails);
 
