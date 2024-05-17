@@ -43,7 +43,8 @@ class RecordFinalDecisionsControllerAboutToStartTest extends AbstractCallbackTes
     @TestConfiguration
     static class RecordFinalDecisionsTestConfig {
         @Bean
-        public RecordFinalDecisionsService recordFinalDecisionsService(ChildrenService childrenService, OptionCountBuilder optionCountBuilder) {
+        public RecordFinalDecisionsService recordFinalDecisionsService(ChildrenService childrenService,
+                                                                       OptionCountBuilder optionCountBuilder) {
             return new RecordFinalDecisionsService(childrenService, optionCountBuilder);
         }
     }
