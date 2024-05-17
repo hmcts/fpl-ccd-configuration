@@ -17,7 +17,7 @@ public class PolicyHelper {
     public static boolean isPolicyMatchingCaseRoles(OrganisationPolicy organisationPolicy,
                                                     Collection<CaseRole> caseRoles) {
         return organisationPolicy != null && caseRoles != null
-            && caseRoles.contains(CaseRole.from(organisationPolicy.getOrgPolicyCaseAssignedRole()));
+               && caseRoles.contains(CaseRole.from(organisationPolicy.getOrgPolicyCaseAssignedRole()));
     }
 
     public static void processFieldByPolicyDatas(PolicyData policyData, String fieldBaseName, Set<CaseRole> caseRoles,
