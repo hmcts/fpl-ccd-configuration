@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class WelshLangRequirements extends BasePage {
@@ -22,15 +22,15 @@ export class WelshLangRequirements extends BasePage {
         this.needToBeInWelshYesRadio = page.getByRole('group', { name: 'Does this application need to be translated into Welsh?' }).getByLabel('Yes');
     }
     async welshLanguageSmokeTest() {
-        await this.welshLangHeading.isVisible();
-        await this.doesAnyRespondentQuestion.isVisible();
+        await expect(this.welshLangHeading).toBeVisible();
+        await expect(this.doesAnyRespondentQuestion).toBeVisible();
         await this.langRequirementYesRadio.click();
-        await this.whichLanguageAreYouUsingQuestion.isVisible();
+        await expect(this.whichLanguageAreYouUsingQuestion).toBeVisible();
         await this.englishLangRadio.click();
-        await this.needToBeTranslatedQuestion.isVisible();
+        await expect(this.needToBeTranslatedQuestion).toBeVisible();
         await this.needToBeInWelshYesRadio.click();
         await this.clickContinue();
-        await this.checkYourAnswersHeader.isVisible();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
     }
 }
