@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +28,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/approve-draft-orders")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

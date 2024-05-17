@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.RecordChildrenFinalDecisionsEventData;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.RecordFinalDecisionsService;
 
 import java.time.LocalDate;
@@ -25,7 +25,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/record-final-decisions")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -35,6 +34,7 @@ public class RecordFinalDecisionsController extends CallbackController {
     public static final String CLOSE_CASE_TAB_FIELD = "closeCaseTabField";
     private final ChildrenService childrenService;
     private final RecordFinalDecisionsService recordFinalDecisionService;
+    private final JudicialService judicialService;
 
 
     @PostMapping("/about-to-start")
@@ -91,5 +91,15 @@ public class RecordFinalDecisionsController extends CallbackController {
         removeTemporaryFields(caseDetails, eventData.getTransientFields());
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
+        final CaseData caseData = getCaseData(request);
+
+        // only delete all allocated/hearing roles on the case when case is completely closed
+        if (CLOSED.equals(caseData.getState())) {
+            judicialService.deleteAllRolesOnCase(caseData.getId());
+        }
     }
 }

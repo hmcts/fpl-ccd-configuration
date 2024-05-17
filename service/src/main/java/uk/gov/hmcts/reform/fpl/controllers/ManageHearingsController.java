@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-hearings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -77,7 +75,6 @@ public class ManageHearingsController extends CallbackController {
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
-    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HAS_SESSION_KEY = "hasSession";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
@@ -431,7 +428,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
-        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
         data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
         data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());

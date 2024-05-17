@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 
-@Api
 @RestController
 @RequestMapping("/callback/remove-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})

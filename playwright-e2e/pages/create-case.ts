@@ -1,14 +1,14 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { CreateCaseName } from "../utils/create-case-name";
 
-export class CreateCase {
+export class CreateCase{
   readonly page: Page;
   readonly caseJurisdictionFilterDropdown: Locator;
   readonly caseTypeFilterDropdown: Locator;
   readonly createCaseLink: Locator;
   readonly addApplicationTitle: Locator;
   readonly viewHistory: Locator;
-  generatedCaseName: any;
+  generatedCaseName: string;
 
   public constructor(page: Page) {
     this.page = page;
@@ -19,6 +19,7 @@ export class CreateCase {
       name: "Add application details",
     });
     this.viewHistory = page.getByText("History");
+    this.generatedCaseName = "";
   }
 
   async createCase() {
@@ -40,7 +41,7 @@ export class CreateCase {
   }
 
    caseName()  {
-    let formattedDate = CreateCaseName.getFormattedDate();
+    const formattedDate = CreateCaseName.getFormattedDate();
     this.generatedCaseName = `Smoke Test ${formattedDate}`;
   }
 
@@ -51,7 +52,7 @@ export class CreateCase {
       .getByRole("button", { name: "Submit" })
       // This click timeout is here allow for ExUI loading spinner to finish
       .click();
-    await this.addApplicationTitle.isVisible();
+    //await this.addApplicationTitle.isVisible();
 
     // This click timeout is here allow for ExUI loading spinner to finish
     await this.viewHistory.click();
@@ -70,7 +71,7 @@ export class CreateCase {
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
     await this.page.getByLabel("Day").click();
-    await expect(this.page.getByText(caseName)).toBeVisible;
+    expect(this.page.getByText(caseName)).toBeVisible();
     await this.page.getByText(caseName).click();
   }
 }
