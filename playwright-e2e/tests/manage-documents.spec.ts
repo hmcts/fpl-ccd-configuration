@@ -1,8 +1,8 @@
 import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from '../settings/user-credentials';
-import caseData from '../caseData/mandatorySubmissionFields.json';
-import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json';
+import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
+import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: 'json' };
 import { expect } from '@playwright/test'
 import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 
