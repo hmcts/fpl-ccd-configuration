@@ -328,30 +328,6 @@ public class ApproveDraftOrdersService {
         return updates;
     }
 
-    private <T> Map<String, List<Element<T>>> addToConfidentialOrderBundle(Element<HearingOrdersBundle>
-                                                                               selectedDraftOrdersBundle,
-                                                                           Element<HearingOrder>
-                                                                               draftOrderElement,
-                                                                           ConfidentialOrderBundle<T>
-                                                                               confidentialOrderBundle,
-                                                                           Element<T> orderToBeAdded) {
-        Map<String, List<Element<T>>> updates = new HashMap<>();
-
-        selectedDraftOrdersBundle.getValue().processAllConfidentialOrders((suffix, selectedDraftOrders) -> {
-            if (isNotEmpty(selectedDraftOrders)
-                && ElementUtils.findElement(draftOrderElement.getId(), selectedDraftOrders).isPresent()) {
-                List<Element<T>> confidentialOrders =
-                    defaultIfNull(confidentialOrderBundle.getConfidentialOrdersBySuffix(suffix),
-                        new ArrayList<>());
-                confidentialOrders.add(orderToBeAdded);
-                updates.put(confidentialOrderBundle.getFieldBaseName() + suffix, confidentialOrders);
-                confidentialOrderBundle.setConfidentialOrdersBySuffix(suffix, confidentialOrders);
-            }
-        });
-
-        return updates;
-    }
-
     @SuppressWarnings("unchecked")
     public void updateRejectedHearingOrders(Map<String, Object> data) {
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
