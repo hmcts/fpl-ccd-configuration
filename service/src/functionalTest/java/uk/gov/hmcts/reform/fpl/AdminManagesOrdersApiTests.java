@@ -94,7 +94,9 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     }
 
     public void parametrizedTests(String inputFileDirectory, String orderType) {
-        startingCaseData = createCase(format(INPUT_FILE, inputFileDirectory), LA_SWANSEA_USER_1);
+        if (startingCaseData != null) {
+            startingCaseData = createCase(format(INPUT_FILE, inputFileDirectory), LA_SWANSEA_USER_1);
+        }
         CaseData caseData = callAboutToSubmit(startingCaseData, orderType, format(EXPECTED_FILE, inputFileDirectory));
         assertEquals(orderType, getGeneratedOrderType(caseData));
     }
