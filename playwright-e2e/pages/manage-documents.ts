@@ -62,7 +62,6 @@ export class ManageDocuments extends BasePage {
         await this.checkYourAnsAndSubmit();
     }
     async uploadedDocuments(type: string) {
-        await this.manageDocumentsTest.isVisible();
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
@@ -74,7 +73,6 @@ export class ManageDocuments extends BasePage {
         await this.checkYourAnsAndSubmit();
     }
     async uploadConfidentialDocuments(type: string) {
-        await this.manageDocumentsTest.isVisible();
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
@@ -86,7 +84,6 @@ export class ManageDocuments extends BasePage {
         await this.checkYourAnsAndSubmit();
     }
     async RemoveDocuments(type: string) {
-        await this.manageDocumentsTest.isVisible();
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.RemoveDocumentsTest.check();
         await this.clickContinue();
