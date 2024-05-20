@@ -10,7 +10,7 @@ export class BasePage {
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
 
-  constructor(page: Page) {
+ constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
@@ -37,9 +37,7 @@ export class BasePage {
     }
   }
 
-  async checkYourAnsAndSubmit() {
-    await this.checkYourAnswersHeader.isVisible();
-    await this.saveAndContinue.click();
+   await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {
