@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"supportingEvidenceLA", "supportingEvidenceNC"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OtherApplicationsBundle implements ApplicationsBundle {
     private final UUID id;
     private final OtherApplicationType applicationType;
