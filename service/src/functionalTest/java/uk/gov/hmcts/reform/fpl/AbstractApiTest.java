@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 @Slf4j
 public abstract class AbstractApiTest {
 
-    static final User LA_SWANSEA_USER_1 = user("james@swansea.gov.uk");
+    static final User LA_SWANSEA_USER_1 = user("local-authority-swansea-0001@maildrop.cc");
     static final User LA_WILTSHIRE_USER_1 = user("raghu@wiltshire.gov.uk");
     static final User LA_WILTSHIRE_USER_2 = user("sam@wiltshire.gov.uk");
     static final User COURT_ADMIN = user("hmcts-admin@example.com");
