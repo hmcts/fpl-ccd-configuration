@@ -1,7 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import { Apihelp } from '../utils/api-helper';
-import caseDataByLa from '../caseData/approveOrders/caseWithConfidentialDraftOrderByLa.json';
-import caseDataByCtsc from '../caseData/approveOrders/caseWithConfidentialDraftOrderByCtsc.json';
+import caseDataByLa from '../caseData/approveOrders/caseWithConfidentialDraftOrderByLa.json' assert { type: 'json' };
+import caseDataByCtsc from '../caseData/approveOrders/caseWithConfidentialDraftOrderByCtsc.json' assert { type: 'json' };
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
