@@ -2,7 +2,6 @@
   "submissionConsent": [
     "agree"
   ],
-  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -10,6 +9,11 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
+  "submittedForm": {
+    "document_filename": "c110a.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/82964433-210a-4a7a-8c0c-30909ced1435/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/82964433-210a-4a7a-8c0c-30909ced1435"
+  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -37,7 +41,7 @@
     "option10": [],
     "option11": []
   },
-  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "hearingDetailsSectionSubHeader": "Interim care order (C33)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -55,16 +59,16 @@
   },
   "manageOrdersOperation": "CREATE",
   "orderTempQuestions": {
-    "approvalDateTime": "YES",
+    "approvalDateTime": "NO",
     "reasonForSecureAccommodation": "NO",
     "previewOrder": "YES",
-    "approvalDate": "NO",
+    "approvalDate": "YES",
     "manageOrdersExpiryDateWithMonth": "NO",
     "refuseContactQuestions": "NO",
     "hearingDetails": "YES",
     "dischargeOfCareDetails": "NO",
     "parentResponsible": "NO",
-    "manageOrdersExclusionRequirementDetails": "NO",
+    "manageOrdersExclusionRequirementDetails": "YES",
     "orderIsByConsent": "NO",
     "orderJurisdiction": "NO",
     "linkApplication": "NO",
@@ -74,7 +78,7 @@
     "manageOrdersVaryOrExtendSupervisionOrder": "NO",
     "childLegalRepresentation": "NO",
     "orderTitle": "NO",
-    "manageOrdersExpiryDateWithEndOfProceedings": "NO",
+    "manageOrdersExpiryDateWithEndOfProceedings": "YES",
     "manageOrdersChildAssessment": "NO",
     "approver": "YES",
     "selectSingleChild": "NO",
@@ -82,7 +86,7 @@
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
     "whichChildren": "YES",
-    "epoIncludePhrase": "YES",
+    "epoIncludePhrase": "NO",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
     "orderPlacedChildInCustody": "NO",
@@ -90,12 +94,12 @@
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "YES",
-    "epoExpiryDate": "YES",
+    "epoChildrenDescription": "NO",
+    "epoExpiryDate": "NO",
     "needSealing": "NO",
     "cafcassJurisdictions": "NO",
     "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "YES",
+    "epoTypeAndPreventRemoval": "NO",
     "uploadAmendedOrder": "NO",
     "closeCase": "NO"
   },
@@ -105,6 +109,7 @@
     "code": "344",
     "email": "FamilyPublicLaw+sa@gmail.com"
   },
+  "manageOrdersExclusionDetails": "I need an exclusion because of X,Y and Z",
   "children_label": "Child 1: Timothy Jones",
   "localAuthorities": [
     {
@@ -202,7 +207,7 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "issuingDetailsSectionSubHeader": "Interim care order (C33)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
@@ -222,7 +227,7 @@
       "id": "0a36708b-c560-4790-ba04-33929447f352"
     }
   ],
-  "manageOrdersFurtherDirections": "some text",
+  "manageOrdersFurtherDirections": "Further details.",
   "children1": [
     {
       "value": {
@@ -299,6 +304,7 @@
       "id": "37ed6ef8-a9d4-44ad-ac47-f3a9baf4f79c"
     }
   ],
+  "manageOrdersHasExclusionRequirement": "Yes",
   "gatekeeperEmails": [
     {
       "value": {
@@ -355,6 +361,11 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
+  "orderPreview": {
+    "document_filename": "Preview order.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9979436d-4ded-41ce-b403-1ba5f4a99a0e/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9979436d-4ded-41ce-b403-1ba5f4a99a0e"
+  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -381,8 +392,8 @@
   },
   "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
-  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
+  "orderDetailsSectionSubHeader": "Interim care order (C33)",
+  "dateAndTimeSubmitted": "2022-09-16T13:31:43.504",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
     "thresholdReason": [
@@ -481,7 +492,7 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
-  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
+  "manageOrdersEndDateTypeWithEndOfProceedings": "END_OF_PROCEEDINGS",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "localAuthorityPolicy": {
     "Organisation": {
@@ -490,7 +501,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
+  "manageOrdersType": "C33_INTERIM_CARE_ORDER",
   "respondents1": [
     {
       "value": {
@@ -518,7 +529,7 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "childrenDetailsSectionSubHeader": "Interim care order (C33)",
   "cafcassDirections": [
     {
       "value": {
@@ -555,6 +566,19 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
+    }
+  ],
+  "applicationDocuments": [
+    {
+      "value": {
+        "documentType": "THRESHOLD",
+        "document": {
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/82964433-210a-4a7a-8c0c-30909ced1435/binary",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/82964433-210a-4a7a-8c0c-30909ced1435"
+        }
+      },
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

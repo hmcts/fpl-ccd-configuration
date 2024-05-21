@@ -2,7 +2,6 @@
   "submissionConsent": [
     "agree"
   ],
-  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -10,6 +9,11 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
+  "submittedForm": {
+    "document_filename": "c110a.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e"
+  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -37,7 +41,7 @@
     "option10": [],
     "option11": []
   },
-  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "hearingDetailsSectionSubHeader": "Recovery of a child (C29)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -53,12 +57,13 @@
       "SELECTED"
     ]
   },
+  "manageOrdersOfficerName": "Officer Barbrady",
   "manageOrdersOperation": "CREATE",
   "orderTempQuestions": {
-    "approvalDateTime": "YES",
+    "approvalDateTime": "NO",
     "reasonForSecureAccommodation": "NO",
     "previewOrder": "YES",
-    "approvalDate": "NO",
+    "approvalDate": "YES",
     "manageOrdersExpiryDateWithMonth": "NO",
     "refuseContactQuestions": "NO",
     "hearingDetails": "YES",
@@ -68,7 +73,7 @@
     "orderIsByConsent": "NO",
     "orderJurisdiction": "NO",
     "linkApplication": "NO",
-    "isFinalOrder": "NO",
+    "isFinalOrder": "YES",
     "whichOthers": "YES",
     "orderToAmend": "NO",
     "manageOrdersVaryOrExtendSupervisionOrder": "NO",
@@ -82,22 +87,22 @@
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
     "whichChildren": "YES",
-    "epoIncludePhrase": "YES",
+    "epoIncludePhrase": "NO",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
-    "orderPlacedChildInCustody": "NO",
+    "orderPlacedChildInCustody": "YES",
     "childArrangementSpecificIssueProhibitedSteps": "NO",
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "YES",
-    "epoExpiryDate": "YES",
+    "epoChildrenDescription": "NO",
+    "epoExpiryDate": "NO",
     "needSealing": "NO",
     "cafcassJurisdictions": "NO",
     "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "YES",
+    "epoTypeAndPreventRemoval": "NO",
     "uploadAmendedOrder": "NO",
-    "closeCase": "NO"
+    "closeCase": "YES"
   },
   "caseLocalAuthority": "SA",
   "court": {
@@ -202,11 +207,12 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "issuingDetailsSectionSubHeader": "Recovery of a child (C29)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
   },
+  "manageOrdersIsFinalOrder": "Yes",
   "displayAmountToPay": "Yes",
   "courtDirections": [
     {
@@ -222,7 +228,6 @@
       "id": "0a36708b-c560-4790-ba04-33929447f352"
     }
   ],
-  "manageOrdersFurtherDirections": "some text",
   "children1": [
     {
       "value": {
@@ -355,6 +360,11 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
+  "orderPreview": {
+    "document_filename": "Preview order.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1469448d-3f9b-4e90-a653-1a48f7b818a2/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1469448d-3f9b-4e90-a653-1a48f7b818a2"
+  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -371,6 +381,7 @@
     },
     "additionalOthers": []
   },
+  "manageOrdersPlacedUnderOrder": "EMERGENCY_PROTECTION_ORDER",
   "solicitor": {
     "name": "John Smith",
     "mobile": "07000000000",
@@ -381,9 +392,11 @@
   },
   "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
-  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
+  "orderDetailsSectionSubHeader": "Recovery of a child (C29)",
+  "dateAndTimeSubmitted": "2022-09-16T13:34:48.847",
+  "manageOrdersCloseCase": "No",
   "manageOrdersApprovedAtHearing": "No",
+  "manageOrdersIsExParte": "Yes",
   "grounds": {
     "thresholdReason": [
       "noCare"
@@ -393,7 +406,10 @@
   "allocationProposal": {
     "proposal": "District judge"
   },
-  "manageOrdersActionsPermitted": [],
+  "manageOrdersActionsPermitted": [
+    "INFORM",
+    "PRODUCE"
+  ],
   "localAuthorityDirections": [
     {
       "value": {
@@ -481,7 +497,6 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
-  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "localAuthorityPolicy": {
     "Organisation": {
@@ -490,7 +505,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
+  "manageOrdersType": "C29_RECOVERY_OF_A_CHILD",
   "respondents1": [
     {
       "value": {
@@ -518,7 +533,7 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "childrenDetailsSectionSubHeader": "Recovery of a child (C29)",
   "cafcassDirections": [
     {
       "value": {
@@ -555,6 +570,19 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
+    }
+  ],
+  "applicationDocuments": [
+    {
+      "value": {
+        "documentType": "THRESHOLD",
+        "document": {
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e/binary",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e"
+        }
+      },
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

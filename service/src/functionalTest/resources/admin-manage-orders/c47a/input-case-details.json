@@ -2,7 +2,6 @@
   "submissionConsent": [
     "agree"
   ],
-  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -10,6 +9,45 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
+  "submittedForm": {
+    "document_filename": "c110a.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
+  },
+  "additionalApplicationsBundle": [
+    {
+      "value": {
+        "uploadedDateTime": "16 June 2021, 11:49am",
+        "pbaPayment": {
+          "usePbaPayment": "Yes",
+          "fileReference": "Example reference",
+          "pbaNumber": "PBA0082848",
+          "clientCode": "8888"
+        },
+        "author": "HMCTS",
+        "c2DocumentBundle": {
+          "uploadedDateTime": "16 June 2021, 11:49am",
+          "author": "HMCTS",
+          "document": {
+            "document_filename": "mockFile.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
+          },
+          "supportingEvidenceLA": [],
+          "supportingEvidenceNC": [],
+          "id": "788f1b70-2d7d-4c76-8484-de225ac92ead",
+          "applicantName": "Joe Bloggs, Respondent 1",
+          "supplementsBundle": [],
+          "type": "WITH_NOTICE",
+          "supportingEvidenceBundle": [],
+          "c2AdditionalOrdersRequested": [
+            "APPOINTMENT_OF_GUARDIAN"
+          ]
+        }
+      },
+      "id": "5c52bfdc-b2a3-48ac-81e4-a9d201339978"
+    }
+  ],
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -17,27 +55,7 @@
     "judgeEmailAddress": "moley@example.com"
   },
   "respondentsRefusedSelector": {},
-  "childSelector": {
-    "option9": [],
-    "option7": [],
-    "option8": [],
-    "option5": [],
-    "option6": [],
-    "optionCount": "1",
-    "option14": [],
-    "option3": [],
-    "option4": [],
-    "option1": [],
-    "option2": [],
-    "option12": [],
-    "option0": [
-      "SELECTED"
-    ],
-    "option13": [],
-    "option10": [],
-    "option11": []
-  },
-  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "hearingDetailsSectionSubHeader": "Appointment of a children's guardian (C47A)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -55,10 +73,10 @@
   },
   "manageOrdersOperation": "CREATE",
   "orderTempQuestions": {
-    "approvalDateTime": "YES",
+    "approvalDateTime": "NO",
     "reasonForSecureAccommodation": "NO",
     "previewOrder": "YES",
-    "approvalDate": "NO",
+    "approvalDate": "YES",
     "manageOrdersExpiryDateWithMonth": "NO",
     "refuseContactQuestions": "NO",
     "hearingDetails": "YES",
@@ -67,7 +85,7 @@
     "manageOrdersExclusionRequirementDetails": "NO",
     "orderIsByConsent": "NO",
     "orderJurisdiction": "NO",
-    "linkApplication": "NO",
+    "linkApplication": "YES",
     "isFinalOrder": "NO",
     "whichOthers": "YES",
     "orderToAmend": "NO",
@@ -81,8 +99,8 @@
     "uploadOrderFile": "NO",
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
-    "whichChildren": "YES",
-    "epoIncludePhrase": "YES",
+    "whichChildren": "NO",
+    "epoIncludePhrase": "NO",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
     "orderPlacedChildInCustody": "NO",
@@ -90,12 +108,12 @@
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "YES",
-    "epoExpiryDate": "YES",
+    "epoChildrenDescription": "NO",
+    "epoExpiryDate": "NO",
     "needSealing": "NO",
-    "cafcassJurisdictions": "NO",
+    "cafcassJurisdictions": "YES",
     "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "YES",
+    "epoTypeAndPreventRemoval": "NO",
     "uploadAmendedOrder": "NO",
     "closeCase": "NO"
   },
@@ -105,7 +123,6 @@
     "code": "344",
     "email": "FamilyPublicLaw+sa@gmail.com"
   },
-  "children_label": "Child 1: Timothy Jones",
   "localAuthorities": [
     {
       "value": {
@@ -143,8 +160,19 @@
       "CARE_ORDER"
     ]
   },
-  "orderAppliesToAllChildren": "No",
   "sendOrderToAllOthers": "No",
+  "manageOrdersLinkedApplication": {
+    "value": {
+      "code": "788f1b70-2d7d-4c76-8484-de225ac92ead",
+      "label": "C2, 16 June 2021, 11:49am"
+    },
+    "list_items": [
+      {
+        "code": "788f1b70-2d7d-4c76-8484-de225ac92ead",
+        "label": "C2, 16 June 2021, 11:49am"
+      }
+    ]
+  },
   "otherPartiesDirections": [
     {
       "value": {
@@ -202,7 +230,7 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "issuingDetailsSectionSubHeader": "Appointment of a children's guardian (C47A)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
@@ -222,7 +250,6 @@
       "id": "0a36708b-c560-4790-ba04-33929447f352"
     }
   ],
-  "manageOrdersFurtherDirections": "some text",
   "children1": [
     {
       "value": {
@@ -341,6 +368,7 @@
       "id": "99ceafd0-de4b-4725-b78b-7625342febed"
     }
   ],
+  "manageOrdersCafcassOfficesEngland": "HULL",
   "respondentDirections": [
     {
       "value": {
@@ -355,6 +383,11 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
+  "orderPreview": {
+    "document_filename": "Preview order.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a838e9a7-a25d-41cd-9131-a27537e9fa5a/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a838e9a7-a25d-41cd-9131-a27537e9fa5a"
+  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -381,9 +414,10 @@
   },
   "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
-  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
+  "orderDetailsSectionSubHeader": "Appointment of a children's guardian (C47A)",
+  "dateAndTimeSubmitted": "2022-09-16T13:42:53.303",
   "manageOrdersApprovedAtHearing": "No",
+  "manageOrdersCafcassRegion": "ENGLAND",
   "grounds": {
     "thresholdReason": [
       "noCare"
@@ -481,8 +515,8 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
-  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+  "manageOrdersShouldLinkApplication": "Yes",
   "localAuthorityPolicy": {
     "Organisation": {
       "OrganisationID": "ORGSA",
@@ -490,7 +524,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
+  "manageOrdersType": "C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
   "respondents1": [
     {
       "value": {
@@ -518,7 +552,6 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
   "cafcassDirections": [
     {
       "value": {
@@ -555,6 +588,19 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
+    }
+  ],
+  "applicationDocuments": [
+    {
+      "value": {
+        "documentType": "THRESHOLD",
+        "document": {
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
+        }
+      },
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

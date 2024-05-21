@@ -2,7 +2,6 @@
   "submissionConsent": [
     "agree"
   ],
-  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -10,6 +9,11 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
+  "submittedForm": {
+    "document_filename": "c110a.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/362b11b8-0183-4ce6-9b3c-3c1e782bcfda/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/362b11b8-0183-4ce6-9b3c-3c1e782bcfda"
+  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -37,7 +41,7 @@
     "option10": [],
     "option11": []
   },
-  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "hearingDetailsSectionSubHeader": "Special guardianship order (C43A)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -65,10 +69,10 @@
     "dischargeOfCareDetails": "NO",
     "parentResponsible": "NO",
     "manageOrdersExclusionRequirementDetails": "NO",
-    "orderIsByConsent": "NO",
+    "orderIsByConsent": "YES",
     "orderJurisdiction": "NO",
     "linkApplication": "NO",
-    "isFinalOrder": "NO",
+    "isFinalOrder": "YES",
     "whichOthers": "YES",
     "orderToAmend": "NO",
     "manageOrdersVaryOrExtendSupervisionOrder": "NO",
@@ -82,7 +86,7 @@
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
     "whichChildren": "YES",
-    "epoIncludePhrase": "YES",
+    "epoIncludePhrase": "NO",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
     "orderPlacedChildInCustody": "NO",
@@ -90,12 +94,12 @@
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "YES",
-    "epoExpiryDate": "YES",
+    "epoChildrenDescription": "NO",
+    "epoExpiryDate": "NO",
     "needSealing": "NO",
     "cafcassJurisdictions": "NO",
-    "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "YES",
+    "appointedGuardian": "YES",
+    "epoTypeAndPreventRemoval": "NO",
     "uploadAmendedOrder": "NO",
     "closeCase": "NO"
   },
@@ -202,11 +206,13 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "manageOrdersIsByConsent": "Yes",
+  "issuingDetailsSectionSubHeader": "Special guardianship order (C43A)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
   },
+  "manageOrdersIsFinalOrder": "Yes",
   "displayAmountToPay": "Yes",
   "courtDirections": [
     {
@@ -222,7 +228,7 @@
       "id": "0a36708b-c560-4790-ba04-33929447f352"
     }
   ],
-  "manageOrdersFurtherDirections": "some text",
+  "manageOrdersFurtherDirections": "Further special guardianship details.",
   "children1": [
     {
       "value": {
@@ -355,6 +361,11 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
+  "orderPreview": {
+    "document_filename": "Preview order.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1a81d5d5-517b-4a28-a4ff-fc5034dbe2e7/binary",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1a81d5d5-517b-4a28-a4ff-fc5034dbe2e7"
+  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -371,6 +382,7 @@
     },
     "additionalOthers": []
   },
+  "appointedGuardians_label": "Person 1: Respondent - Joe Bloggs\nPerson 2: Other - John Doe",
   "solicitor": {
     "name": "John Smith",
     "mobile": "07000000000",
@@ -379,10 +391,29 @@
     "dx": "160010 Kingsway 7",
     "email": "solicitor@email.com"
   },
-  "appointedGuardianSelector": {},
+  "appointedGuardianSelector": {
+    "option9": [],
+    "option7": [],
+    "option8": [],
+    "option5": [],
+    "option6": [],
+    "optionCount": "12",
+    "option14": [],
+    "option3": [],
+    "option4": [],
+    "option1": [],
+    "option2": [],
+    "option12": [],
+    "option0": [
+      "SELECTED"
+    ],
+    "option13": [],
+    "option10": [],
+    "option11": []
+  },
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
-  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
+  "orderDetailsSectionSubHeader": "Special guardianship order (C43A)",
+  "dateAndTimeSubmitted": "2022-09-16T13:40:05.324",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
     "thresholdReason": [
@@ -481,7 +512,6 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
-  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "localAuthorityPolicy": {
     "Organisation": {
@@ -490,7 +520,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
+  "manageOrdersType": "C43A_SPECIAL_GUARDIANSHIP_ORDER",
   "respondents1": [
     {
       "value": {
@@ -518,7 +548,7 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "childrenDetailsSectionSubHeader": "Special guardianship order (C43A)",
   "cafcassDirections": [
     {
       "value": {
@@ -555,6 +585,19 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
+    }
+  ],
+  "applicationDocuments": [
+    {
+      "value": {
+        "documentType": "THRESHOLD",
+        "document": {
+          "document_filename": "solicitor-role-tech.docx",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/362b11b8-0183-4ce6-9b3c-3c1e782bcfda/binary",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/362b11b8-0183-4ce6-9b3c-3c1e782bcfda"
+        }
+      },
+      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }
