@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 
 import java.time.LocalDate;
@@ -43,7 +45,6 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     public static final String EXPECTED_FILE = "admin-manage-orders/%s/expected.txt";
     private final LocalDate todaysDate = LocalDate.now();
     private final LocalDateTime currentDateTime = LocalDateTime.now();
-    private CaseData startingCaseData;
 
     @Autowired
     private DocumentService documentService;
@@ -94,9 +95,7 @@ public class AdminManagesOrdersApiTests extends AbstractApiTest {
     }
 
     public void parametrizedTests(String inputFileDirectory, String orderType) {
-        if (startingCaseData == null) {
-            startingCaseData = createCase(format(INPUT_FILE, inputFileDirectory), LA_SWANSEA_USER_1);
-        }
+        CaseData startingCaseData = createCase(format(INPUT_FILE, inputFileDirectory), LA_SWANSEA_USER_1);
         CaseData caseData = callAboutToSubmit(startingCaseData, orderType, format(EXPECTED_FILE, inputFileDirectory));
         assertEquals(orderType, getGeneratedOrderType(caseData));
     }
