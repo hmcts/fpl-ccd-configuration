@@ -2,6 +2,7 @@
   "submissionConsent": [
     "agree"
   ],
+  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -9,11 +10,6 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066"
-  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -41,7 +37,7 @@
     "option10": [],
     "option11": []
   },
-  "hearingDetailsSectionSubHeader": "Interim supervision order (C35B)",
+  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -59,10 +55,10 @@
   },
   "manageOrdersOperation": "CREATE",
   "orderTempQuestions": {
-    "approvalDateTime": "NO",
+    "approvalDateTime": "YES",
     "reasonForSecureAccommodation": "NO",
     "previewOrder": "YES",
-    "approvalDate": "YES",
+    "approvalDate": "NO",
     "manageOrdersExpiryDateWithMonth": "NO",
     "refuseContactQuestions": "NO",
     "hearingDetails": "YES",
@@ -78,7 +74,7 @@
     "manageOrdersVaryOrExtendSupervisionOrder": "NO",
     "childLegalRepresentation": "NO",
     "orderTitle": "NO",
-    "manageOrdersExpiryDateWithEndOfProceedings": "YES",
+    "manageOrdersExpiryDateWithEndOfProceedings": "NO",
     "manageOrdersChildAssessment": "NO",
     "approver": "YES",
     "selectSingleChild": "NO",
@@ -86,7 +82,7 @@
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
     "whichChildren": "YES",
-    "epoIncludePhrase": "NO",
+    "epoIncludePhrase": "YES",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
     "orderPlacedChildInCustody": "NO",
@@ -94,12 +90,12 @@
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "NO",
-    "epoExpiryDate": "NO",
+    "epoChildrenDescription": "YES",
+    "epoExpiryDate": "YES",
     "needSealing": "NO",
     "cafcassJurisdictions": "NO",
     "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "NO",
+    "epoTypeAndPreventRemoval": "YES",
     "uploadAmendedOrder": "NO",
     "closeCase": "NO"
   },
@@ -206,7 +202,7 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Interim supervision order (C35B)",
+  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
@@ -226,7 +222,7 @@
       "id": "0a36708b-c560-4790-ba04-33929447f352"
     }
   ],
-  "manageOrdersFurtherDirections": "Further details.",
+  "manageOrdersFurtherDirections": "some text",
   "children1": [
     {
       "value": {
@@ -359,11 +355,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/15059037-e95e-49d1-b6cf-a6ff47cff702/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/15059037-e95e-49d1-b6cf-a6ff47cff702"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -390,7 +381,8 @@
   },
   "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Interim supervision order (C35B)",
+  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
     "thresholdReason": [
@@ -489,7 +481,7 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
-  "manageOrdersEndDateTypeWithEndOfProceedings": "END_OF_PROCEEDINGS",
+  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "localAuthorityPolicy": {
     "Organisation": {
@@ -498,7 +490,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C35B_INTERIM_SUPERVISION_ORDER",
+  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
   "respondents1": [
     {
       "value": {
@@ -526,7 +518,7 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Interim supervision order (C35B)",
+  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
   "cafcassDirections": [
     {
       "value": {
@@ -563,19 +555,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

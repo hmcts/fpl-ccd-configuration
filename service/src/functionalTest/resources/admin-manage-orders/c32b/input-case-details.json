@@ -2,6 +2,7 @@
   "submissionConsent": [
     "agree"
   ],
+  "manageOrdersIncludePhrase": "Yes",
   "sendToCtsc": "Yes",
   "judgeAndLegalAdvisor": {
     "useAllocatedJudge": "Yes",
@@ -9,11 +10,6 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2b07e8a1-1c8a-4689-92c9-febd16c826b3/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2b07e8a1-1c8a-4689-92c9-febd16c826b3"
-  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
@@ -41,7 +37,7 @@
     "option10": [],
     "option11": []
   },
-  "hearingDetailsSectionSubHeader": "Discharge of care order (C32B)",
+  "hearingDetailsSectionSubHeader": "Emergency protection order (C23)",
   "othersSelector": {
     "option9": [],
     "option7": [],
@@ -59,20 +55,20 @@
   },
   "manageOrdersOperation": "CREATE",
   "orderTempQuestions": {
-    "approvalDateTime": "NO",
+    "approvalDateTime": "YES",
     "reasonForSecureAccommodation": "NO",
     "previewOrder": "YES",
-    "approvalDate": "YES",
+    "approvalDate": "NO",
     "manageOrdersExpiryDateWithMonth": "NO",
     "refuseContactQuestions": "NO",
     "hearingDetails": "YES",
-    "dischargeOfCareDetails": "YES",
+    "dischargeOfCareDetails": "NO",
     "parentResponsible": "NO",
     "manageOrdersExclusionRequirementDetails": "NO",
     "orderIsByConsent": "NO",
     "orderJurisdiction": "NO",
     "linkApplication": "NO",
-    "isFinalOrder": "YES",
+    "isFinalOrder": "NO",
     "whichOthers": "YES",
     "orderToAmend": "NO",
     "manageOrdersVaryOrExtendSupervisionOrder": "NO",
@@ -86,7 +82,7 @@
     "manageOrdersEducationSupervision": "NO",
     "childPlacementApplications": "NO",
     "whichChildren": "YES",
-    "epoIncludePhrase": "NO",
+    "epoIncludePhrase": "YES",
     "translationRequirements": "NO",
     "respondentsRefused": "NO",
     "orderPlacedChildInCustody": "NO",
@@ -94,14 +90,14 @@
     "furtherDirections": "YES",
     "orderDetails": "NO",
     "childPlacementQuestions": "NO",
-    "epoChildrenDescription": "NO",
-    "epoExpiryDate": "NO",
+    "epoChildrenDescription": "YES",
+    "epoExpiryDate": "YES",
     "needSealing": "NO",
     "cafcassJurisdictions": "NO",
     "appointedGuardian": "NO",
-    "epoTypeAndPreventRemoval": "NO",
+    "epoTypeAndPreventRemoval": "YES",
     "uploadAmendedOrder": "NO",
-    "closeCase": "YES"
+    "closeCase": "NO"
   },
   "caseLocalAuthority": "SA",
   "court": {
@@ -206,12 +202,11 @@
       "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88"
     }
   ],
-  "issuingDetailsSectionSubHeader": "Discharge of care order (C32B)",
+  "issuingDetailsSectionSubHeader": "Emergency protection order (C23)",
   "hearing": {
     "reason": "test reason",
     "timeFrame": "Same day"
   },
-  "manageOrdersIsFinalOrder": "Yes",
   "displayAmountToPay": "Yes",
   "courtDirections": [
     {
@@ -360,11 +355,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b2428af8-cdea-42d2-a261-396c54275dbe/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b2428af8-cdea-42d2-a261-396c54275dbe"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -391,9 +381,8 @@
   },
   "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
-  "orderDetailsSectionSubHeader": "Discharge of care order (C32B)",
-  "dateAndTimeSubmitted": "2022-09-16T13:12:46.938",
-  "manageOrdersCloseCase": "No",
+  "orderDetailsSectionSubHeader": "Emergency protection order (C23)",
+  "dateAndTimeSubmitted": "2022-09-16T13:20:23.138",
   "manageOrdersApprovedAtHearing": "No",
   "grounds": {
     "thresholdReason": [
@@ -492,6 +481,7 @@
     }
   ],
   "manageOrdersFullAddressToStayIfKeepAwayFromHome": {},
+  "manageOrdersEpoType": "REMOVE_TO_ACCOMMODATION",
   "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
   "localAuthorityPolicy": {
     "Organisation": {
@@ -500,7 +490,7 @@
     },
     "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
   },
-  "manageOrdersType": "C32B_DISCHARGE_OF_CARE_ORDER",
+  "manageOrdersType": "C23_EMERGENCY_PROTECTION_ORDER",
   "respondents1": [
     {
       "value": {
@@ -528,7 +518,7 @@
       "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090"
     }
   ],
-  "childrenDetailsSectionSubHeader": "Discharge of care order (C32B)",
+  "childrenDetailsSectionSubHeader": "Emergency protection order (C23)",
   "cafcassDirections": [
     {
       "value": {
@@ -565,20 +555,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "manageOrdersCareOrderIssuedCourt": "96",
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2b07e8a1-1c8a-4689-92c9-febd16c826b3/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2b07e8a1-1c8a-4689-92c9-febd16c826b3"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }
