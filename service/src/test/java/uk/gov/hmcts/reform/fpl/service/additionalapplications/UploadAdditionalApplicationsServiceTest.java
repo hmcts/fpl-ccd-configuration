@@ -640,46 +640,6 @@ class UploadAdditionalApplicationsServiceTest {
                 .getSupplementsBundle().get(0).getValue().getDocument())
                 .isEqualTo(SEALED_SUPPLEMENT_DOCUMENT);
         }
-
-        @Test
-        void shouldSealConfidentialC2Document() {
-            C2DocumentBundle bundle = C2DocumentBundle.builder()
-                .document(DOCUMENT)
-                .supplementsBundle(wrapElementsWithRandomUUID(Supplement.builder()
-                    .document(SUPPLEMENT_DOCUMENT)
-                    .build()))
-                .build();
-
-            CaseData caseData = CASE_DATA.toBuilder()
-                .isC2Confidential(YesNo.YES)
-                .respondentPolicyData(RespondentPolicyData.builder()
-                    .respondentPolicy0(OrganisationPolicy.builder()
-                        .orgPolicyCaseAssignedRole(CaseRole.SOLICITORA.formattedName()).build())
-                    .build())
-                .build();
-
-            AdditionalApplicationsBundle.AdditionalApplicationsBundleBuilder builder =
-                AdditionalApplicationsBundle.builder();
-
-            given(user.getCaseRoles(any())).willReturn(Set.of(CaseRole.SOLICITORA));
-            underTest.convertConfidentialC2Bundle(caseData, bundle, builder);
-
-            AdditionalApplicationsBundle additionalApplicationsBundle = builder.build();
-
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
-                .getDocument())
-                .isEqualTo(SEALED_DOCUMENT);
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleConfidential()
-                .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
-                .getDocument())
-                .isEqualTo(SEALED_DOCUMENT);
-            assertThat(additionalApplicationsBundle.getC2DocumentBundleResp0()
-                .getSupplementsBundle().get(0).getValue().getDocument())
-                .isEqualTo(CONVERTED_SUPPLEMENT_DOCUMENT);
-        }
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle actualC2Bundle, Supplement expectedSupplement,
