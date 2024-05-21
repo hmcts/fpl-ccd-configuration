@@ -62,6 +62,7 @@ public final class NotifyTemplates {
     public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
     public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "ad724f72-eae8-4774-b12a-0c3c658b7095";
+    public static final String JUDGE_APPROVES_URGENT_DRAFT_ORDERS = "7db0eb43-0320-47ee-9c03-25568ebf998c";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";

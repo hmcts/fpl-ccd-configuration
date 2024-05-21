@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -50,6 +51,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_URGENT_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -77,6 +79,15 @@ public class DraftOrdersApprovedEventHandler {
     private final CafcassNotificationService cafcassNotificationService;
     private final WorkAllocationTaskService workAllocationTaskService;
 
+    private boolean isUrgent(CaseData caseData) {
+        return Optional.ofNullable(caseData.getOrderReviewUrgency()).orElse(
+            ApproveOrderUrgencyOption.builder().urgency(List.of()).build()).getUrgency().contains(YesNo.YES);
+    }
+
+    private String getJudgeApprovesDraftOrderTemplateId(CaseData caseData) {
+        return isUrgent(caseData) ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS;
+    }
+
     @Async
     @EventListener
     public void sendNotificationToAdmin(final DraftOrdersApproved event) {
@@ -96,7 +107,7 @@ public class DraftOrdersApprovedEventHandler {
         String adminEmail = courtService.getCourtEmail(caseData);
 
         notificationService.sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            getJudgeApprovesDraftOrderTemplateId(caseData),
             adminEmail,
             content,
             caseData.getId()
@@ -135,7 +146,7 @@ public class DraftOrdersApprovedEventHandler {
         final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            getJudgeApprovesDraftOrderTemplateId(caseData),
             localAuthorityEmails,
             content,
             caseData.getId()
@@ -170,7 +181,7 @@ public class DraftOrdersApprovedEventHandler {
                     DIGITAL_SERVICE);
 
                 notificationService.sendEmail(
-                    JUDGE_APPROVES_DRAFT_ORDERS,
+                    getJudgeApprovesDraftOrderTemplateId(caseData),
                     recipientIsWelsh.get().getEmail(),
                     content,
                     caseData.getId()
@@ -256,7 +267,7 @@ public class DraftOrdersApprovedEventHandler {
                 caseData.getId(),
                 content,
                 digitalRepresentatives,
-                JUDGE_APPROVES_DRAFT_ORDERS
+                getJudgeApprovesDraftOrderTemplateId(caseData)
             );
         }
     }
@@ -290,7 +301,7 @@ public class DraftOrdersApprovedEventHandler {
                 caseData.getId(),
                 content,
                 emailRepresentatives,
-                JUDGE_APPROVES_DRAFT_ORDERS
+                getJudgeApprovesDraftOrderTemplateId(caseData)
             );
         }
     }
@@ -314,7 +325,8 @@ public class DraftOrdersApprovedEventHandler {
         confidentiaOrdersMap.forEach((uploaderEmail, confidentialOrders) -> {
             NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, confidentialOrders,
                 DIGITAL_SERVICE);
-            notificationService.sendEmail(JUDGE_APPROVES_DRAFT_ORDERS, uploaderEmail, content, caseData.getId());
+            notificationService.sendEmail(getJudgeApprovesDraftOrderTemplateId(caseData), uploaderEmail, content,
+                caseData.getId());
         });
     }
 

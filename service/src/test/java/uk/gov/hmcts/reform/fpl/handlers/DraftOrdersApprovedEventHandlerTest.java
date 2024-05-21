@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -11,9 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -51,6 +55,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -69,6 +74,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_URGENT_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -129,13 +135,22 @@ class DraftOrdersApprovedEventHandlerTest {
     @InjectMocks
     private DraftOrdersApprovedEventHandler underTest;
 
-    @Test
-    void shouldNotifyAdminOfApprovedOrders() {
-        CaseData caseData = CaseData.builder()
+    static Stream<Boolean> provideBooleanValues() {
+        return Stream.of(true, false, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyAdminOfApprovedOrders(Boolean urgency) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         List<HearingOrder> orders = List.of(HearingOrder.builder().build());
 
@@ -147,19 +162,24 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToAdmin(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             CTSC_INBOX,
             EXPECTED_TEMPLATE,
             caseData.getId());
     }
 
-    @Test
-    void shouldNotifyAdminOfApprovedConfidentialOrders() {
-        CaseData caseData = CaseData.builder()
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyAdminOfApprovedConfidentialOrders(Boolean urgency) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         HearingOrder confidentialOrders = HearingOrder.builder().build();
 
@@ -172,19 +192,24 @@ class DraftOrdersApprovedEventHandlerTest {
             wrapElements(confidentialOrders)));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             CTSC_INBOX,
             EXPECTED_TEMPLATE,
             caseData.getId());
     }
 
-    @Test
-    void shouldNotifyLAOfApprovedOrders() {
-        CaseData caseData = CaseData.builder()
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyLAOfApprovedOrders(Boolean urgency) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         List<HearingOrder> orders = List.of(HearingOrder.builder().build());
 
@@ -198,24 +223,30 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
             caseData.getId());
     }
 
-    @Test
-    void shouldNotifyLAOfApprovedConfidentialOrdersIfOrderWasUploadedByLa() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyLAOfApprovedConfidentialOrdersIfOrderWasUploadedByLa(Boolean urgency) {
         Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
         Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
 
-        CaseData caseData = CaseData.builder()
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .confidentialOrders(ConfidentialGeneratedOrders.builder()
-                .orderCollectionLA(List.of(generatedOrder)).build())
-            .build();
+                .orderCollectionLA(List.of(generatedOrder)).build());
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
+
         given(localAuthorityRecipients.getRecipients(
             RecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -227,7 +258,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -251,14 +282,19 @@ class DraftOrdersApprovedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
-    void shouldGovNotifyCafcassWelsh() {
-        CaseData caseData = CaseData.builder()
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldGovNotifyCafcassWelsh(Boolean urgency) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         List<HearingOrder> orders = List.of(hearingOrder());
         CafcassLookupConfiguration.Cafcass cafcass =
@@ -272,25 +308,30 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
             caseData.getId());
     }
 
-    @Test
-    void shouldGovNotifyCafcassWelshOfApprovedConfidentialOrderIfUploadedByChildSolicitor() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldGovNotifyCafcassWelshOfApprovedConfidentialOrderIfUploadedByChildSolicitor(Boolean urgency) {
         Element<HearingOrder> hearingOrder = element(HearingOrder.builder().build());
         Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
 
-        CaseData caseData = CaseData.builder()
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .confidentialOrders(ConfidentialGeneratedOrders.builder()
-                .orderCollectionChild0(List.of(generatedOrder)).build())
-            .build();
+                .orderCollectionChild0(List.of(generatedOrder)).build());
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         CafcassLookupConfiguration.Cafcass cafcass =
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
@@ -304,7 +345,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -329,14 +370,19 @@ class DraftOrdersApprovedEventHandlerTest {
         verifyNoInteractions(notificationService);
     }
 
-    @Test
-    void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
-        CaseData caseData = CaseData.builder()
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotGovNotifyCafcassWhenCafcassIsEngland(Boolean urgency) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
                 .id(CASE_ID)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .hearingDetails(List.of(HEARING))
-                .lastHearingOrderDraftsHearingId(HEARING_ID)
-                .build();
+                .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         List<HearingOrder> orders = List.of(hearingOrder());
 
@@ -346,10 +392,10 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService, never()).sendEmail(
-                JUDGE_APPROVES_DRAFT_ORDERS,
-                CAFCASS_EMAIL_ADDRESS,
-                EXPECTED_TEMPLATE,
-                caseData.getId());
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            CAFCASS_EMAIL_ADDRESS,
+            EXPECTED_TEMPLATE,
+            caseData.getId());
     }
 
     @Test
@@ -584,16 +630,21 @@ class DraftOrdersApprovedEventHandlerTest {
                 any());
     }
 
-    @Test
-    void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyDigitalRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(Boolean urgency) {
         List<Representative> digitalReps = unwrapElements(createRepresentatives(DIGITAL_SERVICE));
-        CaseData caseData = CaseData.builder()
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .representatives(wrapElements(digitalReps))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE))
             .willReturn(newHashSet("digital-rep1@test.com", "digital-rep2@test.com"));
@@ -611,20 +662,25 @@ class DraftOrdersApprovedEventHandlerTest {
             CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("digital-rep2@test.com"),
-            JUDGE_APPROVES_DRAFT_ORDERS
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS
         );
     }
 
-    @Test
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthers() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthers(Boolean urgency) {
         List<Representative> emailReps = unwrapElements(createRepresentatives(EMAIL));
-        CaseData caseData = CaseData.builder()
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .hearingDetails(List.of(HEARING))
             .representatives(wrapElements(emailReps))
-            .lastHearingOrderDraftsHearingId(HEARING_ID)
-            .build();
+            .lastHearingOrderDraftsHearingId(HEARING_ID);
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         given(representativesInbox.getEmailsByPreference(caseData, EMAIL))
             .willReturn(newHashSet("rep1@test.com", "rep2@test.com"));
@@ -641,7 +697,7 @@ class DraftOrdersApprovedEventHandlerTest {
             CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("rep1@test.com"),
-            JUDGE_APPROVES_DRAFT_ORDERS
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS
         );
     }
 
@@ -853,21 +909,25 @@ class DraftOrdersApprovedEventHandlerTest {
             WorkAllocationTaskType.CMO_REVIEWED);
     }
 
-    @Test
-    void shouldNotifyUploaderWhenConfidentialOrderIsApproved() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyUploaderWhenConfidentialOrderIsApproved(Boolean urgency) {
         Element<HearingOrder> hearingOrder = element(HearingOrder.builder()
             .uploaderEmail("uploaderEmail@email.com").build());
         Element<GeneratedOrder> generatedOrder = element(hearingOrder.getId(), GeneratedOrder.builder().build());
 
-
-        CaseData caseData = CaseData.builder()
+        CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .hearingDetails(List.of(HEARING))
             .lastHearingOrderDraftsHearingId(HEARING_ID)
             .confidentialOrders(ConfidentialGeneratedOrders.builder()
                 .orderCollectionResp0(List.of(generatedOrder))
-                .build())
-            .build();
+                .build());
+        if (urgency != null) {
+            builder.orderReviewUrgency(ApproveOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
+        CaseData caseData = builder.build();
 
         given(courtService.getCourtEmail(any())).willReturn("courtEmail@email.com");
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
@@ -879,7 +939,7 @@ class DraftOrdersApprovedEventHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            JUDGE_APPROVES_DRAFT_ORDERS,
+            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
             "uploaderEmail@email.com",
             EXPECTED_TEMPLATE,
             CASE_ID);

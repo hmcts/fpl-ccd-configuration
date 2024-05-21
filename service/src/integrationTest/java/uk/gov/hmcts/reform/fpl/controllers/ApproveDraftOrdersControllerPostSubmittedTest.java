@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -16,7 +18,9 @@ import uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
@@ -48,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_URGENT_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -310,8 +316,13 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         verifyNoMoreNotificationsSentToTraslation();
     }
 
-    @Test
-    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
+    static Stream<Boolean> provideBooleanValues() {
+        return Stream.of(true, false, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders(Boolean urgency) {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
         given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
@@ -319,6 +330,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21);
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+        if (urgency != null) {
+            caseDetails.getData().put("orderReviewUrgency", ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency))).build());
+        }
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
         caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
             .id(LOCAL_AUTHORITY_3_CODE)
@@ -334,35 +349,35 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(COURT_3A.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -393,8 +408,9 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         verifyNoMoreNotificationsSentToTraslation();
     }
 
-    @Test
-    void shouldSendDraftOrdersIssuedNotificationsViaSendGridIfJudgeApprovesMultipleOrders() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendDraftOrdersIssuedNotificationsViaSendGridIfJudgeApprovesMultipleOrders(Boolean urgency) {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
         given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
@@ -404,6 +420,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         c21.setTitle("C21 test order");
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+        if (urgency != null) {
+            caseDetails.getData().put("orderReviewUrgency", ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency))).build());
+        }
 
         final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
@@ -413,35 +433,35 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(COURT_1.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -491,7 +511,6 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         });
         verifyNoMoreNotificationsSentToTraslation();
     }
-
 
     @Test
     void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrdersWithTranslation() {
