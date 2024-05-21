@@ -1,25 +1,23 @@
 import { test } from '../fixtures/create-fixture';
-import { Apihelp } from '../utils/api-helper';
+import {createCase, updateCase} from "../utils/api-helper";
 import caseDataByLa from '../caseData/approveOrders/caseWithConfidentialDraftOrderByLa.json' assert { type: 'json' };
 import caseDataByCtsc from '../caseData/approveOrders/caseWithConfidentialDraftOrderByCtsc.json' assert { type: 'json' };
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
-import { testConfig } from '../settings/test-config';
 
 test.describe('Approve Orders', () => {
-    let apiDataSetup = new Apihelp();
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let casename: string;
 
     test.beforeEach(async () => {
-        caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
     test('Judge approve a confidential order uploaded by LA',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseDataByLa);
+            await updateCase(casename, caseNumber, caseDataByLa);
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
@@ -42,7 +40,7 @@ test.describe('Approve Orders', () => {
     test('Judge approve a confidential order uploaded by CTSC',
         async ({ page, signInPage, approveOrders }) => {
             casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-            await apiDataSetup.updateCase(casename, caseNumber, caseDataByCtsc);
+            await updateCase(casename, caseNumber, caseDataByCtsc);
             await signInPage.visit();
             await signInPage.login(judgeUser.email, judgeUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
