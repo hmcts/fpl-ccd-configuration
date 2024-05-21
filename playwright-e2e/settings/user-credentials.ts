@@ -36,3 +36,13 @@ export const secondJudgeWalesUser = {
   email: 'EMP267006@ejudiciary.net',
   password: judgePwd,
 };
+
+export const privateSolicitorOrgUser = {
+  email: process.env.PRIVATE_SOLICITOR_ORG_USER_USERNAME || 'private.solicitors@mailinator.com',
+  password: process.env.PRIVATE_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
+};
+
+export const FPLSolicitorOrgUser = {
+  email: process.env.FPL_SOLICITOR_ORG_USER_USERNAME || 'solicitoroneorg2@mailinator.com',
+  password: process.env.FPL_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
+};
