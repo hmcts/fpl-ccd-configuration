@@ -160,6 +160,7 @@ test.describe('Upload additional applications', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             // CTSC can see some basic properties of the application
+            await additionalApplications.tabNavigation('Other applications');
             await expect(page.getByText('PBA1234567')).toBeVisible();
             await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
             await expect(page.getByText('Within 2 days')).toBeVisible();
@@ -203,6 +204,7 @@ test.describe('Upload additional applications', () => {
             await signInPage.navigateTOCaseDetails(caseNumber);
 
             // LA cannot see some basic properties of the application
+            await additionalApplications.tabNavigation('Other applications');
             await expect(page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
 
             // LA cannot see the draft order to be approved
