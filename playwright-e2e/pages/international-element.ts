@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class InternationalElement extends BasePage {
@@ -20,7 +20,7 @@ export class InternationalElement extends BasePage {
 
   }
   async internationalElementSmokeTest() {
-    await this.internationalElementHeading.isVisible();
+    await expect(this.internationalElementHeading).toBeVisible();
     await this.areThereAnySuitableCarers.getByLabel('No').check();
     await this.anySignificantEventsOutsideUk.getByLabel('No').check();
     await this.anyIssueWithJurisdictionOfThisCase.getByLabel('No').check();
