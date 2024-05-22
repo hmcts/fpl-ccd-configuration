@@ -56,13 +56,10 @@ export class StartApplication {
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
-    this.otherProceedingsLink = page.getByRole("link", { name: "Other Proceedings", });
+    this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
 
   }
-
- async groundsForTheApplication() {
-    await this.groundsForTheApplicationLink.isVisible();
 
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();

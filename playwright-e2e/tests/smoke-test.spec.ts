@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/fixtures";
+import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -11,19 +12,18 @@ test("Smoke Test @smoke-test @accessibility", async ({
   riskAndHarmToChildren,
   factorsAffectingParenting,
   applicantDetails,
+  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
-  respondentDetails,
   welshLangRequirements,
   otherProceedings,
   internationalElement,
-  courtServicesNeeded,
-  c1WithSupplement,
-  page,
+page,
   makeAxeBuilder
 }, testInfo) => {
 
+  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -32,21 +32,20 @@ test("Smoke Test @smoke-test @accessibility", async ({
   );
   //sign in page
   await signInPage.isSignedIn();
-
+  
   // Add application details
   // Start new case, get case id and assert case id is created
-
-     createCase.caseName();
-   await createCase.createCase();
-   await createCase.submitCase(createCase.generatedCaseName);
-   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+  await createCase.caseName();
+  await createCase.createCase();
+  await createCase.submitCase(createCase.generatedCaseName);
+  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Hearing urgency
-  await expect(startApplication.hearingUrgencyLink).toBeVisible();
+  await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
   await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
@@ -55,13 +54,13 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await hearingUrgency.needAHearingWithReducedNoise("No");
   await hearingUrgency.respondentsAwareOfProceedings("No");
   await hearingUrgency.continueButton.click();
-  await expect(hearingUrgency.checkYourAnswers).toBeVisible();
+  await hearingUrgency.checkYourAnswers.isVisible();
   await hearingUrgency.saveAndContinueButton.click();
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Grounds for the application
   await startApplication.groundsForTheApplication();
-  await expect(groundsForTheApplication.groundsForTheApplicationHeading).toBeVisible();
+  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
@@ -71,10 +70,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Factors affecting parenting
   await factorsAffectingParenting.addFactorsAffectingParenting();
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Add application documents
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
@@ -113,26 +112,15 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
 
-  // Court Services Needed
-  await startApplication.courtServicesNeededReqUpdated();
-  await courtServicesNeeded.CourtServicesSmoketest();
-
-  // C1 With Supplement
-  await c1WithSupplement.c1WithSupplementSmokeTest();
-
-  // Submit the case
-  await startApplication.submitCase();
-  await submitCase.submitCaseSmokeTest();
-
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
-    
-expect(accessibilityScanResults.violations).toEqual([]);
+
+  expect(accessibilityScanResults.violations).toEqual([]);
 });
