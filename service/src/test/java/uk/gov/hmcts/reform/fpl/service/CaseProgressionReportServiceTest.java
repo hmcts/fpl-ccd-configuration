@@ -141,7 +141,7 @@ class CaseProgressionReportServiceTest {
                 + "<td class='search-result-column-cell'>22-09-2022</td>"
                 + "<td class='search-result-column-cell'>03-11-2022</td>"
                 + "<td class='search-result-column-cell'>" + getWeeks(submittedDate) + "</td>"
-                + "<td class='search-result-column-cell'>Full hearing</td>"
+                + "<td class='search-result-column-cell'>Final</td>"
                 + "<td class='search-result-column-cell'>02-11-2022</td></tr>"
                 + "</table>");
     }
@@ -356,7 +356,7 @@ class CaseProgressionReportServiceTest {
                 tuple("Case Number", "CCD Number","Receipt date", "Last PLO hearing", "Next hearing",
                         "Age of case (weeks)","PLO stage", "Expected FH date"),
                 tuple("PO22ZA12345", "1663342447124290", "04-05-2022", "22-09-2022",
-                        "03-11-2022", getWeeks(submittedDate), "Full hearing", "02-11-2022"),
+                        "03-11-2022", getWeeks(submittedDate), "Final", "02-11-2022"),
                 tuple("ZO88ZA56789", "1663342966373807", "04-04-2022", "18-06-2022",
                         "22-09-2022", getWeeks(submittedDate.minusMonths(1)), "Issue resolution", "03-10-2022"),
                 tuple("AO88ZA56789", "1663342966000000", "04-07-2022", "22-08-2022",
