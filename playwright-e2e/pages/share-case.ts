@@ -23,7 +23,8 @@ export class ShareCase extends BasePage {
     async shareCaseWithinOrg(userEmail: string) {
         await this.selectCaseChckBox.check();
         await this.shareCaseButton.click();
-        await this.orgUserEmailText.fill(userEmail);
+        await this.orgUserEmailText.click();
+        await this.orgUserEmailText.pressSequentially(`${userEmail}`,{delay: 800})
         await this.page.getByText(`${userEmail}`).click();
         await this.addButton.click();
         await this.continueButton.click();

@@ -35,7 +35,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         })
 
-    test('Managing LA submit application on behalf of outsourced LA',
+    test(' Managing LA submit application on behalf of outsourced LA',
         async ({page, signInPage, createCase, organisation}) => {
             await signInPage.visit();
             await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
@@ -63,7 +63,8 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         })
 
-    test('ManagingLA share case within its organisation', async ({page, createCase, signInPage, organisation}) => {
+    test('ManagingLA share case within its organisation',
+        async ({page, createCase, signInPage, organisation}) => {
         await signInPage.visit();
         await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
         let caseName = 'ManangingLA share case within Org'
@@ -90,7 +91,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
     })
 
-    test('@local Managing LA share case with a  one user within Org',
+    test('Managing LA share case with a  one user within Org',
         async ({page, signInPage, createCase, organisation, shareCase}) =>
         {
         await signInPage.visit();
@@ -105,6 +106,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         await createCase.submitOutSourceCase();
         await createCase.getCaseNumber();
         await createCase.findCase(createCase.casenumber);
+       // await page.pause();
         await shareCase.shareCaseWithinOrg(wiltshireCountyUserTwo.email);
         await createCase.clickSignOut();
 
