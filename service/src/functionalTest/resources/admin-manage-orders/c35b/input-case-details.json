@@ -9,18 +9,12 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066"
-  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
     "judgeLastName": "Moley",
     "judgeEmailAddress": "moley@example.com"
   },
-  "respondentsRefusedSelector": {},
   "childSelector": {
     "option9": [],
     "option7": [],
@@ -359,11 +353,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/15059037-e95e-49d1-b6cf-a6ff47cff702/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/15059037-e95e-49d1-b6cf-a6ff47cff702"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -388,7 +377,6 @@
     "dx": "160010 Kingsway 7",
     "email": "solicitor@email.com"
   },
-  "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
   "orderDetailsSectionSubHeader": "Interim supervision order (C35B)",
   "manageOrdersApprovedAtHearing": "No",
@@ -563,19 +551,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ab666a83-9c8b-42ac-8253-c7caf5569066"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

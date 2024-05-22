@@ -44,8 +44,7 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-      await expect(this.checkYourAnswersHeader).toBeVisible();
-   // await this.checkYourAnswersHeader.isVisible();
+    await expect(this.checkYourAnswersHeader).toBeVisible();
     await this.saveAndContinue.click();
   }
 

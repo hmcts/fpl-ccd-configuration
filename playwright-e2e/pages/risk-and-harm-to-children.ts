@@ -36,11 +36,9 @@ export class RiskAndHarmToChildren extends BasePage{
         await this.emotionalHarmRadio.getByLabel('No').check();
         await this.sexualAbuseRadio.getByLabel('No').check();
         await this.neglectRadio.getByLabel('Yes').check();
-        await this.pastHarmCheckbox.setChecked(true);
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
-        // await this.continueButton.click();
-        // await this.checkYourAnswersHeader.isVisible();
-        // await this.saveAndContinueButton.click();
+        await this.pastHarmCheckbox.check();
+        await this.continueButton.click();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
+        await this.saveAndContinueButton.click();
     }
 }

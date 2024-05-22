@@ -105,7 +105,7 @@ Scenario('HMCTS admin uploads additional applications to the case @nightlyOnly',
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
   I.seeInTab(['Additional applications 1', 'C2 application', 'People notified'], 'Joe Bloggs, Noah King');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');

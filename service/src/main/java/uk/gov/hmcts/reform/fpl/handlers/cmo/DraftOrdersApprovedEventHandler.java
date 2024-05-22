@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
@@ -36,14 +37,17 @@ import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.util.Set.of;
+import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -53,9 +57,11 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class DraftOrdersApprovedEventHandler {
 
     private final CourtService courtService;
@@ -73,9 +79,11 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationToAdminAndLA(final DraftOrdersApproved event) {
+    public void sendNotificationToAdmin(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
-        List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        List<HearingOrder> approvedOrders = new ArrayList<>();
+        approvedOrders.addAll(event.getApprovedOrders());
+        approvedOrders.addAll(unwrapElements(event.getApprovedConfidentialOrders()));
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -87,18 +95,44 @@ public class DraftOrdersApprovedEventHandler {
 
         String adminEmail = courtService.getCourtEmail(caseData);
 
-        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
-            .caseData(caseData)
-            .build();
-
-        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
-
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
             adminEmail,
             content,
             caseData.getId()
         );
+    }
+
+    @Async
+    @EventListener
+    public void sendNotificationToLA(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        List<HearingOrder> approvedOrders = new ArrayList<>();
+        approvedOrders.addAll(event.getApprovedOrders());
+        approvedOrders.addAll(event.getApprovedConfidentialOrders().stream()
+            .filter(order -> findElement(order.getId(),
+                caseData.getConfidentialOrders().getOrderCollectionLA()).isPresent())
+            .map(Element::getValue)
+            .toList());
+
+        if (approvedOrders.isEmpty()) {
+            log.info("Only confidential orders uploaded and not accessible by LA. Skip notifying LA");
+            return;
+        }
+
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+
+        final ApprovedOrdersTemplate content = contentProvider.buildOrdersApprovedContent(caseData, hearing,
+            approvedOrders, DIGITAL_SERVICE);
+
+        final RecipientsRequest recipientsRequest = RecipientsRequest.builder()
+            .caseData(caseData)
+            .build();
+
+        final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
@@ -117,7 +151,15 @@ public class DraftOrdersApprovedEventHandler {
             final Optional<Cafcass> recipientIsWelsh =
                 cafcassLookupConfiguration.getCafcassWelsh(caseData.getCaseLocalAuthority());
             if (recipientIsWelsh.isPresent()) {
-                List<HearingOrder> approvedOrders = event.getApprovedOrders();
+                List<HearingOrder> approvedOrders = new ArrayList<>();
+                approvedOrders.addAll(event.getApprovedOrders());
+                approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
+
+                if (approvedOrders.isEmpty()) {
+                    log.info("Only confidential orders uploaded and not accessible by Cafcass. "
+                             + "Skip notifying Cafcass Welsh");
+                    return;
+                }
 
                 final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
@@ -143,25 +185,44 @@ public class DraftOrdersApprovedEventHandler {
         CaseData caseData = event.getCaseData();
 
         if (CafcassHelper.isNotifyingCafcassEngland(caseData, cafcassLookupConfiguration)) {
+            List<HearingOrder> approvedOrders = new ArrayList<>();
+            approvedOrders.addAll(event.getApprovedOrders());
+            approvedOrders.addAll(getConfidentialOrderToBeSentToCafcass(event));
+
+            if (approvedOrders.isEmpty()) {
+                log.info("Only confidential orders uploaded and not accessible by Cafcass. "
+                         + "Skip notifying Cafcass England");
+                return;
+            }
+
             LocalDateTime hearingStartDate = findElement(caseData.getLastHearingOrderDraftsHearingId(),
                     caseData.getHearingDetails())
                     .map(Element::getValue)
                     .map(HearingBooking::getStartDate)
                     .orElse(null);
 
-            event.getApprovedOrders()
-                .forEach(hearingOrder ->
+            approvedOrders.forEach(hearingOrder ->
                     cafcassNotificationService.sendEmail(caseData,
-                            of(hearingOrder.getOrder()),
+                            Set.of(hearingOrder.isConfidentialOrder() ? hearingOrder.getOrderConfidential()
+                                : hearingOrder.getOrder()),
                             ORDER,
                             OrderCafcassData.builder()
                                     .documentName(hearingOrder.getTitle())
                                     .hearingDate(hearingStartDate)
                                     .orderApprovalDate(hearingOrder.getDateIssued())
                                     .build()
-                        )
-                );
+                    ));
         }
+    }
+
+    private List<HearingOrder> getConfidentialOrderToBeSentToCafcass(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        List<Element<GeneratedOrder>> allChildConfidentialOrders = caseData.getConfidentialOrders()
+            .getAllChildConfidentialOrders();
+        return event.getApprovedConfidentialOrders().stream()
+            .filter(order -> findElement(order.getId(), allChildConfidentialOrders).isPresent())
+            .map(Element::getValue)
+            .toList();
     }
 
     @Async
@@ -169,6 +230,10 @@ public class DraftOrdersApprovedEventHandler {
     public void sendNotificationToDigitalRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendNotificationToDigitalRepresentatives");
+            return;
+        }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -201,6 +266,10 @@ public class DraftOrdersApprovedEventHandler {
     public void sendNotificationToEmailRepresentatives(final DraftOrdersApproved event) {
         CaseData caseData = event.getCaseData();
         List<HearingOrder> approvedOrders = event.getApprovedOrders();
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendNotificationToEmailRepresentatives");
+            return;
+        }
 
         final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
             caseData.getHearingDetails())
@@ -228,9 +297,35 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
+    public void sendNotificationToUploaderWhenConfidentialOrderIsApproved(final DraftOrdersApproved event) {
+        CaseData caseData = event.getCaseData();
+        String adminEmail = courtService.getCourtEmail(caseData);
+        Map<String, List<HearingOrder>> confidentiaOrdersMap = event.getApprovedConfidentialOrders()
+            .stream()
+            .map(Element::getValue)
+            .filter(hearingOrder -> adminEmail == null || !adminEmail.equals(hearingOrder.getUploaderEmail()))
+            .collect(groupingBy(HearingOrder::getUploaderEmail));
+
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+
+        confidentiaOrdersMap.forEach((uploaderEmail, confidentialOrders) -> {
+            NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, confidentialOrders,
+                DIGITAL_SERVICE);
+            notificationService.sendEmail(JUDGE_APPROVES_DRAFT_ORDERS, uploaderEmail, content, caseData.getId());
+        });
+    }
+
+    @Async
+    @EventListener
     public void sendDocumentToPostRecipients(final DraftOrdersApproved event) {
         final CaseData caseData = event.getCaseData();
-
+        if (event.getApprovedOrders().isEmpty()) {
+            log.info("No non-confidential approved orders. skip sendDocumentToPostRecipients");
+            return;
+        }
         final List<DocumentReference> documents = event.getApprovedOrders()
             .stream()
             .filter(order -> order.getNeedTranslation() == YesNo.NO)
@@ -252,11 +347,15 @@ public class DraftOrdersApprovedEventHandler {
     @Async
     @EventListener
     public void notifyTranslationTeam(DraftOrdersApproved event) {
+        List<HearingOrder> approvedOrders = Stream.of(event.getApprovedOrders(),
+            unwrapElements(event.getApprovedConfidentialOrders()))
+            .flatMap(List::stream)
+            .toList();
 
-        ObjectUtils.<List<HearingOrder>>defaultIfNull(event.getApprovedOrders(), List.of()).forEach(
+        approvedOrders.forEach(
             order -> translationRequestService.sendRequest(event.getCaseData(),
                 Optional.ofNullable(order.getTranslationRequirements()),
-                order.getOrder(),
+                (order.isConfidentialOrder()) ? order.getOrderConfidential() : order.getOrder(),
                 String.format("%s - %s", defaultIfEmpty(order.getTitle(), "Blank order (C21)"),
                     formatLocalDateTimeBaseUsingFormat(order.getDateIssued().atStartOfDay(), DATE)
                 )

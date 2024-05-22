@@ -55,7 +55,8 @@ export class StartApplication {
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
-    this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="In progress"]');
+      this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img',{name:'Finished'})
+    //this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="Finished"]');
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
@@ -64,7 +65,7 @@ export class StartApplication {
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
-    this.internationalElement = page.getByRole('link', { name: 'International element' });
+    this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
     this.courtServiceUpdated = page.locator('p:has(a[text="Court services needed"]) > img[title="Finished"]');
@@ -73,7 +74,7 @@ export class StartApplication {
   }
 
   async groundsForTheApplication() {
-    await expect(this.groundsForTheApplicationLink).toBeVisible();
+    expect(await this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
    // await expect(this.groundsForTheApplicationHeading).toBeVisible();
   }
@@ -96,7 +97,7 @@ export class StartApplication {
     }
 
   async groundsForTheApplicationHasBeenUpdated() {
-    await this.groundsForTheApplicationHasBeenUpdatedFinished.isVisible;
+    await expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible();
   }
 
   async riskAndHarmToChildren() {
@@ -160,8 +161,8 @@ export class StartApplication {
   }
 
   async internationalElementReqUpdated() {
-    await expect(this.internationalElement).toBeVisible();
-    await this.internationalElement.click();
+    await expect(this.internationalElementsHeading).toBeVisible();
+    await this.internationalElementsHeading.click();
   }
 
   async courtServicesNeededReqUpdated() {

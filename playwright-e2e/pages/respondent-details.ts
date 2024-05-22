@@ -1,5 +1,5 @@
 import {type Page, type Locator, expect} from "@playwright/test";
-import {BasePage} from "./base-page";
+
 
 export class RespondentDetails extends BasePage{
 
@@ -48,7 +48,7 @@ export class RespondentDetails extends BasePage{
 
   async respondentDetailsNeeded() {
     await expect(this.respondentDetailsHeading).toBeVisible();
-   // await this.firstName.click();
+    await this.firstName.click();
     await this.firstName.fill('John');
    // await this.lastName.click();
     await this.lastName.fill('Smith');

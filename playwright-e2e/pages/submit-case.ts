@@ -4,7 +4,6 @@ import { join } from "path";
 import { ApplicantDetails } from "./applicant-details";
 
 export class SubmitCase extends BasePage{
-  //readonly page: Page;
   readonly declarationHeading: Locator;
   readonly statementAgree: Locator;
   readonly applicationSentHeading: Locator;
@@ -28,10 +27,10 @@ export class SubmitCase extends BasePage{
 
   async submitCaseSmokeTest() {
     //first page
-   // await this.declarationHeading.isVisible();
+    await expect(this.declarationHeading).toBeVisible();
     await expect(this.teamManagerNameText).toBeVisible();
     await this.statementAgree.check();
-   // await this.paymentAmountLocator.isVisible();
+    await expect(this.paymentAmountLocator).toBeVisible();
     await this.clickSubmit();
     //second page
     await expect(this.checkYourAnswersHeader).toBeVisible();

@@ -25,7 +25,7 @@ export class CourtServicesNeeded extends BasePage {
     async CourtServicesSmoketest() {
         await expect(this.courtServicesNeededHeading).toBeVisible();
         await this.interpreterOptional.getByLabel('Yes').check();
-       // await this.giveDetailsIncludingPerson.isVisible();
+       // await expect(this.giveDetailsIncludingPerson).toBeVisible();
         await this.page.getByLabel('Give details including person').fill('Test');
         await this.SpokenOrWrittenWelsh.getByLabel('No').check();
         await this.intermediaryOptional.getByLabel('No').check();

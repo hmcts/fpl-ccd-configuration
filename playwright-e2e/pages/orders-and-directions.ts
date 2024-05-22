@@ -26,8 +26,8 @@ export class OrdersAndDirectionSought extends BasePage{
   }
 
   async ordersAndDirectionsNeeded() {
+    await this.OrdersAndDirectionsSought.click();
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
-   // await this.OrdersAndDirectionsSought.click();
     await this.WhichOrdersDoYouNeedCareOrder.check();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();
     await this.WhichCourtAreYouIssuingFor.selectOption('2: 117');

@@ -22,15 +22,15 @@ export class WelshLangRequirements extends BasePage {
         this.needToBeInWelshYesRadio = page.getByRole('group', { name: 'Does this application need to be translated into Welsh?' }).getByLabel('Yes');
     }
     async welshLanguageSmokeTest() {
-       // await this.welshLangHeading.isVisible();
+        await expect(this.welshLangHeading).toBeVisible();
         await expect(this.doesAnyRespondentQuestion).toBeVisible();
         await this.langRequirementYesRadio.click();
         await expect(this.whichLanguageAreYouUsingQuestion).toBeVisible();
         await this.englishLangRadio.click();
-       // await this.needToBeTranslatedQuestion.isVisible();
+        await expect(this.needToBeTranslatedQuestion).toBeVisible();
         await this.needToBeInWelshYesRadio.click();
         await this.clickContinue();
-       // await expect(this.checkYourAnswersHeader).toBeVisible();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
     }
 }
