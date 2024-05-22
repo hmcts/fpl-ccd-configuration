@@ -1,7 +1,7 @@
 {
   "state": "PREPARE_FOR_HEARING",
   "caseData": {
-    "caseName": "Judge approve a confidential order uploaded by LA",
+    "caseName": "Judge approves a confidential order uploaded by LA",
     "orders": {
       "orderType": [
         "CARE_ORDER"
