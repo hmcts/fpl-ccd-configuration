@@ -23,11 +23,15 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
+    public static final String URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN =
+        "49b46d30-f719-4351-b634-9a75e700d9cb";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
         "e6e899b1-ce44-4626-bb44-b9532af3983f";
+    public static final String URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
+        "0d2657a7-7c3d-4a0a-ad5f-c2b88abc788b";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "acb99554-4806-41f9-a95b-df7ee9b9b878";

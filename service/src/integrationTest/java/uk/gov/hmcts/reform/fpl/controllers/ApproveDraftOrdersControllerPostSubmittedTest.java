@@ -77,11 +77,13 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_3_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_URGENT_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -154,6 +156,10 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
     }
 
+    static Stream<Boolean> provideBooleanValues() {
+        return Stream.of(true, false, null);
+    }
+
     @Test
     void shouldNotSendNotificationsIfNoCMOsReadyForApproval() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -169,13 +175,18 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         checkThat(() -> verify(notificationClient, never()).sendEmail(any(), any(), any(), any()));
     }
 
-    @Test
-    void shouldSendCMOIssuedNotificationsViaSendGridCafcassIfJudgeApproves() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendCMOIssuedNotificationsViaSendGridCafcassIfJudgeApproves(Boolean urgency) {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
         HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
+        if (urgency != null) {
+            caseDetails.getData().put("orderReviewUrgency", ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency))).build());
+        }
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -183,35 +194,40 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN
+                    : ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(COURT_1.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -235,13 +251,18 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         verifyNoMoreNotificationsSent();
     }
 
-    @Test
-    void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendCMOIssuedNotificationsIfJudgeApproves(Boolean urgency) {
         given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
         HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
+        if (urgency != null) {
+            caseDetails.getData().put("orderReviewUrgency", ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency))).build());
+        }
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
         caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
             .id(LOCAL_AUTHORITY_3_CODE)
@@ -255,35 +276,40 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
+                eq(Boolean.TRUE.equals(urgency) ? URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN
+                    : ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN),
                 eq(COURT_3A.getEmail()),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -314,10 +340,6 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         verifyEmailSentToTranslation(1);
         verifyNoMoreNotificationsSentToTraslation();
-    }
-
-    static Stream<Boolean> provideBooleanValues() {
-        return Stream.of(true, false, null);
     }
 
     @ParameterizedTest

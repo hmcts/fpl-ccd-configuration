@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -38,8 +39,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.Set.of;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -68,6 +71,16 @@ public class CaseManagementOrderIssuedEventHandler {
         issuedOrderAdminNotificationHandler.notifyAdmin(event.getCaseData(), event.getCmo().getOrder(), CMO);
     }
 
+    private String getCmoOrderIssuedNotificationTemplateId(CaseData caseData) {
+        return ofNullable(
+            ofNullable(caseData.getOrderReviewUrgency())
+                .orElse(ApproveOrderUrgencyOption.builder().urgency(List.of()).build())
+                .getUrgency())
+            .orElse(List.of()).contains(YesNo.YES)
+            ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
+            : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
+    }
+
     @EventListener
     @Async
     public void notifyLocalAuthority(final CaseManagementOrderIssuedEvent event) {
@@ -83,7 +96,8 @@ public class CaseManagementOrderIssuedEventHandler {
 
         final Collection<String> recipients = localAuthorityRecipients.getRecipients(recipientsRequest);
 
-        notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, recipients, notifyData, caseData.getId());
+        notificationService.sendEmail(getCmoOrderIssuedNotificationTemplateId(caseData), recipients, notifyData,
+            caseData.getId());
     }
 
     @EventListener
@@ -101,7 +115,7 @@ public class CaseManagementOrderIssuedEventHandler {
                     caseData, issuedCmo, DIGITAL_SERVICE);
 
                 notificationService.sendEmail(
-                    CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
+                    getCmoOrderIssuedNotificationTemplateId(caseData),
                     recipientIsWelsh.get().getEmail(),
                     cafcassParameters,
                     caseData.getId()
@@ -148,7 +162,7 @@ public class CaseManagementOrderIssuedEventHandler {
 
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL);
         representatives.forEach(representative -> notificationService.sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative, notifyData, caseData.getId()
+            getCmoOrderIssuedNotificationTemplateId(caseData), representative, notifyData, caseData.getId()
         ));
     }
 
@@ -167,7 +181,7 @@ public class CaseManagementOrderIssuedEventHandler {
         IssuedCMOTemplate notifyData = contentProvider.buildCMOIssuedNotificationParameters(
             caseData, cmo, DIGITAL_SERVICE);
         representatives.forEach(representative -> notificationService.sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative, notifyData, caseData.getId()
+            getCmoOrderIssuedNotificationTemplateId(caseData), representative, notifyData, caseData.getId()
         ));
     }
 
