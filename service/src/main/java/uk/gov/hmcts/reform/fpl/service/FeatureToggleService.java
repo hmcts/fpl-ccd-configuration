@@ -85,6 +85,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
     }
 
+    public String getUserIdsToRemoveRolesFrom() {
+        return ldClient.stringVariation("migrate-user-roles", createLDUser(), "");
+    }
+
     public boolean isElinksEnabled() {
         return ldClient.boolVariation("elinks-enabled", createLDUser(), false);
     }
