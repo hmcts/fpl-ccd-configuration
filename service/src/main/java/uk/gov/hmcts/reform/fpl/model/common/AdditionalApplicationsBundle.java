@@ -5,9 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -66,7 +71,7 @@ public class AdditionalApplicationsBundle {
             return otherApplicationsBundle.toLabel();
         }
 
-        throw new MissingApplicationException(uploadedDateTime);
+        return otherApplicationsBundle.getUploadedDateTime().toString();
     }
 
     public YesNo getApplicationReviewed() {
