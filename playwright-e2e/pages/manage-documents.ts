@@ -3,6 +3,7 @@ import { BasePage } from "./base-page";
 import config from "../settings/test-docs/config";
 
 export class ManageDocuments extends BasePage {
+  
     readonly manageDocumentsTest: Locator;
     readonly uploadNewDocuments: Locator;
     readonly documentType: Locator;
@@ -26,13 +27,13 @@ export class ManageDocuments extends BasePage {
         this.manageDocumentsTest = page.getByRole('heading', { name: 'manage documents', exact: true });
         this.uploadNewDocuments = page.getByRole('group', { name: 'upload new documents' });
         this.documentType = page.getByLabel('Document type');
-        this.IsThisDocumentConfidential = page.getByRole('group', { name: 'Is this document  confidential?' });
+        this.isThisDocumentConfidential = page.getByRole('group', { name: 'Is this document  confidential?' });
         this.isTranslationNeeded = page.getByRole('group', { name: 'Is translation needed?' });
-        this.InputFiles = page.getByRole('textbox', { name: 'Upload a document' });
-        this.NonconfidentialRadioButton = page.getByRole('radio', { name: 'No' });
-        this.ConfidentialRadioButton = page.getByRole('radio', { name: 'Yes' });
-        this.IsDocumentRelatedToCase = page.getByRole('checkbox', { name: 'Yes' });
-        this.RemoveDocumentsTest = page.getByLabel('Remove documents');
+        this.inputFiles = page.getByRole('textbox', { name: 'Upload a document' });
+        this.nonconfidentialRadioButton = page.getByRole('radio', { name: 'No' });
+        this.confidentialRadioButton = page.getByRole('radio', { name: 'Yes' });
+        this.isDocumentRelatedToCase = page.getByRole('checkbox', { name: 'Yes' });
+        this.removeDocumentsTest = page.getByLabel('Remove documents');
         this.uploadedDocumentsTest = page.getByRole('group', { name: '1: hearingDocuments.posStmtList###3ad0ca08-1c4c-48' });
         this.thereIsAMistakeOnTheDocument = page.getByLabel('There is a mistake on the');
         this.caseFileviewTest = page.getByText('Case File View');
@@ -61,14 +62,14 @@ export class ManageDocuments extends BasePage {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
-    async uploadedDocuments(type: string) {
+   async uploadedDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
-        await this.InputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
+        await this.inputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
         await this.documentType.selectOption(type);
-        await this.NonconfidentialRadioButton.check();
-        await this.IsDocumentRelatedToCase.check();
+        await this.nonconfidentialRadioButton.check();
+        await this.isDocumentRelatedToCase.check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
@@ -76,16 +77,16 @@ export class ManageDocuments extends BasePage {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
-        await this.InputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
+        await this.inputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
         await this.documentType.selectOption(type);
-        await this.ConfidentialRadioButton.check();
-        await this.IsDocumentRelatedToCase.check();
+        await this.confidentialRadioButton.check();
+        await this.isDocumentRelatedToCase.check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
     async RemoveDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
-        await this.RemoveDocumentsTest.check();
+        await this.removeDocumentsTest.check();
         await this.clickContinue();
         await this.uploadedDocumentsTest.check();
         await this.thereIsAMistakeOnTheDocument.check();

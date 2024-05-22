@@ -37,7 +37,9 @@ export class BasePage {
     }
   }
 
-   await this.saveAndContinue.click();
+  async checkYourAnsAndSubmit(){
+    await expect(this.checkYourAnswersHeader).toBeVisible();
+    await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {

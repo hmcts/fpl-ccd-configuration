@@ -57,7 +57,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadDocuments('POSITION_STATEMENTS');
+        await manageDocuments.uploadDocuments('Position Statements');
     });
     test('LA uploads confidential documents visible in CFV ', async ({ signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads various documents ' + dateTime.slice(0, 10);
@@ -66,7 +66,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('POSITION_STATEMENTS');
+        await manageDocuments.uploadConfidentialDocuments('Position Statements');
     });
     test('HMCTS uploads confidential documents visible in CFV ', async ({ signInPage, manageDocuments }) => {
         caseName = 'HMCTS uploads variuos documents ' + dateTime.slice(0, 10);
@@ -76,7 +76,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('positionStatement');
+        await manageDocuments.uploadConfidentialDocuments('Position Statements');
         await manageDocuments.clickSignOut();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
     });
@@ -87,7 +87,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('POSITION_STATEMENTS');
+        await manageDocuments.uploadConfidentialDocuments('Position Statements');
         await manageDocuments.clickSignOut();
         await signInPage.login('solicitor1@solicitors.uk', 'Password12');
         await signInPage.login(CTSCUser.email, CTSCUser.password);
