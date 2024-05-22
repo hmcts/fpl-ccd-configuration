@@ -52,7 +52,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.resolve;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Slf4j
 @RestController
@@ -111,11 +110,9 @@ public class TestingSupportController {
         Map<String, Object> caseData = (Map<String, Object>) requestBody.get("caseData");
 
         try {
-            coreCaseDataService.triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                caseId,
+            coreCaseDataService.performPostSubmitCallback(caseId,
                 String.format(POPULATE_EVENT_ID_TEMPLATE, state.getValue()),
-                caseData);
+                (caseDetails -> caseData));
         } catch (FeignException e) {
             log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
             throw e;
