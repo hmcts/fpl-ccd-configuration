@@ -164,7 +164,6 @@ export const test = base.extend<CreateFixtures>({
     await use(new InternationalElement(page));
   },
 
-    courtServicesNeeded: async ({ page }, use) => {
   approveOrders: async ({ page }, use) => {
     await use(new ApproveOrders(page));
   },
