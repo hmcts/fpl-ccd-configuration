@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
 
@@ -37,9 +36,7 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
         ReturnApplication returnApplication = caseData.getReturnApplication();
 
         return ReturnedCaseTemplate.builder()
-            .localAuthority(nonNull(caseData.getCaseLaOrRelatingLa())
-                ? laLookup.getLocalAuthorityName(caseData.getCaseLaOrRelatingLa())
-                : caseData.getApplicantName().orElse(null))
+            .localAuthority(caseData.getApplicantName().orElse(null))
             .respondentFullName(getFirstRespondentFullName(caseData.getRespondents1()))
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
