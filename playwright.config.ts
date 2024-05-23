@@ -34,8 +34,6 @@ export default defineConfig({
     // Record trace only when retrying a test for the first time.
     trace: 'on',
 
-    // Record video only when retrying a test for the first time.
-   // video: 'on-first-retry'
   },
 
   /* Configure projects for major browsers */
