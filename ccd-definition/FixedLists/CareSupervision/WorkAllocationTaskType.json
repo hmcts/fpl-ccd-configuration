@@ -33,5 +33,12 @@
     "ListElementCode": "CMO_REVIEWED",
     "ListElement": "Case Management Order reviewed",
     "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "WorkAllocationTaskType",
+    "ListElementCode": "DRAFT_ORDER_UPLOADED_WITH_C2",
+    "ListElement": "Draft Order Uploaded with C2",
+    "DisplayOrder": 5
   }
 ]
