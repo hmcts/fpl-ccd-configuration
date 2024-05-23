@@ -63,7 +63,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         })
 
-    test('@local ManagingLA share case within its organisation',
+    test(' ManagingLA share case within its organisation',
         async ({page, createCase, signInPage, organisation}) => {
          await signInPage.visit();
          await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
@@ -118,7 +118,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
     })
 
-    test('@local EPS create case for LA',
+    test('EPS create case for LA',
         async ({page,signInPage,createCase,organisation}) =>
         {
             await signInPage.visit();
