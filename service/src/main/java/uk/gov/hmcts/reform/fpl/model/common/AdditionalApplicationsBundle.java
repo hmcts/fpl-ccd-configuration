@@ -66,11 +66,7 @@ public class AdditionalApplicationsBundle {
             return otherApplicationsBundle.toLabel();
         }
 
-        if (isNotEmpty(otherApplicationsBundle)) {
-            return otherApplicationsBundle.getUploadedDateTime();
-        } else {
-            throw new MissingApplicationException(uploadedDateTime);
-        }
+        return uploadedDateTime;
     }
 
     public YesNo getApplicationReviewed() {
