@@ -13,7 +13,7 @@ import lodash from 'lodash';
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
             };
-            let url = `${urlConfig.idamUrl}/loginUser?username=${user.email}&password=${user.password}`;
+            let url = `${urlConfig.idamUrl}loginUser?username=${user.email}&password=${user.password}`;
             return await axios.post(url, qs.stringify(axiosConfig));
         } catch (error) {
             if (axios.isAxiosError(error)) {
