@@ -88,6 +88,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
+        caseDetails.getData().put("draftOrderUrgency", null);
 
         return respond(caseDetails);
     }
