@@ -201,6 +201,7 @@ withPipeline(type, product, component) {
       env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
       env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
+      env.MO_BASE_URL = "https://xui-mo-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
       env.SWANSEA_ORG_ID = "62LYJRF"
       env.MOCKED_PAYMENTS = false
       env.FUNCTIONAL_TESTS_WORKERS = 1
