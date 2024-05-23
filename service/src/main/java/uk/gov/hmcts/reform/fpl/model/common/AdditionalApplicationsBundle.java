@@ -66,7 +66,7 @@ public class AdditionalApplicationsBundle {
             return otherApplicationsBundle.toLabel();
         }
 
-        return otherApplicationsBundle.getUploadedDateTime().toString();
+        return otherApplicationsBundle.getUploadedDateTime();
     }
 
     public YesNo getApplicationReviewed() {
