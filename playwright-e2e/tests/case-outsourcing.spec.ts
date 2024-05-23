@@ -118,7 +118,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
     })
 
-    test('EPS create case for LA',
+    test('@local EPS create case for LA',
         async ({page,signInPage,createCase,organisation}) =>
         {
             await signInPage.visit();
