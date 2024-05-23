@@ -5,7 +5,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
@@ -22,6 +21,7 @@ import java.util.Set;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.DRAFT_ORDER_UPLOADED_WITH_C2;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -58,7 +58,7 @@ public class AdditionalApplicationDraftOrderUploadedEventHandler {
 
         Set<DocumentReference> documentReferences = getNewDraftOrdersUploaded(event);
         if (!documentReferences.isEmpty()) {
-            workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.DRAFT_UPLOADED_WITH_C2);
+            workAllocationTaskService.createWorkAllocationTask(caseData, DRAFT_ORDER_UPLOADED_WITH_C2);
         }
     }
 

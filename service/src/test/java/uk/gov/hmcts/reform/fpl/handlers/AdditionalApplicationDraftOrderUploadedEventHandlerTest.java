@@ -69,7 +69,7 @@ class AdditionalApplicationDraftOrderUploadedEventHandlerTest {
         underTest.createWorkAllocationTask(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 
         verify(workAllocationTaskService).createWorkAllocationTask(caseData,
-            WorkAllocationTaskType.DRAFT_UPLOADED_WITH_C2);
+            WorkAllocationTaskType.DRAFT_ORDER_UPLOADED_WITH_C2);
     }
 
     @Test
@@ -93,7 +93,7 @@ class AdditionalApplicationDraftOrderUploadedEventHandlerTest {
         underTest.createWorkAllocationTask(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
 
         verify(workAllocationTaskService, times(0)).createWorkAllocationTask(caseData,
-            WorkAllocationTaskType.DRAFT_UPLOADED_WITH_C2);
+            WorkAllocationTaskType.DRAFT_ORDER_UPLOADED_WITH_C2);
     }
 
     @Test
