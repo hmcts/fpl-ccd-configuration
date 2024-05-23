@@ -8,12 +8,12 @@ import {
 } from "../settings/user-credentials";
 
 test.describe('Case outsourced another Localauthority or Solicitor Organisation', () => {
-
+    const dateTime = new Date().toISOString();
     test(' Managing LA creates case for their own organisation',
         async ({page, signInPage, createCase, organisation}) => {
             await signInPage.visit();
             await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
-            let caseName = 'ManangingLA create case'
+            let caseName = 'ManangingLA create case' + dateTime.slice(0, 10);
             await createCase.createCase();
             await createCase.selectLA('Wiltshire Council');
             await createCase.clickContinue();
@@ -39,7 +39,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         async ({page, signInPage, createCase, organisation}) => {
             await signInPage.visit();
             await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
-            let caseName = 'ManangingLA create case for Swansea'
+            let caseName = 'ManangingLA create case for Swansea' + dateTime.slice(0, 10);
             await createCase.createCase();
             await createCase.selectLA('Swansea City Council');
             await createCase.clickContinue();
@@ -63,11 +63,11 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
 
         })
 
-    test('ManagingLA share case within its organisation',
+    test('@local ManagingLA share case within its organisation',
         async ({page, createCase, signInPage, organisation}) => {
-        await signInPage.visit();
-        await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
-        let caseName = 'ManangingLA share case within Org'
+         await signInPage.visit();
+         await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password,);
+         let caseName = 'ManangingLA share case within Org' + dateTime.slice(0, 10)
         await createCase.createCase();
         await createCase.selectLA('Swansea City Council');
         await createCase.clickContinue();
@@ -96,7 +96,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         {
         await signInPage.visit();
         await signInPage.login(wiltshireCountyUserOne.email, wiltshireCountyUserOne.password);
-        let caseName = 'ManangingLA share case within Org'
+        let caseName = 'ManangingLA share case within Org' + dateTime.slice(0, 10);
         await createCase.createCase();
         await createCase.selectLA('Swansea City Council');
         await createCase.clickContinue();
@@ -123,7 +123,7 @@ test.describe('Case outsourced another Localauthority or Solicitor Organisation'
         {
             await signInPage.visit();
             await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-            let caseName = 'EPS create case for LA' ;
+            let caseName = 'EPS create case for LA' + dateTime.slice(0, 10);
             await createCase.createCase();
             await createCase.selectRepresentLA();
             await createCase.selectLA('Swansea City Council');

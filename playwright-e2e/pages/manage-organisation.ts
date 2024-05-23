@@ -21,7 +21,7 @@ export class Organisation extends BasePage {
         await expect(this.page.getByLabel('CARE_SUPERVISION_EPO').getByText('CARE_SUPERVISION_EPO', { exact: true })).toBeVisible();
         await this.showcaseFilterButton.click();
         await this.caseNumberSearchText.fill(caseNumber);
-        await this.applyFilterButton.click();
+        await this.applyFilterButton.press('Enter');
         await expect(this.page.getByText('Showing 1 to 1 of 1')).toBeVisible();
         await expect(this.page.getByRole('cell', {name: `${caseName}`})).toBeVisible();
     }
