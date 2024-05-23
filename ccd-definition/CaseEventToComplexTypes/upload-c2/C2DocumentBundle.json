@@ -232,7 +232,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": "20",
+    "FieldDisplayOrder": "21",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
@@ -243,7 +243,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "draftOrdersBundle.documentAcknowledge",
-    "FieldDisplayOrder": "21",
+    "FieldDisplayOrder": "22",
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
   },
@@ -254,7 +254,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "22",
+    "FieldDisplayOrder": "26",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -264,7 +264,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "23",
+    "FieldDisplayOrder": "27",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -273,7 +273,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "24",
+    "FieldDisplayOrder": "28",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -292,7 +292,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "25",
+    "FieldDisplayOrder": "29",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -301,7 +301,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabel",
-    "FieldDisplayOrder": "26",
+    "FieldDisplayOrder": "30",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to ${caseName}</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge!=\"ACK_RELATED_TO_CASE\""
@@ -312,7 +312,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledgeLabelForCYA",
-    "FieldDisplayOrder": "26",
+    "FieldDisplayOrder": "33",
     "DisplayContext": "READONLY",
     "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if this document is related to this case</strong></div><br>",
     "FieldShowCondition": "documentAcknowledge=\"ACK_RELATED_TO_CASE\""
@@ -323,7 +323,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.documentAcknowledge",
-    "FieldDisplayOrder": "27",
+    "FieldDisplayOrder": "34",
     "DisplayContext": "MANDATORY",
     "EventElementLabel": "Tick to confirm this document is related to this case"
   }
