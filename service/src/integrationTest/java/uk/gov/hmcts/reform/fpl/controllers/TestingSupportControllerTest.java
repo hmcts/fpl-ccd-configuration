@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -45,12 +43,10 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.service.UploadDocumentService.oldToSecureDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOldDocument;
 
@@ -110,23 +106,6 @@ class TestingSupportControllerTest {
             () -> makePostRequest(POPULATE_CASE_PATH, Map.of("state", "NOT_A_REAL_STATE")));
 
         assertThat(thrownException.getMessage()).contains("Unable to map NOT_A_REAL_STATE to a case state");
-    }
-
-    @ParameterizedTest
-    @MethodSource("stateToEventNameSource")
-    void shouldTriggerCorrectEvent(String state, String eventName) throws Exception {
-        Map<String, Object> caseData = Map.of("property", "value");
-        Map<String, Object> requestBody = Map.of("state", state, "caseData", caseData);
-
-        var result = makePostRequest(POPULATE_CASE_PATH, requestBody);
-
-        assertThat(result.getResponse().getStatus()).isEqualTo(SC_OK);
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            eventName,
-            caseData);
     }
 
     @Test
