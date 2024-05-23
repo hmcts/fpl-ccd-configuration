@@ -66,7 +66,7 @@ public class AdditionalApplicationsBundle {
             return otherApplicationsBundle.toLabel();
         }
 
-        throw new MissingApplicationException(uploadedDateTime);
+        return uploadedDateTime;
     }
 
     public YesNo getApplicationReviewed() {
