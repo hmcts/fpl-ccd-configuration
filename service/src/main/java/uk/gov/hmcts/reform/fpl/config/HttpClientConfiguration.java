@@ -21,7 +21,6 @@ public class HttpClientConfiguration {
     }
 
     @Bean
-    @Qualifier("userTokenParserHttpClient")
     public CloseableHttpClient userTokenParserHttpClient() {
         RequestConfig config = RequestConfig.custom()
             .setConnectTimeout(Timeout.ofMilliseconds(10000))
