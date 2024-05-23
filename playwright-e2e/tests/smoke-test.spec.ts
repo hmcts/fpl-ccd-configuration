@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures/fixtures";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test(" Smoke Test @smoke-test @accessibility", async ({
+test("Smoke Test @smoke-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -55,14 +55,11 @@ test(" Smoke Test @smoke-test @accessibility", async ({
 
   // Grounds for the application
   await startApplication.groundsForTheApplication();
-
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-
   // Factors affecting parenting
   await factorsAffectingParenting.addFactorsAffectingParenting();
-
   await startApplication.assertFactorsaffectingparenting();
   //await startApplication.addApplicationDetailsHeading.isVisible();
 

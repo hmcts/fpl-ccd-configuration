@@ -1,7 +1,8 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import config from "../settings/test-docs/config";
+import {BasePage} from "./base-page";
 
-export class AddApplicationDocuments {
+export class AddApplicationDocuments extends BasePage{
 
     readonly page: Page;
     readonly applicationDocumentsHeading: Locator;
@@ -11,7 +12,8 @@ export class AddApplicationDocuments {
     readonly giveDetailsText: Locator;
 
     public constructor(page: Page) {
-      this.page = page;
+      super(page);
+        this.page = page;
       this.applicationDocumentsHeading = page.getByRole('heading', { name: 'Application documents' });
       this.addNewButton = page.getByRole('button', { name: 'Add new' });
       this.typeOfDocument = page.getByLabel('Type of document');
@@ -30,8 +32,10 @@ export class AddApplicationDocuments {
         await expect(this.page.locator('span.error-message:text("Uploading...")')).toBeHidden();
         await expect(this.giveDetailsText).toBeVisible();
         await this.giveDetailsText.fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
-        await this.page.getByRole('button', { name: 'Continue' }).click();
-        await this.page.getByRole('heading', { name: 'Check your answers' }).click();
-        await this.page.getByRole('button', { name: 'Save and continue' }).click();
+        await this.clickContinue();
+        await this.checkYourAnsAndSubmit();
+        // await this.page.getByRole('button', { name: 'Continue' }).click();
+        // await this.page.getByRole('heading', { name: 'Check your answers' }).click();
+        // await this.page.getByRole('button', { name: 'Save and continue' }).click();
       }
 }

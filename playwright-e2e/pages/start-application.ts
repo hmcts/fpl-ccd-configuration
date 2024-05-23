@@ -33,6 +33,7 @@ export class StartApplication {
     readonly respondentsDetailsUpdated: Locator;
     readonly courtServiceUpdated: Locator;
     readonly internationalElement: Locator;
+    private internationalElementsHeading: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -189,7 +190,6 @@ export class StartApplication {
     async assertCourtService(){
       await expect(this.courtServiceUpdated).toBeVisible();
     }
-
 
 
 }

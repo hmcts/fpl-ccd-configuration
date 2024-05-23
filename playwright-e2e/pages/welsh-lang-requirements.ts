@@ -30,8 +30,10 @@ export class WelshLangRequirements extends BasePage {
         await expect(this.needToBeTranslatedQuestion).toBeVisible();
         await this.needToBeInWelshYesRadio.click();
         await this.clickContinue();
-        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
+        // await this.clickContinue();
+        // await expect(this.checkYourAnswersHeader).toBeVisible();
+        // await this.checkYourAnsAndSubmit();
     }
 }
 

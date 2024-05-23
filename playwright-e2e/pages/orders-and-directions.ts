@@ -26,7 +26,7 @@ export class OrdersAndDirectionSought extends BasePage{
   }
 
   async ordersAndDirectionsNeeded() {
-    await this.OrdersAndDirectionsSought.click();
+   // await this.OrdersAndDirectionsSought.click();
     await expect(this.OrdersAndDirectionsHeading).toBeVisible();
     await this.WhichOrdersDoYouNeedCareOrder.check();
     await this.DoYouNeedAnyOtherDirectionsRadioNo.check();

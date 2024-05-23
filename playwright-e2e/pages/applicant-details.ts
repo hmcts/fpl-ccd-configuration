@@ -63,7 +63,7 @@ export class ApplicantDetails extends BasePage{
   async colleagueDetailsNeeded(){
 
    // await expect(this.colleagueHeading).toBeVisible();
-    await this.continueButton.click();
+   // await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();
     await this.colleagueName.click();

@@ -1,4 +1,5 @@
 import {type Page, type Locator, expect} from "@playwright/test";
+import {BasePage} from "./base-page";
 
 
 export class RespondentDetails extends BasePage{
