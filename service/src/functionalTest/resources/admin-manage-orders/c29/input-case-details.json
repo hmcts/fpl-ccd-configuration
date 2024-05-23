@@ -9,18 +9,12 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e"
-  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
     "judgeLastName": "Moley",
     "judgeEmailAddress": "moley@example.com"
   },
-  "respondentsRefusedSelector": {},
   "childSelector": {
     "option9": [],
     "option7": [],
@@ -360,11 +354,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1469448d-3f9b-4e90-a653-1a48f7b818a2/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1469448d-3f9b-4e90-a653-1a48f7b818a2"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -570,19 +559,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7e6920ad-1046-4b26-a01a-01a26704104e"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }
