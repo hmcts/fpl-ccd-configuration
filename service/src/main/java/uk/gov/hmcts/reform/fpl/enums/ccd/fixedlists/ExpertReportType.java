@@ -21,7 +21,7 @@ public enum ExpertReportType {
     RESIDENTIAL_ASSESSMENT("residentialAssessment", "Family Centre Assessments - Residential"),
 
     @JsonProperty("nonResidentialAssessment")
-    NON_RESIDENTIAL_ASSESSMENT("nonResidentialAssessment", "Family Centre Assessments - NonResidential"),
+    NON_RESIDENTIAL_ASSESSMENT("nonResidentialAssessment", "Family Centre Assessments - Non-Residential"),
 
     @JsonProperty("psychiatricChildAndParent")
     PSYCHIATRIC_CHILD_AND_PARENT("psychiatricChildAndParent", "Psychiatric - On child and Parent(s)/carers"),
