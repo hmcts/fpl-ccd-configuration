@@ -117,7 +117,7 @@ export class StartApplication {
   }
 
   async allocationProposalHasBeenUpdated() {
-    await expect(this.allocationProposalFinished).toBeVisible;
+    await expect(this.allocationProposalFinished).toBeVisible();
   }
 
   async welshLanguageReq() {
@@ -125,7 +125,7 @@ export class StartApplication {
   }
 
   async welshLanguageReqUpdated() {
-    await expect(this.welshLanguageReqFinished).toBeVisible;
+    await expect(this.welshLanguageReqFinished).toBeVisible();
   }
 
   async internationalElementReqUpdated() {

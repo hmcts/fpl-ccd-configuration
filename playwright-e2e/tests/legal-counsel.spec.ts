@@ -81,7 +81,7 @@ test.describe('Respondent solicitor counsel ', () => {
             await expect(page.getByRole('row', {
                 name: 'Do they have legal representation? No',
                 exact: true
-            })).toBeVisible;
+            })).toBeVisible();
             await legalCounsel.clickSignOut();
             await signInPage.login(FPLSolicitorOrgUser.email, FPLSolicitorOrgUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
