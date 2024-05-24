@@ -1,18 +1,25 @@
 import { test, expect } from "../fixtures/fixtures";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test @accessibility", async ({
+test("e2e test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
+  riskAndHarmToChildren,
+  factorsAffectingParenting,
   applicantDetails,
   allocationProposal,
+  addApplicationDocuments,
   childDetails,
   respondentDetails,
+  welshLangRequirements,
   submitCase,
+  internationalElement,
+  courtServicesNeeded,
+  c1WithSupplement,
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -58,6 +65,20 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
+  // Risk and harm to children
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+
+  // Factors affecting parenting
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+
+  // Add application documents
+  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
+
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
@@ -78,6 +99,22 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
+
+  // International element
+  await startApplication.internationalElementReqUpdated();
+  await internationalElement.internationalElementSmokeTest();
+
+  // Court Services Needed
+  await startApplication.courtServicesNeededReqUpdated();
+  await courtServicesNeeded.CourtServicesSmoketest();
+
+  // C1 With Supplement
+  await c1WithSupplement.c1WithSupplementSmokeTest();
 
   // Submit the case
   await startApplication.submitCase();
