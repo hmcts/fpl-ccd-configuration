@@ -10,9 +10,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.RetryFailureException;
@@ -27,8 +25,8 @@ import java.util.function.Function;
 import javax.annotation.Resource;
 
 import static java.util.Collections.emptyMap;
+
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Service
 @Slf4j
@@ -88,100 +86,6 @@ public class CoreCaseDataService {
                  boolean submitIfEmpty) {
         throw new RetryFailureException(
             String.format("All retries failed to create event %s on ccd for case %d", eventName, caseId), e);
-    }
-
-    /**
-     * Runs the UPDATE_CASE event on a given case.
-     *
-     * @param caseId  Case to update.
-     * @param updates Map of fields to update.
-     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
-     */
-    @Deprecated(since = "February 2023", forRemoval = false)
-    public void updateCase(Long caseId, Map<String, Object> updates) {
-        triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
-    }
-
-    /**
-     * Triggers a CCD event on the case.
-     *
-     * @param caseId  Case to update.
-     * @param event   CCD event name to create and submit.
-     * @param updates Map of fields to update.
-     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
-     */
-    @Deprecated(since = "February 2023", forRemoval = false)
-    public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
-        triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
-    }
-
-    /**
-     * Triggers a CCD event on the case in a given jurisdiction, casetype.
-     *
-     * @param jurisdiction Jurisdiction of the case in CCD
-     * @param caseType     Type of the case in CCD
-     * @param caseId       Case to update.
-     * @param event        CCD event name to create and submit.
-     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
-     */
-    @Deprecated(since = "February 2023", forRemoval = false)
-    public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
-        triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
-    }
-
-    /**
-     * Triggers a CCD event on a case, given various params.
-     *
-     * @param jurisdiction Jurisdiction of the case in CCD
-     * @param caseType     Type of the case in CCD
-     * @param caseId       Case to update.
-     * @param eventName    CCD event name to create and submit.
-     * @param eventData    Map of fields to update.
-     * @deprecated Method does not use CCD concurrency controls correctly, Use startEvent to retrieve current case
-     *      data then submitEvent to submit it to avoid concurrency issues.
-     */
-    @Deprecated(since = "February 2023", forRemoval = false)
-    public void triggerEvent(String jurisdiction,
-                             String caseType,
-                             Long caseId,
-                             String eventName,
-                             Map<String, Object> eventData) {
-        String userToken = systemUserService.getSysUserToken();
-        String systemUpdateUserId = systemUserService.getUserId(userToken);
-
-        try {
-            StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                userToken,
-                authTokenGenerator.generate(),
-                systemUpdateUserId,
-                jurisdiction,
-                caseType,
-                caseId.toString(),
-                eventName);
-
-            CaseDataContent caseDataContent = CaseDataContent.builder()
-                .eventToken(startEventResponse.getToken())
-                .event(Event.builder()
-                    .id(startEventResponse.getEventId())
-                    .build())
-                .data(eventData)
-                .build();
-
-            coreCaseDataApi.submitEventForCaseWorker(
-                userToken,
-                authTokenGenerator.generate(),
-                systemUpdateUserId,
-                jurisdiction,
-                caseType,
-                caseId.toString(),
-                true,
-                caseDataContent);
-        } catch (Exception exception) {
-            log.error("Trigger event cannot be completed due to exception.", exception);
-        }
     }
 
     public CaseDetails findCaseDetailsById(final String caseId) {

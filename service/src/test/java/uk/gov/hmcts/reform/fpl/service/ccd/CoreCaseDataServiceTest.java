@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,46 +89,12 @@ class CoreCaseDataServiceTest {
         }
 
         @Test
-        void shouldStartAndSubmitEventWithoutEventData() {
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, emptyMap()));
-        }
-
-        @Test
-        void shouldStartAndSubmitEventWithEventData() {
-            Map<String, Object> eventData = Map.of("A", "B");
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId, eventData);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, eventData));
-        }
-
-        @Test
         void shouldPerformPostSubmitCallbackWithoutChange() {
             StartEventResponse startEventResponse = buildStartEventResponse(eventId, eventToken);
             when(concurrencyHelper.startEvent(CASE_ID, eventId)).thenReturn(startEventResponse);
             service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
             verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
         }
-    }
-
-    @Test
-    void shouldTriggerUpdateCaseEventWhenCaseIsRequestedToBeUpdated() {
-        final Map<String, Object> caseUpdate = Map.of("a", "b");
-
-        doNothing().when(service).triggerEvent(any(), any(), any(), any(), any());
-
-        service.updateCase(CASE_ID, caseUpdate);
-
-        verify(service).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change-UPDATE_CASE", caseUpdate);
     }
 
     @Test
