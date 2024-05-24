@@ -47,6 +47,8 @@ public class InternationalElementChecker implements EventChecker {
             internationalElement.getImportantDetails())) {
             return false;
         }
+
+        return true;
     }
 
     @Override
