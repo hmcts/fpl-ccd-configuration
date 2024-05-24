@@ -238,7 +238,7 @@ public class SampleCaseSubmissionTestDataHelper {
     private static DocmosisInternationalElement expectedDocmosisInternationalElement() {
         return DocmosisInternationalElement.builder()
             .whichCountriesInvolved("Italy, Spain, France")
-            .outsideHagueConvention("No")
+            .outsideHagueConvention("Yes")
             .importantDetails("Something happened in France")
             .build();
     }
