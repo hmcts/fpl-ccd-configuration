@@ -32,11 +32,9 @@ public class InternationalElementChecker implements EventChecker {
         }
 
         return anyNonEmpty(
-            internationalElement.getIssues(),
-            internationalElement.getProceedings(),
-            internationalElement.getPossibleCarer(),
-            internationalElement.getSignificantEvents(),
-            internationalElement.getInternationalAuthorityInvolvement());
+            internationalElement.getWhichCountriesInvolved(),
+            internationalElement.getOutsideHagueConvention(),
+            internationalElement.getImportantDetails());
     }
 
     @Override
@@ -44,36 +42,11 @@ public class InternationalElementChecker implements EventChecker {
         final InternationalElement internationalElement = caseData.getInternationalElement();
 
         if (internationalElement == null || anyEmpty(
-            internationalElement.getIssues(),
-            internationalElement.getProceedings(),
-            internationalElement.getPossibleCarer(),
-            internationalElement.getSignificantEvents(),
-            internationalElement.getInternationalAuthorityInvolvement())) {
+            internationalElement.getWhichCountriesInvolved(),
+            internationalElement.getOutsideHagueConvention(),
+            internationalElement.getImportantDetails())) {
             return false;
         }
-
-        if (YES.getValue().equals(internationalElement.getIssues())
-            && isEmpty(internationalElement.getIssuesReason())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(internationalElement.getProceedings())
-            && isEmpty(internationalElement.getProceedingsReason())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(internationalElement.getPossibleCarer())
-            && isEmpty(internationalElement.getPossibleCarerReason())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(internationalElement.getSignificantEvents())
-            && isEmpty(internationalElement.getSignificantEventsReason())) {
-            return false;
-        }
-
-        return NO.getValue().equals(internationalElement.getInternationalAuthorityInvolvement())
-            || !isEmpty(internationalElement.getInternationalAuthorityInvolvementDetails());
     }
 
     @Override

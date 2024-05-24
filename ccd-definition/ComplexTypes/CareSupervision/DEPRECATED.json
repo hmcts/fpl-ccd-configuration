@@ -164,5 +164,90 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "possibleCarer",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are there any suitable carers outside of the UK?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "possibleCarerReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "possibleCarer=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "significantEvents",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you aware of any significant events that have happened outside the UK?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "significantEventsReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "significantEvents=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "issues",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you aware of any issues with the jurisdiction of this case - for example under the Brussels 2 regulation?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "issuesReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "issues=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "proceedings",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you aware of any proceedings outside the UK?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "proceedingsReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "proceedings=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "internationalAuthorityInvolvement",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Has, or should, a government or central authority in another country been involved in this case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "internationalAuthorityInvolvementDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "internationalAuthorityInvolvement = \"Yes\"",
+    "SecurityClassification": "Public"
   }
 ]

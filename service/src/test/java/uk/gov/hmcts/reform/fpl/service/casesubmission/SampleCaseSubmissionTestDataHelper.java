@@ -237,11 +237,9 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisInternationalElement expectedDocmosisInternationalElement() {
         return DocmosisInternationalElement.builder()
-            .possibleCarer("Yes\nAunt outside UK")
-            .significantEvents("Yes\nSomething happened in France")
-            .proceedings("Yes\nOutside of the UK")
-            .internationalAuthorityInvolvement("Yes\nFrench authorities were involved")
-            .issues("Yes\nBrussels 2 regulation")
+            .whichCountriesInvolved("Italy, Spain, France")
+            .outsideHagueConvention("No")
+            .importantDetails("Something happened in France")
             .build();
     }
 

@@ -290,9 +290,8 @@ public class RoboticsDataService {
             return false;
         }
 
-        return isAnyConfirmed(internationalElement.getPossibleCarer(), internationalElement.getSignificantEvents(),
-            internationalElement.getIssues(), internationalElement.getProceedings(),
-            internationalElement.getInternationalAuthorityInvolvement());
+        return isAnyConfirmed(internationalElement.getWhichCountriesInvolved(), internationalElement.getOutsideHagueConvention(),
+            internationalElement.getImportantDetails());
     }
 
     private boolean hasRisks(final Risks risks) {
