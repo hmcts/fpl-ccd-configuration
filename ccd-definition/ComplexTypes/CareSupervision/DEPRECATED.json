@@ -171,6 +171,7 @@
     "ListElementCode": "possibleCarer",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are there any suitable carers outside of the UK?",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -179,7 +180,7 @@
     "ListElementCode": "possibleCarerReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "possibleCarer=\"Yes\"",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -188,6 +189,7 @@
     "ListElementCode": "significantEvents",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are you aware of any significant events that have happened outside the UK?",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -196,7 +198,7 @@
     "ListElementCode": "significantEventsReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "significantEvents=\"Yes\"",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -205,6 +207,7 @@
     "ListElementCode": "issues",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are you aware of any issues with the jurisdiction of this case - for example under the Brussels 2 regulation?",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -213,7 +216,7 @@
     "ListElementCode": "issuesReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "issues=\"Yes\"",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -222,6 +225,7 @@
     "ListElementCode": "proceedings",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are you aware of any proceedings outside the UK?",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -230,7 +234,7 @@
     "ListElementCode": "proceedingsReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "proceedings=\"Yes\"",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -239,6 +243,7 @@
     "ListElementCode": "internationalAuthorityInvolvement",
     "FieldType": "YesOrNo",
     "ElementLabel": "Has, or should, a government or central authority in another country been involved in this case?",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -247,7 +252,7 @@
     "ListElementCode": "internationalAuthorityInvolvementDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "internationalAuthorityInvolvement = \"Yes\"",
+    "FieldShowCondition": "whichCountriesInvolved=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]
