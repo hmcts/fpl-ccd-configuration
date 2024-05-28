@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import {type Page, type Locator, expect} from "@playwright/test";
 
 export class RespondentDetails {
 
@@ -15,7 +15,7 @@ export class RespondentDetails {
   readonly relationToChild: Locator;
   readonly relationToChildContact: Locator; //corresponds to yes or no radio feature: 'Do you need contact details hidden from other parties? (Optional)'
   readonly relationToChildContactReason: Locator;
-  readonly litigationCapacity: Locator; //ie Ability to take part in proceedings 
+  readonly litigationCapacity: Locator; //ie Ability to take part in proceedings
   readonly litigationCapacityReason: Locator;
   readonly legalRepresentation: Locator;
   readonly continue: Locator;
@@ -45,7 +45,7 @@ export class RespondentDetails {
   }
 
   async respondentDetailsNeeded() {
-    await this.respondentDetailsHeading.isVisible;
+    await expect(this.respondentDetailsHeading).toBeVisible();
     await this.firstName.click();
     await this.firstName.fill('John');
     await this.lastName.click();

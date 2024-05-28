@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +123,7 @@ class PaymentClientTest {
         when(paymentApi.createCreditAccountPayment(any(), any(), any())).thenThrow(
             new FeignException.UnprocessableEntity("",
                 Request.create(GET, "", Map.of(), new byte[]{}, UTF_8, null),
-                responseBodyContent.getBytes(), Collections.emptyMap()));
+                responseBodyContent.getBytes(), Map.of()));
 
         assertThatThrownBy(() -> paymentClient.callPaymentsApi(paymentRequest))
             .isInstanceOf(PaymentsApiException.class)

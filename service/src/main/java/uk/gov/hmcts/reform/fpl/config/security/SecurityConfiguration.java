@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
 @Configuration
+@SuppressWarnings({"java:S1118", "java:S4502"})
 @EnableWebSecurity
-@SuppressWarnings("java:S1118")
 public class SecurityConfiguration {
 
     private final RequestAuthorizer<User> userRequestAuthorizer;

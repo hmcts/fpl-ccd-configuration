@@ -6,6 +6,8 @@ export class AdditionalApplications extends BasePage {
 
   readonly otherSpecificOrder: Locator;
   readonly c2Order: Locator;
+  readonly confidentialC2Order: Locator;
+  readonly nonConfidentialC2Order: Locator;
   readonly applicant: Locator;
   readonly c1ApplicationType: Locator;
   readonly applicationForm: Locator;
@@ -19,6 +21,8 @@ export class AdditionalApplications extends BasePage {
     super(page);
     this.otherSpecificOrder = page.getByText('Other specific order - including C1 and C100 orders, and supplements');
     this.c2Order = page.getByText('C2 - to add or remove someone on a case, or for a specific request to the judge');
+    this.confidentialC2Order = page.locator('[for="isC2Confidential_Yes"]');
+    this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
     this.applicationForm = page.getByRole('textbox', { name: 'Upload application' });
@@ -39,6 +43,15 @@ export class AdditionalApplications extends BasePage {
     await this.c2Order.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
+    await this.clickContinue();
+  }
+
+  public async chooseConfidentialC2ApplicationType() {
+    await this.c2Order.click();
+    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.confidentialC2Order.click();
     await this.clickContinue();
   }
 
@@ -47,6 +60,7 @@ export class AdditionalApplications extends BasePage {
     await this.otherSpecificOrder.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
     await this.clickContinue();
   }
 
@@ -67,8 +81,9 @@ export class AdditionalApplications extends BasePage {
     await this.clickContinue();
   }
 
+
   public async expectAllUploadsCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -77,8 +92,8 @@ export class AdditionalApplications extends BasePage {
   public async fillC2ApplicationDetails() {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
-      await this.page.waitForTimeout(6000);
-      await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
+    await this.expectAllUploadsCompleted();
 
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();

@@ -1,0 +1,254 @@
+{
+  "state": "Submitted",
+  "caseData": {
+    "caseName": "e2e test case max children",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "changeOfRepresentatives": [
+      {
+        "id": "525aeb0d-79d8-4b60-808a-14ab4f92a421",
+        "value": {
+          "date": "2024-05-03",
+          "removed": {},
+          "added": {
+            "firstName": "ChilKenny",
+            "lastName": "Solicitor",
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "email": "fr_applicant_sol@sharklasers.com"
+          },
+          "by": "HMCTS",
+          "respondent": null,
+          "child": "Susan Brown",
+          "via": "FPL"
+        }
+      }
+    ],
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "f2d78d5b-cbab-414c-9fb4-c85dabf90dd8",
+        "value": {
+          "legalCounsellors": [],
+          "solicitor": {
+            "firstName": "Child",
+            "lastName": "Kenny",
+            "telephoneNumber": {
+              "telephoneNumber": "5654674568"
+            },
+            "colleaguesToBeNotified": [],
+            "organisation": {
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
+            },
+            "unregisteredOrganisation": {},
+            "email": "fr_applicant_sol@sharklasers.com",
+            "regionalOfficeAddress": {}
+          },
+          "party": {
+            "lastName": "Brown",
+            "address": {
+              "AddressLine2": "55 High Street",
+              "AddressLine1": "Hart Reade",
+              "Country": "United Kingdom",
+              "PostTown": "Polegate",
+              "PostCode": "BN26 6AL"
+            },
+            "gender": "Girl",
+            "fathersName": "Charles Brown",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "0123456789",
+              "contactDirection": "Jane Smith"
+            },
+            "careAndContactPlan": "this is the brief summary of care and contact plan",
+            "detailsHidden": "No",
+            "socialWorkerName": "Robert Taylor",
+            "dateOfBirth": "2019-01-10",
+            "fathersResponsibility": "Yes",
+            "litigationIssues": "NO",
+            "firstName": "Susan",
+            "adoption": "No",
+            "addressChangeDate": "2022-02-01",
+            "mothersName": "Claire Brown",
+            "additionalNeeds": "No",
+            "livingSituation": "Living with respondents",
+            "partyId": "0a36cd74-6d26-4e4e-b4dc-5e81439f262b",
+            "keyDates": "these are the key dates"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
+    "applicants": [
+      {
+        "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+        "value": {
+          "party": {
+            "email": {
+              "email": "test@test.com"
+            },
+            "address": {
+              "County": "Swansea",
+              "Country": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "Swansea",
+              "AddressLine1": "Flat 1, Swansea Apartments",
+              "AddressLine2": "Swansea Central Square 11",
+              "AddressLine3": "40 Fleet street"
+            },
+            "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+            "jobTitle": "Solicitor",
+            "pbaNumber": "PBA1234567",
+            "mobileNumber": {
+              "telephoneNumber": "02027725772"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02027725772",
+              "contactDirection": "John"
+            },
+            "organisationName": "Swansea City Council"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      },
+      {
+        "id": "2bfdecbf-26fa-429a-bcf3-0b5cba21a588",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SE16 6BA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 20",
+              "AddressLine2": "Heron House 8"
+            },
+            "lastName": "Bloggs",
+            "firstName": "George",
+            "dateOfBirth": "1990-02-03",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "07000 654321"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "No"
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge",
+      "proposalReason": "test"
+    },
+    "displayAmountToPay": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    }
+  }
+}
+

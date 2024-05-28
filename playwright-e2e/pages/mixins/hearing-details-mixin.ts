@@ -35,7 +35,7 @@ export function HearingDetailsMixin(BasePage) {
         'Further case management',
         'Fact finding',
         'Issue resolution',
-        'Full hearing',
+        'Final',
         'Judgment after hearing',
         'Discharge of care',
         'Family drug & alcohol court',

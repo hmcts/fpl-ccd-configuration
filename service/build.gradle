@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1138'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1227'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -332,7 +332,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '13.2'
   implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.1'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
@@ -350,16 +350,17 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.15.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.16.1'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.15.3'
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.1'
 
-  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.0'
+  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.1'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
   implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
@@ -382,9 +383,9 @@ dependencies {
     exclude group: "com.vaadin.external.google", module: "android-json"
   }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
+  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.1'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
