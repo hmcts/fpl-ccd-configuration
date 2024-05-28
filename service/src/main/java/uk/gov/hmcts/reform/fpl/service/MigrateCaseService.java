@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.controllers.OtherProceedingsController;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -1183,5 +1185,22 @@ public class MigrateCaseService {
         }
 
         return Map.of("submittedC1WithSupplement", submittedC1WithSupplement.toBuilder().document(null).build());
+    }
+
+    public Map<String, Object> removeNamesFromOtherProceedings(CaseData caseData, String migrationId) {
+
+        if (caseData.getProceeding() == null) {
+            throw new AssertionError(format("Migration {id = %s}, proceedings not found", migrationId));
+        }
+
+        final List<Element<Proceeding>> additionalProceedings = caseData.getProceeding().getAdditionalProceedings()
+            .stream().map(el -> element(el.getId(), el.getValue().toBuilder().children(null).build())).toList();
+
+        Proceeding updatedProceeding = caseData.getProceeding().toBuilder()
+            .additionalProceedings(additionalProceedings)
+            .children(null)
+            .build();
+
+        return Map.of("proceeding", updatedProceeding);
     }
 }
