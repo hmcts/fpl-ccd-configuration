@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private static final String SKIP_PAYMENT_PAGE = "skipPaymentPage";
-    private static final String SKIP_DRAFT_ORDER_URGENCY_PAGE = "skipDraftOrderUrgencyPage";
     private static final String IS_C2_CONFIDENTIAL = "isC2Confidential";
 
     private final ObjectMapper mapper;
@@ -88,7 +86,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
-        caseDetails.getData().put("draftOrderUrgency", null);
 
         return respond(caseDetails);
     }
@@ -115,7 +112,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         boolean skipPayment = false;
-        boolean skipDraftOrderUrgencyPage = true;
         if (!isNull(caseData.getTemporaryC2Document())) {
             C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
             temporaryC2Document.setType(caseData.getC2Type());
@@ -136,10 +132,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     temporaryC2Document);
             }
             caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, temporaryC2Document);
-
-            if (!Optional.ofNullable(temporaryC2Document.getDraftOrdersBundle()).orElse(List.of()).isEmpty()) {
-                skipDraftOrderUrgencyPage = false;
-            }
         }
 
         if (!skipPayment) {
@@ -148,11 +140,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         } else {
             caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
             caseDetails.getData().put(SKIP_PAYMENT_PAGE, YES.getValue());
-        }
-        if (skipDraftOrderUrgencyPage) {
-            caseDetails.getData().put(SKIP_DRAFT_ORDER_URGENCY_PAGE, YES.getValue());
-        } else {
-            caseDetails.getData().put(SKIP_DRAFT_ORDER_URGENCY_PAGE, NO.getValue());
         }
 
         return respond(caseDetails);

@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.events.order.AdditonalAppLicationDraftOrderUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
@@ -17,26 +16,22 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
-import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
-class AdditionalApplicationDraftOrderUploadedEventHandlerTest {
+class AdditonalAppLicationDraftOrderUploadedEventHandlerTest {
 
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference DRAFT_ORDER = testDocumentReference();
@@ -47,54 +42,8 @@ class AdditionalApplicationDraftOrderUploadedEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
-    @Mock
-    private WorkAllocationTaskService workAllocationTaskService;
-
     @InjectMocks
-    private AdditionalApplicationDraftOrderUploadedEventHandler underTest;
-
-    @Test
-    void shouldCreateWorkAllocationTaskWhenCMOApproved() {
-        CaseData caseData = CaseData.builder()
-            .additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(C2DocumentBundle.builder()
-                        .draftOrdersBundle(List.of(
-                            element(DraftOrder.builder().document(DocumentReference.builder().build()).build()))
-                        )
-                        .build())
-                    .build())))
-            .build();
-        CaseData caseDataBefore = CaseData.builder().build();
-        underTest.createWorkAllocationTask(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
-
-        verify(workAllocationTaskService).createWorkAllocationTask(caseData,
-            WorkAllocationTaskType.DRAFT_ORDER_UPLOADED_WITH_C2);
-    }
-
-    @Test
-    void shouldNotCreateWorkAllocationTaskWhenCMOApproved() {
-        AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(C2DocumentBundle.builder()
-                .draftOrdersBundle(List.of(
-                    element(DraftOrder.builder().document(DocumentReference.builder().build()).build()))
-                )
-                .build())
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .additionalApplicationsBundle(List.of(
-                element(bundle)))
-            .build();
-        CaseData caseDataBefore = CaseData.builder()
-            .additionalApplicationsBundle(List.of(
-                element(bundle)))
-            .build();
-        underTest.createWorkAllocationTask(new AdditonalAppLicationDraftOrderUploadedEvent(caseData, caseDataBefore));
-
-        verify(workAllocationTaskService, times(0)).createWorkAllocationTask(caseData,
-            WorkAllocationTaskType.DRAFT_ORDER_UPLOADED_WITH_C2);
-    }
+    private AdditonalAppLicationDraftOrderUploadedEventHandler underTest;
 
     @Test
     void shouldSendNotificationToCafcassWhenDraftOrderPresent() {
