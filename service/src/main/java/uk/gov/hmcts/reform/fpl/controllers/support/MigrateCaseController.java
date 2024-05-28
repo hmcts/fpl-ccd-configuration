@@ -35,7 +35,7 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2284", this::run2284,
-        "DFPL-2299", this::run2299
+        "DFPL-2339", this::run2339
     );
 
     @PostMapping("/about-to-submit")
@@ -76,13 +76,13 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run2299(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2299";
+    private void run2339(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2339";
+        final long expectedCaseId = 1706780490728419L;
+        final String kentOrgId = "X7IWKLM";
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712908356292590L, migrationId);
-        migrateCaseService.verifyUrgentDirectionsOrderExists(getCaseData(caseDetails), migrationId,
-            UUID.fromString("78dee4d9-f542-442b-a36a-c83b037e6f27"));
-
-        caseDetails.getData().remove("urgentDirectionsOrder");
+        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails),
+            kentOrgId));
     }
 }
