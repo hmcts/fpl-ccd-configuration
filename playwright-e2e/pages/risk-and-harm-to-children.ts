@@ -28,7 +28,7 @@ export class RiskAndHarmToChildren {
     }
 
     async riskAndHarmToChildrenSmokeTest() {
-        //await expect (this.riskAndHarmToChildrenHeader).toBeVisible();
+        await expect (this.riskAndHarmToChildrenHeader).toBeVisible();
         await this.physicalHarmRadio.getByLabel('Yes').check();
         await this.futureRiskOfHarmCheckbox.check();
         await this.emotionalHarmRadio.getByLabel('No').check();
@@ -36,7 +36,7 @@ export class RiskAndHarmToChildren {
         await this.neglectRadio.getByLabel('Yes').check();
         await this.pastHarmCheckbox.check();
         await this.continueButton.click();
-        //await expect(this.checkYourAnswersHeader).toBeVisible();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.saveAndContinueButton.click();
     }
 }

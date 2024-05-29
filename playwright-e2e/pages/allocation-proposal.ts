@@ -14,7 +14,7 @@ export class AllocationProposal {
 
 async allocationProposalSmokeTest() {
 
-    //expect(this.page.locator('h1').filter({ hasText: 'Allocation proposal' })).toBeVisible(),
+    expect(this.page.locator('h1').filter({ hasText: 'Allocation proposal' })).toBeVisible(),
     await this.page.getByLabel('Circuit Judge', { exact: true }).check()
     await this.page.getByLabel('Circuit Judge (Section 9)').check();
     await this.page.getByLabel('District Judge').check();

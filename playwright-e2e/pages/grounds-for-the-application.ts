@@ -24,13 +24,13 @@ export class GroundsForTheApplication {
     }
 
     async groundsForTheApplicationSmokeTest() {
-            //expect (this.groundsForTheApplicationHeading).toBeVisible(),
+        expect (this.groundsForTheApplicationHeading).toBeVisible(),
         await this.notReceivingExpectedCareFromParentCheckBox.click()
         await this.detailsOfHowCaseMeetsThresholdCriteriaTextBox.fill('Eum laudantium tempor, yet magni beatae. Architecto tempor. Quae adipisci, and labore, but voluptate, but est voluptas. Ipsum error minima. Suscipit eiusmod excepteur veniam. Consequat aliqua ex. Nostrud elit nostrum fugiat, yet esse nihil. Natus anim perspiciatis, and illum, so magni. Consequuntur eiusmod, so error. Anim magna. Dolores nequeporro, yet tempora. Amet rem aliquid.');
         await this.notReceivingExpectedCareFromParentCheckBox.isChecked();
         await this.continueButton.click();
-            //expect(this.checkYourAnswersHeader).toBeVisible(),
+        expect(this.checkYourAnswersHeader).toBeVisible(),
         await this.saveAndContinueButton.click();;
-            //expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible()
+        expect(this.groundsForTheApplicationHasBeenUpdatedFinished).toBeVisible()
     }
 }

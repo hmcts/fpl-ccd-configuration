@@ -45,7 +45,7 @@ export class RespondentDetails {
   }
 
   async respondentDetailsNeeded() {
-    //await expect(this.respondentDetailsHeading).toBeVisible();
+    await expect(this.respondentDetailsHeading).toBeVisible();
     await this.firstName.click();
     await this.firstName.fill('John');
     await this.lastName.click();

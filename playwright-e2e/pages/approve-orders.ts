@@ -11,13 +11,13 @@ export class ApproveOrders extends BasePage {
 
     async navigateToPageViaNextStep() {
         await this.gotoNextStep('Approve orders');
-        //await expect(this.page.getByRole('group', { name: 'Is this order ready to be sealed and issued' }).locator('span')).toBeVisible();
+        await expect(this.page.getByRole('group', { name: 'Is this order ready to be sealed and issued' }).locator('span')).toBeVisible();
     }
 
     async approveOrders() {
         await this.yesApproveOrder.click();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
-        //await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
+        await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
     }
 }

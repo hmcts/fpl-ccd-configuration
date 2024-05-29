@@ -40,7 +40,7 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-      //expect(this.checkYourAnswersHeader).toBeVisible(),
+    expect(this.checkYourAnswersHeader).toBeVisible(),
     await this.saveAndContinue.click()
   }
 

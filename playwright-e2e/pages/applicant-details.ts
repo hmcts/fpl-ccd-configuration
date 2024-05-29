@@ -62,7 +62,7 @@ export class ApplicantDetails extends BasePage{
   }
 
   async colleagueDetailsNeeded(){
-   // await expect(this.colleagueHeading).toBeVisible();
+    await expect(this.colleagueHeading).toBeVisible();
     await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();
@@ -73,7 +73,7 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.click();
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
-      //expect(this.removeColleague).toBeVisible(),
+    expect(this.removeColleague).toBeVisible(),
     await this.clickContinue()
 
     //this checks for warning message and clicks continue if the warning message is visible
