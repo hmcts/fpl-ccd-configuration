@@ -43,7 +43,7 @@ export class ApplicantDetails extends BasePage{
   }
 
   async applicantDetailsNeeded() {
-      //expect(this.applicantDetailsHeading).toBeVisible(),
+    await expect(this.applicantDetailsHeading).toBeVisible(),
     await this.teamManagerName.click();
     await this.teamManagerName.fill(this.teamManagerNameString);
     await this.pbaNumber.click();
@@ -55,15 +55,10 @@ export class ApplicantDetails extends BasePage{
     await this.phoneNumber.click();
     await this.phoneNumber.fill('1234567890');
     await this.clickContinue();
-    // clickContinue is required twice
-    await this.clickContinue();
-    await this.checkYourAnsAndSubmit();
     
   }
 
   async colleagueDetailsNeeded(){
-    await expect(this.colleagueHeading).toBeVisible();
-    await this.continueButton.click();
     await this.addNew.click();
     await this.colleagueRole_SocialWorker.check();
     await this.colleagueName.click();
@@ -78,15 +73,18 @@ export class ApplicantDetails extends BasePage{
 
     //this checks for warning message and clicks continue if the warning message is visible
     //issue cannot be replicated manually
-    try {
-      const warningIsVisible = await this.problemErrorMessage.isVisible();
-    
-      if (warningIsVisible) {
-        await this.clickContinue();
-      }
-    } 
-    catch (error) {
+    const warningIsVisible = await this.problemErrorMessage.isVisible();
+    if (warningIsVisible) {
+      console.log('warning message visible - click continue to work around exui error message')
+      await expect(this.removeColleague).toBeVisible();
+      await this.problemErrorMessage.isVisible();
+      await this.clickContinue();
+      await this.checkYourAnsAndSubmit();
     }
-    await this.checkYourAnsAndSubmit();
+    else {
+      console.log('no warning message - proceed as usual')
+      await this.checkYourAnsAndSubmit();
+    }
+    
   }
 }

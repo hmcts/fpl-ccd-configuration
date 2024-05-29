@@ -89,6 +89,7 @@ export class StartApplication {
   }
 
   async childDetails() {
+    console.log('moved onto child details')
     await expect(this.childDetailsLink).toBeVisible();
     await this.childDetailsLink.click();
   }
