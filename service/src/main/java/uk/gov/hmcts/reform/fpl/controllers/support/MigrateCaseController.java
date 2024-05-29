@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -34,7 +35,8 @@ public class MigrateCaseController extends CallbackController {
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
         "DFPL-2284", this::run2284,
-        "DFPL-2339", this::run2339
+        "DFPL-2339", this::run2339,
+        "DFPL-2343", this::run2343
     );
 
     @PostMapping("/about-to-submit")
@@ -83,5 +85,14 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails),
             orgId));
+    }
+
+    private void run2343(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2343";
+        final long expectedCaseId = 1702981005668215L;
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        caseDetails.getData().putAll(migrateCaseService.removeAdditionalApplicationBundle(getCaseData(caseDetails),
+            UUID.fromString("cd54e598-27cf-411b-8f8a-a3b1b26b586d"), migrationId));
     }
 }

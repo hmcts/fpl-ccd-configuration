@@ -53,6 +53,7 @@ import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -3212,6 +3213,60 @@ class MigrateCaseServiceTest {
         void shouldReturnErrorIfSubmittedC1NotFound() {
             CaseData caseData = CaseData.builder().build();
             assertThrows(AssertionError.class, () -> underTest.removeSubmittedC1Document(caseData, MIGRATION_ID));
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class RemoveAdditionalApplicationBundle {
+        private final Element<AdditionalApplicationsBundle> document1 =
+            element(AdditionalApplicationsBundle.builder().build());
+        private final Element<AdditionalApplicationsBundle> document2 =
+            element(AdditionalApplicationsBundle.builder().build());
+        private final Element<AdditionalApplicationsBundle> documentToBeRemoved =
+            element(AdditionalApplicationsBundle.builder().build());
+
+        @Test
+        void shouldRemoveAdditionalApplicationsBundle() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .additionalApplicationsBundle(List.of(document1, document2,
+                    documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeAdditionalApplicationBundle(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("additionalApplicationsBundle").asList()
+                .containsExactly(document1, document2);
+        }
+
+        @Test
+        void shouldRemoveAdditionalApplicationsBundleIfOnlyOneExists() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .additionalApplicationsBundle(List.of(documentToBeRemoved))
+                .build();
+
+            Map<String, Object> updatedFields = underTest.removeAdditionalApplicationBundle(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID);
+
+            assertThat(updatedFields).extracting("additionalApplicationsBundle").asList().isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionIfAdditionalApplicationsBundleDoesNotExist() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .additionalApplicationsBundle(List.of(document1, document2))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeAdditionalApplicationBundle(caseData,
+                documentToBeRemoved.getId(), MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s},"
+                        + " additional application bundle %s not found",
+                    MIGRATION_ID, 1, documentToBeRemoved.getId()));
         }
     }
 }
