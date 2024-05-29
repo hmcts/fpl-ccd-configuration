@@ -40,8 +40,8 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-    expect(this.checkYourAnswersHeader).toBeVisible(),
-    await this.saveAndContinue.click()
+    await expect(this.checkYourAnswersHeader).toBeVisible();
+    await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {
