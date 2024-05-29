@@ -9,11 +9,14 @@ import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContentProvider;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
@@ -24,6 +27,9 @@ class JudicialMessageReplyEventHandlerTest {
 
     @Mock
     private JudicialMessageReplyContentProvider judicialMessageReplyContentProvider;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private JudicialMessageReplyEventHandler judicialMessageReplyEventHandler;
@@ -41,6 +47,7 @@ class JudicialMessageReplyEventHandlerTest {
 
         final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         given(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
             .willReturn(expectedParameters);
 
