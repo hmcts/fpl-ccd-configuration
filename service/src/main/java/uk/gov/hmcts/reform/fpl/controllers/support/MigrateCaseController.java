@@ -78,10 +78,10 @@ public class MigrateCaseController extends CallbackController {
     private void run2339(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2339";
         final long expectedCaseId = 1706780490728419L;
-        final String kentOrgId = "X7IWKLM";
+        final String orgId = "CPYYWBZ";
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
         caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails),
-            kentOrgId));
+            orgId));
     }
 }
