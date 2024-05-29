@@ -39,7 +39,6 @@ export class StartApplication {
     this.hearingUrgencyHeader = page.getByRole("heading", { name: "Hearing urgency", });
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
-
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
     this.allocationProposalFinished = page.locator('p:has(a[text="Allocation proposal"]) > img[title="Finished"]');
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
@@ -89,7 +88,6 @@ export class StartApplication {
   }
 
   async childDetails() {
-    console.log('moved onto child details')
     await expect(this.childDetailsLink).toBeVisible();
     await this.childDetailsLink.click();
   }

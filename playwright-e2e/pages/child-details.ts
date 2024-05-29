@@ -83,8 +83,6 @@ export class ChildDetails extends BasePage{
         this.applyToAllChildren = page.getByRole('group', { name: 'Do all the children have this' });
         this.childgroup = page.getByRole('group', { name: `${(this.child)}` });
         this.unregisteredOrganisation = page.getByLabel('Organisation name (Optional)');
-
-
     }
 
     async childDetailsNeeded(){
@@ -131,7 +129,6 @@ export class ChildDetails extends BasePage{
         await this.contactDetailsHidden.getByLabel('No').check();
         await this.litigationCapability.getByLabel('No', { exact: true }).click();
         await this.clickContinue();
-        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
     }
 

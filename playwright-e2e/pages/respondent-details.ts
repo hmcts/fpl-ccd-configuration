@@ -1,8 +1,6 @@
 import {type Page, type Locator, expect} from "@playwright/test";
-
-export class RespondentDetails {
-
-  readonly page: Page;
+import { BasePage } from "./base-page";
+export class RespondentDetails extends BasePage {
   readonly respondentDetailsHeading: Locator;
   readonly firstName: Locator;
   readonly lastName: Locator;
@@ -18,12 +16,10 @@ export class RespondentDetails {
   readonly litigationCapacity: Locator; //ie Ability to take part in proceedings
   readonly litigationCapacityReason: Locator;
   readonly legalRepresentation: Locator;
-  readonly continue: Locator;
-  readonly saveAndContinue: Locator;
   readonly addressNotKnownReason: Locator;
 
-  public constructor(page: Page) {
-    this.page = page;
+  constructor(page:Page){
+    super(page);
     this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
     this.firstName = page.getByLabel('*First name (Optional)');
     this.lastName = page.getByLabel('*Last name (Optional)');
@@ -40,12 +36,10 @@ export class RespondentDetails {
     this.litigationCapacity = page.getByRole('group', { name: 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)? (Optional)' });
     this.litigationCapacityReason = page.getByLabel('Give details, including assessment outcomes and referrals to health services (Optional)');
     this.legalRepresentation = page.getByRole('group', { name: '*Do they have legal representation? (Optional)' });
-    this.continue = page.getByRole('button', { name: 'Continue' });
-    this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
   }
 
   async respondentDetailsNeeded() {
-    await expect(this.respondentDetailsHeading).toBeVisible();
+    await expect(this.respondentDetailsHeading).toHaveText('Respondents\' details');
     await this.firstName.click();
     await this.firstName.fill('John');
     await this.lastName.click();
@@ -70,7 +64,7 @@ export class RespondentDetails {
     await this.litigationCapacityReason.click();
     await this.litigationCapacityReason.fill('these are the details');
     await this.legalRepresentation.getByLabel('No').check();
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
   }
 }

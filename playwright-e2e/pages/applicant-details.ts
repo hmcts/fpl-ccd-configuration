@@ -16,7 +16,6 @@ export class ApplicantDetails extends BasePage{
   readonly colleagueEmail: Locator;
   readonly colleaguePhoneNumber: Locator;
   readonly caseUpdateNotification_No: Locator;
- // readonly caseNameText: Locator;
   readonly removeColleague: Locator;
   readonly problemErrorMessage: Locator;
   public teamManagerNameString: string;
@@ -39,11 +38,10 @@ export class ApplicantDetails extends BasePage{
     this.removeColleague = page.getByLabel('Remove Colleague');
     this.teamManagerNameString = 'Sarah Johnson';
     this.problemErrorMessage = page.getByRole('heading', { name: 'There is a problem', exact: true });
-
   }
 
   async applicantDetailsNeeded() {
-    await expect(this.applicantDetailsHeading).toBeVisible(),
+    await expect(this.applicantDetailsHeading).toHaveText('Applicant details');
     await this.teamManagerName.click();
     await this.teamManagerName.fill(this.teamManagerNameString);
     await this.pbaNumber.click();
@@ -55,7 +53,6 @@ export class ApplicantDetails extends BasePage{
     await this.phoneNumber.click();
     await this.phoneNumber.fill('1234567890');
     await this.clickContinue();
-    
   }
 
   async colleagueDetailsNeeded(){
@@ -68,7 +65,7 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.click();
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
-    await expect(this.removeColleague).toBeVisible(); 
+    await expect(this.removeColleague).toHaveText('Remove Colleague');
     await this.clickContinue();
 
     //this checks for warning message and clicks continue if the warning message is visible
@@ -76,7 +73,7 @@ export class ApplicantDetails extends BasePage{
     const warningIsVisible = await this.problemErrorMessage.isVisible();
     if (warningIsVisible) {
       console.log('warning message visible - click continue to work around exui error message')
-      await expect(this.removeColleague).toBeVisible();
+      await expect(this.removeColleague).toHaveText('Remove Colleague');
       await this.problemErrorMessage.isVisible();
       await this.clickContinue();
       await this.checkYourAnsAndSubmit();
@@ -85,6 +82,5 @@ export class ApplicantDetails extends BasePage{
       console.log('no warning message - proceed as usual')
       await this.checkYourAnsAndSubmit();
     }
-    
   }
 }

@@ -10,7 +10,6 @@ export class C1WithSupplement extends BasePage {
     readonly addNewSupplementBundle: Locator;
     readonly documentName: Locator;
     readonly notes: Locator;
-
     readonly uploadDocument: Locator;
     readonly ackRelatedToCase: Locator;
 

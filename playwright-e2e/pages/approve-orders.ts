@@ -18,6 +18,6 @@ export class ApproveOrders extends BasePage {
         await this.yesApproveOrder.click();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
-        await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
+        await expect(this.page.getByText('has been updated with event: Approve orders')).toHaveText('has been updated with event: Approve orders');
     }
 }

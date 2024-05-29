@@ -20,7 +20,7 @@ export class InternationalElement extends BasePage {
 
   }
   async internationalElementSmokeTest() {
-    await expect(this.internationalElementHeading).toBeVisible();
+    await expect(this.internationalElementHeading).toHaveText('International element');
     await this.areThereAnySuitableCarers.getByLabel('No').check();
     await this.anySignificantEventsOutsideUk.getByLabel('No').check();
     await this.anyIssueWithJurisdictionOfThisCase.getByLabel('No').check();

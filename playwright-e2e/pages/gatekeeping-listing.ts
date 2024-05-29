@@ -40,6 +40,6 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
-    await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
+    await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toHaveText('has been updated with event: List Gatekeeping Hearing');
   }
 }
