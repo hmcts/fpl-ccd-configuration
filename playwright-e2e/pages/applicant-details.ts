@@ -73,8 +73,8 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.click();
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
-    expect(this.removeColleague).toBeVisible(),
-    await this.clickContinue()
+    await expect(this.removeColleague).toBeVisible(); 
+    await this.clickContinue();
 
     //this checks for warning message and clicks continue if the warning message is visible
     //issue cannot be replicated manually
