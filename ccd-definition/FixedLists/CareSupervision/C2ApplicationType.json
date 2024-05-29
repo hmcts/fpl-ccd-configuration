@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2ApplicationType",
     "ListElementCode": "WITH_NOTICE",
-    "ListElement": "Application with notice. The other party will be notified about this application, even if there is no hearing.",
+    "ListElement": "Application with notice.",
     "DisplayOrder": 1
   },
   {

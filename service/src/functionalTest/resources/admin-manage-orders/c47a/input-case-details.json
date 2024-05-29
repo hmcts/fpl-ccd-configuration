@@ -9,11 +9,6 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
-  },
   "additionalApplicationsBundle": [
     {
       "value": {
@@ -28,11 +23,6 @@
         "c2DocumentBundle": {
           "uploadedDateTime": "16 June 2021, 11:49am",
           "author": "HMCTS",
-          "document": {
-            "document_filename": "mockFile.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
-          },
           "supportingEvidenceLA": [],
           "supportingEvidenceNC": [],
           "id": "788f1b70-2d7d-4c76-8484-de225ac92ead",
@@ -54,7 +44,6 @@
     "judgeLastName": "Moley",
     "judgeEmailAddress": "moley@example.com"
   },
-  "respondentsRefusedSelector": {},
   "hearingDetailsSectionSubHeader": "Appointment of a children's guardian (C47A)",
   "othersSelector": {
     "option9": [],
@@ -383,11 +372,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a838e9a7-a25d-41cd-9131-a27537e9fa5a/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a838e9a7-a25d-41cd-9131-a27537e9fa5a"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -412,7 +396,6 @@
     "dx": "160010 Kingsway 7",
     "email": "solicitor@email.com"
   },
-  "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
   "orderDetailsSectionSubHeader": "Appointment of a children's guardian (C47A)",
   "dateAndTimeSubmitted": "2022-09-16T13:42:53.303",
@@ -588,19 +571,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/1f153ec0-8d0a-4e84-88c3-aefcd7cea861"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }

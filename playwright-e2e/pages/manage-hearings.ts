@@ -1,10 +1,9 @@
-import {type Page, type Locator, expect} from "@playwright/test";
+import {type Page, type Locator } from "@playwright/test";
 import {BasePage} from "./base-page";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
 export class ManageHearings extends HearingDetailsMixin(BasePage)
 {
-  readonly hearingTypesLabelLocator: Locator;
   readonly hearingDetails: Locator;
   readonly hearingDay: Locator;
   readonly hearingMonth: Locator;
@@ -21,7 +20,6 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     this.hearingYear = this.page.getByRole('textbox', { name: 'Year' });
     this.hearingLengthInHours = this.page.getByLabel('Hearing length, in hours');
     this.hearingLengthInMinutes = this.page.getByLabel('Hearing length, in minutes');
-    this.hearingTypesLabelLocator = this.page.locator('#hearingType .multiple-choice > label');
     this.inpPersonCheckbox = this.page.getByText('In person');
   }
 
@@ -38,7 +36,7 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
 
   async editPastHearingOnCase() {
     await this.page.getByLabel('Edit a hearing that has taken').check();
-    await this.page.getByLabel('Which draft hearing do you').selectOption('Case management hearing, 3 November 2012');
+    await this.page.getByLabel('Which hearing do you want to edit?').selectOption('Case management hearing, 3 November 2012');
     await this.clickContinue();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
     await this.clickContinue();
@@ -121,18 +119,4 @@ export class ManageHearings extends HearingDetailsMixin(BasePage)
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
   };
-
-  async verifyHearingTypesSelection() {
-    const expectedHearingTypes = [
-      'Case management',
-      'Further case management',
-      'Issue resolution',
-      'Final',
-      'Interim care order',
-      'Accelerated discharge of care',
-      'Other'
-    ];
-    const hearingTypes = await this.hearingTypesLabelLocator.allTextContents();
-    expect(hearingTypes).toEqual(expectedHearingTypes);
-  }
 }

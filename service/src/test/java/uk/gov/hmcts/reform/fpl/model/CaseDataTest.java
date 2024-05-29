@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -61,7 +62,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.PLACEMENT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C19_WARRANT_TO_ASSISTANCE;
@@ -78,6 +79,7 @@ import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
@@ -1460,12 +1462,12 @@ class CaseDataTest {
 
         @Test
         void shouldReturnFirstHearingOfGivenType() {
-            HearingBooking otherHearing = hearingBooking(OTHER, now().plusDays(1));
+            HearingBooking placementHearing = hearingBooking(PLACEMENT_HEARING, now().plusDays(1));
             HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
             HearingBooking laterCaseManagementHearing = hearingBooking(CASE_MANAGEMENT, now().plusDays(3));
 
             CaseData caseData = CaseData.builder()
-                .hearingDetails(wrapElements(otherHearing, laterCaseManagementHearing, caseManagementHearing))
+                .hearingDetails(wrapElements(placementHearing, laterCaseManagementHearing, caseManagementHearing))
                 .build();
 
             Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
@@ -1481,7 +1483,7 @@ class CaseDataTest {
                 .hearingDetails(wrapElements(caseManagementHearing))
                 .build();
 
-            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(OTHER);
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(PLACEMENT_HEARING);
 
             assertThat(foundHearing).isNotPresent();
         }
@@ -1678,6 +1680,30 @@ class CaseDataTest {
                 .build();
 
             assertThat(caseData.getBundlesForApproval()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAllHearingOrdersBundlesForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .ordersCTSC(newArrayList(
+                        element(HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build())))
+                    .build());
+
+            Element<HearingOrdersBundle> bundle2 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build()),
+                        element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1, bundle2))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval())
+                .extracting(Element::getId)
+                .containsExactly(bundle1.getId(), bundle2.getId());
         }
 
         private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
@@ -2056,6 +2082,21 @@ class CaseDataTest {
             assertThat(underTest.isDischargeOfCareApplication()).isTrue();
         }
 
+    }
+
+    @Test
+    void shouldReturnAllOrderCollection() {
+        List<Element<GeneratedOrder>> orders = wrapElementsWithUUIDs(GeneratedOrder.builder().title("order").build());
+        List<Element<GeneratedOrder>> ordersCTSC =
+            wrapElementsWithUUIDs(GeneratedOrder.builder().title("orderCTSC").build());
+        CaseData caseData = CaseData.builder()
+            .orderCollection(orders)
+            .confidentialOrders(ConfidentialGeneratedOrders.builder().orderCollectionCTSC(ordersCTSC).build())
+            .build();
+
+        List<Element<GeneratedOrder>> expected = Stream.of(orders, ordersCTSC).flatMap(List::stream).toList();
+
+        assertThat(caseData.getAllOrderCollections()).isEqualTo(expected);
     }
 
     private HearingOrder buildHearingOrder(HearingOrderType type) {

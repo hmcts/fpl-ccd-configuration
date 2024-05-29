@@ -1,6 +1,5 @@
 import {BasePage} from "./base-page";
 import {expect, Page} from "@playwright/test";
-import {ManageHearings} from "./manage-hearings";
 import {HearingDetailsMixin} from "./mixins/hearing-details-mixin";
 
 export class GatekeepingListing extends HearingDetailsMixin(BasePage)

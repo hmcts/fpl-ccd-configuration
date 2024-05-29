@@ -1,6 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 
-export class RiskAndHarmToChildren { 
+export class RiskAndHarmToChildren {
     readonly page: Page;
     readonly physicalHarmRadio: Locator;
     readonly emotionalHarmRadio: Locator;
@@ -36,7 +36,7 @@ export class RiskAndHarmToChildren {
         await this.neglectRadio.getByLabel('Yes').check();
         await this.pastHarmCheckbox.check();
         await this.continueButton.click();
-        await this.checkYourAnswersHeader.isVisible();
+        await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.saveAndContinueButton.click();
     }
 }

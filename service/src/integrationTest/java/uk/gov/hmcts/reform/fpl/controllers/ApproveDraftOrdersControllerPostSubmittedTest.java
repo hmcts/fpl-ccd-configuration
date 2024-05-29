@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -85,11 +86,13 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider.ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -240,6 +243,11 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
+        caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+            .id(LOCAL_AUTHORITY_3_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_3_INBOX)
+            .build()));
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -335,6 +343,11 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
         caseDetails.getData().put("caseLocalAuthority",LOCAL_AUTHORITY_3_CODE);
+        caseDetails.getData().put("localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+            .id(LOCAL_AUTHORITY_3_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_3_INBOX)
+            .build()));
 
         final List<Recipient> recipientsWithOthers = List.of(createRespondentParty(), createOther().toParty());
 
@@ -594,6 +607,11 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
                 .firstOther(createOther()).build())
             .respondents1(createNonRepresentedRespondents())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))

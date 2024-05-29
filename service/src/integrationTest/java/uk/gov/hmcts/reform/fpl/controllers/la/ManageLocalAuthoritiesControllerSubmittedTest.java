@@ -239,12 +239,6 @@ class ManageLocalAuthoritiesControllerSubmittedTest extends AbstractCallbackTest
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
-                LOCAL_AUTHORITY_2_INBOX,
-                toMap(notifyData),
-                notificationReference(CASE_ID));
-
-            verify(notificationClient).sendEmail(
-                CASE_TRANSFERRED_NEW_DESIGNATED_LA_TEMPLATE,
                 LOCAL_AUTHORITY_2_USER_EMAIL,
                 toMap(notifyData),
                 notificationReference(CASE_ID));

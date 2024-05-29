@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class SubmittedC1WithSupplementBundle  {
     private final DocumentReference document;

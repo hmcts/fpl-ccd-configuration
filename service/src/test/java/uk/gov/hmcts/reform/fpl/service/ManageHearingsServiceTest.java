@@ -13,12 +13,10 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -80,7 +78,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
@@ -488,7 +486,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .typeReason("Reason")
             .venue("OTHER")
@@ -506,7 +504,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingTypeReason", "Reason"),
             Map.entry("hearingStartDate", startDate),
@@ -533,7 +531,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .venue("OTHER")
             .typeReason("Reason")
@@ -553,7 +551,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingStartDate", startDate),
             Map.entry("hearingEndDate", endDate),
@@ -581,7 +579,7 @@ class ManageHearingsServiceTest {
         Judge allocatedJudge = testJudge();
 
         HearingBooking hearing = HearingBooking.builder()
-            .type(OTHER)
+            .type(FACT_FINDING)
             .typeDetails("Fact finding")
             .venue("OTHER")
             .typeReason("Reason")
@@ -602,7 +600,7 @@ class ManageHearingsServiceTest {
         Map<String, Object> hearingCaseFields = service.populateHearingCaseFields(hearing, allocatedJudge);
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(Map.ofEntries(
-            Map.entry("hearingType", OTHER),
+            Map.entry("hearingType", FACT_FINDING),
             Map.entry("hearingTypeDetails", "Fact finding"),
             Map.entry("hearingStartDate", startDate),
             Map.entry("hearingEndDate", endDate),
@@ -1253,7 +1251,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedAdjournedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
         }
 
         @Test
@@ -1273,16 +1270,8 @@ class ManageHearingsServiceTest {
                     .cancellationReason(adjournmentReason.getReason())
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeAdjourned);
-
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .adjournmentReason(adjournmentReason)
                 .build();
 
@@ -1290,7 +1279,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
         }
 
         void shouldAdjournHearing(HearingReListOption hearingReListOption, HearingStatus expectedStatus) {
@@ -1307,23 +1295,16 @@ class ManageHearingsServiceTest {
                     .cancellationReason(adjournmentReason.getReason())
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> adjournedHearingBundle = randomDocumentBundle(hearingElement1);
-
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .adjournmentReason(adjournmentReason)
                 .hearingReListOption(hearingReListOption)
-                .hearingFurtherEvidenceDocuments(List.of(adjournedHearingBundle))
                 .build();
-
-            final String documentBundleName = adjournedHearingBundle.getValue().getHearingName();
-            final String updatedDocumentBundleName = String.format("%s - %s", documentBundleName, "adjourned");
 
             service.adjournHearing(caseData, hearingElement1.getId());
 
             assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
-            assertThat(adjournedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
         }
 
         @Test
@@ -1500,7 +1481,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
         }
 
         @Test
@@ -1521,16 +1501,8 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
-
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
                 .build();
@@ -1539,7 +1511,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
         }
 
         @Test
@@ -1563,18 +1534,10 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
-
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder().build());
 
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
@@ -1584,7 +1547,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
                 element(LINKED_CMO_ID, HearingOrder.builder().hearing(vacatedHearing.getValue().toLabel())
                     .build()));
@@ -1610,18 +1572,10 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
-
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder().build());
 
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
                 .draftUploadedCMOs(List.of(linkedDraftCMO))
@@ -1631,7 +1585,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(linkedDraftCMO);
         }
 
@@ -1656,20 +1609,12 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
-
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder()
                 .type(DRAFT_CMO).status(DRAFT)
                 .build());
 
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
                 .hearingOrdersBundlesDrafts(newArrayList(
@@ -1683,7 +1628,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
                 element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                     .hearingName(vacatedHearing.getValue().toLabel())
@@ -1708,24 +1652,17 @@ class ManageHearingsServiceTest {
                     .vacatedDate(vacatedDate)
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> vacatedHearingBundle = randomDocumentBundle(hearingElement1);
-
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .hearingReListOption(reListOption)
                 .vacatedReason(vacatedReason)
                 .vacatedHearingDate(vacatedDate)
-                .hearingFurtherEvidenceDocuments(List.of(vacatedHearingBundle))
                 .build();
-
-            final String documentBundleName = vacatedHearingBundle.getValue().getHearingName();
-            final String updatedDocumentBundleName = String.format("%s - %s", documentBundleName, "vacated");
 
             service.vacateHearing(caseData, hearingElement1.getId());
 
             assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
-            assertThat(vacatedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
         }
     }
 
@@ -1771,29 +1708,6 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).extracting(Element::getValue).containsExactly(reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing, expectedVacatedHearing);
-        }
-
-        @Test
-        void shouldReassignDocumentFromCancelledToReListedHearing() {
-            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
-
-            final Element<HearingBooking> adjournedHearing = element(randomHearing(ADJOURNED_TO_BE_RE_LISTED));
-            final HearingBooking reListedHearing = randomHearing();
-
-            final Element<HearingFurtherEvidenceBundle> adjournedHearingBundle = randomDocumentBundle(adjournedHearing);
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
-                adjournedHearingBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.toLabel())
-                    .build());
-
-            final CaseData caseData = CaseData.builder()
-                .cancelledHearingDetails(newArrayList(adjournedHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(adjournedHearingBundle))
-                .build();
-
-            service.reListHearing(caseData, adjournedHearing.getId(), reListedHearing);
-
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
         }
 
     }
@@ -2019,24 +1933,6 @@ class ManageHearingsServiceTest {
             "enterManually",
             "judicialUserHearingJudge"
         );
-    }
-
-    private Element<HearingFurtherEvidenceBundle> randomDocumentBundle(Element<HearingBooking> hearingBooking) {
-        Element<SupportingEvidenceBundle> adjournedHearingDocument1 = element(SupportingEvidenceBundle.builder()
-            .document(TestDataHelper.testDocumentReference())
-            .name(randomAlphanumeric(10))
-            .build());
-
-        Element<SupportingEvidenceBundle> adjournedHearingDocument2 = element(SupportingEvidenceBundle.builder()
-            .document(TestDataHelper.testDocumentReference())
-            .name(randomAlphanumeric(10))
-            .build());
-
-        return element(hearingBooking.getId(),
-            HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearingBooking.getValue().toLabel())
-                .supportingEvidenceBundle(List.of(adjournedHearingDocument1, adjournedHearingDocument2))
-                .build());
     }
 
     private static HearingBooking hearing(LocalDateTime start, LocalDateTime end) {

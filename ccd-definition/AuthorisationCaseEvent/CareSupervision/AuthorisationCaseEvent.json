@@ -1138,12 +1138,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[LAMANAGING]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
