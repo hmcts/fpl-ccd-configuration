@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
@@ -1183,5 +1184,30 @@ public class MigrateCaseService {
         }
 
         return Map.of("submittedC1WithSupplement", submittedC1WithSupplement.toBuilder().document(null).build());
+    }
+
+    public Map<String, Object> removeAdditionalApplicationBundle(CaseData caseData,
+                                                                 UUID expectedBundleId, String migrationId) {
+        Long caseId = caseData.getId();
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
+
+        if (additionalApplicationsBundle.isEmpty()) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, additionalApplicationsBundle is empty",
+                migrationId, caseId
+            ));
+        }
+
+        List<Element<AdditionalApplicationsBundle>> updatedAdditionalApplicationBundle =
+            ElementUtils.removeElementWithUUID(additionalApplicationsBundle, expectedBundleId);
+
+        if (updatedAdditionalApplicationBundle.size() != additionalApplicationsBundle.size() - 1) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, additional application bundle %s not found",
+                migrationId, caseId, expectedBundleId));
+        }
+
+        return Map.of("additionalApplicationsBundle", updatedAdditionalApplicationBundle);
     }
 }
