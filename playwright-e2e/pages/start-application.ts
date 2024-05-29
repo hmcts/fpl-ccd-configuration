@@ -61,17 +61,17 @@ export class StartApplication {
   }
 
   async groundsForTheApplication() {
-    expect(this.groundsForTheApplicationLink).toBeVisible(),
+    await expect(this.groundsForTheApplicationLink).toBeVisible();
     await this.groundsForTheApplicationLink.click();
   }
 
   async riskAndHarmToChildren() {
-    expect(this.riskAndHarmToChildrenLink).toBeVisible(),
+    await expect(this.riskAndHarmToChildrenLink).toBeVisible();
     await this.riskAndHarmToChildrenLink.click();
   }
 
   async addApplicationDocuments() {
-    expect(this.uploadDocumentsLink).toBeVisible(),
+    await expect(this.uploadDocumentsLink).toBeVisible();
     await this.uploadDocumentsLink.click();
   }
 
@@ -80,7 +80,7 @@ export class StartApplication {
   }
 
   async applicantDetails() {
-    await expect(this.applicantDetailsLink).toBeVisible(),
+    await expect(this.applicantDetailsLink).toBeVisible();
     await this.applicantDetailsLink.click();
   }
 
@@ -89,7 +89,7 @@ export class StartApplication {
   }
 
   async childDetails() {
-    await expect(this.childDetailsLink).toBeVisible(),
+    await expect(this.childDetailsLink).toBeVisible();
     await this.childDetailsLink.click();
   }
 
@@ -98,12 +98,12 @@ export class StartApplication {
   }
 
   async respondentDetails() {
-    await expect(this.respondentsDetailsLink).toBeVisible(),
+    await expect(this.respondentsDetailsLink).toBeVisible();
     await this.respondentsDetailsLink.click();
   }
 
   async allocationProposal() {
-    expect(this.allocationProposalLink).toBeVisible(),
+    await expect(this.allocationProposalLink).toBeVisible();
     await this.allocationProposalLink.click();
   }
 
@@ -120,12 +120,12 @@ export class StartApplication {
   }
 
   async internationalElementReqUpdated() {
-    expect(this.internationalElementsHeading).toBeVisible(),
+    await expect(this.internationalElementsHeading).toBeVisible();
     await this.internationalElementsHeading.click();
   }
 
   async courtServicesNeededReqUpdated() {
-    expect(this.courtServicesNeeded).toBeVisible(),
+    await expect(this.courtServicesNeeded).toBeVisible();
     await this.courtServicesNeeded.click();
   }
 
