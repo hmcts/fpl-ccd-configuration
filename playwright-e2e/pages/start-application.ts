@@ -40,7 +40,7 @@ export class StartApplication {
     this.groundsForTheApplicationLink = page.getByRole("link", { name: "Grounds for the application", });
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
-    this.allocationProposalFinished = page.locator('p:has(a[text="Allocation proposal"]) > img[title="Finished"]');
+    this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img');
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });

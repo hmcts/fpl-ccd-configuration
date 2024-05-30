@@ -31,7 +31,6 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
   }
 
   async addAllocatedJudgeAndCompleteGatekeepingListing() {
-    await this.page.getByLabel('Search for Judge (Optional)').click();
     await this.page.getByLabel('Search for Judge (Optional)').fill('Craig Taylor');
     await this.page.waitForSelector('span:text("District Judge (MC) Craig")');
     await this.page.getByText('District Judge (MC) Craig').click();

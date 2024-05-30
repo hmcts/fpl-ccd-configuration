@@ -35,12 +35,10 @@ export class JudicialMessage extends BasePage
         await this.whichApplication.selectOption('C2, 25 March 2021, 3:16pm');
         await this.sender.selectOption('CTSC');
         await this.recipient.selectOption('Allocated Judge');
-        await this.page.getByLabel('Recipient\'s email address').click();
         await this.recipientEmail.fill('Judge@email.com');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
         await this.clickContinue();
-        await this.message.click();
         await this.message.fill('message send to allocated Judge');
         await this.clickContinue();
 
