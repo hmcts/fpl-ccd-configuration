@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/fixtures";
+import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -17,12 +18,13 @@ test("Smoke Test @smoke-test @accessibility", async ({
   respondentDetails,
   welshLangRequirements,
   submitCase,
+  otherProceedings,
   internationalElement,
   courtServicesNeeded,
   c1WithSupplement,
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
 
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -35,8 +37,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
-
-    createCase.caseName();
+  await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -105,6 +106,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await welshLangRequirements.welshLanguageSmokeTest();
   await startApplication.welshLanguageReqUpdated();
 
+  // Other Proceedings
+  await startApplication.otherProceedingsNeeded();
+  await otherProceedings.otherProceedingsSmokeTest();
+
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
@@ -121,14 +126,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await submitCase.submitCaseSmokeTest();
 
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

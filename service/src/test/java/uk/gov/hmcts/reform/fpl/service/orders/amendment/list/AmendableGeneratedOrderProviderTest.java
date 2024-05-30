@@ -19,7 +19,7 @@ class AmendableGeneratedOrderProviderTest {
     void provideListItems() {
         CaseData caseData = mock(CaseData.class);
         List<Element<GeneratedOrder>> orders = wrapElements(mock(GeneratedOrder.class), mock(GeneratedOrder.class));
-        when(caseData.getOrderCollection()).thenReturn(orders);
+        when(caseData.getAllOrderCollections()).thenReturn(orders);
         assertThat(underTest.provideListItems(caseData)).isEqualTo(orders);
     }
 }

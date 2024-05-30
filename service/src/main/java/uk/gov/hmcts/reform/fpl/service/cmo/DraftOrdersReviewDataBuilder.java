@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
@@ -27,7 +28,10 @@ public class DraftOrdersReviewDataBuilder {
         data.put("draftCMOExists", "N");
 
         int counter = 1;
-        for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
+        List<Element<HearingOrder>> allOrdersForApproval = ordersBundle.getOrders(SEND_TO_JUDGE);
+        allOrdersForApproval.addAll(ordersBundle.getAllConfidentialOrdersByStatus(SEND_TO_JUDGE));
+
+        for (Element<HearingOrder> orderElement : allOrdersForApproval) {
 
             if (orderElement.getValue().getType().isCmo()) {
                 draftOrdersTitles.add(String.format("CMO%s", ordersBundle.getHearingId() != null
@@ -41,7 +45,8 @@ public class DraftOrdersReviewDataBuilder {
                 draftOrdersTitles.add(String.format("C21 Order%s", ordersBundle.getHearingId() != null
                     ? " - " + ordersBundle.getHearingName() : EMPTY));
                 data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
-                data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
+                data.put(String.format("draftOrder%dDocument", counter),
+                    defaultIfNull(orderElement.getValue().getOrder(), orderElement.getValue().getOrderConfidential()));
                 data.put(String.format("reviewDecision%d", counter),
                     ReviewDecision.builder().decision(CMOReviewOutcome.REVIEW_LATER).build());
                 counter++;

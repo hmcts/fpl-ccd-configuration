@@ -4,7 +4,7 @@ import { join } from "path";
 import { ApplicantDetails } from "./applicant-details";
 
 export class SubmitCase extends BasePage{
-  readonly page: Page;
+ // readonly page: Page;
   readonly declarationHeading: Locator;
   readonly statementAgree: Locator;
   readonly applicationSentHeading: Locator;
@@ -28,19 +28,19 @@ export class SubmitCase extends BasePage{
 
   async submitCaseSmokeTest() {
     //first page
-    await this.declarationHeading.isVisible();
-    await this.teamManagerNameText.isVisible();
+    await expect(this.declarationHeading).toBeVisible();
+    await expect(this.teamManagerNameText).toBeVisible();
     await this.statementAgree.check();
-    await this.paymentAmountLocator.isVisible();
+    await expect(this.paymentAmountLocator).toBeVisible();
     await this.clickSubmit();
     //second page
-    await this.checkYourAnswersHeader.isVisible();
-    await this.declarationHeading.isVisible();
-    await this.teamManagerNameText.isVisible();
-    await this.paymentAmountText.isVisible();
+    await expect(this.checkYourAnswersHeader).toBeVisible();
+    await expect(this.declarationHeading).toBeVisible();
+    await expect(this.teamManagerNameText).toBeVisible();
+    await expect(this.paymentAmountText).toBeVisible();
     await this.clickSubmit();
-    await this.applicationSentHeading.isVisible();
+    await expect(this.applicationSentHeading).toBeVisible();
     await this.closeReturnToCase.click();
-    await this.caseInfoHeading.isVisible();
+   // await expect(this.caseInfoHeading).toBeVisible();
   }
 }
