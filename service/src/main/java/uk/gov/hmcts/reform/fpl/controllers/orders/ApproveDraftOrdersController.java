@@ -43,6 +43,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency");
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 

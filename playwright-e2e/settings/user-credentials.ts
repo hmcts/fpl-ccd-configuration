@@ -14,7 +14,6 @@ export const newSwanseaLocalAuthorityUserOne = {
 export const systemUpdateUser = {
   email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
-
 };
 export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
@@ -30,6 +29,10 @@ export const judgeUser = {
 };
 export const judgeWalesUser = {
   email: 'judge-wales@ejudiciary.net',
+  password: judgePwd,
+};
+export const judgeMidlandsUser = {
+  email: 'judge-midlands@ejudiciary.net',
   password: judgePwd,
 };
 export const secondJudgeWalesUser = {

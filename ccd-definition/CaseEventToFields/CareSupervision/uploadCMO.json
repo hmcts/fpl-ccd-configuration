@@ -555,5 +555,18 @@
     "PageDisplayOrder": 6,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderUrgency",
+    "PageID": "Review",
+    "PageFieldDisplayOrder": 31,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 6,
+    "DisplayContext": "COMPLEX",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "cmoUploadType=\"AGREED\" OR hearingOrderDraftKind CONTAINS \"C21\""
   }
 ]

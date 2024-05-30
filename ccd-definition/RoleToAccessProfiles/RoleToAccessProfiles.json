@@ -373,6 +373,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "leadership-judge",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan"
@@ -453,13 +460,6 @@
     "RoleName": "idam:caseworker-publiclaw-magistrate",
     "ReadOnly": "Y",
     "AccessProfiles": "caseworker-publiclaw-magistrate"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "idam:caseworker-publiclaw-judiciary",
-    "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.Addit
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -141,6 +142,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     private CafcassNotificationService cafcassNotificationService;
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @Captor
     private ArgumentCaptor<NewDocumentData> newDocumentDataArgumentCaptor;
 
@@ -156,6 +159,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     void before() {
         given(caseData.getId()).willReturn(CASE_ID);
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(true);
     }
 
     @Test
@@ -469,7 +473,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyCtscAdminOnAdditionalApplicationsUploadWhenCtscIsEnabled() {
+    void shouldNotifyCtscAdminOnAdditionalApplicationsUploadWhenCtscIsEnabledAndWaEmailToggleOn() {
         CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
             .sendToCtsc("Yes")
@@ -490,6 +494,23 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
         );
     }
+
+    @Test
+    void shouldNotNotifyCtscAdminOnAdditionalApplicationsUploadWhenWaEmailToggleOff() {
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .sendToCtsc("Yes")
+            .build();
+
+        given(featureToggleService.isWATaskEmailsEnabled()).willReturn(false);
+
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+        verify(notificationService, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC, CTSC_INBOX, notifyData, caseData.getId()
+        );
+    }
+
 
     @Test
     void shouldNotNotifyHmctsAdminOnAdditionalApplicationsUpload() {
