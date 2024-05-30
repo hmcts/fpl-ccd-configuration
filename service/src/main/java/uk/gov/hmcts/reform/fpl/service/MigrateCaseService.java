@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -952,7 +953,8 @@ public class MigrateCaseService {
             .organisationName(orgName)
             .build();
 
-        var applicantCaseRole = caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole();
+        var applicantCaseRole = caseData.getOutsourcingPolicy() != null
+            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : CaseRole.EPSMANAGING.formattedName();
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(applicantCaseRole).build());
