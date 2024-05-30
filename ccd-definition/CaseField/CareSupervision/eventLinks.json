@@ -237,7 +237,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "listGatekeepingHearingLink",
     "FieldType": "Label",
-    "Label": "[List Gatekeeping Hearing](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/listGatekeepingHearing)",
+    "Label": "[List Initial Hearings](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/listGatekeepingHearing)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
