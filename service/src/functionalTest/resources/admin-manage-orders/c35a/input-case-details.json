@@ -9,18 +9,12 @@
   },
   "manageOrdersEpoRemovalAddress": {},
   "manageOrdersMultiSelectListForC43": [],
-  "submittedForm": {
-    "document_filename": "c110a.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2cbce40e-4ef1-4b64-9b7a-ddb8e80d93ff/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2cbce40e-4ef1-4b64-9b7a-ddb8e80d93ff"
-  },
   "familyManCaseNumber": "mockcaseID",
   "allocatedJudge": {
     "judgeTitle": "HER_HONOUR_JUDGE",
     "judgeLastName": "Moley",
     "judgeEmailAddress": "moley@example.com"
   },
-  "respondentsRefusedSelector": {},
   "childSelector": {
     "option9": [],
     "option7": [],
@@ -361,11 +355,6 @@
       "id": "b5e6c23c-5478-4c9f-9de8-1d4b8277b605"
     }
   ],
-  "orderPreview": {
-    "document_filename": "Preview order.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/112630ac-c8f2-4a0b-99bc-99cc48a262b9/binary",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/112630ac-c8f2-4a0b-99bc-99cc48a262b9"
-  },
   "caseName": "e2e test case",
   "others": {
     "firstOther": {
@@ -390,7 +379,6 @@
     "dx": "160010 Kingsway 7",
     "email": "solicitor@email.com"
   },
-  "appointedGuardianSelector": {},
   "caseLocalAuthorityName": "Swansea City Council",
   "orderDetailsSectionSubHeader": "Supervision order (C35A)",
   "manageOrdersCloseCase": "No",
@@ -565,19 +553,6 @@
         "assignee": "CAFCASS"
       },
       "id": "ff89945c-faf7-4425-962a-28f98ab50df9"
-    }
-  ],
-  "applicationDocuments": [
-    {
-      "value": {
-        "documentType": "THRESHOLD",
-        "document": {
-          "document_filename": "solicitor-role-tech.docx",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2cbce40e-4ef1-4b64-9b7a-ddb8e80d93ff/binary",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2cbce40e-4ef1-4b64-9b7a-ddb8e80d93ff"
-        }
-      },
-      "id": "681458fa-9c6b-4c25-a275-77b23a3375aa"
     }
   ]
 }
