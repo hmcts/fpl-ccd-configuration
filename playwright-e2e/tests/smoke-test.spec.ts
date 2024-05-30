@@ -61,6 +61,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
   await applicantDetails.colleagueDetailsNeeded();
+  console.log('On to next step - childs details');
   await startApplication.applicantDetailsHasBeenUpdated();
 
   // Child details
