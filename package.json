@@ -41,7 +41,7 @@
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "NODE_TLS_REJECT_UNAUTHORIZED=0 MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep '(?=.*)^(?!.*(@smoke-tests|@flaky|@nightlyOnly))' --reporter mocha-multi --verbose",
-    "test:functional-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test smoke-test.spec.ts --project=chromium --project=webkit --project=firefox",
+    "test:functional-nightly": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=chromium --project=webkit --project=firefox",
     "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:local": "yarn playwright test --headed --debug --project=preview --retries=1 --grep @local",
