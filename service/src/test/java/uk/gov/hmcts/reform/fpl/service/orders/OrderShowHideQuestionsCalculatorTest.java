@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C34A_CONTACT_WITH_A_CHIL
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C34B_AUTHORITY_TO_REFUSE_CONTACT;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER_DIGITAL;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C39_CHILD_ASSESSMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C42_FAMILY_ASSISTANCE_ORDER;
@@ -37,13 +36,10 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_S
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C63A_DECLARATION_OF_PARENTAGE;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.OTHER_ORDER;
 
 class OrderShowHideQuestionsCalculatorTest {
 
     private static final Set<Order> MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION = Set.of(
-        C37_EDUCATION_SUPERVISION_ORDER,
-        OTHER_ORDER
     );
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
@@ -105,13 +101,6 @@ class OrderShowHideQuestionsCalculatorTest {
     @ParameterizedTest(name = "Show hide map for {0}")
     @MethodSource("orderWithExpectedMap")
     void calculate(Order order, Map<String, String> expectedShowHideMap) {
-        assertThat(underTest.calculate(order))
-            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
-    }
-
-    @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("finalManualUploadOrders")
-    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
@@ -1088,60 +1077,6 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C63A_DECLARATION_OF_PARENTAGE, declarationOfParentage),
             Arguments.of(C42_FAMILY_ASSISTANCE_ORDER, familyAssistanceOrder)
         );
-    }
-
-    private static Stream<Arguments> finalManualUploadOrders() {
-        return MANUAL_ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
-            .map(order -> Arguments.of(order, Map.ofEntries(
-                Map.entry("partyAllowedContactsAndConditions", "NO"),
-                Map.entry("approver", "NO"),
-                Map.entry("previewOrder", "YES"),
-                Map.entry("orderTitle", "NO"),
-                Map.entry("furtherDirections", "NO"),
-                Map.entry("orderDetails", "NO"),
-                Map.entry("whichChildren", "YES"),
-                Map.entry("hearingDetails", "NO"),
-                Map.entry("linkApplication", "NO"),
-                Map.entry("approvalDate", "YES"),
-                Map.entry("approvalDateTime", "NO"),
-                Map.entry("dischargeOfCareDetails", "NO"),
-                Map.entry("childArrangementSpecificIssueProhibitedSteps", "NO"),
-                Map.entry("epoIncludePhrase", "NO"),
-                Map.entry("epoExpiryDate", "NO"),
-                Map.entry("isFinalOrder", "YES"),
-                Map.entry("epoTypeAndPreventRemoval", "NO"),
-                Map.entry("epoChildrenDescription", "NO"),
-                Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
-                Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-                Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-                Map.entry("cafcassJurisdictions", "NO"),
-                Map.entry("needSealing", "YES"),
-                Map.entry("uploadOrderFile", "YES"),
-                Map.entry("translationRequirements", "YES"),
-                Map.entry("closeCase", "YES"),
-                Map.entry("orderIsByConsent", "NO"),
-                Map.entry("appointedGuardian", "NO"),
-                Map.entry("respondentsRefused", "NO"),
-                Map.entry("refuseContactQuestions", "NO"),
-                Map.entry("whichOthers", "NO"),
-                Map.entry("parentResponsible", "NO"),
-                Map.entry("selectSingleChild", "NO"),
-                Map.entry("reasonForSecureAccommodation", "NO"),
-                Map.entry("childLegalRepresentation", "NO"),
-                Map.entry("orderJurisdiction", "NO"),
-                Map.entry("orderToAmend", "NO"),
-                Map.entry("uploadAmendedOrder", "NO"),
-                Map.entry("childPlacementApplications", "NO"),
-                Map.entry("childPlacementQuestions", "NO"),
-                Map.entry("childPlacementQuestionsForBlankOrder", "NO"),
-                Map.entry("manageOrdersChildAssessment", "NO"),
-                Map.entry("manageOrdersEducationSupervision", "NO"),
-                Map.entry("orderPlacedChildInCustody", "NO"),
-                Map.entry("manageOrdersVaryOrExtendSupervisionOrder", "NO"),
-                Map.entry("leaveToChangeChildSurname", "NO"),
-                Map.entry("declarationOfParentage", "NO"),
-                Map.entry("familyAssistanceOrder", "NO")
-            )));
     }
 
     private static Stream<Arguments> nonFinalManualUploadOrders() {
