@@ -17,7 +17,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "uk.gov.hmcts.reform.am.client",
     "uk.gov.hmcts.reform.ccd.client",
     "uk.gov.hmcts.reform.authorisation",
-    "uk.gov.hmcts.reform.document"
+    "uk.gov.hmcts.reform.document",
+    "uk.gov.hmcts.reform.ccd.document.am"
 })
 @EnableRetry
 @EnableAsync
