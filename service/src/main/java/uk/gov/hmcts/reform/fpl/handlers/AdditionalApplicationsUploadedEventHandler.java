@@ -137,7 +137,7 @@ public class AdditionalApplicationsUploadedEventHandler {
     @EventListener
     @Async
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
-        if(!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())) {
+        if (!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())) {
             log.info("Upload additional application - notification toggled off for court {}",
                 event.getCaseData().getCourt());
             return;

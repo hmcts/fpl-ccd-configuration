@@ -25,7 +25,7 @@ public class NewJudicialMessageEventHandler {
 
     @EventListener
     public void notifyJudicialMessageRecipient(NewJudicialMessageEvent event) {
-        if(!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())) {
+        if (!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())) {
             log.info("JudicialMessage - notification toggled off for court {}", event.getCaseData().getCourt());
             return;
         }
