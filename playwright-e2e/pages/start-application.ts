@@ -26,6 +26,7 @@ export class StartApplication {
   readonly applicantDetailsUpdated: Locator;
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
+  readonly otherProceedingsLink: Locator;
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
@@ -55,8 +56,10 @@ export class StartApplication {
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
+    this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
   }
 
   async groundsForTheApplication() {
@@ -108,6 +111,10 @@ export class StartApplication {
 
   async allocationProposalHasBeenUpdated() {
     await expect(this.allocationProposalFinished).toBeVisible();
+  }
+
+  async otherProceedingsNeeded() {
+    await this.otherProceedingsLink.click();
   }
 
   async welshLanguageReq() {

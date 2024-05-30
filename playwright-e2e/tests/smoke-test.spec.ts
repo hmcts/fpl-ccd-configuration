@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/fixtures";
+import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
 test("Smoke Test @smoke-test @accessibility", async ({
@@ -15,7 +16,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   submitCase,
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
 
   // 1. Sign in as local-authority user
   await signInPage.visit();
@@ -28,18 +29,17 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
-
-   createCase.caseName();
-   await createCase.createCase();
-   await createCase.submitCase(createCase.generatedCaseName);
-   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
-
+  await createCase.caseName();
+  await createCase.createCase();
+  await createCase.submitCase(createCase.generatedCaseName);
+  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+  
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Hearing urgency
-  await expect(startApplication.hearingUrgencyLink).toBeVisible();
+  await startApplication.hearingUrgencyLink.isVisible();
   await startApplication.hearingUrgencyLink.click();
   await hearingUrgency.whenDoYouNeedHearingRadio("Within 18 days");
   await hearingUrgency.whatTypeOfHearingDoYouNeed("Standard case management");
@@ -48,14 +48,29 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await hearingUrgency.needAHearingWithReducedNoise("No");
   await hearingUrgency.respondentsAwareOfProceedings("No");
   await hearingUrgency.continueButton.click();
-  await expect(hearingUrgency.checkYourAnswers).toBeVisible();
+  await hearingUrgency.checkYourAnswers.isVisible();
   await hearingUrgency.saveAndContinueButton.click();
-  await expect(startApplication.addApplicationDetailsHeading).toBeVisible();
+  await startApplication.addApplicationDetailsHeading.isVisible();
 
   // Grounds for the application
   await startApplication.groundsForTheApplication();
-  await expect(groundsForTheApplication.groundsForTheApplicationHeading).toBeVisible();
+  await groundsForTheApplication.groundsForTheApplicationHeading.isVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
+  await startApplication.groundsForTheApplicationHasBeenUpdated();
+
+  // Risk and harm to children
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+
+  // Factors affecting parenting
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+
+  // Add application documents
+  await startApplication.addApplicationDetailsHeading.isVisible();
+  await startApplication.addApplicationDocuments();
+  await addApplicationDocuments.uploadDocumentSmokeTest();
+  await startApplication.addApplicationDocumentsInProgress();
 
   // Applicant Details
   await startApplication.applicantDetails();
@@ -78,19 +93,28 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
+
+  // Other Proceedings
+//   await startApplication.otherProceedingsNeeded();
+//   await otherProceedings.otherProceedingsSmokeTest();
+
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
 
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -237,11 +238,31 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
                 .organisation(newOrganisation)
                 .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void updateOutsourcingPolicyToThirdParty() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                CaseRole.EPSMANAGING.formattedName());
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(CaseRole.EPSMANAGING.formattedName())
                 .build());
         }
 
