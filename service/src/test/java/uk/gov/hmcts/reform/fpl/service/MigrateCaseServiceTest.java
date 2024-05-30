@@ -238,7 +238,8 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
                 .organisation(newOrganisation)
@@ -247,7 +248,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void updateOutsourcingPolicyToThirdPartyIfNull() {
+        void updateOutsourcingPolicyToThirdParty() {
             when(organisationService.findOrganisation(newOrgId))
                 .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
                     .name(newOrgName)
@@ -256,7 +257,8 @@ class MigrateCaseServiceTest {
                 .id(1L)
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                CaseRole.EPSMANAGING.formattedName());
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
                 .organisation(newOrganisation)

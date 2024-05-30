@@ -943,7 +943,8 @@ public class MigrateCaseService {
         return Map.of("grounds", updatedGrounds);
     }
 
-    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId) {
+    public Map<String, OrganisationPolicy> changeThirdPartyStandaloneApplicant(CaseData caseData, String orgId,
+                                                                               String applicantCaseRole) {
         String orgName = organisationService.findOrganisation(orgId)
             .map(uk.gov.hmcts.reform.rd.model.Organisation::getName)
             .orElseThrow();
@@ -953,8 +954,8 @@ public class MigrateCaseService {
             .organisationName(orgName)
             .build();
 
-        var applicantCaseRole = caseData.getOutsourcingPolicy() != null
-            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : CaseRole.EPSMANAGING.formattedName();
+        applicantCaseRole = caseData.getOutsourcingPolicy() != null
+            ? caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole() : applicantCaseRole;
 
         return Map.of("outsourcingPolicy", OrganisationPolicy.builder().organisation(newOrganisation)
             .orgPolicyCaseAssignedRole(applicantCaseRole).build());

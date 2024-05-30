@@ -45,53 +45,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @MockBean
     private OrganisationService organisationService;
 
-    @Nested
-    class Dfpl2284 {
-
-        final CaseData caseData = CaseData.builder()
-            .id(1L)
-            .outsourcingPolicy(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole("[SOLICITORA]")
-                .build())
-            .build();
-
-        @BeforeEach
-        void beforeEach() {
-            when(organisationService.findOrganisation(any())).thenReturn(Optional.of(Organisation.builder()
-                    .name("Test organisation")
-                    .organisationIdentifier("TEST")
-                .build()));
-        }
-
-        @Test
-        void shouldPerformRoleMigrationWhenToggleHasOneUser() {
-            when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("abc-def");
-            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
-
-            verify(caseAccessService).revokeCaseRoleFromUser(1L,"abc-def", CaseRole.SOLICITORA);
-            verifyNoMoreInteractions(caseAccessService);
-        }
-
-        @Test
-        void shouldPerformRoleMigrationWhenToggleHasMultipleUsers() {
-            when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("123;456;789");
-            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
-
-            verify(caseAccessService).revokeCaseRoleFromUser(1L,"123", CaseRole.SOLICITORA);
-            verify(caseAccessService).revokeCaseRoleFromUser(1L,"456", CaseRole.SOLICITORA);
-            verify(caseAccessService).revokeCaseRoleFromUser(1L,"789", CaseRole.SOLICITORA);
-            verifyNoMoreInteractions(caseAccessService);
-        }
-
-        @Test
-        void shouldNotPerformRoleMigrationWhenToggledOff() {
-            when(featureToggleService.getUserIdsToRemoveRolesFrom()).thenReturn("");
-            postAboutToSubmitEvent(buildCaseDetails(caseData, "DFPL-2284"));
-
-            verifyNoInteractions(caseAccessService);
-        }
-    }
-
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
         CaseData caseData = CaseData.builder().build();
