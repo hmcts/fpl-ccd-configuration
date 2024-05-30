@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageContentProvi
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -60,5 +61,27 @@ class NewJudicialMessageEventHandlerTest {
             recipient,
             expectedParameters,
             caseData.getId());
+    }
+
+    @Test
+    void shouldNotNotifyJudicialMessageRecipientWhenToggledOff() {
+        String recipient = "David@fpla.com";
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .sender("Paul@fpla.com")
+            .recipient(recipient)
+            .build();
+
+        CaseData caseData = caseData();
+
+        final NewJudicialMessageTemplate expectedParameters = NewJudicialMessageTemplate.builder().build();
+
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
+
+        newJudicialMessageEventHandler.notifyJudicialMessageRecipient(
+            new NewJudicialMessageEvent(caseData, judicialMessage)
+        );
+
+        verifyNoInteractions(notificationService);
     }
 }

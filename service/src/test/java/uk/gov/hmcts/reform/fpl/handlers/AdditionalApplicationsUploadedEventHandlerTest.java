@@ -713,6 +713,27 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         }
     }
 
+    @Test
+    void shouldNotNotifyCourtAdminIfToggledOff() {
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .sendToCtsc("Yes")
+            .build();
+
+        given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
+        given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+        verifyNoInteractions(notificationService);
+    }
+
     private static Stream<Arguments> applicationDataParams() {
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .document(C2_DOCUMENT)
