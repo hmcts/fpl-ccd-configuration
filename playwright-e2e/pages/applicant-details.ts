@@ -64,23 +64,19 @@ export class ApplicantDetails extends BasePage{
     // Issue cannot be replicated manually.
     const warningIsVisible: boolean = await this.problemErrorMessage.isVisible();
     if (warningIsVisible) {
-      console.log('Warning message visible - click continue to work around exui error message');
       await this.clickContinue();
     
       // Ensure problemErrorMessage is still visible before proceeding
       const problemErrorVisible: boolean = await this.problemErrorMessage.isVisible();
-      console.log(problemErrorVisible)
       if (problemErrorVisible) {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
       } 
       else {
-        console.error('Problem error message is no longer visible when expected');
         await this.checkYourAnsAndSubmit();
       }
     } 
     else {
-      console.log('No warning message - proceed as usual');
       await this.checkYourAnsAndSubmit();
     }
   }

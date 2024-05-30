@@ -46,6 +46,8 @@ export class RespondentDetails extends BasePage {
     await this.dobMonth.fill('11');
     await this.dobYear.fill('2001');
     await this.gender.selectOption('1: Male');
+    this.page.pause();
+    await this.currentAddress.getByLabel('No').click();
     await this.currentAddress.getByLabel('No').check();
     await this.addressNotKnownReason.selectOption('2: Person deceased');
     await this.telephone.fill('01234567890');

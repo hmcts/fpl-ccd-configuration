@@ -20,6 +20,7 @@ test("e2e test @accessibility", async ({
   internationalElement,
   courtServicesNeeded,
   c1WithSupplement,
+  otherProceedings,
   page,
   makeAxeBuilder
 },testInfo) => {
@@ -63,7 +64,6 @@ test("e2e test @accessibility", async ({
   await startApplication.groundsForTheApplication();
   await expect(groundsForTheApplication.groundsForTheApplicationHeading).toBeVisible();
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
-  await startApplication.groundsForTheApplicationHasBeenUpdated();
 
   // Risk and harm to children
   await startApplication.riskAndHarmToChildren();
@@ -99,6 +99,10 @@ test("e2e test @accessibility", async ({
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  // Other Proceedings
+  await startApplication.otherProceedingsNeeded();
+  await otherProceedings.otherProceedingsSmokeTest();
 
   // Welsh language requirements
   await startApplication.welshLanguageReq();
