@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -33,7 +32,6 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2284", this::run2284,
         "DFPL-2331", this::run2331
     );
 
@@ -59,20 +57,6 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Logging migration on case {}", caseDetails.getId());
-    }
-
-    private void run2284(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(
-            migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails), "5ZZ1FJX"));
-
-        // Remove the user roles
-        String idsToRemove = featureToggleService.getUserIdsToRemoveRolesFrom();
-        if (!idsToRemove.isBlank()) {
-            Arrays.stream(idsToRemove.split(";")).forEach(id -> {
-                caseAccessService.revokeCaseRoleFromUser(
-                    caseDetails.getId(), id, CaseRole.SOLICITORA);
-            });
-        }
     }
 
     private void run2331(CaseDetails caseDetails) {
