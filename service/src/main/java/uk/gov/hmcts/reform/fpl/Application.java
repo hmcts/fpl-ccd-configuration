@@ -6,9 +6,11 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl", "uk.gov.hmcts.reform.idam.client",
-    "uk.gov.hmcts.reform.document"})
+@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl"},
+    scanBasePackageClasses = {DocumentUploadClientApi.class, IdamClient.class})
 @EnableFeignClients(basePackages = {
     "uk.gov.hmcts.reform.idam.client",
     "uk.gov.hmcts.reform.rd.client",
@@ -18,9 +20,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "uk.gov.hmcts.reform.am.client",
     "uk.gov.hmcts.reform.ccd.client",
     "uk.gov.hmcts.reform.authorisation",
-    "uk.gov.hmcts.reform.document",
-    "uk.gov.hmcts.reform.ccd.document.am"
-})
+    "uk.gov.hmcts.reform.ccd.document.am.feign"})
 @EnableRetry
 @EnableAsync
 @EnableCaching
