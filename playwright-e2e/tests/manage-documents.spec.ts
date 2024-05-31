@@ -20,6 +20,7 @@ test.describe('Manage Documents', () => {
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
+        await manageDocuments.gotoNextStep('Manage Documents');
         await manageDocuments.uploadDocuments('Court correspondence');
 
         // Check CFV
@@ -49,6 +50,7 @@ test.describe('Manage Documents', () => {
             await expect(page.getByText('Review Correspondence')).toHaveCount(0);
         }
     });
+
     test('LA uploads various documents visble in CFV', async ({ signInPage, manageDocuments }) => {
         caseName = 'LA uploads various documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
@@ -59,6 +61,7 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements');
     });
+
     test('LA uploads confidential documents visible in CFV ', async ({ signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads various documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
@@ -68,6 +71,7 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
     });
+
     test('HMCTS uploads confidential documents visible in CFV ', async ({ signInPage, manageDocuments }) => {
         caseName = 'HMCTS uploads variuos documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
@@ -80,6 +84,7 @@ test.describe('Manage Documents', () => {
         await manageDocuments.clickSignOut();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
     });
+
     test('LA uploads correspodence documents visible in correct folder ', async ({ signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads correspondence documents visible in correct order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
@@ -92,6 +97,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login('solicitor1@solicitors.uk', 'Password12');
         await signInPage.login(CTSCUser.email, CTSCUser.password);
     });
+
     test('LA removes document ', async ({ page, signInPage, manageDocuments }) => {
         caseName = 'LA removes document ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
@@ -102,6 +108,7 @@ test.describe('Manage Documents', () => {
         await page.getByLabel('Uploaded Document').selectOption('1: hearingDocuments.posStmtList###3ad0ca08-1c4c-48');
         await page.getByLabel('There is a mistake on the').check();
     });
+    
     test('CTSC user can move document between folder ', async ({ page, signInPage, manageDocuments }) => {
         caseName = 'CTSC moved documents between folder ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);

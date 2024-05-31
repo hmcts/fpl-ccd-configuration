@@ -21,6 +21,7 @@ export class ManageDocuments extends BasePage {
     readonly moreDocumentsOptions: Locator;
     readonly changeFolder: Locator;
     readonly threshold: Locator;
+    
 
     constructor(page: Page) {
         super(page);
