@@ -24,6 +24,7 @@ export class StartApplication {
   readonly applicantDetailsUpdated: Locator;
   readonly welshLanguageRequirements: Locator;
   readonly welshLanguageReqFinished: Locator;
+  readonly otherProceedingsLink: Locator;
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
@@ -39,13 +40,12 @@ export class StartApplication {
     this.groundsForTheApplicationHeading = page.getByRole("heading", { name: "Grounds for the application", });
     this.groundsForTheApplicationHasBeenUpdatedFinished = page.locator('xpath=//*[@id="taskListLabel"]/dt/ccd-markdown/div/markdown/div/p[4]/img',);
     this.riskAndHarmToChildrenLink = page.getByRole("link", { name: "Risk and harm to children", });
-    this.allocationProposalFinished = page.locator('p:has(a[text="Allocation proposal"]) > img[title="Finished"]');
+    this.allocationProposalFinished = page.locator('p').filter({ hasText: 'Allocation proposal' }).getByRole('img', { name: 'Finished' });
     this.allocationProposalHeading = page.getByRole("group", { name: "Allocation proposal" }).getByRole("heading");
     this.allocationProposalLink = page.getByRole("link", { name: "Allocation proposal", });
     this.uploadDocumentsLink = page.getByRole("link", { name: "Upload documents", });
     this.addApplicationDocsHeading = page.getByRole("heading", { name: "Add application documents", });
-      this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img',{name:'Finished'})
-    //this.upLoadDocsInProgress = page.locator('p:has(a[text="Upload documents"]) > img[title="Finished"]');
+    this.upLoadDocsInProgress = page.locator('p').filter({ hasText: 'Upload documents' }).getByRole('img',{name:'Finished'})
     this.applicantDetailsLink = page.getByRole('link', { name: 'Applicant\'s details' });
     this.respondentsDetailsLink = page.getByRole('link', { name: 'Respondents\' details' });
     this.applicantDetailsUpdated = page.locator('p').filter({ hasText: 'Applicant\'s details' }).getByRole('img', { name: 'Information added' });
@@ -54,15 +54,12 @@ export class StartApplication {
     this.childDetailsUpdated = page.locator('p').filter({ hasText: 'Child\'s Details' }).getByRole('img', { name: 'Information added' });
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
-
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
-    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' });
-
-
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed' });
+    this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
+    this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
 
   }
-
 
   async groundsForTheApplication() {
     expect(await this.groundsForTheApplicationLink).toBeVisible();
@@ -117,7 +114,11 @@ export class StartApplication {
   }
 
   async allocationProposalHasBeenUpdated() {
-    await expect(this.allocationProposalFinished).toBeVisible;
+    await expect(this.allocationProposalFinished).toBeVisible();
+  }
+
+  async otherProceedingsNeeded() {
+    await this.otherProceedingsLink.click();
   }
 
   async welshLanguageReq() {
