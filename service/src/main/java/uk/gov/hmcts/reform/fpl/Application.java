@@ -7,7 +7,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl", "uk.gov.hmcts.reform.idam.client"})
+@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.fpl", "uk.gov.hmcts.reform.idam.client",
+    "uk.gov.hmcts.reform.document"})
 @EnableFeignClients(basePackages = {
     "uk.gov.hmcts.reform.idam.client",
     "uk.gov.hmcts.reform.rd.client",
