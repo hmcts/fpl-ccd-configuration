@@ -1,8 +1,8 @@
 import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, privateSolicitorOrgUser } from '../settings/user-credentials';
-import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
-import caseWithResSolicitor from '../caseData/caseWithRespondentSolicitor.json' assert { type: 'json' };
 import { expect } from '@playwright/test'
 import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 
@@ -10,6 +10,9 @@ test.describe('Manage Documents', () => {
     const dateTime = new Date().toISOString();
     let caseNumber: string;
     let caseName: string;
+    
+    const caseData = require('../caseData/mandatorySubmissionFields.json');
+    const caseWithResSolicitor = require('../caseData/caseWithRespondentSolicitor.json');
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
