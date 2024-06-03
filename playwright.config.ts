@@ -49,11 +49,11 @@ export default defineConfig({
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
     },
-    {
-      name: "preview",
-      use: { ...devices["Desktop Chrome"] },
-      retries: 3,
-    },
+      {
+          name: "preview",
+          retries: 2,
+          use: {...devices["Desktop Chrome"]},
+      },
 
     /* Test against mobile viewports. */
     // {
