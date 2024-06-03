@@ -51,7 +51,7 @@ export default defineConfig({
     },
       {
           name: "preview",
-          retries: 2,
+          retries: 1,
           use: {...devices["Desktop Chrome"]},
       },
 
