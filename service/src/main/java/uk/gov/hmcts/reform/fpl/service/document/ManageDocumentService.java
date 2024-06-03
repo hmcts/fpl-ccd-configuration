@@ -467,6 +467,16 @@ public class ManageDocumentService {
                                                     Map<String, List<Element>> fieldNameToListOfElement) {
         final DocumentUploaderType uploaderType = getUploaderType(caseData);
         final List<Pair<String, String>> ret = new ArrayList<>();
+
+        Set<CaseRole> currentUploaderCaseRoles;
+        if (uploaderType != HMCTS && uploaderType != CAFCASS) {
+            currentUploaderCaseRoles = Optional
+                .ofNullable(userService.getCaseRoles(caseData.getId()))
+                .orElse(Set.of());
+        } else {
+            currentUploaderCaseRoles = Set.of();
+        }
+
         for (Map.Entry<String, List<Element>> entrySet : fieldNameToListOfElement.entrySet()) {
             String fieldName = entrySet.getKey();
             for (Element e : entrySet.getValue()) {
@@ -476,9 +486,6 @@ public class ManageDocumentService {
                 if (uploaderType != HMCTS && uploaderType != CAFCASS) {
                     List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
                         ? new ArrayList<>() : wd.getUploaderCaseRoles();
-                    final Set<CaseRole> currentUploaderCaseRoles = Optional
-                        .ofNullable(userService.getCaseRoles(caseData.getId()))
-                        .orElse(Set.of());
 
                     if (!docCaseRoles.stream().filter(cr -> currentUploaderCaseRoles.contains(cr)).findAny()
                         .isPresent()) {
