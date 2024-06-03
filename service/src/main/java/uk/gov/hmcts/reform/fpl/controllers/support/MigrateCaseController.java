@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
@@ -32,7 +31,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2339", this::run2339
+        "DFPL-2331", this::run2331
     );
 
     @PostMapping("/about-to-submit")
@@ -59,13 +58,12 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2339(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2339";
-        final long expectedCaseId = 1706780490728419L;
-        final String orgId = "CPYYWBZ";
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+    private void run2331(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2331";
+        final long expectedCaseId = 1711533734054404L;
 
-        caseDetails.getData().putAll(migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails),
-            orgId, CaseRole.EPSMANAGING.formattedName()));
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeNamesFromOtherProceedings(getCaseData(caseDetails), migrationId));
     }
 }
