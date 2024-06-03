@@ -22,6 +22,7 @@ import { RespondentDetails } from "../pages/respondent-details";
 import { LegalCounsel } from "../pages/legal-counsel";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
+import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
 import { ApproveOrders } from "../pages/approve-orders";
@@ -44,9 +45,9 @@ type CreateFixtures = {
   uploadDraftOrders: UploadDraftOrders;
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
-  allocationProposal : AllocationProposal;
+  allocationProposal: AllocationProposal;
   additionalApplications: AdditionalApplications;
-  addApplicationDocuments : AddApplicationDocuments;
+  addApplicationDocuments: AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
@@ -55,6 +56,7 @@ type CreateFixtures = {
   respondentDetails: RespondentDetails;
   legalCounsel: LegalCounsel;
   welshLangRequirements: WelshLangRequirements;
+  otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
   approveOrders: ApproveOrders;
@@ -112,7 +114,7 @@ export const test = base.extend<CreateFixtures>({
 
   uploadDraftOrders: async ({ page }, use) => {
     await use(new UploadDraftOrders(page));
-   },
+  },
 
   manageDocuments: async ({ page }, use) => {
     await use(new ManageDocuments(page));
@@ -158,6 +160,10 @@ export const test = base.extend<CreateFixtures>({
     await use(new WelshLangRequirements(page));
   },
 
+  otherProceedings: async ({ page }, use) => {
+    await use(new OtherProceedings(page));
+  },
+  
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
