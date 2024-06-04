@@ -65,8 +65,8 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2323(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2323";
-        //final long expectedCaseId = 1665658311601974L;
-        final long expectedCaseId = 1698663538904244L;
+        final long expectedCaseId = 1665658311601974L;
+
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
         CaseData caseData = getCaseData(caseDetails);
 
