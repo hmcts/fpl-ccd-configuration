@@ -26,12 +26,12 @@ export class SubmitCase extends BasePage{
     //first page
     await expect(this.declarationHeading).toHaveText('Declaration');
     await this.statementAgree.check();
-    await expect(this.paymentAmountLocator).toHaveText('£');
+    await expect(this.paymentAmountLocator).toHaveText('£2,437.00');
     await this.clickSubmit();
     //second page
     await expect(this.checkYourAnswersHeader).toHaveText('Check your answers');
     await expect(this.declarationHeading).toHaveText('Declaration');
-    await expect(this.paymentAmountText).toHaveText('£');
+    await expect(this.paymentAmountText).toHaveText('£2,437.00');
     await this.clickSubmit();
     await expect(this.applicationSentHeading).toHaveText('Application sent');
     await this.closeReturnToCase.click();
