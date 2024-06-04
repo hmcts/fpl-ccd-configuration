@@ -18,13 +18,10 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import javax.annotation.Resource;
-
-import static java.util.Collections.emptyMap;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 

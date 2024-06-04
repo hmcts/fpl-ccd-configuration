@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreatio
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -61,7 +60,6 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
