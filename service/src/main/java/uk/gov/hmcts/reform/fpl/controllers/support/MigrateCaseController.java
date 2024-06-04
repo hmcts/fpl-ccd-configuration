@@ -11,15 +11,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -34,8 +31,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2284", this::run2284,
-        "DFPL-2299", this::run2299
+        "DFPL-2331", this::run2331
     );
 
     @PostMapping("/about-to-submit")
@@ -62,27 +58,12 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2284(CaseDetails caseDetails) {
-        caseDetails.getData().putAll(
-            migrateCaseService.changeThirdPartyStandaloneApplicant(getCaseData(caseDetails), "5ZZ1FJX"));
+    private void run2331(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2331";
+        final long expectedCaseId = 1711533734054404L;
 
-        // Remove the user roles
-        String idsToRemove = featureToggleService.getUserIdsToRemoveRolesFrom();
-        if (!idsToRemove.isBlank()) {
-            Arrays.stream(idsToRemove.split(";")).forEach(id -> {
-                caseAccessService.revokeCaseRoleFromUser(
-                    caseDetails.getId(), id, CaseRole.SOLICITORA);
-            });
-        }
-    }
-
-    private void run2299(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2299";
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1712908356292590L, migrationId);
-        migrateCaseService.verifyUrgentDirectionsOrderExists(getCaseData(caseDetails), migrationId,
-            UUID.fromString("78dee4d9-f542-442b-a36a-c83b037e6f27"));
-
-        caseDetails.getData().remove("urgentDirectionsOrder");
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService
+            .removeNamesFromOtherProceedings(getCaseData(caseDetails), migrationId));
     }
 }
