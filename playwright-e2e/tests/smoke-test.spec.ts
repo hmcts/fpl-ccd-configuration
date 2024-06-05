@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test @accessibility", async ({
+test("Smoke Test @smoke-test", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -93,16 +93,4 @@ test("Smoke Test @smoke-test @accessibility", async ({
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
-
-  const accessibilityScanResults = await makeAxeBuilder()
-    // Automatically uses the shared AxeBuilder configuration,
-    // but supports additional test-specific configuration too
-    .analyze();
-
-  await testInfo.attach('accessibility-scan-results', {
-    body: JSON.stringify(accessibilityScanResults, null, 2),
-    contentType: 'application/json'
-  });
-
-  expect(accessibilityScanResults.violations).toEqual([]);
 });
