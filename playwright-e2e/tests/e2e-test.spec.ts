@@ -9,12 +9,19 @@ test("Smoke Test @smoke-test @accessibility", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
+  riskAndHarmToChildren,
+  factorsAffectingParenting,
   applicantDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
   respondentDetails,
+  welshLangRequirements,
   submitCase,
+  otherProceedings,
+  internationalElement,
+  courtServicesNeeded,
+  c1WithSupplement,
   page,
   makeAxeBuilder
 }, testInfo) => {
@@ -59,6 +66,14 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
+  // Risk and harm to children
+  await startApplication.riskAndHarmToChildren();
+  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
+
+  // Factors affecting parenting
+  await factorsAffectingParenting.addFactorsAffectingParenting();
+  await startApplication.addApplicationDetailsHeading.isVisible();
+
   // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
@@ -85,6 +100,26 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  // Welsh language requirements
+  await startApplication.welshLanguageReq();
+  await welshLangRequirements.welshLanguageSmokeTest();
+  await startApplication.welshLanguageReqUpdated();
+
+  // Other Proceedings
+  await startApplication.otherProceedingsNeeded();
+  await otherProceedings.otherProceedingsSmokeTest();
+
+  // International element
+  await startApplication.internationalElementReqUpdated();
+  await internationalElement.internationalElementSmokeTest();
+
+  // Court Services Needed
+  await startApplication.courtServicesNeededReqUpdated();
+  await courtServicesNeeded.CourtServicesSmoketest();
+
+  // C1 With Supplement
+  await c1WithSupplement.c1WithSupplementSmokeTest();
 
   // Submit the case
   await startApplication.submitCase();
