@@ -1,8 +1,8 @@
-import { test, expect } from "../fixtures/fixtures";
-import { BasePage } from "../pages/base-page";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
+import { test, expect } from "../../fixtures/fixtures";
+import { BasePage } from "../../pages/base-page";
+import { newSwanseaLocalAuthorityUserOne } from "../../settings/user-credentials";
 
-test("E2E Test @accessibility", async ({
+test("e2e test: Submit basic case @e2e-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
