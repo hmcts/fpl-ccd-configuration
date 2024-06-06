@@ -370,5 +370,14 @@
     "FieldType": "Text",
     "ElementLabel": "Others notified",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "noticeOfHearingVacated",
+    "FieldType": "Document",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
 ]

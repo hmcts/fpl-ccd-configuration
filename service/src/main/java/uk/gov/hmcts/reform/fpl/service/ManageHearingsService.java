@@ -715,6 +715,9 @@ public class ManageHearingsService {
             updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
         }
 
+        if (!YES.equals(housekeepEventData.getHearingHousekeepOptions())) {
+            buildNoticeOfHearingVacated(caseData, cancelledHearing.getValue());
+        }
         return cancelledHearing;
     }
 
@@ -783,9 +786,5 @@ public class ManageHearingsService {
             NOTICE_OF_HEARING_VACATED.getDocumentTitle(time.now().toLocalDate()));
 
         hearingBooking.setNoticeOfHearingVacated(DocumentReference.buildFromDocument(document));
-
-        Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
-            hearingBooking::setTranslationRequirements
-        );
     }
 }

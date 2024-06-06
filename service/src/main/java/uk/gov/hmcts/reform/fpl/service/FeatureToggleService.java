@@ -82,7 +82,8 @@ public class FeatureToggleService {
     }
 
     public boolean isSecureDocstoreEnabled() {
-        return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+//        return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+        return false;
     }
 
     public String getUserIdsToRemoveRolesFrom() {
