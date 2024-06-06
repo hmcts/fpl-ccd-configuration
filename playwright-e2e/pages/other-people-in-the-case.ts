@@ -67,6 +67,10 @@ export class OtherPeopleInCase extends BasePage {
 
   async continueAndCheck(){
     await this.clickContinue();
+    await this.page.getByText("John Doe", { exact: true });
+    await this.page.getByText("1990", { exact: true });
+    await this.page.getByText("London", { exact: true });
+    await this.page.getByText("0123456789", { exact: true });
     await this.checkYourAnsAndSubmit();
   }
 }
