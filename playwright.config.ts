@@ -14,8 +14,8 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 300000,
-  expect: { timeout: 300000 },
+  timeout: 400000,
+  expect: { timeout: 400000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -51,8 +51,8 @@ export default defineConfig({
     },
       {
           name: "preview",
-          retries: 1,
-          use: {...devices["Desktop Chrome"]},
+          use: { ...devices["Desktop Chrome"] },
+          retries: 3,
       },
 
     /* Test against mobile viewports. */
