@@ -6,6 +6,17 @@
     "TabID": "RefusedOrdersTab",
     "TabLabel": "Refused Orders",
     "TabDisplayOrder": 12,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "RefusedOrdersTab",
+    "TabLabel": "Refused Orders",
+    "TabDisplayOrder": 12,
     "CaseFieldID": "refusedOrdersTabHeading",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "refusedHearingOrders!=\"\" OR refusedHearingOrdersCTSC!=\"\" OR refusedHearingOrdersLA!=\"\" OR refusedHearingOrdersResp0!=\"\" OR refusedHearingOrdersResp1!=\"\" OR refusedHearingOrdersResp2!=\"\" OR refusedHearingOrdersResp3!=\"\" OR refusedHearingOrdersResp4!=\"\" OR refusedHearingOrdersResp5!=\"\" OR refusedHearingOrdersResp6!=\"\" OR refusedHearingOrdersResp7!=\"\" OR refusedHearingOrdersResp8!=\"\" OR refusedHearingOrdersResp9!=\"\" OR refusedHearingOrdersChild0!=\"\" OR refusedHearingOrdersChild1!=\"\" OR refusedHearingOrdersChild2!=\"\" OR refusedHearingOrdersChild3!=\"\" OR refusedHearingOrdersChild4!=\"\" OR refusedHearingOrdersChild5!=\"\" OR refusedHearingOrdersChild6!=\"\" OR refusedHearingOrdersChild7!=\"\" OR refusedHearingOrdersChild8!=\"\" OR refusedHearingOrdersChild9!=\"\" OR refusedHearingOrdersChild10!=\"\" OR refusedHearingOrdersChild11!=\"\" OR refusedHearingOrdersChild12!=\"\" OR refusedHearingOrdersChild13!=\"\" OR refusedHearingOrdersChild14!=\"\""
