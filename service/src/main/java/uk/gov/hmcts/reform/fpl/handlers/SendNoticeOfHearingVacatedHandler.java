@@ -7,11 +7,16 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.HearingVacatedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -33,6 +38,7 @@ public class SendNoticeOfHearingVacatedHandler {
 
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
     private final RepresentativeNotificationService representativeNotificationService;
+    private final SendDocumentService sendDocumentService;
 
     @Async
     @EventListener
@@ -60,6 +66,17 @@ public class SendNoticeOfHearingVacatedHandler {
                 servingPreference, VACATE_HEARING, notifyData, caseData
             );
         });
+    }
+
+    @Async
+    @EventListener
+    public void sendNoticeOfHearingByPost(final SendNoticeOfHearingVacated event) {
+        final CaseData caseData = event.getCaseData();
+        final DocumentReference noticeOfHearingVacated = event.getVacatedHearing().getNoticeOfHearingVacated();
+
+        final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
+
+        sendDocumentService.sendDocuments(caseData, List.of(noticeOfHearingVacated), recipients);
     }
 }
 

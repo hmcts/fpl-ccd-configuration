@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -53,9 +54,11 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING_VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_LATER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingReListOption.RE_LIST_NOW;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
@@ -768,5 +771,21 @@ public class ManageHearingsService {
             .map(Element::getValue)
             .map(HearingBooking::toLabel)
             .collect(Collectors.joining("\n"));
+    }
+
+    public void buildNoticeOfHearingVacated(CaseData caseData, HearingBooking hearingBooking) {
+        DocmosisNoticeOfHearingVacated notice =
+            noticeOfHearingGenerationService.getHearingVacatedTemplateData(caseData, hearingBooking,
+                caseData.getHearingReListOption() == RE_LIST_NOW);
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
+            NOTICE_OF_HEARING_VACATED);
+        Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
+            NOTICE_OF_HEARING_VACATED.getDocumentTitle(time.now().toLocalDate()));
+
+        hearingBooking.setNoticeOfHearingVacated(DocumentReference.buildFromDocument(document));
+
+        Optional.ofNullable(caseData.getSendNoticeOfHearingTranslationRequirements()).ifPresent(
+            hearingBooking::setTranslationRequirements
+        );
     }
 }
