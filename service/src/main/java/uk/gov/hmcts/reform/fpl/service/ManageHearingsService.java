@@ -358,6 +358,12 @@ public class ManageHearingsService {
         }
     }
 
+    public void buildNoticeOfHearingVacatedIfYes(CaseData caseData, HearingBooking hearingBooking) {
+        if (!YES.equals(caseData.getManageHearingHousekeepEventData().getHearingHousekeepOptions())) {
+            buildNoticeOfHearingVacated(caseData, hearingBooking);
+        }
+    }
+
     public void buildNoticeOfHearing(CaseData caseData, HearingBooking hearingBooking) {
         DocmosisNoticeOfHearing notice = noticeOfHearingGenerationService.getTemplateData(caseData, hearingBooking);
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(notice,
@@ -715,9 +721,6 @@ public class ManageHearingsService {
             updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
         }
 
-        if (!YES.equals(housekeepEventData.getHearingHousekeepOptions())) {
-            buildNoticeOfHearingVacated(caseData, cancelledHearing.getValue());
-        }
         return cancelledHearing;
     }
 
