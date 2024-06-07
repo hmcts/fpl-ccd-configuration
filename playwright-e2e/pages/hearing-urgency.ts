@@ -11,7 +11,6 @@ export class HearingUrgency {
   readonly continueButton: Locator;
   readonly checkYourAnswers: Locator;
   readonly saveAndContinueButton: Locator;
-
   readonly doYouNeedAWithoutNoticeGroup: Locator;
   readonly doYouNeedAHearingWithReducedNoiseGroup: Locator;
   readonly areRespondentsAwareOfProceedingsGroup: Locator;

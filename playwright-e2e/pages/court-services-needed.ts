@@ -32,7 +32,7 @@ export class CourtServicesNeeded extends BasePage {
         await this.facilitiesOrAssistanceForDisability.getByLabel('No').check();
         await this.separateWatingRoomOrSecurityMeasures.getByLabel('No').check();
         await this.somethingElse.getByLabel('No').check();
-        await this.clickContinue();
+        await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
 }

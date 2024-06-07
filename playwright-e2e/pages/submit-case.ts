@@ -4,7 +4,6 @@ import { join } from "path";
 import { ApplicantDetails } from "./applicant-details";
 
 export class SubmitCase extends BasePage{
- // readonly page: Page;
   readonly declarationHeading: Locator;
   readonly statementAgree: Locator;
   readonly applicationSentHeading: Locator;
@@ -32,15 +31,14 @@ export class SubmitCase extends BasePage{
     await expect(this.teamManagerNameText).toBeVisible();
     await this.statementAgree.check();
     await expect(this.paymentAmountLocator).toBeVisible();
-    await this.clickSubmit();
+    await await this.submit.click();
     //second page
     await expect(this.checkYourAnswersHeader).toBeVisible();
     await expect(this.declarationHeading).toBeVisible();
     await expect(this.teamManagerNameText).toBeVisible();
     await expect(this.paymentAmountText).toBeVisible();
-    await this.clickSubmit();
+    await await this.submit.click();
     await expect(this.applicationSentHeading).toBeVisible();
     await this.closeReturnToCase.click();
-   // await expect(this.caseInfoHeading).toBeVisible();
   }
 }

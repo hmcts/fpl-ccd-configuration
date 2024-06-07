@@ -52,9 +52,9 @@ export class ApplicantDetails extends BasePage{
     await this.clientCode.fill('1234567');
     await this.phoneNumber.click();
     await this.phoneNumber.fill('1234567890');
-    await this.clickContinue();
+    await this.continueButton.click();
     // clickContinue is required twice
-    await this.clickContinue();
+    await this.continueButton.click();
     await this.checkYourAnsAndSubmit();
   }
 
@@ -71,7 +71,7 @@ export class ApplicantDetails extends BasePage{
     await this.colleaguePhoneNumber.fill('0123456789');
     await this.caseUpdateNotification_No.check(); //this checks no. Same as above, these radio buttons are not grouped.
     await expect(this.removeColleague).toBeVisible();
-    await this.clickContinue();
+    await this.continueButton.click();
     await this.checkYourAnsAndSubmit();
   }
 }

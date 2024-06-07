@@ -21,29 +21,29 @@ export class UploadDraftOrders extends BasePage {
     //upload CMO
     async uploadCMODraftOrders() {
         await this.cmoOptionLocator.check();
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await this.page.getByLabel('Agreed CMO discussed at hearing - judge to check and seal').check();
         await this.page.locator('#pastHearingsForCMO').selectOption('Case management hearing, 3 November 2012');
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await this.attachCmoLocator.setInputFiles('./playwright-e2e/files/draftOrder.docx');
         await this.waitForAllUploadsToBeCompleted();
         await this.page.getByLabel('Yes').check();
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
-        await this.clickContinue();
-        await this.clickSubmit();
+        await this.continueButton.click();
+        await await this.submit.click();;
     }
 
     // upload PDO
     async uploadAdditionalDraftOrders() {
         await this.otherOptionalLocator.check();
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await this.page.getByLabel('Which hearing does the order').selectOption('2: f2be08a2-4daf-4aa3-b7ba-95843b4bcb88');
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await this.page.getByLabel('Order title').fill('Test');
         await this.uploadOrderLocator.setInputFiles('./playwright-e2e/files/draftOrder2.docx');
@@ -56,12 +56,12 @@ export class UploadDraftOrders extends BasePage {
         await this.waitForAllUploadsToBeCompleted();
         await this.page.locator('#currentHearingOrderDrafts_1_documentAcknowledge-ACK_RELATED_TO_CASE').click();
         await this.waitForAllUploadsToBeCompleted();
-        await this.clickContinue();
+        await this.continueButton.click();
 
         await expect(this.page.getByText('draftOrder2.docx')).toBeVisible();
         await expect(this.page.getByText('draftOrder.docx')).toBeVisible();
 
-        await this.clickContinue();
-        await this.clickSubmit();
+        await this.continueButton.click();
+        await this.submit.click();;
     }
 }

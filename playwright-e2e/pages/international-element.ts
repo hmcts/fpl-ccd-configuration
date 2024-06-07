@@ -26,7 +26,7 @@ export class InternationalElement extends BasePage {
     await this.anyIssueWithJurisdictionOfThisCase.getByLabel('No').check();
     await this.awareOfAnyProceedingsOutsideTheUk.getByLabel('No').check();
     await this.aGovtOrCentralAuthorityOutsideUkInvolvedInCase.getByLabel('No').check();
-    await this.clickContinue();
+    await this.continueButton.click()
     await this.checkYourAnsAndSubmit();
   }
 }

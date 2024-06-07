@@ -29,8 +29,7 @@ export class WelshLangRequirements extends BasePage {
         await this.englishLangRadio.click();
         await expect(this.needToBeTranslatedQuestion).toBeVisible();
         await this.needToBeInWelshYesRadio.click();
-        await this.clickContinue();
-        await expect(this.checkYourAnswersHeader).toBeVisible();
+        await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
 }

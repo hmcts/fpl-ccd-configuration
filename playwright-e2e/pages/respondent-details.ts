@@ -1,8 +1,7 @@
 import {type Page, type Locator, expect} from "@playwright/test";
+import { BasePage } from "./base-page";
 
-export class RespondentDetails {
-
-  readonly page: Page;
+export class RespondentDetails extends BasePage{
   readonly respondentDetailsHeading: Locator;
   readonly firstName: Locator;
   readonly lastName: Locator;
@@ -23,7 +22,7 @@ export class RespondentDetails {
   readonly addressNotKnownReason: Locator;
 
   public constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
     this.firstName = page.getByLabel('*First name (Optional)');
     this.lastName = page.getByLabel('*Last name (Optional)');
@@ -46,31 +45,23 @@ export class RespondentDetails {
 
   async respondentDetailsNeeded() {
     await expect(this.respondentDetailsHeading).toBeVisible();
-    await this.firstName.click();
     await this.firstName.fill('John');
-    await this.lastName.click();
     await this.lastName.fill('Smith');
-    await this.dobDay.click();
     await this.dobDay.fill('10');
-    await this.dobMonth.click();
     await this.dobMonth.fill('11');
-    await this.dobYear.click();
     await this.dobYear.fill('2001');
     await this.gender.click(); //not sure if click needed
     await this.gender.selectOption('1: Male');
     await this.currentAddress.getByLabel('No').check();
     await this.addressNotKnownReason.selectOption('2: Person deceased');
     await this.telephone.fill('01234567890');
-    await this.relationToChild.click();
     await this.relationToChild.fill('aunt');
     await this.relationToChildContact.getByLabel('Yes').check();
-    await this.relationToChildContactReason.click();
     await this.relationToChildContactReason.fill('this is the reason');
     await this.litigationCapacity.getByLabel('Yes').check();
-    await this.litigationCapacityReason.click();
     await this.litigationCapacityReason.fill('these are the details');
     await this.legalRepresentation.getByLabel('No').check();
-    await this.continue.click();
-    await this.saveAndContinue.click();
+    await this.continueButton.click()
+    await this.checkYourAnsAndSubmit();
   }
 }

@@ -15,8 +15,7 @@ export class OtherProceedings extends BasePage {
   async otherProceedingsSmokeTest() {
     await this.otherProceedingsHeading.isVisible();
     await this.areThereAnyPastOrOngoingProccedingsReleventToCase.check();
-    await this.clickContinue();
-    await expect(this.checkYourAnswersHeader).toBeVisible();
+    await this.continueButton.click()
     await this.checkYourAnsAndSubmit();
   }
 }

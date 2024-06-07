@@ -31,7 +31,6 @@ export class OtherPeopleInCase extends BasePage {
     this.relationshipToChild = page.getByText('What is this person\'s relationship to the child or children in this case? (Optional)');
     this.contactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' });
     this.addNew = page.getByRole('button', { name: 'Add new' });
-
   }
 
   async personOneToBeGivenNotice() {
@@ -66,7 +65,7 @@ export class OtherPeopleInCase extends BasePage {
   }
 
   async continueAndCheck(){
-    await this.clickContinue();
+    await this.continueButton.click()
     await this.page.getByText("John Doe", { exact: true });
     await this.page.getByText("1990", { exact: true });
     await this.page.getByText("London", { exact: true });

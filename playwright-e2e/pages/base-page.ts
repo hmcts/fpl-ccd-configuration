@@ -48,9 +48,9 @@ export class BasePage {
     await this.page.getByRole('tab', { name: tabName }).click();
   }
 
-  async clickContinue() {
-    await this.continueButton.click();
-  }
+  // async clickContinue() {
+  //   await this.continueButton.click();
+  // }
 
   async waitForAllUploadsToBeCompleted() {
     const locs = await this.page.getByText('Cancel upload').all();
@@ -86,8 +86,8 @@ export class BasePage {
     await this.signOut.click();
   }
 
-  async clickSubmit() {
-    await this.submit.click();
-  }
+  // async clickSubmit() {
+  //   await this.submit.click();
+  // }
 }
 

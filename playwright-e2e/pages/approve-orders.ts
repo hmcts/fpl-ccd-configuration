@@ -16,7 +16,7 @@ export class ApproveOrders extends BasePage {
 
     async approveOrders() {
         await this.yesApproveOrder.click();
-        await this.clickContinue();
+        await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
         await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
     }

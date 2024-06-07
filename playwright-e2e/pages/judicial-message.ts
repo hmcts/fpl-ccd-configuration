@@ -39,25 +39,25 @@ export class JudicialMessage extends BasePage
         await this.recipientEmail.fill('Judge@email.com');
         await this.subject.fill('Message To the allocated Judge');
         await this.urgency.fill('Urgent');
-        await this.clickContinue();
+        await this.continueButton.click()
         await this.message.click();
         await this.message.fill('message send to allocated Judge');
-        await this.clickContinue();
+        await this.continueButton.click()
 
     }
 
     async judgeReplyMessage(){
         await this.messageToReply.selectOption('Subject 1, 16 November 2023 at 4:51pm, High');
-        await this.clickContinue();
+        await this.continueButton.click()
         await this.haveToReply.getByLabel('Yes').check();
         await this.reply.fill('Reply CTSC admin about the hearing.');
-        await this.clickContinue();
+        await this.continueButton.click()
     }
 
 async CTSCUserCloseMessage(){
     await this.messageToReply.selectOption('Subject 1, 1 December 2023 at 2:41pm, High');
-    await this.clickContinue();
+    await this.continueButton.click()
     await this.haveToReply.getByLabel('No').check();
-    await this.clickContinue();
+    await this.continueButton.click()
 }
 }

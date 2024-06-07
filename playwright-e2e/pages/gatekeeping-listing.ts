@@ -35,10 +35,10 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
     await this.page.getByLabel('Search for Judge (Optional)').fill('Craig Taylor');
     await this.page.waitForSelector('span:text("District Judge (MC) Craig")');
     await this.page.getByText('District Judge (MC) Craig').click();
-    await this.clickContinue();
+    await this.continueButton.click();
     await this.completeHearingDetails();
     await this.page.getByRole('radio', { name: 'Yes' }).check();
-    await this.clickContinue();
+    await this.continueButton.click();
     await this.checkYourAnsAndSubmit();
     await expect(this.page.getByText('has been updated with event: List Gatekeeping Hearing')).toBeVisible();
   }

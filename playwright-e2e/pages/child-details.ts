@@ -130,7 +130,7 @@ export class ChildDetails extends BasePage{
         await this.additionalNeeds.getByLabel('No').check();
         await this.contactDetailsHidden.getByLabel('No').check();
         await this.litigationCapability.getByLabel('No', { exact: true }).click();
-        await this.clickContinue();
+        await this.continueButton.click();
         await expect(this.checkYourAnswersHeader).toBeVisible();
         await this.checkYourAnsAndSubmit();
     }

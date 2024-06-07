@@ -36,7 +36,7 @@ export class AdditionalApplications extends BasePage {
   public async chooseOtherApplicationType() {
     await this.otherSpecificOrder.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
   public async chooseC2ApplicationType() {
@@ -44,7 +44,7 @@ export class AdditionalApplications extends BasePage {
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
     await this.nonConfidentialC2Order.click();
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
   public async chooseConfidentialC2ApplicationType() {
@@ -52,7 +52,7 @@ export class AdditionalApplications extends BasePage {
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
     await this.confidentialC2Order.click();
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
   public async chooseBothApplicationTypes() {
@@ -61,7 +61,7 @@ export class AdditionalApplications extends BasePage {
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
     await this.nonConfidentialC2Order.click();
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
   public async fillOtherApplicationDetails() {
@@ -78,7 +78,7 @@ export class AdditionalApplications extends BasePage {
     await this.uploadOtherSupplement();
     await this.page.waitForTimeout(6000);
     await this.uploadOtherSupportingEvidence();
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
 
@@ -104,7 +104,7 @@ export class AdditionalApplications extends BasePage {
     // add new draft order
     await this.uploadDraftOrder();
 
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 
   public async uploadDraftOrder() {
@@ -140,6 +140,6 @@ export class AdditionalApplications extends BasePage {
     await this.page.getByLabel('Yes').check();
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
-    await this.clickContinue();
+    await this.continueButton.click();
   }
 }
