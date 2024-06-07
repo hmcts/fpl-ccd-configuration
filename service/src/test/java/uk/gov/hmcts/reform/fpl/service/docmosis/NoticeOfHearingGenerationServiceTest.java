@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
 import static uk.gov.hmcts.reform.fpl.service.email.content.HearingVacatedEmailContentProvider.RELIST_ACTION_NOT_RELISTED;
 import static uk.gov.hmcts.reform.fpl.service.email.content.HearingVacatedEmailContentProvider.RELIST_ACTION_RELISTED;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class NoticeOfHearingGenerationServiceTest {
