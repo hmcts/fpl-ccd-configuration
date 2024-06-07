@@ -415,6 +415,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         });
         return args.stream();
     }
+
     @ParameterizedTest
     @MethodSource("provideBooleanAndStringValues")
     void shouldSendNotificationToAllocatedJudgeIfNoHearingJudgeEmailPresent(Boolean urgency, String hearingJudgeEmail) {
