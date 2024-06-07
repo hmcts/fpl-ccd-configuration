@@ -131,9 +131,9 @@ export class AdditionalApplications extends BasePage {
     await this.page.getByLabel('File name').fill('supporting document');
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_notes').fill('supporting doc notes');
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles(config.testTextFile);
-    await this.expectAllUploadsCompleted();
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
-  }
+    await this.expectAllUploadsCompleted();
+     }
 
 
   public async payForApplication() {
