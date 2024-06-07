@@ -31,6 +31,8 @@ import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-fl
 import { SubmitCase } from "../pages/submit-case";
 import {Organisation} from "../pages/manage-organisation";
 import {ShareCase} from "../pages/share-case";
+import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -65,6 +67,8 @@ type CreateFixtures = {
   c1WithSupplement: C1WithSupplement;
   organisation: Organisation;
   shareCase: ShareCase;
+  otherPeopleInCase: OtherPeopleInCase;
+
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -183,6 +187,10 @@ export const test = base.extend<CreateFixtures>({
   c1WithSupplement: async ({ page }, use) => {
      await use(new C1WithSupplement(page));
   },
+
+  otherPeopleInCase: async ({ page }, use) => {
+    await use(new OtherPeopleInCase(page));
+ },
 
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
