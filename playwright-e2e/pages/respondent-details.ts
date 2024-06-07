@@ -3,8 +3,6 @@ import { BasePage } from "./base-page";
 
 export class RespondentDetails extends BasePage{
   readonly respondentDetailsHeading: Locator;
-  readonly firstName: Locator;
-  readonly lastName: Locator;
   readonly gender: Locator;
   readonly currentAddress: Locator;
   readonly telephone: Locator;
@@ -21,8 +19,6 @@ export class RespondentDetails extends BasePage{
   public constructor(page: Page) {
     super(page);
     this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
-    this.firstName = page.getByLabel('*First name (Optional)');
-    this.lastName = page.getByLabel('*Last name (Optional)');
     this.gender = page.getByLabel('Gender (Optional)');
     this.currentAddress = page.getByRole('group', { name: '*Current address known?' });
     this.addressNotKnownReason = page.getByLabel('*Reason the address is not known');
@@ -39,8 +35,7 @@ export class RespondentDetails extends BasePage{
 
   async respondentDetailsNeeded() {
     await expect(this.respondentDetailsHeading).toBeVisible();
-    await this.firstName.fill('John');
-    await this.lastName.fill('Smith');
+    await this.fillFirstSecondName("John", "Smith")
     await this.dobFillOutB("1","12",(new Date().getUTCFullYear()-20).toString());
     await this.gender.click(); //not sure if click needed
     await this.gender.selectOption('1: Male');

@@ -15,6 +15,12 @@ export class BasePage {
   readonly dobDayB: Locator;
   readonly dobMonthB: Locator;
   readonly dobYearB: Locator;
+  readonly postcode: Locator;
+  readonly findAddress: Locator;
+  readonly selectAddress: Locator;
+  readonly firstName: Locator;
+  readonly lastName: Locator;
+  
 
   constructor(page: Page) {
     this.page = page;
@@ -25,16 +31,17 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
-    
     this.dobDayA = page.getByRole('textbox', { name: 'Day' });
     this.dobMonthA = page.getByRole('textbox', { name: 'Month' });
     this.dobYearA = page.getByRole('textbox', { name: 'Year' });
-    // this.dobDay = page.getByLabel('Day');
-    // this.dobMonth = page.getByLabel('Month');
-    // this.dobYear = page.getByLabel('Year');
     this.dobDayB = page.getByLabel('Day');
     this.dobMonthB = page.getByLabel('Month');
     this.dobYearB = page.getByLabel('Year');
+    this.postcode = page.getByRole('textbox', { name: 'Enter a UK postcode' })
+    this.findAddress = page.getByRole('button', { name: 'Find address' });
+    this.selectAddress = page.getByLabel('Select an address');
+    this.firstName = page.getByLabel('First name');
+    this.lastName = page.getByLabel('Last name');
   }
 
   async gotoNextStep(eventName: string) {
@@ -115,5 +122,16 @@ export class BasePage {
   // async clickSubmit() {
   //   await this.submit.click();
   // }
+
+  async postcodeFindAddress(postcode: string, selectAdd: string){
+    await this.postcode.fill(postcode);
+    await this.findAddress.click();
+    await this.selectAddress.selectOption(selectAdd);
+  }
+
+  async fillFirstSecondName(first:string, second:string){
+    await this.firstName.fill(first);
+    await this.lastName.fill(second);
+  }
 }
 
