@@ -12,13 +12,13 @@ export class AddApplicationDocuments extends BasePage{
     readonly giveDetailsText: Locator;
 
     public constructor(page: Page) {
-      super(page);
+        super(page);
         this.page = page;
-      this.applicationDocumentsHeading = page.getByRole('heading', { name: 'Application documents' });
-      this.addNewButton = page.getByRole('button', { name: 'Add new' });
-      this.typeOfDocument = page.getByLabel('Type of document');
-      this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
-      this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
+        this.applicationDocumentsHeading = page.getByRole('heading', {name: 'Application documents'});
+        this.addNewButton = page.getByRole('button', {name: 'Add new'});
+        this.typeOfDocument = page.getByLabel('Type of document');
+        this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
+        this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
     }
 
     async uploadDocumentSmokeTest() {
@@ -28,14 +28,11 @@ export class AddApplicationDocuments extends BasePage{
         await this.typeOfDocument.selectOption('8: BIRTH_CERTIFICATE');
         await this.page.locator('input#temporaryApplicationDocuments_0_document').first().setInputFiles(config.testPdfFile);
         // Wait for the "Uploading..." process to finish otherwise step will fail
-        await expect(this.page.locator('span.error-message:text("Uploading...")')).toBeVisible();
-        await expect(this.page.locator('span.error-message:text("Uploading...")')).toBeHidden();
+        await this.waitForAllUploadsToBeCompleted();
         await expect(this.giveDetailsText).toBeVisible();
         await this.giveDetailsText.fill('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.');
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
-        // await this.page.getByRole('button', { name: 'Continue' }).click();
-        // await this.page.getByRole('heading', { name: 'Check your answers' }).click();
-        // await this.page.getByRole('button', { name: 'Save and continue' }).click();
+        await this.page.getByRole('button', { name: 'Continue' }).click();
+        await this.page.getByRole('heading', { name: 'Check your answers' }).click();
+        await this.page.getByRole('button', { name: 'Save and continue' }).click();
       }
 }
