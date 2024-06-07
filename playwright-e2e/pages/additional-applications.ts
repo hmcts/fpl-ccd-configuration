@@ -133,7 +133,7 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_document').setInputFiles(config.testTextFile);
     await this.page.locator('#temporaryOtherApplicationsBundle_supportingEvidenceBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
     await this.expectAllUploadsCompleted();
-     }
+  }
 
 
   public async payForApplication() {
