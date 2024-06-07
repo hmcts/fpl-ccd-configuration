@@ -9,8 +9,12 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
-
-
+  readonly dobDayA: Locator;
+  readonly dobMonthA: Locator;
+  readonly dobYearA: Locator;
+  readonly dobDayB: Locator;
+  readonly dobMonthB: Locator;
+  readonly dobYearB: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -21,6 +25,16 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
+    
+    this.dobDayA = page.getByRole('textbox', { name: 'Day' });
+    this.dobMonthA = page.getByRole('textbox', { name: 'Month' });
+    this.dobYearA = page.getByRole('textbox', { name: 'Year' });
+    // this.dobDay = page.getByLabel('Day');
+    // this.dobMonth = page.getByLabel('Month');
+    // this.dobYear = page.getByLabel('Year');
+    this.dobDayB = page.getByLabel('Day');
+    this.dobMonthB = page.getByLabel('Month');
+    this.dobYearB = page.getByLabel('Year');
   }
 
   async gotoNextStep(eventName: string) {
@@ -84,6 +98,18 @@ export class BasePage {
 
   async clickSignOut() {
     await this.signOut.click();
+  }
+
+  async dobFillOutA(date: string, month: string, year: string){
+    await this.dobDayA.fill(date);
+    await this.dobMonthA.fill(month);
+    await this.dobYearA.fill(year);
+  }
+
+  async dobFillOutB(date: string, month: string, year: string){
+    await this.dobDayB.fill(date);
+    await this.dobMonthB.fill(month);
+    await this.dobYearB.fill(year);
   }
 
   // async clickSubmit() {

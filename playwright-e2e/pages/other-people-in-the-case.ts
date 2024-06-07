@@ -4,9 +4,6 @@ import { BasePage } from "./base-page";
 export class OtherPeopleInCase extends BasePage {
   readonly otherPeopleHeading: Locator;
   readonly fullName: Locator;
-  readonly dobDay: Locator;
-  readonly dobMonth: Locator;
-  readonly dobYear: Locator;
   readonly gender: Locator;
   readonly placeOfBirth: Locator;
   readonly currentAddress: Locator;
@@ -20,9 +17,6 @@ export class OtherPeopleInCase extends BasePage {
     super(page);
     this.otherPeopleHeading = page.getByRole("heading", {name: "Other people in the case", exact: true});
     this.fullName = page.getByLabel('Full name (Optional)');
-    this.dobDay = page.getByLabel('Day');
-    this.dobMonth = page.getByLabel('Month');
-    this.dobYear = page.getByLabel('Year');
     this.gender = page.getByLabel('Gender (Optional)');
     this.placeOfBirth = page.getByLabel('Place of birth (Optional)');
     this.currentAddress = page.getByRole('group', { name: '*Current address known? (' });
@@ -35,9 +29,7 @@ export class OtherPeopleInCase extends BasePage {
 
   async personOneToBeGivenNotice() {
     await this.fullName.fill("John Doe");
-    await this.dobDay.fill("1");
-    await this.dobMonth.fill("10");
-    await this.dobYear.fill("1990")
+    await this.dobFillOutB("2","11",(new Date().getUTCFullYear()-20).toString());
     await this.gender.selectOption('1: Male');
     await this.placeOfBirth.fill("London");
     await this.currentAddress.getByLabel('No').check();
@@ -53,7 +45,7 @@ export class OtherPeopleInCase extends BasePage {
     await this.page.locator('#others_additionalOthers_0_name').fill('Jane Doe');
     await this.page.locator('#others_additionalOthers #DOB-day').fill("2");
     await this.page.locator('#others_additionalOthers #DOB-month').fill("11");
-    await this.page.locator('#others_additionalOthers #DOB-year').fill("1999");
+    await this.page.locator('#others_additionalOthers #DOB-year').fill((new Date().getUTCFullYear()-20).toString());
     await this.page.locator('#others_additionalOthers_0_gender').selectOption('2: Female');
     await this.page.locator('#others_additionalOthers_0_birthPlace').fill("Leeds");
     await this.page.locator('#others_additionalOthers_0_addressKnow_No').check();
