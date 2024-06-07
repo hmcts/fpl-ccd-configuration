@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 @Getter
 @RequiredArgsConstructor
+@Slf4j
 public enum HearingCancellationReason {
     CA1("CAFCASS not allocated/present"),
     CA2("No/poor CAFCASS analysis"),
@@ -47,4 +50,13 @@ public enum HearingCancellationReason {
     OT10("Covid 19");
 
     private final String label;
+
+    public static String getHearingCancellationReasonLabel(HearingBooking hearinhBooking) {
+        try {
+            return HearingCancellationReason.valueOf(hearinhBooking.getCancellationReason()).getLabel();
+        } catch (IllegalArgumentException e) {
+            log.warn("CancellationReason invalid : {}", hearinhBooking.getCancellationReason());
+            return hearinhBooking.getCancellationReason();
+        }
+    }
 }

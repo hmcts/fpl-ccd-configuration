@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -59,7 +60,7 @@ public class NoticeOfHearingGenerationService {
             .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .hearingBooking(getHearingBooking(hearingBooking))
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
-            .vacatedReason(hearingBooking.getCancellationReason())
+            .vacatedReason(HearingCancellationReason.getHearingCancellationReasonLabel(hearingBooking))
             .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
             .crest(CREST.getValue())
             .build();

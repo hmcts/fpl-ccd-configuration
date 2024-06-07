@@ -38,17 +38,8 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
-            .vacatedReason(getVacateReason(hearingBooking))
+            .vacatedReason(HearingCancellationReason.getHearingCancellationReasonLabel(hearingBooking))
             .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
             .build();
-    }
-
-    private String getVacateReason(HearingBooking hearingBooking) {
-        try {
-            return HearingCancellationReason.valueOf(hearingBooking.getCancellationReason()).getLabel();
-        } catch (IllegalArgumentException e) {
-            log.warn("CancellationReason invalid : {}", hearingBooking.getCancellationReason());
-            return hearingBooking.getCancellationReason();
-        }
     }
 }
