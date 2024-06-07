@@ -11,12 +11,12 @@ export class AddApplicationDocuments {
     readonly giveDetailsText: Locator;
 
     public constructor(page: Page) {
-        this.page = page;
+      this.page = page;
       this.applicationDocumentsHeading = page.getByRole('heading', { name: 'Application documents' });
       this.addNewButton = page.getByRole('button', { name: 'Add new' });
-        this.typeOfDocument = page.getByLabel('Type of document');
-        this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
-        this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
+      this.typeOfDocument = page.getByLabel('Type of document');
+      this.chooseFileButton = page.locator('input#temporaryApplicationDocuments_0_document').first();
+      this.giveDetailsText = page.getByLabel('Give details of documents to follow, including why you\'re not sending them now, and when you think they\'ll be ready. (Optional)');
     }
 
     async uploadDocumentSmokeTest() {
