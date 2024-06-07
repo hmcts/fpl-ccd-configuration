@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 public class DocmosisNoticeOfHearingVacated implements DocmosisData {
     private final String familyManCaseNumber;
     private final String ccdCaseNumber;
+    private final String crest;
 
     @JsonUnwrapped
     private DocmosisHearingBooking hearingBooking;

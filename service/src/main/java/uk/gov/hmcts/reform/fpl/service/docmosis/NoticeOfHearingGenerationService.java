@@ -61,6 +61,7 @@ public class NoticeOfHearingGenerationService {
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
             .vacatedReason(hearingBooking.getCancellationReason())
             .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
+            .crest(CREST.getValue())
             .build();
     }
 
