@@ -95,7 +95,6 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
     await this.page.waitForTimeout(6000);
 
-
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();
     await this.within2Days.click();
