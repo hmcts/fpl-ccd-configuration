@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 public class Proceeding {
