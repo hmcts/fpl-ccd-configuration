@@ -23,7 +23,7 @@ plugins {
   id 'project-report'
   id 'idea'
   id 'info.solidsoft.pitest' version '1.15.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1236'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1253'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -306,21 +306,15 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
+
+  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.2.3'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-config', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-core', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-crypto', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-web', version: '6.2.3'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '6.2.3'
   implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
-  implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.9.6'
-  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version:'5.2.3'
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.11.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
@@ -330,16 +324,13 @@ dependencies {
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.9'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '13.2'
-  implementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
-  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+  implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
@@ -350,18 +341,8 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.3'
 
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.16.1'
-
-  implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
   implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.17.1'
-
-  implementation group: 'net.minidev', name: 'json-smart', version: '2.5.1'
-
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
-
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
-  implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
 
