@@ -5,8 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -23,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(MockitoExtension.class)
 class JudicialMessageReplyEventHandlerTest {
+    private static final String CTSC_EMAIL = "ctsc@test.com";
+
     @Mock
     private NotificationService notificationService;
 
@@ -31,6 +35,9 @@ class JudicialMessageReplyEventHandlerTest {
 
     @Mock
     private FeatureToggleService featureToggleService;
+
+    @Mock
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @InjectMocks
     private JudicialMessageReplyEventHandler judicialMessageReplyEventHandler;
@@ -72,16 +79,50 @@ class JudicialMessageReplyEventHandlerTest {
             .recipient(recipient)
             .build();
 
-        CaseData caseData = caseData();
+        CaseData caseData = caseData().toBuilder()
+            .court(Court.builder().name("test").code("000").build())
+            .build();
 
         final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
 
         when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
+        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
 
         judicialMessageReplyEventHandler.notifyRecipientOfReply(
             new JudicialMessageReplyEvent(caseData, judicialMessage)
         );
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldStillNotifyCTSCWhenToggledOff() {
+        String recipient = CTSC_EMAIL;
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .sender("Paul@fpla.com")
+            .recipient(recipient)
+            .build();
+
+        CaseData caseData = caseData().toBuilder()
+            .court(Court.builder().name("test").code("000").build())
+            .build();
+
+        final JudicialMessageReplyTemplate expectedParameters = JudicialMessageReplyTemplate.builder().build();
+
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
+        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(CTSC_EMAIL);
+        given(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))
+            .willReturn(expectedParameters);
+
+        judicialMessageReplyEventHandler.notifyRecipientOfReply(
+            new JudicialMessageReplyEvent(caseData, judicialMessage)
+        );
+
+        verify(notificationService).sendEmail(
+            JUDICIAL_MESSAGE_REPLY_TEMPLATE,
+            recipient,
+            expectedParameters,
+            caseData.getId());
     }
 }
