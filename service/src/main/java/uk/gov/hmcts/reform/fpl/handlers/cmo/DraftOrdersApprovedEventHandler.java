@@ -146,7 +146,7 @@ public class DraftOrdersApprovedEventHandler {
         final Collection<String> localAuthorityEmails = localAuthorityRecipients.getRecipients(recipientsRequest);
 
         notificationService.sendEmail(
-            getJudgeApprovesDraftOrderTemplateId(caseData),
+            JUDGE_APPROVES_DRAFT_ORDERS,
             localAuthorityEmails,
             content,
             caseData.getId()
@@ -181,7 +181,7 @@ public class DraftOrdersApprovedEventHandler {
                     DIGITAL_SERVICE);
 
                 notificationService.sendEmail(
-                    getJudgeApprovesDraftOrderTemplateId(caseData),
+                    JUDGE_APPROVES_DRAFT_ORDERS,
                     recipientIsWelsh.get().getEmail(),
                     content,
                     caseData.getId()
@@ -267,7 +267,7 @@ public class DraftOrdersApprovedEventHandler {
                 caseData.getId(),
                 content,
                 digitalRepresentatives,
-                getJudgeApprovesDraftOrderTemplateId(caseData)
+                JUDGE_APPROVES_DRAFT_ORDERS
             );
         }
     }
@@ -301,7 +301,7 @@ public class DraftOrdersApprovedEventHandler {
                 caseData.getId(),
                 content,
                 emailRepresentatives,
-                getJudgeApprovesDraftOrderTemplateId(caseData)
+                JUDGE_APPROVES_DRAFT_ORDERS
             );
         }
     }
@@ -325,7 +325,7 @@ public class DraftOrdersApprovedEventHandler {
         confidentiaOrdersMap.forEach((uploaderEmail, confidentialOrders) -> {
             NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, confidentialOrders,
                 DIGITAL_SERVICE);
-            notificationService.sendEmail(getJudgeApprovesDraftOrderTemplateId(caseData), uploaderEmail, content,
+            notificationService.sendEmail(JUDGE_APPROVES_DRAFT_ORDERS, uploaderEmail, content,
                 caseData.getId());
         });
     }

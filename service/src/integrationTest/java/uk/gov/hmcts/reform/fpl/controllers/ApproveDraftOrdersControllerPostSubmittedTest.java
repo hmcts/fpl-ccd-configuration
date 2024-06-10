@@ -194,32 +194,28 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -276,32 +272,28 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(Boolean.TRUE.equals(urgency) ? URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-                    : CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -371,28 +363,28 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_3_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
@@ -455,28 +447,28 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient,never()).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq(IntegrationTestConstants.CAFCASS_EMAIL),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("robert@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))
             );
 
             verify(notificationClient).sendEmail(
-                eq(urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
                 eq("charlie@example.com"),
                 anyMap(),
                 eq(notificationReference(CASE_ID))

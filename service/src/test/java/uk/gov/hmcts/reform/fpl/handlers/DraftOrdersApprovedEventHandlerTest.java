@@ -223,7 +223,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService).sendEmail(
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            JUDGE_APPROVES_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -258,7 +258,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToLA(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
 
         verify(notificationService).sendEmail(
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            JUDGE_APPROVES_DRAFT_ORDERS,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -308,7 +308,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, orders, List.of()));
 
         verify(notificationService).sendEmail(
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            JUDGE_APPROVES_DRAFT_ORDERS,
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -345,7 +345,7 @@ class DraftOrdersApprovedEventHandlerTest {
         underTest.sendNotificationToCafcass(new DraftOrdersApproved(caseData, List.of(), List.of(hearingOrder)));
 
         verify(notificationService).sendEmail(
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            JUDGE_APPROVES_DRAFT_ORDERS,
             CAFCASS_EMAIL_ADDRESS,
             EXPECTED_TEMPLATE,
             caseData.getId());
@@ -662,7 +662,7 @@ class DraftOrdersApprovedEventHandlerTest {
             CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("digital-rep2@test.com"),
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS
+            JUDGE_APPROVES_DRAFT_ORDERS
         );
     }
 
@@ -697,7 +697,7 @@ class DraftOrdersApprovedEventHandlerTest {
             CASE_ID,
             EXPECTED_TEMPLATE,
             Set.of("rep1@test.com"),
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS
+            JUDGE_APPROVES_DRAFT_ORDERS
         );
     }
 
@@ -939,7 +939,7 @@ class DraftOrdersApprovedEventHandlerTest {
         );
 
         verify(notificationService).sendEmail(
-            urgency != null && urgency ? JUDGE_APPROVES_URGENT_DRAFT_ORDERS : JUDGE_APPROVES_DRAFT_ORDERS,
+            JUDGE_APPROVES_DRAFT_ORDERS,
             "uploaderEmail@email.com",
             EXPECTED_TEMPLATE,
             CASE_ID);
