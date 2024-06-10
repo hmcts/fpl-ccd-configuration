@@ -26,11 +26,11 @@ test.describe('Manage child representatives ', () => {
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.addRegisteredSOlOrg();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.assignSolicitorToAllChildren();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
             await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(4);
@@ -46,15 +46,15 @@ test.describe('Manage child representatives ', () => {
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.addRegisteredSOlOrg();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.assignDifferrentChildSolicitor();
             await childDetails.addDifferentSolicitorForChild('Child 1');
             await childDetails.addCafcassSolicitorForChild('Child 2');
             await childDetails.addCafcassSolicitorForChild('Child 3');
             await childDetails.addCafcassSolicitorForChild('Child 4');
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
             await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(3);
@@ -71,11 +71,11 @@ test.describe('Manage child representatives ', () => {
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.addUnregisteredSolOrg();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.assignSolicitorToAllChildren();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
             await expect(page.locator('#case-viewer-field-read--children1')).toContainText('Organisation (unregistered)');
@@ -92,9 +92,9 @@ test.describe('Manage child representatives ', () => {
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
             await signInPage.navigateTOCaseDetails(caseNumber);
             await childDetails.gotoNextStep("Children");
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.removeSolicitor();
-            await childDetails.clickContinue();
+            await childDetails.continueButton.click();
             await childDetails.checkYourAnsAndSubmit();
             await childDetails.tabNavigation('People in the case');
             await expect(page.getByText('Private solicitors', {exact: true})).toHaveCount(0);

@@ -99,26 +99,23 @@ export class ChildDetails extends BasePage{
         await this.continueButton.click();
         await this.checkYourAnsAndSubmit();
     }
-
-    async addRegisteredSOlOrg(){
-        await this.childHaveRepresentative.getByText('Yes').click();
+    async childRepresentationFill(){
+        await this.childHaveRepresentative.getByText('Yes', { exact: true }).click();
         await this.representativeFirstName.fill('Child Solicitor');
         await this.representativeLastName.fill('One');
         await this.representativeEmail.fill('solicitor@email.com');
+    }
+    async addRegisteredSOlOrg(){
+        await this.childRepresentationFill();
         await this.representativeOrgSearch.fill('Private solicitors');
         await this.selectPrivateOrganisation.click();
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
     }
 
     async addUnregisteredSolOrg(){
-        await this.childHaveRepresentative.getByText('Yes', { exact: true }).click();
-        await this.representativeFirstName.fill('Child Solicitor');
-        await this.representativeLastName.fill('One');
-        await this.representativeEmail.fill('solicitor@email.com');
+        await this.childRepresentationFill();
         await this.unregisteredOrganisation.fill('NewOrganisation');
-        await this.postcode.fill('TW7');
-        await this.findAddress.click();
-        await this.selectAddress.selectOption({index: 1});
+        await this.postcodeFindAddress('TW7', '1: Object')
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
     }
 
