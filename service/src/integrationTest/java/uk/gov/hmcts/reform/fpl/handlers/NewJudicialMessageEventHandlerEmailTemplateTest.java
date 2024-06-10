@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -45,6 +47,9 @@ class NewJudicialMessageEventHandlerEmailTemplateTest extends EmailTemplateTest 
         .respondents1(wrapElements(RESPONDENT))
         .children1(wrapElements(CHILD))
         .build();
+
+    @MockBean
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Autowired
     private NewJudicialMessageEventHandler underTest;

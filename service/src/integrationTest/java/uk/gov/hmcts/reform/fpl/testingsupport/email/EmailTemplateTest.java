@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscTeamLeadLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -95,9 +94,6 @@ public class EmailTemplateTest {
 
     @MockBean
     protected FeatureToggleService featureToggleService;
-
-    @MockBean
-    protected CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @SpyBean
     private DocumentService documentService;
