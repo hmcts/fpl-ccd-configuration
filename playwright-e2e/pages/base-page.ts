@@ -28,7 +28,7 @@ export class BasePage {
     await this.goButton.click();
     await this.page.waitForTimeout(20000);
     if (await  this.goButton.isVisible()) {
-        await this.page.reload();
+       // await this.page.reload();
        await this.goButton.click();
     }
   }
