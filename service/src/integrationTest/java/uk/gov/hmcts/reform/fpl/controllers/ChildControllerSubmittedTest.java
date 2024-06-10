@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SO
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ChildController.class)
