@@ -28,6 +28,7 @@ export class StartApplication {
   readonly internationalElementsHeading: Locator;
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
+  readonly otherPeopleInCaseLink: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -58,7 +59,7 @@ export class StartApplication {
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
     this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
-
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
   }
 
   async groundsForTheApplication() {
@@ -137,6 +138,11 @@ export class StartApplication {
   async courtServicesNeededReqUpdated() {
     await expect(this.courtServicesNeeded).toBeVisible();
     await this.courtServicesNeeded.click();
+  }
+
+  async addOtherPeopleInCase(){
+    await expect(this.otherPeopleInCaseLink).toBeVisible();
+    await this.otherPeopleInCaseLink.click();
   }
 
   async submitCase() {

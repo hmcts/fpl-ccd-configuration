@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants;
 import uk.gov.service.notify.NotificationClient;
 
@@ -137,6 +138,9 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     private CafcassNotificationService cafcassNotificationService;
 
     @MockBean
+    private WorkAllocationTaskService workAllocationTaskService;
+
+    @MockBean
     DocmosisHelper docmosisHelper;
 
     @Captor
@@ -154,6 +158,8 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
+        givenFplService();
+        givenSystemUser();
     }
 
     static Stream<Boolean> provideBooleanValues() {
