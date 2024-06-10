@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('Upload additional applications', () => {
+test.describe('@local Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
