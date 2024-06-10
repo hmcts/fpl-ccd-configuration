@@ -23,7 +23,7 @@ test.describe('Manage Documents', () => {
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await manageDocuments.gotoNextStep('Manage Documents');
+        await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
 
         // Check CFV
@@ -54,7 +54,7 @@ test.describe('Manage Documents', () => {
         }
     });
 
-    test('LA uploads various documents visble in CFV', async ({ signInPage, manageDocuments }) => {
+    test('LA uploads various documents visible in CFV', async ({ signInPage, manageDocuments }) => {
         caseName = 'LA uploads various documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
