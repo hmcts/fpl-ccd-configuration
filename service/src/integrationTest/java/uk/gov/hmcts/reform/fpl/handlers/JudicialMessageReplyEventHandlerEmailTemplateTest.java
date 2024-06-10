@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -39,7 +39,7 @@ class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTes
         .build();
 
     @MockBean
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     @Autowired
     private JudicialMessageReplyEventHandler underTest;
