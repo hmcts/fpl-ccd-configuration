@@ -57,7 +57,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -125,11 +124,6 @@ class CaseManagementOrderIssuedEventHandlerTest {
         return Stream.of(true, false, null);
     }
 
-    private String getExpectedTemplateId(Boolean urgency) {
-        return urgency == null || Boolean.FALSE.equals(urgency) ? CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE
-            : URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
-    }
-
     @ParameterizedTest
     @MethodSource("provideBooleanValues")
     void shouldNotifyLocalAuthority(Boolean urgency) {
@@ -148,7 +142,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyLocalAuthority(EVENT);
 
         verify(notificationService).sendEmail(
-            getExpectedTemplateId(urgency), Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             DIGITAL_REP_CMO_TEMPLATE_DATA,
             CASE_ID
         );
@@ -172,7 +166,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyCafcass(EVENT);
 
         verify(notificationService).sendEmail(
-            getExpectedTemplateId(urgency), "FamilyPublicLaw+cafcass@gmail.com",
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
             EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
     }
@@ -194,7 +188,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyCafcass(EVENT);
 
         verify(notificationService, never()).sendEmail(
-            getExpectedTemplateId(urgency), "FamilyPublicLaw+cafcass@gmail.com",
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "FamilyPublicLaw+cafcass@gmail.com",
             EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID
         );
     }
@@ -250,7 +244,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyEmailRepresentatives(EVENT);
 
         verify(notificationService).sendEmail(
-            getExpectedTemplateId(urgency), "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
     }
 
     @ParameterizedTest
@@ -271,7 +265,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         underTest.notifyDigitalRepresentatives(EVENT);
 
         verify(notificationService).sendEmail(
-            getExpectedTemplateId(urgency), "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "fred@flinstone.com", DIGITAL_REP_CMO_TEMPLATE_DATA, CASE_ID);
     }
 
     @Test
