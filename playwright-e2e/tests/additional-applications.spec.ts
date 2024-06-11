@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe(' Upload additional applications', () => {
+test.describe('@local  Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -18,7 +18,7 @@ test.describe(' Upload additional applications', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('@local LA uploads a C1 application',
+  test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -65,7 +65,7 @@ test.describe(' Upload additional applications', () => {
       }
     });
 
-  test('@local LA uploads a C2 application with draft order',
+  test('LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -95,7 +95,7 @@ test.describe(' Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-  test('@local LA uploads combined Other and C2 applications',
+  test('LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
