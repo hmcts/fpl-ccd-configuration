@@ -115,8 +115,8 @@ fpl:
   mla_to_local_authorities:
     mapping: 'ORG-LA-2=>test1'
   system_update:
-    username: 'fpl-system-update@mailnesia.com'
-    password: 'Password12'
+    username: ${SYSTEM_UPDATE_USER_USERNAME}
+    password: ${SYSTEM_UPDATE_USER_PASSWORD}
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
   court_to_court_admin:
     mapping: "344=>FamilyPublicLaw+ctsc@gmail.com;332=>FamilyPublicLaw+PublicLawEmail@gmail.com"
