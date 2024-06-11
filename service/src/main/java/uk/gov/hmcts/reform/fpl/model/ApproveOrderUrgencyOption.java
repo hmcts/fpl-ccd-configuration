@@ -8,8 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
