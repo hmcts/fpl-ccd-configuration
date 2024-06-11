@@ -3456,6 +3456,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderReviewUrgency",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]

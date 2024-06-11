@@ -295,5 +295,32 @@
     "ListElementCode": "judgeAmendedDocument",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "orderReviewUrgency",
+    "ListElementCode": "urgency",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "orderReviewUrgency",
+    "ListElementCode": "urgencyLabel",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "orderReviewUrgency",
+    "ListElementCode": "urgencyLabel2",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
   }
 ]

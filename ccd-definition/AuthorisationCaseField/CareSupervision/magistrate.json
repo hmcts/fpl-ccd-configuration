@@ -2685,6 +2685,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderReviewUrgency",
     "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "CRU"
+    "CRUD": "CRUD"
   }
 ]

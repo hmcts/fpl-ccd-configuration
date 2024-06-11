@@ -5,11 +5,16 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
 public class ApproveOrderUrgencyOption {
-    private final List<YesNo> urgency;
+
+    @Builder.Default
+    private final List<YesNo> urgency = new ArrayList<>();
 }

@@ -688,7 +688,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "orderReviewUrgency",
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "PageID": "UrgencyCheck",
     "PageFieldDisplayOrder": 1,
     "PageDisplayOrder": 4,
