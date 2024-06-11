@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import org.joda.time.DateTime;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 @Data
@@ -15,6 +16,8 @@ public class DocumentReference {
     private String filename;
     @JsonProperty("document_binary_url")
     private final String binaryUrl;
+    @JsonProperty("upload_timestamp")
+    private final DateTime uploadedTimestamp;
     @JsonIgnore
     private Long size;
     @JsonIgnore
