@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 import uk.gov.hmcts.reform.fpl.service.translation.TranslationRequestFormCreationService;
 import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
@@ -58,6 +59,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -127,6 +129,9 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
     private SendLetterService sendLetters;
 
     @MockBean
+    private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
     TranslationRequestFormCreationService translationRequestFormCreationService;
 
     @MockBean
@@ -155,6 +160,8 @@ class ApproveDraftOrdersControllerPostSubmittedTest extends AbstractCallbackTest
         when(translationRequestFormCreationService.buildTranslationRequestDocuments(any()))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
+        when(coreCaseDataService.performPostSubmitCallback(any(), any(), any(), anyBoolean()))
+            .thenReturn(CaseDetails.builder().build());
         when(docmosisHelper.extractPdfContent(APPLICATION_BINARY)).thenReturn("Some content");
         givenFplService();
         givenSystemUser();
