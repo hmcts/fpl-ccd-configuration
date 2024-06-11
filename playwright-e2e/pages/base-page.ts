@@ -31,6 +31,7 @@ export class BasePage {
     if (await  this.goButton.isVisible()) {
        await this.goButton.click();
     }
+      await expect(this.page.getByRole('heading', {name: `${eventName}`,exact:true})).toBeVisible();
   }
 
   async expectAllUploadsCompleted() {
