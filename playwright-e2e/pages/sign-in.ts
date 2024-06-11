@@ -1,7 +1,8 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
+import {BasePage} from "./base-page";
 
-export class SignInPage {
+export class SignInPage extends BasePage{
   readonly page: Page;
   readonly url: string;
   readonly mourl: string;
@@ -13,6 +14,7 @@ export class SignInPage {
   readonly logoutButton: Locator;
 
   public constructor(page: Page) {
+    super(page);
     this.page = page;
     this.url = urlConfig.frontEndBaseURL;
     this.mourl = urlConfig.manageOrgURL;
@@ -29,6 +31,7 @@ export class SignInPage {
   }
   async navigateTOCaseDetails(caseNumber:string) {
     await this.page.goto(`${urlConfig.frontEndBaseURL}case-details/${caseNumber}`);
+    await  this.tabNavigation('History');
   }
 
   async login(email: string, password: string) {
