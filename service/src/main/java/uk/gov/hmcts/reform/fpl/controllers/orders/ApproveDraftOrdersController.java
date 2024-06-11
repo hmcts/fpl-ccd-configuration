@@ -43,7 +43,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency");
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", "draftOrdersApproved");
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
@@ -74,6 +74,14 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+
+        // add temp variable if at least one draft order/cmo has been approved
+        if (caseData.getReviewDraftOrdersData().hasADraftBeenApproved()
+            || caseData.getReviewCMODecision().hasBeenApproved()) {
+            data.put("draftOrdersApproved", "Yes");
+        } else {
+            data.put("draftOrdersApproved", "No");
+        }
 
         return respond(caseDetails, errors);
     }

@@ -665,6 +665,17 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
+    "CaseFieldID": "draftOrdersApproved",
+    "DisplayContext": "READONLY",
+    "PageID": "ReviewDecision",
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 50,
+    "FieldShowCondition": "cmoToReviewList = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
     "CaseFieldID": "noDraftCMOs",
     "DisplayContext": "READONLY",
     "PageID": "NoDraftsPlaceholder",
@@ -678,11 +689,11 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "orderReviewUrgency",
     "DisplayContext": "OPTIONAL",
-    "PageID": "ReviewDecision",
-    "PageFieldDisplayOrder": 50,
-    "PageDisplayOrder": 2,
+    "PageID": "UrgencyCheck",
+    "PageFieldDisplayOrder": 1,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "reviewCMODecision.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision1.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision2.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision3.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision4.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision5.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision6.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision7.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision8.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision9.decision=\"SEND_TO_ALL_PARTIES\" OR reviewDecision10.decision=\"SEND_TO_ALL_PARTIES\""
+    "PageShowCondition": "draftOrdersApproved=\"Yes\""
   }
 ]
