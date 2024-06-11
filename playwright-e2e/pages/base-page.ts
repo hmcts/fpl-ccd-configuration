@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import {notEqual} from "node:assert";
 
 export class BasePage {
   readonly nextStep: Locator;
@@ -27,8 +28,9 @@ export class BasePage {
     await this.nextStep.selectOption(eventName);
     await expect(this.goButton).toBeEnabled();
     await this.goButton.click();
-    await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
+   // await this.page.waitForTimeout(20000);
+    if ( await this.page.getByRole('heading', {name: `${eventName}`,exact:true}).isVisible()==false && await this.goButton.isVisible()) {
+        await this.nextStep.selectOption(eventName);
        await this.goButton.click();
     }
       await expect(this.page.getByRole('heading', {name: `${eventName}`,exact:true})).toBeVisible();
