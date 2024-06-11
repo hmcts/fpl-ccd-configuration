@@ -1,8 +1,8 @@
-import { test, expect } from "../fixtures/fixtures";
-import { BasePage } from "../pages/base-page";
-import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
+import { test, expect } from "../../fixtures/fixtures";
+import { BasePage } from "../../pages/base-page";
+import { newSwanseaLocalAuthorityUserOne } from "../../settings/user-credentials";
 
-test("Smoke Test @smoke-test @accessibility", async ({
+test("e2e test: add other people @e2e-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -11,10 +11,10 @@ test("Smoke Test @smoke-test @accessibility", async ({
   groundsForTheApplication,
   applicantDetails,
   allocationProposal,
-  addApplicationDocuments,
   childDetails,
   respondentDetails,
   submitCase,
+  otherPeopleInCase,
   page,
   makeAxeBuilder
 }, testInfo) => {
@@ -30,7 +30,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
-  await createCase.caseName();
+  await createCase.caseName("e2e add other people");
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -59,12 +59,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Add application documents
-  await startApplication.addApplicationDetailsHeading.isVisible();
-  await startApplication.addApplicationDocuments();
-  await addApplicationDocuments.uploadDocumentSmokeTest();
-  await startApplication.addApplicationDocumentsInProgress();
-
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
@@ -86,6 +80,12 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
+  //add other people in the case
+  await startApplication.addOtherPeopleInCase()
+  await otherPeopleInCase.personOneToBeGivenNotice();
+  await otherPeopleInCase.personTwoToBeGivenNotice();
+  await otherPeopleInCase.continueAndCheck();
+  
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
