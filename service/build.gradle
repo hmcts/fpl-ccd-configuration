@@ -505,3 +505,7 @@ bootWithCCD {
     environment 'MANAGE_CASE_S2S_AUTHORISED_SERVICES', 'ccd_gw,xui_webapp,ccd_data,fpl_case_service'
   }
 }
+
+configurations.all {
+  exclude group: 'com.vaadin.external.google', module: 'android-json'
+}
