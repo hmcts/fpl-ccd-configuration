@@ -25,6 +25,7 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
+    await expect(this.goButton).toBeEnabled();
     await this.goButton.click();
     await this.page.waitForTimeout(20000);
     if (await  this.goButton.isVisible()) {
