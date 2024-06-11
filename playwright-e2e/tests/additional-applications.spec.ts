@@ -65,7 +65,7 @@ test.describe(' Upload additional applications', () => {
       }
     });
 
-  test('LA uploads a C2 application with draft order',
+  test('@local LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -95,7 +95,7 @@ test.describe(' Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-  test('LA uploads combined Other and C2 applications',
+  test('@local LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
