@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe(' Upload additional applications', () => {
+test.describe('@local Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -126,7 +126,7 @@ test.describe(' Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-    test('@local LA uploads a confidential C2 application with draft order',
+    test(' LA uploads a confidential C2 application with draft order',
         async ({ page, signInPage, additionalApplications }) => {
             caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
