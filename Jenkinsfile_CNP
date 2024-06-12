@@ -202,12 +202,10 @@ withPipeline(type, product, component) {
   before('fullFunctionalTest:preview'){
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
-      env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-      env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+      env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
-      env.SWANSEA_ORG_ID = "62LYJRF"
       env.MOCKED_PAYMENTS = false
-      env.FUNCTIONAL_TESTS_WORKERS = 1
       env.TEST_RETRIES = 1
 
   }
@@ -247,9 +245,7 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
-    env.PARALLEL_CHUNKS = 12
     env.TEST_RETRIES = 3
   }
 
