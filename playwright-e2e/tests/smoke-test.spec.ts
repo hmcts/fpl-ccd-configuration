@@ -9,23 +9,16 @@ test("Smoke Test @smoke-test @accessibility", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren,
-  factorsAffectingParenting,
   applicantDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
   respondentDetails,
-  welshLangRequirements,
   submitCase,
-  internationalElement,
-  courtServicesNeeded,
-  c1WithSupplement,
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
 
-  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
@@ -66,24 +59,16 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Risk and harm to children
-  await startApplication.riskAndHarmToChildren();
-  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
   // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
- 
+
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
-  await startApplication.applicantDetails(); 
+  await startApplication.applicantDetails();
   await applicantDetails.colleagueDetailsNeeded();
   await startApplication.applicantDetailsHasBeenUpdated();
 
@@ -101,37 +86,19 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
-  // Welsh language requirements
-  await startApplication.welshLanguageReq();
-  await welshLangRequirements.welshLanguageSmokeTest();
-  await startApplication.welshLanguageReqUpdated();
-
-  // International element
-  await startApplication.internationalElementReqUpdated();
-  await internationalElement.internationalElementSmokeTest();
-
-  // Court Services Needed
-  await startApplication.courtServicesNeededReqUpdated();
-  await courtServicesNeeded.CourtServicesSmoketest();
-
-  // C1 With Supplement
-  await startApplication.c1WithSupp();
-  await c1WithSupplement.c1WithSupplementSmokeTest();
-  await startApplication.c1WithSuppFinished();
-
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
-  
+
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

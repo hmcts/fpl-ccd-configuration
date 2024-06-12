@@ -59,7 +59,8 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId, RemovableOrder removableOrder) {
         HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
 
-        if (isEmpty(caseData.getHearingOrdersBundlesDrafts())) {
+        if (isEmpty(caseData.getHearingOrdersBundlesDrafts())
+            && isEmpty(caseData.getHearingOrdersBundlesDraftReview())) {
 
             Optional<Element<HearingOrder>> hearingOrderElement = caseData.getDraftUploadedCMOWithId(removedOrderId);
 

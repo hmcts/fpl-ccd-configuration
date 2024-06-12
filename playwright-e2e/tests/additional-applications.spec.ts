@@ -1,24 +1,27 @@
 import { test } from '../fixtures/create-fixture';
-import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json';
-import { newSwanseaLocalAuthorityUserOne, judgeWalesUser } from '../settings/user-credentials';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
+import {createCase, updateCase} from "../utils/api-helper";
 
 test.describe('Upload additional applications', () => {
-  let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;
-  let casename: string;
+  let caseName: string;
+  const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
 
-  test.beforeEach(async () => {
-    caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+
+
+    test.beforeEach(async () => {
+    caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
   test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads an other application ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
@@ -64,8 +67,8 @@ test.describe('Upload additional applications', () => {
 
   test('LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
@@ -94,8 +97,8 @@ test.describe('Upload additional applications', () => {
 
   test('LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
-      casename = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
-      await apiDataSetup.updateCase(casename, caseNumber, caseData);
+      caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
@@ -122,4 +125,90 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.tabNavigation('Draft orders');
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
+
+    test('LA uploads a confidential C2 application with draft order',
+        async ({ page, signInPage, additionalApplications }) => {
+            caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseData);
+            await signInPage.visit();
+            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            await additionalApplications.gotoNextStep('Upload additional applications');
+            await additionalApplications.chooseConfidentialC2ApplicationType();
+            await additionalApplications.fillC2ApplicationDetails();
+
+            // Payment details
+            await expect(page.getByText('£255.00')).toBeVisible();
+            await additionalApplications.payForApplication();
+
+            await additionalApplications.checkYourAnsAndSubmit();
+
+            await additionalApplications.tabNavigation('Other applications');
+
+            // can see some basic properties of the application
+            await expect(page.getByText('PBA1234567')).toBeVisible();
+            await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+            await expect(page.getByText('Within 2 days')).toBeVisible();
+
+            // can see the draft order to be approved
+            await additionalApplications.tabNavigation('Draft orders');
+            await expect(page.getByText('Draft order title')).toBeVisible();
+
+            await additionalApplications.clickSignOut();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            // CTSC can see some basic properties of the application
+            await additionalApplications.tabNavigation('Other applications');
+            await expect(page.getByText('PBA1234567')).toBeVisible();
+            await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+            await expect(page.getByText('Within 2 days')).toBeVisible();
+
+            // CTSC can see the draft order to be approved
+            await additionalApplications.tabNavigation('Draft orders');
+            await expect(page.getByText('Draft order title')).toBeVisible();
+        });
+
+    test('CTSC uploads a confidential C2 application with draft order',
+        async ({ page, signInPage, additionalApplications }) => {
+            caseName = 'CTSC uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
+            await updateCase(caseName, caseNumber, caseData);
+            await signInPage.visit();
+            await signInPage.login(CTSCUser.email, CTSCUser.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            await additionalApplications.gotoNextStep('Upload additional applications');
+            await additionalApplications.chooseConfidentialC2ApplicationType();
+            await additionalApplications.fillC2ApplicationDetails();
+
+            // Payment details
+            await expect(page.getByText('£255.00')).toBeVisible();
+            await additionalApplications.payForApplication();
+
+            await additionalApplications.checkYourAnsAndSubmit();
+
+            await additionalApplications.tabNavigation('Other applications');
+
+            // can see some basic properties of the application
+            await expect(page.getByText('PBA1234567')).toBeVisible();
+            await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
+            await expect(page.getByText('Within 2 days')).toBeVisible();
+
+            // can see the draft order to be approved
+            await additionalApplications.tabNavigation('Draft orders');
+            await expect(page.getByText('Draft order title')).toBeVisible();
+
+            await additionalApplications.clickSignOut();
+            await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            // LA cannot see some basic properties of the application
+            await additionalApplications.tabNavigation('Other applications');
+            await expect(page.getByText('This is a confidential application and restricted viewing applies')).toBeVisible();
+
+            // LA cannot see the draft order to be approved
+            await additionalApplications.tabNavigation('Draft orders');
+            await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
+        });
 });

@@ -75,7 +75,6 @@
       {
         "id": "105409c7-9ec5-4c3a-9182-ad05d5290243",
         "value": {
-          "id": "${SWANSEA_ORG_ID}",
           "name": "Swansea City Council",
           "email": "swansea@test.com",
           "pbaNumber": "PBA0082848",

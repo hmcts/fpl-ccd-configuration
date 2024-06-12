@@ -44,23 +44,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C37_EDUCATION_SUPERVISION_ORDER",
-    "ListElement": "Education supervision order (C37)",
-    "DisplayOrder": 100
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
     "ListElementCode": "C38B_EXTENSION_OF_AN_EDUCATION_SUPERVISION_ORDER",
     "ListElement": "Extension of an education supervision order (C38B)",
     "DisplayOrder": 110
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C44A_LEAVE_TO_CHANGE_SURNAME",
-    "ListElement": "Leave to change surname (C44A)",
-    "DisplayOrder": 130
   },
   {
     "LiveFrom": "01/01/2017",
@@ -75,13 +61,6 @@
     "ListElementCode": "FL406_POWER_OF_ARREST",
     "ListElement": "Power of arrest (FL406)",
     "DisplayOrder": 155
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C29_RECOVERY_OF_A_CHILD",
-    "ListElement": "Recovery of a child (C29)",
-    "DisplayOrder": 160
   },
   {
     "LiveFrom": "01/01/2017",
@@ -152,13 +131,6 @@
     "ListElementCode": "C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER",
     "ListElement": "Variation of Emergency protection order (C24)",
     "DisplayOrder": 270
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageOrdersUploadType",
-    "ListElementCode": "C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER",
-    "ListElement": "Variation/extension of Education supervision order (C36)",
-    "DisplayOrder": 280
   },
   {
     "LiveFrom": "01/01/2017",
