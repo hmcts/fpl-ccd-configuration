@@ -31,6 +31,7 @@ export class SignInPage extends BasePage{
   }
   async navigateTOCaseDetails(caseNumber:string) {
     await this.page.goto(`${urlConfig.frontEndBaseURL}case-details/${caseNumber}`);
+    expect(this.page.getByText('CCD ID',{exact:true})).toBeVisible();
     await  this.tabNavigation('History');
   }
 
