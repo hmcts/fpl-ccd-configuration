@@ -87,7 +87,7 @@ xui-webapp:
     imagePullPolicy: Always
     replicas: 1
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:pr-3713-6028814-20240610170238
+    image: hmctspublic.azurecr.io/xui/webapp:pr-3710-114817a-20240604173033
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
