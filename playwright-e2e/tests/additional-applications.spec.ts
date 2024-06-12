@@ -6,7 +6,7 @@ import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
 import {createCase, updateCase} from "../utils/api-helper";
 
-test.describe('@local Upload additional applications', () => {
+test.describe(' Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -18,7 +18,7 @@ test.describe('@local Upload additional applications', () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
-  test('LA uploads a C1 application',
+  test('@local LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads an other application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -65,7 +65,7 @@ test.describe('@local Upload additional applications', () => {
       }
     });
 
-  test('LA uploads a C2 application with draft order',
+  test('@local LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
