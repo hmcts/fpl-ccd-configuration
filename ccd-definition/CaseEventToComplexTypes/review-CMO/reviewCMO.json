@@ -302,7 +302,7 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "orderReviewUrgency",
     "ListElementCode": "urgency",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -311,7 +311,7 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "orderReviewUrgency",
     "ListElementCode": "urgencyLabel",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"
   },
   {
