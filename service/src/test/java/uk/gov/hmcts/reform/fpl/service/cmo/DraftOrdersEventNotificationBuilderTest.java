@@ -81,7 +81,7 @@ class DraftOrdersEventNotificationBuilderTest {
         List<ReviewCMOEvent> events = underTest.buildEventsToPublish(caseData);
 
         assertThat(events).usingRecursiveComparison().isEqualTo(List.of(
-            new DraftOrdersApproved(caseData, unwrapElements(ordersToBeSent))));
+            new DraftOrdersApproved(caseData, unwrapElements(ordersToBeSent), List.of())));
     }
 
     @Test
@@ -115,7 +115,7 @@ class DraftOrdersEventNotificationBuilderTest {
 
         assertThat(events).usingRecursiveComparison().isEqualTo(List.of(
             new CaseManagementOrderRejectedEvent(caseData, rejectedCMO),
-            new DraftOrdersApproved(caseData, List.of(approvedC21))));
+            new DraftOrdersApproved(caseData, List.of(approvedC21), List.of())));
     }
 
     @Test
