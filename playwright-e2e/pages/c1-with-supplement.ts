@@ -38,6 +38,7 @@ export class C1WithSupplement extends BasePage {
         await this.notes.click();
         await this.notes.fill('notes');
         await this.uploadDocument.setInputFiles(config.testPdfFile);
+        await this.expectAllUploadsCompleted();
         await this.page.waitForTimeout(6000);
         await this.ackRelatedToCase.check();
         await this.continueButton.click();

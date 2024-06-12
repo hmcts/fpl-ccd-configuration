@@ -16,6 +16,7 @@ export class ManageDocuments extends BasePage {
 
         await this.page.getByRole('textbox', { name: 'Upload a document' })
             .setInputFiles(config.testTextFile);
+        await this.expectAllUploadsCompleted();
 
         await this.page.getByLabel('Document type').selectOption(type);
         // not confidential

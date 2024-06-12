@@ -42,7 +42,32 @@ export const privateSolicitorOrgUser = {
   password: process.env.PRIVATE_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
 };
 
+export const privateSolicitorOrgUserTwo = {
+    email: process.env.PRIVATE_SOLICITOR_ORG_USER_TWO_USERNAME || 'solicitor1@solicitors.uk',
+    password: process.env.PRIVATE_SOLICITOR_ORG_USER_TWO_PASSWORD || defaultPwd,
+};
+
 export const FPLSolicitorOrgUser = {
   email: process.env.FPL_SOLICITOR_ORG_USER_USERNAME || 'solicitoroneorg2@mailinator.com',
   password: process.env.FPL_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
+};
+
+export const wiltshireCountyUserOne = {
+    email: process.env.WILTSHIRE_USER_ONE_USERNAME || 'raghu@wiltshire.gov.uk',
+    password: process.env.WILTSHIRE_USER_ONE_PASSWORD || defaultPwd,
+};
+
+export const wiltshireCountyUserTwo = {
+    email: process.env.WILTSHIRE_USER_TWO_USERNAME || 'sam@wiltshire.gov.uk',
+    password: process.env.WILTSHIRE_USER_TWO_PASSWORD || defaultPwd,
+};
+
+export const swanseaOrgCAAUser = {
+    email: ' james@swansea.gov.uk',
+    password: defaultPwd,
+};
+
+export const WiltshireOrgCAAUser = {
+    email: 'admin@wiltshire.gov.uk',
+    password: defaultPwd,
 };

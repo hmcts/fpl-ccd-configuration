@@ -29,7 +29,10 @@ import { ApproveOrders } from "../pages/approve-orders";
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
+import {Organisation} from "../pages/manage-organisation";
+import {ShareCase} from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
+
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -62,7 +65,10 @@ type CreateFixtures = {
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
+  organisation: Organisation;
+  shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
+
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -189,4 +195,12 @@ export const test = base.extend<CreateFixtures>({
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
   },
+
+    organisation: async ({page}, use) => {
+        await use(new Organisation(page));
+    },
+
+    shareCase: async ({page}, use) => {
+        await use(new ShareCase(page));
+    },
 });
