@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
