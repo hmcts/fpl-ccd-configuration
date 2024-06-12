@@ -83,7 +83,7 @@ export class ManageDocuments extends BasePage {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
-    async RemoveDocuments(type: string) {
+    async removeDocuments() {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.removeDocumentsTest.check();
         await this.clickContinue();

@@ -13,6 +13,7 @@ test.describe('Manage Documents', () => {
     
     const caseData = require('../caseData/mandatorySubmissionFields.json');
     const caseWithResSolicitor = require('../caseData/caseWithRespondentSolicitor.json');
+    const caseWithManageDocumentUploads = require('../caseData/caseWithManageDocumentUploads.json');
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
@@ -103,11 +104,12 @@ test.describe('Manage Documents', () => {
 
     test('LA removes document ', async ({ page, signInPage, manageDocuments }) => {
         caseName = 'LA removes document ' + dateTime.slice(0, 10);
-        await updateCase(caseName, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await manageDocuments.gotoNextStep('Removes documents');
+        await manageDocuments.gotoNextStep('Manage documents');
+        await manageDocuments.removeDocuments();
         await page.getByLabel('Uploaded Document').selectOption('1: hearingDocuments.posStmtList###3ad0ca08-1c4c-48');
         await page.getByLabel('There is a mistake on the').check();
     });
