@@ -2,26 +2,19 @@ import { test, expect } from "../../fixtures/fixtures";
 import { BasePage } from "../../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../../settings/user-credentials";
 
-test("e2e test: Submit basic case @e2e-test @accessibility", async ({
+test("e2e test: add other people @e2e-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren,
-  factorsAffectingParenting,
   applicantDetails,
   allocationProposal,
-  addApplicationDocuments,
   childDetails,
   respondentDetails,
-  welshLangRequirements,
   submitCase,
-  otherProceedings,
-  internationalElement,
-  courtServicesNeeded,
-  c1WithSupplement,
+  otherPeopleInCase,
   page,
   makeAxeBuilder
 }, testInfo) => {
@@ -37,7 +30,7 @@ test("e2e test: Submit basic case @e2e-test @accessibility", async ({
 
   // Add application details
   // Start new case, get case id and assert case id is created
-  await createCase.caseName();
+  await createCase.caseName("e2e add other people");
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
   await createCase.checkCaseIsCreated(createCase.generatedCaseName);
@@ -66,20 +59,6 @@ test("e2e test: Submit basic case @e2e-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Risk and harm to children
-  await startApplication.riskAndHarmToChildren();
-  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
-  // Add application documents
-  await startApplication.addApplicationDetailsHeading.isVisible();
-  await startApplication.addApplicationDocuments();
-  await addApplicationDocuments.uploadDocumentSmokeTest();
-  await startApplication.addApplicationDocumentsInProgress();
-
   // Applicant Details
   await startApplication.applicantDetails();
   await applicantDetails.applicantDetailsNeeded();
@@ -101,26 +80,12 @@ test("e2e test: Submit basic case @e2e-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
-  // Welsh language requirements
-  await startApplication.welshLanguageReq();
-  await welshLangRequirements.welshLanguageSmokeTest();
-  await startApplication.welshLanguageReqUpdated();
-
-  // Other Proceedings
-  await startApplication.otherProceedingsNeeded();
-  await otherProceedings.otherProceedingsSmokeTest();
-
-  // International element
-  await startApplication.internationalElementReqUpdated();
-  await internationalElement.internationalElementSmokeTest();
-
-  // Court Services Needed
-  await startApplication.courtServicesNeededReqUpdated();
-  await courtServicesNeeded.CourtServicesSmoketest();
-
-  // C1 With Supplement
-  await c1WithSupplement.c1WithSupplementSmokeTest();
-
+  //add other people in the case
+  await startApplication.addOtherPeopleInCase()
+  await otherPeopleInCase.personOneToBeGivenNotice();
+  await otherPeopleInCase.personTwoToBeGivenNotice();
+  await otherPeopleInCase.continueAndCheck();
+  
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();

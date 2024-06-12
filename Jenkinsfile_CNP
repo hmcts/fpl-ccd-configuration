@@ -120,6 +120,8 @@ def setupSecretsForIntegrationTests(pipelineConf) {
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
+      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
+      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
     }
   }
 }
@@ -133,6 +135,8 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
+  env.SYSTEM_UPDATE_USER_PASSWORD = ''
+  env.SYSTEM_UPDATE_USER_USERNAME = ''
 }
 
 def setupShutteringSecret() {
