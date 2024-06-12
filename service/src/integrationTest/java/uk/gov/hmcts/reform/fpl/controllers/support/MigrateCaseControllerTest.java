@@ -26,15 +26,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     private static final String INVALID_MIGRATION_ID = "invalid id";
 
-    @MockBean
-    private CaseAccessService caseAccessService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
-    private OrganisationService organisationService;
-
     @Test
     void shouldThrowExceptionWhenMigrationNotMappedForMigrationID() {
         CaseData caseData = CaseData.builder().build();
