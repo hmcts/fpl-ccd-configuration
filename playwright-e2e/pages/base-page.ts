@@ -49,7 +49,7 @@ export class BasePage {
   }
 
   async tabNavigation(tabName: string) {
-    await this.page.getByRole('tab', { name: tabName }).click();
+    await this.page.getByRole('tab', { name: tabName ,exact:true}).click();
   }
 
   async clickContinue() {
