@@ -63,7 +63,7 @@ public class SecurityConfiguration {
 
         http
             .authorizeRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**/*")
+                .requestMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**")
                 .authenticated())
             .csrf(csrf -> csrf.disable())
             .addFilter(authCheckerUserOnlyFilter);
