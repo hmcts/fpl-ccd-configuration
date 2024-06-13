@@ -486,6 +486,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderReviewUrgency",
+    "Label": "Do any of these orders need to be reviewed urgently? If no urgency in any order, select continue only.",
+    "FieldType": "ApproveOrderUrgencyOption",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftCMOExists",
     "Label": "Bundle contains a draft CMO for approval",
     "FieldType": "Text",
