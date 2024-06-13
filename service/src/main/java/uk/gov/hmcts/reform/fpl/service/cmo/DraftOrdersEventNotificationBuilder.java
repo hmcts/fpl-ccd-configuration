@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -37,7 +36,7 @@ public class DraftOrdersEventNotificationBuilder {
 
         List<Element<HearingOrder>> c21s = orders.stream()
             .filter(order -> !order.getValue().getType().isCmo())
-            .collect(toList());
+            .toList();
 
         //If CMO is the only approved/rejected order, then publish specific event for CMO (and generic for others)
         if (optionalCmo.isPresent()) {
