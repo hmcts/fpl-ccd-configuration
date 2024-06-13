@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import org.joda.time.DateTime;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocumentReference {
     @JsonProperty("document_url")
     private final String url;
@@ -17,7 +20,7 @@ public class DocumentReference {
     @JsonProperty("document_binary_url")
     private final String binaryUrl;
     @JsonProperty("upload_timestamp")
-    private final DateTime uploadedTimestamp;
+    private final LocalDateTime uploadedTimestamp;
     @JsonIgnore
     private Long size;
     @JsonIgnore
