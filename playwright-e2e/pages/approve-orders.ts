@@ -8,7 +8,7 @@ export class ApproveOrders extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.yesApproveOrder = page.getByRole('radio', { name: 'Yes' });
-        this.urgentOrder=page.getByLabel('Oneormoreoftheorders');
+        this.urgentOrder=page.getByLabel('One or more of the orders');
     }
 
     async navigateToPageViaNextStep() {
