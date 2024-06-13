@@ -21,6 +21,8 @@ export class ManageDocuments extends BasePage {
     readonly moreDocumentsOptions: Locator;
     readonly changeFolder: Locator;
     readonly threshold: Locator;
+    readonly addNew: Locator;
+    readonly no: Locator;
     
 
     constructor(page: Page) {
@@ -42,6 +44,8 @@ export class ManageDocuments extends BasePage {
         this.moreDocumentsOptions = page.getByRole('button', { name: 'More document options', exact: true });
         this.changeFolder = page.getByText('Change folder');
         this.threshold = page.getByLabel('Threshold', { exact: true });
+        this.addNew = page.getByRole('button', { name: 'Add new' });
+        this.no=page.getByRole('radio', { name: 'No' });
 
     }
     async uploadDocuments(type: string) {
@@ -71,6 +75,8 @@ export class ManageDocuments extends BasePage {
         await this.isDocumentRelatedToCase.check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
+        await this.addNew.check();
+        await this .no.check();
     }
     async uploadConfidentialDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
