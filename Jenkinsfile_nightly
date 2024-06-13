@@ -3,7 +3,7 @@
 properties([
     pipelineTriggers([cron('H 17 * * 1-5')]),
     parameters([
-        string(name: 'FE_BASE_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
+        string(name: 'FE_BASE_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net/',
             description: 'The URL you want to run the full functional tests against'),
         string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
             description: 'The URL of case service callbacks'),
