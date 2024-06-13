@@ -35,7 +35,6 @@ export class SignInPage {
     await this.emailInputLocator.fill(email);
     await this.passwordInputLocator.fill(password);
     await this.signinButtonLocator.click();
-    await this.page.getByRole("button", {name: 'Reject analytics cookies'}).click();
   }
 
   async isSignedIn() {
