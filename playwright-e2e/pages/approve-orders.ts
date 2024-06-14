@@ -3,10 +3,12 @@ import { expect, Locator, Page } from "@playwright/test";
 
 export class ApproveOrders extends BasePage {
     readonly yesApproveOrder: Locator;
+    readonly urgentOrder: Locator;
 
     public constructor(page: Page) {
         super(page);
         this.yesApproveOrder = page.getByRole('radio', { name: 'Yes' });
+        this.urgentOrder=page.getByLabel('One or more of the orders');
     }
 
     async navigateToPageViaNextStep() {
@@ -16,6 +18,8 @@ export class ApproveOrders extends BasePage {
 
     async approveOrders() {
         await this.yesApproveOrder.click();
+        await this.clickContinue();
+        await this.urgentOrder.check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
         await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();

@@ -3,17 +3,12 @@
 properties([
     pipelineTriggers([cron('H 17 * * 1-5')]),
     parameters([
-        string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
+        string(name: 'FE_BASE_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net/',
             description: 'The URL you want to run the full functional tests against'),
         string(name: 'CASE_SERVICE_URL', defaultValue: 'http://fpl-case-service-aat.service.core-compute-aat.internal',
             description: 'The URL of case service callbacks'),
         string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
             description: 'The URL of idam api'),
-        string(name: 'SWANSEA_ORG_ID', defaultValue: '62LYJRF',
-            description: 'The organisation id of Swansea local authority'),
-        string(name: 'FUNCTIONAL_TESTS_WORKERS',
-            defaultValue: '8',
-            description: 'Number of workers running functional tests'),
     ])
 ])
 
@@ -97,7 +92,6 @@ withNightlyPipeline(type, product, component) {
     before('fullFunctionalTest') {
         yarnBuilder.yarn('yarn-update')
         yarnBuilder.yarn('install-dependencies')
-        env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
         env.MOCKED_PAYMENTS = false
         env.TEST_RETRIES = 5
         env.TESTS_FOR_ACCESSIBILITY = true

@@ -40,8 +40,8 @@ This repository contains automation tests that can be run locally. To set up the
 ENVIRONMENT=aat
 FE_BASE_URL=https://example.com/login
 AAT_BASE_URL=https://example.com
-AAT_IDAM_URL=https://example.com
-AAT_SERVICE_URL=https://example.com
+IDAM_API_URL=https://example.com
+CASE_SERVICE_URL=https://example.com
 
 # userCredentials and Passwords
 E2E_TEST_PASSWORD=passwordhere
