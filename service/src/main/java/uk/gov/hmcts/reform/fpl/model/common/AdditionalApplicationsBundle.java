@@ -82,7 +82,7 @@ public class AdditionalApplicationsBundle {
     @JsonIgnore
     public String getApplicantName() {
         try {
-            // check all possible C2 Bundles
+            // check all possible C2 Bundles TODO SIMPLIFY THIS IF BUSINESS LOGIC MEANS EITHER CONF OR NON CONF FIELD
             for (Field f : getClass().getDeclaredFields()) {
                 Object field = f.get(this);
                 if (isNotEmpty(field) && field instanceof C2DocumentBundle
