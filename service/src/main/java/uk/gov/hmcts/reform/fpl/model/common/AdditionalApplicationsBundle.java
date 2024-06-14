@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import java.lang.reflect.Field;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -86,8 +85,8 @@ public class AdditionalApplicationsBundle {
             // check all possible C2 Bundles
             for (Field f : getClass().getDeclaredFields()) {
                 Object field = f.get(this);
-                if (!isEmpty(field) && field instanceof C2DocumentBundle
-                    && !isNotEmpty(((C2DocumentBundle) field).getApplicantName())) {
+                if (isNotEmpty(field) && field instanceof C2DocumentBundle
+                    && isNotEmpty(((C2DocumentBundle) field).getApplicantName())) {
                     return ((C2DocumentBundle) field).getApplicantName();
                 }
             }
