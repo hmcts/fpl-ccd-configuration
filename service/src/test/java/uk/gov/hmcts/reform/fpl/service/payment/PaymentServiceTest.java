@@ -265,6 +265,23 @@ class PaymentServiceTest {
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
         }
+        @Test
+
+        void shouldMakeCorrectPaymentForConfidentialAdditionalApplications() {
+            CaseData caseData = buildConfidentialCaseData(CLIENT_CODE, CUSTOMER_REFERENCE,
+                "Swansea City Council, Applicant");
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .organisationName("Swansea City Council")
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+        }
 
         @Test
         void shouldMakeCorrectPaymentForAdditionalApplicationsWithCorrectNameIfRespondent() {
@@ -363,6 +380,21 @@ class PaymentServiceTest {
                 .additionalApplicationsBundle(List.of(
                     element(AdditionalApplicationsBundle.builder()
                         .c2DocumentBundle(C2DocumentBundle.builder()
+                            .applicantName(applicantName)
+                            .build())
+                        .pbaPayment(PBAPayment.builder()
+                            .clientCode(clientCode)
+                            .fileReference(customerReference)
+                            .pbaNumber(PBA_NUMBER)
+                            .build()).build()))).build();
+        }
+
+        private CaseData buildConfidentialCaseData(String clientCode, String customerReference, String applicantName) {
+            return CaseData.builder()
+                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+                .additionalApplicationsBundle(List.of(
+                    element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
                             .applicantName(applicantName)
                             .build())
                         .pbaPayment(PBAPayment.builder()
