@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,8 +14,10 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.ApproveOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
@@ -39,6 +43,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
@@ -115,9 +120,19 @@ class CaseManagementOrderIssuedEventHandlerTest {
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(CASE_DATA, ORDER, IssuedOrderType.CMO);
     }
 
-    @Test
-    void shouldNotifyLocalAuthority() {
+    static Stream<Boolean> provideBooleanValues() {
+        return Stream.of(true, false, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyLocalAuthority(Boolean urgency) {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        if (urgency != null) {
+            given(CASE_DATA.getOrderReviewUrgency()).willReturn(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
         given(localAuthorityRecipients.getRecipients(
             RecipientsRequest.builder().caseData(CASE_DATA).build()
         )).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -133,9 +148,16 @@ class CaseManagementOrderIssuedEventHandlerTest {
         );
     }
 
-    @Test
-    void shouldGovNotifyCafcassWelsh() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldGovNotifyCafcassWelsh(Boolean urgency) {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
+        if (urgency != null) {
+            given(CASE_DATA.getOrderReviewUrgency()).willReturn(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
             .willReturn(Optional.of(new Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
@@ -149,9 +171,17 @@ class CaseManagementOrderIssuedEventHandlerTest {
         );
     }
 
-    @Test
-    void shouldNotGovNotifyCafcassWhenCafcassIsEngland() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotGovNotifyCafcassWhenCafcassIsEngland(Boolean urgency) {
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
         given(CASE_DATA.getCaseLaOrRelatingLa()).willReturn(LOCAL_AUTHORITY_CODE);
+        if (urgency != null) {
+            given(CASE_DATA.getOrderReviewUrgency()).willReturn(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
         given(cafcassLookupConfiguration.getCafcassWelsh(LOCAL_AUTHORITY_CODE))
                 .willReturn(Optional.empty());
 
@@ -195,9 +225,15 @@ class CaseManagementOrderIssuedEventHandlerTest {
         );
     }
 
-    @Test
-    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyEmailRepresentativesExcludingUnselectedOthersWhenServingOthersIsEnabled(Boolean urgency) {
         given(CASE_DATA.getCaseLocalAuthority()).willReturn(LOCAL_AUTHORITY_CODE);
+        if (urgency != null) {
+            given(CASE_DATA.getOrderReviewUrgency()).willReturn(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
         given(representativesInbox.getEmailsByPreference(CASE_DATA, EMAIL))
             .willReturn(newHashSet("barney@rubble.com", "andrew@rubble.com"));
         given(otherRecipientsInbox.getNonSelectedRecipients(eq(EMAIL), eq(CASE_DATA), any(), any()))
@@ -211,8 +247,14 @@ class CaseManagementOrderIssuedEventHandlerTest {
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, "barney@rubble.com", EMAIL_REP_CMO_TEMPLATE_DATA, CASE_ID);
     }
 
-    @Test
-    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled() {
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldNotifyDigitalRepresentativesAndExcludeUnselectedOthersWhenServingOthersIsEnabled(Boolean urgency) {
+        if (urgency != null) {
+            given(CASE_DATA.getOrderReviewUrgency()).willReturn(ApproveOrderUrgencyOption.builder()
+                .urgency(List.of(YesNo.from(urgency)))
+                .build());
+        }
         given(representativesInbox.getEmailsByPreference(CASE_DATA, DIGITAL_SERVICE))
             .willReturn(newHashSet("fred@flinstone.com", "barney@rubble.com"));
         given(cmoContentProvider.buildCMOIssuedNotificationParameters(CASE_DATA, CMO, DIGITAL_SERVICE))
