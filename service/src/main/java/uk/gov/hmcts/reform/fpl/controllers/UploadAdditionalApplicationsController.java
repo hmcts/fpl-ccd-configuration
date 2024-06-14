@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
