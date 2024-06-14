@@ -299,7 +299,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 try {
                     FeesData feesData = applicationsFeeCalculator.getFeeDataForAdditionalApplications(lastBundle);
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
-                } catch (FeeRegisterException | PaymentsApiException paymentException) {
+                } catch (Exception paymentException) {
                     log.error("Additional applications payment for case {} failed", caseDetails.getId());
                     publishEvent(new FailedPBAPaymentEvent(caseData,
                         uploadAdditionalApplicationsService.getApplicationTypes(lastBundle),

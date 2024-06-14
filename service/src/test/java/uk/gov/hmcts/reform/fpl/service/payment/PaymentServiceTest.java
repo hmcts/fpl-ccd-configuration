@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -31,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -265,11 +269,12 @@ class PaymentServiceTest {
 
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
         }
-        @Test
 
-        void shouldMakeCorrectPaymentForConfidentialAdditionalApplications() {
+        @ParameterizedTest
+        @MethodSource("getC2BundleSubfields")
+        void shouldMakeCorrectPaymentForConfidentialAdditionalApplications(String confFieldName) {
             CaseData caseData = buildConfidentialCaseData(CLIENT_CODE, CUSTOMER_REFERENCE,
-                "Swansea City Council, Applicant");
+                "Swansea City Council, Applicant", confFieldName);
 
             CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
                 .customerReference("customerReference")
@@ -389,27 +394,45 @@ class PaymentServiceTest {
                             .build()).build()))).build();
         }
 
-        private CaseData buildConfidentialCaseData(String clientCode, String customerReference, String applicantName) {
+        private CaseData buildConfidentialCaseData(String clientCode, String customerReference, String applicantName,
+                                                   String fieldName) {
+            AdditionalApplicationsBundle appsBundle = AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder()
+                    .clientCode(clientCode)
+                    .fileReference(customerReference)
+                    .pbaNumber(PBA_NUMBER)
+                    .build()).build();
+
+            ReflectionTestUtils.setField(appsBundle, fieldName, C2DocumentBundle.builder()
+                .applicantName(applicantName)
+                .build());
+
             return CaseData.builder()
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
                 .additionalApplicationsBundle(List.of(
-                    element(AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                            .applicantName(applicantName)
-                            .build())
-                        .pbaPayment(PBAPayment.builder()
-                            .clientCode(clientCode)
-                            .fileReference(customerReference)
-                            .pbaNumber(PBA_NUMBER)
-                            .build()).build()))).build();
+                    element(appsBundle))).build();
         }
-
 
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()
                 .totalAmount(feeDto.getCalculatedAmount())
                 .fees(List.of(feeDto))
                 .build();
+        }
+
+        private static Stream<Arguments> getC2BundleSubfields() {
+            Stream.Builder<Arguments> stream = Stream.builder();
+
+            stream.add(Arguments.of("c2DocumentBundle"));
+            stream.add(Arguments.of("c2DocumentBundleLA"));
+            stream.add(Arguments.of("c2DocumentBundleConfidential"));
+            for (int i = 0; i < 9; i++) {
+                stream.add(Arguments.of("c2DocumentBundleResp" + i));
+            }
+            for (int i = 0; i < 15; i++) {
+                stream.add(Arguments.of("c2DocumentBundleChild" + i));
+            }
+            return stream.build();
         }
     }
 
@@ -816,4 +839,6 @@ class PaymentServiceTest {
             .orders(orders)
             .build();
     }
+
+
 }
