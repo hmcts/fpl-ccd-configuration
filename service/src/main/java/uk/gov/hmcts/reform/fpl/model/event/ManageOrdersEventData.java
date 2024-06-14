@@ -151,6 +151,8 @@ public class ManageOrdersEventData {
     String manageOrdersParagraphs;
     String manageOrdersCostOrders;
 
+    String manageOrdersNonMolestationOrder;
+
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {
         if (isEmpty(manageOrdersChildArrangementsOrderTypes) && manageOrdersChildArrangementsOrderType != null) {
