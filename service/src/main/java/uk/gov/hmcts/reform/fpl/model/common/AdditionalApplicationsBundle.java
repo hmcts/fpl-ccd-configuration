@@ -6,10 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.exceptions.removaltool.MissingApplicationException;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 
+import java.lang.reflect.Field;
+
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -80,13 +82,23 @@ public class AdditionalApplicationsBundle {
 
     @JsonIgnore
     public String getApplicantName() {
-        if (isNotEmpty(c2DocumentBundle)) {
-            return c2DocumentBundle.getApplicantName();
+        try {
+            // check all possible C2 Bundles
+            for (Field f : getClass().getDeclaredFields()) {
+                Object field = f.get(this);
+                if (!isEmpty(field) && field instanceof C2DocumentBundle
+                    && !isNotEmpty(((C2DocumentBundle) field).getApplicantName())) {
+                    return ((C2DocumentBundle) field).getApplicantName();
+                }
+            }
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            return "Applicant";
         }
+        // finally check the other applications bundle
         if (isNotEmpty(otherApplicationsBundle)) {
             return otherApplicationsBundle.getApplicantName();
         }
-        throw new MissingApplicationException(uploadedDateTime);
+        return "Applicant";
     }
 
     public YesNo getHasConfidentialC2() {
