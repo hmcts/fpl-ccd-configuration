@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Value
 @Builder(toBuilder = true)
@@ -56,7 +59,7 @@ public class ReviewDraftOrdersData {
             "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
             "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
             "draftOrder8Document", "draftOrder9Document", "draftOrder10Document", "reviewDraftOrdersTitles",
-            "draftOrdersTitlesInBundle"
+            "draftOrdersTitlesInBundle", "draftOrdersApproved"
         };
     }
 
@@ -66,6 +69,20 @@ public class ReviewDraftOrdersData {
             "reviewDecision5", "reviewDecision6", "reviewDecision7", "reviewDecision8", "reviewDecision9",
             "reviewDecision10"
         };
+    }
+
+    @JsonIgnore
+    public boolean hasADraftBeenApproved() {
+        return (!isEmpty(reviewDecision1) && reviewDecision1.hasBeenApproved())
+            || (!isEmpty(reviewDecision2) && reviewDecision2.hasBeenApproved())
+            || (!isEmpty(reviewDecision3) && reviewDecision3.hasBeenApproved())
+            || (!isEmpty(reviewDecision4) && reviewDecision4.hasBeenApproved())
+            || (!isEmpty(reviewDecision5) && reviewDecision5.hasBeenApproved())
+            || (!isEmpty(reviewDecision6) && reviewDecision6.hasBeenApproved())
+            || (!isEmpty(reviewDecision7) && reviewDecision7.hasBeenApproved())
+            || (!isEmpty(reviewDecision8) && reviewDecision8.hasBeenApproved())
+            || (!isEmpty(reviewDecision9) && reviewDecision9.hasBeenApproved())
+            || (!isEmpty(reviewDecision10) && reviewDecision10.hasBeenApproved());
     }
 
 }
