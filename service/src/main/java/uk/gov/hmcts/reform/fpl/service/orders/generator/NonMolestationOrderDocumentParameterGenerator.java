@@ -42,13 +42,15 @@ public class NonMolestationOrderDocumentParameterGenerator implements DocmosisPa
             .respondents(caseData.getRespondents1().stream()
                 .map(element -> element.getValue().getParty())
                 .map(respondent -> {
-                    final boolean isConfidential = equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
+                    final boolean isConfidential =
+                        equalsIgnoreCase(respondent.getContactDetailsHidden(), YES.getValue());
                     return DocmosisRespondent.builder()
                         .name(respondent.getFullName())
                         .dateOfBirth(respondent.getDateOfBirth() != null
                             ? formatLocalDateToString(respondent.getDateOfBirth(), LONG) : "")
                         .address(!isConfidential && respondent.getAddress() != null
-                            ? defaultIfEmpty(respondent.getAddress().getAddressAsString(", "), "") : "")
+                            ? defaultIfEmpty(respondent.getAddress().getAddressAsString(", "), "")
+                            : "")
                         .build();
                 })
                 .collect(toList()))
