@@ -20,13 +20,13 @@ export class Organisation extends BasePage {
     async searchUnassignedCase(caseNumber: string, caseName: string) {
         await this.manageOrganisationLink.click();
         await this.unassignedCaseLink.click();
-        await expect(this.page.getByRole('heading', {name: 'Unassigned Cases'})).toBeVisible();
+        await expect(this.page.getByRole('heading', {name: 'Unassigned Cases',exact:true})).toBeVisible();
         await expect(this.page.getByLabel('CARE_SUPERVISION_EPO').getByText('CARE_SUPERVISION_EPO', { exact: true })).toBeVisible();
         await this.showcaseFilterButton.click();
         await this.caseNumberSearchText.fill(caseNumber);
         await this.applyFilterButton.click();
-       // await this.applyFilterButton.press('Enter',{delay:800});
-        await expect(this.page.getByText('Showing 1 to 1 of 1')).toBeVisible();
-        await expect(this.page.getByRole('cell', {name: `${caseName}`,exact:true})).toBeVisible();
+        await expect(this.page.getByLabel('CARE_SUPERVISION_EPO')).toContainText('Showing 1 to 1 of 1 CARE_SUPERVISION_EPO cases');
+        await this.page.getByText('Showing 1 to 1 of 1 CARE_SUPERVISION_EPO casesSelect any CARE_SUPERVISION_EPO').click();
+        await expect(this.page.getByText(`${caseName}`,{exact:true})).toBeVisible();
     }
 }
