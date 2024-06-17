@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.PeopleInCaseService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -103,6 +105,7 @@ class UploadAdditionalApplicationsServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final IdamClient idamClient = mock(IdamClient.class);
     private final UserService user = mock(UserService.class);
+    private final ManageDocumentService manageDocumentService = mock(ManageDocumentService.class);
     private final DocumentUploadHelper uploadHelper = mock(DocumentUploadHelper.class);
     private final DocumentConversionService conversionService = mock(DocumentConversionService.class);
     private final PeopleInCaseService peopleInCaseService = mock(PeopleInCaseService.class);
@@ -121,12 +124,14 @@ class UploadAdditionalApplicationsServiceTest {
             .willReturn(SEALED_SUPPLEMENT_DOCUMENT);
         given(documentSealingService.sealDocument(DOCUMENT, COURT_1, SealType.ENGLISH))
             .willReturn(SEALED_DOCUMENT);
-        underTest = new UploadAdditionalApplicationsService(
-            time, user, uploadHelper, documentSealingService, conversionService);
+        underTest = new UploadAdditionalApplicationsService(time, user, manageDocumentService, uploadHelper,
+            documentSealingService, conversionService);
         given(user.isHmctsUser()).willReturn(true);
+        given(manageDocumentService.getUploaderType(any())).willReturn(DocumentUploaderType.HMCTS);
         given(uploadHelper.getUploadedDocumentUserDetails()).willReturn(HMCTS);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldBuildExpectedC2DocumentBundle() {
         Supplement supplement = createSupplementsBundle();
@@ -153,7 +158,10 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getApplicationReviewed()).isEqualTo(YesNo.NO);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(List.of())
+            .build());
 
         // No longer called in this method
         // verify(conversionService).convertToPdf(DOCUMENT);
@@ -195,6 +203,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildOtherApplicationsBundleWithOtherApplicantName() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
@@ -224,7 +233,11 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
         assertThat(actual.getOtherApplicationsBundle().getRespondents()).isEmpty();
 
-        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement,
+            createSupportingEvidenceBundleBuilder()
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .uploaderCaseRoles(List.of())
+                .build());
     }
 
     @ParameterizedTest
@@ -246,6 +259,7 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
@@ -282,8 +296,14 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
-        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
-        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, createSupportingEvidenceBundleBuilder()
+            .uploaderType(DocumentUploaderType.HMCTS)
+            .uploaderCaseRoles(List.of()).build());
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement,
+            createSupportingEvidenceBundleBuilder("other document")
+                .uploaderCaseRoles(List.of())
+                .uploaderType(DocumentUploaderType.HMCTS)
+                .build());
     }
 
     @Test
@@ -718,17 +738,25 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
     }
 
+    private SupportingEvidenceBundle.SupportingEvidenceBundleBuilder createSupportingEvidenceBundleBuilder() {
+        return createSupportingEvidenceBundleBuilder("Supporting document");
+    }
+
+    private SupportingEvidenceBundle.SupportingEvidenceBundleBuilder
+        createSupportingEvidenceBundleBuilder(String name) {
+        return SupportingEvidenceBundle.builder()
+            .name(name)
+            .notes("Document notes")
+            .document(SUPPORTING_DOCUMENT)
+            .dateTimeReceived(time.now().minusDays(1));
+    }
+
     private SupportingEvidenceBundle createSupportingEvidenceBundle() {
         return createSupportingEvidenceBundle("Supporting document");
     }
 
     private SupportingEvidenceBundle createSupportingEvidenceBundle(String name) {
-        return SupportingEvidenceBundle.builder()
-            .name(name)
-            .notes("Document notes")
-            .document(SUPPORTING_DOCUMENT)
-            .dateTimeReceived(time.now().minusDays(1))
-            .build();
+        return createSupportingEvidenceBundleBuilder(name).build();
     }
 
     private Supplement createSupplementsBundle() {
