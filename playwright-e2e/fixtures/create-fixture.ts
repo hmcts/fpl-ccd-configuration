@@ -22,12 +22,14 @@ import { RespondentDetails } from "../pages/respondent-details";
 import { LegalCounsel } from "../pages/legal-counsel";
 import { ChildDetails } from "../pages/child-details";
 import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
+import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
 import { ApproveOrders } from "../pages/approve-orders";
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
+import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -42,9 +44,9 @@ type CreateFixtures = {
   uploadDraftOrders: UploadDraftOrders;
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
-  allocationProposal : AllocationProposal;
+  allocationProposal: AllocationProposal;
   additionalApplications: AdditionalApplications;
-  addApplicationDocuments : AddApplicationDocuments;
+  addApplicationDocuments: AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
@@ -53,12 +55,14 @@ type CreateFixtures = {
   respondentDetails: RespondentDetails;
   legalCounsel: LegalCounsel;
   welshLangRequirements: WelshLangRequirements;
+  otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
   approveOrders: ApproveOrders;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
+  otherPeopleInCase: OtherPeopleInCase;
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -108,7 +112,7 @@ export const test = base.extend<CreateFixtures>({
 
   uploadDraftOrders: async ({ page }, use) => {
     await use(new UploadDraftOrders(page));
-   },
+  },
 
   manageDocuments: async ({ page }, use) => {
     await use(new ManageDocuments(page));
@@ -154,6 +158,10 @@ export const test = base.extend<CreateFixtures>({
     await use(new WelshLangRequirements(page));
   },
 
+  otherProceedings: async ({ page }, use) => {
+    await use(new OtherProceedings(page));
+  },
+  
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
   },
@@ -173,6 +181,10 @@ export const test = base.extend<CreateFixtures>({
   c1WithSupplement: async ({ page }, use) => {
      await use(new C1WithSupplement(page));
   },
+
+  otherPeopleInCase: async ({ page }, use) => {
+    await use(new OtherPeopleInCase(page));
+ },
 
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
