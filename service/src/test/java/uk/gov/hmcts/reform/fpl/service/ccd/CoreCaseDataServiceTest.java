@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -17,16 +18,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.exceptions.RetryFailureException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -61,6 +61,13 @@ class CoreCaseDataServiceTest {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
     }
 
+    @Test
+    void shouldThrowExceptionInRecoverMethod() {
+        assertThatThrownBy(() ->
+            service.recover(new Exception(), 1L, "test-event", caseDetails -> Map.of(), false))
+            .isInstanceOf(RetryFailureException.class);
+    }
+
     @Nested
     class StartAndSubmitEvent {
         String eventId = "sample-event";
@@ -75,29 +82,8 @@ class CoreCaseDataServiceTest {
             when(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(CASE_ID), eventId))
                 .thenReturn(buildStartEventResponse(eventId, eventToken));
-        }
 
-        @Test
-        void shouldStartAndSubmitEventWithoutEventData() {
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, emptyMap()));
-        }
-
-        @Test
-        void shouldStartAndSubmitEventWithEventData() {
-            Map<String, Object> eventData = Map.of("A", "B");
-            service.triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, eventId, eventData);
-
-            verify(coreCaseDataApi).startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId,
-                JURISDICTION, CASE_TYPE, Long.toString(CASE_ID), eventId);
-            verify(coreCaseDataApi).submitEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
-                CASE_TYPE, Long.toString(CASE_ID), true,
-                buildCaseDataContent(eventId, eventToken, eventData));
+            ReflectionTestUtils.setField(service, "self", service);
         }
 
         @Test
@@ -107,17 +93,6 @@ class CoreCaseDataServiceTest {
             service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
             verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
         }
-    }
-
-    @Test
-    void shouldTriggerUpdateCaseEventWhenCaseIsRequestedToBeUpdated() {
-        final Map<String, Object> caseUpdate = Map.of("a", "b");
-
-        doNothing().when(service).triggerEvent(any(), any(), any(), any(), any());
-
-        service.updateCase(CASE_ID, caseUpdate);
-
-        verify(service).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, "internal-change-UPDATE_CASE", caseUpdate);
     }
 
     @Test

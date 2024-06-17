@@ -120,6 +120,8 @@ def setupSecretsForIntegrationTests(pipelineConf) {
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
       env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
+      env.SYSTEM_UPDATE_USER_PASSWORD = "${SYSTEM_UPDATE_USER_PASSWORD}"
+      env.SYSTEM_UPDATE_USER_USERNAME = "${SYSTEM_UPDATE_USER_USERNAME}"
     }
   }
 }
@@ -133,6 +135,8 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
   env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
+  env.SYSTEM_UPDATE_USER_PASSWORD = ''
+  env.SYSTEM_UPDATE_USER_USERNAME = ''
 }
 
 def setupShutteringSecret() {
@@ -198,12 +202,10 @@ withPipeline(type, product, component) {
   before('fullFunctionalTest:preview'){
       yarnBuilder.yarn('yarn-update')
       yarnBuilder.yarn('install-dependencies')
-      env.AAT_IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
-      env.AAT_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net/"
-      env.SWANSEA_ORG_ID = "62LYJRF"
+      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+      env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.FE_BASE_URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       env.MOCKED_PAYMENTS = false
-      env.FUNCTIONAL_TESTS_WORKERS = 1
       env.TEST_RETRIES = 1
 
   }
@@ -243,9 +245,7 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL = "https://fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.URL = "https://xui-fpl-case-service-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.SWANSEA_ORG_ID = "62LYJRF"
     env.MOCKED_PAYMENTS = false
-    env.PARALLEL_CHUNKS = 12
     env.TEST_RETRIES = 3
   }
 

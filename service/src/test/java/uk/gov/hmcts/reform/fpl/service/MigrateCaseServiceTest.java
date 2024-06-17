@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -237,11 +239,31 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
                 .organisation(newOrganisation)
                 .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void updateOutsourcingPolicyToThirdParty() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                CaseRole.EPSMANAGING.formattedName());
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(CaseRole.EPSMANAGING.formattedName())
                 .build());
         }
 
@@ -3212,6 +3234,41 @@ class MigrateCaseServiceTest {
         void shouldReturnErrorIfSubmittedC1NotFound() {
             CaseData caseData = CaseData.builder().build();
             assertThrows(AssertionError.class, () -> underTest.removeSubmittedC1Document(caseData, MIGRATION_ID));
+        }
+
+        @Test
+        void shouldRemoveNamesFromProceedings() {
+            final UUID otherProceeding1 = UUID.randomUUID();
+            final UUID otherProceeding2 = UUID.randomUUID();
+
+            List<Element<Proceeding>> otherProceedings = new ArrayList<>();
+            otherProceedings.add(element(otherProceeding1, Proceeding.builder().ended("yes").children("Bob").build()));
+            otherProceedings.add(element(otherProceeding2, Proceeding.builder().started("no").children("Jim").build()));
+
+            Proceeding proceeding = Proceeding.builder()
+                .additionalProceedings(otherProceedings)
+                .children("Amy")
+                .build();
+
+            List<Element<Proceeding>> expectedOtherProceedings = new ArrayList<>();
+            expectedOtherProceedings.add(element(otherProceeding1, Proceeding.builder().ended("yes").build()));
+            expectedOtherProceedings.add(element(otherProceeding2, Proceeding.builder().started("no").build()));
+
+            Proceeding expectedProceeding = Proceeding.builder()
+                .additionalProceedings(expectedOtherProceedings)
+                .build();
+
+            CaseData caseData = CaseData.builder().proceeding(proceeding).build();
+
+            Map<String, Object> actual = underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID);
+
+            assertThat(actual).extracting("proceeding").isEqualTo(expectedProceeding);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNullProceedings() {
+            CaseData caseData = CaseData.builder().build();
+            assertThrows(AssertionError.class, () -> underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID));
         }
     }
 }
