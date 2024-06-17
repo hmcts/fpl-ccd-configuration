@@ -176,7 +176,7 @@ public class ManageDocumentService {
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
         return List.of(HMCTS).contains(getUploaderType(caseData));
     }
-    
+
     private Element<? extends WithDocument> handlePlacementResponseRemoval(CaseData caseData,
                                                                            UUID documentElementId,
                                                                            Map<String, Object> output) {
@@ -763,7 +763,7 @@ public class ManageDocumentService {
         final List<Pair<String, String>> ret = new ArrayList<>();
 
         Set<CaseRole> currentUploaderCaseRoles;
-        if (uploaderType != HMCTS && uploaderType != CAFCASS) {
+        if (currentUploaderType != HMCTS && currentUploaderType != CAFCASS) {
             currentUploaderCaseRoles = Optional
                 .ofNullable(userService.getCaseRoles(caseData.getId()))
                 .orElse(Set.of());
