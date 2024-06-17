@@ -424,6 +424,14 @@ class UploadAdditionalApplicationsServiceTest {
                     .build(),
                 List.of(C2_APPLICATION)),
             Arguments.of(AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundleConfidential(
+                        C2DocumentBundle.builder()
+                            .type(WITHOUT_NOTICE)
+                            .document(DocumentReference.builder().build())
+                            .build())
+                    .build(),
+                List.of(C2_APPLICATION)),
+            Arguments.of(AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(
                         OtherApplicationsBundle.builder()
                             .applicationType(C1_PARENTAL_RESPONSIBILITY)

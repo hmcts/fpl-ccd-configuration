@@ -66,7 +66,7 @@ public class UploadAdditionalApplicationsService {
 
     public List<ApplicationType> getApplicationTypes(AdditionalApplicationsBundle bundle) {
         List<ApplicationType> applicationTypes = new ArrayList<>();
-        if (!isNull(bundle.getC2DocumentBundle())) {
+        if (!isNull(bundle.getC2DocumentBundle()) || !isNull(bundle.getC2DocumentBundleConfidential())) {
             applicationTypes.add(C2_APPLICATION);
         }
 
