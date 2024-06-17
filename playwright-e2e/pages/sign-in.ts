@@ -48,7 +48,7 @@ export class SignInPage {
   }
 
   async isLoggedInMO(){
-       await expect(this.page.getByRole('heading', { name: 'Organisation' })).toBeVisible();
+       await expect(this.page.getByRole('heading', { name: 'Organisation' ,exact:true})).toBeVisible();
   }
 }
 
