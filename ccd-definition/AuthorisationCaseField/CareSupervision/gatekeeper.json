@@ -4694,7 +4694,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageOrdersAllowedContact1",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
