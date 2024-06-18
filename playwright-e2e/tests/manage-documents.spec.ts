@@ -56,7 +56,7 @@ test.describe('Manage Documents', () => {
         }
     });
 
-    test('LA uploads confidential documents visible in CFV', async ({ signInPage, manageDocuments }) => {
+    test('LA uploads documents visible in CFV', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
@@ -65,19 +65,24 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements');
-        await manageDocuments.clickSignOut();
+
+        // position is visble under CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         //Login as respondence solicitor
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.navigateTOCaseDetails(caseNumber);
 
-        // Documents should not be visible in cfv
+        //go to CFV and assert Position statement not visble
         await signInPage.navigateTOCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
     });
 
-    test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView }) => {
+    test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
@@ -85,9 +90,24 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
+
+        // position is visble under CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+
+        //Login as respondence solicitor
+        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.visit();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        //go to CFV and assert Position statement not visble
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
     });
 
-    test('HMCTS uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments }) => {
+    test('HMCTS uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments, caseFileView }) => {
         caseName = 'HMCTS uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
@@ -96,31 +116,47 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
-        await manageDocuments.clickSignOut();
+
+        //Login as respondence solicitor
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.visit();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        //go to CFV and assert Position statement not visble
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
     });
 
-    test('LA uploads correspodence documents visible in correct folder ', async ({ signInPage, manageDocuments, caseFileView }) => {
+    test('LA uploads correspodence documents visible in correct folder ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads correspondence documents visible in correct order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('Position Statements');
-        await manageDocuments.clickSignOut();
-        await signInPage.login('solicitor1@solicitors.uk', 'Password12');
-        await signInPage.login(CTSCUser.email, CTSCUser.password);
+        await manageDocuments.uploadConfidentialDocuments('Court Correspondence');
+
+        // Check CFV
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
     });
 
-    test('LA removes document ', async ({ page, signInPage, manageDocuments }) => {
+    test('LA removes document ', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA removes document ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.uploadDocuments('Position Statements');
+
         //shows in cfv
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         // remove documents
         await manageDocuments.gotoNextStep('Manage documents');
