@@ -6,6 +6,17 @@
     "TabID": "PaymentsTab",
     "TabLabel": "Payment History",
     "TabDisplayOrder": 17,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "PaymentsTab",
+    "TabLabel": "Payment History",
+    "TabDisplayOrder": 17,
     "CaseFieldID": "paymentHistory",
     "TabFieldDisplayOrder": 1
   }
