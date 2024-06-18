@@ -401,7 +401,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "RoleName": "allocated-legal-advisor",
+    "RoleName": "allocated-legal-adviser",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-judiciary"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "hearing-legal-adviser",
     "ReadOnly": "N",
     "AccessProfiles": "caseworker-publiclaw-judiciary"
   },
