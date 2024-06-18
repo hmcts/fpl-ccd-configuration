@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.rd.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Jacksonized
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JudicialUserRequest {
 
     @JsonProperty("personal_code")
