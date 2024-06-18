@@ -54,7 +54,7 @@ public class NonMolestationOrderDocumentParameterGenerator implements DocmosisPa
                         .build();
                 })
                 .collect(toList()))
-            .recitalsOrPreamble(eventData.getManageOrdersRecitalsAndPreambles())
+            .recitalsOrPreamble(eventData.getManageOrdersRecitalsAndPreamblesOptional())
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .courtOrder(eventData.getManageOrdersNonMolestationOrder())
             .build();

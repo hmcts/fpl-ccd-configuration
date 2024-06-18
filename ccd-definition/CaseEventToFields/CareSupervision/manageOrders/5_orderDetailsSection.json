@@ -413,7 +413,20 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"YES\" OR orderTempQuestions.nonMolestationOrder=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersRecitalsAndPreamblesOptional",
+    "PageFieldDisplayOrder": 32,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 6,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.nonMolestationOrder=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

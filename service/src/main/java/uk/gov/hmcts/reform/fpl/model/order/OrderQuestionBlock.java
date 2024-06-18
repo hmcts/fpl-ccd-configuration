@@ -132,7 +132,7 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersPartyToBeBefriended1", "manageOrdersPartyToBeBefriended2",
             "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate")),
     NON_MOLESTATION_ORDER("nonMolestationOrder", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersRecitalsAndPreambles", "manageOrdersNonMolestationOrder"));
+        List.of("manageOrdersRecitalsAndPreamblesOptional", "manageOrdersNonMolestationOrder"));
 
     private final String showHideField;
     private final OrderSection section;
