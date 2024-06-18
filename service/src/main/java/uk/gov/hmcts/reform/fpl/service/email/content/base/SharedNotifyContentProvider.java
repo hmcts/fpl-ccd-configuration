@@ -28,7 +28,7 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
     protected EmailNotificationHelper helper;
 
     protected <T extends SharedNotifyTemplate> T buildNotifyTemplate(T template, CaseData caseData) {
-        Long caseId = caseData.getId();
+        final Long caseId = caseData.getId();
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing())
             .map(Hearing::getTimeFrame)
@@ -43,6 +43,14 @@ public abstract class SharedNotifyContentProvider extends AbstractEmailContentPr
         template.setNonUrgentHearing(timeFrame.isPresent() && !timeFrame.get().equals("Same day")
                                      ? YES.getValue() : NO.getValue()
         );
+
+        //When hearing is not filled in put make the subject line Application Received - hearing other
+        if (NO.getValue().equals(template.getUrgentHearing()) && NO.getValue().equals(template.getNonUrgentHearing())) {
+            template.setTimeFrameValue("other");
+            template.setTimeFramePresent(YES.getValue());
+            template.setNonUrgentHearing(YES.getValue());
+        }
+
         template.setFirstRespondentName(getFirstRespondentLastName(caseData.getRespondents1()));
         template.setReference(String.valueOf(caseId));
         template.setCaseUrl(getCaseUrl(caseId));
