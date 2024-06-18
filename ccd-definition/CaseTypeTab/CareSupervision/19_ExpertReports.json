@@ -6,6 +6,18 @@
     "TabID": "ExpertReportsTab",
     "TabLabel": "Expert Reports",
     "TabDisplayOrder": 19,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1,
+    "TabShowCondition": "expertReport = \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ExpertReportsTab",
+    "TabLabel": "Expert Reports",
+    "TabDisplayOrder": 19,
     "CaseFieldID": "expertReport",
     "TabFieldDisplayOrder": 1
   }
