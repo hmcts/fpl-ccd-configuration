@@ -1069,7 +1069,7 @@ class DraftOrderServiceTest {
             ConfidentialOrderBundle.SUFFIX_CTSC, ConfidentialOrderBundle.SUFFIX_LA,
             ConfidentialOrderBundle.SUFFIX_RESPONDENT + "0", ConfidentialOrderBundle.SUFFIX_CHILD + "0"
         })
-        void shouldAddToExisitingDraftHearingBundlesWhenUserUploadConfidentialDraftOrders(String suffix) {
+        void shouldAddToExistingDraftHearingBundlesWhenUserUploadConfidentialDraftOrders(String suffix) {
             if (ConfidentialOrderBundle.SUFFIX_CTSC.equals(suffix)) {
                 given(userService.isHmctsUser()).willReturn(true);
             } else if (ConfidentialOrderBundle.SUFFIX_LA.equals(suffix)) {
