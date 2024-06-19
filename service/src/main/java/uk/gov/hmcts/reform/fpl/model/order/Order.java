@@ -521,6 +521,7 @@ public enum Order {
         "Non-molestation order (FL404A)",
         IsFinalOrder.NO,
         List.of(
+            LINKED_TO_HEARING,
             APPROVER,
             APPROVAL_DATE,
             WHICH_CHILDREN,

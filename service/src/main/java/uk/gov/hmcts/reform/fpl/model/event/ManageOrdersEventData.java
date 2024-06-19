@@ -153,6 +153,8 @@ public class ManageOrdersEventData {
     String manageOrdersCostOrders;
 
     String manageOrdersNonMolestationOrder;
+    DynamicList manageOrdersNonMolestationOrderApplicant;
+    DynamicList manageOrdersNonMolestationOrderRespondent;
 
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {
