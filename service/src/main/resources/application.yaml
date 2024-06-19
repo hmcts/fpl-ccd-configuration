@@ -280,7 +280,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Send chasing email if a CMO has not been uploaded within 5 days'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.OrderChasingEmailJob'
-      cron: ${CHASE_CMO_EMAIL_CRON:0 0 12 ? * * *}
+      cron: ${CHASE_CMO_EMAIL_CRON:0 30 07 ? * * *}
 
 testing:
   support:
