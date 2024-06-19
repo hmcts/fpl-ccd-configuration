@@ -6,6 +6,18 @@
     "TabID": "Notes",
     "TabLabel": "Notes",
     "TabDisplayOrder": 13,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1,
+    "TabShowCondition": "caseNotes = \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Notes",
+    "TabLabel": "Notes",
+    "TabDisplayOrder": 13,
     "CaseFieldID": "caseNotes",
     "TabFieldDisplayOrder": 1
   }
