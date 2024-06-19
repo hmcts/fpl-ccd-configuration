@@ -9,6 +9,8 @@ properties([
             description: 'The URL of case service callbacks'),
         string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
             description: 'The URL of idam api'),
+        string(name: 'MO_BASE_URL', defaultValue: 'https://manage-org.aat.platform.hmcts.net',
+          description: 'The URL of manage organisation'),
     ])
 ])
 
