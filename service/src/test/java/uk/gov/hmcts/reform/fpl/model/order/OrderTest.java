@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_S
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C63A_DECLARATION_OF_PARENTAGE;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.FL404A_NON_MOLESTATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -100,6 +101,8 @@ class OrderTest {
             .isEqualTo("c63a_declaration_of_parentage.pdf");
         assertThat(C42_FAMILY_ASSISTANCE_ORDER.fileName(RenderFormat.PDF))
             .isEqualTo("c42_family_assistance_order.pdf");
+        assertThat(FL404A_NON_MOLESTATION_ORDER.fileName(RenderFormat.PDF))
+            .isEqualTo("fl404a_non_molestation_order.pdf");
     }
 
     @ParameterizedTest
@@ -136,6 +139,7 @@ class OrderTest {
         assertThat(C34A_CONTACT_WITH_A_CHILD_IN_CARE.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C63A_DECLARATION_OF_PARENTAGE.firstSection()).isEqualTo(HEARING_DETAILS);
         assertThat(C42_FAMILY_ASSISTANCE_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
+        assertThat(FL404A_NON_MOLESTATION_ORDER.firstSection()).isEqualTo(HEARING_DETAILS);
     }
 
     @ParameterizedTest
@@ -284,7 +288,11 @@ class OrderTest {
             Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, REVIEW, Optional.empty()),
             Arguments.of(C34A_CONTACT_WITH_A_CHILD_IN_CARE, REVIEW, Optional.empty()),
-            Arguments.of(C63A_DECLARATION_OF_PARENTAGE, REVIEW, Optional.empty())
+            Arguments.of(C63A_DECLARATION_OF_PARENTAGE, REVIEW, Optional.empty()),
+            Arguments.of(FL404A_NON_MOLESTATION_ORDER, HEARING_DETAILS, Optional.of(ISSUING_DETAILS)),
+            Arguments.of(FL404A_NON_MOLESTATION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(FL404A_NON_MOLESTATION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(FL404A_NON_MOLESTATION_ORDER, ORDER_DETAILS, Optional.of(REVIEW))
         );
     }
 
