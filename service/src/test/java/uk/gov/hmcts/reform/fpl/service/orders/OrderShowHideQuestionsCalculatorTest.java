@@ -359,7 +359,6 @@ class OrderShowHideQuestionsCalculatorTest {
 
 
         Map<String, String> nonMolestationOrder = new HashMap<>(allQuestions);
-        nonMolestationOrder.put("hearingDetails", "NO");
         nonMolestationOrder.put("linkApplication", "NO");
         nonMolestationOrder.put("approvalDate", "YES");
         nonMolestationOrder.put("whichChildren", "YES");

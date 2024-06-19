@@ -67,6 +67,7 @@ public class NonMolestationOrderDocumentParameterGenerator implements DocmosisPa
     }
 
     private String getSelectedApplicantName(DynamicList applicantsList) {
-        return applicantsList.getValueLabel().split(", ")[0];
+        String labelSelected = applicantsList.getValueLabel();
+        return labelSelected.substring(0, labelSelected.lastIndexOf(","));
     }
 }

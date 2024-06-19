@@ -134,7 +134,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersParentageAction",
             "manageOrdersParagraphs",
             "manageOrdersCostOrders",
-            "manageOrdersPreamblesText"
+            "manageOrdersPreamblesText",
+            "manageOrdersNonMolestationOrder",
+            "manageOrdersNonMolestationOrderApplicant",
+            "manageOrdersNonMolestationOrderRespondent"
         );
     }
 }
