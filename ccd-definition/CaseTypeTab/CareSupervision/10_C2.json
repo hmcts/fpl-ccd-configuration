@@ -6,6 +6,17 @@
     "TabID": "OtherApplicationsTab",
     "TabLabel": "Other applications",
     "TabDisplayOrder": 10,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OtherApplicationsTab",
+    "TabLabel": "Other applications",
+    "TabDisplayOrder": 10,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "c2DocumentBundle!=\"\" OR additionalApplicationsBundle!=\"\" OR hiddenApplicationsBundle!=\"\""
