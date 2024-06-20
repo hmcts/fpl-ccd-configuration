@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
+import uk.gov.hmcts.reform.fpl.enums.TransparencyOrderExpirationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -300,6 +301,17 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersBirthCertificateRegistrationSubDistrict("RegSubDistrict")
                         .manageOrdersBirthCertificateRegistrationCounty("RegCounty")
                         .manageOrdersPlacementOrderOtherDetails("Other Details")
+                        .build()
+                );
+            case TRANSPARENCY_ORDER_BLOCK:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersTransparencyOrderExpiration(TransparencyOrderExpirationType.DATE_TO_BE_CHOSEN)
+                        .manageOrdersTransparencyOrderEndDate(LocalDate.of(2024, 12, 25))
+                        .manageOrdersTransparencyOrderPublishInformationDetails("Publish Information Details")
+                        .manageOrdersTransparencyOrderPublishIdentityDetails("Publish Identity Details")
+                        .manageOrdersTransparencyOrderPublishDocumentsDetails("Publish Document Details")
+                        .manageOrdersTransparencyOrderPermissionToReportEffectiveDate(LocalDate.of(2024, 10, 25))
                         .build()
                 );
             case CHILD_ASSESSMENT_ORDER:
