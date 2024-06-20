@@ -137,7 +137,16 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersPreamblesText",
             "manageOrdersNonMolestationOrder",
             "manageOrdersNonMolestationOrderApplicant",
-            "manageOrdersNonMolestationOrderRespondent"
+            "manageOrdersNonMolestationOrderRespondent",
+            "manageOrdersTransparencyOrderExpiration",
+            "manageOrdersTransparencyOrderEndDate",
+            "manageOrdersTransparencyOrderPublishInformationLabel",
+            "manageOrdersTransparencyOrderPublishInformationDetails",
+            "manageOrdersTransparencyOrderPublishIdentityLabel",
+            "manageOrdersTransparencyOrderPublishIdentityDetails",
+            "manageOrdersTransparencyOrderPublishDocumentsLabel",
+            "manageOrdersTransparencyOrderPublishDocumentsDetails",
+            "manageOrdersTransparencyOrderPermissionToReportEffectiveDate"
         );
     }
 }

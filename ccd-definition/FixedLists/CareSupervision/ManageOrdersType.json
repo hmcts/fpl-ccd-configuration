@@ -163,8 +163,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "TRANSPARENCY_ORDER",
+    "ListElement": "Transparency Order",
+    "DisplayOrder": 24
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "FL404A_NON_MOLESTATION_ORDER",
     "ListElement": "Non-molestation order (FL404A)",
-    "DisplayOrder": 23
+    "DisplayOrder": 25
   }
 ]
