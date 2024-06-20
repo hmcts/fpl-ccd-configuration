@@ -52,8 +52,8 @@ public class NonMolestationOrderEventHandlerTest {
     @InjectMocks
     private NonMolestationOrderEventHandler underTest;
 
-    private final DocumentReference ORDER_DOCUMENT = mock(DocumentReference.class);
-    private final OrderIssuedNotifyData NOTIFY_DATA = mock(OrderIssuedNotifyData.class);
+    private final DocumentReference orderDocument = mock(DocumentReference.class);
+    private final OrderIssuedNotifyData notifyData = mock(OrderIssuedNotifyData.class);
 
     private void init() {
 
@@ -65,7 +65,7 @@ public class NonMolestationOrderEventHandlerTest {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
         NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
             "Non molestation order",
-            ORDER_DOCUMENT,
+            orderDocument,
             LanguageTranslationRequirement.ENGLISH_TO_WELSH
         );
 
@@ -73,7 +73,7 @@ public class NonMolestationOrderEventHandlerTest {
 
         verify(translationRequestService).sendRequest(caseData,
             Optional.of(LanguageTranslationRequirement.ENGLISH_TO_WELSH),
-            ORDER_DOCUMENT, "Non molestation order");
+            orderDocument, "Non molestation order");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class NonMolestationOrderEventHandlerTest {
             .build();
         NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
             "Non molestation order",
-            ORDER_DOCUMENT,
+            orderDocument,
             LanguageTranslationRequirement.ENGLISH_TO_WELSH
         );
 
@@ -100,12 +100,12 @@ public class NonMolestationOrderEventHandlerTest {
             .build())).thenReturn(Set.of("la@test.com"));
 
         when(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
-            ORDER_DOCUMENT, GENERATED_ORDER)).thenReturn(NOTIFY_DATA);
+            orderDocument, GENERATED_ORDER)).thenReturn(notifyData);
 
         underTest.notifyParties(event);
 
         verify(notificationService).sendEmail(NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE, Set.of("la@test.com"),
-            NOTIFY_DATA,caseData.getId());
+            notifyData,caseData.getId());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class NonMolestationOrderEventHandlerTest {
             .build();
         NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
             "Non molestation order",
-            ORDER_DOCUMENT,
+            orderDocument,
             LanguageTranslationRequirement.ENGLISH_TO_WELSH
         );
 
@@ -132,12 +132,12 @@ public class NonMolestationOrderEventHandlerTest {
             .build())).thenReturn(Set.of("la2@test.com"));
 
         when(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
-            ORDER_DOCUMENT, GENERATED_ORDER)).thenReturn(NOTIFY_DATA);
+            orderDocument, GENERATED_ORDER)).thenReturn(notifyData);
 
         underTest.notifyParties(event);
 
         verify(notificationService).sendEmail(NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE, Set.of("la2@test.com"),
-            NOTIFY_DATA,caseData.getId());
+            notifyData,caseData.getId());
     }
 
     @Test
@@ -156,14 +156,9 @@ public class NonMolestationOrderEventHandlerTest {
                     .code(selectedUuid.toString())
                     .build()).build())
             .build();
-        NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
-            "Non molestation order",
-            ORDER_DOCUMENT,
-            LanguageTranslationRequirement.ENGLISH_TO_WELSH
-        );
 
         when(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
-            ORDER_DOCUMENT, GENERATED_ORDER)).thenReturn(NOTIFY_DATA);
+            orderDocument, GENERATED_ORDER)).thenReturn(notifyData);
         when(representativesInbox.getRespondentSolicitorEmailsFromList(respondents,
             RepresentativeServingPreferences.DIGITAL_SERVICE))
             .thenReturn(new HashSet<>(Set.of("respondent_digital@test.com")));
@@ -171,11 +166,17 @@ public class NonMolestationOrderEventHandlerTest {
             RepresentativeServingPreferences.EMAIL))
             .thenReturn(new HashSet<>(Set.of("respondent_email@test.com")));
 
+        NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
+            "Non molestation order",
+            orderDocument,
+            LanguageTranslationRequirement.ENGLISH_TO_WELSH
+        );
+
         underTest.notifyParties(event);
 
         verify(notificationService).sendEmail(NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE,
             Set.of("respondent_digital@test.com", "respondent_email@test.com"),
-            NOTIFY_DATA,caseData.getId());
+            notifyData,caseData.getId());
     }
 
     @Test
@@ -194,14 +195,9 @@ public class NonMolestationOrderEventHandlerTest {
                     .code(selectedUuid.toString())
                     .build()).build())
             .build();
-        NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
-            "Non molestation order",
-            ORDER_DOCUMENT,
-            LanguageTranslationRequirement.ENGLISH_TO_WELSH
-        );
 
         when(orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
-            ORDER_DOCUMENT, GENERATED_ORDER)).thenReturn(NOTIFY_DATA);
+            orderDocument, GENERATED_ORDER)).thenReturn(notifyData);
         when(representativesInbox.getChildrenSolicitorEmailsFromList(children,
             RepresentativeServingPreferences.DIGITAL_SERVICE))
             .thenReturn(new HashSet<>(Set.of("child_digital@test.com")));
@@ -209,10 +205,16 @@ public class NonMolestationOrderEventHandlerTest {
             RepresentativeServingPreferences.EMAIL))
             .thenReturn(new HashSet<>(Set.of("child_email@test.com")));
 
+        NonMolestationOrderEvent event = new NonMolestationOrderEvent(caseData, manageOrdersEventData,
+            "Non molestation order",
+            orderDocument,
+            LanguageTranslationRequirement.ENGLISH_TO_WELSH
+        );
+
         underTest.notifyParties(event);
 
         verify(notificationService).sendEmail(NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE,
             Set.of("child_digital@test.com", "child_email@test.com"),
-            NOTIFY_DATA,caseData.getId());
+            notifyData,caseData.getId());
     }
 }
