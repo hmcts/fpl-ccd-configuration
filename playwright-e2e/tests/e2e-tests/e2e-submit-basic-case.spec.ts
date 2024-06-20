@@ -114,6 +114,7 @@ test("e2e test: Submit basic case @e2e-test @accessibility", async ({
   // International element
   await startApplication.internationalElementReqUpdated();
   await internationalElement.internationalElementSmokeTest();
+  await expect(startApplication.internationalElementCompleted).toBeVisible();
 
   // Court Services Needed
   await startApplication.courtServicesNeededReqUpdated();
