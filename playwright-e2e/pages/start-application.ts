@@ -29,6 +29,7 @@ export class StartApplication {
   readonly courtServicesNeeded: Locator;
   readonly submitApplicationLink: Locator;
   readonly otherPeopleInCaseLink: Locator;
+  readonly internationalElementCompleted: Locator;
 
   public constructor(page: Page) {
     this.page = page;
@@ -56,10 +57,11 @@ export class StartApplication {
     this.welshLanguageRequirements = page.getByRole('link', { name: 'Welsh language requirements' });
     this.welshLanguageReqFinished = page.locator('p:has(a[text="Welsh language requirements"]) > img[title="Finished"]');
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
+    this.internationalElementCompleted = page.locator('p').filter({ hasText: 'International element' }).getByRole('img',{name:'Finished'});
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
-    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'});
+    this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'});
   }
 
   async groundsForTheApplication() {
