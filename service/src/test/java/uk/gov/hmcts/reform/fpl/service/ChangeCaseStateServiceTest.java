@@ -43,8 +43,7 @@ class ChangeCaseStateServiceTest {
             .build();
 
         assertThat(changeCaseStateService.initialiseEventFields(caseData))
-            .extracting("nextStateLabelContent")
-            .isNull();
+            .doesNotContainKey("nextStateLabelContent");
     }
 
     @Test
@@ -70,9 +69,9 @@ class ChangeCaseStateServiceTest {
 
         Map<String, Object> updatedCaseData = changeCaseStateService.updateCaseState(caseData);
 
-        assertThat(updatedCaseData)
-            .extracting("state", "deprivationOfLiberty", "closeCaseTabField")
-            .containsExactly(FINAL_HEARING, null, null);
+        assertThat(updatedCaseData).doesNotContainKeys("deprivationOfLiberty");
+        assertThat(updatedCaseData).extracting("state", "closeCaseTabField")
+            .containsExactly(FINAL_HEARING, null);
     }
 
     @ParameterizedTest
@@ -95,9 +94,7 @@ class ChangeCaseStateServiceTest {
             .confirmChangeState(NO.getValue())
             .build();
 
-        assertThat(changeCaseStateService.updateCaseState(caseData))
-            .extracting("state")
-            .isNull();
+        assertThat(changeCaseStateService.updateCaseState(caseData)).doesNotContainKey("state");
     }
 
     @Test

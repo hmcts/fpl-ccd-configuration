@@ -21,10 +21,12 @@ import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
@@ -39,22 +41,24 @@ import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -82,6 +86,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -91,6 +96,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -233,11 +239,31 @@ class MigrateCaseServiceTest {
                     .build())
                 .build();
 
-            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId);
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                null);
             OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
             assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
                 .organisation(newOrganisation)
                 .orgPolicyCaseAssignedRole(caseRole)
+                .build());
+        }
+
+        @Test
+        void updateOutsourcingPolicyToThirdParty() {
+            when(organisationService.findOrganisation(newOrgId))
+                .thenReturn(Optional.of(uk.gov.hmcts.reform.rd.model.Organisation.builder()
+                    .name(newOrgName)
+                    .build()));
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .build();
+
+            Map<String, OrganisationPolicy> fields = underTest.changeThirdPartyStandaloneApplicant(caseData, newOrgId,
+                CaseRole.EPSMANAGING.formattedName());
+            OrganisationPolicy updatedOrgPolicy = fields.get("outsourcingPolicy");
+            assertThat(updatedOrgPolicy).isEqualTo(OrganisationPolicy.builder()
+                .organisation(newOrganisation)
+                .orgPolicyCaseAssignedRole(CaseRole.EPSMANAGING.formattedName())
                 .build());
         }
 
@@ -1838,94 +1864,6 @@ class MigrateCaseServiceTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class RemoveHearingFurtherEvidenceDocuments {
-        private final Element<SupportingEvidenceBundle> seb1 = element(SupportingEvidenceBundle.builder()
-            .build());
-        private final Element<SupportingEvidenceBundle> seb2 = element(SupportingEvidenceBundle.builder()
-            .build());
-        private final Element<SupportingEvidenceBundle> sebToBeRemoved =
-            element(SupportingEvidenceBundle.builder().build());
-
-        private UUID hearingFurtherEvidenceBundleId = UUID.randomUUID();
-
-        @Test
-        void shouldRemoveTargetSupportingEvidenceBundle() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .hearingFurtherEvidenceDocuments(List.of(
-                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
-                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
-                        .build())
-                ))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
-                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").asList()
-                .containsExactly(
-                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
-                        .supportingEvidenceBundle(List.of(seb1, seb2))
-                        .build()
-                ));
-        }
-
-        @Test
-        void shouldReturnNullWhenLastSupportingEvidenceBundleIsRemoved() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .hearingFurtherEvidenceDocuments(List.of(
-                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
-                        .supportingEvidenceBundle(List.of(sebToBeRemoved))
-                        .build())
-                ))
-                .build();
-
-            Map<String, Object> updatedFields = underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
-                hearingFurtherEvidenceBundleId, sebToBeRemoved.getId());
-
-            assertThat(updatedFields).extracting("hearingFurtherEvidenceDocuments").isNull();
-        }
-
-        @Test
-        void shouldThrowExceptionIfTargetSupportingEvidenceBundleNotExist() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .hearingFurtherEvidenceDocuments(List.of(
-                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
-                        .supportingEvidenceBundle(List.of(seb1, seb2))
-                        .build())
-                ))
-                .build();
-
-            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
-                    hearingFurtherEvidenceBundleId, sebToBeRemoved.getId()))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format(
-                    "Migration {id = %s, case reference = %s}, hearing further evidence documents not found",
-                    MIGRATION_ID, 1, sebToBeRemoved.getId().toString()));
-        }
-
-        @Test
-        void shouldThrowExceptionIfHearingIdNotExist() {
-            CaseData caseData = CaseData.builder()
-                .id(1L)
-                .hearingFurtherEvidenceDocuments(List.of(
-                    element(hearingFurtherEvidenceBundleId, HearingFurtherEvidenceBundle.builder()
-                        .supportingEvidenceBundle(List.of(seb1, seb2, sebToBeRemoved))
-                        .build())
-                ))
-                .build();
-
-            assertThatThrownBy(() -> underTest.removeHearingFurtherEvidenceDocuments(caseData, MIGRATION_ID,
-                UUID.randomUUID(), sebToBeRemoved.getId()))
-                .isInstanceOf(AssertionError.class)
-                .hasMessage(format("Migration {id = %s, case reference = %s}, hearing not found", MIGRATION_ID, 1));
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class RemoveCourtBundleByBundleId {
 
         private UUID hearingId = UUID.randomUUID();
@@ -2081,7 +2019,7 @@ class MigrateCaseServiceTest {
             List<Element<HearingOrder>> expectedList = List.of(sealedCmo2);
 
             assertThat(updatedFields).extracting("sealedCMOs").isEqualTo(expectedList);
-            assertThat(updatedFields).extracting("ordersToBeSent").isNull();
+            assertThat(updatedFields).doesNotContainKey("ordersToBeSent");
         }
 
         @Test
@@ -2447,7 +2385,7 @@ class MigrateCaseServiceTest {
 
             underTest.clearHearingOption(caseDetails);
 
-            assertThat(caseDetails.getData()).extracting("hearingOption").isNull();
+            assertThat(caseDetails.getData()).doesNotContainKey("hearingOption");
         }
 
         @Test
@@ -3261,6 +3199,76 @@ class MigrateCaseServiceTest {
 
             assertThat(updates).containsEntry("hearingDetails", expectedHearingDetails);
             assertThat(updates).containsEntry("cancelledHearingDetails", expectedCancelledHearingDetails);
+        }
+    }
+
+    @Nested
+    class RemoveSubmittedC1Document {
+        private static final SubmittedC1WithSupplementBundle SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE =
+            SubmittedC1WithSupplementBundle.builder()
+                .document(mock(DocumentReference.class))
+                .urgencyTimeFrameType(mock(UrgencyTimeFrameType.class))
+                .supportingEvidenceBundle(wrapElementsWithUUIDs(mock(SupportingEvidenceBundle.class)))
+                .supplementsBundle(wrapElementsWithUUIDs(mock(Supplement.class)))
+                .clearSubmittedC1WithSupplement("clearSubmittedC1WithSupplement")
+                .isDocumentUploaded("isDocumentUploaded")
+                .build();
+
+        @Test
+        void testShouldRemoveDocument() {
+            SubmittedC1WithSupplementBundle expected = SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE.toBuilder()
+                .document(null)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .submittedC1WithSupplement(SUBMITTED_C1_WITH_SUPPLEMENT_BUNDLE)
+                .build();
+
+            Map<String, Object> actual = underTest.removeSubmittedC1Document(caseData, MIGRATION_ID);
+
+            assertThat(actual).extracting("submittedC1WithSupplement").isEqualTo(expected);
+        }
+
+
+        @Test
+        void shouldReturnErrorIfSubmittedC1NotFound() {
+            CaseData caseData = CaseData.builder().build();
+            assertThrows(AssertionError.class, () -> underTest.removeSubmittedC1Document(caseData, MIGRATION_ID));
+        }
+
+        @Test
+        void shouldRemoveNamesFromProceedings() {
+            final UUID otherProceeding1 = UUID.randomUUID();
+            final UUID otherProceeding2 = UUID.randomUUID();
+
+            List<Element<Proceeding>> otherProceedings = new ArrayList<>();
+            otherProceedings.add(element(otherProceeding1, Proceeding.builder().ended("yes").children("Bob").build()));
+            otherProceedings.add(element(otherProceeding2, Proceeding.builder().started("no").children("Jim").build()));
+
+            Proceeding proceeding = Proceeding.builder()
+                .additionalProceedings(otherProceedings)
+                .children("Amy")
+                .build();
+
+            List<Element<Proceeding>> expectedOtherProceedings = new ArrayList<>();
+            expectedOtherProceedings.add(element(otherProceeding1, Proceeding.builder().ended("yes").build()));
+            expectedOtherProceedings.add(element(otherProceeding2, Proceeding.builder().started("no").build()));
+
+            Proceeding expectedProceeding = Proceeding.builder()
+                .additionalProceedings(expectedOtherProceedings)
+                .build();
+
+            CaseData caseData = CaseData.builder().proceeding(proceeding).build();
+
+            Map<String, Object> actual = underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID);
+
+            assertThat(actual).extracting("proceeding").isEqualTo(expectedProceeding);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNullProceedings() {
+            CaseData caseData = CaseData.builder().build();
+            assertThrows(AssertionError.class, () -> underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID));
         }
     }
 }

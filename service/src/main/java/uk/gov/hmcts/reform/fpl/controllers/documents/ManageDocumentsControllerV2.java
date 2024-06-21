@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-documentsv2")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -84,6 +82,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
             caseDetails.getData().put("allowSelectDocumentTypeToRemoveDocument",
                 YesNo.from(allowSelectDocumentTypeToRemoveDocument));
             if (allowSelectDocumentTypeToRemoveDocument) {
+                // for HMCTS admin
                 DynamicList availableDocumentTypesForRemoval = manageDocumentService
                     .buildDocumentTypeDynamicListForRemoval(caseData);
                 if (!availableDocumentTypesForRemoval.getListItems().isEmpty()) {
@@ -92,7 +91,7 @@ public class ManageDocumentsControllerV2 extends CallbackController {
                     return respond(caseDetails, List.of("There is no document to be removed."));
                 }
             } else {
-                // LA or Solicitor flow
+                // for LA or external solicitor
                 DynamicList availableDocumentsToBeRemoved = manageDocumentService
                     .buildAvailableDocumentsToBeRemoved(caseData);
                 if (!availableDocumentsToBeRemoved.getListItems().isEmpty()) {

@@ -9,25 +9,23 @@ test("Smoke Test @smoke-test @accessibility", async ({
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren,
-  factorsAffectingParenting,
   applicantDetails,
-  respondentDetails,
   allocationProposal,
   addApplicationDocuments,
   childDetails,
-  welshLangRequirements,
+  respondentDetails,
+  submitCase,
   page,
   makeAxeBuilder
-},testInfo) => {
+}, testInfo) => {
 
-  const basePage = new BasePage(page);
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
   );
+  //sign in page
   await signInPage.isSignedIn();
 
   // Add application details
@@ -61,14 +59,6 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Risk and harm to children
-  await startApplication.riskAndHarmToChildren();
-  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
   // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
@@ -86,7 +76,7 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await startApplication.childDetails();
   await childDetails.childDetailsNeeded();
   await startApplication.childDetailsHasBeenUpdated();
-  
+
   // Add respondents' details
   await startApplication.respondentDetails();
   await respondentDetails.respondentDetailsNeeded();
@@ -96,20 +86,19 @@ test("Smoke Test @smoke-test @accessibility", async ({
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
 
-  // Welsh language requirements
-  await startApplication.welshLanguageReq();
-  await welshLangRequirements.welshLanguageSmokeTest();
-  await startApplication.welshLanguageReqUpdated();
+  // Submit the case
+  await startApplication.submitCase();
+  await submitCase.submitCaseSmokeTest();
 
   const accessibilityScanResults = await makeAxeBuilder()
-  // Automatically uses the shared AxeBuilder configuration,
-  // but supports additional test-specific configuration too
-  .analyze();
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
 
   await testInfo.attach('accessibility-scan-results', {
     body: JSON.stringify(accessibilityScanResults, null, 2),
     contentType: 'application/json'
   });
 
-expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

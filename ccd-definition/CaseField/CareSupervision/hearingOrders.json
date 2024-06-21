@@ -486,6 +486,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderReviewUrgency",
+    "Label": "Do any of these orders need to be reviewed urgently? If no urgency in any order, select continue only.",
+    "FieldType": "ApproveOrderUrgencyOption",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftCMOExists",
     "Label": "Bundle contains a draft CMO for approval",
     "FieldType": "Text",
@@ -932,6 +941,276 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "refusedHearingOrders",
     "Label": "Refused Order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersCTSC",
+    "Label": "Refused Order (Uploaded by CTSC)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersLA",
+    "Label": "Refused Order (Uploaded by LA)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp0",
+    "Label": "Refused Order (Uploaded by Respondent 1)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp1",
+    "Label": "Refused Order (Uploaded by Respondent 2)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp2",
+    "Label": "Refused Order (Uploaded by Respondent 3)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp3",
+    "Label": "Refused Order (Uploaded by Respondent 4)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp4",
+    "Label": "Refused Order (Uploaded by Respondent 5)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp5",
+    "Label": "Refused Order (Uploaded by Respondent 6)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp6",
+    "Label": "Refused Order (Uploaded by Respondent 7)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp7",
+    "Label": "Refused Order (Uploaded by Respondent 8)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp8",
+    "Label": "Refused Order (Uploaded by Respondent 9)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersResp9",
+    "Label": "Refused Order (Uploaded by Respondent 10)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild0",
+    "Label": "Refused Order (Uploaded by Child 1)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild1",
+    "Label": "Refused Order (Uploaded by Child 2)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild2",
+    "Label": "Refused Order (Uploaded by Child 3)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild3",
+    "Label": "Refused Order (Uploaded by Child 4)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild4",
+    "Label": "Refused Order (Uploaded by Child 5)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild5",
+    "Label": "Refused Order (Uploaded by Child 6)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild6",
+    "Label": "Refused Order (Uploaded by Child 7)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild7",
+    "Label": "Refused Order (Uploaded by Child 8)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild8",
+    "Label": "Refused Order (Uploaded by Child 9)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild9",
+    "Label": "Refused Order (Uploaded by Child 10)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild10",
+    "Label": "Refused Order (Uploaded by Child 11)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild11",
+    "Label": "Refused Order (Uploaded by Child 12)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild12",
+    "Label": "Refused Order (Uploaded by Child 13)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild13",
+    "Label": "Refused Order (Uploaded by Child 14)",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "refusedHearingOrdersChild14",
+    "Label": "Refused Order (Uploaded by Child 15)",
     "FieldType": "Collection",
     "FieldTypeParameter": "UploadedCaseManagementOrder",
     "SecurityClassification": "Public",

@@ -18,7 +18,7 @@ class FPLRetryerTest {
     private static final byte[] EMPTY_BODY = {};
     private static final Request REQUEST = Request.create(GET, EMPTY, Map.of(), EMPTY_BODY, UTF_8, null);
     private static final RetryableException EXCEPTION = new RetryableException(
-        500, "", GET, new FeignException.InternalServerError("test", REQUEST, EMPTY_BODY), null, REQUEST
+        500, "", GET, new FeignException.InternalServerError("test", REQUEST, EMPTY_BODY, Map.of()), null, REQUEST
     );
 
     @Test
