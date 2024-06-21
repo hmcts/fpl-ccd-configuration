@@ -90,11 +90,12 @@ export class ManageDocuments extends BasePage {
         await this.checkYourAnsAndSubmit();
     }
     async removeDocuments() {
-        await expect(this.manageDocumentsTest).toBeVisible();
-        await this.removeDocumentsTest.check();
+        await this.page.getByLabel('Remove documents').check();
         await this.clickContinue();
-        await this.uploadedDocumentsTest.check();
-        await this.thereIsAMistakeOnTheDocument.check();
+        await this.page.getByLabel('Document type').selectOption('Court correspondence');
+        await this.clickContinue();
+        await this.page.getByLabel('Uploaded Document').selectOption('mock.pdf');
+        await this.page.getByLabel('There is a mistake on the').check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }

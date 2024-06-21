@@ -253,21 +253,23 @@
           }
         }
       }
-    ]
-  },
-  "expertReportList": [
-    {
-      "id": "4c1c4050-f593-49a5-95d0-67a011c68693",
-      "value": {
-        "document": {
-          "document_url": "${TEST_DOCUMENT_URL}",
-          "document_filename": "mock.pdf",
-          "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
-        },
-        "uploaderType": "HMCTS",
-        "uploaderCaseRoles": [],
-        "markAsConfidential": "No"
+    ],
+    "correspondenceDocList": [
+      {
+        "id": "4c1c4050-f593-49a5-95d0-67a011c68693",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mock.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
+          "uploaderCaseRoles": [
+            "LASOLICITOR"
+          ],
+          "markAsConfidential": "No"
+        }
       }
-    }
-  ]
+    ]
+  }
 }
