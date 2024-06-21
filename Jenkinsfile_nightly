@@ -102,7 +102,7 @@ withNightlyPipeline(type, product, component) {
     }
 
     afterAlways('fullFunctionalTest') {
-      stage('Functional UI Tests  chromium') {
+      stage('Functional UI tests chromium') {
             try {
                 yarnBuilder.yarn('test:functional-chromium')
             } catch (Error) {
@@ -114,12 +114,12 @@ withNightlyPipeline(type, product, component) {
                     keepAll: true,
                     reportDir: 'playwright-report',
                     reportFiles: 'index.html',
-                    reportName: 'UI Functional Chromium Report'
+                    reportName: 'UITestChromiumReport'
                 ])
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
-      stage('Functional UI Tests Firefox') {
+      stage('Functional UI tests firefox') {
         try {
           yarnBuilder.yarn('test:functional-firefox')
         } catch (Error) {
@@ -131,12 +131,12 @@ withNightlyPipeline(type, product, component) {
             keepAll: true,
             reportDir: 'playwright-report',
             reportFiles: 'index.html',
-            reportName: 'UI Functional Firefox Report'
+            reportName: 'UITestFirefoxReport'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
       }
-      stage('Functional UI Tests webkit ') {
+      stage('Functional UI tests webkit ') {
         try {
           yarnBuilder.yarn('test:functional-webkit')
         } catch (Error) {
@@ -148,7 +148,7 @@ withNightlyPipeline(type, product, component) {
             keepAll: true,
             reportDir: 'playwright-report',
             reportFiles: 'index.html',
-            reportName: 'UI Functional webkit Report'
+            reportName: 'UITestWebkitReport'
           ])
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
