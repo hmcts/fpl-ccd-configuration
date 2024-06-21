@@ -8,9 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
 
@@ -36,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseExtensionService {
     private final ValidateGroupService validateGroupService;
+    private final HearingService hearingService;
 
     private String buildChildCaseCompletionDateLabel(CaseData caseData) {
         List<Child> children = ElementUtils.unwrapElements(caseData.getChildren1());
@@ -66,7 +70,8 @@ public class CaseExtensionService {
             "shouldBeCompletedByDate", formatLocalDateToString(
                     getMaxExtendedTimeLine(caseData, caseData.getChildren1()),
                     DATE
-                )
+                ),
+            "extendTimelineHearingList", caseData.buildDynamicHearingList(caseData.getPastHearings(), null)
         );
     }
 
@@ -121,10 +126,14 @@ public class CaseExtensionService {
 
         List<ChildExtension> allChildExtension = childExtensionEventData.getAllChildExtension();
 
+        LocalDate extensionDate = getExtensionDate(caseData)
+            .map(d -> d.plusWeeks(8))
+            .orElse(defaultCompletionDate);
+
         allChildExtension.stream()
             .filter(Objects::nonNull)
             .forEach(childExtension ->
-                updateExtensionDate(childExtension, getElement(childExtension.getId(), children), defaultCompletionDate)
+                updateExtensionDate(childExtension, getElement(childExtension.getId(), children), extensionDate)
             );
 
         return children;
@@ -135,10 +144,13 @@ public class CaseExtensionService {
         ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
         LocalDate defaultCompletionDate = caseData.getDefaultCompletionDate();
 
-
         List<Element<Child>> children = caseData.getChildren1();
 
-        children.forEach(childElement -> updateExtensionDate(childExtensionAll, childElement, defaultCompletionDate));
+        LocalDate extensionDate = getExtensionDate(caseData)
+            .map(d -> d.plusWeeks(8))
+            .orElse(defaultCompletionDate);
+
+        children.forEach(childElement -> updateExtensionDate(childExtensionAll, childElement, extensionDate));
 
         return children;
     }
@@ -150,23 +162,23 @@ public class CaseExtensionService {
         ChildExtensionEventData childExtensionEventData = caseData.getChildExtensionEventData();
         ChildExtension childExtensionAll = childExtensionEventData.getChildExtensionAll();
 
-        selected.forEach(value -> updateExtensionDate(childExtensionAll, children.get(value), defaultCompletionDate));
+        LocalDate extensionDate = getExtensionDate(caseData)
+            .map(d -> d.plusWeeks(8))
+            .orElse(defaultCompletionDate);
+
+        selected.forEach(value -> updateExtensionDate(childExtensionAll, children.get(value), extensionDate));
         return children;
     }
 
     private void updateExtensionDate(ChildExtension childExtension,
                                      Element<Child> childElement,
-                                     LocalDate caseCompletionDate) {
+                                     LocalDate eightWeekExtensionDate) {
         Child child = childElement.getValue();
         ChildParty.ChildPartyBuilder childPartyBuilder = child.getParty().toBuilder();
         childPartyBuilder.extensionReason(childExtension.getCaseExtensionReasonList());
-        LocalDate childExtensionDate = childExtension.getExtensionDateOther();
-
-        if (EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())) {
-            childExtensionDate = Optional.ofNullable(child.getParty().getCompletionDate())
-                    .map(childCompletionDate -> childCompletionDate.plusWeeks(8))
-                .orElseGet(() -> caseCompletionDate.plusWeeks(8));
-        }
+        LocalDate childExtensionDate = EIGHT_WEEK_EXTENSION.equals(childExtension.getCaseExtensionTimeList())
+            ? eightWeekExtensionDate
+            : childExtension.getExtensionDateOther();
 
         ChildParty childParty = childPartyBuilder.completionDate(childExtensionDate).build();
         childElement.setValue(child.toBuilder().party(childParty).build());
@@ -209,5 +221,17 @@ public class CaseExtensionService {
             .filter(Objects::nonNull)
             .max(LocalDate::compareTo)
             .orElseGet(caseData::getDefaultCompletionDate);
+    }
+
+    public Optional<LocalDate> getExtensionDate(CaseData caseData) {
+        ChildExtensionEventData eventData = caseData.getChildExtensionEventData();
+
+        if (YES.equals(eventData.getExtendTimelineApprovedAtHearing())) {
+            DynamicList selectedHearing = eventData.getExtendTimelineHearingList();
+            Optional<Element<HearingBooking>> hearing = hearingService.findHearing(caseData, selectedHearing);
+            return hearing.map(hearingBooking -> hearingBooking.getValue().getEndDate().toLocalDate());
+        } else {
+            return Optional.ofNullable(eventData.getExtendTimelineHearingDate());
+        }
     }
 }
