@@ -51,9 +51,9 @@ test.describe('Manage Documents', () => {
     });
 
     test('High Court Review Correspondence WA task', async ({ page, signInPage, manageDocuments, caseFileView }) => {
-    casename = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
+    caseName = 'High Court Review Correspondence WA task ' + dateTime.slice(0, 10);
     setHighCourt(caseData);
-    await updateCase(casename, caseNumber, caseData);
+    await updateCase(caseName, caseNumber, caseData);
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateTOCaseDetails(caseNumber);

@@ -13,8 +13,6 @@ test.describe('Upload additional applications', () => {
   let caseName: string;
   const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
 
-
-
     test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
@@ -201,11 +199,11 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.tabNavigation('Draft orders');
             await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
         });
-  
+
       test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView }) => {
-        casename = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
+        caseName = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
         setHighCourt(caseData);
-        await updateCase(casename, caseNumber, caseData);
+        await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);

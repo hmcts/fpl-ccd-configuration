@@ -27,14 +27,12 @@ import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
-import { ApproveOrders } from "../pages/approve-orders";
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
 import { Organisation } from "../pages/manage-organisation";
 import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
-
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -50,7 +48,6 @@ type CreateFixtures = {
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
   allocationProposal: AllocationProposal;
-  additionalApplications: AdditionalApplications;
   addApplicationDocuments: AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
@@ -66,7 +63,6 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
-  approveOrders: ApproveOrders;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
@@ -168,7 +164,7 @@ export const test = base.extend<CreateFixtures>({
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
   },
-  
+
   legalCounsel: async ({ page }, use) => {
     await use(new LegalCounsel(page));
   },
@@ -180,20 +176,16 @@ export const test = base.extend<CreateFixtures>({
   otherProceedings: async ({ page }, use) => {
     await use(new OtherProceedings(page));
   },
-  
+
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
-  },
-
-  approveOrders: async ({ page }, use) => {
-    await use(new ApproveOrders(page));
   },
 
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
 
-    addAdminCaseFlag: async ({ page }, use) => {
+  addAdminCaseFlag: async ({ page }, use) => {
         await use(new AddAndRemoveAdminCaseFlag(page));
   },
 
