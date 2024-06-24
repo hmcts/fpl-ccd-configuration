@@ -1,7 +1,9 @@
 import { test } from '../fixtures/create-fixture';
 import {createCase, updateCase} from "../utils/api-helper";
+import { testConfig } from '../settings/test-config';
 import caseDataByLa from '../caseData/approveOrders/caseWithConfidentialDraftOrderByLa.json' assert { type: 'json' };
 import caseDataByCtsc from '../caseData/approveOrders/caseWithConfidentialDraftOrderByCtsc.json' assert { type: 'json' };
+import caseData from '../caseData/caseWithDraftOrder.json';
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, judgeLondonUser, HighCourtAdminUser } from '../settings/user-credentials';
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";
@@ -66,7 +68,7 @@ test.describe('Approve Orders', () => {
             await approveOrders.tabNavigation('Orders');
             await expect(page.getByText('Confidential order uploaded by CTSC')).toBeHidden();
         });
-  
+
     test('Review CMO (High Court) WA Task',
     async ({ page, signInPage, approveOrders, caseFileView }) => {
       casename = 'Review CMO (High Court) WA Task ' + dateTime.slice(0, 10);
@@ -82,7 +84,7 @@ test.describe('Approve Orders', () => {
       await caseFileView.goToCFVTab();
       await caseFileView.openFolder('Orders');
       await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
-      
+
       if (testConfig.waEnabled) {
         await approveOrders.clickSignOut();
 

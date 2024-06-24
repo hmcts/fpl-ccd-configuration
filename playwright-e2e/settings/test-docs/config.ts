@@ -15,15 +15,15 @@ const config: Config = {
     __dirname,
     "../test-docs/testPdf.pdf",
   ),
-  testPdfFile2: path.resolve(
+  testPdfFile2: join(
     __dirname,
     "../test-docs/testPdf2.pdf",
   ),
-  testPdfFile3: path.resolve(
+  testPdfFile3: join(
     __dirname,
     "../test-docs/testPdf3.pdf",
   ),
-  testPdfFile4: path.resolve(
+  testPdfFile4: join(
     __dirname,
     "../test-docs/testPdf4.pdf",
   ),
