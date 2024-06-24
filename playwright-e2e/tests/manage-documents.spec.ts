@@ -139,12 +139,10 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.removeDocuments();
 
-
-        //go to CFV and assert Court Correspondence not visble
+       //go to CFV and assert Court Correspondence not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
         await expect(page.getByRole('tree')).not.toContainText('mock.pdf');
-    
     });
 
     test('CTSC user can move document between folder ', async ({ page, signInPage,caseFileView }) => {
