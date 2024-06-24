@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_S
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C63A_DECLARATION_OF_PARENTAGE;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.TRANSPARENCY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -284,7 +285,10 @@ class OrderTest {
             Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C44A_LEAVE_TO_CHANGE_A_SURNAME, REVIEW, Optional.empty()),
             Arguments.of(C34A_CONTACT_WITH_A_CHILD_IN_CARE, REVIEW, Optional.empty()),
-            Arguments.of(C63A_DECLARATION_OF_PARENTAGE, REVIEW, Optional.empty())
+            Arguments.of(C63A_DECLARATION_OF_PARENTAGE, REVIEW, Optional.empty()),
+            Arguments.of(TRANSPARENCY_ORDER, ISSUING_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(TRANSPARENCY_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(TRANSPARENCY_ORDER, REVIEW, Optional.empty())
         );
     }
 
