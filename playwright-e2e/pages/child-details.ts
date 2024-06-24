@@ -13,9 +13,6 @@ export class ChildDetails extends BasePage{
     readonly slDay: Locator; //SL = start living
     readonly slMonth: Locator;
     readonly slYear: Locator;
-    readonly postcode: Locator;
-    readonly findAddress: Locator;
-    readonly selectAddress: Locator;
     readonly keyDates: Locator;
     readonly briefSummaryCare: Locator;
     readonly adoption: Locator;
@@ -55,9 +52,6 @@ export class ChildDetails extends BasePage{
         this.slDay = this.startLiving.getByLabel('Day');
         this.slMonth = this.startLiving.getByLabel('Month');
         this.slYear = this.startLiving.getByLabel('Year');
-        this.postcode = page.getByRole('textbox', { name: 'Enter a UK postcode' })
-        this.findAddress = page.getByRole('button', { name: 'Find address' });
-        this.selectAddress = page.getByLabel('Select an address');
         this.keyDates = page.getByLabel('Key dates for this child (Optional)');
         this.briefSummaryCare = page.getByLabel('Brief summary of care and');
         this.adoption = page.getByRole('group', { name: 'Are you considering adoption at this stage? (Optional)' });
@@ -88,44 +82,27 @@ export class ChildDetails extends BasePage{
     }
 
     async childDetailsNeeded(){
-        await this.firstName.click();
         await this.firstName.fill('Susan');
-        await this.lastName.click();
         await this.lastName.fill('Brown');
-        await this.dobDay.click();
         await this.dobDay.fill('10');
-        await this.dobMonth.click();
         await this.dobMonth.fill('1');
-        await this.dobYear.click();
         await this.dobYear.fill('2019');
         await this.gender.selectOption('2: Girl');
         await this.page.getByLabel('Living with respondents').click();
         await this.page.getByLabel('Living with respondents').click(); //duplicated line is NOT an error - solves issue with checkbox not being able to be checked.
         await expect(this.page.getByLabel('Living with respondents')).toBeChecked(); //needed due to flakiness of checking the box.
-        await this.slDay.click();
         await this.slDay.fill('1');
-        await this.slMonth.click();
         await this.slMonth.fill('2');
-        await this.slYear.click();
         await this.slYear.fill('2022');
-        await this.postcode.fill('BN26 6AL');
-        await this.findAddress.click();
-        await this.selectAddress.selectOption('1: Object');
-        await this.keyDates.click();
+        await this.postcodeFindAddress('BN26 6AL', '1: Object');
         await this.keyDates.fill('these are the key dates');
-        await this.briefSummaryCare.click();
         await this.briefSummaryCare.fill('this is the brief summary of care and contact plan');
         await this.adoption.getByLabel('No').check();
-        await this.motherName.click();
         await this.motherName.fill('Claire Brown');
-        await this.fatherName.click();
         await this.fatherName.fill('Charles Brown');
         await this.fatherParentalResponsibility.selectOption('1: Yes');
-        await this.socialWorkerName.click();
         await this.socialWorkerName.fill('Robert Taylor');
-        await this.telephone.click();
         await this.telephone.fill('0123456789');
-        await this.personToContact.click();
         await this.personToContact.fill('Jane Smith');
         await this.additionalNeeds.getByLabel('No').check();
         await this.contactDetailsHidden.getByLabel('No').check();
@@ -151,9 +128,7 @@ export class ChildDetails extends BasePage{
         await this.representativeLastName.fill('One');
         await this.representativeEmail.fill('solicitor@email.com');
         await this.unregisteredOrganisation.fill('NewOrganisation');
-        await this.postcode.fill('TW7');
-        await this.findAddress.click();
-        await this.selectAddress.selectOption({index: 1});
+        await this.postcodeFindAddress('TW7', '1: Object');
         await this.representativeTelephone.locator('#childrenMainRepresentative_telephoneNumber_telephoneNumber').fill('012345678');
     }
 
