@@ -128,7 +128,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("refuseContactQuestions", "NO"),
         Map.entry("leaveToChangeChildSurname", "NO"),
         Map.entry("partyAllowedContactsAndConditions", "NO"),
-        Map.entry("familyAssistanceOrder", "NO")
+        Map.entry("familyAssistanceOrder", "NO"),
+        Map.entry("manageOrdersTransparencyOrder", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -593,7 +594,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
-            Map.entry("familyAssistanceOrder", "NO")
+            Map.entry("familyAssistanceOrder", "NO"),
+            Map.entry("manageOrdersTransparencyOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -655,7 +657,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
-            Map.entry("familyAssistanceOrder", "NO")
+            Map.entry("familyAssistanceOrder", "NO"),
+            Map.entry("manageOrdersTransparencyOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
