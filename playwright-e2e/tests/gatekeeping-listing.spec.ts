@@ -1,23 +1,17 @@
 import { test } from '../fixtures/create-fixture';
-import { Apihelp } from '../utils/api-helper';
-import caseData from '../caseData/caseSentToGatekeeper.json';
-import {
-  CTSCUser,
-  newSwanseaLocalAuthorityUserOne,
-  HighCourtAdminUser,
-  judgeLondonUser
-} from "../settings/user-credentials";
+import { createCase, updateCase } from "../utils/api-helper";
+import caseData from '../caseData/caseSentToGatekeeper.json' assert { type: "json" };
+import { newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, judgeLondonUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
 
 test.describe('Gatekeeping Listing', () => {
-  let apiDataSetup = new Apihelp();
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
   test.beforeEach(async () => {
-    caseNumber = await apiDataSetup.createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
 
   test('Review Standard Direction Order High Court WA Task',
@@ -25,7 +19,7 @@ test.describe('Gatekeeping Listing', () => {
       caseFileView }) => {
       caseName = 'Review Standard Direction Order High Court WA Task ' + dateTime.slice(0, 10);
       setHighCourt(caseData);
-      await apiDataSetup.updateCase(caseName, caseNumber, caseData);
+      await updateCase(caseName, caseNumber, caseData);
       await signInPage.visit();
       await signInPage.login(judgeLondonUser.email, judgeLondonUser.password)
       await signInPage.navigateTOCaseDetails(caseNumber);

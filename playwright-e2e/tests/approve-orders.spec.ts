@@ -3,7 +3,7 @@ import {createCase, updateCase} from "../utils/api-helper";
 import { testConfig } from '../settings/test-config';
 import caseDataByLa from '../caseData/approveOrders/caseWithConfidentialDraftOrderByLa.json' assert { type: 'json' };
 import caseDataByCtsc from '../caseData/approveOrders/caseWithConfidentialDraftOrderByCtsc.json' assert { type: 'json' };
-import caseData from '../caseData/caseWithDraftOrder.json';
+import caseData from '../caseData/caseWithDraftOrder.json' assert { type: "json" };
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, judgeUser, judgeLondonUser, HighCourtAdminUser } from '../settings/user-credentials';
 import { setHighCourt } from '../utils/update-case-details';
 import { expect } from "@playwright/test";

@@ -4,6 +4,7 @@ const require = createRequire(import.meta.url);
 import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
+import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert { type: "json" };
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, updateCase } from "../utils/api-helper";
 
@@ -11,7 +12,6 @@ test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
-  const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
 
     test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
