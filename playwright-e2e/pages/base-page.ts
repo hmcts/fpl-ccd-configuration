@@ -9,9 +9,10 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
-  readonly postcode: Locator;
-  readonly findAddress: Locator;
-  readonly selectAddress: Locator;
+  readonly dobDay: Locator; //DOB (date of birth)
+  readonly dobMonth: Locator;
+  readonly dobYear: Locator;
+  
 
   constructor(page: Page) {
     this.page = page;
@@ -22,9 +23,9 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
-    this.postcode = page.getByRole('textbox', { name: 'Enter a UK postcode' })
-    this.findAddress = page.getByRole('button', { name: 'Find address' });
-    this.selectAddress = page.getByLabel('Select an address');
+    this.dobDay = page.getByLabel('Day');
+    this.dobMonth = page.getByLabel('Month');
+    this.dobYear = page.getByLabel('Year');
   }
 
   async gotoNextStep(eventName: string) {
@@ -94,11 +95,10 @@ export class BasePage {
     await this.submit.click();
   }
   
-  async postcodeFindAddress(postcode: string, selectAdd: string){
-    await this.postcode.fill(postcode);
-    await this.findAddress.click();
-    await this.selectAddress.selectOption(selectAdd);
+  async dobFillOut(date: string, month: string, year: string){
+    await this.dobDay.fill(date);
+    await this.dobMonth.fill(month);
+    await this.dobYear.fill(year);
   }
-  
 }
 

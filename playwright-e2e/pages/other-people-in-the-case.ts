@@ -36,9 +36,7 @@ export class OtherPeopleInCase extends BasePage {
 
   async personOneToBeGivenNotice() {
     await this.fullName.fill("John Doe");
-    await this.dobDay.fill("1");
-    await this.dobMonth.fill("10");
-    await this.dobYear.fill("1990")
+    await this.dobFillOut("2","11",(new Date().getUTCFullYear()-20).toString());
     await this.gender.selectOption('1: Male');
     await this.placeOfBirth.fill("London");
     await this.currentAddress.getByLabel('No').check();
