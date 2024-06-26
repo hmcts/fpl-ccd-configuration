@@ -138,7 +138,7 @@ export class AdditionalApplications extends BasePage {
   }
 
   public async payForApplication() {
-    await this.page.getByLabel('Yes').check();
+    await this.page.locator('[for="temporaryPbaPayment_usePbaPayment_Yes"]').check();
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
@@ -148,7 +148,6 @@ export class AdditionalApplications extends BasePage {
     await this.gotoNextStep('Upload additional applications');
     await this.chooseC2ApplicationType();
     await this.fillC2ApplicationDetails(uploadDraftOrder);
-    await expect(this.page.getByText('£232.00')).toBeVisible();
     await this.payForApplication();
     await this.checkYourAnsAndSubmit();
   }

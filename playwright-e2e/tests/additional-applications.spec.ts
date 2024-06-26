@@ -120,8 +120,8 @@ test.describe('Upload additional applications', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
 
+            await signInPage.navigateTOCaseDetails(caseNumber);
             await additionalApplications.gotoNextStep('Upload additional applications');
             await additionalApplications.chooseConfidentialC2ApplicationType();
             await additionalApplications.fillC2ApplicationDetails();
@@ -207,7 +207,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await additionalApplications.uploadBasicC2Application(false);
+        await additionalApplications.uploadBasicC2Application(false); 
 
         // Check CFV
         await caseFileView.goToCFVTab();

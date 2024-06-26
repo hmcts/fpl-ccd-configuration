@@ -1,5 +1,5 @@
 import { BasePage } from "./base-page";
-import { Page } from "@playwright/test";
+import { Page} from "@playwright/test";
 import config from "../settings/test-docs/config";
 
 export class Placement extends BasePage
@@ -13,10 +13,13 @@ export class Placement extends BasePage
     await this.clickContinue();
     await this.page.getByRole('textbox', { name: 'Application document' }).setInputFiles(config.testPdfFile);
     await this.waitForAllUploadsToBeCompleted();
+    await this.page.waitForTimeout(8000);
     await this.page.locator('#placement_placementSupportingDocuments_0_document').setInputFiles(config.testPdfFile2);
     await this.waitForAllUploadsToBeCompleted();
+    await this.page.waitForTimeout(8000);
     await this.page.locator('#placement_placementSupportingDocuments_1_document').setInputFiles(config.testPdfFile3);
     await this.waitForAllUploadsToBeCompleted();
+    await this.page.waitForTimeout(8000);
     await this.page.locator('#placement_placementConfidentialDocuments_0_document').setInputFiles(config.testPdfFile4);
     await this.waitForAllUploadsToBeCompleted();
     await this.clickContinue();
