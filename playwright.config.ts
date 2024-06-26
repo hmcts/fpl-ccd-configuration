@@ -23,7 +23,7 @@ export default defineConfig({
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: 1,
+  workers: process.env.CI ? 2 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
