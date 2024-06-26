@@ -1,7 +1,7 @@
 {
   "state": "PREPARE_FOR_HEARING",
   "caseData": {
-    "caseName": "e2e test case",
+    "caseName": "Judge approves draft CMO",
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -21,26 +21,22 @@
       {
         "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
         "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
           "endDate": "2050-01-02T16:30:00",
+          "startDate": "2050-01-01T15:15:00",
           "hearingNeedsBooked": [
             "INTERPRETER",
             "SPOKEN_OR_WRITTEN_WELSH",
             "SOMETHING_ELSE"
           ],
+          "venueCustomAddress": {},
           "hearingNeedsDetails": "Some details",
           "judgeAndLegalAdvisor": {
-            "judgeLastName": "Test",
             "judgeTitle": "HER_HONOUR_JUDGE",
-            "legalAdvisorName": "Test Test"
-          },
-          "startDate": "2050-01-01T15:15:00",
-          "attendance": [
-            "IN_PERSON"
-          ],
-          "type": "OTHER",
-          "typeDetails": "test type details",
-          "venue": "96",
-          "venueCustomAddress": {}
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
         }
       },
       {
@@ -286,35 +282,6 @@
       "judgeLastName": "Moley",
       "judgeEmailAddress": "moley@example.com"
     },
-    "judicialMessages": [
-      {
-        "id": "c09eb60e-facc-4af6-9761-3e23f6748673",
-        "value": {
-          "applicationType": "C2, 25 March 2021, 3:16pm",
-          "dateSent": "16 November 2023 at 4:51pm",
-          "latestMessage": "Some note",
-          "messageHistory": "FamilyPublicLaw+ctsc@gmail.com - Some note",
-          "recipient": "recipient@fpla.com",
-          "recipientType": "HEARING_JUDGE",
-          "relatedDocumentFileNames": "Test.txt",
-          "relatedDocuments": [
-            {
-              "id": "156f8d6d-7be5-4417-9d5c-81d6dd7f6cdd",
-              "value": {
-                "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-                "document_filename": "Test.txt",
-                "document_url": "${TEST_DOCUMENT_URL}"
-              }
-            }
-          ],
-          "requestedBy": "Subject 1",
-          "sender": "FamilyPublicLaw+ctsc@gmail.com",
-          "senderType": "CTSC",
-          "status": "OPEN",
-          "urgency": "High"
-        }
-      }
-    ],
     "hearingOrdersBundlesDrafts": [
       {
         "id": "89f99f9c-80d6-47c8-bb6f-50de214d1a16",
@@ -344,6 +311,7 @@
               }
             }
           ],
+          "ordersLA": [],
           "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
           "hearingName": "Case management hearing, 3 November 2012",
           "judgeTitleAndName": "Her Honour Judge Test"
