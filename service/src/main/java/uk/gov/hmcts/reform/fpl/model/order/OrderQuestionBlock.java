@@ -130,7 +130,15 @@ public enum OrderQuestionBlock {
             "manageOrdersConditionsOfContact")),
     FAMILY_ASSISTANCE_ORDER("familyAssistanceOrder", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersPartyToBeBefriended1", "manageOrdersPartyToBeBefriended2",
-            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate"));
+            "manageOrdersPartyToBeBefriended3", "manageOrdersFamilyAssistanceEndDate")),
+    TRANSPARENCY_ORDER_BLOCK("manageOrdersTransparencyOrder", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTransparencyOrderExpiration", "manageOrdersTransparencyOrderEndDate",
+            "manageOrdersTransparencyOrderPublishInformationLabel",
+            "manageOrdersTransparencyOrderPublishInformationDetails",
+            "manageOrdersTransparencyOrderPublishIdentityLabel", "manageOrdersTransparencyOrderPublishIdentityDetails",
+            "manageOrdersTransparencyOrderPublishDocumentsLabel",
+            "manageOrdersTransparencyOrderPublishDocumentsDetails",
+            "manageOrdersTransparencyOrderPermissionToReportEffectiveDate"));
 
     private final String showHideField;
     private final OrderSection section;
