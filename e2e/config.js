@@ -4,10 +4,11 @@ const e2ePw = process.env.E2E_TEST_PASSWORD;
 module.exports = {
   newSwanseaLocalAuthorityUserOne: {
     email: 'local-authority-swansea-0001@maildrop.cc',
-    password: e2ePw || "Password1234",
-    // forename: 'kurt@swansea.gov.uk',
-    // surname: '(local-authority)',
+    password:  e2ePw,
+    forename: 'Local',
+    surname: 'Authority',
   },
+
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
@@ -16,7 +17,7 @@ module.exports = {
   },
   newSwanseaLocalAuthorityUserTwo: {
     email: 'Local-Authority-Swansea-0002@AAT.com',
-    password: process.env.LA_USER_PASSWORD || e2ePw
+    password:  e2ePw,
   },
   swanseaLocalAuthorityUserTwo: {
     email: 'damian@swansea.gov.uk',
@@ -26,7 +27,7 @@ module.exports = {
   },
   newHillingdonLocalAuthorityUserOne: {
     email: 'Local-Authority-Hillingdon-0001@AAT.com',
-    password: process.env.LA_USER_PASSWORD || e2ePw
+    password:  e2ePw,
   },
   hillingdonLocalAuthorityUserOne: {
     email: 'sam@hillingdon.gov.uk',
@@ -145,7 +146,8 @@ module.exports = {
     manageLegalRepresentatives: 'Add counsel/external solicitor',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
-    messageJudge: 'Send and reply to messages',
+    messageJudge: 'Send messages',
+    replyMessage: 'Reply to messages',
     removeManagingOrganisation: 'Remove managing organisation',
     languageRequirement: 'Welsh language requirements',
     selectCourt: 'Select court to issue',

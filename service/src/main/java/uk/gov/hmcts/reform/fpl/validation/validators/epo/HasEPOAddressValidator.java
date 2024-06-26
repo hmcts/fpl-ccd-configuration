@@ -21,7 +21,7 @@ public class HasEPOAddressValidator implements ConstraintValidator<HasEPOAddress
     }
 
     private boolean hasPopulatedAddress(Address address) {
-        return !isEmpty(address.getAddressLine1()) && !isEmpty(address.getPostcode());
+        return address != null && !isEmpty(address.getAddressLine1()) && !isEmpty(address.getPostcode());
     }
 
     private boolean epoIsPreventRemoval(Orders orders) {

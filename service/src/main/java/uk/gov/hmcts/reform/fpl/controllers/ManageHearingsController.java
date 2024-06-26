@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
-import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -68,7 +66,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-hearings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -78,7 +75,6 @@ public class ManageHearingsController extends CallbackController {
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
-    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HAS_SESSION_KEY = "hasSession";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
@@ -432,7 +428,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
-        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
         data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
         data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
@@ -467,10 +462,6 @@ public class ManageHearingsController extends CallbackController {
                     if (isNotEmpty(hearingBooking.getNoticeOfHearing())) {
                         publishEvent(new SendNoticeOfHearing(caseData, hearingBooking, false));
                     }
-
-                    if (isNewOrReListedHearing(caseData) && isTemporaryHearingJudge(hearingBooking)) {
-                        publishEvent(new TemporaryHearingJudgeAllocationEvent(caseData, hearingBooking));
-                    }
                 });
         }
     }
@@ -487,12 +478,4 @@ public class ManageHearingsController extends CallbackController {
         return isEmpty(caseData.getHearingOption()) || NEW_HEARING.equals(caseData.getHearingOption());
     }
 
-    private boolean isNewOrReListedHearing(CaseData caseData) {
-        return caseData.getHearingOption() == null
-            || NEW_HEARING.equals(caseData.getHearingOption()) || RE_LIST_NOW.equals(caseData.getHearingReListOption());
-    }
-
-    private boolean isTemporaryHearingJudge(HearingBooking hearingBooking) {
-        return (hearingBooking.getHearingJudgeLabel() != null);
-    }
 }

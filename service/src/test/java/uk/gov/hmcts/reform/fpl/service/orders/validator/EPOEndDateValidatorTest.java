@@ -20,7 +20,7 @@ class EPOEndDateValidatorTest {
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    private final EPOEndDateValidator underTest = new EPOEndDateValidator(time);
+    private final EPOEndDateValidator underTest = new EPOEndDateValidator();
 
     @Test
     void accept() {
@@ -31,12 +31,24 @@ class EPOEndDateValidatorTest {
     void validateFutureDate() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now())
-                .manageOrdersEndDateTime(time.now().minusHours(1))
+                .manageOrdersApprovalDateTime(time.now().minusDays(1))
+                .manageOrdersEndDateTime(time.now().plusDays(30))
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of("Enter an end date in the future"));
+        assertThat(underTest.validate(caseData)).asList().isEmpty();
+    }
+
+    @Test
+    void validateDatBeforeToday() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(time.now().minusDays(3))
+                .manageOrdersEndDateTime(time.now().minusDays(1))
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).asList().isEmpty();
     }
 
     @Test
@@ -61,8 +73,7 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of(END_DATE_RANGE_MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(END_DATE_RANGE_MESSAGE));
     }
 
     @Test
@@ -88,7 +99,6 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(
-            List.of(BEFORE_APPROVAL_MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(BEFORE_APPROVAL_MESSAGE));
     }
 }

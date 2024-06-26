@@ -58,3 +58,13 @@ infrastructure/.terraform/
 
 # vscode
 .vscode/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+tests-examples/demo-todo-app.spec.ts
+playwright-e2e/local-config/config.js
+playwright-e2e/.env
+
+# Ignore .env file
+.env

@@ -2,19 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingFurtherEvidenceDocuments",
+    "ID": "respStmtList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "HearingFurtherEvidenceBundle",
-    "Label": "Further evidence documents for hearings",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentStatements",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "RespondentStatement",
+    "FieldTypeParameter": "RespondentStatementV2",
     "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -22,104 +12,70 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocuments",
+    "ID": "respStmtListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "HMCTS further evidence documents",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
+    "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsNC",
+    "ID": "respStmtListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "HMCTS further evidence documents",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Non confidential version of furtherEvidenceDocuments (non hmcts field)"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsLA",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Local authority further evidence documents",
+    "FieldTypeParameter": "RespondentStatementV2Confidential",
+    "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsLANC",
+    "ID": "respStmtListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Local authority further evidence documents",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Non confidential version of furtherEvidenceDocumentsLA (non hmcts/cafcass/la field)"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsSolicitor",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Solicitor further evidence documents",
+    "FieldTypeParameter": "RespondentStatementV2",
+    "Label": "Respondent statements",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocuments",
+    "ID": "correspondenceDocList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by HMCTS",
+    "FieldTypeParameter": "CorrespondenceDocument",
+    "Label": "Correspondence",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocumentsNC",
+    "ID": "correspondenceDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by HMCTS",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
+    "Label": "Correspondence (Confidential)",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Non confidential version of correspondenceDocuments (non hmcts field)"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocumentsLA",
+    "ID": "correspondenceDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by local authority",
-    "Searchable": "N",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocumentsLANC",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by local authority",
+    "FieldTypeParameter": "CorrespondenceDocumentConfidential",
+    "Label": "Correspondence (Restricted to CTSC only)",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Non confidential version of correspondenceDocumentsLA (non hmcts/cafcass/la field)"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceDocumentsSolicitor",
+    "ID": "correspondenceDocListRemoved",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Correspondence uploaded by solicitor",
+    "FieldTypeParameter": "CorrespondenceDocument",
+    "Label": "Correspondence (Removed)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -127,6 +83,36 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundleListV2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundle",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundleConfidential",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingCourtBundleConfidential",
+    "Label": "Court bundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtBundleListRemoved",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingCourtBundle",
     "Label": "Court bundle",
@@ -146,29 +132,37 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "positionStatementChildList",
+    "ID": "caseSummaryListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementChild",
-    "Label": "Position statement child",
+    "FieldTypeParameter": "CaseSummaryConfidential",
+    "Label": "Case summary",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated. To be removed once all case migrated"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "positionStatementRespondentList",
+    "ID": "caseSummaryListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "PositionStatementRespondent",
-    "Label": "Position statement respondent",
+    "FieldTypeParameter": "CaseSummaryConfidential",
+    "Label": "Case summary",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated. To be removed once all case migrated"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "positionStatementChildListV2",
+    "ID": "caseSummaryListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CaseSummary",
+    "Label": "Case summary",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildList",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementChild",
     "Label": "Position statement child",
@@ -178,10 +172,110 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "positionStatementRespondentListV2",
+    "ID": "posStmtChildListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChildConfidential",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtChildListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementChild",
+    "Label": "Position statement child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespList",
     "FieldType": "Collection",
     "FieldTypeParameter": "PositionStatementRespondent",
     "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondentConfidential",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtRespListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementRespondent",
+    "Label": "Position statement respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementConfidential",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatementConfidential",
+    "Label": "Position statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "posStmtListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PositionStatement",
+    "Label": "Position statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -192,6 +286,76 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SkeletonArgument",
     "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skeletonArgumentListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
+    "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skeletonArgumentListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SkeletonArgumentConfidential",
+    "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "skeletonArgumentListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SkeletonArgument",
+    "Label": "Skeleton argument",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceedingConfidential",
+    "Label": "Previous Proceedings",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "previousProceedingListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PreviousProceeding",
+    "Label": "Previous Proceedings",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

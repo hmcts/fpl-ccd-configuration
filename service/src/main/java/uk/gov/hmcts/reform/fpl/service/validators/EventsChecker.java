@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,6 +15,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -64,6 +66,7 @@ public class EventsChecker {
     private AllocationProposalChecker allocationProposalChecker;
 
     @Autowired
+    @Lazy
     private CaseSubmissionChecker caseSubmissionChecker;
 
     @Autowired
@@ -77,6 +80,9 @@ public class EventsChecker {
 
     @Autowired
     private InternationalElementChecker internationalElementChecker;
+
+    @Autowired
+    private C1WithSupplementChecker c1WithSupplementChecker;
 
     @Autowired
     private OthersChecker othersChecker;
@@ -110,19 +116,16 @@ public class EventsChecker {
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);
         eventCheckers.put(OTHER_PROCEEDINGS, proceedingsChecker);
         eventCheckers.put(INTERNATIONAL_ELEMENT, internationalElementChecker);
+        eventCheckers.put(C1_WITH_SUPPLEMENT, c1WithSupplementChecker);
         eventCheckers.put(OTHERS, othersChecker);
         eventCheckers.put(COURT_SERVICES, courtServiceChecker);
         eventCheckers.put(LANGUAGE_REQUIREMENTS, languageRequirementsChecker);
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
         eventCheckers.put(SELECT_COURT, courtChecker);
-    }
-
-    private void addCheckersBasedOnToggle() {
         eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
     }
 
     public List<String> validate(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.validate(caseData))
             .orElse(emptyList());
@@ -147,7 +150,6 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
-        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
             .map(validator -> validator.isAvailable(caseData))
             .orElse(true);

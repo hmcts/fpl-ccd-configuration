@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentRemovalReason",
+    "ListElementCode": "MISTAKE_ON_DOCUMENT",
+    "ListElement": "There is a mistake on the document",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentRemovalReason",
+    "ListElementCode": "UPLOADED_TO_WRONG_CASE",
+    "ListElement": "The document was uploaded to the wrong case",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentRemovalReason",
+    "ListElementCode": "OTHER",
+    "ListElement": "Another reason",
+    "DisplayOrder": 3
+  }
+]

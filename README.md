@@ -79,57 +79,9 @@ It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine
 Refer to the confluence page at [https://tools.hmcts.net/confluence/x/QRTgWw](https://tools.hmcts.net/confluence/x/QRTgWw)
 for additional explanation.
 
-## Testing
-E2E tests are configured to run in parallel in 3 headless browsers by default.
+## Testing E2E
 
-To run e2e tests enter `yarn test` in the command line.
-
-### Optional configuration
-
-To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`. By default, 3 chunks are enabled.
-
-```$bash
-PARALLEL_CHUNKS=1 yarn test
-```
-
-To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`. By default, browser window is hidden.
-
-```$bash
-SHOW_BROWSER_WINDOW=true yarn test
-```
-
-To enable retry upon test failure please set `TEST_RETRIES` environment variable to desired positive value. By default no retries are enabled.
-
-```$bash
-TEST_RETRIES=2 yarn test
-```
-
-To disable Chrome web security
-
-```$bash
-DISABLE_SECURITY=true yarn test
-```
-
-To run a selected E2E test use the Feature or Scenario name
-
-```$bash
-SHOW_BROWSER_WINDOW=true yarn test -g "Gatekeeper adds allocated judge"
-```
-
-### Creating sample case via E2E tests
-
-E2E tests can be used to create a sample case. To do so you can run the following command:
-
-```$bash
-PARALLEL_CHUNKS=1 yarn test --grep 'Create EPO order'
-```
-Note: Case number will be printed to the console while tests run e.g. `Case #1571-7550-7484-8512 has been created`.
-
-### Running E2E against remote environment
-```$bash
-URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" yarn test
-```
-If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
+We use Playwright with TypeScript. All the details can be found in the [E2E README.md](./playwright-e2e/README.md).
 
 ### Running api tests
 

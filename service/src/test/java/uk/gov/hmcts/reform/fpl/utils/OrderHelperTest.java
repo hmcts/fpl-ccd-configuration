@@ -4,14 +4,23 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class OrderHelperTest {
 
@@ -87,5 +96,60 @@ class OrderHelperTest {
             assertThat(OrderHelper.isOfType(order, SUPERVISION_ORDER)).isFalse();
         }
 
+    }
+
+    @Nested
+    class GetLatestApprovalDateOfFinalOrders {
+        private final LocalDateTime todayDateTime = LocalDateTime.now();
+        private final LocalDateTime latestApprovalDateTime = todayDateTime.minusDays(1);
+        private final LocalDate latestApprovalDate = latestApprovalDateTime.toLocalDate();
+        private final Element<GeneratedOrder> latestFinalOrder = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime)
+            .approvalDate(latestApprovalDate).build());
+        private final Element<GeneratedOrder> latestFinalOrderWithApprovalDateTime = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime).markedFinal(YesNo.YES.getValue())
+            .approvalDateTime(latestApprovalDateTime).build());
+        private final Element<GeneratedOrder> finalOrderWithApprovalDate = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime).markedFinal(YesNo.YES.getValue())
+            .approvalDate(latestApprovalDate.minusDays(1)).build());
+        private final Element<GeneratedOrder> finalOrderWithApprovalDateTime = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime).markedFinal(YesNo.YES.getValue())
+            .approvalDate(latestApprovalDate.minusDays(2)).build());
+        private final Element<GeneratedOrder> orderWithApprovalDateTime = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime).markedFinal(YesNo.NO.getValue())
+            .approvalDate(latestApprovalDate.minusDays(3)).build());
+        private final Element<GeneratedOrder> orderWithApprovalDate = element(GeneratedOrder.builder()
+            .dateTimeIssued(todayDateTime)
+            .approvalDate(latestApprovalDate.minusDays(4)).build());
+
+        @Test
+        void shouldReturnLatestApprovalDate() {
+            CaseData caseData = CaseData.builder()
+                .orderCollection(List.of(
+                    latestFinalOrder, latestFinalOrderWithApprovalDateTime, finalOrderWithApprovalDate,
+                    finalOrderWithApprovalDateTime, orderWithApprovalDate, orderWithApprovalDateTime))
+                .build();
+
+            assertThat(OrderHelper.getLatestApprovalDateOfFinalOrders(caseData))
+                .isEqualTo(Optional.of(latestApprovalDate));
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenNoFinalOrderFound() {
+            CaseData caseData = CaseData.builder()
+                .orderCollection(List.of(orderWithApprovalDate, orderWithApprovalDateTime))
+                .build();
+
+            assertThat(OrderHelper.getLatestApprovalDateOfFinalOrders(caseData)).isEqualTo(Optional.empty());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenNull() {
+            CaseData caseData = CaseData.builder()
+                .orderCollection(null)
+                .build();
+
+            assertThat(OrderHelper.getLatestApprovalDateOfFinalOrders(caseData)).isEqualTo(Optional.empty());
+        }
     }
 }

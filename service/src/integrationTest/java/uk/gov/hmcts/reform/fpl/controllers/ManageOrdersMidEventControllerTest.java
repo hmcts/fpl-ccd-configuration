@@ -128,7 +128,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("refuseContactQuestions", "NO"),
         Map.entry("leaveToChangeChildSurname", "NO"),
         Map.entry("partyAllowedContactsAndConditions", "NO"),
-        Map.entry("familyAssistanceOrder", "NO")
+        Map.entry("familyAssistanceOrder", "NO"),
+        Map.entry("manageOrdersTransparencyOrder", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -371,12 +372,21 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void epoEndDateShouldReturnErrorForPastDate() {
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF), eq(ENGLISH)))
+            .thenReturn(DOCMOSIS_DOCUMENT);
+
+        when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
+            .thenReturn(UPLOADED_DOCUMENT);
+
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
+            buildRemoveToAccommodationEventData(now().minusDays(2), now().minusDays(1))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+        Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {
+        });
 
-        assertThat(response.getErrors()).containsOnly("Enter an end date in the future");
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
     }
 
     @Test
@@ -584,7 +594,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
-            Map.entry("familyAssistanceOrder", "NO")
+            Map.entry("familyAssistanceOrder", "NO"),
+            Map.entry("manageOrdersTransparencyOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -646,7 +657,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("respondentsRefused", "NO"),
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
-            Map.entry("familyAssistanceOrder", "NO")
+            Map.entry("familyAssistanceOrder", "NO"),
+            Map.entry("manageOrdersTransparencyOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);

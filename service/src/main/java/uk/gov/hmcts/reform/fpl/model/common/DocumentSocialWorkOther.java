@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Data
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 public class DocumentSocialWorkOther extends DocumentMetaData {
     private final String documentTitle;
 
-    @Builder(toBuilder = true)
     public DocumentSocialWorkOther(DocumentReference typeOfDocument,
                                    LocalDateTime dateTimeUploaded,
                                    String uploadedBy,
@@ -19,4 +19,5 @@ public class DocumentSocialWorkOther extends DocumentMetaData {
         super(typeOfDocument, dateTimeUploaded, uploadedBy);
         this.documentTitle = documentTitle;
     }
+
 }

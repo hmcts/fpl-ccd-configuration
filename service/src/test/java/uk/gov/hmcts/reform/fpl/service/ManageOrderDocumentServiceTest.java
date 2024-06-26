@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.selectors.ChildrenSmartSelector;
 
 import java.util.Map;
@@ -27,6 +27,13 @@ public class ManageOrderDocumentServiceTest {
         .court(COURT_1)
         .build();
 
+    private static final CaseData CASE_DATA_2 = CaseData.builder()
+        .localAuthorities(wrapElements(LocalAuthority.builder()
+            .name(LOCAL_AUTHORITY_1_NAME)
+            .build()))
+        .court(COURT_1)
+        .build();
+
     private final ChildrenSmartSelector childrenSmartSelector = mock(ChildrenSmartSelector.class);
     private final LocalAuthorityNameLookupConfiguration laNameLookup =
         mock(LocalAuthorityNameLookupConfiguration.class);
@@ -34,13 +41,9 @@ public class ManageOrderDocumentServiceTest {
         new ManageOrderDocumentService(childrenSmartSelector,
             laNameLookup);
 
-    @BeforeEach
-    void setUp() {
-        when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_1_CODE)).thenReturn(LOCAL_AUTHORITY_1_NAME);
-    }
-
     @Test
     void shouldReturnExpectedSingularGrammar() {
+        when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_1_CODE)).thenReturn(LOCAL_AUTHORITY_1_NAME);
         when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class)));
 
         Map<String, String> expectedGrammar = Map.of(
@@ -56,6 +59,7 @@ public class ManageOrderDocumentServiceTest {
 
     @Test
     void shouldReturnExpectedPluralGrammar() {
+        when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_1_CODE)).thenReturn(LOCAL_AUTHORITY_1_NAME);
         when(childrenSmartSelector.getSelectedChildren(CASE_DATA)).thenReturn(wrapElements(mock(Child.class),
             mock(Child.class)));
 
@@ -68,5 +72,20 @@ public class ManageOrderDocumentServiceTest {
         );
 
         assertThat(manageOrderDocumentService.commonContextElements(CASE_DATA)).isEqualTo(expectedGrammar);
+    }
+
+    @Test
+    void shouldReturnExpectedSingularGrammarEvenWhenCaseLocalAuthorityDoesntExist() {
+        when(childrenSmartSelector.getSelectedChildren(CASE_DATA_2)).thenReturn(wrapElements(mock(Child.class)));
+
+        Map<String, String> expectedGrammar = Map.of(
+            "childOrChildren", "child",
+            "childIsOrAre", "is",
+            "childWasOrWere", "was",
+            "localAuthorityName", LOCAL_AUTHORITY_1_NAME,
+            "courtName", LOCAL_AUTHORITY_1_COURT_NAME
+        );
+
+        assertThat(manageOrderDocumentService.commonContextElements(CASE_DATA_2)).isEqualTo(expectedGrammar);
     }
 }

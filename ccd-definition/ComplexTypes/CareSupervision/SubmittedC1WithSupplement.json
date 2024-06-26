@@ -1,0 +1,95 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ListElementCode": "isDocumentUploaded",
+    "ElementLabel": "Is Document Uploaded?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "YesOrNoFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ListElementCode": "clearSubmittedC1WithSupplement",
+    "ElementLabel": "Remove this C1 with supplement application.",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "YesOrNoFixedList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "CategoryID": "originalApplications"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "urgencyTimeFrameType",
+    "ElementLabel": "Please state how soon you want the judge to consider your application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "UrgencyTimeFrameType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "supplementsBundle",
+    "ElementLabel": "Supplements",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1SupplementOriginal",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "supportingEvidenceBundle",
+    "ElementLabel": "Supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C1SupportingEvidenceBundleOriginal",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmittedC1WithSupplement",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

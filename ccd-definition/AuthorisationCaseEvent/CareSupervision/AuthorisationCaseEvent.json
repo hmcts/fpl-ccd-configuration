@@ -403,6 +403,29 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterC1WithSupplement",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[SOLICITORA]",
+          "[CHILDSOLICITORA]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterOthers",
     "AccessControl": [
       {
@@ -683,54 +706,36 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-approve-order",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CR"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsV2",
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocumentsLA",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LABARRISTER]",
-          "[LASOLICITOR]",
-          "[LASHARED]",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-superuser",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
+          "[LABARRISTER]",
+          "[LAMANAGING]",
+          "[LASHARED]",
+          "[LASOLICITOR]",
+          "[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+          "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",
+          "[CHILDSOLICITORA]", "[CHILDSOLICITORB]", "[CHILDSOLICITORC]", "[CHILDSOLICITORD]",
+          "[CHILDSOLICITORE]", "[CHILDSOLICITORF]", "[CHILDSOLICITORG]", "[CHILDSOLICITORH]",
+          "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
+          "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
+          "[BARRISTER]",
+          "[CAFCASSSOLICITOR]"
         ],
         "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
       }
     ]
   },
@@ -1110,12 +1115,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[LAMANAGING]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
@@ -1373,46 +1373,6 @@
           "[CAFCASSSOLICITOR]"
         ],
         "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[SOLICITOR]",
-          "[SOLICITORA]",
-          "[SOLICITORB]",
-          "[SOLICITORC]",
-          "[SOLICITORD]",
-          "[SOLICITORE]",
-          "[SOLICITORF]",
-          "[SOLICITORG]",
-          "[SOLICITORH]",
-          "[SOLICITORI]",
-          "[SOLICITORJ]",
-          "[CHILDSOLICITORA]",
-          "[CHILDSOLICITORB]",
-          "[CHILDSOLICITORC]",
-          "[CHILDSOLICITORD]",
-          "[CHILDSOLICITORE]",
-          "[CHILDSOLICITORF]",
-          "[CHILDSOLICITORG]",
-          "[CHILDSOLICITORH]",
-          "[CHILDSOLICITORI]",
-          "[CHILDSOLICITORJ]",
-          "[CHILDSOLICITORK]",
-          "[CHILDSOLICITORL]",
-          "[CHILDSOLICITORM]",
-          "[CHILDSOLICITORN]",
-          "[CHILDSOLICITORO]",
-          "[CAFCASSSOLICITOR]",
-          "[BARRISTER]"
-        ],
-        "CRUD": "CR"
       }
     ]
   },

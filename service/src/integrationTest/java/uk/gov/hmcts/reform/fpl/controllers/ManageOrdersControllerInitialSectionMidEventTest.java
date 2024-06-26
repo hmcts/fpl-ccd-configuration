@@ -122,6 +122,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .leaveToChangeChildSurname(NO)
             .familyAssistanceOrder(NO)
             .partyAllowedContactsAndConditions(NO)
+            .manageOrdersTransparencyOrder(NO)
             .build()
         );
     }
@@ -191,6 +192,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .leaveToChangeChildSurname(NO)
             .partyAllowedContactsAndConditions(NO)
             .familyAssistanceOrder(NO)
+            .manageOrdersTransparencyOrder(NO)
             .build()
         );
     }

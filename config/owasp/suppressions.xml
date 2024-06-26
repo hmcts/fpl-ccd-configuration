@@ -30,20 +30,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-   file name: spring-plugin-metadata-1.2.0.RELEASE.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org.springframework.plugin/spring-plugin-metadata@.*$</packageUrl>
-    <cve>CVE-2023-34047</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: spring-plugin-core-1.2.0.RELEASE.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org.springframework.plugin/spring-plugin-core@.*$</packageUrl>
-    <cve>CVE-2023-34047</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
    file name: bcprov-jdk15on-1.69.jar
    ]]></notes>
     <packageUrl regex="true">^pkg:maven/org.bouncycastle/bcprov-jdk15on@.*$</packageUrl>

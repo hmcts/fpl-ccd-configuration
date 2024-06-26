@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +23,9 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/enter-local-authority")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -46,6 +45,15 @@ public class ApplicantLocalAuthorityController extends CallbackController {
         final CaseDetails caseDetails = request.getCaseDetails();
         final CaseData caseData = getCaseData(caseDetails);
         final LocalAuthority localAuthority = applicantLocalAuthorityService.getUserLocalAuthority(caseData);
+
+        // Only do these checks when not in open/returned states
+        if (!List.of(OPEN, RETURNED).contains(caseData.getState())
+            && !applicantLocalAuthorityService.isApplicantOrOnBehalfOfOrgId(localAuthority.getId(), caseData)) {
+            // user is not operating on behalf of the applicant - it's likely a respondent solicitor on a 3rd party
+            // case (both actual applicant + respondent get [SOLICITORA] roles so can't do this via event permissions
+            return respond(caseDetails,
+                List.of("You must be the applicant or acting on behalf of the applicant to modify these details."));
+        }
 
         caseDetails.getData().put(LOCAL_AUTHORITY, localAuthority);
         caseDetails.getData().put(COLLEAGUES, localAuthority.getColleagues());

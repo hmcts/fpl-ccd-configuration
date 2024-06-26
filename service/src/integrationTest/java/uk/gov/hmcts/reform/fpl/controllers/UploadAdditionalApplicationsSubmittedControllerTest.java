@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -51,8 +52,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static java.util.UUID.randomUUID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -140,6 +143,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+    @Captor
+    private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
 
     private static final Element<Representative> REPRESENTATIVE_WITH_DIGITAL_PREFERENCE = element(
         Representative.builder()
@@ -201,9 +206,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .willAnswer(returnsFirstArg());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID));
-        given(uploadAdditionalApplicationsService.convertC2Bundle(any()))
+        given(uploadAdditionalApplicationsService.convertC2Bundle(any(), any()))
             .willAnswer(returnsFirstArg());
-        given(uploadAdditionalApplicationsService.convertOtherBundle(any()))
+        given(uploadAdditionalApplicationsService.convertOtherBundle(any(), any()))
             .willAnswer(returnsFirstArg());
 
         doNothing().when(sendDocumentService).sendDocuments(any());
@@ -218,6 +223,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         CaseData caseData = CaseData.builder().id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .familyManCaseNumber(String.valueOf(CASE_ID))
             .respondents1(respondents)
             .representatives(List.of(REPRESENTATIVE_WITH_DIGITAL_PREFERENCE, REPRESENTATIVE_WITH_EMAIL_PREFERENCE,
@@ -557,33 +567,78 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void shouldSendNotificationsWhenTriggerEventFails() {
+    void shouldConvertBundles() {
+        UUID additionalApplicationsBundleId = UUID.randomUUID();
+        C2DocumentBundle c2Bundle = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+        OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant").build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+            .c2DocumentBundle(c2Bundle)
+            .otherApplicationsBundle(otherBundle)
+            .build();
+
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("additionalApplicationType", List.of(C2_ORDER, OTHER_ORDER))
+            .put("additionalApplicationsBundle",
+                List.of(element(additionalApplicationsBundleId, additionalApplicationsBundle)))
+            .put("sendToCtsc", NO.getValue())
+            .build());
+
+        when(coreCaseDataService.performPostSubmitCallback(any(),
+                eq("internal-change-upload-add-apps"),
+                changeFunctionCaptor.capture())).thenReturn(caseDetails);
+
+        C2DocumentBundle expectedC2 = c2Bundle.toBuilder().applicantName("Converted C2").build();
+        when(uploadAdditionalApplicationsService.convertC2Bundle(any(), any())).thenReturn(expectedC2);
+        OtherApplicationsBundle expectedOtherBundle = otherBundle.toBuilder().applicantName("Converted Other").build();
+        when(uploadAdditionalApplicationsService.convertOtherBundle(any(), any())).thenReturn(expectedOtherBundle);
+
+        postSubmittedEvent(caseDetails);
+        Map<String, Object> actual = changeFunctionCaptor.getValue().apply(caseDetails);
+
+        assertEquals(actual.get("additionalApplicationsBundle"), List.of(element(additionalApplicationsBundleId,
+                additionalApplicationsBundle.toBuilder()
+                    .c2DocumentBundle(expectedC2)
+                    .otherApplicationsBundle(expectedOtherBundle)
+                    .build())));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldConvertC2ConfidentialBundle() {
         given(uploadAdditionalApplicationsService.getApplicationTypes(any()))
             .willReturn(List.of(ApplicationType.C2_APPLICATION));
 
-        CaseDetails caseDetails = buildCaseDetails(YES, YES);
-        Map<String, Object> updates = Map.of(
-            "additionalApplicationsBundle", caseDetails.getData().get("additionalApplicationsBundle")
-        );
+        C2DocumentBundle c2 = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(new ArrayList<>())
+            .applicantName(LOCAL_AUTHORITY_1_NAME + ", Applicant")
+            .build();
 
-        doNothing().when(coreCaseDataService).triggerEvent(
-            caseDetails.getId(),
-            "internal-change-upload-add-apps",
-            updates);
+        CaseDetails caseDetails = createCase(ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("sendToCtsc", NO)
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElementsWithUUIDs(AdditionalApplicationsBundle.builder()
+                .pbaPayment(PBAPayment.builder().usePbaPayment(NO.getValue()).build())
+                .c2DocumentBundleConfidential(c2)
+                .build()))
+            .build());
 
         postSubmittedEvent(caseDetails);
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS),
-            any(),
-            any(),
-            any()));
-
-        checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC),
-            any(),
-            any(),
-            any()));
+        verify(coreCaseDataService).performPostSubmitCallback(eq(caseDetails.getId()),
+            eq("internal-change-upload-add-apps"), changeFunctionCaptor.capture());
+        changeFunctionCaptor.getValue().apply(caseDetails);
+        verify(uploadAdditionalApplicationsService).convertConfidentialC2Bundle(any(), eq(c2), any());
     }
 
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
@@ -597,6 +652,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private Map<String, Object> buildCommonNotificationParameters() {
         return Map.of(
             "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()),
             "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
             "familyManCaseNumber", String.valueOf(CASE_ID),
             "respondents1", List.of(element(Respondent.builder()

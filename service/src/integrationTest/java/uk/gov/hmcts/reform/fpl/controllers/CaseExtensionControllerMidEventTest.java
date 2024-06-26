@@ -66,7 +66,7 @@ class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
                 .childExtension1(ChildExtension.builder()
                         .id(id2)
                         .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
-                        .extensionDateOther(LocalDate.of(2024, 3, 4))
+                        .extensionDateOther(LocalDate.now().plusYears(1))
                         .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                         .index("2")
                         .build())

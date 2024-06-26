@@ -67,7 +67,7 @@
     "ListElementCode": "legalCounsellors",
     "FieldType": "Collection",
     "FieldTypeParameter": "LegalCounsellor",
-    "ElementLabel": "Legal Counsellor",
+    "ElementLabel": "Counsel",
     "SecurityClassification": "Public"
   }
 ]

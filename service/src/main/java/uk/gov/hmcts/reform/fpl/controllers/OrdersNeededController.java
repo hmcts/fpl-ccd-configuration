@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/orders-needed")
@@ -140,6 +138,8 @@ public class OrdersNeededController extends CallbackController {
             data.put("otherOrderType", "NO");
         }
 
+        data.put("c1Application", YesNo.from(caseData.isC1Application()).getValue());
+
         if (caseData.getOrders() != null) {
             String courtCode = caseData.getOrders().getCourt();
             Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
@@ -170,6 +170,10 @@ public class OrdersNeededController extends CallbackController {
 
         if (ordersFieldName.equals("ordersSolicitor")) {
             data.put("orders", data.get("ordersSolicitor"));
+        }
+
+        if (caseData.isC1Application()) {
+            data.remove("submittedC1WithSupplement");
         }
 
         return respond(caseDetails);

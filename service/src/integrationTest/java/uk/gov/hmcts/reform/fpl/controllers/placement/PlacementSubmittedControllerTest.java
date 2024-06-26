@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -68,6 +69,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.ASYNC_MAX_TIMEOUT;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feeResponse;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
@@ -149,7 +151,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .placementPayment(PBAPayment.builder()
                 .pbaNumber(PBA_NUMBER)
                 .build())
-            .placement(placement)
             .placements(wrapElements(placement))
             .build();
 
@@ -216,7 +217,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .placementPayment(PBAPayment.builder()
                 .pbaNumber(PBA_NUMBER)
                 .build())
-            .placement(placement)
             .placements(wrapElements(placement))
             .build();
 
@@ -224,6 +224,11 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
             .id(CASE_ID)
             .caseLocalAuthorityName(LOCAL_AUTHORITY_1_NAME)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_1_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_1_INBOX)
+                .build()))
             .children1(List.of(child1, child2))
             .placementEventData(placementEventData)
             .build();
@@ -376,7 +381,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
                 .id(1L)
                 .children1(List.of(child1, child2))
                 .placementEventData(PlacementEventData.builder()
-                    .placement(placement)
                     .placements(List.of(element(applicationUUID, placement)))
                     .placementIdToBeSealed(applicationUUID)
                     .placementPaymentRequired(NO)
@@ -394,7 +398,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
 
             final Map<String, Object> expectedCaseChanges = new HashMap<>();
             expectedCaseChanges.put("placements", List.of(element(applicationUUID, sealedPlacement)));
-            expectedCaseChanges.put("placement", sealedPlacement);
 
             verify(concurrencyHelper).submitEvent(any(), eq(1L), eq(expectedCaseChanges));
         }
@@ -425,7 +428,6 @@ class PlacementSubmittedControllerTest extends AbstractPlacementControllerTest {
         expectedCaseChanges.put("placementLastPaymentTime", now());
         expectedCaseChanges.put("placementPaymentRequired", null);
         expectedCaseChanges.put("placementPayment", null);
-        expectedCaseChanges.put("placement", null);
 
         return expectedCaseChanges;
     }

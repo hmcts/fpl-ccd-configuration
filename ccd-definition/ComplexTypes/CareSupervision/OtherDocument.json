@@ -30,6 +30,7 @@
     "ListElementCode": "typeOfDocument",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "archivedDocuments"
   }
 ]

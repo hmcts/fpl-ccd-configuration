@@ -2,11 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.84.0"
+      version = "3.105.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "2.46.0"
+      version = "2.50.0"
     }
   }
 }
@@ -29,25 +29,32 @@ resource "azurerm_resource_group" "rg" {
   tags = var.common_tags
 }
 
-resource "azurerm_application_insights" "appinsights" {
-  name                = "${var.product}-${var.component}-appinsights-${var.env}"
-  location            = var.appinsights_location
-  resource_group_name = azurerm_resource_group.rg.name
-  application_type    = "web"
+module "application_insights" {
+  source = "git@github.com:hmcts/terraform-module-application-insights?ref=main"
 
-  tags = var.common_tags
+  env     = var.env
+  product = var.product
+  name    = "${var.product}-${var.component}-appinsights"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.appinsights_location
+  common_tags         = var.common_tags
 }
 
+moved {
+  from = azurerm_application_insights.appinsights
+  to   = module.application_insights.azurerm_application_insights.this
+}
 #Copying appinsights key to the valut
 resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
   name         = "AppInsightsInstrumentationKey"
-  value        = azurerm_application_insights.appinsights.instrumentation_key
+  value        = module.application_insights.instrumentation_key
   key_vault_id = module.key-vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "AZURE_KEY_VAULT_SECRET" {
   name         = "app-insights-connection-string"
-  value        = azurerm_application_insights.appinsights.connection_string
+  value        = module.application_insights.connection_string
   key_vault_id = module.key-vault.key_vault_id
 }
 
@@ -61,7 +68,7 @@ module "key-vault" {
   resource_group_name     = azurerm_resource_group.rg.name
   product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
-  create_managed_identity    = true
+  create_managed_identity = true
 }
 
 module "fpl-scheduler-postgres-v15-flexible-server" {
@@ -70,14 +77,14 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  name                = "${var.product}-${var.component}-postgresql-v15-flexible-server"
-  env                = var.env
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  name                 = "${var.product}-${var.component}-postgresql-v15-flexible-server"
+  env                  = var.env
   pgsql_admin_username = var.pgsql_admin_username
 
-  product            = var.product
-  component          = var.component
-  business_area      = "cft"
+  product       = var.product
+  component     = var.component
+  business_area = "cft"
 
   subnet_suffix = "expanded"
 
@@ -87,7 +94,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  pgsql_version      = "15"
+  pgsql_version = "15"
 
   pgsql_server_configuration = [
     {
@@ -96,19 +103,19 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  common_tags        = var.common_tags
+  common_tags = var.common_tags
 
   admin_user_object_id = var.jenkins_AAD_objectId
 
 }
 
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
-  name      = "${var.product}-support-email"
+  name         = "${var.product}-support-email"
   key_vault_id = module.key-vault.key_vault_id
 }
 
 data "azurerm_key_vault_secret" "use-shuttered-case-def" {
-  name      = "use-shuttered-case-def"
+  name         = "use-shuttered-case-def"
   key_vault_id = module.key-vault.key_vault_id
 }
 
@@ -146,6 +153,6 @@ resource "azurerm_key_vault_secret" "update-summary-tab-cron" {
   key_vault_id = module.key-vault.key_vault_id
   # After secret is created, manual changes to value aren't reverted
   lifecycle {
-    ignore_changes = [ value ]
+    ignore_changes = [value]
   }
 }

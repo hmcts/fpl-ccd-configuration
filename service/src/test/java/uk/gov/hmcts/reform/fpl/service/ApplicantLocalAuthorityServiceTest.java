@@ -1253,4 +1253,77 @@ class ApplicantLocalAuthorityServiceTest {
             assertThat(localAuthority2.getDesignated()).isEqualTo("Yes");
         }
     }
+
+    @Nested
+    class OnBehalfOf {
+
+        private final String orgId = "abc";
+
+        @Test
+        void shouldReturnTrueIfLoggedInUserIsPartOfIssuingLA() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorityPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID(orgId)
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.isApplicantOrOnBehalfOfOrgId(orgId, caseData)).isTrue();
+        }
+
+
+        @Test
+        void shouldReturnTrueIfLoggedInUserIsPartOfOutsourcedLA() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID(orgId)
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.isApplicantOrOnBehalfOfOrgId(orgId, caseData)).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueIfLoggedInUserIsPartOfSharedLA() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .sharedLocalAuthorityPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID(orgId)
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.isApplicantOrOnBehalfOfOrgId(orgId, caseData)).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueIfLoggedInUserIsNotPartOfIssuingLA() {
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .localAuthorityPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID("other-org-1")
+                        .build())
+                    .build())
+                .outsourcingPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID("other-org-2")
+                        .build())
+                    .build())
+                .sharedLocalAuthorityPolicy(OrganisationPolicy.builder()
+                    .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                        .organisationID("other-org-3")
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.isApplicantOrOnBehalfOfOrgId(orgId, caseData)).isFalse();
+        }
+    }
 }

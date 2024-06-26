@@ -1,0 +1,262 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "respondentName",
+    "FieldType": "Text",
+    "ElementLabel": "Respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "respondentId",
+    "FieldType": "Text",
+    "ElementLabel": "Id of the respondent for this respondent statement",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "respondentName=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Document name",
+    "SecurityClassification": "Public",
+    "RegularExpression": "^(?!.*<[^>\\d]+>*).*"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "dateTimeReceived",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time received",
+    "HintText": "For example, 31 3 2016  2 30 00",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "respondentsStatementsConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "translatedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Translated document",
+    "SecurityClassification": "Public",
+    "CategoryID": "respondentsStatementsConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "translationUploadDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Welsh translation upload time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "translatedDocument=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "documentAcknowledgeLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "documentAcknowledgeLabelForCYA",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "documentAcknowledge",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DocumentAcknowledge",
+    "ElementLabel": "Tick to confirm this document is related to this case",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "confidentialWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "confidential",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ConfidentialDocument",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "confidentialWarningLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "confidentialTabLabel",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential CONTAINS \"CONFIDENTIAL\"",
+    "Searchable": "N",
+    "Comment": "Used to identify documents as confidential in tab view only. Does not display in event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FurtherEvidenceType",
+    "ElementLabel": "Choose a further evidence document type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "expertReportType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ExpertReportList",
+    "ElementLabel": "Choose an expert report type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"EXPERT_REPORTS\"",
+    "Searchable": "N",
+    "Comment": "Only shown + populated if this is an expert report"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "uploadedBySolicitor",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "needTranslation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "translationRequirements=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "hasConfidentialAddressLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "hasConfidentialAddress",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Document contains a confidential address?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatementV2Confidential",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
+  }
+]

@@ -23,7 +23,7 @@ public class CaseSubmissionDocumentAnnexGenerator {
     public DocmosisAnnexDocuments generate(CaseData caseData,
                                            Language applicationLanguage) {
 
-        List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
+        List<Element<ApplicationDocument>> documents = caseData.getTemporaryApplicationDocuments();
 
         return DocmosisAnnexDocuments.builder()
             .documents(transformDocuments(documents, applicationLanguage))

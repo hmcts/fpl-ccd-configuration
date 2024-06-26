@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentType",
+    "ListElementCode": "THRESHOLD",
+    "ListElement": "Threshold",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadableDocumentType",
+    "ListElementCode": "BUNDLE",
+    "ListElement": "Bundle",
+    "DisplayOrder": 2
+  }
+]

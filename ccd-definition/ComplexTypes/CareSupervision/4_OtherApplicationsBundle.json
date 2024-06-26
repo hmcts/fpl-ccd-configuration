@@ -16,7 +16,8 @@
     "ElementLabel": "File",
     "RegularExpression": ".doc,.docx,.pdf",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "CategoryID": "c1AndOtherApplications"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -71,7 +72,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Supplement",
+    "FieldTypeParameter": "C1Supplement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -81,27 +82,7 @@
     "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "C1SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

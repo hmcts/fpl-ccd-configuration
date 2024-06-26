@@ -5,6 +5,8 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAssignmentService;
 import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
@@ -57,4 +59,16 @@ public class NoticeOfChangeControllerUpdateRespondentsTest extends AbstractCallb
 
     }
 
+    @Test
+    void shouldClearOnComplete() {
+        CaseData caseData = CaseData.builder()
+            .changeOrganisationRequestField(ChangeOrganisationRequest.builder()
+                .approvalStatus(ChangeOrganisationApprovalStatus.APPROVED)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse resp = postAboutToSubmitEvent(caseData);
+
+        assertThat(resp.getData()).doesNotContainKey("changeOrganisationRequestField");
+    }
 }

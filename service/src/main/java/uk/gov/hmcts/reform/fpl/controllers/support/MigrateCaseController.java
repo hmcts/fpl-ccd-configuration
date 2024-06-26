@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,28 +11,23 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 import java.util.function.Consumer;
 
-@Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/migrate-case")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
-
     private final MigrateCaseService migrateCaseService;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
-        "DFPL-1921", this::run1921,
-        "DFPL-1940", this::run1940
+        "DFPL-log", this::runLog,
+        "DFPL-2354", this::run2354
     );
 
     @PostMapping("/about-to-submit")
@@ -56,26 +50,14 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run1921(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1921";
-        var possibleCaseIds = List.of(1689599455058930L);
-
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeCaseSummaryByHearingId(caseData, migrationId,
-            UUID.fromString("37ab2651-b3f6-40e2-b880-275a6dba51cd")));
+    private void runLog(CaseDetails caseDetails) {
+        log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run1940(CaseDetails caseDetails) {
-        var migrationId = "DFPL-1940";
-        var possibleCaseIds = List.of(1697791879605293L);
-        var expectedMessageId = UUID.fromString("29b3eab8-1e62-4aa2-86d1-17874d27933e");
+    private void run2354(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2354";
 
-        migrateCaseService.doCaseIdCheckList(caseDetails.getId(), possibleCaseIds, migrationId);
-        CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.removeJudicialMessage(caseData, migrationId,
-            String.valueOf(expectedMessageId)));
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1717512460432566L, migrationId);
+        caseDetails.getData().remove("urgentDirectionsOrder");
     }
-
-
 }

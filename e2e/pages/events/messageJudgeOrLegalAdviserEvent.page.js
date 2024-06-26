@@ -14,6 +14,25 @@ module.exports = {
     existingMessagesList: '#judicialMessageDynamicList',
     senderEmail: '#judicialMessageMetaData_sender',
     recipientEmail: '#judicialMessageMetaData_recipient',
+    senderType:{
+      id:'#judicialMessageMetaData_senderType',
+      options:{
+        CTCS:'1: CTSC',
+        localCourtadmin:'2: LOCAL_COURT_ADMIN',
+        legalAdvisor:'3: OTHER',
+        hearingJudge:'4: HEARING_JUDGE',
+      },
+    },
+    recipientType:{
+      id: '#judicialMessageMetaData_recipientType',
+      options:{
+        CTCS:'1: CTSC',
+        allocateJudge: '2: JUDICIARY',
+        localCourtAdmin:'3: LOCAL_COURT_ADMIN',
+        legalAdvisor:'4: OTHER',
+        HearingJudge:'5: HEARING_JUDGE',
+      },
+    },
     replyingToMessage: {
       id: '#judicialMessageReply_isReplying',
       options: {
@@ -43,6 +62,19 @@ module.exports = {
     await I.runAccessibilityTest();
     I.selectOption(this.fields.additionalApplicationsList, dropdownLabel);
   },
+
+  async selectSenderType(user) {
+    I.waitForElement(this.fields.senderType.id);
+    await I.runAccessibilityTest();
+    I.selectOption(this.fields.senderType.id, user);
+  },
+  async selectRecipientType(user) {
+    I.waitForElement(this.fields.recipientType.id);
+    await I.runAccessibilityTest();
+    I.selectOption(this.fields.recipientType.id,user );
+
+  },
+
 
   enterRecipientEmail(email) {
     I.fillField(this.fields.recipientEmail, email);

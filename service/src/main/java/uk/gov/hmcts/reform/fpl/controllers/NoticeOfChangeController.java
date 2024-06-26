@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import java.util.stream.Stream;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
-@Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/noc-decision")
@@ -98,5 +96,15 @@ public class NoticeOfChangeController extends CallbackController {
             log.error(aacResponse.getErrors().stream().collect(Collectors.joining(", ")));
         }
         return aacResponse;
+    }
+
+    @PostMapping("/update-respondents/about-to-submit")
+    public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        // clean up after the NoC decision
+        caseDetails.getData().remove("changeOrganisationRequestField");
+
+        return respond(caseDetails);
     }
 }

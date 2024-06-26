@@ -60,13 +60,8 @@ public class LocalAuthorityRecipientsService {
             .collect(Collectors.toSet());
     }
 
-    private List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
+    public List<String> getDesignatedLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
-
-        // from onboarding config
-        if (!featureToggles.isRestrictedFromPrimaryApplicantEmails(caseData.getId().toString())) {
-            localAuthorityInboxes.getSharedInbox(caseData.getCaseLocalAuthority()).ifPresent(recipients::add);
-        }
 
         if (isNotEmpty(caseData.getLocalAuthorities())) {
             Optional<LocalAuthority> localAuthority = getDesignatedLocalAuthority(caseData);
@@ -90,7 +85,7 @@ public class LocalAuthorityRecipientsService {
         return recipients;
     }
 
-    private List<String> getSecondaryLocalAuthorityContacts(CaseData caseData) {
+    public List<String> getSecondaryLocalAuthorityContacts(CaseData caseData) {
         final List<String> recipients = new ArrayList<>();
 
         var secondaryLocalAuthority = getSecondaryLocalAuthority(caseData);
@@ -108,15 +103,20 @@ public class LocalAuthorityRecipientsService {
         return recipients;
     }
 
-    private List<String> getLegalRepresentatives(CaseData caseData) {
+    public List<String> getLegalRepresentatives(CaseData caseData) {
 
         return unwrapElements(caseData.getLegalRepresentatives()).stream()
             .map(LegalRepresentative::getEmail)
             .collect(Collectors.toList());
     }
 
-    private List<String> getFallbackInbox() {
+    public List<String> getFallbackInbox() {
         return List.of(fallbackInbox);
+    }
+
+    public Optional<String> getShareInbox(LocalAuthority la) {
+        return localAuthorityIds.getLocalAuthorityCode(la.getId())
+            .flatMap(localAuthorityInboxes::getSharedInbox);
     }
 
     private Optional<LocalAuthority> getDesignatedLocalAuthority(CaseData caseData) {

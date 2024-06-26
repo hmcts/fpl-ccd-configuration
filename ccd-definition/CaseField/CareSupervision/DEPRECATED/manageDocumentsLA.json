@@ -1,0 +1,48 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentLA",
+    "FieldType": "ManageDocumentTypeLA",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsNoC2sLabel",
+    "FieldType": "Label",
+    "Label": "There are no additional applications to add documents to",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsNoPlacementNoticesLabel",
+    "FieldType": "Label",
+    "Label": "There are no issued notice of hearing for placements to add responses for",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsPlacementList",
+    "FieldType": "DynamicList",
+    "Label": "Which Placement Application?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentSubtypeListLA",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageDocumentSubtypeListLA",
+    "Label": "Choose a further evidence document type",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

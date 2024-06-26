@@ -18,7 +18,6 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.DOCUMENT_ACKNOWLEDGEMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
@@ -49,10 +48,6 @@ public class HearingCourtBundleTest {
                 TEST_ID,
                 CONFIDENTIAL_COURT_BUNDLE
             )))
-            .courtBundleNC(List.of(element(
-                TEST_ID,
-                NON_CONFIDENTIAL_COURT_BUNDLE
-            )))
             .build();
 
         Map<String, Object> serialised = objectMapper.convertValue(initialHearingCourtBundle, new TypeReference<>() {});
@@ -72,23 +67,9 @@ public class HearingCourtBundleTest {
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
-        List<Map<String, Object>> expectedNCCourtBundle = List.of(Map.of(
-            "id", TEST_ID.toString(),
-            "value", Map.ofEntries(
-                Map.entry("confidential", List.of()),
-                Map.entry("document", Map.of(
-                    "document_binary_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
-                    "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
-                    "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
-                )),
-                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
-                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
-            )));
-
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle,
-            "courtBundleNC", expectedNCCourtBundle
+            "courtBundle", expectedCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
@@ -96,29 +77,10 @@ public class HearingCourtBundleTest {
     }
 
     @Test
-    void testCourtBundleNCContainsNonConfidentialBundleOnly() {
-        HearingCourtBundle hearingCourtBundle = HearingCourtBundle.builder()
-            .hearing(TEST_HEARING)
-            .courtBundle(List.of(
-                element(TEST_ID, NON_CONFIDENTIAL_COURT_BUNDLE),
-                element(TEST_ID, CONFIDENTIAL_COURT_BUNDLE)
-            ))
-            .build();
-
-        assertThat(unwrapElements(hearingCourtBundle.getCourtBundle()))
-            .isEqualTo(List.of(NON_CONFIDENTIAL_COURT_BUNDLE, CONFIDENTIAL_COURT_BUNDLE));
-    }
-
-    @Test
     void testSerialisationAndDeserialisationIfEmptyBundle() {
         HearingCourtBundle initialHearingCourtBundle = HearingCourtBundle.builder()
             .hearing(TEST_HEARING)
             .courtBundle(List.of(element(
-                TEST_ID,
-                CourtBundle.builder()
-                    .build()
-            )))
-            .courtBundleNC(List.of(element(
                 TEST_ID,
                 CourtBundle.builder()
                     .build()
@@ -136,8 +98,7 @@ public class HearingCourtBundleTest {
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle,
-            "courtBundleNC", expectedCourtBundle
+            "courtBundle", expectedCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);

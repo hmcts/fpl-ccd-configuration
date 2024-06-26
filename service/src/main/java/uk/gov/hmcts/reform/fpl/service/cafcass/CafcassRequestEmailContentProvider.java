@@ -11,6 +11,7 @@ import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData.SAME_DAY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -46,7 +47,9 @@ public enum CafcassRequestEmailContentProvider {
                 caseData.getFamilyManCaseNumber(),
                 "new court bundle"),
         (caseData, cafcassData) ->
-            String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
+            (isEmpty(cafcassData.getHearingDetails()))
+                ? "A new court bundle for this case was uploaded to the Public Law Portal"
+                : String.format("A new court bundle for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
             true),
@@ -56,11 +59,14 @@ public enum CafcassRequestEmailContentProvider {
             caseData.getFamilyManCaseNumber(),
             "new case summary"),
         (caseData, cafcassData) ->
-            String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
+            (isEmpty(cafcassData.getHearingDetails()))
+                ? "A new case summary for this case was uploaded to the Public Law Portal"
+                : String.format("A new case summary for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    @Deprecated
     POSITION_STATEMENT_CHILD("Position statement child",
         (caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
@@ -72,6 +78,7 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    @Deprecated
     POSITION_STATEMENT_RESPONDENT("Position statement respondent",
         (caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
@@ -83,13 +90,23 @@ public enum CafcassRequestEmailContentProvider {
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),
 
+    POSITION_STATEMENT("Position statement",
+        (caseData, cafcassData) -> String.format(getSubject(),
+            caseData.getFamilyManCaseNumber(),
+            "new position statement"),
+        (caseData, cafcassData) ->
+            "A new position statement for this case was uploaded to the Public Law Portal",
+        CafcassEmailConfiguration::getRecipientForCourtBundle,
+        true),
+
     SKELETON_ARGUMENT("Skeleton Argument",
         (caseData, cafcassData) -> String.format(getSubject(),
             caseData.getFamilyManCaseNumber(),
             "new skeleton argument"),
         (caseData, cafcassData) ->
-            String.format("A skeleton argument for this case was uploaded to the "
-                    + "Public Law Portal entitled %s",
+            (isEmpty(cafcassData.getHearingDetails()))
+                ? "A skeleton argument for this case was uploaded to the Public Law Portal"
+                : String.format("A skeleton argument for this case was uploaded to the Public Law Portal entitled %s",
                 cafcassData.getHearingDetails()),
         CafcassEmailConfiguration::getRecipientForCourtBundle,
         true),

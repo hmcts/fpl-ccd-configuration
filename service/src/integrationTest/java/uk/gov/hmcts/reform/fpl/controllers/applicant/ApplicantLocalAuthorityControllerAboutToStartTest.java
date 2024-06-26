@@ -2,11 +2,16 @@ package uk.gov.hmcts.reform.fpl.controllers.applicant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.ApplicantLocalAuthorityController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -30,7 +35,6 @@ import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolic
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantLocalAuthorityController.class)
@@ -62,9 +66,42 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
     }
 
     @Test
-    void shouldPrePopulateLocalAuthorityDetailsFromReferenceData() {
+    void shouldThrowErrorIfNotInApplicantOrgAndInCaseManagementState() {
+        final CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .localAuthorityPolicy(createPolicy("ORG2"))
+            .sharedLocalAuthorityPolicy(createPolicy("ORG3"))
+            .outsourcingPolicy(createPolicy("ORG4"))
+            .build();
 
-        final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseData()));
+        final AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+
+        assertThat(response.getErrors()).containsExactly(
+            "You must be the applicant or acting on behalf of the applicant to modify these details.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"OPEN", "RETURNED"})
+    void shouldNotThrowErrorIfNotInApplicantOrgAndInOpenOrReturnedStates(String state) {
+        final CaseData caseData = CaseData.builder()
+            .state(State.fromValue(state))
+            .localAuthorityPolicy(createPolicy("ORG2"))
+            .sharedLocalAuthorityPolicy(createPolicy("ORG3"))
+            .outsourcingPolicy(createPolicy("ORG4"))
+            .build();
+
+        final AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+
+        assertThat(response.getErrors()).isNullOrEmpty();
+    }
+
+    @Test
+    void shouldPrePopulateLocalAuthorityDetailsFromReferenceData() {
+        CaseData caseData = CaseData.builder()
+            .state(State.OPEN)
+            .build();
+
+        final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
         final LocalAuthorityEventData expectedData = LocalAuthorityEventData.builder()
             .localAuthority(LocalAuthority.builder()
@@ -96,6 +133,7 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
             .localAuthorityPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(),
                 LASOLICITOR))
             .applicants(wrapElements(Applicant.builder()
@@ -141,6 +179,8 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
 
         final CaseData caseData = CaseData.builder()
             .localAuthorities(wrapElements(localAuthority))
+            .localAuthorityPolicy(createPolicy(organisation.getOrganisationIdentifier()))
+            .state(State.CASE_MANAGEMENT)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
@@ -151,6 +191,14 @@ class ApplicantLocalAuthorityControllerAboutToStartTest extends AbstractCallback
             .build();
 
         assertThat(updatedCaseData.getLocalAuthorityEventData()).isEqualTo(expectedEventData);
+    }
+
+    private OrganisationPolicy createPolicy(String orgID) {
+        return OrganisationPolicy.builder()
+            .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+                .organisationID(orgID)
+                .build())
+            .build();
     }
 
 }

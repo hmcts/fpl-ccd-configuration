@@ -5,7 +5,8 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File name",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "hearingNotices"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ListElementCode": "translatedDocument",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "hearingNotices"
   },
   {
     "LiveFrom": "01/01/2017",

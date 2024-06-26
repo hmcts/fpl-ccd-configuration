@@ -863,6 +863,41 @@ class GatekeepingOrderServiceTest {
 
             verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
         }
+
+        @Test
+        void shouldBuildUrgentDirectionOrderWhenDecisionIsToSealOrder() {
+
+            final GatekeepingOrderSealDecision sealDecision = GatekeepingOrderSealDecision.builder()
+                .orderStatus(SEALED)
+                .draftDocument(uploadedOrder)
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .court(court)
+                .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                    .gatekeepingOrderSealDecision(sealDecision)
+                    .build())
+                .build();
+
+            final StandardDirectionOrder actualOrder = underTest.buildOrderFromUploadedFile(caseData);
+
+            final StandardDirectionOrder expectedOrder = StandardDirectionOrder.builder()
+                .orderStatus(SEALED)
+                .dateOfUpload(time.now().toLocalDate())
+                .uploader(userName)
+                .orderDoc(uploadedOrder)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .build();
+
+            assertThat(actualOrder).isEqualTo(expectedOrder);
+
+            final CaseData caseDataWithOrderAttached = caseData.toBuilder()
+                .urgentDirectionsOrder(actualOrder)
+                .build();
+            underTest.sealDocumentAfterEventSubmitted(caseDataWithOrderAttached);
+
+            verify(sealingService).sealDocument(uploadedOrder, court, SealType.ENGLISH);
+        }
     }
 
     @Nested

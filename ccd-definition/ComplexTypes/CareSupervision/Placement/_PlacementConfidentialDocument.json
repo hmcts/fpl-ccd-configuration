@@ -22,7 +22,8 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "placementApplicationsAndResponsesConfidential"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -82,6 +83,57 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_NAME)
+                .build()))
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(C110A)
+                .build())
+            .children1(wrapElements(mock(Child.class)))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Smith").build())
+                .build()))
+            .orders(Orders.builder()
+                .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
+                .directions(YES.getValue())
+                .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
+                .build())
+            .hearing(Hearing.builder()
+                .timeFrame("Same day")
+                .build())
+            .build();
+
+        assertThat(underTest.buildCafcassSubmissionNotification(caseData)).isEqualTo(cafcassSubmissionTemplate);
+    }
+
+    @Test
+    void shouldReturnCompletedNotifyDataEvenWhenCaseLocalAuthorityDoesntExist() {
+        SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
+            .cafcass(CAFCASS_NAME)
+            .localAuthority(LOCAL_AUTHORITY_NAME)
+            .dataPresent(YES.getValue())
+            .fullStop(NO.getValue())
+            .ordersAndDirections(List.of("Emergency protection order", "Contact with any named person"))
+            .timeFramePresent(YES.getValue())
+            .timeFrameValue("same day")
+            .urgentHearing(YES.getValue())
+            .nonUrgentHearing(NO.getValue())
+            .firstRespondentName("Smith")
+            .reference(CASE_REFERENCE)
+            .caseUrl(caseUrl(CASE_REFERENCE))
+            .documentLink(Map.of(
+                "file", ENCODED_BINARY,
+                "is_csv", false
+            ))
+            .childLastName(CHILD_LAST_NAME)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_REFERENCE))
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_NAME)
+                .build()))
+            .relatingLA(LOCAL_AUTHORITY_CODE)
             .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
                 .submittedForm(C110A)
                 .build())
@@ -107,6 +159,9 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_REFERENCE))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .localAuthorities(wrapElements(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_NAME)
+                .build()))
             .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
                 .submittedForm(C110A)
                 .build())
@@ -134,4 +189,32 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 + "• Contact with any named person"
         );
     }
+
+    @Test
+    void shouldReturnNewApplicationCafcassDataWithFallbackApplicantTextIfNoApplicant() {
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_REFERENCE))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .c110A(uk.gov.hmcts.reform.fpl.model.group.C110A.builder()
+                .submittedForm(C110A)
+                .build())
+            .children1(wrapElements(Child.builder().party(ChildParty.builder().lastName("Lewis").build()).build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().lastName("Smith").build())
+                .build()))
+            .orders(Orders.builder()
+                .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
+                .directions(YES.getValue())
+                .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
+                .build())
+            .hearing(Hearing.builder()
+                .timeFrame("Same day")
+                .build())
+            .build();
+
+        NewApplicationCafcassData newApplicationCafcassData = underTest.buildCafcassSubmissionSendGridData(caseData);
+
+        assertThat(newApplicationCafcassData.getLocalAuthourity()).isEqualTo("An applicant");
+    }
+
 }

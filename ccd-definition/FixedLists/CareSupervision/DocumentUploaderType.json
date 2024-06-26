@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "SOLICITOR",
+    "ListElement": "Solicitor"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "DESIGNATED_LOCAL_AUTHORITY",
+    "ListElement": "Designated Local Authority"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "SECONDARY_LOCAL_AUTHORITY",
+    "ListElement": "Secondary Local Authority"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "HMCTS",
+    "ListElement": "HMCTS"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "BARRISTER",
+    "ListElement": "Barrister"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentUploaderType",
+    "ListElementCode": "CAFCASS",
+    "ListElement": "CAFCASS"
+  }
+]

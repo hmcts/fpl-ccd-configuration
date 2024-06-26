@@ -18,14 +18,9 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class HearingCourtBundle {
     private String hearing;
     private List<Element<CourtBundle>> courtBundle;
-    private List<Element<CourtBundle>> courtBundleNC;
 
     public List<Element<CourtBundle>> getCourtBundle() {
         return defaultIfNull(this.courtBundle, new ArrayList<>());
-    }
-
-    public List<Element<CourtBundle>> getCourtBundleNC() {
-        return defaultIfNull(this.courtBundleNC, new ArrayList<>());
     }
 
 }

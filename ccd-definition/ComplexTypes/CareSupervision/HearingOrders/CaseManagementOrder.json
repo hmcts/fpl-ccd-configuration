@@ -24,7 +24,18 @@
     "FieldType": "Document",
     "ElementLabel": "Order",
     "SecurityClassification": "Public",
-    "RegularExpression": ".doc,.docx"
+    "RegularExpression": ".doc,.docx",
+    "CategoryID": "orders"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "orderConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "RegularExpression": ".doc,.docx",
+    "CategoryID": "ordersConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -32,7 +43,8 @@
     "ListElementCode": "translatedOrder",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "orders"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -125,7 +137,7 @@
     "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "supportingDocs",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "CmoSupportingEvidenceBundle",
     "ElementLabel": "Case summary or supporting documents",
     "SecurityClassification": "Public"
   },
@@ -212,5 +224,15 @@
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "uploaderEmail",
+    "FieldType": "Text",
+    "ElementLabel": "uploader email",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   }
 ]

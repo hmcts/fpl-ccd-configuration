@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CourtBundleUploadedEmailCon
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -325,6 +326,55 @@ class FurtherEvidenceNotificationServiceTest {
 
         verify(notificationService).sendEmail(COURT_BUNDLE_UPLOADED_NOTIFICATION, recipients,
             courtBundleUploadedData, CASE_ID.toString());
+    }
+
+    @Test
+    void shouldReturnDesignatedLocalAuthorityRecipientsOnly() {
+        final CaseData caseData = caseData();
+
+        when(localAuthorityRecipients.getDesignatedLocalAuthorityContacts(any()))
+            .thenReturn(new ArrayList<>(LOCAL_AUTHORITY_EMAILS));
+
+        Set<String> actual = furtherEvidenceNotificationService.getDesignatedLocalAuthorityRecipientsOnly(caseData);
+
+        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+        verify(localAuthorityRecipients).getDesignatedLocalAuthorityContacts(caseData);
+    }
+
+    @Test
+    void shouldReturnSecondaryLocalAuthorityContactsOnly() {
+        final CaseData caseData = caseData();
+
+        when(localAuthorityRecipients.getSecondaryLocalAuthorityContacts(any()))
+            .thenReturn(new ArrayList<>(LOCAL_AUTHORITY_EMAILS));
+
+        Set<String> actual = furtherEvidenceNotificationService.getSecondaryLocalAuthorityRecipientsOnly(caseData);
+
+        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+        verify(localAuthorityRecipients).getSecondaryLocalAuthorityContacts(caseData);
+    }
+
+    @Test
+    void shouldReturnLegalRepresentativeOnly() {
+        final CaseData caseData = caseData();
+
+        when(localAuthorityRecipients.getLegalRepresentatives(any()))
+            .thenReturn(new ArrayList<>(LOCAL_AUTHORITY_EMAILS));
+
+        Set<String> actual = furtherEvidenceNotificationService.getLegalRepresentativeOnly(caseData);
+
+        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+        verify(localAuthorityRecipients).getLegalRepresentatives(caseData);
+    }
+
+    @Test
+    void shouldReturnFallbackInboxOnly() {
+        when(localAuthorityRecipients.getFallbackInbox()).thenReturn(new ArrayList<>(LOCAL_AUTHORITY_EMAILS));
+
+        Set<String> actual = furtherEvidenceNotificationService.getFallbackInbox();
+
+        assertThat(actual).isEqualTo(LOCAL_AUTHORITY_EMAILS);
+        verify(localAuthorityRecipients).getFallbackInbox();
     }
 
     private CaseData caseData() {

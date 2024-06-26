@@ -15,7 +15,8 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "RegularExpression": ".doc,.docx,.pdf",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "CategoryID": "c2Applications"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -106,7 +107,7 @@
     "ListElementCode": "draftOrdersBundle",
     "ElementLabel": "Draft Orders",
     "FieldType": "Collection",
-    "FieldTypeParameter": "DraftOrder",
+    "FieldTypeParameter": "C2DraftOrder",
     "SecurityClassification": "Public"
   },
   {
@@ -115,7 +116,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "Supplement",
+    "FieldTypeParameter": "C2Supplement",
     "SecurityClassification": "Public"
   },
   {
@@ -124,28 +125,8 @@
     "ListElementCode": "supportingEvidenceBundle",
     "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "C2SupportingEvidenceBundle",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",

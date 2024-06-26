@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C44A_LEAVE_TO_CHANGE_A_S
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C45A_PARENTAL_RESPONSIBILITY_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C63A_DECLARATION_OF_PARENTAGE;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.TRANSPARENCY_ORDER;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -104,6 +105,8 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C63aDeclarationOfParentageDocumentParameterGenerator
         c63aDeclarationOfParentageDocumentParameterGenerator;
+    @Mock
+    private TransparencyOrderParameterGenerator transparencyOrderParameterGenerator;
 
     // Additional Document Collectors
     @Mock
@@ -131,7 +134,7 @@ class OrderDocumentGeneratorHolderTest {
             c34BAuthorityToRefuseContactOrderParameterGenerator, c44aLeaveToChangeTheSurnameOrderParameterGenerator,
             c34AContactWithAChildInCareOrderDocumentParameterGenerator,
             c63aDeclarationOfParentageDocumentParameterGenerator,
-            c42FamilyAssistanceOrderDocumentParameterGenerator
+            c42FamilyAssistanceOrderDocumentParameterGenerator, transparencyOrderParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -162,6 +165,7 @@ class OrderDocumentGeneratorHolderTest {
                 put(C34A_CONTACT_WITH_A_CHILD_IN_CARE, c34AContactWithAChildInCareOrderDocumentParameterGenerator);
                 put(C63A_DECLARATION_OF_PARENTAGE, c63aDeclarationOfParentageDocumentParameterGenerator);
                 put(C42_FAMILY_ASSISTANCE_ORDER, c42FamilyAssistanceOrderDocumentParameterGenerator);
+                put(TRANSPARENCY_ORDER, transparencyOrderParameterGenerator);
             }
         };
 

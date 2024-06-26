@@ -43,5 +43,14 @@
     "ElementLabel": "Closure details",
     "FieldShowCondition": "fullReason=\"OTHER\" OR partialReason=\"OTHER\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CloseCase",
+    "ListElementCode": "dateBackup",
+    "FieldType": "Date",
+    "ElementLabel": "Date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "date=\"DO_NOT_SHOW\""
   }
 ]

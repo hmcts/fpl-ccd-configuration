@@ -48,6 +48,9 @@ public class Placement implements SelectableItem {
     @JsonProperty("placementNoticeDocuments")
     private List<Element<PlacementNoticeDocument>> noticeDocuments;
 
+    @JsonProperty("placementNoticeDocumentsRemoved")
+    private List<Element<PlacementNoticeDocument>> noticeDocumentsRemoved;
+
     @JsonProperty("placementUploadDateTime")
     public LocalDateTime placementUploadDateTime;
 
@@ -76,6 +79,7 @@ public class Placement implements SelectableItem {
         return placementBuilder.build();
     }
 
+    @JsonIgnore
     public DocumentReference getPlacementApplicationCopy() {
         return application;
     }

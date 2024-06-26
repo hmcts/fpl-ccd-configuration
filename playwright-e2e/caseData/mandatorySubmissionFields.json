@@ -1,0 +1,260 @@
+
+  {
+  "state": "SUBMITTED",
+  "caseData": {
+    "caseName": "e2e test new case",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "John",
+            "dateOfBirth": "2016-09-02"
+          }
+        }
+      },
+      {
+        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Black",
+            "firstName": "William",
+            "dateOfBirth": "2017-10-01"
+          }
+        }
+      },
+      {
+        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
+        "value": {
+          "party": {
+            "gender": "Girl",
+            "lastName": "Black",
+            "firstName": "Sarah",
+            "dateOfBirth": "2010-05-02"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "party": {
+            "email": {
+              "email": "swansea@test.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "Swansea City Council",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "displayAmountToPay": "Yes",
+    "temporaryApplicationDocuments": [
+      {
+        "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "solicitor-role-tech.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedBy": null,
+          "documentName": null,
+          "documentType": "THRESHOLD",
+          "includedInSWET": null,
+          "dateTimeUploaded": null
+        }
+      }
+    ],
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "additionalApplicationsBundle": [
+      {
+        "id": "4ae96392-b71d-40a6-9e59-a66d3fd279a5",
+        "value": {
+          "author": "HMCTS",
+          "pbaPayment": {
+            "usePbaPayment": "No"
+          },
+          "c2DocumentBundle": {
+            "id": "2c3d7329-8206-44a1-b1b4-7502ab253b0f",
+            "type": "WITHOUT_NOTICE",
+            "author": "HMCTS",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Test.txt",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "uploadedDateTime": "25 March 2021, 3:16pm",
+            "supplementsBundle": [],
+            "supportingEvidenceLA": [],
+            "supportingEvidenceNC": [],
+            "supportingEvidenceBundle": [],
+            "c2AdditionalOrdersRequested": [
+              "CHANGE_SURNAME_OR_REMOVE_JURISDICTION"
+            ]
+          },
+          "uploadedDateTime": "25 March 2021, 3:16pm",
+          "otherApplicationsBundle": {
+            "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
+            "author": "HMCTS",
+            "document": {
+              "document_url": "${TEST_DOCUMENT_URL}",
+              "document_filename": "Test.txt",
+              "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+            },
+            "applicationType": "C100_CHILD_ARRANGEMENTS",
+            "uploadedDateTime": "25 March 2021, 3:16pm",
+            "supplementsBundle": [],
+            "supportingEvidenceLA": [],
+            "supportingEvidenceNC": [],
+            "supportingEvidenceBundle": []
+          }
+        }
+      }
+    ]
+  }
+}
+

@@ -7,9 +7,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.PlacementController;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-
-import java.util.UUID;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -31,7 +28,6 @@ public class PlacementControllerPostSubmittedTest extends AbstractCallbackTest {
                 .id(1234123412341234L)
                 .state(CASE_MANAGEMENT.getLabel())
                 .data(ofEntries(
-                        entry("placement", Placement.builder().childId(UUID.randomUUID()).build()),
                         entry("placementIdToBeSealed", "")))
                 .build();
 

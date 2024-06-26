@@ -1,23 +1,5 @@
 [
   {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hearingDocumentsTabHeading",
-    "FieldType": "Label",
-    "Label": "## Hearing documents",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "correspondenceTabHeading",
-    "FieldType": "Label",
-    "Label": "## Correspondence",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "judicialMessagesTabHeading",

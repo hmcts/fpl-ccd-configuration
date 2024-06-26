@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
-@Api
 @Slf4j
 @RestController
 @RequestMapping("/callback/send-order-reminder")

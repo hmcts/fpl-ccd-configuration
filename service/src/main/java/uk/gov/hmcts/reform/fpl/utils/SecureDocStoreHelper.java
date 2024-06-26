@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -37,6 +39,7 @@ public class SecureDocStoreHelper {
      *                           otherwise, UnsupportedOperationException will be thrown.
      * @return byte array of the file
      */
+    @Retryable(value = UnsupportedOperationException.class, maxAttempts = 5, backoff = @Backoff(delay = 500))
     @SneakyThrows
     public byte[] download(final String documentUrlString, Callable<byte[]> oldDmStoreApproach) {
         try {

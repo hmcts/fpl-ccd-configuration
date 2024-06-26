@@ -43,4 +43,5 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         givenSystemUser();
         givenFplService();
     }
+
 }

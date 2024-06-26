@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.model.event.PlacementEventData.PLACEMENT_G
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.putFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/placementNotice")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -107,8 +105,9 @@ public class PlacementNoticeController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         final CaseData caseData = getCaseData(request);
+        final CaseData caseDataBefore = getCaseDataBefore(request);
 
-        publishEvent(placementService.getNoticeAddedEvent(caseData));
+        publishEvent(placementService.getNoticeAddedEvent(caseData, caseDataBefore));
     }
 
     public DynamicList asDynamicList(List<Element<Placement>> placements) {

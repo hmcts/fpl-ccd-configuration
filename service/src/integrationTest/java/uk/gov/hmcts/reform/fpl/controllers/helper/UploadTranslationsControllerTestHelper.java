@@ -4,12 +4,10 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatementV2;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -26,9 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.WELSH_TO_ENGLISH;
@@ -96,6 +91,13 @@ public class UploadTranslationsControllerTestHelper {
                 .build()
             )
         ))
+        .respStmtList(List.of(
+            element(UUID_8, RespondentStatementV2.builder()
+                .document(DocumentReference.builder()
+                    .filename("respStmt.pdf")
+                    .build())
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build())))
         .noticeOfProceedingsBundle(List.of(element(UUID_3, DocumentBundle.builder()
                 .document(DocumentReference.builder()
                     .filename("noticeo_c6.pdf")
@@ -110,38 +112,6 @@ public class UploadTranslationsControllerTestHelper {
                 .build()
             )
         ))
-        .hearingFurtherEvidenceDocuments(List.of(
-            element(UUID_7, HearingFurtherEvidenceBundle.builder()
-                .supportingEvidenceBundle(List.of(
-                    element(UUID_8, SupportingEvidenceBundle.builder()
-                        .name("Document 1")
-                        .type(EXPERT_REPORTS)
-                        .translationRequirements(ENGLISH_TO_WELSH)
-                        .dateTimeUploaded(LocalDateTime.of(2009, 1, 3, 12, 1, 2))
-                        .build())
-                )).build())
-        ))
-        .respondentStatements(List.of(
-            element(UUID_9, RespondentStatement.builder()
-                .respondentId(UUID_RESPONDENT)
-                .respondentName("Respondent 1")
-                .supportingEvidenceBundle(List.of(
-                    element(UUID_10, SupportingEvidenceBundle.builder()
-                        .name("Document 2")
-                        .type(GUARDIAN_REPORTS)
-                        .translationRequirements(ENGLISH_TO_WELSH)
-                        .dateTimeUploaded(LocalDateTime.of(2008, 1, 3, 12, 1, 2))
-                        .build())
-                )).build())
-        ))
-        .furtherEvidenceDocuments(List.of(
-            element(UUID_11, SupportingEvidenceBundle.builder()
-                .name("Document 3")
-                .type(OTHER_REPORTS)
-                .translationRequirements(ENGLISH_TO_WELSH)
-                .dateTimeUploaded(LocalDateTime.of(2007, 1, 3, 12, 1, 2))
-                .build())
-        ))
         .build();
     public static final DynamicList RENDERED_DYNAMIC_LIST = DynamicList.builder()
         .value(DynamicListElement.EMPTY)
@@ -154,9 +124,7 @@ public class UploadTranslationsControllerTestHelper {
             dlElement(UrgentHearingOrder.COLLECTION_ID, "Urgent hearing order - 8 December 2020"),
             dlElement(UUID_6, "Notice of hearing - 3 January 2010"),
             dlElement(C110A.COLLECTION_ID, "Application (C110A)"),
-            dlElement(UUID_11, "Other reports - Document 3 - 3 January 2007"),
-            dlElement(UUID_8, "Expert reports - Document 1 - 3 January 2009"),
-            dlElement(UUID_10, "Child's guardian reports - Document 2 - 3 January 2008")
+            dlElement(UUID_8, "Respondent Statement - respStmt.pdf")
         )).build();
     public static final DocumentReference TEST_DOCUMENT = DocumentReference.buildFromDocument(testDocument());
     public static final byte[] TRANSLATED_DOC_BYTES = "TranslatedDocumentContent".getBytes();

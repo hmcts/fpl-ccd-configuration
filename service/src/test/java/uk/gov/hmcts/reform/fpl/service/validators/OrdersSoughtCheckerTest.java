@@ -13,8 +13,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderSection;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -188,7 +190,18 @@ class OrdersSoughtCheckerTest {
                 .emergencyProtectionOrderDirections(List.of(OTHER))
                 .emergencyProtectionOrderDirectionDetails("")
                 .build(),
-
+            completedEPO()
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .address(null)
+                .build(),
+            completedEPO()
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .address(Address.builder().addressLine1("test address").build())
+                .build(),
+            completedEPO()
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .address(Address.builder().postcode("test post code").build())
+                .build(),
 
             completedOrder()
                 .orderType(List.of(OrderType.OTHER))
@@ -220,6 +233,10 @@ class OrdersSoughtCheckerTest {
             completedOrder()
                 .build(),
             completedEPO()
+                .build(),
+            completedEPO()
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .address(Address.builder().addressLine1("test address").postcode("test post code").build())
                 .build(),
             completedSAO()
                 .build()

@@ -1,0 +1,289 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "hearingId",
+    "FieldType": "Text",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orders=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "hearingName",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "judgeTitleAndName",
+    "FieldType": "Text",
+    "ElementLabel": "Judge",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "confidentialDraftRestrictedLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This is a confidential draft order and restricted viewing applies",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "orders!=\"*\" AND ordersCTSC!=\"*\" AND ordersLA!=\"*\" AND ordersResp0!=\"*\" AND ordersResp1!=\"*\" AND ordersResp2!=\"*\" AND ordersResp3!=\"*\" AND ordersResp4!=\"*\" AND ordersResp5!=\"*\" AND ordersResp6!=\"*\" AND ordersResp7!=\"*\" AND ordersResp8!=\"*\" AND ordersResp9!=\"*\" AND ordersChild0!=\"*\" AND ordersChild1!=\"*\" AND ordersChild2!=\"*\" AND ordersChild3!=\"*\" AND ordersChild4!=\"*\" AND ordersChild5!=\"*\" AND ordersChild6!=\"*\" AND ordersChild7!=\"*\" AND ordersChild8!=\"*\" AND ordersChild9!=\"*\" AND ordersChild10!=\"*\" AND ordersChild11!=\"*\" AND ordersChild12!=\"*\" AND ordersChild13!=\"*\" AND ordersChild14!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "orders",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Draft",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by CTSC)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by LA)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp0",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 1)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp1",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 2)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 3)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp3",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 4)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp4",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 5)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp5",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 6)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp6",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 7)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp7",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 8)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp8",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 9)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersResp9",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Respondent 10)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild0",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 1)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild1",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 2)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild2",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 3)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild3",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 4)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild4",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 5)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild5",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 6)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild6",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 7)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild7",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 8)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild8",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 9)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild9",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 10)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild10",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 11)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild11",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 12)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild12",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 13)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild13",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 14)",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrdersBundleForApproval",
+    "ListElementCode": "ordersChild14",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingOrderForApproval",
+    "ElementLabel": "Confidential Draft (Uploaded by Child 15)",
+    "SecurityClassification": "Public"
+  }
+]
