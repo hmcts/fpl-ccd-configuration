@@ -5,6 +5,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 1
   environment:
     FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
@@ -204,6 +208,8 @@ ccd:
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
   ccd-definition-store-api:
     java:
       disableKeyVaults: true
@@ -212,6 +218,8 @@ ccd:
       devcpuRequests: '900m'
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       imagePullPolicy: Always
       environment:
         DEFINITION_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
@@ -234,6 +242,10 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       enviroment:
         USER_PROFILE_DB_USERNAME: hmcts
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
@@ -308,6 +320,10 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       environment:
         ROLE_ASSIGNMENT_DB_USERNAME: hmcts
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
@@ -341,6 +357,8 @@ aac-manage-case-assignment:
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
+      minReplicas: 1
+      maxReplicas: 1
     keyVaults:
       aac:
         secrets:
@@ -367,6 +385,10 @@ ccd-case-document-am-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 1
     environment:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
