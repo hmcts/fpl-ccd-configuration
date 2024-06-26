@@ -67,8 +67,9 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadDocuments('Position Statements');
 
         // position is visble under CFV
+        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Position Statements');
+        await caseFileView.openFolder('Court Correspondence');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         //Login as respondence solicitor
@@ -92,8 +93,9 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
 
         // position is visble under CFV
+        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Position Statements');
+        await caseFileView.openFolder('Court Correspondence');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         //Login as respondence solicitor
@@ -123,9 +125,10 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visble
+        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Position Statements');
-        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Court Correspondence');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
     });
 
     test('CTSC removes document ', async ({ page, signInPage, manageDocuments, caseFileView }) => {
