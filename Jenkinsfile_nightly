@@ -102,9 +102,9 @@ withNightlyPipeline(type, product, component) {
     }
 
     afterAlways('fullFunctionalTest') {
-        stage('Functional Tests Nightly') {
+      stage('Functional UI tests chromium') {
             try {
-                yarnBuilder.yarn('test:functional-nightly')
+                yarnBuilder.yarn('test:functional-chromium')
             } catch (Error) {
                 unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
             } finally {
@@ -114,11 +114,45 @@ withNightlyPipeline(type, product, component) {
                     keepAll: true,
                     reportDir: 'playwright-report',
                     reportFiles: 'index.html',
-                    reportName: 'UI Functional Test Report'
+                    reportName: 'UITestChromiumReport'
                 ])
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
             }
         }
+      stage('Functional UI tests firefox') {
+        try {
+          yarnBuilder.yarn('test:functional-firefox')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestFirefoxReport'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
+      stage('Functional UI tests webkit ') {
+        try {
+          yarnBuilder.yarn('test:functional-webkit')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestWebkitReport'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
     }
 
     afterAlways('fortify-scan') {
