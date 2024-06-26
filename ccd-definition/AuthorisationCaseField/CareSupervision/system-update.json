@@ -3519,7 +3519,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseManagementLocation",
     "UserRole": "caseworker-publiclaw-systemupdate",
+<<<<<<< DFPL-2108-E2E
     "CRUD": "CRU"
+=======
+    "CRUD": "CRUD"
+>>>>>>> master
   },
   {
     "LiveFrom": "01/01/2017",
