@@ -26,7 +26,7 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
-
+    
         // Check CFV
         await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
@@ -56,7 +56,7 @@ test.describe('Manage Documents', () => {
         }
     });
 
-    test('LA uploads Position Statements visible in CFV', async ({ signInPage, manageDocuments, caseFileView, page }) => {
+    test('LA uploads Position Statements visible in CFV', async ({ signInPage, manageDocuments, caseFileView, page ,}) => {
         caseName = 'LA uploads Position Statements visible in CFV ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');

@@ -3,7 +3,7 @@ import { BasePage } from "./base-page";
 import config from "../settings/test-docs/config";
 
 export class ManageDocuments extends BasePage {
-  
+
     readonly manageDocumentsTest: Locator;
     readonly uploadNewDocuments: Locator;
     readonly documentType: Locator;
@@ -23,7 +23,6 @@ export class ManageDocuments extends BasePage {
     readonly threshold: Locator;
     readonly addNew: Locator;
     readonly no: Locator;
-    
 
     constructor(page: Page) {
         super(page);
@@ -45,27 +44,27 @@ export class ManageDocuments extends BasePage {
         this.changeFolder = page.getByText('Change folder');
         this.threshold = page.getByLabel('Threshold', { exact: true });
         this.addNew = page.getByRole('button', { name: 'Add new' });
-        this.no=page.getByRole('radio', { name: 'No' });
+        this.no = page.getByRole('radio', { name: 'No' });
 
     }
     async uploadDocuments(type: string) {
         await this.page.getByLabel('Upload new documents').check();
         await this.clickContinue();
-
         await this.page.getByRole('textbox', { name: 'Upload a document' })
             .setInputFiles(config.testTextFile);
-
         await this.page.getByLabel('Document type').selectOption(type);
+
         // not confidential
         await this.page.getByRole('radio', { name: 'No' }).check();
+
         // is on right case
         await this.page.getByRole('checkbox', { name: 'Yes' }).check();
-
         await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
+
     }
-   async uploadedDocuments(type: string) {
+    async uploadedDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
@@ -76,7 +75,7 @@ export class ManageDocuments extends BasePage {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
         await this.addNew.check();
-        await this .no.check();
+        await this.no.check();
     }
     async uploadConfidentialDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
