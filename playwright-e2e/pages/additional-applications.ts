@@ -51,6 +51,7 @@ export class AdditionalApplications extends BasePage {
     await this.c2Order.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await expect(this.page.getByText('Is this a confidential application? If you select yes, only yourself and HMCTS will be able to view this application.',{exact:true})).toBeVisible();
     await this.confidentialC2Order.click();
     await this.clickContinue();
   }
