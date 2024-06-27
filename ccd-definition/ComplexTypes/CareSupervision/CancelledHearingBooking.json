@@ -322,15 +322,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
-    "ListElementCode": "housekeepReason",
-    "FieldType": "Text",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "type=\"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CancelledHearingBooking",
     "ListElementCode": "others",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
@@ -345,14 +336,5 @@
     "FieldType": "Text",
     "ElementLabel": "Others notified",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CancelledHearingBooking",
-    "ListElementCode": "noticeOfHearingVacated",
-    "FieldType": "Document",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
 ]

@@ -99,8 +99,6 @@ public class HearingBooking implements TranslatableItem {
     private LanguageTranslationRequirement translationRequirements;
     private final PreviousHearingVenue previousHearingVenue;
     private String cancellationReason;
-    private String housekeepReason;
-    private DocumentReference noticeOfHearingVacated;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());

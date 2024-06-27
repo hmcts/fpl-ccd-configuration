@@ -32,38 +32,5 @@
     "DisplayContext": "MANDATORY",
     "PageID": "SelectReListOption",
     "PageDisplayOrder": 3
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingHousekeepOption",
-    "PageFieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "hearingReListOption=\"NONE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingHousekeepReason",
-    "PageFieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "hearingHousekeepOption=\"YES\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageHearings",
-    "CaseFieldID": "hearingHousekeepReasonOther",
-    "PageFieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY",
-    "PageID": "SelectReListOption",
-    "PageDisplayOrder": 3,
-    "FieldShowCondition": "hearingHousekeepOption=\"YES\" AND hearingHousekeepReason=\"OTHER\""
   }
 ]

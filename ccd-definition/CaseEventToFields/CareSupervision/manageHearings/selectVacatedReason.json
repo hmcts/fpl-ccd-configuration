@@ -9,6 +9,6 @@
     "ShowSummaryChangeOption": "Y",
     "PageID": "SelectVacatedReason",
     "PageDisplayOrder": 4,
-    "PageShowCondition": "hearingOption=\"VACATE_HEARING\" AND hearingHousekeepOption!=\"YES\""
+    "PageShowCondition": "hearingOption=\"VACATE_HEARING\" AND hearingReListOption!=\"NONE\""
   }
 ]
