@@ -2697,7 +2697,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "extendTimelineHearingList",
-    "Label": "Which hearing?",
+    "Label": "Which hearing was this extension approved at?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public",
     "Searchable": "N"
