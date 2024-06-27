@@ -144,6 +144,7 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Draft order title')).toBeVisible();
 
             await additionalApplications.clickSignOut();
+            await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
 
@@ -188,6 +189,7 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Draft order title')).toBeVisible();
 
             await additionalApplications.clickSignOut();
+            await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
 
