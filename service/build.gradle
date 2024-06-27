@@ -353,6 +353,8 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackVersion
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logbackVersion
 
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.4.12'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.4.12'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
@@ -389,6 +391,7 @@ dependencies {
   functionalTestImplementation group: 'net.javacrumbs.json-unit', name: 'json-unit-assertj', version: '3.2.7'
   functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
