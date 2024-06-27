@@ -229,7 +229,7 @@ public class CaseExtensionService {
         if (YES.equals(eventData.getExtendTimelineApprovedAtHearing())) {
             DynamicList selectedHearing = eventData.getExtendTimelineHearingList();
             Optional<Element<HearingBooking>> hearing = hearingService.findHearing(caseData, selectedHearing);
-            return hearing.map(hearingBooking -> hearingBooking.getValue().getEndDate().toLocalDate());
+            return hearing.map(hearingBooking -> hearingBooking.getValue().getStartDate().toLocalDate());
         } else {
             return Optional.ofNullable(eventData.getExtendTimelineHearingDate());
         }

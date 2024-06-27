@@ -9,22 +9,30 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildExtension;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ChildExtensionEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.NO_EXTENSION;
@@ -41,8 +49,17 @@ class CaseExtensionServiceTest {
     @Mock
     private ValidateGroupService validateGroupService;
 
+    @Mock
+    private HearingService hearingService;
+
     @InjectMocks
     private CaseExtensionService service;
+
+    private final Element<HearingBooking> hearingBooking = element(UUID.randomUUID(), HearingBooking.builder()
+        .startDate(LocalDateTime.of(2020, 1, 1, 12, 0))
+        .endDate(LocalDateTime.of(2020, 1, 1, 13, 0))
+        .type(HearingType.CASE_MANAGEMENT)
+        .build());
 
     @Test
     void shouldReturnPrePopulatedFields() {
@@ -54,6 +71,7 @@ class CaseExtensionServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(wrapElements(children))
             .dateSubmitted(of(2023, 10, 2))
+            .hearingDetails(List.of(hearingBooking))
             .build();
 
         Map<String, Object> prePopulateFields = service.prePopulateFields(caseData);
@@ -68,7 +86,14 @@ class CaseExtensionServiceTest {
             .containsEntry("childSelectorForExtension", Selector.builder()
                 .count("123")
                 .build())
-            .containsEntry("shouldBeCompletedByDate", "8 April 2025");
+            .containsEntry("shouldBeCompletedByDate", "8 April 2025")
+            .containsEntry("extendTimelineHearingList", DynamicList.builder()
+                .value(DynamicListElement.EMPTY)
+                .listItems(List.of(DynamicListElement.builder()
+                    .code(hearingBooking.getId())
+                    .label(hearingBooking.getValue().toLabel())
+                    .build()))
+                .build());
     }
 
     @Test
@@ -152,25 +177,29 @@ class CaseExtensionServiceTest {
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
 
+        when(hearingService.findHearing(any(), any())).thenReturn(Optional.of(hearingBooking));
+
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extendTimelineApprovedAtHearing(YES)
+                .extendTimelineHearingList(getHearingList(hearingBooking.getId()))
                 .extensionForAllChildren(NO.getValue())
                 .childSelectorForExtension(Selector.builder()
                     .selected(List.of(0, 1, 2))
                     .build())
                 .childExtension0(ChildExtension.builder()
                     .id(id1)
-                    .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                    .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
                     .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                .childExtension1(ChildExtension.builder()
                     .id(id2)
-                    .caseExtensionTimeList(CaseExtensionTime.OTHER_EXTENSION)
+                    .caseExtensionTimeList(OTHER_EXTENSION)
                     .extensionDateOther(of(2024, 3, 4))
                     .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                .childExtension3(ChildExtension.builder()
                     .id(id3)
-                    .caseExtensionTimeList(CaseExtensionTime.EIGHT_WEEK_EXTENSION)
+                    .caseExtensionTimeList(EIGHT_WEEK_EXTENSION)
                     .caseExtensionReasonList(INTERNATIONAL_ASPECT)
                     .build())
                 .build();
@@ -183,6 +212,7 @@ class CaseExtensionServiceTest {
 
         CaseData caseData = CaseData.builder()
                 .children1(children1)
+                .hearingDetails(List.of(hearingBooking))
                 .dateSubmitted(of(2023, 10, 2))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
@@ -191,9 +221,9 @@ class CaseExtensionServiceTest {
         List<Element<Child>> selectedChildren = service.updateChildrenExtension(caseData);
 
         assertThat(selectedChildren).contains(
-                element(id1, getChild(of(2024, 3, 29), "Daisy", "French")),
+                element(id1, getChild(of(2020, 2, 26), "Daisy", "French")),
                 element(id2, getChild(of(2024, 3, 4), "Archie", "Turner")),
-                element(id3, getChild(of(2025, 6, 3), "Julie", "Jane"))
+                element(id3, getChild(of(2020, 2, 26), "Julie", "Jane"))
         );
     }
 
@@ -204,7 +234,9 @@ class CaseExtensionServiceTest {
         UUID id3 = UUID.randomUUID();
         LocalDate extensionDateOther = of(2031, 9, 12);
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
-                .extensionForAllChildren(YES.getValue())
+            .extendTimelineApprovedAtHearing(NO)
+            .extendTimelineHearingDate(LocalDate.of(2030, 1, 1))
+            .extensionForAllChildren(YES.getValue())
                 .sameExtensionForAllChildren(YES.getValue())
                 .childSelectorForExtension(Selector.builder()
                         .selected(List.of(1,2))
@@ -247,6 +279,8 @@ class CaseExtensionServiceTest {
         LocalDate extensionDateOther = of(2031, 9, 12);
 
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+            .extendTimelineApprovedAtHearing(NO)
+            .extendTimelineHearingDate(LocalDate.of(2030, 1, 1))
             .extensionForAllChildren(NO.getValue())
             .sameExtensionForAllChildren(YES.getValue())
             .childSelectorForExtension(Selector.builder()
@@ -287,7 +321,12 @@ class CaseExtensionServiceTest {
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         UUID id3 = UUID.randomUUID();
+
+        when(hearingService.findHearing(any(), any())).thenReturn(Optional.of(hearingBooking));
+
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extendTimelineApprovedAtHearing(YES)
+                .extendTimelineHearingList(getHearingList(hearingBooking.getId()))
                 .extensionForAllChildren(NO.getValue())
                 .sameExtensionForAllChildren(YES.getValue())
                 .childSelectorForExtension(Selector.builder()
@@ -309,6 +348,7 @@ class CaseExtensionServiceTest {
         CaseData caseData = CaseData.builder()
                 .children1(children1)
                 .dateSubmitted(of(2030, 10, 2))
+                .hearingDetails(List.of(hearingBooking))
                 .childExtensionEventData(childExtensionEventData)
                 .build();
 
@@ -316,12 +356,11 @@ class CaseExtensionServiceTest {
         List<Element<Child>> selectedChildren = service.updateAllChildrenExtension(caseData);
 
         assertThat(selectedChildren).contains(
-                element(id1, getChild(of(2024, 3, 29), "Daisy", "French")),
-                element(id2, getChild(of(2031, 5, 28), "Archie", "Turner")),
-                element(id3, getChild(of(2025, 6, 3), "Julie", "Jane"))
+                element(id1, getChild(of(2020, 2, 26), "Daisy", "French")),
+                element(id2, getChild(of(2020, 2, 26), "Archie", "Turner")),
+                element(id3, getChild(of(2020, 2, 26), "Julie", "Jane"))
         );
     }
-
 
     @Test
     void shouldReturnSelectedAllChildren() {
@@ -479,6 +518,46 @@ class CaseExtensionServiceTest {
         assertThat(errors).isEmpty();
     }
 
+    @Test
+    void shouldGetExtensionDateFromHearing() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearingBooking))
+            .childExtensionEventData(ChildExtensionEventData.builder()
+                .extendTimelineApprovedAtHearing(YES)
+                .extendTimelineHearingList(getHearingList(hearingBooking.getId()))
+                .build())
+            .build();
+
+        when(hearingService.findHearing(any(), any())).thenReturn(Optional.of(hearingBooking));
+
+        Optional<LocalDate> extensionDate = service.getExtensionDate(caseData);
+
+        assertThat(extensionDate).contains(of(2020, 1, 1));
+    }
+
+    @Test
+    void shouldGetExtensionDateFromApprovalDate() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearingBooking))
+            .childExtensionEventData(ChildExtensionEventData.builder()
+                .extendTimelineApprovedAtHearing(NO)
+                .extendTimelineHearingDate(LocalDate.of(2022, 2, 2))
+                .build())
+            .build();
+
+        Optional<LocalDate> extensionDate = service.getExtensionDate(caseData);
+        assertThat(extensionDate).contains(of(2022, 2, 2));
+    }
+
+    private DynamicList getHearingList(UUID selected) {
+        return DynamicList.builder()
+            .listItems(List.of(DynamicListElement.builder()
+                .code(hearingBooking.getId())
+                .label(hearingBooking.getValue().toLabel())
+                .build()))
+            .value(DynamicListElement.builder().code(selected).build())
+            .build();
+    }
 
     private Child getChild(LocalDate completionDate,
                            String firstName,
