@@ -18,6 +18,8 @@ public enum DocmosisTemplates {
     C6("FL-PLW-HNO-ENG-00092.doc", null, "Notice_of_proceedings_c6"),
     C6A("FL-PLW-HNO-ENG-00093.doc", null, "Notice_of_proceedings_c6a"),
     NOTICE_OF_HEARING("FL-PLW-HNO-ENG-00525.doc", null, "Notice_of_hearing"),
+    NOTICE_OF_HEARING_VACATED("FL-PLW-HNO-ENG-notice-of-hearing-vacated.doc", null,
+        "Notice_of_hearing_vacated"),
     SDO("FL-PLW-STD-ENG-00099-v2.doc", null, "standard-directions-order"),
     UDO("FL-PLW-STD-ENG-00099-v2.doc", null, "urgent-directions-order"),
     ORDER_V2("FL-PLW-GOR-ENG-00728.doc", null, "order"),
