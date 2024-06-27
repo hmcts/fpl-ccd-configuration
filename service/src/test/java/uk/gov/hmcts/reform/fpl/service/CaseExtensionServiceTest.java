@@ -32,7 +32,6 @@ import java.util.UUID;
 import static java.time.LocalDate.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONAL_ASPECT;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.NO_EXTENSION;
