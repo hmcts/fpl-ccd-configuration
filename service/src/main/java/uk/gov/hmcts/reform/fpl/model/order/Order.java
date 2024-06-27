@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SECURE_ACCO
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SELECT_SINGLE_CHILD;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TITLE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSLATION_REQUIREMENTS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.TRANSPARENCY_ORDER_BLOCK;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_AMENDED_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.VARY_OR_EXTEND_SUPERVISION_ORDER;
@@ -261,6 +262,20 @@ public enum Order {
             WHICH_CHILDREN,
             LEAVE_TO_CHANGE_CHILD_SURNAME,
             ORDER_BY_CONSENT,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
+    TRANSPARENCY_ORDER(
+        DIGITAL,
+        "Transparency Order",
+        "The Children Act 1989",
+        "Transparency Order",
+        IsFinalOrder.MAYBE,
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            ORDER_BY_CONSENT,
+            TRANSPARENCY_ORDER_BLOCK,
             REVIEW_DRAFT_ORDER
         )
     ),
