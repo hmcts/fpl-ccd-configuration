@@ -19,4 +19,10 @@ public class ReviewDecision {
     public boolean hasReviewOutcomeOf(CMOReviewOutcome reviewOutcome) {
         return reviewOutcome.equals(decision);
     }
+
+    @JsonIgnore
+    public boolean hasBeenApproved() {
+        return CMOReviewOutcome.SEND_TO_ALL_PARTIES.equals(decision)
+            || CMOReviewOutcome.JUDGE_AMENDS_DRAFT.equals(decision);
+    }
 }
