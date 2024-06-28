@@ -290,6 +290,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cancelledHearingId",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "pastAndTodayHearingDateList",
     "Label": "Which hearing?",
     "FieldType": "DynamicList",
@@ -395,6 +404,35 @@
     "Label": "Will the hearing be re-listed?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingReListOption",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingHousekeepOption",
+    "Label": "Is this for Housekeeping?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingHousekeepOptions",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingHousekeepReason",
+    "Label": "Housekeeping reason",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingHousekeepReasons",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingHousekeepReasonOther",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
