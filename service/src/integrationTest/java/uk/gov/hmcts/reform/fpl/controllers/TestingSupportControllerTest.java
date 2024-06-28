@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.microsoft.applicationinsights.core.dependencies.http.HttpStatus.SC_OK;
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
