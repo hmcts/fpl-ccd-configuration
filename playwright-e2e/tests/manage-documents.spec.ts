@@ -18,15 +18,15 @@ test.describe('Manage Documents', () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
 
-    test('LA uploads correspondence documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
-        caseName = 'LA uploads correspondence documents ' + dateTime.slice(0, 10);
+    test('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
+        caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Court correspondence');
-    
+
         // Check CFV
         await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
@@ -56,7 +56,7 @@ test.describe('Manage Documents', () => {
         }
     });
 
-    test('LA uploads Position Statements visible in CFV', async ({ signInPage, manageDocuments, caseFileView, page ,}) => {
+    test('LA uploads Position Statements visible in CFV', async ({ signInPage, manageDocuments, caseFileView, page }) => {
         caseName = 'LA uploads Position Statements visible in CFV ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
@@ -65,6 +65,9 @@ test.describe('Manage Documents', () => {
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements');
+
+        // uploads documents
+       // await manageDocuments.uploadNewDocuments();
 
         // position is visble under CFV
         await signInPage.navigateTOCaseDetails(caseNumber);
@@ -142,20 +145,20 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.removeDocuments();
 
-       //go to CFV and assert Court Correspondence not visble
+        //go to CFV and assert Court Correspondence not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
         await expect(page.getByRole('tree')).not.toContainText('mock.pdf');
     });
 
-    test('CTSC user can move document between folder ', async ({ page, signInPage,caseFileView }) => {
+    test('CTSC user can move document between folder ', async ({ page, signInPage, caseFileView }) => {
         caseName = 'CTSC moved documents between folder ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithManageDocumentUploads);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.moveDocument('Court Correspondence','Threshold');
+        await caseFileView.moveDocument('Court Correspondence', 'Threshold');
         await caseFileView.openFolder('Threshold');
         await expect(page.getByRole('tree')).toContainText('mock.pdf');
 

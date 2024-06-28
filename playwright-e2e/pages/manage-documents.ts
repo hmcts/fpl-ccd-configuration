@@ -62,7 +62,6 @@ export class ManageDocuments extends BasePage {
         await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
-
     }
     async uploadedDocuments(type: string) {
         await expect(this.manageDocumentsTest).toBeVisible();
