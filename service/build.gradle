@@ -132,7 +132,7 @@ task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verificatio
 
 project.ext {
   pacticipant = 'fpl_ccdConfiguration'
-  pacticipantVersion = System.env.GIT_COMMIT.substring(0,9)
+  pacticipantVersion = System.env.GIT_COMMIT != null ? System.env.GIT_COMMIT.substring(0,9) : ''
 }
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
