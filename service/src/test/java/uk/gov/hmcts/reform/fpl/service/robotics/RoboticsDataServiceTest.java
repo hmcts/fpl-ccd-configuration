@@ -335,11 +335,7 @@ class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
-                .possibleCarer("Yes")
-                .significantEvents("No")
-                .issues("No")
-                .proceedings("No")
-                .internationalAuthorityInvolvement("No")
+                .outsideHagueConvention("Yes")
                 .build())
             .build();
 
@@ -353,11 +349,7 @@ class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithInternationalElement = caseData.toBuilder()
             .internationalElement(InternationalElement.builder()
-                .possibleCarer("No")
-                .significantEvents("No")
-                .issues("No")
-                .proceedings("No")
-                .internationalAuthorityInvolvement("No")
+                .outsideHagueConvention("No")
                 .build())
             .build();
 
