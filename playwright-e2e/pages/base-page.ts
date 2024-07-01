@@ -86,4 +86,8 @@ export class BasePage {
   async clickSignOut() {
     await this.signOut.click();
   }
+
+  async clickSubmit() {
+    await this.submit.click();
+  }
 }
