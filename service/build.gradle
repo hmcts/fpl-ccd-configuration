@@ -221,7 +221,7 @@ task highLevelDataSetup(type: JavaExec, description: 'High level data step mock 
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = "8.45.1"
+  toolVersion = "10.17.0"
   // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
   configDirectory.set(file("$rootDir/config/checkstyle"))
 }
