@@ -18,6 +18,8 @@ public enum DocmosisTemplates {
     C6("FL-PLW-HNO-ENG-00092.doc", null, "Notice_of_proceedings_c6"),
     C6A("FL-PLW-HNO-ENG-00093.doc", null, "Notice_of_proceedings_c6a"),
     NOTICE_OF_HEARING("FL-PLW-HNO-ENG-00525.doc", null, "Notice_of_hearing"),
+    NOTICE_OF_HEARING_VACATED("FL-PLW-HNO-ENG-notice-of-hearing-vacated.doc", null,
+        "Notice_of_hearing_vacated"),
     SDO("FL-PLW-STD-ENG-00099-v2.doc", null, "standard-directions-order"),
     UDO("FL-PLW-STD-ENG-00099-v2.doc", null, "urgent-directions-order"),
     ORDER_V2("FL-PLW-GOR-ENG-00728.doc", null, "order"),
@@ -29,7 +31,8 @@ public enum DocmosisTemplates {
     A81("FL-PLW-GOR-ENG-00728.doc", null, "placement_order_a81"),
     A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206"),
     A92("FL-PLW-HNO-ENG-notice-of-placement.doc", null, "notice_of_hearing_placement"),
-    HIGH_COURT_SEAL("FL-PLW-ASS-ENG-HIGH-COURT-SEAL.docx", null, "high_court_seal");
+    HIGH_COURT_SEAL("FL-PLW-ASS-ENG-HIGH-COURT-SEAL.docx", null, "high_court_seal"),
+    TRANSPARENCY_ORDER("FL-PLW-GOR-ENG-TRANSPARENCY-ORDER-TEMPLATE.doc", null, "transparency_order");
 
     private final String template;
     private final String welshTemplate;

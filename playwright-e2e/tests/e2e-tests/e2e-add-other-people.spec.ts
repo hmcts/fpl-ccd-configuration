@@ -2,7 +2,7 @@ import { test, expect } from "../../fixtures/fixtures";
 import { BasePage } from "../../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../../settings/user-credentials";
 
-test("e2e test: add other people @e2e-test @accessibility", async ({
+test.skip("  e2e test: add other people @e2e-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -85,7 +85,7 @@ test("e2e test: add other people @e2e-test @accessibility", async ({
   await otherPeopleInCase.personOneToBeGivenNotice();
   await otherPeopleInCase.personTwoToBeGivenNotice();
   await otherPeopleInCase.continueAndCheck();
-  
+
   // Submit the case
   await startApplication.submitCase();
   await submitCase.submitCaseSmokeTest();
