@@ -6,6 +6,7 @@
     "CaseFieldID": "internationalElement",
     "ListElementCode": "whichCountriesInvolved",
     "EventElementLabel": "Which other countries are involved?",
+    "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -15,6 +16,7 @@
     "CaseFieldID": "internationalElement",
     "ListElementCode": "outsideHagueConvention",
     "EventElementLabel": "Are any of these countries outside of the Hague Convention?",
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -24,6 +26,7 @@
     "CaseFieldID": "internationalElement",
     "ListElementCode": "importantDetails",
     "EventElementLabel": "Provide all important details",
+    "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   }
 ]
