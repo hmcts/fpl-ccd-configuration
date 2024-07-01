@@ -72,23 +72,25 @@ test.describe('Manage Documents', () => {
         // position is visble under CFV
         await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Position Statements');
+        await expect(page.getByRole('tree')).toContainText(' testTextFile.txt ');
+        await signInPage.logout();
 
         //Login as respondence solicitor
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-        await signInPage.visit();
+        await signInPage.isSignedIn();
         await signInPage.navigateTOCaseDetails(caseNumber);
 
-        //go to CFV and assert Position statement not visble
+        //go to CFV and assert Position statement  visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
     });
 
     test('LA uploads confidential documents visible in CFV not visible to solicitor', async ({ signInPage, manageDocuments, caseFileView, page }) => {
-        caseName = 'LA uploads confidential documents visible in CFV not visible to solicitor ' + dateTime.slice(0, 10);
+        caseName = 'LA uploads confidential position document ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseData);
+        await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
@@ -96,24 +98,27 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
 
         // position is visble under CFV
-        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Court Correspondence');
+        await caseFileView.openFolder('Position Statements');
+        await caseFileView.openFolder('Confidential');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
 
         //Login as respondence solicitor
+        await signInPage.logout();
         await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
-        await signInPage.visit();
+        await signInPage.isSignedIn();
         await signInPage.navigateTOCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visble
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
     });
 
     test('CTSC uploads confidential documents visible in CFV not visible to solicitor ', async ({ signInPage, manageDocuments, caseFileView, page }) => {
-        caseName = 'CTSC uploads confidential documents visible in CFV not visible to solicitor ' + dateTime.slice(0, 10);
+        caseName = 'CTSC uploads confidential Position statement documents  ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithResSolicitor);
         await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
         await signInPage.visit();
@@ -122,16 +127,41 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadConfidentialDocuments('Position Statements');
 
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await signInPage.logout();
+
         //Login as respondence solicitor
-        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
         await signInPage.visit();
+        await signInPage.login(privateSolicitorOrgUser.email, privateSolicitorOrgUser.password);
+        await signInPage.isSignedIn();
+        await signInPage.navigateTOCaseDetails(caseNumber);
+
+        //go to CFV and assert Position statement not visble
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Position Statements');
+        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await signInPage.logout();
+
+        //login in LA and assert position statement not visible
+
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.isSignedIn();
         await signInPage.navigateTOCaseDetails(caseNumber);
 
         //go to CFV and assert Position statement not visble
         await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
-        await caseFileView.openFolder('Court Correspondence');
-        await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Position Statements');
+        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+        await caseFileView.openFolder('Confidential');
+        await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
+
+
     });
 
     test('CTSC removes document ', async ({ page, signInPage, manageDocuments, caseFileView }) => {

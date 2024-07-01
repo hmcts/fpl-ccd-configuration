@@ -15,7 +15,7 @@ export class CaseFileView extends BasePage {
         await this.page.getByRole('button', { name: 'toggle ' + name }).click();
     }
 
-    async moveDocument(fromFolder: string,toFolder:string ) { 
+    async moveDocument(fromFolder: string,toFolder:string ) {
         await this.openFolder(fromFolder);
         await this.page.getByRole('button', { name: 'More document options', exact: true }).click();
         await this.page.getByText('Change folder').click();

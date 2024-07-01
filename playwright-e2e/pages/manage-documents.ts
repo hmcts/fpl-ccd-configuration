@@ -27,7 +27,7 @@ export class ManageDocuments extends BasePage {
     constructor(page: Page) {
         super(page);
         this.manageDocumentsTest = page.getByRole('heading', { name: 'Manage documents', exact: true });
-        this.uploadNewDocuments = page.getByRole('group', { name: 'Upload new documents' });
+        this.uploadNewDocuments = page.getByLabel('Upload new documents');
         this.documentType = page.getByLabel('Document type');
         this.isThisDocumentConfidential = page.getByRole('group', { name: 'Is this document  confidential?' });
         this.isTranslationNeeded = page.getByRole('group', { name: 'Is translation needed?' });
@@ -67,10 +67,11 @@ export class ManageDocuments extends BasePage {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
-        await this.inputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
+        await this.inputFiles.setInputFiles(config.testTextFile);
         await this.documentType.selectOption(type);
         await this.nonconfidentialRadioButton.check();
         await this.isDocumentRelatedToCase.check();
+        await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
         await this.addNew.check();
@@ -80,10 +81,11 @@ export class ManageDocuments extends BasePage {
         await expect(this.manageDocumentsTest).toBeVisible();
         await this.uploadNewDocuments.check();
         await this.clickContinue();
-        await this.inputFiles.setInputFiles('./playwright-e2e/files/draftOrder.docx');
+        await this.inputFiles.setInputFiles(config.testTextFile);
         await this.documentType.selectOption(type);
         await this.confidentialRadioButton.check();
         await this.isDocumentRelatedToCase.check();
+        await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
@@ -94,15 +96,6 @@ export class ManageDocuments extends BasePage {
         await this.clickContinue();
         await this.page.getByLabel('Uploaded Document').selectOption('mock.pdf');
         await this.page.getByLabel('There is a mistake on the').check();
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
-    }
-    async caseFileView(type: string) {
-        await this.caseFileviewTest.check();
-        await this.togglePositionStatements.click();
-        await this.moreDocumentsOptions.click();
-        await this.changeFolder.click();
-        await this.threshold.check();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
     }
