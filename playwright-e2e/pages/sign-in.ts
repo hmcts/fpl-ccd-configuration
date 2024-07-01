@@ -32,12 +32,9 @@ export class SignInPage {
   }
 
   async login(email: string, password: string) {
-    await expect(async() => {
-      await this.emailInputLocator.fill(email);
-      await this.passwordInputLocator.fill(password);
-      await this.signinButtonLocator.click();
-      await this.isSignedIn();
-    }).toPass();
+    await this.emailInputLocator.fill(email);
+    await this.passwordInputLocator.fill(password);
+    await this.signinButtonLocator.click();
   }
 
   async isSignedIn() {
