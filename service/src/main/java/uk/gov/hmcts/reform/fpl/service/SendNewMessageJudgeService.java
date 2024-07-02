@@ -168,6 +168,8 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         unwrapElements(caseData.getAdditionalApplicationsBundle()).forEach(bundle -> {
             ofNullable(bundle.getC2DocumentBundle())
                 .ifPresent(application -> applications.add(element(application.getId(), application)));
+            ofNullable(bundle.getC2DocumentBundleConfidential())
+                .ifPresent(application -> applications.add(element(application.getId(), application)));
             ofNullable(bundle.getOtherApplicationsBundle())
                 .ifPresent(application -> applications.add(element(application.getId(), application)));
         });
