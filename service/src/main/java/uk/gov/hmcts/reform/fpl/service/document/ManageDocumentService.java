@@ -176,7 +176,7 @@ public class ManageDocumentService {
     public boolean allowSelectDocumentTypeToRemoveDocument(CaseData caseData) {
         return List.of(HMCTS).contains(getUploaderType(caseData));
     }
-    
+
     private Element<? extends WithDocument> handlePlacementResponseRemoval(CaseData caseData,
                                                                            UUID documentElementId,
                                                                            Map<String, Object> output) {
@@ -761,6 +761,16 @@ public class ManageDocumentService {
                                                     Map<String, List<Element<?>>> fieldNameToListOfElement) {
         final DocumentUploaderType currentUploaderType = getUploaderType(caseData);
         final List<Pair<String, String>> ret = new ArrayList<>();
+
+        Set<CaseRole> currentUploaderCaseRoles;
+        if (currentUploaderType != HMCTS && currentUploaderType != CAFCASS) {
+            currentUploaderCaseRoles = Optional
+                .ofNullable(userService.getCaseRoles(caseData.getId()))
+                .orElse(Set.of());
+        } else {
+            currentUploaderCaseRoles = Set.of();
+        }
+
         for (Map.Entry<String, List<Element<?>>> entrySet : fieldNameToListOfElement.entrySet()) {
             String fieldName = entrySet.getKey();
             for (Element e : entrySet.getValue()) {
@@ -771,9 +781,6 @@ public class ManageDocumentService {
                 if (currentUploaderType != HMCTS && currentUploaderType != CAFCASS) {
                     List<CaseRole> docCaseRoles = wd.getUploaderCaseRoles() == null
                         ? new ArrayList<>() : wd.getUploaderCaseRoles();
-                    final Set<CaseRole> currentUploaderCaseRoles = Optional
-                        .ofNullable(userService.getCaseRoles(caseData.getId()))
-                        .orElse(Set.of());
 
                     if (!docCaseRoles.stream().filter(cr -> currentUploaderCaseRoles.contains(cr)).findAny()
                         .isPresent()) {
