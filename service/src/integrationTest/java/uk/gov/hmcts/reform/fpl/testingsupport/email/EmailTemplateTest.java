@@ -105,6 +105,7 @@ public class EmailTemplateTest {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
         when(featureToggleService.isSecureDocstoreEnabled()).thenReturn(true);
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
     }
 

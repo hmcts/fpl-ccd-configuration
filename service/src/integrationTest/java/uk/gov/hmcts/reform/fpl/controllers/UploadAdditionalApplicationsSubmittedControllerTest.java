@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -143,6 +144,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CafcassNotificationService cafcassNotificationService;
     @MockBean
     private SendDocumentService sendDocumentService;
+    @MockBean
+    private FeatureToggleService featureToggleService;
     @Captor
     private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;
 
@@ -213,6 +216,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         doNothing().when(sendDocumentService).sendDocuments(any());
         doNothing().when(cafcassNotificationService).sendEmail(any(), any(), any());
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
     }
 
 

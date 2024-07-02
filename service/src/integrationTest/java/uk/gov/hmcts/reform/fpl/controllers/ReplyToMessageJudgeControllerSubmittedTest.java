@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -18,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
@@ -41,6 +44,9 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     ReplyToMessageJudgeControllerSubmittedTest() {
         super("reply-message-judge");
@@ -84,6 +90,8 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .urgency("High")
                     .build())))
             .build();
+
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
 
         postSubmittedEvent(asCaseDetails(caseData));
 
