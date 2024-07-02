@@ -18,4 +18,5 @@ public class HearingVacatedTemplate extends BaseCaseNotifyData {
     private String vacatedDate;
     private String vacatedReason;
     private String relistAction;
+    private String familyManCaseNumber;
 }

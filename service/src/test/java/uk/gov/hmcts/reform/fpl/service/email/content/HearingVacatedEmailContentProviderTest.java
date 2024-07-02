@@ -28,6 +28,8 @@ public class HearingVacatedEmailContentProviderTest extends AbstractEmailContent
     private static final LocalDate VACATED_DATE = HEARING_START_DATE.minusDays(1).toLocalDate();
     private static final String HEARING_VENUE = "Hearing venue";
     private static final String CANCELLATION_REASON = "cancel reason";
+    private static final String FAMILYMANID = "TEST";
+    private static final Long CASE_ID = 1234L;
 
     private static final HearingBooking VACATED_HEARING = HearingBooking.builder()
         .startDate(HEARING_START_DATE)
@@ -50,6 +52,8 @@ public class HearingVacatedEmailContentProviderTest extends AbstractEmailContent
         when(hearingVenueLookUpService.getHearingVenue(any(HearingBooking.class))).thenReturn(mock(HearingVenue.class));
         when(hearingVenueLookUpService.buildHearingVenue(any())).thenReturn(HEARING_VENUE);
         when(caseDataExtractionService.getHearingTime(any())).thenReturn("10:30 - 10:30");
+        when(CASE_DATA.getFamilyManCaseNumber()).thenReturn(FAMILYMANID);
+        when(CASE_DATA.getId()).thenReturn(CASE_ID);
     }
 
     @Test
@@ -79,16 +83,45 @@ public class HearingVacatedEmailContentProviderTest extends AbstractEmailContent
             .isEqualTo(buildExpectedHearingVacatedTemplate(HearingCancellationReason.LA1.getLabel(), false));
     }
 
+    @Test
+    void shouldDefaultToCCDIdIfNoFamilyMan() {
+        when(CASE_DATA.getFamilyManCaseNumber()).thenReturn(null);
+
+        HearingVacatedTemplate actualEmailTemplate =
+            underTest.buildHearingVacatedNotification(CASE_DATA,
+                VACATED_HEARING.toBuilder().cancellationReason("LA1").build(),
+                false);
+
+        assertThat(actualEmailTemplate)
+            .isEqualTo(buildExpectedTemplateWithCcdId(HearingCancellationReason.LA1.getLabel(), false));
+    }
+
     private HearingVacatedTemplate buildExpectedHearingVacatedTemplate(String cancelReason, boolean isRelisted) {
         return HearingVacatedTemplate.builder()
             .hearingDate(HEARING_START_DATE)
             .hearingDateFormatted("1 January 2024")
             .hearingVenue(HEARING_VENUE)
             .hearingTime("10:30 - 10:30")
+            .familyManCaseNumber(FAMILYMANID)
             .vacatedDate("31 December 2023")
             .vacatedReason(cancelReason)
             .relistAction(isRelisted ? HearingVacatedEmailContentProvider.RELIST_ACTION_RELISTED
                 : HearingVacatedEmailContentProvider.RELIST_ACTION_NOT_RELISTED)
             .build();
     }
+
+    private HearingVacatedTemplate buildExpectedTemplateWithCcdId(String cancelReason, boolean isRelisted) {
+        return HearingVacatedTemplate.builder()
+            .hearingDate(HEARING_START_DATE)
+            .hearingDateFormatted("1 January 2024")
+            .hearingVenue(HEARING_VENUE)
+            .hearingTime("10:30 - 10:30")
+            .familyManCaseNumber(CASE_ID.toString())
+            .vacatedDate("31 December 2023")
+            .vacatedReason(cancelReason)
+            .relistAction(isRelisted ? HearingVacatedEmailContentProvider.RELIST_ACTION_RELISTED
+                : HearingVacatedEmailContentProvider.RELIST_ACTION_NOT_RELISTED)
+            .build();
+    }
+
 }
