@@ -106,6 +106,19 @@ class ApplicantsListGeneratorTest {
             .build());
     }
 
+    @Test
+    void shouldReturnWithoutOthers() {
+        DynamicList actualDynamicList = underTest.buildApplicantsList(caseData, false);
+
+        assertThat(actualDynamicList.getListItems())
+            .extracting(DynamicListElement::getLabel)
+            .containsExactly("Swansea local authority, Applicant",
+                RESPONDENT_PARTY_1.getFullName() + ", Respondent 1",
+                RESPONDENT_PARTY_2.getFullName() + ", Respondent 2",
+                CHILD_PARTY_1.getFullName() + ", Child 1",
+                CHILD_PARTY_2.getFullName() + ", Child 2");
+    }
+
     @ParameterizedTest
     @MethodSource("additionalApplicationBundlesData")
     void shouldReturnApplicantNameAndType(AdditionalApplicationsBundle bundle, String name, ApplicantType type) {

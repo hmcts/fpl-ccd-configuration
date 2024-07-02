@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -140,7 +141,7 @@ public class ManageOrdersController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails oldCaseDetails = callbackRequest.getCaseDetails();
-
+        ManageOrdersEventData eventData = getCaseData(oldCaseDetails).getManageOrdersEventData();
         // Start event with concurrency controls
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(oldCaseDetails.getId(),
             "internal-change-manage-order", postSubmitHelper::getPostSubmitUpdates, true);
@@ -152,7 +153,7 @@ public class ManageOrdersController extends CallbackController {
 
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
-        publishEvent(eventBuilder.build(caseData, caseDataBefore));
+        publishEvent(eventBuilder.build(caseData, caseDataBefore, eventData));
     }
 
     @PostMapping("/post-submit-callback/about-to-submit")

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPr
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.FamilyAssistancePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.NonMolestationOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.RespondentsRefusedBlockPrePopulator;
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FAMILY_ASSISTANCE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NON_MOLESTATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.PARTY_ALLOWED_CONTACTS_AND_CONDITIONS;
@@ -119,6 +121,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private TranslationRequirementsBlockPrePopulator translationRequirementsBlockPrePopulator;
     @Mock
     private FamilyAssistancePrePopulator familyAssistancePrePopulator;
+    @Mock
+    private NonMolestationOrderPrePopulator nonMolestationOrderPrePopulator;
 
     @InjectMocks
     private OrderSectionAndQuestionsPrePopulatorHolder underTest;
@@ -150,7 +154,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             parentalResponsibilityPrePopulator,
             allowedContactPrePopulator,
             declarationOfParentagePrePopulator,
-            familyAssistancePrePopulator
+            familyAssistancePrePopulator,
+            nonMolestationOrderPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.ofEntries(
             Map.entry(PARTY_ALLOWED_CONTACTS_AND_CONDITIONS, allowedContactPrePopulator),
@@ -171,7 +176,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             Map.entry(ORDER_TO_AMEND, amendOrderToDownloadPrePopulator),
             Map.entry(PARENTAL_RESPONSIBILITY, parentalResponsibilityPrePopulator),
             Map.entry(DECLARATION_OF_PARENTAGE, declarationOfParentagePrePopulator),
-            Map.entry(FAMILY_ASSISTANCE_ORDER, familyAssistancePrePopulator)
+            Map.entry(FAMILY_ASSISTANCE_ORDER, familyAssistancePrePopulator),
+            Map.entry(NON_MOLESTATION_ORDER, nonMolestationOrderPrePopulator)
         );
 
         sectionPrepopulatorMapping = Map.of(

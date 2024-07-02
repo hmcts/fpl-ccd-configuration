@@ -7,8 +7,10 @@ import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.ManageOrdersEvent;
+import uk.gov.hmcts.reform.fpl.events.order.NonMolestationOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.orders.amendment.find.AmendedOrderFinder;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.model.order.Order.A70_PLACEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.FL404A_NON_MOLESTATION_ORDER;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -25,7 +28,7 @@ public class ManageOrdersEventBuilder {
     private final SealedOrderHistoryService historyService;
     private final List<AmendedOrderFinder<? extends AmendableOrder>> finders;
 
-    public ManageOrdersEvent build(CaseData caseData, CaseData caseDataBefore) {
+    public ManageOrdersEvent build(CaseData caseData, CaseData caseDataBefore, ManageOrdersEventData eventData) {
         List<Element<GeneratedOrder>> currentOrders = caseData.getOrderCollection();
         List<Element<GeneratedOrder>> oldOrders = caseDataBefore.getOrderCollection();
 
@@ -36,6 +39,13 @@ public class ManageOrdersEventBuilder {
                 return new GeneratedPlacementOrderEvent(caseData,
                     lastGeneratedOrder.getDocument(),
                     lastGeneratedOrder.getNotificationDocument());
+            } else if (FL404A_NON_MOLESTATION_ORDER.name().equals(lastGeneratedOrder.getOrderType())) {
+                return new NonMolestationOrderEvent(caseData,
+                    eventData,
+                    lastGeneratedOrder.asLabel(),
+                    lastGeneratedOrder.getDocument(),
+                    lastGeneratedOrder.getTranslationRequirements()
+                );
             } else {
                 return new GeneratedOrderEvent(
                     caseData,
