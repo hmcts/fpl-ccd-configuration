@@ -9,8 +9,10 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
-
-
+  readonly dobDay: Locator; //DOB (date of birth)
+  readonly dobMonth: Locator;
+  readonly dobYear: Locator;
+  
 
   constructor(page: Page) {
     this.page = page;
@@ -21,6 +23,9 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
+    this.dobDay = page.getByLabel('Day');
+    this.dobMonth = page.getByLabel('Month');
+    this.dobYear = page.getByLabel('Year');
   }
 
   async gotoNextStep(eventName: string) {
@@ -88,6 +93,12 @@ export class BasePage {
 
   async clickSubmit() {
     await this.submit.click();
+  }
+  
+  async dobFillOut(date: string, month: string, year: string){
+    await this.dobDay.fill(date);
+    await this.dobMonth.fill(month);
+    await this.dobYear.fill(year);
   }
 }
 
