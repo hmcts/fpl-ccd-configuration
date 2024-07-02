@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
@@ -28,7 +29,6 @@ public abstract class AbstractCallbackTest extends AbstractTest {
 
     private final String eventName;
     private final String eventId;
-
     protected static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
 
     protected AbstractCallbackTest(String eventName) {
@@ -288,6 +288,7 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
+                    .with(csrf())
                     .header("authorization", USER_AUTH_TOKEN)
                     .header("user-id", USER_ID)
                     .header("user-roles", String.join(",", userRoles))

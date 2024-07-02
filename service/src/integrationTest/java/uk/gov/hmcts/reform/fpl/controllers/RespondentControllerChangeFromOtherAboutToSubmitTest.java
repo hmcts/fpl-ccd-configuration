@@ -7,6 +7,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +18,22 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.CaseService;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeCaseRoleService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
+import uk.gov.hmcts.reform.fpl.service.legalcounsel.RepresentableLegalCounselUpdater;
+import uk.gov.hmcts.reform.fpl.service.noc.NoticeOfChangeFieldPopulator;
+import uk.gov.hmcts.reform.fpl.service.others.OthersListGenerator;
+import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -49,10 +67,43 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithRandomU
 
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
+@Import({OthersService.class, ConfidentialDetailsService.class, RespondentService.class,
+    RespondentAfterSubmissionRepresentationService.class, RepresentableLegalCounselUpdater.class,
+    RepresentativeService.class})
 class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallbackTest {
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private OthersListGenerator othersListGenerator;
+
+    @MockBean
+    private CaseService caseService;
+
+    @MockBean
+    private RepresentativeCaseRoleService representativeCaseRoleService;
+
+    @MockBean
+    private ValidateEmailService validateEmailService;
+
+    @MockBean
+    private ChangeOfRepresentationService changeOfRepresentationService;
+
+    @MockBean
+    private NoticeOfChangeFieldPopulator noticeOfChangeFieldPopulator;
+
+    @MockBean
+    private RespondentValidator respondentValidator;
+
+    @MockBean
+    private NoticeOfChangeService noticeOfChangeService;
+
+    @MockBean
+    private OrganisationService organisationService;
+
+    @MockBean
+    private UserService userService;
 
     RespondentControllerChangeFromOtherAboutToSubmitTest() {
         super("enter-respondents/change-from-other");
@@ -77,6 +128,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         return builder.build();
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersToRespondent(int selectedOtherSeq, int numberOfAdditionalOther,
@@ -111,6 +163,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         assertThat(responseCaseData.findRespondent(numberOfRespondent)).contains(transformedRespondent);
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithHiddenDetailsToRespondentWhereNoConfidentialRespondent(
@@ -159,6 +212,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .contains(prepareExpectedTransformedConfidentialRespondent());
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertConfidentialOthersToConfidentialRespondentAndNoMoreConfidentialOthers(
@@ -224,6 +278,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .contains(prepareExpectedExistingConfidentialRespondent(numberOfRespondent - 1));
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertConfidentialOthersToConfidentialRespondentAndRetainConfidentialOthers(
@@ -290,6 +345,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .contains(prepareExpectedExistingConfidentialRespondent(numberOfRespondent - 1));
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithRepresentativeToRespondent(
@@ -345,6 +401,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
             .contains(resolveRespondentRepresentativeRole(numberOfRespondent + 1));
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertOthersWithRepresentativesToRespondent(
@@ -439,6 +496,7 @@ class RespondentControllerChangeFromOtherAboutToSubmitTest extends AbstractCallb
         }
     }
 
+    @WithMockUser
     @ParameterizedTest
     @MethodSource("othersToRespondentParam")
     void shouldConvertConfidentialOthersWithRepresentativesToRespondent(

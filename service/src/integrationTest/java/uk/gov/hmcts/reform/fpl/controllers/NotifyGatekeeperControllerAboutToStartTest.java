@@ -3,13 +3,16 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
@@ -31,6 +34,9 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
     private static final String SUBMITTED = "Submitted";
     private static final String GATEKEEPING = "Gatekeeping";
 
+    @MockBean
+    protected ValidateEmailService validateEmailService;
+
     @SpyBean
     private ValidateGroupService validateGroupService;
 
@@ -38,6 +44,7 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
         super("notify-gatekeeper");
     }
 
+    @WithMockUser
     @Test
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails(
@@ -46,6 +53,7 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
+    @WithMockUser
     @Test
     void shouldNotValidateFamilymanNumberWhenInGatekeepingState() {
         postAboutToStartEvent(caseDetails(INVALID_FAMILY_MAN_NUMBER, GATEKEEPING));
@@ -53,6 +61,7 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
         verify(validateGroupService, never()).validateGroup(any(), any());
     }
 
+    @WithMockUser
     @Test
     void shouldResetGateKeeperEmailCollection() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails(
@@ -65,6 +74,7 @@ class NotifyGatekeeperControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(gateKeeperEmailAddresses.get(0).getValue().getEmail()).isEqualTo("");
     }
 
+    @WithMockUser
     @Test
     void shouldResetReturnedApplicationProperties() {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails(

@@ -5,6 +5,8 @@ import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import org.springframework.http.HttpStatus;
 
+import java.util.Date;
+
 public class IdamErrorDecoder implements ErrorDecoder {
 
     private final ErrorDecoder defaultDecoder;
@@ -31,7 +33,7 @@ public class IdamErrorDecoder implements ErrorDecoder {
                 response.reason(),
                 response.request().httpMethod(),
                 exception,
-                null,
+                (Date) null,
                 response.request()
             );
         }

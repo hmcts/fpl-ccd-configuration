@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.groups.Default;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,8 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
-import javax.validation.groups.Default;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

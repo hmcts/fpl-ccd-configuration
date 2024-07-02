@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Map;
 
-import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap.of;
+import static java.util.Map.of;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +43,7 @@ class CaseConverterTest {
     void shouldConvertCaseDetailsToCaseDataAndSetIdAndState(State state) {
         final CaseDetails caseDetails = CaseDetails
             .builder()
-            .data(Map.of())
+            .data(of())
             .id(nextLong())
             .state(state.getValue())
             .build();
@@ -72,7 +72,7 @@ class CaseConverterTest {
     void shouldConvertCaseDetailsToCaseDataAndDontSetStateIfNotRecognised(String state) {
         final CaseDetails caseDetails = CaseDetails
             .builder()
-            .data(Map.of())
+            .data(of())
             .id(nextLong())
             .state(state)
             .build();
@@ -138,7 +138,7 @@ class CaseConverterTest {
 
     @Test
     void shouldConvertArbitraryObject() {
-        Map<String, Object> objectToBeConverted = Map.of("caseName", "name");
+        Map<String, Object> objectToBeConverted = of("caseName", "name");
 
         CaseData expectedConvertedObject = CaseData.builder()
             .caseName("name")

@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import uk.gov.hmcts.reform.fpl.enums.C29ActionsPermitted;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
@@ -15,8 +18,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;

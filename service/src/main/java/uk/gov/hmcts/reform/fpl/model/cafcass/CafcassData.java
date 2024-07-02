@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface CafcassData {
     String SAME_DAY = "same day";
+    
     default String getDocumentName() {
         throw new UnsupportedOperationException();
     }

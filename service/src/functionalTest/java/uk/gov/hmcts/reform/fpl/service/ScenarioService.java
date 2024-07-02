@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.http.ContentType;
 import lombok.RequiredArgsConstructor;
 import net.serenitybdd.rest.SerenityRest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-import static com.gargoylesoftware.htmlunit.util.MimeType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -40,7 +40,7 @@ public final class ScenarioService {
             .given()
             .headers(authenticationService.getAuthorizationHeaders(testConfiguration.getUsers()
                 .get(scenario.getRequest().getUser())))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .body(scenario.getRequest().getDataAsString())
             .post(scenario.getRequest().getUri())
             .then()

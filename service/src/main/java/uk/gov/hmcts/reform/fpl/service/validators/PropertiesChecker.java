@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseDataParent;
@@ -10,8 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,7 +24,7 @@ public abstract class PropertiesChecker implements EventChecker {
         .collect(toList());
 
     @Autowired
-    private javax.validation.Validator validator;
+    private jakarta.validation.Validator validator;
 
     public List<String> validate(CaseData caseData, List<String> propertiesToBeValidated, Class<?>... groups) {
         checkProperties(propertiesToBeValidated);

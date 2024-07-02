@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -10,8 +12,6 @@ import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.email.EmailAttachment;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

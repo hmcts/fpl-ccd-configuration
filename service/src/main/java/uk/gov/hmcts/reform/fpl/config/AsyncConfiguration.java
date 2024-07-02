@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config;
 
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.request.SimpleRequestData;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
-import javax.annotation.Nonnull;
 
 @Slf4j
 @Configuration

@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.groups.Default;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotBlank;
-import javax.validation.groups.Default;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 

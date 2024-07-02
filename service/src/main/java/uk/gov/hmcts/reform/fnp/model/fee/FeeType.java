@@ -63,6 +63,7 @@ public enum FeeType {
     CHILD_RECOVERY_ORDER;
 
     private static final Map<OrderType, FeeType> orderToFeeMap;
+
     static {
         orderToFeeMap = new HashMap<>();
         orderToFeeMap.put(OrderType.CARE_ORDER, CARE_ORDER);
