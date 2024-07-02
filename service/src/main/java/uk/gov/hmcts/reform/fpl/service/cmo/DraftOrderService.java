@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.PolicyHelper;
@@ -74,6 +75,7 @@ public class DraftOrderService {
     private final ObjectMapper mapper;
     private final Time time;
     private final HearingOrderKindEventDataBuilder hearingOrderKindEventDataBuilder;
+    private final ManageDocumentService manageDocumentService;
     private final UserService userService;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
@@ -150,10 +152,10 @@ public class DraftOrderService {
         return newEventDataBuilder.build();
     }
 
-    public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
+    public UUID updateCase(CaseData caseData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
                            Map<HearingOrderType, List<Element<HearingOrdersBundle>>> combinedBundles) {
-
+        UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
         final UUID selectedHearingId = getSelectedHearingId(eventData);
         final List<HearingOrderKind> hearingOrderKinds = getHearingOrderKinds(eventData);
 
@@ -163,6 +165,7 @@ public class DraftOrderService {
                 .flatMap(id -> findElement(id, hearings))
                 .orElseThrow(() -> new HearingNotFoundException(selectedHearingId));
 
+            boolean isNewCMO = isNewCMO(eventData);
             DocumentReference cmo = getCMO(eventData, hearing.getValue(), cmoDrafts);
 
             Element<HearingOrder> order = element(from(
@@ -174,6 +177,12 @@ public class DraftOrderService {
                 eventData.getCmoToSendTranslationRequirements(),
                 hearing.getId()
             ));
+            if (isNewCMO) {
+                order = element(order.getValue().toBuilder()
+                    .uploaderType(manageDocumentService.getUploaderType(caseData))
+                    .uploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData))
+                    .build());
+            }
 
             Optional<UUID> previousCmoId = updateHearingWithCmoId(hearing.getValue(), order);
 
@@ -214,6 +223,8 @@ public class DraftOrderService {
                 if (!existingC21Documents.contains(hearingOrder.getValue())) {
                     hearingOrder.getValue().setDateSent(time.now().toLocalDate());
                     hearingOrder.getValue().setStatus(SEND_TO_JUDGE);
+                    hearingOrder.getValue().setUploaderType(manageDocumentService.getUploaderType(caseData));
+                    hearingOrder.getValue().setUploaderCaseRoles(manageDocumentService.getUploaderCaseRoles(caseData));
                 }
                 hearingOrder.getValue().setTranslationRequirements(eventData.getOrderToSendTranslationRequirements(i));
             }
@@ -454,6 +465,11 @@ public class DraftOrderService {
         return ofNullable(eventData)
             .map(UploadDraftOrdersData::getHearingOrderDraftKind)
             .orElse(emptyList());
+    }
+
+    private boolean isNewCMO(UploadDraftOrdersData currentEventData) {
+        return !(currentEventData.getUploadedCaseManagementOrder() == null
+            && currentEventData.getReplacementCMO() == null);
     }
 
     private DocumentReference getCMO(UploadDraftOrdersData currentEventData,

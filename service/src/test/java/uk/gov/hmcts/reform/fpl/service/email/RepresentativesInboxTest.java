@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -11,10 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,9 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class RepresentativesInboxTest {
 
-    private static final UUID EMAIL_REP_UUID = UUID.randomUUID();
-    private static final UUID EMAIL_REP2_UUID = UUID.randomUUID();
-    private static final UUID DIGITAL_REP_UUID = UUID.randomUUID();
     private static final String ORGANISATION_ID = "ORGANISATION_ID";
     private static final String EMAIL_1 = "email1";
     private static final String EMAIL_2 = "email2";
@@ -42,6 +38,9 @@ class RepresentativesInboxTest {
     private static final String EMAIL_6 = "email6";
     private static final String EMAIL_7 = "email7";
     private static final String EMAIL_8 = "email8";
+    private static final String EMAIL_9 = "email9";
+    private static final String EMAIL_10 = "email10";
+    private static final String EMAIL_11 = "email11";
     private static final Respondent UNREGISTERED_RESPONDENT = Respondent.builder()
         .solicitor(RespondentSolicitor.builder()
             .email(EMAIL_1)
@@ -62,6 +61,10 @@ class RepresentativesInboxTest {
         .fullName("Jack Frost")
         .email(EMAIL_8)
         .build());
+    private static final Element<Colleague> SOLICITOR_2_COLLEAGUE = element(Colleague.builder()
+        .fullName("Billy Frost")
+        .email(EMAIL_10)
+        .build());
     private static final Respondent REGISTERED_RESPONDENT_WITH_COLLEAGUES = Respondent.builder()
         .solicitor(RespondentSolicitor.builder()
             .email(EMAIL_2)
@@ -69,6 +72,15 @@ class RepresentativesInboxTest {
                 .organisationID(ORGANISATION_ID)
                 .build())
             .colleaguesToBeNotified(List.of(SOLICITOR_COLLEAGUE))
+            .build())
+        .build();
+    private static final Respondent REGISTERED_RESPONDENT_2_WITH_COLLEAGUES = Respondent.builder()
+        .solicitor(RespondentSolicitor.builder()
+            .email(EMAIL_11)
+            .organisation(Organisation.builder()
+                .organisationID(ORGANISATION_ID)
+                .build())
+            .colleaguesToBeNotified(List.of(SOLICITOR_2_COLLEAGUE))
             .build())
         .build();
     private static final Representative EMAIL_REP = Representative.builder()
@@ -106,6 +118,15 @@ class RepresentativesInboxTest {
                 .organisationID(ORGANISATION_ID)
                 .build())
             .colleaguesToBeNotified(List.of(SOLICITOR_COLLEAGUE))
+            .build())
+        .build();
+    private static final Child REGISTERED_CHILD_2_WITH_COLLEAGUES = Child.builder()
+        .solicitor(RespondentSolicitor.builder()
+            .email(EMAIL_9)
+            .organisation(Organisation.builder()
+                .organisationID(ORGANISATION_ID)
+                .build())
+            .colleaguesToBeNotified(List.of(SOLICITOR_2_COLLEAGUE))
             .build())
         .build();
 
@@ -410,7 +431,7 @@ class RepresentativesInboxTest {
             .respondents1(List.of(element(REGISTERED_RESPONDENT_WITH_COLLEAGUES)))
             .build();
 
-        HashSet<String> emails = underTest.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE);
+        Set<String> emails = underTest.getRespondentSolicitorEmails(caseData, DIGITAL_SERVICE);
 
         assertThat(emails).containsExactlyInAnyOrder(EMAIL_2, EMAIL_8);
     }
@@ -421,8 +442,68 @@ class RepresentativesInboxTest {
             .children1(List.of(element(REGISTERED_CHILD_WITH_COLLEAGUES)))
             .build();
 
-        HashSet<String> emails = underTest.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE);
+        Set<String> emails = underTest.getChildrenSolicitorEmails(caseData, DIGITAL_SERVICE);
 
         assertThat(emails).containsExactlyInAnyOrder(EMAIL_6, EMAIL_8);
+    }
+
+    @Test
+    void shouldGetChildSolicitorColleagueEmailsAsWellByChildSolicitorCaseRoleA() {
+        CaseData caseData = CaseData.builder()
+            .children1(List.of(
+                element(REGISTERED_CHILD_WITH_COLLEAGUES), // A
+                element(REGISTERED_CHILD_2_WITH_COLLEAGUES) // B
+            ))
+            .build();
+
+        Set<String> emails = underTest.getRepresentedSolicitorEmails(caseData, CaseRole.CHILDSOLICITORA,
+            DIGITAL_SERVICE);
+
+        assertThat(emails).containsExactlyInAnyOrder(EMAIL_6, EMAIL_8);
+    }
+
+    @Test
+    void shouldGetChildSolicitorColleagueEmailsAsWellByChildSolicitorCaseRoleB() {
+        CaseData caseData = CaseData.builder()
+            .children1(List.of(
+                element(REGISTERED_CHILD_WITH_COLLEAGUES), // A
+                element(REGISTERED_CHILD_2_WITH_COLLEAGUES) // B
+            ))
+            .build();
+
+        Set<String> emails = underTest.getRepresentedSolicitorEmails(caseData, CaseRole.CHILDSOLICITORB,
+            DIGITAL_SERVICE);
+
+        assertThat(emails).containsExactlyInAnyOrder(EMAIL_9, EMAIL_10);
+    }
+
+    @Test
+    void shouldGetRespondentSolicitorColleagueEmailsAsWellByRespondentSolicitorCaseRoleA() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(REGISTERED_RESPONDENT_WITH_COLLEAGUES), // A
+                element(REGISTERED_RESPONDENT_2_WITH_COLLEAGUES) // B
+            ))
+            .build();
+
+        Set<String> emails = underTest.getRepresentedSolicitorEmails(caseData, CaseRole.SOLICITORA,
+            DIGITAL_SERVICE);
+
+        assertThat(emails).containsExactlyInAnyOrder(EMAIL_2, EMAIL_8);
+    }
+
+    @Test
+    void shouldGetRespondentSolicitorColleagueEmailsAsWellByRespondentSolicitorCaseRoleB() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(REGISTERED_RESPONDENT_WITH_COLLEAGUES), // A
+                element(REGISTERED_RESPONDENT_2_WITH_COLLEAGUES) // B
+            ))
+            .build();
+
+        Set<String> emails = underTest.getRepresentedSolicitorEmails(caseData, CaseRole.SOLICITORB,
+            DIGITAL_SERVICE);
+
+        assertThat(emails).containsExactlyInAnyOrder(EMAIL_11, EMAIL_10);
     }
 }
