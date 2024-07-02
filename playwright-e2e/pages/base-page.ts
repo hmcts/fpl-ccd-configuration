@@ -10,16 +10,14 @@ export class BasePage {
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
 
-
-
-  constructor(page: Page) {
+ constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue" });
     this.submit = page.getByRole('button', { name: 'Submit' });
   }
 
@@ -27,15 +25,15 @@ export class BasePage {
     await this.nextStep.selectOption(eventName);
     await this.goButton.dblclick();
     await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
-       await this.goButton.click();
+    if (await this.goButton.isVisible()) {
+      await this.goButton.click();
     }
   }
 
   async expectAllUploadsCompleted() {
     let locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
-        await expect(locs[i]).toBeDisabled();
+      await expect(locs[i]).toBeDisabled();
     }
   }
 
