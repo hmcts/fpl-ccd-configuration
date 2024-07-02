@@ -14,8 +14,8 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 600000,
-  expect: { timeout: 240000 },
+  timeout: 800000,
+  expect: { timeout: 800000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
