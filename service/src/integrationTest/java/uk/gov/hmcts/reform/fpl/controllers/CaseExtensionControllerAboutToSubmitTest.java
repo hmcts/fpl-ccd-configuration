@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList.INTERNATIONA
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -158,6 +159,8 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
         LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
 
         ChildExtensionEventData childExtensionEventData = ChildExtensionEventData.builder()
+                .extendTimelineHearingDate(LocalDate.of(2020, 1, 1))
+                .extendTimelineApprovedAtHearing(NO)
                 .extensionForAllChildren(NO.getValue())
                 .childSelectorForExtension(Selector.builder()
                         .selected(List.of(0, 1, 2))
@@ -191,12 +194,12 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
 
-        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo("2024-12-03");
+        assertThat(callbackResponse.getData().get("caseCompletionDate")).isEqualTo("2024-03-04");
 
         String caseSummaryExtensionDetails = join(lineSeparator(),
-                "Daisy French - 27 August 2024 - International Aspect",
+                "Daisy French - 26 February 2020 - International Aspect",
                 "Archie Turner - 4 March 2024 - International Aspect",
-                "Julie Jane - 3 December 2024 - International Aspect");
+                "Julie Jane - 26 February 2020 - International Aspect");
 
         assertThat(callbackResponse.getData().get("caseSummaryExtensionDetails"))
                 .isEqualTo(caseSummaryExtensionDetails);
@@ -205,9 +208,9 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(children1)
             .isEqualTo(List.of(
-                    getChildMap(id1.toString(), "2024-08-27", "Daisy", "French"),
+                    getChildMap(id1.toString(), "2020-02-26", "Daisy", "French"),
                     getChildMap(id2.toString(), "2024-03-04", "Archie", "Turner"),
-                    getChildMap(id3.toString(), "2024-12-03", "Julie", "Jane")
+                    getChildMap(id3.toString(), "2020-02-26", "Julie", "Jane")
                 )
             );
     }
@@ -250,6 +253,6 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
     private Element<Child> getChild(UUID id, LocalDate completionDate,
                                    String firstName,
                                    String lastName) {
-        return ElementUtils.element(id, getChild(completionDate, firstName, lastName));
+        return element(id, getChild(completionDate, firstName, lastName));
     }
 }
