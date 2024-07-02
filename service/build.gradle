@@ -132,7 +132,7 @@ task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verificatio
 
 project.ext {
   pacticipant = 'fpl_ccdConfiguration'
-  pacticipantVersion = getCheckedOutGitCommitHash()
+  pacticipantVersion = System.env.GIT_COMMIT != null ? System.env.GIT_COMMIT.substring(0,9) : ''
 }
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
@@ -156,10 +156,6 @@ task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test 
 runAndPublishConsumerPactTests.dependsOn runContractTests
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-def getCheckedOutGitCommitHash() {
-  'git rev-parse --verify --short HEAD'.execute().text.trim()
-}
 
 pact {
   broker {
