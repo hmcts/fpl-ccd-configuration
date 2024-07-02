@@ -38,6 +38,21 @@ public class CafcassCasesControllerTest extends AbstractTest {
     }
 
     @Test
+    void searchCasesInvalidFormat400() throws Exception {
+        MvcResult response = mockMvc
+            .perform(get("/cases")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(","))
+                .queryParam("startDate", "123")
+                .queryParam("endDate", "321"))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+    }
+
+    @Test
     void searchCasesEmptyParam400() throws Exception {
         MvcResult response = mockMvc
             .perform(get("/cases"))
