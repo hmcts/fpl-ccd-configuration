@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.cafcass;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
+@Slf4j
 @RestController
 @RequestMapping("/cases")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,6 +26,7 @@ public class CafcassCasesController {
     @GetMapping("")
     public ResponseEntity<Object> searchCases(@RequestParam(name = "startDate") String startDate,
                                               @RequestParam(name = "endDate") String endDate) {
+        log.info("searchCases request received");
         try {
             if (isEmpty(startDate)) {
                 throw new IllegalArgumentException("startDate empty");
@@ -32,6 +35,7 @@ public class CafcassCasesController {
                 throw new IllegalArgumentException("endDate empty");
             }
 
+            log.info("searchCases, " + startDate + ", " + endDate);
             LocalDate startLocalDateTime =
                 DateFormatterHelper.parseLocalDateFromStringUsingFormat(startDate, DATE_TIME_FORMAT_IN);
             LocalDate endLocalDateTime =
