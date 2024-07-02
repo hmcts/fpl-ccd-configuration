@@ -9,6 +9,8 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
+    private postCode: Locator;
+    private findAddress: Locator;
 
 
 
@@ -21,6 +23,8 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
+    this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
+    this.findAddress = page.getByRole('button', { name: 'Find address' });
   }
 
   async gotoNextStep(eventName: string) {
@@ -88,6 +92,13 @@ export class BasePage {
 
   async clickSubmit() {
     await this.submit.click();
+  }
+
+  async enterPostCode(postcode:string){
+      await this.postCode.fill(postcode);
+      await this.findAddress.click();
+      await this.page.getByLabel('Select an address').selectOption('1: Object');
+
   }
 }
 
