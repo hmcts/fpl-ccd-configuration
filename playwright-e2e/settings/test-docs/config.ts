@@ -15,6 +15,18 @@ const config: Config = {
     __dirname,
     "../test-docs/testPdf.pdf",
   ),
+  testPdfFile2: join(
+    __dirname,
+    "../test-docs/testPdf2.pdf",
+  ),
+  testPdfFile3: join(
+    __dirname,
+    "../test-docs/testPdf3.pdf",
+  ),
+  testPdfFile4: join(
+    __dirname,
+    "../test-docs/testPdf4.pdf",
+  ),
   testWordFile: join(
     __dirname,
     "../test-docs/testWordDoc.docx",
@@ -27,6 +39,9 @@ const config: Config = {
 
 export default config as {
   testPdfFile: string;
+  testPdfFile2: string;
+  testPdfFile3: string;
+  testPdfFile4: string;
   testWordFile: string;
   testTextFile: string;
 };

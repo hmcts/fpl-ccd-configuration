@@ -24,4 +24,12 @@ export class ApproveOrders extends BasePage {
         await this.checkYourAnsAndSubmit();
         await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
     }
+  
+      async approveNonUrgentDraftCMO() {
+       await this.yesApproveOrder.click();
+       await this.clickContinue();
+       await this.clickContinue();
+       await this.checkYourAnsAndSubmit();
+       await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
+    }
 }

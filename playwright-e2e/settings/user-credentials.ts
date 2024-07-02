@@ -14,26 +14,40 @@ export const newSwanseaLocalAuthorityUserOne = {
 export const systemUpdateUser = {
   email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
-
 };
+
 export const CTSCUser = {
   email: process.env.CTSC_USERNAME || 'fpl-ctsc-admin@justice.gov.uk',
   password: defaultPwd,
 };
+
 export const CTSCTeamLeadUser = {
   email: process.env.CTSC_TL_USERNAME || 'fpl-ctsc-team-leader@justice.gov.uk',
   password: defaultPwd,
 };
+
+export const HighCourtAdminUser = {
+  email: 'high-court-admin@justice.gov.uk',
+  password: defaultPwd,
+};
+
 export const judgeUser = {
   email: process.env.JUDGE_USERNAME || 'judiciary-only@mailnesia.com',
   password: defaultPwd,
 };
+
 export const judgeWalesUser = {
   email: 'judge-wales@ejudiciary.net',
   password: judgePwd,
 };
+
 export const secondJudgeWalesUser = {
   email: 'EMP267006@ejudiciary.net',
+  password: judgePwd,
+};
+
+export const judgeLondonUser = {
+  email: 'EMP264002@ejudiciary.net',
   password: judgePwd,
 };
 
