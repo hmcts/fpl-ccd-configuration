@@ -207,5 +207,4 @@ public class TestingSupportController {
     public void assignSystemUserRole() {
         roleAssignmentService.assignSystemUserRole();
     }
-
 }

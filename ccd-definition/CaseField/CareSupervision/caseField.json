@@ -2276,7 +2276,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "isC2Confidential",
-    "Label": "Is this an application where notice is not to be given to any other parties?",
+    "Label": "Is this a confidential application? If you select yes, only yourself and HMCTS will be able to view this application.",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2582,7 +2582,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c1ApplicationDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1ApplicationDocument",
+    "FieldTypeParameter": "C1ApplicationDocumentConfidential",
     "Label": "C1 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2592,7 +2592,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c1ApplicationDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C1ApplicationDocument",
+    "FieldTypeParameter": "C1ApplicationDocumentConfidential",
     "Label": "C1 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2622,7 +2622,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationDocListLA",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2ApplicationDocument",
+    "FieldTypeParameter": "C2ApplicationDocumentConfidential",
     "Label": "C2 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -2632,7 +2632,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2ApplicationDocListCTSC",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2ApplicationDocument",
+    "FieldTypeParameter": "C2ApplicationDocumentConfidential",
     "Label": "C2 Application Document",
     "SecurityClassification": "Public",
     "Searchable": "N"

@@ -279,6 +279,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .build());
 
         CaseData initialCaseData = CaseData.builder()
+            .id(1234123412341234L)
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(RE_LIST_NOW)
             .vacateHearingDateList(dynamicList(
@@ -298,6 +299,12 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingOrdersBundlesDrafts(newArrayList(hearingOrdersBundleElement))
             .build();
 
+
+        Document document = document();
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
 
         HearingBooking expectedReListedHearing = futureHearingToBeVacated.getValue().toBuilder()
@@ -313,6 +320,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .status(HearingStatus.VACATED_AND_RE_LISTED)
                 .cancellationReason(vacatedReason.getReason())
                 .vacatedDate(vacatedHearingDate)
+                .noticeOfHearingVacated(DocumentReference.buildFromDocument(document))
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
@@ -410,6 +418,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .build();
 
         CaseData initialCaseData = CaseData.builder()
+            .id(1234123412341234L)
             .selectedHearingId(randomUUID())
             .hearingOption(VACATE_HEARING)
             .hearingReListOption(adjournmentOption)
@@ -419,6 +428,11 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .vacatedHearingDate(vacatedHearingDate)
             .build();
 
+        Document document = document();
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
+            .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
+        given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
+
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
 
         Element<HearingBooking> expectedVacatedHearing = element(
@@ -427,11 +441,13 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
                 .status(adjournmentOption == RE_LIST_LATER ? VACATED_TO_BE_RE_LISTED : VACATED)
                 .cancellationReason(vacatedReason.getReason())
                 .vacatedDate(vacatedHearingDate)
+                .noticeOfHearingVacated(DocumentReference.buildFromDocument(document))
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).isNull();
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId()).isNull();
+        assertThat(updatedCaseData.getCancelledHearingId()).isEqualTo(expectedVacatedHearing.getId());
     }
 
 }
