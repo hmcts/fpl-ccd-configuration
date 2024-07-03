@@ -23,11 +23,15 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
+    public static final String URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN =
+        "49b46d30-f719-4351-b634-9a75e700d9cb";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
         "e6e899b1-ce44-4626-bb44-b9532af3983f";
+    public static final String URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
+        "0d2657a7-7c3d-4a0a-ad5f-c2b88abc788b";
     public static final String CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE =
         "90c5f4b3-738b-4c8d-b433-c8c90095f815";
     public static final String CMO_REJECTED_BY_JUDGE_TEMPLATE = "acb99554-4806-41f9-a95b-df7ee9b9b878";
@@ -62,6 +66,7 @@ public final class NotifyTemplates {
     public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
     public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "ad724f72-eae8-4774-b12a-0c3c658b7095";
+    public static final String JUDGE_APPROVES_URGENT_DRAFT_ORDERS = "7db0eb43-0320-47ee-9c03-25568ebf998c";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String DOCUMENT_UPLOADED_NOTIFICATION_TEMPLATE = "47b6ec09-da8c-452d-9ec7-bc3153890959";
@@ -90,4 +95,5 @@ public final class NotifyTemplates {
     public static final String COURT_ADMIN_LISTING_TEMPLATE = "0de3b451-b21a-43da-8faa-3371fe67ecd2";
     public static final String COURT_ADMIN_UDO_LISTING_TEMPLATE = "bae4b7a8-44a2-4337-a720-04cc46607322";
     public static final String CHASE_OUTSTANDING_ORDER_LA_TEMPLATE = "a8b9812a-bc54-43f6-84e5-c3f8195320fa";
+    public static final String VACATE_HEARING = "7c70f9b8-013e-43eb-8bf3-9981e0606026";
 }

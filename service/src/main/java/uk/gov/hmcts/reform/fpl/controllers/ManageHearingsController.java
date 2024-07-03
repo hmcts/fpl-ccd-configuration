@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.events.judicial.HandleHearingModificationRolesEvent;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -67,7 +67,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
-@Api
 @RestController
 @RequestMapping("/callback/manage-hearings")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -75,9 +74,9 @@ public class ManageHearingsController extends CallbackController {
 
     private static final String FIRST_HEARING_FLAG = "firstHearingFlag";
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
+    private static final String CANCELLED_HEARING_ID = "cancelledHearingId";
     private static final String PRE_ATTENDANCE = "preHearingAttendanceDetails";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
-    private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HAS_SESSION_KEY = "hasSession";
     private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
     private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
@@ -350,6 +349,8 @@ public class ManageHearingsController extends CallbackController {
         final CaseData caseData = getCaseData(caseDetails);
         final CaseDetailsMap data = caseDetailsMap(caseDetails);
 
+        data.remove(CANCELLED_HEARING_ID);
+
         hearingsService.findAndSetPreviousVenueId(caseData);
 
         if (EDIT_PAST_HEARING == caseData.getHearingOption()) {
@@ -411,6 +412,10 @@ public class ManageHearingsController extends CallbackController {
                 hearingsService.vacateHearing(caseData, vacatedHearingId);
                 data.remove(SELECTED_HEARING_ID);
             }
+
+            hearingsService.buildNoticeOfHearingVacatedIfYes(caseData,
+                hearingsService.getHearingBooking(vacatedHearingId, caseData.getCancelledHearingDetails()));
+            data.put(CANCELLED_HEARING_ID, vacatedHearingId);
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
             final UUID cancelledHearingId = hearingsService.getSelectedHearingId(caseData);
 
@@ -431,7 +436,6 @@ public class ManageHearingsController extends CallbackController {
         }
 
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
-        data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
         data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
         data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
@@ -468,6 +472,14 @@ public class ManageHearingsController extends CallbackController {
                     }
                 });
         }
+
+        hearingsService.findHearingBooking(caseData.getCancelledHearingId(), caseData.getCancelledHearingDetails())
+            .ifPresent(cancelledHearing -> {
+                if (!isEmpty(cancelledHearing.getCancellationReason())) {
+                    publishEvent(new SendNoticeOfHearingVacated(caseData, cancelledHearing,
+                        isNotEmpty(caseData.getSelectedHearingId())));
+                }
+            });
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {

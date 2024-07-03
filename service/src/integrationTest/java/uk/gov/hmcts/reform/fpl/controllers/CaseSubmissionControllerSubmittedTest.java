@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -102,6 +103,7 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -425,6 +427,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                     .build())
                 .build())
             .caseLocalAuthority(LOCAL_AUTHORITY_2_CODE)
+            .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .id(LOCAL_AUTHORITY_2_CODE)
+                .designated(YES.getValue())
+                .email(LOCAL_AUTHORITY_2_INBOX)
+                .build()))
             .id(CASE_ID)
             .build();
 
@@ -721,7 +728,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 "caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME,
                 "sendToCtsc", enableCtsc.getValue(),
                 "dateSubmitted", LocalDate.of(2020, 1, 1),
-                "representativeType", RepresentativeType.LOCAL_AUTHORITY
+                "representativeType", RepresentativeType.LOCAL_AUTHORITY,
+                "localAuthorities", wrapElementsWithUUIDs(LocalAuthority.builder()
+                    .id(LOCAL_AUTHORITY_1_CODE)
+                    .name(LOCAL_AUTHORITY_1_NAME)
+                    .designated(YES.getValue())
+                    .email(LOCAL_AUTHORITY_1_INBOX)
+                    .build())
             ))).build();
     }
 
@@ -793,10 +806,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private <T extends SharedNotifyTemplate> T getIncompleteParameters(T template) {
         setSharedTemplateParameters(template);
 
-        template.setTimeFramePresent(NO.getValue());
-        template.setTimeFrameValue("");
+        template.setTimeFramePresent(YES.getValue());
+        template.setTimeFrameValue("other");
         template.setUrgentHearing(NO.getValue());
-        template.setNonUrgentHearing(NO.getValue());
+        template.setNonUrgentHearing(YES.getValue());
         template.setFirstRespondentName("");
 
         return template;

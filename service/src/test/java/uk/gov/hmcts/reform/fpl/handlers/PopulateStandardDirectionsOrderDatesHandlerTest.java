@@ -44,8 +44,8 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
     private static final List<Element<HearingBooking>> CASE_MANAGEMENT_HEARING_DETAILS = wrapElements(
         HearingBooking.builder().type(HearingType.CASE_MANAGEMENT).build()
     );
-    private static final List<Element<HearingBooking>> OTHER_HEARING_DETAILS = wrapElements(
-        HearingBooking.builder().type(HearingType.OTHER).build()
+    private static final List<Element<HearingBooking>> PLACEMENT_HEARING_DETAILS = wrapElements(
+        HearingBooking.builder().type(HearingType.PLACEMENT_HEARING).build()
     );
 
     private static final List<Element<Direction>> STANDARD_DIRECTIONS = wrapElements(
@@ -99,7 +99,7 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
 
     @Test
     void shouldNotTriggerEventWhenNoHearingsAreCaseManagement() {
-        callbackRequest.getCaseDetails().getData().put("hearingDetails", OTHER_HEARING_DETAILS);
+        callbackRequest.getCaseDetails().getData().put("hearingDetails", PLACEMENT_HEARING_DETAILS);
         handler.populateDates(new PopulateStandardDirectionsOrderDatesEvent(callbackRequest));
         verifyNoInteractions(coreCaseDataService);
     }

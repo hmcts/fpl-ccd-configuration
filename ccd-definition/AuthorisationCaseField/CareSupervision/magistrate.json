@@ -849,41 +849,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents_socialWorkChronology_document",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents_socialWorkStatement_document",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents_socialWorkAssessment_document",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documents_socialWorkOther",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
@@ -1732,13 +1697,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfActingOrIssueListCTSC",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"
   },
@@ -2721,5 +2679,12 @@
     "CaseFieldID": "thresholdListCTSC",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "orderReviewUrgency",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRUD"
   }
 ]

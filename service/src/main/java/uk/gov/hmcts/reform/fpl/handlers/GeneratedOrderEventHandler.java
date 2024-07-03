@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.RecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -69,6 +72,7 @@ public class GeneratedOrderEventHandler {
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final UserService userService;
     private final WorkAllocationTaskService workAllocationTaskService;
+    private final JudicialService judicialService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -137,11 +141,21 @@ public class GeneratedOrderEventHandler {
         }
     }
 
+    @Async
     @EventListener
     public void createWorkAllocationTask(GeneratedOrderEvent event) {
         if (userService.isJudiciaryUser()) {
             CaseData caseData = event.getCaseData();
             workAllocationTaskService.createWorkAllocationTask(caseData, WorkAllocationTaskType.ORDER_UPLOADED);
+        }
+    }
+
+    @Async
+    @EventListener
+    public void cleanupRoles(GeneratedOrderEvent event) {
+        // If the case is now closed, we should cleanup any AM roles
+        if (State.CLOSED.equals(event.getCaseData().getState())) {
+            judicialService.deleteAllRolesOnCase(event.getCaseData().getId());
         }
     }
 

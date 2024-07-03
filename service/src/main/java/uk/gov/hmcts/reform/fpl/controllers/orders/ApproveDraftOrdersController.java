@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +28,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
-@Api
 @RestController
 @RequestMapping("/callback/approve-draft-orders")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -45,6 +43,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "orderReviewUrgency", "draftOrdersApproved");
 
         caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
@@ -75,6 +74,14 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+
+        // add temp variable if at least one draft order/cmo has been approved
+        if (caseData.getReviewDraftOrdersData().hasADraftBeenApproved()
+            || caseData.getReviewCMODecision().hasBeenApproved()) {
+            data.put("draftOrdersApproved", "Yes");
+        } else {
+            data.put("draftOrdersApproved", "No");
+        }
 
         return respond(caseDetails, errors);
     }

@@ -2,28 +2,47 @@ import { type Page, type Locator, expect } from "@playwright/test";
 
 export class BasePage {
   readonly nextStep: Locator;
-  readonly go: Locator;
+  readonly goButton: Locator;
   readonly page: Page;
   readonly continueButton: Locator;
   readonly signOut: Locator;
   readonly checkYourAnswersHeader: Locator;
+  readonly saveAndContinue: Locator;
+  readonly submit: Locator;
+  readonly rateLimit: Locator;
+
 
   constructor(page: Page) {
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
-    this.go = page.getByRole("button", { name: "Go" });
+    this.goButton = page.getByRole('button', { name: 'Go', exact: true });
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
+    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.submit = page.getByRole('button', { name: 'Submit' });
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
 
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
-    await this.go.click();
+    await this.goButton.dblclick();
+    await this.page.waitForTimeout(20000);
+    if (await  this.goButton.isVisible()) {
+       await this.goButton.click();
+    }
   }
 
-  async checkYourAnsAndSubmit(submitLabel: string = "Save and continue") {
-    await this.page.getByRole("button", { name: submitLabel }).click();
+  async expectAllUploadsCompleted() {
+    let locs = await this.page.getByText('Cancel upload').all();
+    for (let i = 0; i < locs.length; i++) {
+        await expect(locs[i]).toBeDisabled();
+    }
+  }
+
+  async checkYourAnsAndSubmit(){
+    await expect(this.checkYourAnswersHeader).toBeVisible();
+    await this.saveAndContinue.click();
   }
 
   async tabNavigation(tabName: string) {
@@ -35,7 +54,7 @@ export class BasePage {
   }
 
   async waitForAllUploadsToBeCompleted() {
-    let locs = await this.page.getByText('Cancel upload').all();
+    const locs = await this.page.getByText('Cancel upload').all();
     for (let i = 0; i < locs.length; i++) {
       await expect(locs[i]).toBeDisabled();
     }
@@ -51,7 +70,7 @@ export class BasePage {
     expect(await this.reloadAndCheckForText(userName, 10000, 3)).toBeTruthy();
   }
 
-  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<Boolean> {
+  async reloadAndCheckForText(text: string, timeout?: number, maxAttempts?: number): Promise<boolean> {
     // reload the page, wait 5s, see if it's there
     for (let attempt = 0; attempt < (maxAttempts ?? 12); attempt++) {
       await this.page.reload();
@@ -67,6 +86,8 @@ export class BasePage {
   async clickSignOut() {
     await this.signOut.click();
   }
+
+  async clickSubmit() {
+    await this.submit.click();
+  }
 }
-
-

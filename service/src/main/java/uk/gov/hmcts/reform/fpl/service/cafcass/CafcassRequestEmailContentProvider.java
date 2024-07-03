@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.config.cafcass.CafcassEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.ChangeOfAddressData;
+import uk.gov.hmcts.reform.fpl.model.notify.hearing.HearingVacatedTemplate;
 
 import java.time.format.FormatStyle;
 import java.util.function.BiFunction;
@@ -269,6 +270,17 @@ public enum CafcassRequestEmailContentProvider {
             "Child name:", cafcassData.getPlacementChildName());
     }
 
+    private static String getVacateOfHearingMessage(CaseData caseData, CafcassData cafcassData) {
+        HearingVacatedTemplate hearingVacatedTemplate = (HearingVacatedTemplate) cafcassData;
+
+        return String.join(" ",
+            String.join(", ",
+                hearingVacatedTemplate.getHearingDateFormatted(), hearingVacatedTemplate.getHearingVenue(),
+                hearingVacatedTemplate.getHearingTime()),
+            System.lineSeparator(),
+            "This hearing has been vacated on", hearingVacatedTemplate.getVacatedDate(), "due to",
+            hearingVacatedTemplate.getVacatedReason(), "and will", hearingVacatedTemplate.getRelistAction());
+    }
 
     private static String getSubject() {
         return "Court Ref. %s.- %s";

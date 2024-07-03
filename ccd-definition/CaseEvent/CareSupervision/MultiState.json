@@ -27,8 +27,7 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "Publish": "Y"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -794,7 +793,8 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/submitted",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -914,6 +914,7 @@
     "PostConditionState": "*",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/record-final-decisions/submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
@@ -1096,6 +1097,7 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted",
+    "Publish":  "Y"
   }
 ]

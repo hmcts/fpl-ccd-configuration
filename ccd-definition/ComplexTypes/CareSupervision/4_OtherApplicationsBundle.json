@@ -89,26 +89,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C1SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C1SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
     "ListElementCode": "id",
     "FieldType": "Text",
     "ElementLabel": " ",

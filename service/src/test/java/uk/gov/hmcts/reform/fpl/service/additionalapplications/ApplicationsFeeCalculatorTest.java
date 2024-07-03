@@ -223,6 +223,24 @@ class ApplicationsFeeCalculatorTest {
     }
 
     @Test
+    void shouldCalculateFeeForAdditionalApplicationsBundleWithConfidentialC2Document() {
+        C2DocumentBundle c2Document = buildC2Document();
+
+        AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundleConfidential(c2Document)
+            .build();
+
+        when(feeService.getFeesDataForAdditionalApplications(c2OrderFeeTypes))
+            .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+
+        FeesData actualFeesData = feeCalculator.getFeeDataForAdditionalApplications(bundle);
+
+        verify(feeService).getFeesDataForAdditionalApplications(c2OrderFeeTypes);
+        assertThat(actualFeesData).isEqualTo(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+    }
+
+
+    @Test
     void shouldCalculateFeeForAdditionalApplicationsBundleWithC2DocumentAndOtherApplications() {
         C2DocumentBundle c2Document = buildC2Document();
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle();

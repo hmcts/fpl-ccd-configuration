@@ -11,5 +11,18 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "Publish": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "create-work-allocation-task",
+    "CaseFieldID": "court",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "Publish": "Y",
+    "FieldShowCondition": "lastCreatedWATask = \"DO_NOT_SHOW\""
   }
 ]

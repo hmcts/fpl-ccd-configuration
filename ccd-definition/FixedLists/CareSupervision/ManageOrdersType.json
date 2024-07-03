@@ -150,7 +150,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
     "ListElementCode": "C36_VARIATION_OR_EXTENSION_OF_SUPERVISION_ORDERS",
-    "ListElement": "Variation or extension of supervision orders (C36)",
+    "ListElement": "Variation or extension of education supervision orders (C36)",
     "DisplayOrder": 22
   },
   {
@@ -159,5 +159,12 @@
     "ListElementCode": "C63A_DECLARATION_OF_PARENTAGE",
     "ListElement": "Declaration of parentage (C63A)",
     "DisplayOrder": 23
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "TRANSPARENCY_ORDER",
+    "ListElement": "Transparency Order",
+    "DisplayOrder": 24
   }
 ]
