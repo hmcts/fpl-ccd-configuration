@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "CaseEventID": "enterInternationalElement",
+    "CaseFieldID": "internationalElement",
+    "ListElementCode": "whichCountriesInvolved",
+    "EventElementLabel": "Which other countries are involved?",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "CaseEventID": "enterInternationalElement",
+    "CaseFieldID": "internationalElement",
+    "ListElementCode": "outsideHagueConvention",
+    "EventElementLabel": "Are any of these countries outside of the Hague Convention?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "CaseEventID": "enterInternationalElement",
+    "CaseFieldID": "internationalElement",
+    "ListElementCode": "importantDetails",
+    "EventElementLabel": "Provide all important details",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  }
+]
