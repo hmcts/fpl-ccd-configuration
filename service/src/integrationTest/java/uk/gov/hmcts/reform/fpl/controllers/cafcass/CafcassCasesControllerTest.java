@@ -63,6 +63,28 @@ public class CafcassCasesControllerTest extends AbstractTest {
             .andReturn();
 
         assertEquals(response.getResponse().getStatus(), 400);
+
+        response = mockMvc
+            .perform(get("/cases")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(","))
+                .queryParam("startDate", "2023-03-28T12:32:54.541"))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+
+        response = mockMvc
+            .perform(get("/cases")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(","))
+                .queryParam("endDate", "2024-03-27T12:32:54.542"))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
     }
 
     @Test
@@ -161,7 +183,7 @@ public class CafcassCasesControllerTest extends AbstractTest {
             "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, fileBytes);
 
         response = mockMvc
-            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(" "))
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
                 .file(file)
                 .param("typeOfDocument", "type Of Document")
                 .header("authorization", USER_AUTH_TOKEN)
