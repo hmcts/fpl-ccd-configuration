@@ -5,7 +5,6 @@ import config from "../settings/test-docs/config";
 export class Orders extends BasePage {
     orderPage: Page;
     private EPOEndDate: Locator;
-    private createOrder: Locator;
     private orderTypeRadio: Locator;
     private orderApproved: Locator;
     private orderApplication: Locator;
@@ -18,10 +17,12 @@ export class Orders extends BasePage {
     private isExclusion: Locator;
     private excluded: Locator;
     private powerOfExclusionStart: Locator;
+    orderToAmend: Locator;
+    uploadAmendOrder: Locator;
+
 
     public constructor(page: Page) {
         super(page);
-        this.createOrder = page.getByRole('radio', {name: 'Create an order'});
         this.orderTypeRadio = page.getByRole('group', {name: 'Select order'});
         this.orderApproved = page.getByRole('group', {name: 'Was the order approved at a'});
         this.orderApplication = page.getByRole('group', {name: 'Is there an application for'});
@@ -36,11 +37,12 @@ export class Orders extends BasePage {
         this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
         this.excluded =page.getByLabel('Who\'s excluded');
         this.powerOfExclusionStart =page.getByRole('group', { name: 'Date power of exclusion starts' });
-
+this.orderToAmend =page.getByLabel('Select order to amend');
+this.uploadAmendOrder =page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
     }
 
-    async createNewOrder() {
-        await this.createOrder.check();
+    async selectOrderOperation(toDo:string) {
+        await this.page.getByRole('radio', {name: `${toDo}`}).click();
     }
 
     async selectOrder(orderType: string) {
@@ -87,8 +89,8 @@ export class Orders extends BasePage {
             // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Year').click();
             // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Year').fill('2024');
            // await this.page.getByRole('textbox', { name: 'Upload power of arrest, if' }).click();
-            await this.page.getByRole('textbox', { name: 'Upload power of arrest, if' }).setInputFiles(config.testPdfFile);
-await this.waitForAllUploadsToBeCompleted();
+//             await this.page.getByRole('textbox', { name: 'Upload power of arrest, if' }).setInputFiles(config.testPdfFile);
+// await this.waitForAllUploadsToBeCompleted();
         }
 
         await this.page.getByRole('group', {name: 'Include: "Any person who can produce the children to the applicant must do so"'}).getByLabel('Yes').click();
@@ -99,48 +101,6 @@ await this.waitForAllUploadsToBeCompleted();
         await this.EPOEndDate.getByRole('textbox', {name: 'Year'}).fill('2013');
         await this.EPOEndDate.getByRole('spinbutton', {name: 'Hour'}).fill('10');
         await this.finalOrder.getByLabel('Yes').click();
-
-
-        // await page.getByRole('group', { name: 'Include: "Any person who can' }).getByLabel('Yes').check();
-        // await page.getByLabel('Add description of children (').dblclick();
-        // await page.getByLabel('Add description of children (').fill('tesy');
-        // await page.getByLabel('Add further directions, if').click();
-        // await page.getByLabel('Add further directions, if').click();
-        // await page.getByLabel('Add further directions, if').fill('test');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Day').click({
-        //     clickCount: 3
-        // });
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Day').fill('12');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Month').click();
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Month').fill('3');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').fill('20');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').click();
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').fill('2024');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').press('Tab');
-        // await page.getByRole('spinbutton', { name: 'Minute' }).press('Shift+Tab');
-        // await page.getByRole('spinbutton', { name: 'Hour' }).fill('10');
-        // await page.getByRole('group', { name: 'Is this a final order?' }).getByLabel('Yes').check();
-        // await page.getByRole('button', { name: 'Continue' }).click();
-        // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Month').click();
-        // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Month').fill('3');
-        // await page.getByText('Manage ordersEPO order by').click();
-        // await page.getByRole('button', { name: 'Continue' }).click();
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').click({
-        //     clickCount: 3
-        // });
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').fill('');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Month').fill('');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Month').click();
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Month').fill('10');
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').click();
-        // await page.getByRole('group', { name: 'When does it end?' }).getByLabel('Year').fill('2013');
-        // await page.getByRole('button', { name: 'Continue' }).click();
-        // await page.goto('https://manage-case.aat.platform.hmcts.net/cases/case-details/1719848245113172/trigger/manageOrders/manageOrdersreview');
-// await expect(page1.locator('#viewerContainer')).toContainText('An Emergency Protection Order is granted to the applicant, Swansea City Council.');
-        // await expect(page1.locator('#viewerContainer')).toContainText('The Court authorises the applicant to prevent the children being removed from 5 Pilgrims');
-        // await expect(page1.locator('#viewerContainer')).toContainText('The Court directs that father be excluded from 5 Pilgrims Rise, Barnet, EN4 9QP, United');
-
-
     }
 
     async openOrderDoc() {
@@ -148,5 +108,10 @@ await this.waitForAllUploadsToBeCompleted();
         this.orderPreviewLink.click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
+    }
+
+async uploadAmendedOrder(){
+    await this.uploadAmendOrder.setInputFiles(config.testPdfFile);
+    await this.waitForAllUploadsToBeCompleted();
     }
 }
