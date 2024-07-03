@@ -4,24 +4,23 @@ import config from "../settings/test-docs/config";
 
 export class Orders extends BasePage {
     orderPage: Page;
-    private EPOEndDate: Locator;
-    private orderTypeRadio: Locator;
-    private orderApproved: Locator;
-    private orderApplication: Locator;
-    private approvedHearing: Locator;
-    private issuingJudge: Locator;
-    private childInvolved: Locator;
-    private EPOrderType: Locator;
-    private finalOrder: Locator;
-    private orderPreviewLink: Locator;
-    private isExclusion: Locator;
-    private excluded: Locator;
-    private powerOfExclusionStart: Locator;
-    orderToAmend: Locator;
-    uploadAmendOrder: Locator;
+    readonly orderToAmend: Locator;
+    readonly uploadAmendOrder: Locator;
+    readonly EPOEndDate: Locator;
+    readonly orderTypeRadio: Locator;
+    readonly orderApproved: Locator;
+    readonly orderApplication: Locator;
+    readonly approvedHearing: Locator;
+    readonly issuingJudge: Locator;
+    readonly childInvolved: Locator;
+    readonly EPOrderType: Locator;
+    readonly finalOrder: Locator;
+    readonly orderPreviewLink: Locator;
+    readonly isExclusion: Locator;
+    readonly excluded: Locator;
+    readonly powerOfExclusionStart: Locator;
 
-
-    public constructor(page: Page) {
+    constructor(page: Page) {
         super(page);
         this.orderTypeRadio = page.getByRole('group', {name: 'Select order'});
         this.orderApproved = page.getByRole('group', {name: 'Was the order approved at a'});
@@ -34,14 +33,14 @@ export class Orders extends BasePage {
         this.finalOrder = page.getByRole('group', {name: 'Is this a final order?'});
         this.orderPreviewLink = page.getByRole('link', {name: 'Preview order.pdf'});
         this.orderPage = page;
-        this.isExclusion = page.getByRole('group', { name: 'Is there an exclusion' });
-        this.excluded =page.getByLabel('Who\'s excluded');
-        this.powerOfExclusionStart =page.getByRole('group', { name: 'Date power of exclusion starts' });
-this.orderToAmend =page.getByLabel('Select order to amend');
-this.uploadAmendOrder =page.getByRole('textbox', { name: 'Upload the amended order. It will then be dated and stamped as amended.' });
+        this.isExclusion = page.getByRole('group', {name: 'Is there an exclusion'});
+        this.excluded = page.getByLabel('Who\'s excluded');
+        this.powerOfExclusionStart = page.getByRole('group', {name: 'Date power of exclusion starts'});
+        this.orderToAmend = page.getByLabel('Select order to amend');
+        this.uploadAmendOrder = page.getByRole('textbox', {name: 'Upload the amended order. It will then be dated and stamped as amended.'});
     }
 
-    async selectOrderOperation(toDo:string) {
+    async selectOrderOperation(toDo: string) {
         await this.page.getByRole('radio', {name: `${toDo}`}).click();
     }
 
@@ -64,35 +63,17 @@ this.uploadAmendOrder =page.getByRole('textbox', { name: 'Upload the amended ord
         await this.page.getByRole('group', {name: 'Child 4 (Optional)'}).getByLabel('Yes').check();
     }
 
-    async addEPOOrderDetails(EPOOrderType:string) {
-
-        //await this.EPOrderType.getByLabel('Remove to accommodation').click();
+    async addEPOOrderDetails(EPOOrderType: string) {
         await this.EPOrderType.getByLabel(`${EPOOrderType}`).click();
-        if(EPOOrderType == 'Prevent removal from an address'){
-
-            // await page.getByRole('textbox', { name: 'Enter a UK postcode' }).click();
-            // await page.getByRole('textbox', { name: 'Enter a UK postcode' }).fill('EN4');
-            // await page.getByRole('button', { name: 'Find address' }).click();
-            // await page.getByLabel('Select an address').selectOption('1: Object');
+        if (EPOOrderType == 'Prevent removal from an address') {
             await this.enterPostCode('EN4');
             await this.isExclusion.getByLabel('Yes').check();
-           // await page.getByRole('group', { name: 'Is there an exclusion' }).getByLabel('Yes').check();
-
             await this.excluded.fill('father');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
             await this.powerOfExclusionStart.getByLabel('Month').fill('3');
             await this.powerOfExclusionStart.getByLabel('Year').fill('2024');
             await this.powerOfExclusionStart.getByLabel('Day').fill('12');
-
-            // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Month').fill('3');
-            // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Year').fill('02');
-            // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Year').click();
-            // await page.getByRole('group', { name: 'Date power of exclusion starts' }).getByLabel('Year').fill('2024');
-           // await this.page.getByRole('textbox', { name: 'Upload power of arrest, if' }).click();
-//             await this.page.getByRole('textbox', { name: 'Upload power of arrest, if' }).setInputFiles(config.testPdfFile);
-// await this.waitForAllUploadsToBeCompleted();
         }
-
         await this.page.getByRole('group', {name: 'Include: "Any person who can produce the children to the applicant must do so"'}).getByLabel('Yes').click();
         await this.page.getByLabel('Add description of children (').fill('Children description');
         await this.page.getByLabel('Add further directions, if').fill('Furhter direction\nto the applicant \nto take care of children');
@@ -103,15 +84,15 @@ this.uploadAmendOrder =page.getByRole('textbox', { name: 'Upload the amended ord
         await this.finalOrder.getByLabel('Yes').click();
     }
 
-    async openOrderDoc() {
+    async openOrderDoc(docLink: string) {
         const newPagePromise = this.page.context().waitForEvent('page');
-        this.orderPreviewLink.click();
+        await this.page.getByRole('link', {name: `${docLink}`}).click();
         this.orderPage = await newPagePromise;
         await this.orderPage.waitForLoadState();
     }
 
-async uploadAmendedOrder(){
-    await this.uploadAmendOrder.setInputFiles(config.testPdfFile);
-    await this.waitForAllUploadsToBeCompleted();
+    async uploadAmendedOrder() {
+        await this.uploadAmendOrder.setInputFiles(config.testPdfFile);
+        await this.waitForAllUploadsToBeCompleted();
     }
 }
