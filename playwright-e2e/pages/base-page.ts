@@ -9,8 +9,15 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
+<<<<<<< DFPL-2191
 
  constructor(page: Page) {
+=======
+  readonly rateLimit: Locator;
+
+
+  constructor(page: Page) {
+>>>>>>> master
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
@@ -19,6 +26,7 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue" });
     this.submit = page.getByRole('button', { name: 'Submit' });
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
 
   async gotoNextStep(eventName: string) {
@@ -88,4 +96,3 @@ export class BasePage {
     await this.submit.click();
   }
 }
-
