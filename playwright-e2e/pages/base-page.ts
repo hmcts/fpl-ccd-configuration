@@ -9,15 +9,10 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
-<<<<<<< DFPL-2191
-
- constructor(page: Page) {
-=======
   readonly rateLimit: Locator;
 
 
   constructor(page: Page) {
->>>>>>> master
     this.page = page;
     this.nextStep = page.getByLabel("Next step");
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
