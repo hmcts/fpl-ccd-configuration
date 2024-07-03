@@ -35,12 +35,12 @@ public class CafcassCasesController {
                                               @RequestParam(name = "endDate") String endDate) {
         log.info("searchCases request received");
         try {
-            if (isEmpty(startDate)) {
-                throw new IllegalArgumentException("startDate empty");
-            }
-            if (isEmpty(endDate)) {
-                throw new IllegalArgumentException("endDate empty");
-            }
+//            if (isEmpty(startDate)) {
+//                throw new IllegalArgumentException("startDate empty");
+//            }
+//            if (isEmpty(endDate)) {
+//                throw new IllegalArgumentException("endDate empty");
+//            }
 
             log.info("searchCases, " + startDate + ", " + endDate);
             LocalDate startLocalDateTime =
@@ -66,9 +66,9 @@ public class CafcassCasesController {
     @GetMapping("documents/{documentId}/binary")
     public ResponseEntity<Object> getDocumentBinary(@PathVariable String documentId) {
         try {
-            if (isEmpty(documentId)) {
-                throw new IllegalArgumentException("documentId empty");
-            }
+//            if (isEmpty(documentId)) {
+//                throw new IllegalArgumentException("documentId empty");
+//            }
 
             return ResponseEntity.ok(String.format("getDocumentBinary - document id: [%s]",
                 UUID.fromString(documentId)));
@@ -85,15 +85,15 @@ public class CafcassCasesController {
                                                  @RequestParam(value = "file") MultipartFile file,
                                                  @RequestParam(value = "typeOfDocument") String typeOfDocument) {
         try {
-            if (isEmpty(caseId)) {
-                throw new IllegalArgumentException("caseId empty");
-            }
-            if (isEmpty(file)) {
-                throw new IllegalArgumentException("file empty");
-            }
-            if (isEmpty(typeOfDocument)) {
-                throw new IllegalArgumentException("typeOfDocument empty");
-            }
+//            if (isEmpty(caseId)) {
+//                throw new IllegalArgumentException("caseId empty");
+//            }
+//            if (isEmpty(file)) {
+//                throw new IllegalArgumentException("file empty");
+//            }
+//            if (isEmpty(typeOfDocument)) {
+//                throw new IllegalArgumentException("typeOfDocument empty");
+//            }
 
             return ResponseEntity.ok(String.format(
                 "uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]",
@@ -110,9 +110,9 @@ public class CafcassCasesController {
     public ResponseEntity<Object> uploadGuardians(@PathVariable String caseId,
                                                   @RequestBody List<Map<String, Object>> guardians) {
         try {
-            if (isEmpty(caseId)) {
-                throw new IllegalArgumentException("caseId empty");
-            }
+//            if (isEmpty(caseId)) {
+//                throw new IllegalArgumentException("caseId empty");
+//            }
             if (isEmpty(guardians)) {
                 throw new IllegalArgumentException("list empty");
             }
