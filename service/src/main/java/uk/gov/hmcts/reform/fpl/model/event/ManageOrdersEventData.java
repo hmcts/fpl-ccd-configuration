@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.PlacedUnderOrder;
 import uk.gov.hmcts.reform.fpl.enums.ReasonForSecureAccommodation;
 import uk.gov.hmcts.reform.fpl.enums.RelationshipWithChild;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.TransparencyOrderExpirationType;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateOption;
@@ -150,6 +151,13 @@ public class ManageOrdersEventData {
     String manageOrdersPreamblesText;
     String manageOrdersParagraphs;
     String manageOrdersCostOrders;
+
+    TransparencyOrderExpirationType manageOrdersTransparencyOrderExpiration;
+    LocalDate manageOrdersTransparencyOrderEndDate;
+    String manageOrdersTransparencyOrderPublishInformationDetails;
+    String manageOrdersTransparencyOrderPublishIdentityDetails;
+    String manageOrdersTransparencyOrderPublishDocumentsDetails;
+    LocalDate manageOrdersTransparencyOrderPermissionToReportEffectiveDate;
 
     @JsonIgnore
     public List<ChildArrangementsOrderType> getManageOrdersChildArrangementsOrderTypes() {

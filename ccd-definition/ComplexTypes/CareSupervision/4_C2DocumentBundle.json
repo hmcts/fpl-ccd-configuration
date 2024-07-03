@@ -131,28 +131,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated after CFV"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "Supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "C2SupportingEvidenceBundle",
-    "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Deprecated after CFV"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "c2AdditionalOrdersRequested",
     "ElementLabel": "Additional orders requested",
     "HintText": "Select all that apply",

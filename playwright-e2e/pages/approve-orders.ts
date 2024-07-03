@@ -8,7 +8,7 @@ export class ApproveOrders extends BasePage {
     public constructor(page: Page) {
         super(page);
         this.yesApproveOrder = page.getByRole('radio', { name: 'Yes' });
-        this.urgentOrder=page.getByLabel('One or more of the orders');
+        this.urgentOrder = page.getByLabel('One or more of the orders');
     }
 
     async navigateToPageViaNextStep() {
@@ -23,5 +23,13 @@ export class ApproveOrders extends BasePage {
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
         await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
+    }
+  
+      async approveNonUrgentDraftCMO() {
+       await this.yesApproveOrder.click();
+       await this.clickContinue();
+       await this.clickContinue();
+       await this.checkYourAnsAndSubmit();
+       await expect(this.page.getByText('has been updated with event: Approve orders')).toBeVisible();
     }
 }
