@@ -6,9 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractTest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -77,51 +83,182 @@ public class CafcassCasesControllerTest extends AbstractTest {
         assertEquals(response.getResponse().getStatus(), 500);
     }
 
-    private <T> T getEvent(String path, Class<T> responseType, String... userRoles) {
-        try {
-            MvcResult response = mockMvc
-                .perform(get(path)
-                    .header("user-roles", String.join(",", userRoles)))
-                .andReturn();
+    @Test
+    void getDocumentBinary() throws Exception {
+        UUID docId = UUID.randomUUID();
+        MvcResult response = mockMvc
+            .perform(get("/cases/documents/%s/binary".formatted(docId))
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(200))
+            .andReturn();
 
-            byte[] responseBody = response.getResponse().getContentAsByteArray();
-
-            if (responseBody.length > 0) {
-                return mapper.readValue(responseBody, responseType);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        assertEquals("getDocumentBinary - document id: [%s]".formatted(docId),
+            response.getResponse().getContentAsString());
     }
 
-    private <T> T postEvent(String path, byte[] data, Class<T> responseType, String... userRoles) {
-        try {
-            MvcResult response = mockMvc
-                .perform(post(path)
-                    .header("user-roles", String.join(",", userRoles))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(data))
-                .andReturn();
+    @Test
+    void getDocumentBinary400() throws Exception {
+        MvcResult response = mockMvc
+            .perform(get("/cases/documents/123/binary")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
 
-            byte[] responseBody = response.getResponse().getContentAsByteArray();
+        assertEquals(response.getResponse().getStatus(), 400);
 
-            if (responseBody.length > 0) {
-                return mapper.readValue(responseBody, responseType);
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        response = mockMvc
+            .perform(get("/cases/documents/ /binary")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
     }
 
-    private byte[] toBytes(Object o) {
-        try {
-            return mapper.writeValueAsString(o).getBytes();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+    @Test
+    void uploadDocument() throws Exception {
+        UUID caseId = UUID.randomUUID();
+        byte[] fileBytes = "This is a file. Trust me!".getBytes();
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, fileBytes);
+
+        MvcResult response = mockMvc
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
+                .file(file)
+                .param("typeOfDocument", "type Of Document")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(200))
+            .andReturn();
+
+        assertEquals("uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]"
+                .formatted(caseId, fileBytes.length, "type Of Document"),
+            response.getResponse().getContentAsString());
+    }
+
+    @Test
+    void uploadDocument400() throws Exception {
+        UUID caseId = UUID.randomUUID();
+
+        MvcResult response = mockMvc
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
+                .param("typeOfDocument", "type Of Document")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+
+
+        byte[] fileBytes = "This is a file. Trust me!".getBytes();
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, fileBytes);
+
+        response = mockMvc
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(" "))
+                .file(file)
+                .param("typeOfDocument", "type Of Document")
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+    }
+
+    @Test
+    void uploadGuardians() throws Exception {
+        UUID caseId = UUID.randomUUID();
+
+        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
+                .content("[\n"
+                         + "  {\n"
+                         + "    \"guardianName\": \"John Smith\",\n"
+                         + "    \"telephoneNumber\": \"01234567890\",\n"
+                         + "    \"email\": \"john.smith@example.com\",\n"
+                         + "    \"children\": [\n"
+                         + "      \"Joe Bloggs\"\n"
+                         + "    ]\n"
+                         + "  }\n"
+                         + "]")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(200))
+            .andReturn();
+
+        assertEquals("uploadGuardians - caseId: [%s], no of guardians: [%s]\nguardianName: [%s], children: [%s]\n"
+                .formatted(caseId, 1, "John Smith", "Joe Bloggs"),
+            response.getResponse().getContentAsString());
+    }
+
+    @Test
+    void uploadGuardians400() throws Exception {
+        UUID caseId = UUID.randomUUID();
+
+        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
+                .content("[]")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+
+        response = mockMvc.perform(post("/cases/%s/guardians".formatted(" "))
+                .content("[\n"
+                         + "  {\n"
+                         + "    \"guardianName\": \"John Smith\",\n"
+                         + "    \"telephoneNumber\": \"01234567890\",\n"
+                         + "    \"email\": \"john.smith@example.com\",\n"
+                         + "    \"children\": [\n"
+                         + "      \"Joe Bloggs\"\n"
+                         + "    ]\n"
+                         + "  }\n"
+                         + "]")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(400))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 400);
+    }
+
+    @Test
+    void uploadGuardians500() throws Exception {
+        UUID caseId = UUID.randomUUID();
+
+        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
+                .content("[\n"
+                         + "  {\n"
+                         + "    \"guardianName\": \"John Smith\",\n"
+                         + "    \"telephoneNumber\": \"01234567890\",\n"
+                         + "    \"email\": \"john.smith@example.com\",\n"
+                         + "    \"children\": \"12313\""
+                         + "  }\n"
+                         + "]")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("authorization", USER_AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .header("user-roles", String.join(",")))
+            .andExpect(status().is(500))
+            .andReturn();
+
+        assertEquals(response.getResponse().getStatus(), 500);
     }
 }
