@@ -1,8 +1,7 @@
-
-  {
-  "state": "SUBMITTED",
+{
+  "state": "PREPARE_FOR_HEARING",
   "caseData": {
-    "caseName": "e2e test new case",
+    "caseName": "Judge approves draft CMO",
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -18,6 +17,54 @@
       "reason": "test reason",
       "timeFrame": "Same day"
     },
+    "hearingDetails": [
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "endDate": "2050-01-02T16:30:00",
+          "startDate": "2050-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      },
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
+        "value": {
+          "endDate": "2012-11-03T14:34:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeLastName": "Test",
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Test Test",
+            "judgeEmailAddress": "test@judge.com"
+          },
+          "startDate": "2012-11-03T13:34:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "type": "CASE_MANAGEMENT",
+          "caseManagementOrderId": "f2bc3cbe-35f8-43a8-960b-bd41310901a0",
+          "venueCustomAddress": {}
+        }
+      }
+    ],
     "children1": [
       {
         "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
@@ -139,6 +186,31 @@
         }
       }
     ],
+    "draftUploadedCMOs": [
+      {
+        "id": "f2bc3cbe-35f8-43a8-960b-bd41310901a0",
+        "value": {
+          "type": "AGREED_CMO",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "draftOrder.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "title": "Agreed CMO discussed at hearing",
+          "others": [],
+          "status": "SEND_TO_JUDGE",
+          "hearing": "Case management hearing, 3 November 2012",
+          "dateSent": "2024-03-19",
+          "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
+          "needTranslation": "NO",
+          "judgeTitleAndName": "Her Honour Judge Test",
+          "documentAcknowledge": [
+            "ACK_RELATED_TO_CASE"
+          ],
+          "translationRequirements": "NO"
+        }
+      }
+    ],
     "respondents1": [
       {
         "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
@@ -179,7 +251,6 @@
       "proposal": "District judge"
     },
     "caseLocalAuthority": "SA",
-    "familyManCaseNumber": "SW24C51337",
     "localAuthorityPolicy": {
       "Organisation": {
         "OrganisationID": "ORGSA",
@@ -211,6 +282,42 @@
       "judgeLastName": "Moley",
       "judgeEmailAddress": "moley@example.com"
     },
+    "hearingOrdersBundlesDrafts": [
+      {
+        "id": "89f99f9c-80d6-47c8-bb6f-50de214d1a16",
+        "value": {
+          "orders": [
+            {
+              "id": "f2bc3cbe-35f8-43a8-960b-bd41310901a0",
+              "value": {
+                "type": "AGREED_CMO",
+                "order": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "draftOrder.docx",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
+                "title": "Agreed CMO discussed at hearing",
+                "others": [],
+                "status": "SEND_TO_JUDGE",
+                "hearing": "Case management hearing, 3 November 2012",
+                "dateSent": "2024-03-19",
+                "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
+                "needTranslation": "NO",
+                "judgeTitleAndName": "Her Honour Judge Test",
+                "documentAcknowledge": [
+                  "ACK_RELATED_TO_CASE"
+                ],
+                "translationRequirements": "NO"
+              }
+            }
+          ],
+          "ordersLA": [],
+          "hearingId": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb88",
+          "hearingName": "Case management hearing, 3 November 2012",
+          "judgeTitleAndName": "Her Honour Judge Test"
+        }
+      }
+    ],
     "additionalApplicationsBundle": [
       {
         "id": "4ae96392-b71d-40a6-9e59-a66d3fd279a5",
@@ -258,4 +365,3 @@
     ]
   }
 }
-
