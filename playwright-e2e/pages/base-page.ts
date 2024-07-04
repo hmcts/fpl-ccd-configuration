@@ -27,9 +27,10 @@ export class BasePage {
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
     await this.goButton.dblclick();
-    await this.page.waitForTimeout(20000);
+    await expect(this.page.getByRole("heading",{name:`${eventName}`})).toBeVisible();
     if (await this.goButton.isVisible()) {
       await this.goButton.click();
+      await expect(this.page.getByRole("heading",{name:`${eventName}`})).toBeVisible();
     }
   }
 
