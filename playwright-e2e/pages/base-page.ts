@@ -26,10 +26,11 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
     await this.nextStep.selectOption(eventName);
-    await this.goButton.click({clickCount:2});
-    if (await this.goButton.isVisible() &&  ! this.page.getByRole("heading",{name:`${eventName}`}).isVisible()) {
-      await this.goButton.click();
-         }
+    await this.goButton.click({clickCount:2,delay:300});
+    await this.page.waitForURL('**/trigger/**');
+    if (await this.goButton.isVisible()) {
+      await this.goButton.click({clickCount:2});
+    }
       await expect(this.page.getByRole("heading",{name:`${eventName}`})).toBeVisible();
   }
 
