@@ -29,12 +29,14 @@ export class SignInPage {
   }
   async navigateTOCaseDetails(caseNumber:string) {
     await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);
+    await this.page.waitForLoadState();
   }
 
   async login(email: string, password: string) {
     await this.emailInputLocator.fill(email);
     await this.passwordInputLocator.fill(password);
     await this.signinButtonLocator.click();
+    await this.isSignedIn();
   }
 
   async isSignedIn() {
