@@ -2,7 +2,7 @@ import { test } from '../fixtures/create-fixture';
 import { testConfig } from '../settings/test-config';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, , privateSolicitorOrgUser } from '../settings/user-credentials';
+import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser, privateSolicitorOrgUser } from '../settings/user-credentials';
 import caseData from '../caseData/mandatorySubmissionFields.json' assert { type: 'json' };
 import { expect } from '@playwright/test';
 import { createCase, giveAccessToCase, updateCase } from "../utils/api-helper";
