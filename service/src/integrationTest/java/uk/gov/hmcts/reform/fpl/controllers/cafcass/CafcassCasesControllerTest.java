@@ -21,6 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(CafcassCasesController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class CafcassCasesControllerTest extends AbstractTest {
+    private static final UUID CASE_ID = UUID.randomUUID();
+    private static final  byte[] FILE_BYTES = "This is a file. Trust me!".getBytes();
+    private static final MockMultipartFile FILE = new MockMultipartFile(
+        "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, FILE_BYTES);
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -142,14 +147,10 @@ public class CafcassCasesControllerTest extends AbstractTest {
 
     @Test
     void uploadDocument() throws Exception {
-        UUID caseId = UUID.randomUUID();
-        byte[] fileBytes = "This is a file. Trust me!".getBytes();
-        MockMultipartFile file = new MockMultipartFile(
-            "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, fileBytes);
 
         MvcResult response = mockMvc
-            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
-                .file(file)
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(CASE_ID))
+                .file(FILE)
                 .param("typeOfDocument", "type Of Document")
                 .header("authorization", USER_AUTH_TOKEN)
                 .header("user-id", USER_ID)
@@ -158,7 +159,7 @@ public class CafcassCasesControllerTest extends AbstractTest {
             .andReturn();
 
         assertEquals("uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]"
-                .formatted(caseId, fileBytes.length, "type Of Document"),
+                .formatted(CASE_ID, FILE_BYTES.length, "type Of Document"),
             response.getResponse().getContentAsString());
     }
 
@@ -185,7 +186,6 @@ public class CafcassCasesControllerTest extends AbstractTest {
         response = mockMvc
             .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
                 .file(file)
-                .param("typeOfDocument", "type Of Document")
                 .header("authorization", USER_AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .header("user-roles", String.join(",")))

@@ -75,6 +75,7 @@ public class CafcassCasesController {
                                                  @RequestParam(value = "file") MultipartFile file,
                                                  @RequestParam(value = "typeOfDocument") String typeOfDocument) {
         log.info("uploadDocument request received");
+
         try {
             return ResponseEntity.ok(String.format(
                 "uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]",
