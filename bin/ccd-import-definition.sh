@@ -10,7 +10,7 @@ uploadFilename="$(date +"%Y%m%d-%H%M%S")-${filename}"
 echo "Getting userToken and serviceToken"
 userToken=$(${dir}/utils/idam-lease-user-token.sh ${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12})
 echo ">>> Got userToken"
-serviceToken=$(${dir}/utils/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
+serviceToken=$(${dir}/utils/idam-lease-service-token.sh ccd_gw $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool:latest --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
 echo ">>> Got serviceToken"
 
 version="n/a"

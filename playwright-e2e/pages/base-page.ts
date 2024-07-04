@@ -9,8 +9,9 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
-    private postCode: Locator;
-    private findAddress: Locator;
+  private postCode: Locator;
+  private findAddress: Locator;
+  readonly rateLimit: Locator;
 
 
 
@@ -25,6 +26,8 @@ export class BasePage {
     this.submit = page.getByRole('button', { name: 'Submit' });
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
+
   }
 
   async gotoNextStep(eventName: string) {
@@ -102,4 +105,5 @@ export class BasePage {
 
   }
 }
+
 

@@ -439,7 +439,8 @@ public class CaseData extends CaseDataParent {
             bundle -> {
                 ofNullable(bundle.getC2DocumentBundle()).ifPresent(
                     c2 -> applicationBundles.add(element(c2.getId(), c2)));
-
+                ofNullable(bundle.getC2DocumentBundleConfidential()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
                 ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
                     otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
             }
@@ -972,9 +973,15 @@ public class CaseData extends CaseDataParent {
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
+    private final UUID cancelledHearingId;
     private final List<HearingAttendance> hearingAttendance;
     private final String hearingAttendanceDetails;
     private final String preHearingAttendanceDetails;
+
+    @Builder.Default
+    @JsonUnwrapped
+    private final ManageHearingHousekeepEventData manageHearingHousekeepEventData =
+        ManageHearingHousekeepEventData.builder().build();
 
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)

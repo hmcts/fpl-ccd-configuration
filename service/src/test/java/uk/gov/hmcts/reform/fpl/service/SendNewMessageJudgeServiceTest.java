@@ -123,13 +123,22 @@ class SendNewMessageJudgeServiceTest {
 
         final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .id(randomUUID())
-            .uploadedDateTime("01 Dec 2020")
+            .uploadedDateTime("1 December 2020, 12:00pm")
             .author("Some author")
             .build();
 
-        final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
+        final C2DocumentBundle confC2DocumentBundle = C2DocumentBundle.builder()
+            .id(randomUUID())
+            .uploadedDateTime("2 December 2020, 12:00pm")
+            .author("Some author")
+            .build();
+
+        final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(randomUUID(),
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2DocumentBundle)
+                .build()),
+            element(randomUUID(), AdditionalApplicationsBundle.builder()
+                .c2DocumentBundleConfidential(confC2DocumentBundle)
                 .build()));
 
         final Element<Placement> placement = element(Placement.builder()
@@ -148,7 +157,8 @@ class SendNewMessageJudgeServiceTest {
         final Map<String, Object> expectedEventData = sendNewMessageJudgeService.initialiseCaseFields(caseData);
 
         final DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(c2DocumentBundle.getId(), "C2, 01 Dec 2020"),
+            Pair.of(confC2DocumentBundle.getId(), "C2, 2 December 2020, 12:00pm"),
+            Pair.of(c2DocumentBundle.getId(), "C2, 1 December 2020, 12:00pm"),
             Pair.of(placement.getId(), "A50, Alex Green, 12 October 2020, 1:00pm"));
 
         final String expectedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
