@@ -34,44 +34,6 @@ java:
     DECLARATION_OF_PARENTAGE: Private
     RD_STAFF_API_ENABLED: true
     RD_JUDICIAL_API_ENABLED: true
-  keyVaults:
-    fpl:
-      secrets:
-        - notify-api-key
-        - send-grid-api-key
-        - docmosis-api-key
-        - fpl-case-service-s2s-secret
-        - fpl-case-service-idam-client-secret
-        - local-authority-email-to-code-mapping
-        - local-authority-code-to-name-mapping
-        - local-authority-user-mapping
-        - local-authority-code-to-hmcts-court-mapping
-        - local-authority-code-to-cafcass-mapping
-        - local-authority-code-to-org-id-mapping
-        - local-authority-code-to-shared-inbox-mapping
-        - eps-to-local-authorities-mapping
-        - mla-to-local-authorities-mapping
-        - local-authority-fallback-inbox
-        - system-update-user-username
-        - system-update-user-password
-        - translation-notification-sender
-        - translation-notification-recipient
-        - robotics-notification-sender
-        - robotics-notification-recipient
-        - cafcass-notification-sender
-        - cafcass-notification-recipient-order
-        - cafcass-notification-recipient-courtbundle
-        - cafcass-notification-recipient-large-file
-        - cafcass-notification-recipient-new-application
-        - cafcass-notification-recipient-new-document
-        - cafcass-notification-recipient-additional-document
-        - cafcass-notification-recipient-notice-of-hearing
-        - cafcass-notification-recipient-change-of-address
-        - ld-sdk-key
-        - ctsc-inbox
-        - ctsc-team-lead-inbox
-        - rcj-family-high-court-inbox
-        - court-to-court-admin-mapping
 
 idam-pr:
   releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
