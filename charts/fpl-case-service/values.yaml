@@ -46,6 +46,7 @@ java:
     CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
     fpl:
+      resourceGroup: fpl
       secrets:
         - name: notify-api-key
           alias: notify.api_key

@@ -21,10 +21,10 @@ spring:
       - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
   config:
     import:
+      - optional:configtree:/mnt/secrets/fpl
       - application-local.yaml
       - optional:application-user-mappings.yaml # won't be present in prod code
       - optional:application-feature-toggle.yaml # won't be present in prod code
-      - optional:configtree:/mnt/secrets/fpl
   profiles:
     group:
       dev:
