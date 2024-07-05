@@ -26,6 +26,7 @@ export class BasePage {
 
   async gotoNextStep(eventName: string) {
       await expect(async () => {
+         // await this.page.reload();
           await this.nextStep.selectOption(eventName);
           await this.goButton.click({clickCount:2,delay:300});
           await expect(this.page.getByRole("heading",{name:`${eventName}`})).toBeVisible();
