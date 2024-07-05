@@ -8,7 +8,7 @@ import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, updateCase } from "../utils/api-helper";
 
-test.describe('Upload additional applications', () => {
+test.describe('@local Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -64,7 +64,7 @@ test.describe('Upload additional applications', () => {
       }
     });
 
-  test('LA uploads a C2 application with draft order',
+  test('@local1 LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -83,7 +83,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.checkYourAnsAndSubmit();
   });
 
-  test('LA uploads combined Other and C2 applications',
+  test(' LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
@@ -114,7 +114,7 @@ test.describe('Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-    test('LA uploads a confidential C2 application with draft order',
+    test('@local1 LA uploads a confidential C2 application with draft order',
         async ({ page, signInPage, additionalApplications }) => {
             caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);
@@ -209,7 +209,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await additionalApplications.uploadBasicC2Application(false); 
+        await additionalApplications.uploadBasicC2Application(false);
 
         // Check CFV
         await caseFileView.goToCFVTab();
