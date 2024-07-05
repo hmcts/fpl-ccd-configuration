@@ -7,7 +7,7 @@ import {
     WiltshireOrgCAAUser
 } from "../settings/user-credentials";
 
-test.describe('Case outsourced another Localauthority or Solicitor Organisation', () => {
+test.describe('@local2 Case outsourced another Localauthority or Solicitor Organisation', () => {
     const dateTime = new Date().toISOString();
     test(' Managing LA creates case for their own organisation',
         async ({page, signInPage, createCase, organisation}) => {
