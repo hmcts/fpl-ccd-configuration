@@ -15,7 +15,7 @@ export default defineConfig({
     testMatch:'*spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 4*60*1000, //total test execution time is set to 6 min
+  timeout: 6*60*1000, //total test execution time is set to 6 min
   expect: { timeout: 1*60*1000 }, //wait time for the assertion
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -25,7 +25,7 @@ export default defineConfig({
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 3 : undefined,
+  workers: process.env.CI ? 5 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],

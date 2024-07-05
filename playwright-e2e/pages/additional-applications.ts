@@ -92,8 +92,8 @@ export class AdditionalApplications extends BasePage {
   public async fillC2ApplicationDetails(uploadDraftOrder: boolean = true) {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
-    await this.page.waitForTimeout(6000);
     await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
 
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();
@@ -113,10 +113,11 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle').getByRole('button', { name: 'Add new' }).click();
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_title').fill('Draft order title');
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testTextFile);
+    await this.expectAllUploadsCompleted();
     // added hard wait due to EXUI-1194
     await this.page.waitForTimeout(6000);
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
-    await this.expectAllUploadsCompleted();
+
   }
 
   public async uploadOtherSupplement() {
