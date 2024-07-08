@@ -10,13 +10,15 @@ import { RiskAndHarmToChildren } from "../pages/risk-and-harm-to-children";
 import { FactorsAffectingParenting } from "../pages/factors-affecting-parenting";
 import { UploadDraftOrders } from "../pages/upload-draft-orders";
 import { AllocationProposal } from "../pages/allocation-proposal";
-import { AdditionalApplications } from "../pages/additional-applications";
 import { ManageDocuments } from "../pages/manage-documents";
 import { CaseFileView } from "../pages/case-file-view";
 import { AddApplicationDocuments } from "../pages/add-application-documents";
 import { ManageHearings } from "../pages/manage-hearings";
 import { GatekeepingListing } from "../pages/gatekeeping-listing";
 import { CaseDetails } from "../pages/case-details";
+import { AdditionalApplications } from "../pages/additional-applications";
+import { ApproveOrders} from "../pages/approve-orders";
+import { Placement } from "../pages/placement";
 import { ApplicantDetails } from "../pages/applicant-details";
 import { RespondentDetails } from "../pages/respondent-details";
 import { LegalCounsel } from "../pages/legal-counsel";
@@ -25,10 +27,11 @@ import { WelshLangRequirements } from "../pages/welsh-lang-requirements";
 import { OtherProceedings } from "../pages/other-proceedings";
 import { C1WithSupplement } from "../pages/c1-with-supplement";
 import { InternationalElement } from "../pages/international-element";
-import { ApproveOrders } from "../pages/approve-orders";
 import { CourtServicesNeeded } from "../pages/court-services-needed";
 import { AddAndRemoveAdminCaseFlag } from "../pages/add-and-remove-admin-case-flag";
 import { SubmitCase } from "../pages/submit-case";
+import { Organisation } from "../pages/manage-organisation";
+import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 
 type CreateFixtures = {
@@ -45,11 +48,13 @@ type CreateFixtures = {
   manageDocuments: ManageDocuments;
   caseFileView: CaseFileView;
   allocationProposal: AllocationProposal;
-  additionalApplications: AdditionalApplications;
   addApplicationDocuments: AddApplicationDocuments;
   manageHearings: ManageHearings;
   gateKeepingListing: GatekeepingListing;
   caseDetails: CaseDetails;
+  additionalApplications: AdditionalApplications;
+  approveOrders: ApproveOrders;
+  placement: Placement;
   applicantDetails: ApplicantDetails;
   childDetails: ChildDetails;
   respondentDetails: RespondentDetails;
@@ -58,11 +63,13 @@ type CreateFixtures = {
   otherProceedings: OtherProceedings;
   submitCase: SubmitCase;
   internationalElement: InternationalElement;
-  approveOrders: ApproveOrders;
   courtServicesNeeded: CourtServicesNeeded;
   addAdminCaseFlag: AddAndRemoveAdminCaseFlag;
   c1WithSupplement: C1WithSupplement;
+  organisation: Organisation;
+  shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
+
 };
 
 export const test = base.extend<CreateFixtures>({
@@ -138,16 +145,24 @@ export const test = base.extend<CreateFixtures>({
     await use(new CaseDetails(page));
   },
 
+  approveOrders: async ({ page }, use) => {
+    await use(new ApproveOrders(page));
+  },
+
+  placement: async ({ page }, use) => {
+    await use(new Placement(page));
+  },
+
+  respondentDetails: async ({ page }, use) => {
+    await use(new RespondentDetails(page));
+  },
+
   applicantDetails: async ({ page }, use) => {
     await use(new ApplicantDetails(page));
   },
 
   childDetails: async ({ page }, use) => {
     await use(new ChildDetails(page));
-  },
-
-  respondentDetails: async ({ page }, use) => {
-    await use(new RespondentDetails(page));
   },
 
   legalCounsel: async ({ page }, use) => {
@@ -161,20 +176,16 @@ export const test = base.extend<CreateFixtures>({
   otherProceedings: async ({ page }, use) => {
     await use(new OtherProceedings(page));
   },
-  
+
   internationalElement: async ({ page }, use) => {
     await use(new InternationalElement(page));
-  },
-
-  approveOrders: async ({ page }, use) => {
-    await use(new ApproveOrders(page));
   },
 
   courtServicesNeeded: async ({ page }, use) => {
     await use(new CourtServicesNeeded(page));
   },
 
-    addAdminCaseFlag: async ({ page }, use) => {
+  addAdminCaseFlag: async ({ page }, use) => {
         await use(new AddAndRemoveAdminCaseFlag(page));
   },
 
@@ -188,5 +199,13 @@ export const test = base.extend<CreateFixtures>({
 
   submitCase: async ({ page }, use) => {
     await use(new SubmitCase(page));
+  },
+
+  organisation: async ({page}, use) => {
+      await use(new Organisation(page));
+  },
+
+  shareCase: async ({page}, use) => {
+      await use(new ShareCase(page));
   },
 });
