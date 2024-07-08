@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
+    "ListElementCode": "internationalElementNotice",
+    "FieldType": "Label",
+    "ElementLabel": "Only complete this section if there is an international element to this application.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
     "ListElementCode": "whichCountriesInvolved",
     "FieldType": "TextArea",
     "ElementLabel": "Which other countries are involved?",
