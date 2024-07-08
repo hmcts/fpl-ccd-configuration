@@ -3,7 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.HearingHousekeepReason;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.ManageHearingHousekeepEventData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -23,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearingVacated;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -59,6 +64,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING_VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingDuration.HOURS_MINS;
@@ -80,6 +86,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FACT_FINDING;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -936,6 +943,37 @@ class ManageHearingsServiceTest {
             NOTICE_OF_HEARING.getDocumentTitle(time.now().toLocalDate()));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSendNoticeOfHearingVacatedIfNotHousekeeping(boolean relist) {
+        final DocmosisNoticeOfHearingVacated docmosisData = DocmosisNoticeOfHearingVacated.builder().build();
+        final DocmosisDocument docmosisDocument = testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT);
+
+        final HearingBooking hearingToUpdate = randomHearing();
+        final CaseData caseData = CaseData.builder()
+            .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
+                .hearingHousekeepOption(NO)
+                .build())
+            .hearingReListOption(relist ? HearingReListOption.RE_LIST_NOW : RE_LIST_LATER)
+            .build();
+
+        given(noticeOfHearingGenerationService.getHearingVacatedTemplateData(caseData, hearingToUpdate, relist))
+            .willReturn(docmosisData);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING_VACATED))
+            .willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(eq(docmosisDocument.getBytes()), anyString())).willReturn(DOCUMENT);
+
+        service.buildNoticeOfHearingVacatedIfYes(caseData, hearingToUpdate);
+
+        assertThat(hearingToUpdate.getNoticeOfHearingVacated())
+            .isEqualTo(DocumentReference.buildFromDocument(DOCUMENT));
+
+        verify(noticeOfHearingGenerationService).getHearingVacatedTemplateData(caseData, hearingToUpdate, relist);
+        verify(docmosisDocumentGeneratorService).generateDocmosisDocument(docmosisData, NOTICE_OF_HEARING_VACATED);
+        verify(uploadDocumentService).uploadPDF(
+            TestDataHelper.DOCUMENT_CONTENT,
+            NOTICE_OF_HEARING_VACATED.getDocumentTitle(time.now().toLocalDate()));
+    }
 
     @Nested
     class PastHearings {
@@ -1636,6 +1674,38 @@ class ManageHearingsServiceTest {
                     .build()));
         }
 
+        @Test
+        void shouldHousekeepHearing() {
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+
+            Element<HearingBooking> vacatedHearing = element(hearingElement1.getId(),
+                hearingElement1.getValue().toBuilder()
+                    .status(VACATED)
+                    .housekeepReason(HearingHousekeepReason.DUPLICATE.getLabel())
+                    .vacatedDate(vacatedDate)
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .hearingReListOption(NONE)
+                .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
+                    .hearingHousekeepOption(YES)
+                    .hearingHousekeepReason(HearingHousekeepReason.DUPLICATE)
+                    .build())
+                .vacatedHearingDate(vacatedDate)
+                .build();
+
+            service.vacateHearing(caseData, hearingElement1.getId());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+        }
+
         void shouldVacateHearing(HearingReListOption reListOption, HearingStatus expectedStatus) {
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
@@ -1931,7 +2001,10 @@ class ManageHearingsServiceTest {
             "allocatedJudgeLabel",
             "judicialUser",
             "enterManually",
-            "judicialUserHearingJudge"
+            "judicialUserHearingJudge",
+            "hearingHousekeepReasonOther",
+            "hearingHousekeepOption",
+            "hearingHousekeepReason"
         );
     }
 

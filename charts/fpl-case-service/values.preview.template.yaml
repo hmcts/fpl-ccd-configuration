@@ -5,6 +5,10 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 1
   environment:
     FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
@@ -151,6 +155,9 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    postgresHostname: "family-public-law-preview.postgres.database.azure.com"
+    postgresSecret: postgres
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
 
   ccd-api-gateway-web:
     nodejs:
@@ -173,7 +180,8 @@ ccd:
       devmemoryLimits: '2048Mi'
       devcpuRequests: '900m'
       environment:
-        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_IDAM_KEY: ${CCD_DATA_STORE_S2S_SECRET}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
@@ -189,12 +197,19 @@ ccd:
         HTTP_CLIENT_MAX_TOTAL: '300'
         HTTP_CLIENT_MAX_CLIENT_PER_ROUTE: '30'
         DATA_STORE_DB_MAX_POOL_SIZE: 80
-        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
+        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?))
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-cdam
+      secrets:
+        DATA_STORE_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
   ccd-definition-store-api:
     java:
       disableKeyVaults: true
@@ -203,9 +218,12 @@ ccd:
       devcpuRequests: '900m'
       autoscaling:
         enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       imagePullPolicy: Always
       environment:
-        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+        DEFINITION_STORE_DB_USERNAME: hmcts
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,xui_webapp,aac_manage_case_assignment
         DEFINITION_STORE_TX_TIMEOUT_DEFAULT: 60
@@ -213,25 +231,30 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         WELSH_TRANSLATION_ENABLED: false
+      secrets:
+        DEFINITION_STORE_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
 
   ccd-user-profile-api:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       enviroment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_DB_USERNAME: hmcts
+        USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      secrets:
+        USER_PROFILE_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
-
-  postgresql:
-    persistence:
-      enabled: false
-    image:
-        registry: hmctspublic.azurecr.io
-        repository: imported/bitnami/postgresql
-        tag: '11.16.0'
-    postgresConfig:
-      maxConnections: "300"
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -268,13 +291,23 @@ ccd:
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     extraEnvs:
       - name: DATA_STORE_URL
-        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+      - name: DATA_STORE_USER
+        value: hmcts
+      - name: DATA_STORE_PASS
+        valueFrom:
+          secretKeyRef:
+            name: postgres
+            key: PASSWORD
       - name: DB_URL
-        value: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
       - name: DB_USER
         value: hmcts
       - name: DB_PWD
-        value: hmcts
+        valueFrom:
+          secretKeyRef:
+            name: postgres
+            key: PASSWORD
       - name: ES_HOSTS
         value: http://${SERVICE_NAME}-es-master:9200
       - name: ES_DATA_NODES_URL
@@ -287,13 +320,23 @@ ccd:
       initialDelaySeconds: 90
   am-role-assignment-service:
     java:
+      autoscaling:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 1
       environment:
-        ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
+        ROLE_ASSIGNMENT_DB_USERNAME: hmcts
+        ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       keyVaults:
         am:
           secrets:
           - name: role-assignment-service-LD-SDK-KEY
             alias: LD_SDK_KEY
+      secrets:
+        ROLE_ASSIGNMENT_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
 aac-manage-case-assignment:
   enabled: true
   java:
@@ -314,6 +357,8 @@ aac-manage-case-assignment:
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
+      minReplicas: 1
+      maxReplicas: 1
     keyVaults:
       aac:
         secrets:
@@ -340,6 +385,10 @@ ccd-case-document-am-api:
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 1
     environment:
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -362,3 +411,17 @@ xui-mo-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://${SERVICE_NAME}-aac
       CASE_TYPES: CARE_SUPERVISION_EPO
+
+postgresql:
+  enabled: true
+  flexibleserver: family-public-law-preview
+  setup:
+    databases:
+    - name: "pr-${CHANGE_ID}-data-store"
+    - name: "pr-${CHANGE_ID}-definition-store"
+    - name: "pr-${CHANGE_ID}-user-profile"
+    - name: "pr-${CHANGE_ID}-draftstore"
+    - name: "pr-${CHANGE_ID}-payment"
+    - name: "pr-${CHANGE_ID}-evidence"
+    - name: "pr-${CHANGE_ID}-annotation"
+    - name: "pr-${CHANGE_ID}-role-assignment"
