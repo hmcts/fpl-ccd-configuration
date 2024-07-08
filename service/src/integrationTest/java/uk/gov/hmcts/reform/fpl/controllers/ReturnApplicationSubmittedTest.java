@@ -17,8 +17,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.*;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_RETURNED_TO_THE_LA;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -48,6 +47,7 @@ class ReturnApplicationSubmittedTest extends AbstractCallbackTest {
                 .build()))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+                .name(LOCAL_AUTHORITY_1_NAME)
                 .id(LOCAL_AUTHORITY_1_CODE)
                 .designated(YES.getValue())
                 .email(LOCAL_AUTHORITY_1_INBOX)
