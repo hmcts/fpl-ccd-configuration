@@ -1,5 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { urlConfig } from "../settings/urls";
+import config from "../settings/test-docs/config";
 
 export class SignInPage {
   readonly page: Page;
@@ -35,6 +36,7 @@ export class SignInPage {
     await this.emailInputLocator.fill(email);
     await this.passwordInputLocator.fill(password);
     await this.signinButtonLocator.click();
+    await this.page.context().storageState({path:config.CTSCUserAuthFile})
   }
 
   async isSignedIn() {

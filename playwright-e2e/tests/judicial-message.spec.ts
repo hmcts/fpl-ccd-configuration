@@ -18,6 +18,7 @@ test.describe('send and reply message',()=>{
   test('CTSC admin send message to Judge',
     async ({page,signInPage,judicialMessages}) => {
         casename = 'CTSC message Judge ' + dateTime.slice(0, 10);
+
         await updateCase(casename,caseNumber,caseData);
         await signInPage.visit();
         await signInPage.login(CTSCUser.email,CTSCUser.password);
