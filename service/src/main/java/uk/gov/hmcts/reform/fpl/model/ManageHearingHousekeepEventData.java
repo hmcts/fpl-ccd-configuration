@@ -8,8 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 @Data
 @Builder
 public class ManageHearingHousekeepEventData {
-    private YesNo hearingHousekeepOptions;
+    private YesNo hearingHousekeepOption;
     private HearingHousekeepReason hearingHousekeepReason;
     private String hearingHousekeepReasonOther;
-
 }
