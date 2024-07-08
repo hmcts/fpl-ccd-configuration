@@ -275,13 +275,13 @@ ccd:
       port: 9200
     configTpl:
       xpack.monitoring.enabled: "false"
-      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      db.url: 'jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/{{ tpl .Values.global.databaseNamePrefix $}}data-store?ssl=disable&stringtype=unspecified'
       db.user: hmcts
       db.pwd: hmcts
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     extraEnvs:
       - name: DATA_STORE_URL
-        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: 'jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ tpl .Values.global.databaseNamePrefix $}}data-store?sslmode=require&stringtype=unspecified'
       - name: DATA_STORE_USER
         value: hmcts
       - name: DATA_STORE_PASS
@@ -290,7 +290,7 @@ ccd:
             name: postgres
             key: PASSWORD
       - name: DB_URL
-        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: 'jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ tpl .Values.global.databaseNamePrefix $}}data-store?sslmode=require&stringtype=unspecified'
       - name: DB_USER
         value: hmcts
       - name: DB_PWD
