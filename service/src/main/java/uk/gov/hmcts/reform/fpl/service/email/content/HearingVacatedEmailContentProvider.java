@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import java.time.format.FormatStyle;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
@@ -40,6 +41,8 @@ public class HearingVacatedEmailContentProvider extends AbstractEmailContentProv
             .vacatedDate(formatLocalDateToString(hearingBooking.getVacatedDate(), FormatStyle.LONG))
             .vacatedReason(HearingCancellationReason.getHearingCancellationReasonLabel(hearingBooking))
             .relistAction(isRelisted ? RELIST_ACTION_RELISTED : RELIST_ACTION_NOT_RELISTED)
+            .familyManCaseNumber(Optional.ofNullable(caseData.getFamilyManCaseNumber())
+                .orElse(caseData.getId().toString()))
             .build();
     }
 }
