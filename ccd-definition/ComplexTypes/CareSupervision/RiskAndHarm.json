@@ -103,7 +103,7 @@
     "ListElementCode": "anythingElseAffectingParenting",
     "FieldType": "TextArea",
     "ElementLabel": "Tell us what else is affecting their ability to parent",
-    "FieldShowCondition": "FactorsAffectingParentingList CONTAINS \"ANYTHING_ELSE\"",
+    "FieldShowCondition": "factorsAffectingParenting CONTAINS \"ANYTHING_ELSE\"",
     "SecurityClassification": "Public"
   }
 ]
