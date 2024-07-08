@@ -5,7 +5,7 @@
     "CaseEventID": "amendInternationalElement",
     "CaseFieldID": "internationalElement",
     "ListElementCode": "internationalElementNotice",
-    "EventElementLabel": "Only complete this section if there is an international element to this application.",
+    "EventElementLabel": "<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete this section if there is an international element to this application.</div>",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"
   },

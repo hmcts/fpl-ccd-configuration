@@ -4,7 +4,7 @@
     "ID": "InternationalElement",
     "ListElementCode": "internationalElementNotice",
     "FieldType": "Label",
-    "ElementLabel": "Only complete this section if there is an international element to this application.",
+    "ElementLabel": "<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete this section if there is an international element to this application.</div>",
     "SecurityClassification": "Public"
   },
   {
