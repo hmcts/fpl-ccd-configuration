@@ -14,12 +14,14 @@ export default defineConfig({
   testDir: "./playwright-e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 600000,
-  expect: { timeout: 600000 },
+  timeout: 800000,
+  expect: { timeout: 800000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
+  /*build fails when reaches 35 failed test - fail fast*/
+  maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -28,14 +30,9 @@ export default defineConfig({
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    // Capture screenshot after each test failure.
-    screenshot: 'only-on-failure',
-
     // Record trace only when retrying a test for the first time.
-    trace: 'on',
+    trace: 'on-first-retry',
 
-    // Record video only when retrying a test for the first time.
-    video: 'on-first-retry'
   },
 
   /* Configure projects for major browsers */

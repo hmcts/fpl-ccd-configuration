@@ -6,6 +6,17 @@
     "TabID": "ChangeOfRepresentativesTab",
     "TabLabel": "Change of representatives",
     "TabDisplayOrder": 20,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "ChangeOfRepresentativesTab",
+    "TabLabel": "Change of representatives",
+    "TabDisplayOrder": 20,
     "CaseFieldID": "changeOfRepresentatives",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "changeOfRepresentatives!=\"\""
