@@ -78,5 +78,32 @@
     "ElementLabel": "Select all that apply",
     "FieldShowCondition": "neglect=\"Yes\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "whatKindOfRiskAndHarmToChildren",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "RiskAndHarmToChildrenList",
+    "ElementLabel": "What kind of harm is the child at risk of?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "factorsAffectingParenting",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "FactorsAffectingParentingList",
+    "ElementLabel": "Is there anything affecting any respondent's ability to parent?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "ListElementCode": "anythingElseAffectingParenting",
+    "FieldType": "TextArea",
+    "ElementLabel": "Tell us what else is affecting their ability to parent",
+    "FieldShowCondition": "FactorsAffectingParentingList CONTAINS \"ANYTHING_ELSE\"",
+    "SecurityClassification": "Public"
   }
 ]
