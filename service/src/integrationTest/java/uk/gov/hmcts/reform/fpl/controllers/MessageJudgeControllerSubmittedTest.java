@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -43,6 +44,9 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CCDConcurrencyHelper concurrencyHelper;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     MessageJudgeControllerSubmittedTest() {
         super("message-judge");
@@ -87,6 +91,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
                     .build())))
             .build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
             .eventId(i.getArgument(1))
