@@ -7,7 +7,7 @@ dir=$(dirname ${0})
 role=${1}
 
 userToken=$(${dir}/idam-lease-user-token.sh ${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12})
-totp=$(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC})
+totp=$(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool:latest --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC})
 serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $totp)
 
 echo "Creating CCD role: ${role}"

@@ -84,8 +84,7 @@
       "caseworker-publiclaw-judiciary",
       "caseworker-publiclaw-magistrate",
       "caseworker-publiclaw-solicitor",
-      "caseworker-publiclaw-superuser",
-      "caseworker-publiclaw-systemupdate"
+      "caseworker-publiclaw-superuser"
     ],
     "CRUD": "R"
   },
