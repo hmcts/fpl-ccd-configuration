@@ -18,4 +18,8 @@ public class Risks {
     private final List<String> sexualAbuseOccurrences;
     private final List<String> physicalHarmOccurrences;
     private final List<String> emotionalHarmOccurrences;
+    private final List<String> whatKindOfRiskAndHarmToChildren;
+    private final List<String> factorsAffectingParenting;
+    private final String anythingElseAffectingParenting;
+
 }

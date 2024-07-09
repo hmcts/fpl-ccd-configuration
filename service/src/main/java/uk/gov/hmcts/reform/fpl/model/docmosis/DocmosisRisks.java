@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.docmosis;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,4 +16,7 @@ public class DocmosisRisks {
     private final String sexualAbuseDetails;
     private final String physicalHarmDetails;
     private final String emotionalHarmDetails;
+    private final String whatKindOfRiskAndHarmToChildren;
+    private final String factorsAffectingParenting;
+    private final String anythingElseAffectingParenting;
 }
