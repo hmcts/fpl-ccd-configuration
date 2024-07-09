@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
 @Slf4j
@@ -22,11 +23,13 @@ public class CafcassApiInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        UserInfo userInfo = idamClient.getUserInfo(request.getHeader("Authorization"));
-        log.info(String.join(", ", userInfo.getRoles()));
-        if (userInfo == null || !userInfo.getRoles().contains(CAFCASS_SYSTEM_UPDATE)) {
-            throw new AuthorizationException();
+        String authToken = request.getHeader("Authorization");
+        if (isNotEmpty(authToken)) {
+            UserInfo userInfo = idamClient.getUserInfo(authToken);
+            if (userInfo != null && userInfo.getRoles().contains(CAFCASS_SYSTEM_UPDATE.getRoleName())) {
+                return true;
+            }
         }
-        return true;
+        throw new AuthorizationException();
     }
 }
