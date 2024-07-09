@@ -32,10 +32,9 @@ public class RiskAndHarmChecker implements EventChecker {
         }
 
         return anyNonEmpty(
-            risks.getNeglect(),
-            risks.getSexualAbuse(),
-            risks.getPhysicalHarm(),
-            risks.getEmotionalHarm());
+            risks.getWhatKindOfRiskAndHarmToChildren(),
+            risks.getFactorsAffectingParenting(),
+            risks.getAnythingElseAffectingParenting());
     }
 
     @Override
@@ -43,30 +42,13 @@ public class RiskAndHarmChecker implements EventChecker {
         final Risks risks = caseData.getRisks();
 
         if (risks == null || anyEmpty(
-            risks.getNeglect(),
-            risks.getSexualAbuse(),
-            risks.getPhysicalHarm(),
-            risks.getEmotionalHarm())) {
+            risks.getWhatKindOfRiskAndHarmToChildren(),
+            risks.getFactorsAffectingParenting(),
+            risks.getAnythingElseAffectingParenting())) {
             return false;
         }
 
-        if (YES.getValue().equals(risks.getNeglect())
-            && isEmpty(risks.getNeglectOccurrences())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(risks.getSexualAbuse())
-            && isEmpty(risks.getSexualAbuseOccurrences())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(risks.getPhysicalHarm())
-            && isEmpty(risks.getPhysicalHarmOccurrences())) {
-            return false;
-        }
-
-        return NO.getValue().equals(risks.getEmotionalHarm())
-            || !isEmpty(risks.getEmotionalHarmOccurrences());
+        return true;
     }
 
     @Override
