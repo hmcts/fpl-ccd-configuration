@@ -24,7 +24,6 @@ public class SendOrderReminderEventHandler {
     private final ChaseMissingCMOEmailContentProvider contentProvider;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
 
-    @Async
     @EventListener
     public void sendNotificationToApplicant(final SendOrderReminderEvent event) {
         NotifyData notifyData = contentProvider.buildTemplate(event.getCaseData());
