@@ -952,7 +952,7 @@ class ManageHearingsServiceTest {
         final HearingBooking hearingToUpdate = randomHearing();
         final CaseData caseData = CaseData.builder()
             .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
-                .hearingHousekeepOptions(NO)
+                .hearingHousekeepOption(NO)
                 .build())
             .hearingReListOption(relist ? HearingReListOption.RE_LIST_NOW : RE_LIST_LATER)
             .build();
@@ -1694,7 +1694,7 @@ class ManageHearingsServiceTest {
                 .hearingDetails(newArrayList(hearingElement1, hearingElement2))
                 .hearingReListOption(NONE)
                 .manageHearingHousekeepEventData(ManageHearingHousekeepEventData.builder()
-                    .hearingHousekeepOptions(YES)
+                    .hearingHousekeepOption(YES)
                     .hearingHousekeepReason(HearingHousekeepReason.DUPLICATE)
                     .build())
                 .vacatedHearingDate(vacatedDate)
