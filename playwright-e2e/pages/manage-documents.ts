@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
-import { BasePage } from "./base-page";
 import config from "../settings/test-docs/config";
+import { BasePage } from "./base-page";
 
 export class ManageDocuments extends BasePage {
 

@@ -12,7 +12,7 @@ export class BasePage {
   readonly dobDay: Locator; //DOB (date of birth)
   readonly dobMonth: Locator;
   readonly dobYear: Locator;
-  
+  readonly rateLimit: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -26,6 +26,7 @@ export class BasePage {
     this.dobDay = page.getByLabel('Day');
     this.dobMonth = page.getByLabel('Month');
     this.dobYear = page.getByLabel('Year');
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
 
   async gotoNextStep(eventName: string) {
@@ -101,4 +102,5 @@ export class BasePage {
     await this.dobYear.fill(year);
   }
 }
+
 
