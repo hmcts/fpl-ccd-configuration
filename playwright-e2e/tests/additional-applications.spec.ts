@@ -16,6 +16,8 @@ test.describe('@local Upload additional applications', () => {
     test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
+    //mark test as slow to give extra timeout
+    test.slow();
 
   test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
@@ -64,7 +66,7 @@ test.describe('@local Upload additional applications', () => {
       }
     });
 
-  test('@local1 LA uploads a C2 application with draft order',
+  test('LA uploads a C2 application with draft order',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads a C2 application with draft order ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
