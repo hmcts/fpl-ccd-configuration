@@ -42,6 +42,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.ObjectUtils.anyNotNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
@@ -299,8 +300,8 @@ public class RoboticsDataService {
             return false;
         }
 
-        return isAnyConfirmed(risks.getPhysicalHarm(), risks.getEmotionalHarm(), risks.getSexualAbuse(),
-            risks.getNeglect());
+        return anyNotNull(risks.getWhatKindOfRiskAndHarmToChildren(), 
+            risks.getFactorsAffectingParenting(), risks.getAnythingElseAffectingParenting());
     }
 
     private boolean isAnyConfirmed(final String... values) {
