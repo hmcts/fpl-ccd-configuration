@@ -28,6 +28,8 @@ public final class NotifyTemplates {
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
+    public static final String URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE =
+        "64c0d87a-8945-43ac-9df7-0662e61b3035";
     public static final String CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
         "e6e899b1-ce44-4626-bb44-b9532af3983f";
     public static final String URGENT_CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE =
