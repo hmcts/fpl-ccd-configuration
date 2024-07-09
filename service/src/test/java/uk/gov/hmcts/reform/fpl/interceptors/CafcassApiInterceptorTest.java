@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,16 +21,16 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 @ExtendWith(MockitoExtension.class)
 public class CafcassApiInterceptorTest {
-    @Mock
-    private IdamClient idamClient;
-    @InjectMocks
-    private CafcassApiInterceptor underTest;
-
     private final static String AUTH_TOKEN_TEST = "bearerToken";
     private final static UserInfo CAFCASS_SYSTEM_UPDATE_USER =
         UserInfo.builder().roles(List.of(CAFCASS_SYSTEM_UPDATE.getRoleName())).build();
     private final static UserInfo LOCAL_AUTHORITY_UPDATE_USER =
         UserInfo.builder().roles(List.of(LOCAL_AUTHORITY.getRoleName())).build();
+
+    @Mock
+    private IdamClient idamClient;
+    @InjectMocks
+    private CafcassApiInterceptor underTest;
 
     @Test
     public void shouldReturnTrueIfCafcassSystemUpdateUser() throws Exception {
