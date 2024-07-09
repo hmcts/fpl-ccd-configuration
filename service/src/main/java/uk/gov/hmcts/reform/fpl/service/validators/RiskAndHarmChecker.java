@@ -9,8 +9,6 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
