@@ -21,5 +21,4 @@ public class Risks {
     private final List<String> whatKindOfRiskAndHarmToChildren;
     private final List<String> factorsAffectingParenting;
     private final String anythingElseAffectingParenting;
-
 }
