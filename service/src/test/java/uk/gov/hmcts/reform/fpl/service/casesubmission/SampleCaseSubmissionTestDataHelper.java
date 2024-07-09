@@ -245,10 +245,9 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisRisks expectedDocmosisRisks() {
         return DocmosisRisks.builder()
-            .neglectDetails("Yes\nPast harm\nFuture risk of harm")
-            .sexualAbuseDetails("Yes\nPast harm\nFuture risk of harm")
-            .physicalHarmDetails("Yes\nPast harm\nFuture risk of harm")
-            .emotionalHarmDetails("Yes\nPast harm\nFuture risk of harm")
+            .whatKindOfRiskAndHarmToChildren("Emotional abuse")
+            .factorsAffectingParenting("Anything else")
+            .anythingElseAffectingParenting("Something else")
             .build();
     }
 

@@ -273,14 +273,11 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsForRisksIsYes() {
+    void shouldReturnTrueForHarmAllegedWhenOneOfTheOptionsisNotEmpty() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
-                .physicalHarm("Yes")
-                .emotionalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
+                .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
                 .build())
             .build();
 
@@ -290,14 +287,10 @@ class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsNo() {
+    void shouldReturnFalseForHarmAllegedWhenAllOfTheOptionsForRisksIsEmpty() {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
-                .physicalHarm("No")
-                .emotionalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
                 .build())
             .build();
 

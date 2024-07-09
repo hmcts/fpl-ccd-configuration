@@ -10,8 +10,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,10 +45,9 @@ class RiskAndHarmCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyRisks() {
         return Stream.of(
-                Risks.builder().neglect("Yes").build(),
-                Risks.builder().sexualAbuse("No").build(),
-                Risks.builder().physicalHarm("Yes").build(),
-                Risks.builder().emotionalHarm("No").build())
+                Risks.builder().whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse")).build(),
+                Risks.builder().factorsAffectingParenting(List.of("Anything else")).build(),
+                Risks.builder().anythingElseAffectingParenting("Something else").build())
                 .map(Arguments::of);
     }
 
@@ -54,10 +55,9 @@ class RiskAndHarmCheckerIsStartedTest {
         return Stream.of(
                 Risks.builder().build(),
                 Risks.builder()
-                        .neglect("")
-                        .sexualAbuse("")
-                        .physicalHarm("")
-                        .emotionalHarm("")
+                        .whatKindOfRiskAndHarmToChildren(emptyList())
+                        .factorsAffectingParenting(emptyList())
+                        .anythingElseAffectingParenting("")
                         .build())
                 .map(Arguments::of);
     }

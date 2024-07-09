@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
@@ -71,31 +72,24 @@ class RiskAndHarmCheckerTest {
         return Stream.of(
             Risks.builder().build(),
             completedRisk()
-                .emotionalHarmOccurrences(null)
+                .whatKindOfRiskAndHarmToChildren(null)
                 .build(),
             completedRisk()
-                .emotionalHarmOccurrences(emptyList())
-                .build(),
-
-            completedRisk()
-                .physicalHarmOccurrences(null)
-                .build(),
-            completedRisk()
-                .physicalHarmOccurrences(emptyList())
+                .whatKindOfRiskAndHarmToChildren(emptyList())
                 .build(),
 
             completedRisk()
-                .sexualAbuseOccurrences(null)
+                .factorsAffectingParenting(null)
                 .build(),
             completedRisk()
-                .sexualAbuseOccurrences(emptyList())
+                .factorsAffectingParenting(emptyList())
                 .build(),
 
             completedRisk()
-                .neglectOccurrences(null)
+                .anythingElseAffectingParenting(null)
                 .build(),
             completedRisk()
-                .neglectOccurrences(emptyList())
+                .anythingElseAffectingParenting("")
                 .build()
         ).map(Arguments::of);
     }
@@ -103,10 +97,9 @@ class RiskAndHarmCheckerTest {
     private static Stream<Arguments> completeRisks() {
         return Stream.of(
             Risks.builder()
-                .emotionalHarm("No")
-                .physicalHarm("No")
-                .sexualAbuse("No")
-                .neglect("No")
+                .whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse"))
+                .factorsAffectingParenting(List.of("Domestic abuse"))
+                .anythingElseAffectingParenting(null)
                 .build(),
             completedRisk()
                 .build()
@@ -115,13 +108,8 @@ class RiskAndHarmCheckerTest {
 
     private static Risks.RisksBuilder completedRisk() {
         return Risks.builder()
-            .emotionalHarm("Yes")
-            .emotionalHarmOccurrences(singletonList("Past harm"))
-            .physicalHarm("Yes")
-            .physicalHarmOccurrences(singletonList("Past harm"))
-            .sexualAbuse("Yes")
-            .sexualAbuseOccurrences(singletonList("Past harm"))
-            .neglect("Yes")
-            .neglectOccurrences(singletonList("Past harm"));
+            .whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse"))
+            .factorsAffectingParenting(List.of("Anything else"))
+            .anythingElseAffectingParenting("Somthing else");
     }
 }

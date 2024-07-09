@@ -1367,10 +1367,9 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisRisks expectedDefaultRisk = DocmosisRisks.builder()
-                .emotionalHarmDetails("-")
-                .neglectDetails("-")
-                .physicalHarmDetails("-")
-                .sexualAbuseDetails("-")
+                .whatKindOfRiskAndHarmToChildren("-")
+                .factorsAffectingParenting("-")
+                .anythingElseAffectingParenting("-")
                 .build();
 
             assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
