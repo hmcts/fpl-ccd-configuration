@@ -96,7 +96,7 @@ class RiskAndHarmCheckerTest {
     private static Stream<Arguments> completeRisks() {
         return Stream.of(
             Risks.builder()
-                .whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse"))
+                .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
                 .factorsAffectingParenting(List.of("Domestic abuse"))
                 .anythingElseAffectingParenting(null)
                 .build(),
@@ -107,7 +107,7 @@ class RiskAndHarmCheckerTest {
 
     private static Risks.RisksBuilder completedRisk() {
         return Risks.builder()
-            .whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse"))
+            .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
             .factorsAffectingParenting(List.of("Anything else"))
             .anythingElseAffectingParenting("Somthing else");
     }

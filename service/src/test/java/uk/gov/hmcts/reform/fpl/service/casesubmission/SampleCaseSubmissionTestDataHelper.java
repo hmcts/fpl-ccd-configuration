@@ -245,7 +245,7 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisRisks expectedDocmosisRisks() {
         return DocmosisRisks.builder()
-            .whatKindOfRiskAndHarmToChildren("Emotional abuse")
+            .whatKindOfRiskAndHarmToChildren("Emotional harm")
             .factorsAffectingParenting("Anything else")
             .anythingElseAffectingParenting("Something else")
             .build();

@@ -14,26 +14,13 @@
     "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "${caseLocalAuthority:-test1}",
     "risks": {
-      "neglect": "Yes",
-      "sexualAbuse": "Yes",
-      "physicalHarm": "Yes",
-      "emotionalHarm": "Yes",
-      "neglectOccurrences": [
-        "Past harm",
-        "Future risk of harm"
+      "whatKindOfRiskAndHarmToChildren": [
+        "Emotional harm"
       ],
-      "sexualAbuseOccurrences": [
-        "Past harm",
-        "Future risk of harm"
+      "factorsAffectingParenting": [
+        "Anything else"
       ],
-      "physicalHarmOccurrences": [
-        "Past harm",
-        "Future risk of harm"
-      ],
-      "emotionalHarmOccurrences": [
-        "Past harm",
-        "Future risk of harm"
-      ]
+      "anythingElseAffectingParenting": "Something else"
     },
     "orders": {
       "orderType": [

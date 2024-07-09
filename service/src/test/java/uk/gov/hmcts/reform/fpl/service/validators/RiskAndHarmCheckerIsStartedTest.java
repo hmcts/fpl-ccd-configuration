@@ -45,7 +45,7 @@ class RiskAndHarmCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyRisks() {
         return Stream.of(
-                Risks.builder().whatKindOfRiskAndHarmToChildren(List.of("Emotional abuse")).build(),
+                Risks.builder().whatKindOfRiskAndHarmToChildren(List.of("Emotional harm")).build(),
                 Risks.builder().factorsAffectingParenting(List.of("Anything else")).build(),
                 Risks.builder().anythingElseAffectingParenting("Something else").build())
                 .map(Arguments::of);
