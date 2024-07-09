@@ -1,8 +1,7 @@
-
-  {
-  "state": "SUBMITTED",
+{
+  "state": "PREPARE_FOR_HEARING",
   "caseData": {
-    "caseName": "e2e test new case",
+    "caseName": "e2e test case",
     "orders": {
       "orderType": [
         "CARE_ORDER"
@@ -179,7 +178,6 @@
       "proposal": "District judge"
     },
     "caseLocalAuthority": "SA",
-    "familyManCaseNumber": "SW24C51337",
     "localAuthorityPolicy": {
       "Organisation": {
         "OrganisationID": "ORGSA",
@@ -258,4 +256,3 @@
     ]
   }
 }
-

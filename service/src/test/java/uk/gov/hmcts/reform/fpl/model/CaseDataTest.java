@@ -826,6 +826,7 @@ class CaseDataTest {
         private final String formattedFutureDate = "6 December 2020, 3:00pm";
         private final String formattedPastDate = "4 December 2020, 3:00pm";
         private final String july2020 = "4 July 2020, 3:00pm";
+        private final String aug2020 = "4 August 2020, 3:00pm";
         private final String may2021 = "6 May 2021, 3:00pm";
 
         private final Element<C2DocumentBundle> pastC2Element = buildC2WithFormattedDate(formattedPastDate);
@@ -834,6 +835,7 @@ class CaseDataTest {
 
 
         private final C2DocumentBundle pastC2Bundle = buildC2WithFormattedDate(july2020).getValue();
+        private final C2DocumentBundle pastC2BundleConf = buildC2WithFormattedDate(aug2020).getValue();
         private final C2DocumentBundle presentC2Bundle = buildC2WithFormattedDate(formattedDate).getValue();
         private final C2DocumentBundle futureC2Bundle = buildC2WithFormattedDate(may2021).getValue();
 
@@ -855,12 +857,14 @@ class CaseDataTest {
         void shouldBuildDynamicListFromC2DocumentsWithinAdditionalApplicationsBundle() {
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(
                 element(AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle).build()),
+                element(AdditionalApplicationsBundle.builder().c2DocumentBundleConfidential(pastC2BundleConf).build()),
                 element(AdditionalApplicationsBundle.builder().c2DocumentBundle(futureC2Bundle).build()));
 
             CaseData caseData = CaseData.builder().additionalApplicationsBundle(additionalBundles).build();
 
             DynamicList expectedDynamicList = buildDynamicList(
                 Pair.of(futureC2Bundle.getId(), "C2, " + futureC2Bundle.getUploadedDateTime()),
+                Pair.of(pastC2BundleConf.getId(), "C2, " + pastC2BundleConf.getUploadedDateTime()),
                 Pair.of(pastC2Bundle.getId(), "C2, " + pastC2Bundle.getUploadedDateTime())
             );
 
