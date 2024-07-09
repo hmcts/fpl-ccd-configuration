@@ -993,22 +993,12 @@ public class CaseSubmissionGenerationService
                                              Language applicationLanguage) {
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
-            .neglectDetails(risksPresent
-                            ? concatenateYesOrNoKeyAndValue(
-                risks.getNeglect(),
-                listToString(risks.getNeglectOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .sexualAbuseDetails(risksPresent
-                                ? concatenateYesOrNoKeyAndValue(
-                risks.getSexualAbuse(),
-                listToString(risks.getSexualAbuseOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .physicalHarmDetails(risksPresent
-                                 ? concatenateYesOrNoKeyAndValue(
-                risks.getPhysicalHarm(),
-                listToString(risks.getPhysicalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
-            .emotionalHarmDetails(risksPresent
-                                  ? concatenateYesOrNoKeyAndValue(
-                risks.getEmotionalHarm(),
-                listToString(risks.getEmotionalHarmOccurrences()), applicationLanguage) : DEFAULT_STRING)
+            .whatKindOfRiskAndHarmToChildren(risksPresent 
+                                ? listToString(risks.getWhatKindOfRiskAndHarmToChildren()) : DEFAULT_STRING)
+            .factorsAffectingParenting(risksPresent 
+                                ? listToString(risks.getFactorsAffectingParenting()) : DEFAULT_STRING)
+            .anythingElseAffectingParenting(risksPresent 
+                                ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING)
             .build();
     }
 
