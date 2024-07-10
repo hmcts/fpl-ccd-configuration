@@ -78,6 +78,10 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .builder()
             .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
             .recitalsOrPreamble(getOrderRecitalsAndPreambles(eventData))
+            .prohibitedStepsOrderDetails(getProhibitedStepsOrderDetails(eventData))
+            .specificIssueOrderDetails(getSpecificIssueOrderDetails(eventData))
+            .childArrangementsContactWithDetails(getChildArrangementsContactWithDetails(eventData))
+            .childArrangementsLiveWithDetails(getChildArrangementsLiveWithDetails(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(buildOrderDetails(eventData))
             .furtherDirections(getOrderDirections(eventData))
@@ -123,6 +127,22 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
         return eventData.getManageOrdersRecitalsAndPreambles();
+    }
+
+    private String getProhibitedStepsOrderDetails(ManageOrdersEventData eventData) {
+        return eventData.getManageOrdersProhibitedStepsOrderDetails();
+    }
+
+    private String getSpecificIssueOrderDetails(ManageOrdersEventData eventData) {
+        return eventData.getManageOrdersSpecificIssueOrderDetails();
+    }
+
+    private String getChildArrangementsContactWithDetails(ManageOrdersEventData eventData) {
+        return eventData.getManageOrdersChildArrangementsContactWithDetails();
+    }
+
+    private String getChildArrangementsLiveWithDetails(ManageOrdersEventData eventData) {
+        return eventData.getManageOrdersChildArrangementsLiveWithDetails();
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {
