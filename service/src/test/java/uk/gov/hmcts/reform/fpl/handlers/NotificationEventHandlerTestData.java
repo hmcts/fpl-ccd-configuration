@@ -21,6 +21,7 @@ public class NotificationEventHandlerTestData {
     public static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
     public static final String COURT_CODE = "11";
     public static final String CTSC_INBOX = "Ctsc+test@gmail.com";
+    public static final String SOLICITOR_EMAIL_ADDRESS = "solicitor1@gmail.com";
 
     private NotificationEventHandlerTestData() {
     }
