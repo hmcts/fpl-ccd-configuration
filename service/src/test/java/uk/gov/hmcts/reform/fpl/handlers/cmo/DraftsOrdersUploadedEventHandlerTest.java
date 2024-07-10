@@ -3,28 +3,27 @@ package uk.gov.hmcts.reform.fpl.handlers.cmo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.DraftOrderUrgencyOption;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.cafcass.OrderCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -33,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
@@ -64,13 +65,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(MockitoExtension.class)
 class DraftsOrdersUploadedEventHandlerTest {
     private static final Long CASE_ID = 12345L;
-    private static final CMOReadyToSealTemplate CMO_READY_TO_SEAL_TEMPLATE_DATA = mock(CMOReadyToSealTemplate.class);
     private static final DraftOrdersUploadedTemplate DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA = mock(
         DraftOrdersUploadedTemplate.class
     );
-
-    @Mock
-    private CourtService courtService;
 
     @Mock
     private NotificationService notificationService;
@@ -83,12 +80,6 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
-
-    @Captor
-    private ArgumentCaptor<Set<DocumentReference>> documentsToSend;
-
-    @Captor
-    private ArgumentCaptor<OrderCafcassData> orderCafcassDataCaptor;
 
     @InjectMocks
     private DraftOrdersUploadedEventHandler underTest;
@@ -244,8 +235,13 @@ class DraftsOrdersUploadedEventHandlerTest {
         );
     }
 
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded() {
+    static Stream<Boolean> provideBooleanValues() {
+        return Stream.of(true, false, null);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploaded(Boolean urgency) {
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
@@ -253,14 +249,17 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
 
-        final CaseData caseData = CaseData.builder()
+        final CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .allocatedJudge(allocatedJudge())
             .hearingDetails(List.of(hearing, selectedHearing))
             .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId());
+        if (urgency != null) {
+            builder.draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency))).build());
+        }
+        CaseData caseData = builder.build();
 
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
@@ -271,119 +270,8 @@ class DraftsOrdersUploadedEventHandlerTest {
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
-
-        verifyNoMoreInteractions(notificationService);
-    }
-
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploadedWithAgreedCMOExist() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
-
-        final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(hearing.getId(), AGREED_CMO, C21, C21);
-
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
-
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
-
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(draftCMOBundle.getOrders()),
-            DRAFT_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
-
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
-
-        verifyNoMoreInteractions(notificationService);
-    }
-
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
-
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
-
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
-
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
-
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(agreedCmoBundle.getOrders()),
-            AGREED_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
-
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
-            CASE_ID
-        );
-
-        verifyNoMoreInteractions(notificationService);
-    }
-
-    @Test
-    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploadedWithDraftCMOExist() {
-        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
-        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
-
-        final HearingOrdersBundle draftCMOBundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
-        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
-
-        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
-
-        final CaseData caseData = CaseData.builder()
-            .id(CASE_ID)
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .allocatedJudge(allocatedJudge())
-            .hearingDetails(List.of(hearing, selectedHearing))
-            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
-            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
-
-        when(draftOrdersContentProvider.buildContent(
-            caseData, selectedHearing.getValue(), judge,
-            unwrapElements(agreedCmoBundle.getOrders()),
-            AGREED_CMO
-        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
-
-        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
-
-        verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            Boolean.TRUE.equals(urgency) ? URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE
+                : DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
             judge.getJudgeEmailAddress(),
             DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
             CASE_ID
@@ -393,9 +281,144 @@ class DraftsOrdersUploadedEventHandlerTest {
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
-    void shouldSendNotificationToAllocatedJudgeIfNoHearingJudgeEmailPresent(String hearingJudgeEmail) {
+    @MethodSource("provideBooleanValues")
+    void shouldSendNotificationToHearingJudgeWhenDraftCMOUploadedWithAgreedCMOExist(Boolean urgency) {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
 
+        final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
+        final HearingOrdersBundle agreedCmoBundle = ordersBundle(hearing.getId(), AGREED_CMO, C21, C21);
+
+        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+
+        final CaseData.CaseDataBuilder builder = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId());
+        if (urgency != null) {
+            builder.draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency))).build());
+        }
+        CaseData caseData = builder.build();
+
+        when(draftOrdersContentProvider.buildContent(
+            caseData, selectedHearing.getValue(), judge,
+            unwrapElements(draftCMOBundle.getOrders()),
+            DRAFT_CMO
+        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+
+        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+        verify(notificationService).sendEmail(
+            Boolean.TRUE.equals(urgency) ? URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE
+                : DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            judge.getJudgeEmailAddress(),
+            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+            CASE_ID
+        );
+
+        verifyNoMoreInteractions(notificationService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploaded(Boolean urgency) {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
+
+        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+
+        final CaseData.CaseDataBuilder builder = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId());
+        if (urgency != null) {
+            builder.draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency))).build());
+        }
+        CaseData caseData = builder.build();
+
+        when(draftOrdersContentProvider.buildContent(
+            caseData, selectedHearing.getValue(), judge,
+            unwrapElements(agreedCmoBundle.getOrders()),
+            AGREED_CMO
+        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+
+        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+        verify(notificationService).sendEmail(
+            Boolean.TRUE.equals(urgency) ? URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE
+                : DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            judge.getJudgeEmailAddress(),
+            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+            CASE_ID
+        );
+
+        verifyNoMoreInteractions(notificationService);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanValues")
+    void shouldSendNotificationToHearingJudgeWhenAgreedCMOUploadedWithDraftCMOExist(Boolean urgency) {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle draftCMOBundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
+        final HearingOrdersBundle agreedCmoBundle = ordersBundle(selectedHearing.getId(), AGREED_CMO, C21, C21);
+
+        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+
+        final CaseData.CaseDataBuilder builder = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(agreedCmoBundle))
+            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId());
+        if (urgency != null) {
+            builder.draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency))).build());
+        }
+        CaseData caseData = builder.build();
+
+        when(draftOrdersContentProvider.buildContent(
+            caseData, selectedHearing.getValue(), judge,
+            unwrapElements(agreedCmoBundle.getOrders()),
+            AGREED_CMO
+        )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
+
+        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+        verify(notificationService).sendEmail(
+            Boolean.TRUE.equals(urgency) ? URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE
+                : DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            judge.getJudgeEmailAddress(),
+            DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
+            CASE_ID
+        );
+
+        verifyNoMoreInteractions(notificationService);
+    }
+
+    static Stream<Arguments> provideBooleanAndStringValues() {
+        List<Arguments> args = new ArrayList<>();
+        Stream.of(true, false, null).forEach(urgency -> {
+            args.add(Arguments.of(urgency, null));
+            args.add(Arguments.of(urgency, ""));
+        });
+        return args.stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideBooleanAndStringValues")
+    void shouldSendNotificationToAllocatedJudgeIfNoHearingJudgeEmailPresent(Boolean urgency, String hearingJudgeEmail) {
         final Element<HearingBooking> hearing1 = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail(hearingJudgeEmail);
 
@@ -404,14 +427,17 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final Judge judge = allocatedJudge();
 
-        final CaseData caseData = CaseData.builder()
+        final CaseData.CaseDataBuilder builder = CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .allocatedJudge(judge)
             .hearingDetails(List.of(hearing1, selectedHearing))
             .hearingOrdersBundlesDraftReview(wrapElements(bundle1, selectedHearingBundle))
-            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-            .build();
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId());
+        if (urgency != null) {
+            builder.draftOrderUrgency(DraftOrderUrgencyOption.builder().urgency(List.of(YesNo.from(urgency))).build());
+        }
+        CaseData caseData = builder.build();
 
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge, unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
@@ -420,7 +446,8 @@ class DraftsOrdersUploadedEventHandlerTest {
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verify(notificationService).sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
+            Boolean.TRUE.equals(urgency) ? URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE
+                : DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
             judge.getJudgeEmailAddress(),
             DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA,
             CASE_ID
