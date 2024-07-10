@@ -82,13 +82,6 @@ class RiskAndHarmCheckerTest {
                 .build(),
             completedRisk()
                 .factorsAffectingParenting(emptyList())
-                .build(),
-
-            completedRisk()
-                .anythingElseAffectingParenting(null)
-                .build(),
-            completedRisk()
-                .anythingElseAffectingParenting("")
                 .build()
         ).map(Arguments::of);
     }
@@ -98,7 +91,6 @@ class RiskAndHarmCheckerTest {
             Risks.builder()
                 .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
                 .factorsAffectingParenting(List.of("Domestic abuse"))
-                .anythingElseAffectingParenting(null)
                 .build(),
             completedRisk()
                 .build()
@@ -109,6 +101,6 @@ class RiskAndHarmCheckerTest {
         return Risks.builder()
             .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
             .factorsAffectingParenting(List.of("Anything else"))
-            .anythingElseAffectingParenting("Somthing else");
+            .anythingElseAffectingParenting("Something else");
     }
 }

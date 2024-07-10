@@ -41,8 +41,7 @@ public class RiskAndHarmChecker implements EventChecker {
 
         if (risks == null || anyEmpty(
             risks.getWhatKindOfRiskAndHarmToChildren(),
-            risks.getFactorsAffectingParenting(),
-            risks.getAnythingElseAffectingParenting())) {
+            risks.getFactorsAffectingParenting())) {
             return false;
         }
 
