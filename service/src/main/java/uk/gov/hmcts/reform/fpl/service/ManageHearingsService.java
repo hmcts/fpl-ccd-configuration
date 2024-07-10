@@ -359,7 +359,7 @@ public class ManageHearingsService {
     }
 
     public void buildNoticeOfHearingVacatedIfYes(CaseData caseData, HearingBooking hearingBooking) {
-        if (!YES.equals(caseData.getManageHearingHousekeepEventData().getHearingHousekeepOptions())) {
+        if (!YES.equals(caseData.getManageHearingHousekeepEventData().getHearingHousekeepOption())) {
             buildNoticeOfHearingVacated(caseData, hearingBooking);
         }
     }
@@ -700,7 +700,7 @@ public class ManageHearingsService {
             .status(hearingStatus)
             .vacatedDate(caseData.getVacatedHearingDate());
 
-        if (YES.equals(housekeepEventData.getHearingHousekeepOptions())) {
+        if (YES.equals(housekeepEventData.getHearingHousekeepOption())) {
             HearingHousekeepReason housekeepReason = housekeepEventData.getHearingHousekeepReason();
             cancelledHearingBuilder = cancelledHearingBuilder
                 .housekeepReason((HearingHousekeepReason.OTHER.equals(housekeepReason))
