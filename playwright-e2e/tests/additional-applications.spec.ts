@@ -8,7 +8,7 @@ import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.
 import { setHighCourt } from '../utils/update-case-details';
 import { createCase, updateCase } from "../utils/api-helper";
 
-test.describe('@local Upload additional applications', () => {
+test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
@@ -116,7 +116,7 @@ test.describe('@local Upload additional applications', () => {
       await expect(page.getByText('Draft order title')).toBeVisible();
     });
 
-    test('@local1 LA uploads a confidential C2 application with draft order',
+    test('LA uploads a confidential C2 application with draft order',
         async ({ page, signInPage, additionalApplications }) => {
             caseName = 'LA uploads a confidential C2 application with draft order ' + dateTime.slice(0, 10);
             await updateCase(caseName, caseNumber, caseData);

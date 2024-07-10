@@ -205,6 +205,7 @@ test.describe('Manage Documents', () => {
     await signInPage.visit();
     await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
     await signInPage.navigateTOCaseDetails(caseNumber);
+    await manageDocuments.gotoNextStep('Manage documents');
     await manageDocuments.uploadDocuments('Court correspondence');
 
     // Check CFV

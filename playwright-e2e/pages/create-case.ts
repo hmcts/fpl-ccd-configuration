@@ -79,7 +79,7 @@ export class CreateCase extends BasePage{
     //await this.addApplicationTitle.isVisible();
 
     // This click timeout is here allow for ExUI loading spinner to finish
-    await this.viewHistory.click();
+    //await this.viewHistory.click();
   }
 
   async checkCaseIsCreated(caseName: string) {
@@ -90,11 +90,8 @@ export class CreateCase extends BasePage{
       .selectOption("Public Law Applications");
     await this.page.getByLabel("State").selectOption("Any");
     await this.page.getByLabel("Apply filter").click();
-    await this.page.getByLabel("Day").click();
-    await this.page.getByLabel("Case name").click();
     await this.page.getByLabel("Case name").fill(caseName);
     await this.page.getByLabel("Apply filter").click();
-    await this.page.getByLabel("Day").click();
     expect(this.page.getByText(caseName)).toBeVisible();
     await this.page.getByText(caseName).click();
   }
