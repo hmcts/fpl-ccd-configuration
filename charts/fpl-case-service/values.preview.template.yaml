@@ -260,16 +260,6 @@ ccd:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
     replicas: 1
-    minimumMasterNodes: 1
-    antiAffinity: "soft"
-    esJavaOpts: "-Xmx512m -Xms512m"
-    extraEnvs:
-      - name: discovery.type
-        value: single-node
-      - name: cluster.initial_master_nodes
-        value: ""
-    persistence:
-      enabled: false
 
   logstash:
     image: hmctspublic.azurecr.io/ccd/logstash
@@ -285,13 +275,13 @@ ccd:
       port: 9200
     configTpl:
       xpack.monitoring.enabled: "false"
-      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      db.url: 'jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/pr-${CHANGE_ID}-data-store?ssl=disable&stringtype=unspecified'
       db.user: hmcts
       db.pwd: hmcts
       es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
     extraEnvs:
       - name: DATA_STORE_URL
-        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: 'jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require&stringtype=unspecified'
       - name: DATA_STORE_USER
         value: hmcts
       - name: DATA_STORE_PASS
@@ -300,7 +290,7 @@ ccd:
             name: postgres
             key: PASSWORD
       - name: DB_URL
-        value: jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/{{ .Values.global.databaseNamePrefix }}data-store?sslmode=require&stringtype=unspecified
+        value: 'jdbc:postgresql://family-public-law-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require&stringtype=unspecified'
       - name: DB_USER
         value: hmcts
       - name: DB_PWD
