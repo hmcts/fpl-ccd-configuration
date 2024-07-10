@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildAssessmentOrder;
 import uk.gov.hmcts.reform.fpl.model.GroundsForChildRecoveryOrder;
@@ -54,7 +53,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -327,7 +325,6 @@ public class CaseSubmissionGenerationService
             .internationalElement(buildDocmosisInternationalElement(caseData.getInternationalElement(),
                 applicationLanguage))
             .risks(buildDocmosisRisks(caseData.getRisks(), applicationLanguage))
-            .factorsParenting(buildDocmosisFactorsParenting(caseData.getFactorsParenting(), applicationLanguage))
             .respondents(buildDocmosisRespondents(caseData.getAllRespondents(), applicationLanguage))
             .applicants(buildDocmosisApplicants(caseData))
             .children(buildDocmosisChildren(caseData.getAllChildren(), applicationLanguage))
@@ -994,7 +991,8 @@ public class CaseSubmissionGenerationService
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
             .physicalHarm(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Physical harm including non-accidental injury", applicationLanguage) 
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), 
+                    "Physical harm including non-accidental injury", applicationLanguage) 
                 : DEFAULT_STRING)
             .emotionalHarm(risksPresent
                 ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Emotional harm", applicationLanguage) 
@@ -1014,26 +1012,6 @@ public class CaseSubmissionGenerationService
             .anythingElse(risksPresent 
                 ? risks.getAnythingElseAffectingParenting() 
                 : DEFAULT_STRING)
-            .build();
-    }
-
-    private DocmosisFactorsParenting buildDocmosisFactorsParenting(final FactorsParenting factorsParenting,
-                                                                   Language applicationLanguage) {
-        final boolean factorsParentingPresent = (factorsParenting != null);
-
-        return DocmosisFactorsParenting.builder()
-            .alcoholDrugAbuseDetails(factorsParentingPresent
-                                     ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getAlcoholDrugAbuse(),
-                factorsParenting.getAlcoholDrugAbuseReason(), applicationLanguage) : DEFAULT_STRING)
-            .domesticViolenceDetails(factorsParentingPresent
-                                     ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getDomesticViolence(),
-                factorsParenting.getDomesticViolenceReason(), applicationLanguage) : DEFAULT_STRING)
-            .anythingElse(factorsParentingPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                factorsParenting.getAnythingElse(),
-                factorsParenting.getAnythingElseReason(), applicationLanguage) : DEFAULT_STRING)
             .build();
     }
 

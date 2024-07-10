@@ -58,7 +58,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC17Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -1377,23 +1376,6 @@ class CaseSubmissionGenerationServiceTest {
                 .build();
 
             assertThat(caseSubmission.getRisks()).isEqualTo(expectedDefaultRisk);
-        }
-
-        @Test
-        void shouldReturnDefaultFactorsAffectingParentingWhenInfoNotGiven() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .factorsParenting(null)
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
-
-            DocmosisFactorsParenting expectedFactorsParenting = DocmosisFactorsParenting.builder()
-                .alcoholDrugAbuseDetails("-")
-                .anythingElse("-")
-                .domesticViolenceDetails("-")
-                .build();
-
-            assertThat(caseSubmission.getFactorsParenting()).isEqualTo(expectedFactorsParenting);
         }
 
         @Test
