@@ -993,12 +993,27 @@ public class CaseSubmissionGenerationService
                                              Language applicationLanguage) {
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
-            .whatKindOfRiskAndHarmToChildren(risksPresent 
-                                ? listToString(risks.getWhatKindOfRiskAndHarmToChildren()) : DEFAULT_STRING)
-            .factorsAffectingParenting(risksPresent 
-                                ? listToString(risks.getFactorsAffectingParenting()) : DEFAULT_STRING)
-            .anythingElseAffectingParenting(risksPresent 
-                                ? risks.getAnythingElseAffectingParenting() : DEFAULT_STRING)
+            .physicalHarm(risksPresent
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Physical harm including non-accidental injury", applicationLanguage) 
+                : DEFAULT_STRING)
+            .emotionalHarm(risksPresent
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Emotional harm", applicationLanguage) 
+                : DEFAULT_STRING)
+            .sexualAbuse(risksPresent
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Sexual abuse", applicationLanguage) 
+                : DEFAULT_STRING)
+            .neglect(risksPresent
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Neglect", applicationLanguage) 
+                : DEFAULT_STRING)
+            .alcoholDrugAbuse(risksPresent
+                ? isPresentInList(risks.getFactorsAffectingParenting(), "Alcohol or drug abuse", applicationLanguage) 
+                : DEFAULT_STRING)
+            .domesticAbuse(risksPresent
+                ? isPresentInList(risks.getFactorsAffectingParenting(), "Domestic abuse", applicationLanguage) 
+                : DEFAULT_STRING)
+            .anythingElse(risksPresent 
+                ? risks.getAnythingElseAffectingParenting() 
+                : DEFAULT_STRING)
             .build();
     }
 
@@ -1067,6 +1082,11 @@ public class CaseSubmissionGenerationService
             default:
                 return DEFAULT_STRING;
         }
+    }
+
+    private String isPresentInList(List<String> givenList, String givenString, 
+                                    Language applicationLanguage) {
+        return (givenList.contains(givenString)) ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
     }
 
     private String listToString(final List<String> givenList) {

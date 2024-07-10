@@ -10,11 +10,11 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisRisks {
-    private final String neglectDetails;
-    private final String sexualAbuseDetails;
-    private final String physicalHarmDetails;
-    private final String emotionalHarmDetails;
-    private final String whatKindOfRiskAndHarmToChildren;
-    private final String factorsAffectingParenting;
-    private final String anythingElseAffectingParenting;
+    private final String physicalHarm;
+    private final String emotionalHarm;
+    private final String sexualAbuse;
+    private final String neglect;
+    private final String alcoholDrugAbuse;
+    private final String domesticAbuse;
+    private final String anythingElse;
 }
