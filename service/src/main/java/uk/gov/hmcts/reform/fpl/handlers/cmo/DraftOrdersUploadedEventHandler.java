@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContent
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrdersUploadedEventHandler {
@@ -49,12 +52,19 @@ public class DraftOrdersUploadedEventHandler {
     private final DraftOrdersUploadedContentProvider draftOrdersContentProvider;
     private final CafcassNotificationService cafcassNotificationService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final FeatureToggleService featureToggleService;
 
     @Async
     @EventListener
     public void sendNotificationToJudge(final DraftOrdersUploaded event) {
         final CaseData caseData = event.getCaseData();
         final HearingBooking hearing = getHearingBooking(caseData);
+
+        if (!featureToggleService.isCourtNotificationEnabledForWa(event.getCaseData().getCourt())) {
+            log.info("Upload draft order - notification toggled off for court {}",
+                event.getCaseData().getCourt());
+            return;
+        }
 
         AbstractJudge judge = getJudge(caseData, hearing);
 

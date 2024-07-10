@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -83,6 +84,9 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @Captor
     private ArgumentCaptor<Set<DocumentReference>> documentsToSend;
@@ -268,6 +272,8 @@ class DraftsOrdersUploadedEventHandlerTest {
             DRAFT_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verify(notificationService).sendEmail(
@@ -306,6 +312,8 @@ class DraftsOrdersUploadedEventHandlerTest {
             DRAFT_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verify(notificationService).sendEmail(
@@ -336,6 +344,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(selectedHearing.getId())
             .build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
             unwrapElements(agreedCmoBundle.getOrders()),
@@ -380,6 +389,8 @@ class DraftsOrdersUploadedEventHandlerTest {
             AGREED_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verify(notificationService).sendEmail(
@@ -413,6 +424,7 @@ class DraftsOrdersUploadedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(selectedHearing.getId())
             .build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge, unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
@@ -458,6 +470,31 @@ class DraftsOrdersUploadedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(hearing1.getId())
             .allocatedJudge(null)
             .build();
+
+        underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
+
+        verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotSendNotificationToHearingJudgeWhenToggledOff() {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
+
+        final HearingOrdersBundle draftCMOBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21);
+
+        final JudgeAndLegalAdvisor judge = selectedHearing.getValue().getJudgeAndLegalAdvisor();
+
+        final CaseData caseData = CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDraftReview(wrapElements(draftCMOBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+            .build();
+
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
 
         underTest.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
