@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test(" Smoke Test @smoke-test @accessibility", async ({
+test("Smoke Test @smoke-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
@@ -18,7 +18,7 @@ test(" Smoke Test @smoke-test @accessibility", async ({
   page,
   makeAxeBuilder
 }, testInfo) => {
- // Marking this test slow to increse the time for 3 times of other test
+ // Marking this test slow to increase the time for 3 times of other test
     test.slow();
   // 1. Sign in as local-authority user
   await signInPage.visit();
