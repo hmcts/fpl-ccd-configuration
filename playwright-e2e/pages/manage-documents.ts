@@ -48,15 +48,17 @@ export class ManageDocuments extends BasePage {
         this.no = page.getByRole('radio', { name: 'No' });
 
     }
-    async uploadDocuments(type: string,isconfidential: string= 'No') {
+    async uploadDocuments(type: string,isConfidential: string= 'No') {
         await this.page.getByLabel('Upload new documents').check();
         await this.clickContinue();
+
         await this.page.getByRole('textbox', { name: 'Upload a document' })
             .setInputFiles(config.testTextFile);
+
         await this.page.getByLabel('Document type').selectOption(type);
 
         // not confidential
-        await this.page.getByRole('radio', { name: `${isconfidential}` }).check();
+        await this.page.getByRole('radio', { name: `${isConfidential}` }).check();
 
         // is on right case
         await this.page.getByRole('checkbox', { name: 'Yes'}).check();
