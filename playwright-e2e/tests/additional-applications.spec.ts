@@ -85,7 +85,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.checkYourAnsAndSubmit();
   });
 
-  test(' LA uploads combined Other and C2 applications',
+  test('LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
       caseName = 'LA uploads additional application with both Other and C2 ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, caseData);
