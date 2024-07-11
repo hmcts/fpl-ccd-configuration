@@ -45,7 +45,7 @@
     "test:functional-chromium": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=chromium",
     "test:functional-webkit": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test  --project=webkit",
     "test:functional-firefox": "yarn playwright install chromium && yarn playwright install firefox && yarn playwright install webkit && yarn playwright test --project=firefox",
-    "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test smoke-test.spec --project=preview",
+    "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
     "test:local": "yarn playwright test  --headed  --project=preview --retries=1 --grep @local",
     "prepare": "husky install",
@@ -67,6 +67,7 @@
   "dependencies": {
     "@axe-core/playwright": "^4.8.5",
     "@types/lodash": "^4.14.202",
-    "dotenv": "^16.4.1"
+    "dotenv": "^16.4.1",
+    "playwright": "^1.45.1"
   }
 }
