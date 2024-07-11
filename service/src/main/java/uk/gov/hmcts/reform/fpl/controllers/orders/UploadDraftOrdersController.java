@@ -99,7 +99,7 @@ public class UploadDraftOrdersController extends CallbackController {
             C21, hearingOrdersBundles.getAgreedCmos()
         );
 
-        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, bundles);
+        UUID hearingId = service.updateCase(caseData, hearings, unsealedCMOs, bundles);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
