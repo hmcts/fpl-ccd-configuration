@@ -20,7 +20,6 @@ test.describe('Manage Documents', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
-    test.slow();
 
     test('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
