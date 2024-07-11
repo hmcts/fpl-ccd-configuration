@@ -31,7 +31,6 @@ test.describe('Manage Documents', () => {
         await manageDocuments.uploadDocuments('Court correspondence');
 
         // Check CFV
-        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Court Correspondence');
         await expect(page.getByRole('tree')).toContainText('testTextFile.txt');
@@ -74,7 +73,6 @@ test.describe('Manage Documents', () => {
        // await manageDocuments.uploadNewDocuments();
 
         // position is visble under CFV
-        await signInPage.navigateTOCaseDetails(caseNumber);
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await expect(page.getByRole('tree')).toContainText(' testTextFile.txt ');
