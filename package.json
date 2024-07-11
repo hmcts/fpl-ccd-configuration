@@ -67,6 +67,7 @@
   "dependencies": {
     "@axe-core/playwright": "^4.8.5",
     "@types/lodash": "^4.14.202",
-    "dotenv": "^16.4.1"
+    "dotenv": "^16.4.1",
+    "playwright": "^1.45.1"
   }
 }
