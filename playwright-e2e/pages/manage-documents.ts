@@ -63,8 +63,6 @@ export class ManageDocuments extends BasePage {
         await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
-        //Sometime after upload document , the control goes to case list page. To handle this
-        //await expect(this.page.getByText('updated with event: Manage documents')).toBeVisible();
     }
 
     async removeDocuments() {
