@@ -30,7 +30,6 @@ export class BasePage {
           await this.nextStep.selectOption(eventName);
           await this.goButton.click({clickCount:2,delay:300});
           await expect(this.page.getByRole('button', { name: 'Continue' })).toBeVisible();
-        //  await expect(this.page.getByText(`${eventName}`,{exact:true})).toBeVisible();
       }).toPass();
     }
 

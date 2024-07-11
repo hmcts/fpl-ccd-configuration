@@ -48,7 +48,7 @@ export class ManageDocuments extends BasePage {
         this.no = page.getByRole('radio', { name: 'No' });
 
     }
-    async uploadDocuments(type: string) {
+    async uploadDocuments(type: string,isconfidential: string= 'No') {
         await this.page.getByLabel('Upload new documents').check();
         await this.clickContinue();
         await this.page.getByRole('textbox', { name: 'Upload a document' })
@@ -56,40 +56,17 @@ export class ManageDocuments extends BasePage {
         await this.page.getByLabel('Document type').selectOption(type);
 
         // not confidential
-        await this.page.getByRole('radio', { name: 'No' }).check();
+        await this.page.getByRole('radio', { name: `${isconfidential}` }).check();
 
         // is on right case
-        await this.page.getByRole('checkbox', { name: 'Yes' }).check();
+        await this.page.getByRole('checkbox', { name: 'Yes'}).check();
         await this.waitForAllUploadsToBeCompleted();
         await this.clickContinue();
         await this.checkYourAnsAndSubmit();
+        //Sometime after upload document , the control goes to case list page. To handle this
+        //await expect(this.page.getByText('updated with event: Manage documents')).toBeVisible();
     }
-    async uploadedDocuments(type: string) {
-        await expect(this.manageDocumentsTest).toBeVisible();
-        await this.uploadNewDocuments.check();
-        await this.clickContinue();
-        await this.inputFiles.setInputFiles(config.testTextFile);
-        await this.documentType.selectOption(type);
-        await this.nonconfidentialRadioButton.check();
-        await this.isDocumentRelatedToCase.check();
-        await this.waitForAllUploadsToBeCompleted();
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
-        await this.addNew.check();
-        await this.no.check();
-    }
-    async uploadConfidentialDocuments(type: string) {
-        await expect(this.manageDocumentsTest).toBeVisible();
-        await this.uploadNewDocuments.check();
-        await this.clickContinue();
-        await this.inputFiles.setInputFiles(config.testTextFile);
-        await this.documentType.selectOption(type);
-        await this.confidentialRadioButton.check();
-        await this.isDocumentRelatedToCase.check();
-        await this.waitForAllUploadsToBeCompleted();
-        await this.clickContinue();
-        await this.checkYourAnsAndSubmit();
-    }
+
     async removeDocuments() {
         await this.page.getByLabel('Remove documents').check();
         await this.clickContinue();

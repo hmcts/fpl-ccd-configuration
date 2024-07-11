@@ -22,4 +22,5 @@ export class CaseFileView extends BasePage {
         await this.page.getByLabel(toFolder, { exact: true }).check();
         await this.page.getByRole('button', { name: 'Save', exact: true }).click();
     }
+
 }

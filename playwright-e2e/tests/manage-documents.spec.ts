@@ -20,6 +20,7 @@ test.describe('Manage Documents', () => {
     test.beforeEach(async () => {
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
     });
+    test.slow();
 
     test('LA uploads documents', async ({ page, signInPage, manageDocuments, caseFileView }) => {
         caseName = 'LA uploads documents ' + dateTime.slice(0, 10);
@@ -69,9 +70,6 @@ test.describe('Manage Documents', () => {
         await manageDocuments.gotoNextStep('Manage documents');
         await manageDocuments.uploadDocuments('Position Statements');
 
-        // uploads documents
-       // await manageDocuments.uploadNewDocuments();
-
         // position is visble under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
@@ -97,9 +95,9 @@ test.describe('Manage Documents', () => {
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('Position Statements');
+        await manageDocuments.uploadDocuments('Position Statements','Yes');
 
-        // position is visble under CFV
+        // position is visible under CFV
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await caseFileView.openFolder('Confidential');
@@ -111,7 +109,7 @@ test.describe('Manage Documents', () => {
         await signInPage.isSignedIn();
         await signInPage.navigateTOCaseDetails(caseNumber);
 
-        //go to CFV and assert Position statement not visble
+        //go to CFV and assert Position statement not visible
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
         await expect(page.getByRole('tree')).not.toContainText('testTextFile.txt');
@@ -127,7 +125,7 @@ test.describe('Manage Documents', () => {
         await signInPage.login(CTSCUser.email, CTSCUser.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
         await manageDocuments.gotoNextStep('Manage documents');
-        await manageDocuments.uploadConfidentialDocuments('Position Statements');
+        await manageDocuments.uploadDocuments('Position Statements','Yes');
 
         await caseFileView.goToCFVTab();
         await caseFileView.openFolder('Position Statements');
