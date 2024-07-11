@@ -51,7 +51,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseSubmissionController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
-    private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
+    private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true."
+        + "\n The applicant understands that proceedings for contempt of court may be brought against anyone who makes,"
+        + " or causes to be made, a false statement in a document verified by a statement of truth without an honest"
+        + " belief in its truth. The applicant believes that the facts stated in this application are true.";
     public static final String DRAFT_APPLICATION_DOCUMENT = "draftApplicationDocument";
     private final CaseSubmissionService caseSubmissionService;
     private final FeeService feeService;
