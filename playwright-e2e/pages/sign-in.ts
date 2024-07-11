@@ -41,7 +41,6 @@ export class SignInPage extends BasePage{
   }
 
   async isSignedIn() {
-   // await this.applyLocator.click();
     await expect(this.applyLocator).toBeVisible();
   }
 
