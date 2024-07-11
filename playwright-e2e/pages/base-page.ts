@@ -19,7 +19,7 @@ export class BasePage {
     this.continueButton = page.getByRole("button", { name: "Continue" });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue" });
+    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
     this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
