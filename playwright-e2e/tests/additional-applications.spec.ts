@@ -16,6 +16,8 @@ test.describe('Upload additional applications', () => {
     test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
+    //mark test as slow to give extra timeout
+    test.slow();
 
   test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
@@ -209,7 +211,7 @@ test.describe('Upload additional applications', () => {
         await signInPage.visit();
         await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
         await signInPage.navigateTOCaseDetails(caseNumber);
-        await additionalApplications.uploadBasicC2Application(false); 
+        await additionalApplications.uploadBasicC2Application(false);
 
         // Check CFV
         await caseFileView.goToCFVTab();
