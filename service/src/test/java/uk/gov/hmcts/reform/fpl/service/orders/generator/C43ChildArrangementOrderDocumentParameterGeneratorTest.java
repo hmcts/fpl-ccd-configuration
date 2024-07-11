@@ -35,6 +35,10 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
     private static final String LA_NAME = "Local Authority Name";
     private static final String CONSENT = "By consent";
     private static final String ORDER_HEADER = "Warning \n";
+    private static final String PROHIBITED_STEPS_DETAIL = "Prohibited steps order detail";
+    private static final String SPECIFIC_ISSUE_DETAIL = "Specific issue order detail";
+    private static final String CONTACT_WITH_DETAIL = "Contact with order detail";
+    private static final String LIVE_WITH_DETAIL = "Live with order detail";
     private static final String RECITALS_AND_PREAMBLES = "Recitals and Preambles";
     private static final String DIRECTIONS = "Directions";
     private static final String FURTHER_DIRECTIONS = "Further directions";
@@ -94,7 +98,7 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         List<C43OrderType> c43OrderTypes = List.of(
             C43OrderType.SPECIFIC_ISSUE_ORDER, C43OrderType.PROHIBITED_STEPS_ORDER);
 
-        CaseData caseData = buildCaseData(c43OrderTypes, null);
+        CaseData caseData = buildCaseData(c43OrderTypes, List.of());
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(orderMessageGenerator.getOrderByConsentMessage(any())).thenReturn(CONSENT);
@@ -166,6 +170,10 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
                 .manageOrdersType(Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER)
                 .manageOrdersIsByConsent("No")
                 .manageOrdersMultiSelectListForC43(c43OrderTypes)
+                .manageOrdersProhibitedStepsOrderDetails(PROHIBITED_STEPS_DETAIL)
+                .manageOrdersSpecificIssueOrderDetails(SPECIFIC_ISSUE_DETAIL)
+                .manageOrdersChildArrangementsLiveWithDetails(
+                    childArrOrderType.contains(CHILD_LIVE) ? LIVE_WITH_DETAIL : null)
                 .manageOrdersRecitalsAndPreambles(RECITALS_AND_PREAMBLES)
                 .manageOrdersDirections(DIRECTIONS)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
@@ -184,6 +192,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(ORDER_TITLE)
             .recitalsOrPreamble(RECITALS_AND_PREAMBLES)
+            .prohibitedStepsOrderDetails(PROHIBITED_STEPS_DETAIL)
+            .specificIssueOrderDetails(SPECIFIC_ISSUE_DETAIL)
             .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)
@@ -202,6 +212,9 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
         return C43ChildArrangementOrderDocmosisParameters.builder()
             .orderTitle(ORDER_TITLE)
             .recitalsOrPreamble(RECITALS_AND_PREAMBLES)
+            .childArrangementsLiveWithDetails(LIVE_WITH_DETAIL)
+            .specificIssueOrderDetails(SPECIFIC_ISSUE_DETAIL)
+            .prohibitedStepsOrderDetails(PROHIBITED_STEPS_DETAIL)
             .orderByConsent(CONSENT)
             .orderDetails(orderDetails)
             .furtherDirections(directions)
