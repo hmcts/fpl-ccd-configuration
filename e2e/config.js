@@ -9,7 +9,6 @@ module.exports = {
     forename: 'Local',
     surname: 'Authority',
   },
-  
   swanseaLocalAuthorityUserOne: {
     email: 'kurt@swansea.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
