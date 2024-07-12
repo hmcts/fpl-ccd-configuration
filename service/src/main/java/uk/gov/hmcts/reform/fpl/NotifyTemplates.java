@@ -58,7 +58,7 @@ public final class NotifyTemplates {
     public static final String UNDELIVERED_EMAILS_TEMPLATE = "35840c28-78b7-48c2-bd09-239598dae28b";
     public static final String APPLICATION_RETURNED_TO_THE_LA = "2d8b5486-7527-42ea-9b56-e79bfc0f6c27";
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
-    public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
+    public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "1b05712d-00e6-4bb9-943e-65268069ef91";
     public static final String COURT_BUNDLE_UPLOADED_NOTIFICATION = "8ef65a4d-cf5c-4dcf-9f3b-57906c3a3720";
     public static final String NOTICE_OF_NEW_HEARING = "aa997c49-efe7-4443-a4ea-6198f62ce449";
     public static final String NOTICE_OF_NEW_HEARING_NO_OTHER_ADDRESS = "a51849ac-8fd9-4387-be37-0d80a9209b79";
