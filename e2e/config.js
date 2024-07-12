@@ -4,6 +4,7 @@ const e2ePw = process.env.E2E_TEST_PASSWORD;
 module.exports = {
   newSwanseaLocalAuthorityUserOne: {
     email: 'local-authority-swansea-0001@maildrop.cc',
+    
     password:  e2ePw,
     forename: 'Local',
     surname: 'Authority',
