@@ -240,7 +240,7 @@
     "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
-    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true. \n The applicant understands that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth. The applicant believes that the facts stated in this application are true.",
     "applicationDocuments": [
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",

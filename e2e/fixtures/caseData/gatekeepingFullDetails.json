@@ -313,7 +313,7 @@
         }
       }
     ],
-    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true. \n The applicant understands that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth. The applicant believes that the facts stated in this application are true.",
     "hearingDetails": [
       {
         "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
