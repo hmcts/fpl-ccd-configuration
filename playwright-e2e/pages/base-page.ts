@@ -25,13 +25,13 @@ export class BasePage {
   }
 
   async gotoNextStep(eventName: string) {
-    await this.nextStep.selectOption(eventName);
-    await this.goButton.dblclick();
-    await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
-       await this.goButton.click();
+      await expect(async () => {
+          await this.page.reload();
+          await this.nextStep.selectOption(eventName);
+          await this.goButton.click({clickCount:2,delay:300});
+          await expect(this.page.getByRole('button', { name: 'Continue' })).toBeVisible();
+      }).toPass();
     }
-  }
 
   async expectAllUploadsCompleted() {
     let locs = await this.page.getByText('Cancel upload').all();
