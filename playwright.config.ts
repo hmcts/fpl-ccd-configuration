@@ -15,8 +15,8 @@ export default defineConfig({
   testMatch:'*spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 3*60*1000, //total test execution time is set to 3 min
-  expect: { timeout: 1*45*1000 }, //wait time for the assertion 45 sec
+  timeout: 3*60*1000, //each test execution time is set to 3 min
+  expect: { timeout: 1*60*1000 }, //wait time for the assertion to be true 45 sec
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -58,7 +58,7 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
       retries: 3,
         timeout: 3*60*1000,
-        expect: { timeout: 2*60*1000 },
+        expect: { timeout: 1*60*1000 },
     },
 
     /* Test against mobile viewports. */
