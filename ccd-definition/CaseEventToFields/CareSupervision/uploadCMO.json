@@ -22,6 +22,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,
     "DisplayContext": "READONLY",
+    "FieldShowCondition": "hearingOrderDraftKind=\"DO_NOT_SHOW\"",
     "Publish": "Y"
   },
   {
@@ -30,7 +31,7 @@
     "CaseEventID": "uploadCMO",
     "CaseFieldID": "draftOrderNeedsReviewUploaded",
     "PageID": "OrderDraftKindSelection",
-    "DisplayContext": "READONLY",
+    "DisplayContext": "MANDATORY",
     "PageFieldDisplayOrder": 101,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,

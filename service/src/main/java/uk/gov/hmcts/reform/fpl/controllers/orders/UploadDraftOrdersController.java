@@ -111,7 +111,7 @@ public class UploadDraftOrdersController extends CallbackController {
 
         // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
         caseDetails.getData().put("draftOrderNeedsReviewUploaded",
-            eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
+            eventData.hasDraftOrderBeenUploadedThatNeedsApproval().getValue());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
