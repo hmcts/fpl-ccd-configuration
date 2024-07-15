@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -53,6 +55,9 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     static Stream<Boolean> provideBooleanValues() {
         return Stream.of(true, false, null);
     }
@@ -60,6 +65,8 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
     @ParameterizedTest
     @MethodSource("provideBooleanValues")
     void shouldSendNotificationsIfNewAgreedCMOUploaded(Boolean urgency) {
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
+
         postSubmittedEvent(caseDetails(urgency));
 
         checkUntil(() -> verify(notificationClient).sendEmail(
