@@ -29,7 +29,6 @@ export class BasePage {
   }
 
   async gotoNextStep(eventName: string) {
-    
       await expect(async () => {
           await this.page.reload();
           await this.nextStep.selectOption(eventName);
