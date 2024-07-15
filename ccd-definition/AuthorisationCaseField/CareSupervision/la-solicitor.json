@@ -2296,6 +2296,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isC2Confidential",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "applicantsList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
@@ -3212,5 +3219,12 @@
     "CaseFieldID": "draftOrderNeedsReviewUploaded",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderUrgency",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRUD"
   }
 ]

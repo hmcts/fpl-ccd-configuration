@@ -107,10 +107,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "c1AndOtherApplicationsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "c1AndOtherApplications",
+    "DisplayOrder": "7010"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "c2Applications",
     "CategoryLabel": "C2 applications",
     "ParentCategoryID": "applications",
     "DisplayOrder": "702"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "c2ApplicationsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "c2Applications",
+    "DisplayOrder": "7020"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -150,6 +166,22 @@
     "CategoryLabel": "Draft Orders",
     "ParentCategoryID": "orders",
     "DisplayOrder": "802"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "draftOrdersConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "draftOrders",
+    "DisplayOrder": "8020"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "ordersConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "orders",
+    "DisplayOrder": "803"
   },
   {
     "LiveFrom": "01/01/2017",

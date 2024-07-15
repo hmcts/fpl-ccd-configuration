@@ -9,8 +9,8 @@ export class BasePage {
   readonly checkYourAnswersHeader: Locator;
   readonly saveAndContinue: Locator;
   readonly submit: Locator;
- 
-  
+  readonly rateLimit: Locator;
+
 
   constructor(page: Page) {
     this.page = page;
@@ -21,16 +21,17 @@ export class BasePage {
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
     this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
     this.submit = page.getByRole('button', { name: 'Submit' });
+    this.rateLimit = page.getByText('Your request was rate limited. Please wait a few seconds before retrying your document upload');
   }
 
   async gotoNextStep(eventName: string) {
-    await this.nextStep.selectOption(eventName);
-    await this.goButton.dblclick();
-    await this.page.waitForTimeout(20000);
-    if (await  this.goButton.isVisible()) {
-       await this.goButton.click();
+      await expect(async () => {
+          await this.page.reload();
+          await this.nextStep.selectOption(eventName);
+          await this.goButton.click({clickCount:2,delay:300});
+          await expect(this.page.getByRole('button', { name: 'Continue' })).toBeVisible();
+      }).toPass();
     }
-  }
 
   async expectAllUploadsCompleted() {
     let locs = await this.page.getByText('Cancel upload').all();
@@ -40,7 +41,7 @@ export class BasePage {
   }
 
   async checkYourAnsAndSubmit(){
-    await this.checkYourAnswersHeader.isVisible();
+    await expect(this.checkYourAnswersHeader).toBeVisible();
     await this.saveAndContinue.click();
   }
 
@@ -90,4 +91,3 @@ export class BasePage {
     await this.submit.click();
   }
 }
-

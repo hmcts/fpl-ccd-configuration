@@ -2713,7 +2713,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDrafts",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -2977,6 +2977,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cancelledHearingId",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "adjournmentReason",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
@@ -3013,6 +3020,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingReListOption",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingHousekeepOption",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingHousekeepReason",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingHousekeepReasonOther",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },
@@ -3475,6 +3503,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submittedC1WithSupplement",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isC2Confidential",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -4710,6 +4745,69 @@
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRUD"
   },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderExpiration",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderEndDate",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishInformationLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishInformationDetails",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishIdentityLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishIdentityDetails",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishDocumentsLabel",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPublishDocumentsDetails",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageOrdersTransparencyOrderPermissionToReportEffectiveDate",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRUD"
+  },  
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

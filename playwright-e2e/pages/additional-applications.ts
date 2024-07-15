@@ -6,6 +6,8 @@ export class AdditionalApplications extends BasePage {
 
   readonly otherSpecificOrder: Locator;
   readonly c2Order: Locator;
+  readonly confidentialC2Order: Locator;
+  readonly nonConfidentialC2Order: Locator;
   readonly applicant: Locator;
   readonly c1ApplicationType: Locator;
   readonly applicationForm: Locator;
@@ -19,6 +21,8 @@ export class AdditionalApplications extends BasePage {
     super(page);
     this.otherSpecificOrder = page.getByText('Other specific order - including C1 and C100 orders, and supplements');
     this.c2Order = page.getByText('C2 - to add or remove someone on a case, or for a specific request to the judge');
+    this.confidentialC2Order = page.locator('[for="isC2Confidential_Yes"]');
+    this.nonConfidentialC2Order = page.locator('[for="isC2Confidential_No"]');
     this.applicant = page.getByLabel('Select applicant');
     this.c1ApplicationType = page.getByLabel('Select application');
     this.applicationForm = page.getByRole('textbox', { name: 'Upload application' });
@@ -39,6 +43,15 @@ export class AdditionalApplications extends BasePage {
     await this.c2Order.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
+    await this.clickContinue();
+  }
+
+  public async chooseConfidentialC2ApplicationType() {
+    await this.c2Order.click();
+    await this.applicant.selectOption('Swansea City Council, Applicant');
+    await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.confidentialC2Order.click();
     await this.clickContinue();
   }
 
@@ -47,6 +60,7 @@ export class AdditionalApplications extends BasePage {
     await this.otherSpecificOrder.click();
     await this.applicant.selectOption('Swansea City Council, Applicant');
     await this.page.getByText('Application by consent. Parties will be notified of this application.').click();
+    await this.nonConfidentialC2Order.click();
     await this.clickContinue();
   }
 
@@ -75,11 +89,11 @@ export class AdditionalApplications extends BasePage {
     }
   }
 
-  public async fillC2ApplicationDetails() {
+  public async fillC2ApplicationDetails(uploadDraftOrder: boolean = true) {
     // upload application form
     await this.c2ApplicationForm.setInputFiles(config.testTextFile);
-    await this.page.waitForTimeout(6000);
     await this.expectAllUploadsCompleted();
+    await this.page.waitForTimeout(6000);
 
     await this.acknowledgeC2ApplicationForm.check();
     await this.page.getByLabel('Change surname or remove from jurisdiction.').click();
@@ -87,8 +101,10 @@ export class AdditionalApplications extends BasePage {
 
     // TODO - upload supplements, supporting evidence?
 
-    // add new draft order
-    await this.uploadDraftOrder();
+    // add new draft order if required
+    if (uploadDraftOrder) {
+        await this.uploadDraftOrder();
+    }
 
     await this.clickContinue();
   }
@@ -97,10 +113,11 @@ export class AdditionalApplications extends BasePage {
     await this.page.locator('#temporaryC2Document_draftOrdersBundle').getByRole('button', { name: 'Add new' }).click();
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_title').fill('Draft order title');
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_document').setInputFiles(config.testTextFile);
+    await this.expectAllUploadsCompleted();
     // added hard wait due to EXUI-1194
     await this.page.waitForTimeout(6000);
     await this.page.locator('#temporaryC2Document_draftOrdersBundle_0_documentAcknowledge-ACK_RELATED_TO_CASE').check();
-    await this.expectAllUploadsCompleted();
+
   }
 
   public async uploadOtherSupplement() {
@@ -121,11 +138,18 @@ export class AdditionalApplications extends BasePage {
     await this.expectAllUploadsCompleted();
   }
 
-
   public async payForApplication() {
-    await this.page.getByLabel('Yes').check();
+    await this.page.locator('[for="temporaryPbaPayment_usePbaPayment_Yes"]').check();
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.clickContinue();
+  }
+
+  public async uploadBasicC2Application(uploadDraftOrder: boolean = true) {
+    await this.gotoNextStep('Upload additional applications');
+    await this.chooseC2ApplicationType();
+    await this.fillC2ApplicationDetails(uploadDraftOrder);
+    await this.payForApplication();
+    await this.checkYourAnsAndSubmit();
   }
 }

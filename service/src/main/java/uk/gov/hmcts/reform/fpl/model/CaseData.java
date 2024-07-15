@@ -439,7 +439,8 @@ public class CaseData extends CaseDataParent {
             bundle -> {
                 ofNullable(bundle.getC2DocumentBundle()).ifPresent(
                     c2 -> applicationBundles.add(element(c2.getId(), c2)));
-
+                ofNullable(bundle.getC2DocumentBundleConfidential()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
                 ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
                     otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
             }
@@ -459,6 +460,7 @@ public class CaseData extends CaseDataParent {
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
     private final C2ApplicationType c2Type;
+    private final YesNo isC2Confidential;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 
@@ -499,9 +501,19 @@ public class CaseData extends CaseDataParent {
     @PastOrPresent(message = "Date of issue cannot be in the future", groups = DateOfIssueGroup.class)
     private final LocalDate dateOfIssue;
     private final List<Element<GeneratedOrder>> orderCollection;
+    @JsonUnwrapped
+    @Builder.Default
+    private final ConfidentialGeneratedOrders confidentialOrders = ConfidentialGeneratedOrders.builder().build();
 
     public List<Element<GeneratedOrder>> getOrderCollection() {
         return orderCollection != null ? orderCollection : new ArrayList<>();
+    }
+
+    @JsonIgnore
+    public List<Element<GeneratedOrder>> getAllOrderCollections() {
+        return Stream.of(getOrderCollection(), confidentialOrders.getAllConfidentialOrders())
+            .flatMap(List::stream)
+            .toList();
     }
 
     @JsonUnwrapped
@@ -805,12 +817,16 @@ public class CaseData extends CaseDataParent {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview;
     private List<Element<HearingOrder>> refusedHearingOrders;
+    @JsonUnwrapped
+    @Builder.Default
+    private ConfidentialRefusedOrders confidentialRefusedOrders = ConfidentialRefusedOrders.builder().build();
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE))
+                                       || isNotEmpty(bundle.getValue().getAllConfidentialOrdersByStatus(SEND_TO_JUDGE)))
             .collect(toList());
     }
 
@@ -897,11 +913,13 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
     private final List<Element<HearingOrder>> ordersToBeSent;
+    private ApproveOrderUrgencyOption orderReviewUrgency;
 
     @JsonUnwrapped
     @Builder.Default
@@ -958,9 +976,15 @@ public class CaseData extends CaseDataParent {
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
+    private final UUID cancelledHearingId;
     private final List<HearingAttendance> hearingAttendance;
     private final String hearingAttendanceDetails;
     private final String preHearingAttendanceDetails;
+
+    @Builder.Default
+    @JsonUnwrapped
+    private final ManageHearingHousekeepEventData manageHearingHousekeepEventData =
+        ManageHearingHousekeepEventData.builder().build();
 
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)

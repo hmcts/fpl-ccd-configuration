@@ -41,10 +41,19 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 @RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UploadDraftOrdersController extends CallbackController {
+    private static final String DRAFT_ORDER_URGENCY = "draftOrderUrgency";
 
     private static final int MAX_ORDERS = 10;
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        caseDetails.getData().remove(DRAFT_ORDER_URGENCY);
+        return respond(caseDetails);
+    }
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -91,7 +100,7 @@ public class UploadDraftOrdersController extends CallbackController {
             C21, hearingOrdersBundles.getAgreedCmos()
         );
 
-        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, bundles);
+        UUID hearingId = service.updateCase(caseData, hearings, unsealedCMOs, bundles);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
