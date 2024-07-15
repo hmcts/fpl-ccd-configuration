@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -15,25 +16,27 @@ import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiApplicant;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCaseData;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiChild;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiColleague;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiOther;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiRespondent;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiSolicitor;
-import uk.gov.hmcts.reform.fpl.model.cafcass.CafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.cafcass.apibuilders.CafcassApiCaseDataConverter;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Service
@@ -81,11 +84,13 @@ public class CafcassApiCaseService {
             .respondentLA(caseData.getRelatingLA())
             .applicants(getCafcassApiApplicant(caseData))
             .respondents(getCafcassApiRespondents(caseData))
+            .children(getCafcassApiChild(caseData))
+            .others(getCafcassApiOthers(caseData))
             .build();
     }
 
     private List<CafcassApiApplicant> getCafcassApiApplicant(CaseData caseData) {
-        return caseData.getLocalAuthorities().stream()
+        return Optional.ofNullable(caseData.getLocalAuthorities()).orElse(List.of()).stream()
             .map(applicantElement -> {
                 LocalAuthority applicant = applicantElement.getValue();
 
@@ -95,7 +100,7 @@ public class CafcassApiCaseService {
                     .email(applicant.getEmail())
                     .phone(applicant.getPhone())
                     .address(getCafcassApiAddress(applicant.getAddress()))
-                    .designated(YES.equals(YesNo.valueOf(applicant.getDesignated())))
+                    .designated(equalsIgnoreCase(applicant.getDesignated(), YES.getValue()))
                     .colleagues(applicant.getColleagues().stream()
                         .map(Element::getValue)
                         .map(colleague -> CafcassApiColleague.builder()
@@ -128,7 +133,7 @@ public class CafcassApiCaseService {
     }
 
     private List<CafcassApiRespondent> getCafcassApiRespondents(CaseData caseData) {
-        return caseData.getRespondents1().stream()
+        return Optional.ofNullable(caseData.getRespondents1()).orElse(List.of()).stream()
             .map(Element::getValue)
             .map(respondent -> {
                 RespondentParty respondentParty = respondent.getParty();
@@ -159,17 +164,72 @@ public class CafcassApiCaseService {
     }
 
     private CafcassApiSolicitor getCafcassApiSolicitor(RespondentSolicitor respondentSolicitor) {
+        CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder();
+        if (respondentSolicitor != null) {
+            builder = builder.email(respondentSolicitor.getEmail());
+            builder = builder.firstName(respondentSolicitor.getFirstName());
+            builder = builder.lastName(respondentSolicitor.getLastName());
 
-        CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder()
-            .email(respondentSolicitor.getEmail())
-            .firstName(respondentSolicitor.getFirstName())
-            .lastName(respondentSolicitor.getLastName());
-
-        if (respondentSolicitor.getOrganisation() != null) {
-            builder = builder.organisationId(respondentSolicitor.getOrganisation().getOrganisationID());
-            builder = builder.organisationName(respondentSolicitor.getOrganisation().getOrganisationName());
+            if (respondentSolicitor.getOrganisation() != null) {
+                builder = builder.organisationId(respondentSolicitor.getOrganisation().getOrganisationID());
+                builder = builder.organisationName(respondentSolicitor.getOrganisation().getOrganisationName());
+            }
         }
 
         return builder.build();
+    }
+
+    private List<CafcassApiChild> getCafcassApiChild(CaseData caseData) {
+        return Optional.ofNullable(caseData.getChildren1()).orElse(List.of()).stream()
+            .map(Element::getValue)
+            .map(child -> {
+                ChildParty childParty = child.getParty();
+                return CafcassApiChild.builder()
+                    .firstName(childParty.getFirstName())
+                    .lastName(childParty.getLastName())
+                    .dateOfBirth(childParty.getDateOfBirth())
+                    .gender(childParty.getGender().toString())
+                    .genderIdentification(childParty.getGenderIdentification())
+                    .livingSituation(childParty.getLivingSituation())
+                    .livingSituationDetails(childParty.getLivingSituationDetails())
+                    .address(getCafcassApiAddress(childParty.getAddress()))
+                    .careAndContactPlan(childParty.getCareAndContactPlan())
+                    .detailsHidden(equalsIgnoreCase(childParty.getDetailsHidden(), YES.getValue()))
+                    .socialWorkerName(childParty.getSocialWorkerName())
+                    .socialWorkerTelephoneNumber(getTelephoneNumber(childParty.getSocialWorkerTelephoneNumber()))
+                    .additionalNeeds(equalsIgnoreCase(childParty.getAdditionalNeeds(), YES.getValue()))
+                    .additionalNeedsDetails(childParty.getAdditionalNeedsDetails())
+                    .litigationIssues(childParty.getLitigationIssues())
+                    .litigationIssuesDetails(childParty.getLitigationIssuesDetails())
+                    .solicitor(getCafcassApiSolicitor(child.getSolicitor()))
+                    .fathersResponsibility(childParty.getFathersResponsibility())
+                    .build();
+            })
+            .toList();
+    }
+
+    private List<CafcassApiOther> getCafcassApiOthers(CaseData caseData) {
+        return Optional.ofNullable(caseData.getOthers())
+            .map(others -> Stream.concat(Optional.ofNullable(others.getFirstOther()).stream(),
+                    unwrapElements(others.getAdditionalOthers()).stream())
+                .filter(Objects::nonNull)
+                .map(other -> CafcassApiOther.builder()
+                    .name(other.getName())
+                    .dateOfBirth(other.getDateOfBirth())
+                    .gender(other.getGender())
+                    .genderIdentification(other.getGenderIdentification())
+                    .birthPlace(other.getBirthPlace())
+                    .addressKnown(equalsIgnoreCase(other.getAddressKnow(), YES.getValue()))
+                    .addressUnknownReason(other.getAddressNotKnowReason())
+                    .address(getCafcassApiAddress(other.getAddress()))
+                    .telephone(other.getTelephone())
+                    .litigationIssues(other.getLitigationIssues())
+                    .litigationIssuesDetails(other.getLitigationIssuesDetails())
+                    .detailsHidden(equalsIgnoreCase(other.getDetailsHidden(), YES.getValue()))
+                    .detailsHiddenReason(other.getDetailsHiddenReason())
+                    .build())
+                .toList()
+            )
+            .orElse(List.of());
     }
 }

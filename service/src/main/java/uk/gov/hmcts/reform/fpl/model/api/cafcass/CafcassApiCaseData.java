@@ -20,9 +20,11 @@ public class CafcassApiCaseData {
     private String applicantLA;
     private String respondentLA;
     private List<CafcassApiApplicant> applicants;
-    private List<?> children;
-    private List<?> respondents;
-    private List<?> others;
+    private List<CafcassApiRespondent> respondents;
+    private List<CafcassApiChild> children;
+    private List<CafcassApiOther> others;
+
+    // TODO following field
     private Object internationalElement;
     private List<?> previousProceedings;
     private List<?> hearingDetails;

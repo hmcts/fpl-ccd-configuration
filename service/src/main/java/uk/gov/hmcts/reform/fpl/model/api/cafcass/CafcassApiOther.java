@@ -3,24 +3,20 @@ package uk.gov.hmcts.reform.fpl.model.api.cafcass;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
-
 @Getter
 @Builder
-public class CafcassApiRespondent {
-    private String firstName;
-    private String lastName;
+public class CafcassApiOther {
+    private String name;
+    private String dateOfBirth;
     private String gender;
     private String genderIdentification;
+    private String birthPlace;
     private boolean addressKnown;
     private String addressUnknownReason;
     private CafcassApiAddress address;
-    private LocalDate dateOfBirth;
-    private String telephoneNumber;
+    private String telephone;
     private String litigationIssues;
     private String litigationIssuesDetails;
-    private String contactDetailsHidden;
-    private String contactDetailsHiddenReason;
-    private String relationshipToChild;
-    private CafcassApiSolicitor solicitor;
+    private boolean detailsHidden;
+    private String detailsHiddenReason;
 }

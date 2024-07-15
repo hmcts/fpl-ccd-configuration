@@ -7,20 +7,23 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class CafcassApiRespondent {
+public class CafcassApiChild {
     private String firstName;
     private String lastName;
+    private LocalDate dateOfBirth;
     private String gender;
     private String genderIdentification;
-    private boolean addressKnown;
-    private String addressUnknownReason;
+    private String livingSituation;
+    private String livingSituationDetails;
     private CafcassApiAddress address;
-    private LocalDate dateOfBirth;
-    private String telephoneNumber;
+    private String careAndContactPlan;
+    private boolean detailsHidden;
+    private String socialWorkerName;
+    private String socialWorkerTelephoneNumber;
+    private boolean additionalNeeds;
+    private String additionalNeedsDetails;
     private String litigationIssues;
     private String litigationIssuesDetails;
-    private String contactDetailsHidden;
-    private String contactDetailsHiddenReason;
-    private String relationshipToChild;
     private CafcassApiSolicitor solicitor;
+    private String fathersResponsibility;
 }
