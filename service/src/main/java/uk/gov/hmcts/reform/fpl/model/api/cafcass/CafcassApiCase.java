@@ -1,15 +1,19 @@
 package uk.gov.hmcts.reform.fpl.model.api.cafcass;
 
 import lombok.Builder;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
+
+@Getter
 @Builder
 public class CafcassApiCase {
-    private String caseId;
+    private Long caseId;
     private String jurisdiction;
     private String state;
     private String caseTypeId;
-    private String createdDate;
-    private String lastModified;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModified;
     private String lastStateModifiedDate;
     private CafcassApiCaseData caseData;
 }

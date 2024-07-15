@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassApiService;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCase;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiSearchCasesResponse;
+import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassApiCaseService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +33,10 @@ public class CafcassCasesController {
     private static final String DATE_TIME_FORMAT_IN = "yyyy-MM-dd'T'hh:mm:ss.SSS";
     private static final String DATE_TIME_FORMAT_OUT = "yyyy-MM-dd";
 
-    private final CafcassApiService cafcassApiService;
+    private final CafcassApiCaseService cafcassApiCaseService;
 
     @GetMapping("")
-    public ResponseEntity<Object> searchCases(
+    public CafcassApiSearchCasesResponse searchCases(
         @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
         @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         log.info("searchCases, " + startDate + ", " + endDate);
@@ -45,8 +47,12 @@ public class CafcassCasesController {
             throw new BadInputException();
         }
 
-        // TODO return CafcassApiSearchCasesResponse
-        return ResponseEntity.ok(cafcassApiService.searchCaseByDateRange(startDate, endDate));
+        List<CafcassApiCase> caseDetails = cafcassApiCaseService.searchCaseByDateRange(startDate, endDate);
+
+        return CafcassApiSearchCasesResponse.builder()
+            .total(caseDetails.size())
+            .cases(caseDetails)
+            .build();
     }
 
     @GetMapping("documents/{documentId}/binary")
