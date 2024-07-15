@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -270,7 +269,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftCMOs = List.of();
-        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
 
         CaseData caseData = CaseData.builder()
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
@@ -288,7 +286,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .cmosSentToJudge("DUMMY DATA")
                 .cmoUploadType(CMOType.AGREED).build())
             .hearingDetails(allHearings)
-            .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
             .draftUploadedCMOs(draftCMOs)
             .build();
 
@@ -307,7 +304,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftOrders = List.of();
-        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
 
         CaseData caseData = CaseData.builder()
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
@@ -320,7 +316,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .showReplacementCMO(YesNo.NO)
                 .build())
             .hearingDetails(allHearings)
-            .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
             .draftUploadedCMOs(draftOrders)
             .build();
 
@@ -339,7 +334,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
         List<Element<HearingOrder>> draftCMOs = List.of();
-        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
 
         CaseData caseData = CaseData.builder()
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
@@ -357,7 +351,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .cmosSentToJudge("DUMMY DATA")
                 .cmoUploadType(CMOType.DRAFT).build())
             .hearingDetails(allHearings)
-            .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
             .draftUploadedCMOs(draftCMOs)
             .build();
 
@@ -367,24 +360,6 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .extracting("draftOrderNeedsReviewUploaded")
             .isEqualTo("NO");
 
-    }
-
-
-    private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(
-        List<Element<HearingBooking>> hearings) {
-        List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(UUID.randomUUID(),
-            SupportingEvidenceBundle.builder()
-                .name("case summary")
-                .uploadedBy("Test LA")
-                .document(testDocumentReference())
-                .dateTimeUploaded(now())
-                .build()));
-
-        return List.of(element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-            .hearingName(hearings.get(0).getValue().toLabel())
-            .supportingEvidenceBundle(hearingDocsBundles)
-            .build())
-        );
     }
 
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
