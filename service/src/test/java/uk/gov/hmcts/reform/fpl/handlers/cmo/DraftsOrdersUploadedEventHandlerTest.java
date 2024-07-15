@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
@@ -81,6 +82,9 @@ class DraftsOrdersUploadedEventHandlerTest {
     @Mock
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private DraftOrdersUploadedEventHandler underTest;
 
@@ -88,9 +92,9 @@ class DraftsOrdersUploadedEventHandlerTest {
     void shouldSendNotificationToCafcass() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
-                    Optional.of(
-                            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                    )
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
             );
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
         final Element<HearingBooking> selectedHearing = hearingWithJudgeEmail("judge2@test.com");
@@ -99,17 +103,17 @@ class DraftsOrdersUploadedEventHandlerTest {
         final HearingOrdersBundle selectedHearingBundle = ordersBundle(selectedHearing.getId(), DRAFT_CMO, C21, C21);
 
         Set<DocumentReference> documentReferences = unwrapElements(selectedHearingBundle.getOrders()).stream()
-                .map(HearingOrder::getOrder)
-                .collect(Collectors.toSet());
+            .map(HearingOrder::getOrder)
+            .collect(Collectors.toSet());
 
         final CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .allocatedJudge(allocatedJudge())
-                .hearingDetails(List.of(hearing, selectedHearing))
-                .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
-                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-                .build();
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+            .build();
 
         underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
 
@@ -165,9 +169,9 @@ class DraftsOrdersUploadedEventHandlerTest {
     void shouldNotNotifyCafcassWhenHearingOrderIsNotCurrent() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
-                    Optional.of(
-                            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
-                    )
+                Optional.of(
+                    new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS)
+                )
             );
 
         final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
@@ -175,33 +179,33 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO, C21);
         final HearingOrdersBundle selectedHearingBundleTemp = ordersBundle(
-                selectedHearing.getId(),
-                DRAFT_CMO,
-                C21,
-                C21
+            selectedHearing.getId(),
+            DRAFT_CMO,
+            C21,
+            C21
         );
 
         List<Element<HearingOrder>> collect = unwrapElements(selectedHearingBundleTemp.getOrders())
-                .stream()
-                .map(hearingOrder -> hearingOrder.toBuilder()
-                        .dateSent(LocalDate.now().minusDays(2))
-                        .build()
-                )
-                .map(Element::newElement)
-                .collect(Collectors.toList());
+            .stream()
+            .map(hearingOrder -> hearingOrder.toBuilder()
+                .dateSent(LocalDate.now().minusDays(2))
+                .build()
+            )
+            .map(Element::newElement)
+            .collect(Collectors.toList());
 
         HearingOrdersBundle selectedHearingBundle = selectedHearingBundleTemp.toBuilder()
-                .orders(collect)
-                .build();
+            .orders(collect)
+            .build();
 
         final CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .allocatedJudge(allocatedJudge())
-                .hearingDetails(List.of(hearing, selectedHearing))
-                .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
-                .lastHearingOrderDraftsHearingId(selectedHearing.getId())
-                .build();
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing, selectedHearing))
+            .hearingOrdersBundlesDrafts(wrapElements(bundle, selectedHearingBundle))
+            .lastHearingOrderDraftsHearingId(selectedHearing.getId())
+            .build();
 
         underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
 
@@ -217,21 +221,21 @@ class DraftsOrdersUploadedEventHandlerTest {
     void shouldNotNotifyCafcassWhenLAisNonEnglish() {
         when(cafcassLookupConfiguration.getCafcassEngland(any()))
             .thenReturn(
-                    Optional.empty()
+                Optional.empty()
             );
 
         final CaseData caseData = CaseData.builder()
-                .id(CASE_ID)
-                .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .build();
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build();
 
         underTest.sendNotificationToCafcass(new DraftOrdersUploaded(caseData));
 
         verify(cafcassNotificationService, never()).sendEmail(
-                same(caseData),
-                any(),
-                same(ORDER),
-                any()
+            same(caseData),
+            any(),
+            same(ORDER),
+            any()
         );
     }
 
@@ -261,6 +265,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         }
         CaseData caseData = builder.build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
             unwrapElements(draftCMOBundle.getOrders()),
@@ -304,6 +309,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         }
         CaseData caseData = builder.build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
             unwrapElements(draftCMOBundle.getOrders()),
@@ -345,6 +351,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         }
         CaseData caseData = builder.build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
             unwrapElements(agreedCmoBundle.getOrders()),
@@ -388,6 +395,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         }
         CaseData caseData = builder.build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge,
             unwrapElements(agreedCmoBundle.getOrders()),
@@ -439,6 +447,7 @@ class DraftsOrdersUploadedEventHandlerTest {
         }
         CaseData caseData = builder.build();
 
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
         when(draftOrdersContentProvider.buildContent(
             caseData, selectedHearing.getValue(), judge, unwrapElements(selectedHearingBundle.getOrders()), DRAFT_CMO
         )).thenReturn(DRAFT_ORDERS_UPLOADED_TEMPLATE_DATA);
@@ -501,11 +510,11 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     private HearingOrdersBundle ordersBundle(UUID hearingId, HearingOrderType... hearingOrderTypes) {
         List<HearingOrder> hearingOrders = Stream.of(hearingOrderTypes).map(hearingOrderType -> HearingOrder.builder()
-            .type(hearingOrderType)
-            .title(hearingOrderType.toString())
-            .order(TestDataHelper.testDocumentReference())
-            .dateSent(LocalDate.now())
-            .build())
+                .type(hearingOrderType)
+                .title(hearingOrderType.toString())
+                .order(TestDataHelper.testDocumentReference())
+                .dateSent(LocalDate.now())
+                .build())
             .collect(Collectors.toList());
 
         return HearingOrdersBundle.builder()
