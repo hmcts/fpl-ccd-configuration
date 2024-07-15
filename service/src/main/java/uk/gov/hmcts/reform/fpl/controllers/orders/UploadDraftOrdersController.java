@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
+@Slf4j
 @RestController
 @RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -110,6 +112,9 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
         // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
+        log.info("draftOrderNeedsReviewUploaded={}",
+            eventData.hasDraftOrderBeenUploadedThatNeedsApproval().getValue());
+
         caseDetails.getData().put("draftOrderNeedsReviewUploaded",
             eventData.hasDraftOrderBeenUploadedThatNeedsApproval().getValue());
 
