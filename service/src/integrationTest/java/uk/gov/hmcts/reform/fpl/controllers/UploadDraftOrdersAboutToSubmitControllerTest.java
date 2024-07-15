@@ -358,7 +358,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         assertThat(response.getData())
             .extracting("draftOrderNeedsReviewUploaded")
-            .isEqualTo("No ");
+            .isEqualTo("No");
 
     }
 
