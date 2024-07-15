@@ -293,7 +293,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         assertThat(response.getData())
             .extracting("draftOrderNeedsReviewUploaded")
-            .isEqualTo("YES");
+            .isEqualTo("Yes");
     }
 
     @Test
@@ -323,7 +323,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         assertThat(response.getData())
             .extracting("draftOrderNeedsReviewUploaded")
-            .isEqualTo("YES");
+            .isEqualTo("Yes");
     }
 
     @Test
@@ -358,7 +358,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         assertThat(response.getData())
             .extracting("draftOrderNeedsReviewUploaded")
-            .isEqualTo("NO");
+            .isEqualTo("No ");
 
     }
 
