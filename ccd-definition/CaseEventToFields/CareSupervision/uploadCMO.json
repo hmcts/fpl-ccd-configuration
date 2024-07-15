@@ -22,6 +22,7 @@
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,
     "DisplayContext": "READONLY",
+    "FieldShowCondition": "hearingOrderDraftKind = \"DO NOT SHOW\""
     "Publish": "Y"
   },
   {
