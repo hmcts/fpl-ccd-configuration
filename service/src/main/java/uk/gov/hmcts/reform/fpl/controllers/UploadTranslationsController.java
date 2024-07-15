@@ -62,16 +62,16 @@ public class UploadTranslationsController extends CallbackController {
         CaseDetails caseDetails = coreCaseDataService.performPostSubmitCallback(caseData.getId(),
             "internal-change-translations",
             caseDetailsCurrent -> {
-            Map<String, Object> updatedDetailsMap = new HashMap<>();
+                Map<String, Object> updatedDetailsMap = new HashMap<>();
 
-            updatedDetailsMap.putAll(translatableItemService.finalise(caseData));
+                updatedDetailsMap.putAll(translatableItemService.finalise(caseData));
 
-            caseData.getUploadTranslationsEventData()
-                .getTransientFields()
-                .forEach(field -> updatedDetailsMap.put(field, null));
+                caseData.getUploadTranslationsEventData()
+                    .getTransientFields()
+                    .forEach(field -> updatedDetailsMap.put(field, null));
 
-            return updatedDetailsMap;
-        });
+                return updatedDetailsMap;
+            });
 
         CaseData updatedCaseData = getCaseData(caseDetails);
 
