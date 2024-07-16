@@ -830,6 +830,8 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private final YesNo draftOrderNeedsReviewUploaded;
+
     @JsonUnwrapped
     @Builder.Default
     private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
@@ -911,6 +913,7 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
