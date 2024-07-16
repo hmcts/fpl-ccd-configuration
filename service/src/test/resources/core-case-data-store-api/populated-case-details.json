@@ -392,16 +392,9 @@
       "somethingElseDetails": "I need this from someone"
     },
     "internationalElement": {
-      "issues": "Yes",
-      "proceedings": "Yes",
-      "issuesReason": "Brussels 2 regulation",
-      "possibleCarer": "Yes",
-      "proceedingsReason": "Outside of the UK",
-      "significantEvents": "Yes",
-      "possibleCarerReason": "Aunt outside UK",
-      "significantEventsReason": "Something happened in France",
-      "internationalAuthorityInvolvement": "Yes",
-      "internationalAuthorityInvolvementDetails": "French authorities were involved"
+      "whichCountriesInvolved": "Italy, Spain, France",
+      "outsideHagueConvention": "Yes",
+      "importantDetails": "Something happened in France"
     },
     "documents_socialWorkCarePlan_document": {
       "statusReason": "some text",

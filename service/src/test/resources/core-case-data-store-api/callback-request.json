@@ -409,14 +409,9 @@
         "extraSecurityMeasuresDetails": "security needed"
       },
       "internationalElement": {
-        "issues": "Yes",
-        "proceedings": "Yes",
-        "issuesReason": "Brussels 2 regulation",
-        "possibleCarer": "Yes",
-        "proceedingsReason": "Outside of the UK",
-        "significantEvents": "Yes",
-        "possibleCarerReason": "Aunt outside UK",
-        "significantEventsReason": "Something happened in France"
+        "whichCountriesInvolved": "Italy, Spain, France",
+        "outsideHagueConvention": "Yes",
+        "importantDetails": "Something happened in France"
       },
       "documents_socialWorkOther": [
         {
