@@ -62,6 +62,7 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+        caseDetailsMap.remove("draftOrderNeedsReviewUploaded"); // cleanup transient field
 
         return respond(caseDetailsMap);
     }
@@ -107,6 +108,10 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles.get(AGREED_CMO));
         caseDetails.getData().put("hearingOrdersBundlesDraftReview", bundles.get(DRAFT_CMO));
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
+
+        // if a AGREED CMO or C21 was uploaded, the judge needs to approve it (WA purposes)
+        caseDetails.getData().put("draftOrderNeedsReviewUploaded",
+            eventData.hasDraftOrderBeenUploadedThatNeedsApproval());
 
         removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
