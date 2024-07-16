@@ -23,13 +23,13 @@ public class CafcassApiCaseData {
     private List<CafcassApiRespondent> respondents;
     private List<CafcassApiChild> children;
     private List<CafcassApiOther> others;
+    private List<CafcassApiHearing> hearingDetails;
+    private CafcassApiInternationalElement internationalElement;
+    private List<CafcassApiProceeding> previousProceedings;
+    private CafcassApiRisk risks;
+    private CafcassApiFactorsParenting factorsParenting;
+    private CafcassApiCaseManagementLocation caseManagementLocation;
 
     // TODO following field
-    private Object internationalElement;
-    private List<?> previousProceedings;
-    private List<?> hearingDetails;
     private List<?> caseDocuments;
-    private Object risks;
-    private Object factorsParenting;
-    private CaseLocation caseManagementLocation;
 }

@@ -3,23 +3,36 @@ package uk.gov.hmcts.reform.fpl.service.cafcass;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
+import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiApplicant;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCaseData;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCaseManagementLocation;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiChild;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiColleague;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiFactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiHearing;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiOther;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiProceeding;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiRespondent;
+import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiRisk;
 import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -78,7 +91,6 @@ public class CafcassApiCaseService {
             .applicationType(caseData.isC1Application() ? "C1" : "C110A")
             .ordersSought(caseData.getOrders().getOrderType())
             .dateOfCourtIssue(caseData.getDateOfIssue())
-            .caseManagementLocation(caseData.getCaseManagementLocation())
             .citizenIsApplicant(NO.equals(caseData.getIsLocalAuthority()))
             .applicantLA(caseData.getCaseLocalAuthority())
             .respondentLA(caseData.getRelatingLA())
@@ -86,6 +98,12 @@ public class CafcassApiCaseService {
             .respondents(getCafcassApiRespondents(caseData))
             .children(getCafcassApiChild(caseData))
             .others(getCafcassApiOthers(caseData))
+            .hearingDetails(getCafcassApiHearing(caseData))
+            .internationalElement(getCafcassApiInternationalElement(caseData))
+            .previousProceedings(getCafcassApiProceeding(caseData))
+            .risks(getCafcassApiRisk(caseData))
+            .factorsParenting(getCafcassApiFactorsParenting(caseData))
+            .caseManagementLocation(getCafcassApiCaseManagementLocation(caseData))
             .build();
     }
 
@@ -100,7 +118,7 @@ public class CafcassApiCaseService {
                     .email(applicant.getEmail())
                     .phone(applicant.getPhone())
                     .address(getCafcassApiAddress(applicant.getAddress()))
-                    .designated(equalsIgnoreCase(applicant.getDesignated(), YES.getValue()))
+                    .designated(isYes(applicant.getDesignated()))
                     .colleagues(applicant.getColleagues().stream()
                         .map(Element::getValue)
                         .map(colleague -> CafcassApiColleague.builder()
@@ -109,13 +127,17 @@ public class CafcassApiCaseService {
                             .email(colleague.getEmail())
                             .phone(colleague.getPhone())
                             .fullName(colleague.getFullName())
-                            .mainContact(YES.equals(YesNo.valueOf(colleague.getMainContact())))
-                            .notificationRecipient(YES.equals(YesNo.valueOf(colleague.getNotificationRecipient())))
+                            .mainContact(isYes(colleague.getMainContact()))
+                            .notificationRecipient(isYes(colleague.getNotificationRecipient()))
                             .build())
                         .toList())
                     .build();
             })
             .toList();
+    }
+
+    private boolean isYes(String yesNo) {
+        return YES.getValue().equalsIgnoreCase(yesNo);
     }
 
     private CafcassApiAddress getCafcassApiAddress(Address address) {
@@ -141,7 +163,7 @@ public class CafcassApiCaseService {
                     .firstName(respondentParty.getFirstName())
                     .lastName(respondentParty.getLastName())
                     .gender(respondentParty.getGender())
-                    .addressKnown(YES.equals(YesNo.valueOf(respondentParty.getAddressKnow())))
+                    .addressKnown(isYes(respondentParty.getAddressKnow()))
                     .addressUnknownReason(respondentParty.getAddressNotKnowReason())
                     .address(getCafcassApiAddress(respondentParty.getAddress()))
                     .dateOfBirth(respondentParty.getDateOfBirth())
@@ -194,10 +216,10 @@ public class CafcassApiCaseService {
                     .livingSituationDetails(childParty.getLivingSituationDetails())
                     .address(getCafcassApiAddress(childParty.getAddress()))
                     .careAndContactPlan(childParty.getCareAndContactPlan())
-                    .detailsHidden(equalsIgnoreCase(childParty.getDetailsHidden(), YES.getValue()))
+                    .detailsHidden(isYes(childParty.getDetailsHidden()))
                     .socialWorkerName(childParty.getSocialWorkerName())
                     .socialWorkerTelephoneNumber(getTelephoneNumber(childParty.getSocialWorkerTelephoneNumber()))
-                    .additionalNeeds(equalsIgnoreCase(childParty.getAdditionalNeeds(), YES.getValue()))
+                    .additionalNeeds(isYes(childParty.getAdditionalNeeds()))
                     .additionalNeedsDetails(childParty.getAdditionalNeedsDetails())
                     .litigationIssues(childParty.getLitigationIssues())
                     .litigationIssuesDetails(childParty.getLitigationIssuesDetails())
@@ -219,17 +241,118 @@ public class CafcassApiCaseService {
                     .gender(other.getGender())
                     .genderIdentification(other.getGenderIdentification())
                     .birthPlace(other.getBirthPlace())
-                    .addressKnown(equalsIgnoreCase(other.getAddressKnow(), YES.getValue()))
+                    .addressKnown(isYes(other.getAddressKnow()))
                     .addressUnknownReason(other.getAddressNotKnowReason())
                     .address(getCafcassApiAddress(other.getAddress()))
                     .telephone(other.getTelephone())
                     .litigationIssues(other.getLitigationIssues())
                     .litigationIssuesDetails(other.getLitigationIssuesDetails())
-                    .detailsHidden(equalsIgnoreCase(other.getDetailsHidden(), YES.getValue()))
+                    .detailsHidden(isYes(other.getDetailsHidden()))
                     .detailsHiddenReason(other.getDetailsHiddenReason())
                     .build())
                 .toList()
             )
             .orElse(List.of());
+    }
+
+    private List<CafcassApiHearing> getCafcassApiHearing(CaseData caseData) {
+        return Optional.ofNullable(caseData.getHearingDetails()).orElse(List.of()).stream()
+            .map(hearingBookingElement -> {
+                HearingBooking hearingBooking = hearingBookingElement.getValue();
+                return CafcassApiHearing.builder()
+                    .id(hearingBookingElement.getId().toString())
+                    .type(hearingBooking.getType())
+                    .typeDetails(hearingBooking.getTypeDetails())
+                    .venue(hearingBooking.getVenue())
+                    .status(hearingBooking.getStatus())
+                    .startDate(hearingBooking.getStartDate())
+                    .endDate(hearingBooking.getEndDate())
+                    .attendance(hearingBooking.getAttendance())
+                    .cancellationReason(hearingBooking.getCancellationReason())
+                    .preAttendanceDetails(hearingBooking.getPreAttendanceDetails())
+                    .attendanceDetails(hearingBooking.getAttendanceDetails())
+                    .build();
+            })
+            .toList();
+    }
+
+    private CafcassApiInternationalElement getCafcassApiInternationalElement(CaseData caseData) {
+        CafcassApiInternationalElement.CafcassApiInternationalElementBuilder builder =
+            CafcassApiInternationalElement.builder();
+
+        final InternationalElement internationalElement = caseData.getInternationalElement();
+        if (internationalElement != null) {
+            builder = builder.possibleCarer(isYes(internationalElement.getPossibleCarer()))
+                .possibleCarerReason(internationalElement.getPossibleCarerReason())
+                .significantEvents(isYes(internationalElement.getSignificantEvents()))
+                .significantEventsReason(internationalElement.getSignificantEventsReason())
+                .issues(isYes(internationalElement.getIssues()))
+                .issuesReason(internationalElement.getIssuesReason())
+                .proceedings(isYes(internationalElement.getProceedings()))
+                .proceedingsReason(internationalElement.getProceedingsReason())
+                .internationalAuthorityInvolvement(isYes(internationalElement.getInternationalAuthorityInvolvement()))
+                .internationalAuthorityInvolvementDetails(internationalElement
+                    .getInternationalAuthorityInvolvementDetails());
+        }
+
+        return builder.build();
+    }
+
+    private List<CafcassApiProceeding> getCafcassApiProceeding(CaseData caseData) {
+        return caseData.getAllProceedings().stream()
+            .map(Element::getValue)
+            .map(proceeding -> CafcassApiProceeding.builder()
+                .proceedingStatus(proceeding.getProceedingStatus())
+                .caseNumber(proceeding.getCaseNumber())
+                .started(proceeding.getProceedingStatus())
+                .ended(proceeding.getEnded())
+                .ordersMade(proceeding.getOrdersMade())
+                .judge(proceeding.getJudge())
+                .children(proceeding.getChildren())
+                .guardian(proceeding.getGuardian())
+                .sameGuardianNeeded(isYes(proceeding.getSameGuardianNeeded()))
+                .sameGuardianDetails(proceeding.getSameGuardianDetails())
+                .build())
+            .toList();
+    }
+
+    private CafcassApiRisk getCafcassApiRisk(CaseData caseData) {
+        CafcassApiRisk.CafcassApiRiskBuilder builder = CafcassApiRisk.builder();
+
+        Risks risk = caseData.getRisks();
+        if (risk != null) {
+            builder = builder
+                .neglectOccurrences(risk.getNeglectOccurrences())
+                .sexualAbuseOccurrences(risk.getSexualAbuseOccurrences())
+                .physicalHarmOccurrences(risk.getPhysicalHarmOccurrences())
+                .emotionalHarmOccurrences(risk.getEmotionalHarmOccurrences());
+        }
+        return builder.build();
+    }
+
+    private CafcassApiFactorsParenting getCafcassApiFactorsParenting(CaseData caseData) {
+        CafcassApiFactorsParenting.CafcassApiFactorsParentingBuilder builder = CafcassApiFactorsParenting.builder();
+
+        FactorsParenting factorsParenting = caseData.getFactorsParenting();
+        if (factorsParenting != null) {
+            builder = builder.alcoholDrugAbuse(isYes(factorsParenting.getAlcoholDrugAbuse()))
+                .alcoholDrugAbuseReason(factorsParenting.getAlcoholDrugAbuseReason())
+                .domesticViolence(isYes(factorsParenting.getDomesticViolence()))
+                .domesticViolenceReason(factorsParenting.getDomesticViolenceReason())
+                .anythingElse(isYes(factorsParenting.getAnythingElse()))
+                .anythingElseReason(factorsParenting.getAnythingElseReason());
+        }
+        return builder.build();
+    }
+
+    private CafcassApiCaseManagementLocation getCafcassApiCaseManagementLocation(CaseData caseData) {
+        CafcassApiCaseManagementLocation.CafcassApiCaseManagementLocationBuilder builder =
+            CafcassApiCaseManagementLocation.builder();
+
+        CaseLocation caseLocation = caseData.getCaseManagementLocation();
+        if (caseLocation != null) {
+            builder = builder.region(caseLocation.getRegion()).baseLocation(caseLocation.getBaseLocation());
+        }
+        return builder.build();
     }
 }
