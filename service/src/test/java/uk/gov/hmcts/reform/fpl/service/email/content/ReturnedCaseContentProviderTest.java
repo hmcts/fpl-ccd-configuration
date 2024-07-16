@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons;
 import uk.gov.hmcts.reform.fpl.exceptions.DocumentException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
@@ -26,8 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate.ReturnedCaseTemplateBuilder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -42,6 +48,12 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(12345L)
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+            .name(LOCAL_AUTHORITY_1_NAME)
+            .id(LOCAL_AUTHORITY_1_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_1_INBOX)
+            .build()))
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
         .children1(wrapElements(mock(Child.class)))
         .respondents1(wrapElements(Respondent.builder()

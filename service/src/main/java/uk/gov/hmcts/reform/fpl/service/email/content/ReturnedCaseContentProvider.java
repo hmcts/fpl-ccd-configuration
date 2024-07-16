@@ -36,7 +36,7 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
         ReturnApplication returnApplication = caseData.getReturnApplication();
 
         return ReturnedCaseTemplate.builder()
-            .localAuthority(laLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .localAuthority(caseData.getApplicantName().orElse("The applicant"))
             .respondentFullName(getFirstRespondentFullName(caseData.getRespondents1()))
             .lastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
