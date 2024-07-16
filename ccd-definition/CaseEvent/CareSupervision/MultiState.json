@@ -8,8 +8,7 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migrate-case/about-to-submit",
-    "Comment": "Event is triggered by running migration tool - callback modifies the data.",
-    "Publish": "Y"
+    "Comment": "Event is triggered by running migration tool - callback modifies the data."
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +26,8 @@
     "Name": "Update case summary",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Publish": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1098,8 +1098,7 @@
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted",
-    "Publish":  "Y"
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documentsv2/submitted"
   },
   {
     "LiveFrom": "01/01/2017",
