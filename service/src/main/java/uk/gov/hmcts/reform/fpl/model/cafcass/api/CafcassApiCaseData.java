@@ -1,8 +1,7 @@
-package uk.gov.hmcts.reform.fpl.model.api.cafcass;
+package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
 import lombok.Getter;
-import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.time.LocalDate;
@@ -29,7 +28,5 @@ public class CafcassApiCaseData {
     private CafcassApiRisk risks;
     private CafcassApiFactorsParenting factorsParenting;
     private CafcassApiCaseManagementLocation caseManagementLocation;
-
-    // TODO following field
-    private List<?> caseDocuments;
+    private List<CafcassApiCaseDocument> caseDocuments;
 }

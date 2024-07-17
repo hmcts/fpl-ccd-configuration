@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
-import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiCase;
-import uk.gov.hmcts.reform.fpl.model.api.cafcass.CafcassApiSearchCasesResponse;
-import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassApiCaseService;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiCaseService;
 
 import java.time.LocalDateTime;
 import java.util.List;

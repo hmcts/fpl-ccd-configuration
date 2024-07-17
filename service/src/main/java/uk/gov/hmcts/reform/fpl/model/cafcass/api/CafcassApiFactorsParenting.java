@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.api.cafcass;
+package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
 import lombok.Getter;
