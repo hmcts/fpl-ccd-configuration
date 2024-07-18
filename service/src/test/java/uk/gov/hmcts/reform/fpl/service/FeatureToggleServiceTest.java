@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,6 +157,19 @@ class FeatureToggleServiceTest {
             eq("migrate-user-roles"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(""));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForCourtNotificationEnabledForWa(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isCourtNotificationEnabledForWa(Court.builder().code("151").build()))
+            .isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("wa-test-court-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(true));
     }
 
     private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
