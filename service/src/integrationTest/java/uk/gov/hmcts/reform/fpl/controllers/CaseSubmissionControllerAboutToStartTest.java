@@ -78,11 +78,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getData())
             .containsEntry("caseName", "title")
             .containsEntry("submissionConsentLabel",
-                "I, Emma Taylor, believe that the facts stated in this application are true."
-                + "\n The applicant understands that proceedings for contempt of court may be brought against anyone"
-                + " who makes, or causes to be made, a false statement in a document verified by a statement of truth"
-                + " without an honest belief in its truth."
-                + " The applicant believes that the facts stated in this application are true.");
+                "I, Emma Taylor, believe that the facts stated in this application are true.");
     }
 
     @Test
