@@ -95,9 +95,6 @@ public class TaskListRenderer {
         ofNullable(tasks.get(RISK_AND_HARM))
             .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
             .ifPresent(applicationGrounds::withTask);
-        ofNullable(tasks.get(FACTORS_AFFECTING_PARENTING))
-            .map(task -> task.withHint("In emergency cases, you can send your application without this information"))
-            .ifPresent(applicationGrounds::withTask);
 
         final TaskSection documents = newSection("Add application documents")
             .withTask(tasks.get(APPLICATION_DOCUMENTS))
