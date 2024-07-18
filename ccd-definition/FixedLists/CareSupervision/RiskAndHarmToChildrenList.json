@@ -8,7 +8,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PastOrFutureHarmSelect",
+    "ID": "RiskAndHarmToChildrenList",
     "ListElementCode": "EMOTIONAL_HARM",
     "ListElement": "Emotional harm",
     "DisplayOrder": 2
@@ -22,7 +22,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "PastOrFutureHarmSelect",
+    "ID": "RiskAndHarmToChildrenList",
     "ListElementCode": "NEGLECT",
     "ListElement": "Neglect",
     "DisplayOrder": 4
