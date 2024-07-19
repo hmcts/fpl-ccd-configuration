@@ -27,7 +27,6 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2354", this::run2354,
         "DFPL-2474", this::run2474
     );
 
@@ -53,13 +52,6 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Logging migration on case {}", caseDetails.getId());
-    }
-
-    private void run2354(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2354";
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1717512460432566L, migrationId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
     }
 
     private void run2474(CaseDetails caseDetails) {
