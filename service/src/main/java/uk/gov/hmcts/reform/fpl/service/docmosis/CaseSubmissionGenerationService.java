@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -991,26 +993,31 @@ public class CaseSubmissionGenerationService
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
             .physicalHarm(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), 
-                    "Physical harm including non-accidental injury", applicationLanguage) 
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
+                    RiskAndHarmToChildrenType.PHYSICAL_HARM, applicationLanguage)
                 : DEFAULT_STRING)
             .emotionalHarm(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Emotional harm", applicationLanguage) 
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
+                    RiskAndHarmToChildrenType.EMOTIONAL_HARM, applicationLanguage)
                 : DEFAULT_STRING)
             .sexualAbuse(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Sexual abuse", applicationLanguage) 
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
+                    RiskAndHarmToChildrenType.SEXUAL_ABUSE, applicationLanguage)
                 : DEFAULT_STRING)
             .neglect(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(), "Neglect", applicationLanguage) 
+                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
+                    RiskAndHarmToChildrenType.NEGLECT, applicationLanguage)
                 : DEFAULT_STRING)
             .alcoholDrugAbuse(risksPresent
-                ? isPresentInList(risks.getFactorsAffectingParenting(), "Alcohol or drug abuse", applicationLanguage) 
+                ? isPresentInList(risks.getFactorsAffectingParenting(),
+                    FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE, applicationLanguage)
                 : DEFAULT_STRING)
             .domesticAbuse(risksPresent
-                ? isPresentInList(risks.getFactorsAffectingParenting(), "Domestic abuse", applicationLanguage) 
+                ? isPresentInList(risks.getFactorsAffectingParenting(),
+                    FactorsAffectingParentingType.DOMESTIC_ABUSE, applicationLanguage)
                 : DEFAULT_STRING)
-            .anythingElse(risksPresent 
-                ? risks.getAnythingElseAffectingParenting() 
+            .anythingElse(risksPresent
+                ? risks.getAnythingElseAffectingParenting()
                 : DEFAULT_STRING)
             .build();
     }
@@ -1062,9 +1069,9 @@ public class CaseSubmissionGenerationService
         }
     }
 
-    private String isPresentInList(List<String> givenList, String givenString, 
+    private String isPresentInList(List<String> givenList, Object givenObject,
                                     Language applicationLanguage) {
-        return (givenList.contains(givenString)) ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
+        return (givenList.contains(givenObject)) ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
     }
 
     private String listToString(final List<String> givenList) {
