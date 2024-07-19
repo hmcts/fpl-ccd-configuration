@@ -439,7 +439,8 @@ public class CaseData extends CaseDataParent {
             bundle -> {
                 ofNullable(bundle.getC2DocumentBundle()).ifPresent(
                     c2 -> applicationBundles.add(element(c2.getId(), c2)));
-
+                ofNullable(bundle.getC2DocumentBundleConfidential()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
                 ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
                     otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
             }
@@ -829,6 +830,8 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private final YesNo draftOrderNeedsReviewUploaded;
+
     @JsonUnwrapped
     @Builder.Default
     private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
@@ -910,6 +913,7 @@ public class CaseData extends CaseDataParent {
             .collect(toList());
     }
 
+    private DraftOrderUrgencyOption draftOrderUrgency;
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;

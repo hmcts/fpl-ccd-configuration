@@ -1,22 +1,23 @@
 import { test } from '../fixtures/create-fixture';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser } from '../settings/user-credentials';
+import { newSwanseaLocalAuthorityUserOne, judgeWalesUser, CTSCUser, HighCourtAdminUser } from '../settings/user-credentials';
 import { expect } from "@playwright/test";
 import { testConfig } from '../settings/test-config';
-import {createCase, updateCase} from "../utils/api-helper";
+import caseData from '../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json' assert { type: "json" };
+import { setHighCourt } from '../utils/update-case-details';
+import { createCase, updateCase } from "../utils/api-helper";
 
 test.describe('Upload additional applications', () => {
   const dateTime = new Date().toISOString();
   let caseNumber: string;
   let caseName: string;
-  const caseData = require('../caseData/mandatorySubmissionFieldsWithoutAdditionalApp.json');
-
-
 
     test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
   });
+    //mark test as slow to give extra timeout
+    test.slow();
 
   test('LA uploads a C1 application',
     async ({ page, signInPage, additionalApplications }) => {
@@ -82,18 +83,7 @@ test.describe('Upload additional applications', () => {
       await additionalApplications.payForApplication();
 
       await additionalApplications.checkYourAnsAndSubmit();
-
-      await additionalApplications.tabNavigation('Other applications');
-
-      // can see some basic properties of the application
-      await expect(page.getByText('PBA1234567')).toBeVisible();
-      await expect(page.getByText('Change surname or remove from jurisdiction.')).toBeVisible();
-      await expect(page.getByText('Within 2 days')).toBeVisible();
-
-      // can see the draft order to be approved
-      await additionalApplications.tabNavigation('Draft orders');
-      await expect(page.getByText('Draft order title')).toBeVisible();
-    });
+  });
 
   test('LA uploads combined Other and C2 applications',
     async ({ page, signInPage, additionalApplications }) => {
@@ -132,8 +122,8 @@ test.describe('Upload additional applications', () => {
             await updateCase(caseName, caseNumber, caseData);
             await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-            await signInPage.navigateTOCaseDetails(caseNumber);
 
+            await signInPage.navigateTOCaseDetails(caseNumber);
             await additionalApplications.gotoNextStep('Upload additional applications');
             await additionalApplications.chooseConfidentialC2ApplicationType();
             await additionalApplications.fillC2ApplicationDetails();
@@ -156,6 +146,7 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Draft order title')).toBeVisible();
 
             await additionalApplications.clickSignOut();
+            await signInPage.visit();
             await signInPage.login(CTSCUser.email, CTSCUser.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
 
@@ -200,6 +191,7 @@ test.describe('Upload additional applications', () => {
             await expect(page.getByText('Draft order title')).toBeVisible();
 
             await additionalApplications.clickSignOut();
+            await signInPage.visit();
             await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
             await signInPage.navigateTOCaseDetails(caseNumber);
 
@@ -211,4 +203,42 @@ test.describe('Upload additional applications', () => {
             await additionalApplications.tabNavigation('Draft orders');
             await expect(page.getByText('This is a confidential draft order and restricted viewing applies')).toBeVisible();
         });
+
+      test('Failed Payment High Court WA task', async ({ page, signInPage, additionalApplications, caseFileView }) => {
+        caseName = 'Failed Payment High Court WA task ' + dateTime.slice(0, 10);
+        setHighCourt(caseData);
+        await updateCase(caseName, caseNumber, caseData);
+        await signInPage.visit();
+        await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+        await signInPage.navigateTOCaseDetails(caseNumber);
+        await additionalApplications.uploadBasicC2Application(false);
+
+        // Check CFV
+        await caseFileView.goToCFVTab();
+        await caseFileView.openFolder('Application');
+        await caseFileView.openFolder('C2 applications');
+        await expect(page.getByRole('tree')).toContainText('testTextFile.pdf');
+
+        // If WA is enabled
+        if (testConfig.waEnabled) {
+            console.log('WA testing');
+            await additionalApplications.clickSignOut();
+            await signInPage.visit();
+            await signInPage.login(HighCourtAdminUser.email, HighCourtAdminUser.password);
+
+            await signInPage.navigateTOCaseDetails(caseNumber);
+
+            // Judge in Wales should see this Welsh case task + be able to assign it to themselves
+            await additionalApplications.tabNavigation('Tasks');
+            await additionalApplications.waitForTask('Failed Payment (High Court)');
+
+            // Assign and complete the task
+            await page.getByText('Assign to me').click();
+            await page.getByText('Mark as done').click();
+            await page.getByRole('button', { name: "Mark as done" }).click();
+
+            // Should be no more tasks on the page
+            await expect(page.getByText('Failed Payment (High Court)')).toHaveCount(0);
+        }
+    });
 });

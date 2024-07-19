@@ -8,5 +8,14 @@
     "Label": "Last created work allocation task",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "draftOrderNeedsReviewUploaded",
+    "FieldType": "YesOrNo",
+    "Label": "Last upload draft order event resulted in a review order task",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
