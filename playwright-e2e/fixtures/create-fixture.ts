@@ -34,6 +34,7 @@ import { Organisation } from "../pages/manage-organisation";
 import { ShareCase } from "../pages/share-case";
 import { OtherPeopleInCase } from "../pages/other-people-in-the-case";
 import { ReturnApplication } from "../pages/return-application";
+import { Orders } from "../pages/orders";
 
 type CreateFixtures = {
   signInPage: SignInPage;
@@ -71,6 +72,7 @@ type CreateFixtures = {
   shareCase: ShareCase;
   otherPeopleInCase: OtherPeopleInCase;
   returnApplication: ReturnApplication;
+  orders: Orders;
 
 };
 
@@ -214,4 +216,8 @@ export const test = base.extend<CreateFixtures>({
   shareCase: async ({ page }, use) => {
     await use(new ShareCase(page));
   },
+  
+   orders: async ({page}, use) => {
+        await use(new Orders(page));
+   },
 });
