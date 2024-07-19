@@ -65,7 +65,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2474(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2474";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1720171349888707L, migrationId);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1719824920130559L, migrationId);
         caseDetails.getData().remove("redDotAssessmentForm");
     }
 }
