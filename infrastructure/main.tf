@@ -32,9 +32,10 @@ resource "azurerm_resource_group" "rg" {
 module "application_insights" {
   source = "git@github.com:hmcts/terraform-module-application-insights?ref=main"
 
-  env     = var.env
-  product = var.product
-  name    = "${var.product}-${var.component}-appinsights"
+  env                 = var.env
+  product             = var.product
+  name                = "${var.product}-${var.component}-appinsights"
+  alert_limit_reached = true
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.appinsights_location
