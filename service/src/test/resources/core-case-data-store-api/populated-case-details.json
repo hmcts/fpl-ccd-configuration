@@ -15,15 +15,15 @@
     "caseLocalAuthority": "${caseLocalAuthority:-test1}",
     "risks": {
       "whatKindOfRiskAndHarmToChildren": [
-        "Physical harm including non-accidental injury",
-        "Emotional harm",
-        "Sexual abuse",
-        "Neglect"
+        "PHYSICAL_HARM",
+        "EMOTIONAL_HARM",
+        "SEXUAL_ABUSE",
+        "NEGLECT"
       ],
       "factorsAffectingParenting": [
-        "Alcohol or drug abuse",
-        "Domestic abuse",
-        "Anything else"
+        "ALCOHOL_DRUG_ABUSE",
+        "DOMESTIC_ABUSE",
+        "ANYTHING_ELSE"
       ],
       "anythingElseAffectingParenting": "Something else"
     },
