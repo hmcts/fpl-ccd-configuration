@@ -812,7 +812,7 @@
     "Name": "Upload translated documents",
     "Description": "Upload translated documents",
     "DisplayOrder": 100,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "EventEnablingCondition": "languageRequirement=\"Yes\"",
     "SecurityClassification": "Public",
