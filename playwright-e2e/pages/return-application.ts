@@ -10,11 +10,11 @@ export class ReturnApplication extends BasePage {
 
   public constructor(page: Page) {
     super(page);
-    this.returnApplication =page.getByLabel('Return application');
+    this.returnApplication = page.getByLabel('Return application');
     this.updateAndSubmit = page.getByRole('button', { name: 'Go' });
     this.reasonForRejection = page.getByLabel('Application Incomplete');
-    this.needToChange =page.getByLabel('Let the local authority know');
-    this.submitApplication= page.getByRole('button', { name: 'Submit application' });
+    this.needToChange = page.getByLabel('Let the local authority know');
+    this.submitApplication = page.getByRole('button', { name: 'Submit application' });
 
   }
 
