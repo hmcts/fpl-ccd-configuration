@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter{
+public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter {
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
