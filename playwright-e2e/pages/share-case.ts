@@ -11,8 +11,7 @@ export class ShareCase extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.selectCaseChckBox = page.getByRole('row', {name: 'ascending ascending ascending'})
-            .getByLabel('', {exact: true});
+        this.selectCaseChckBox = page.getByLabel('Select all');
         this.shareCaseButton = page.getByRole('button', {name: 'Share Case'});
         this.orgUserEmailText = page.getByLabel('Search by name or email');
         this.addButton = page.getByRole('button', {name: 'Add user'});
