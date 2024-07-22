@@ -150,6 +150,8 @@ then
 curl http://localhost:9210/care_supervision_epo_cases-000001/_search
 ```
 
+A list of port numbers is available on [RSE CFT lib](https://github.com/hmcts/rse-cft-lib#ports)
+
 ### Uploading ccd definition into PR environment
 On PR env following ccd definition files are generated and stored as jenkins job artefacts:
 - ccd-fpl-preview-<PR_ID>-toggle-on.xlsx (uploaded automatically by jenkins)
