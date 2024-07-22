@@ -30,6 +30,8 @@ test.describe('Return application', () => {
       await page.getByLabel('Let the local authority know').fill('test');
       await page.getByRole('button', { name: 'Submit' }).click();
       await page.getByRole('button', { name: 'Save and continue' }).click();
+      await signInPage.logout();
+
 
     });
 
