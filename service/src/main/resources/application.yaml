@@ -276,12 +276,12 @@ scheduler:
       description: 'Find undelivered emails'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
-    - name: 'Create chasing work allocation tasks'
+    - name: 'Send chasing CMO email'
       enabled: true
       cronGroup: "NIGHTLY_CRON"
-      description: 'Create work allocation tasks if a CMO has not been uploaded within 5 days'
-      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.CreateWAOrderChasingTasks'
-      cron: ${CHASE_CMO_TASK_CRON:0 0 2 ? * * *}
+      description: 'Send chasing email if a CMO has not been uploaded within 5 days'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.OrderChasingEmailJob'
+      cron: ${CHASE_CMO_EMAIL_CRON:0 0 2 ? * * *}
 
 testing:
   support:
