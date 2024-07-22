@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
@@ -20,11 +21,16 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import java.time.LocalDate;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @ContextConfiguration(classes = {
     ReturnedCaseContentProvider.class,
@@ -40,6 +46,12 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
     private static final CaseData CASE_DATA = CaseData.builder()
         .id(ID)
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .localAuthorities(wrapElementsWithUUIDs(LocalAuthority.builder()
+            .name(LOCAL_AUTHORITY_1_NAME)
+            .id(LOCAL_AUTHORITY_1_CODE)
+            .designated(YES.getValue())
+            .email(LOCAL_AUTHORITY_1_INBOX)
+            .build()))
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .respondents1(wrapElements(Respondent.builder()
             .party(RespondentParty.builder()
@@ -102,7 +114,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line()
                 .callout("Will Smith " + FAMILY_MAN_CASE_NUMBER)
                 .line()
-                .h1("What we asked the local authority to change")
+                .h1("What we asked the applicant to change")
                 .line("Application incomplete")
                 .line()
                 .line("please fill section 1")

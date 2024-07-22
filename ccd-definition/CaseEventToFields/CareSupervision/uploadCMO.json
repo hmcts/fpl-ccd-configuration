@@ -16,6 +16,33 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderNeedsReviewUploaded",
+    "PageID": "OrderDraftKindSelection",
+    "DisplayContext": "READONLY",
+    "PageFieldDisplayOrder": 2,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "hearingOrderDraftKind=\"DO_NOT_SHOW\"",
+    "Publish": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "court",
+    "PageID": "OrderDraftKindSelection",
+    "PageFieldDisplayOrder": 100,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "hearingOrderDraftKind = \"DO NOT SHOW\"",
+    "Publish": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
     "CaseFieldID": "caseName",
     "PageID": "OrderDraftKindSelection",
     "PageFieldDisplayOrder": 1,
@@ -555,5 +582,18 @@
     "PageDisplayOrder": 6,
     "DisplayContext": "READONLY",
     "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadCMO",
+    "CaseFieldID": "draftOrderUrgency",
+    "PageID": "Review",
+    "PageFieldDisplayOrder": 31,
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 6,
+    "DisplayContext": "COMPLEX",
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "cmoUploadType=\"AGREED\" OR hearingOrderDraftKind CONTAINS \"C21\""
   }
 ]
