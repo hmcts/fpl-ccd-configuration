@@ -126,12 +126,20 @@ PR=<PR_NUMBER>; NODE_TLS_REJECT_UNAUTHORIZED=0 PARALLEL_CHUNKS=1 SHOW_BROWSER_WI
 
 ### Connecting to PR database
 
-```$bash
-kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
-```
-then connect to data-store db on port 5020
+- Hostname = `family-public-law-preview.postgres.database.azure.com`
+- Port = `5432`
+- Database Name = `pr-<number>-data-store`
+- Username = `hmcts`
+- SSL (Parameters) =  `require`
 
-A list of port numbers is available on [RSE CFT lib](https://github.com/hmcts/rse-cft-lib#ports)
+Password can be found in Kubernetes Services -> preview environment
+-> Kubernetes resources -> workloads
+-> `fpl-case-service-pr-<number>-ccd-data-store-api`
+-> select pod -> select container (overview) -> environment variables tab
+-> click postgres link for DATA_STORE_DB_PASSWORD -> click eye to decrypt
+
+To view the databases:
+`kubectl get flexibleserversdatabases -n family-public-law`
 
 ### Connecting to PR elastic search
 ```$bash
