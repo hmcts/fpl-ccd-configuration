@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.handlers.cmo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.SendOrderReminderEvent;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -24,7 +23,6 @@ public class SendOrderReminderEventHandler {
     private final ChaseMissingCMOEmailContentProvider contentProvider;
     private final LocalAuthorityRecipientsService localAuthorityRecipients;
 
-    @Async
     @EventListener
     public void sendNotificationToApplicant(final SendOrderReminderEvent event) {
         NotifyData notifyData = contentProvider.buildTemplate(event.getCaseData());
