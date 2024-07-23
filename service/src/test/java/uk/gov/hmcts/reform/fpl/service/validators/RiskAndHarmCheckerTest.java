@@ -93,7 +93,7 @@ class RiskAndHarmCheckerTest {
         return Stream.of(
             Risks.builder()
                 .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
-                .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ANYTHING_ELSE))
+                .factorsAffectingParenting(List.of(FactorsAffectingParentingType.DOMESTIC_ABUSE))
                 .build(),
             completedRisk()
                 .build()
