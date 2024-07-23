@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.judicial.NewHearingJudgeEvent;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.JudicialService;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,11 +25,13 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class NewHearingJudgeEventHandlerTest {
@@ -104,7 +109,7 @@ class NewHearingJudgeEventHandlerTest {
     void shouldAttemptAssignIfHearingJudgeJudicialUserWithPersonalCodeOnly() {
         when(judicialService.getJudge("personal"))
             .thenReturn(Optional.of(JudicialUserProfile.builder()
-                    .sidamId("sidam")
+                .sidamId("sidam")
                 .build()));
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
             .caseData(CaseData.builder().id(12345L).build())
@@ -189,4 +194,64 @@ class NewHearingJudgeEventHandlerTest {
         verifyNoMoreInteractions(judicialService);
     }
 
+    @Test
+    void shouldCreateHearingRoleInFutureIfMultipleHearings() {
+        LocalDateTime future = LocalDateTime.now();
+
+        HearingBooking hearing1 = HearingBooking.builder()
+            .startDate(future)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idamId")
+                    .build())
+                .build())
+            .build();
+
+        HearingBooking hearing2 = hearing1.toBuilder()
+            .startDate(future.plusDays(2))
+            .build();
+
+        underTest.handleNewHearingJudge(new NewHearingJudgeEvent(
+            hearing2,
+            CaseData.builder().id(12345L).hearingDetails(wrapElements(hearing1, hearing2)).build(),
+            Optional.empty()
+        ));
+
+        verify(judicialService).assignHearingJudge(any(),
+            eq("1234"),
+            eq(future.plusDays(2).atZone(ZoneId.systemDefault())),
+            any(),
+            anyBoolean());
+    }
+
+    @Test
+    void shouldCreateHearingRoleNowIfSingleHearing() {
+        final LocalDateTime now = LocalDateTime.now();
+        final ZonedDateTime nowZoned = now.atZone(ZoneId.systemDefault());
+
+        HearingBooking hearing1 = HearingBooking.builder()
+            .startDate(now.plusDays(2))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idamId")
+                    .build())
+                .build())
+            .build();
+
+        try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
+            zonedStatic.when(ZonedDateTime::now).thenReturn(nowZoned);
+
+            underTest.handleNewHearingJudge(new NewHearingJudgeEvent(
+                hearing1,
+                CaseData.builder().id(12345L).hearingDetails(wrapElements(hearing1)).build(),
+                Optional.empty()
+            ));
+
+            verify(judicialService).assignHearingJudge(12345L,
+                "idamId",
+                nowZoned,
+                null,
+                false);
+        }
+    }
 }

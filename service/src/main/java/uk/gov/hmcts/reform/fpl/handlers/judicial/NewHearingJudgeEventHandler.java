@@ -51,6 +51,10 @@ public class NewHearingJudgeEventHandler {
         ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(ZoneId.systemDefault()))
             .orElse(null);
 
+        // if this is the first hearing, use now as the start date/time, else use the start of the hearing
+        ZonedDateTime startDate = event.getCaseData().getAllNonCancelledHearings().size() > 1
+            ? event.getHearing().getStartDate().atZone(ZoneId.systemDefault())
+            : ZonedDateTime.now();
 
         if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getIdamId())) {
@@ -58,7 +62,7 @@ public class NewHearingJudgeEventHandler {
             // have an IDAM ID - use that to grant the role
             judicialService.assignHearingJudge(event.getCaseData().getId(),
                 hearingJudge.getJudgeJudicialUser().getIdamId(),
-                event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                startDate,
                 // if there's a hearing after the one added, we're going out of order, so set an end date
                 possibleEnd,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle()));
@@ -71,7 +75,7 @@ public class NewHearingJudgeEventHandler {
 
             judge.ifPresentOrElse(judicialUserProfile ->
                     judicialService.assignHearingJudge(event.getCaseData().getId(), judicialUserProfile.getSidamId(),
-                        event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
+                        startDate,
                         possibleEnd,
                         JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle())),
                 () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
