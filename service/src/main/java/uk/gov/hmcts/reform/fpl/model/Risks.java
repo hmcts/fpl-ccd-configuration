@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class Risks {
     private final List<String> sexualAbuseOccurrences;
     private final List<String> physicalHarmOccurrences;
     private final List<String> emotionalHarmOccurrences;
-    private final List<String> whatKindOfRiskAndHarmToChildren;
-    private final List<String> factorsAffectingParenting;
+    private final List<RiskAndHarmToChildrenType> whatKindOfRiskAndHarmToChildren;
+    private final List<FactorsAffectingParentingType> factorsAffectingParenting;
     private final String anythingElseAffectingParenting;
 }

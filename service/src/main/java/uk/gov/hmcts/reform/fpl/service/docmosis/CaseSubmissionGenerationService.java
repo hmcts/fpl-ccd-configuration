@@ -993,28 +993,28 @@ public class CaseSubmissionGenerationService
         final boolean risksPresent = (risks != null);
         return DocmosisRisks.builder()
             .physicalHarm(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
-                    RiskAndHarmToChildrenType.PHYSICAL_HARM, applicationLanguage)
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.PHYSICAL_HARM)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .emotionalHarm(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
-                    RiskAndHarmToChildrenType.EMOTIONAL_HARM, applicationLanguage)
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.EMOTIONAL_HARM)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .sexualAbuse(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
-                    RiskAndHarmToChildrenType.SEXUAL_ABUSE, applicationLanguage)
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.SEXUAL_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .neglect(risksPresent
-                ? isPresentInList(risks.getWhatKindOfRiskAndHarmToChildren(),
-                    RiskAndHarmToChildrenType.NEGLECT, applicationLanguage)
+                ? (risks.getWhatKindOfRiskAndHarmToChildren().contains(RiskAndHarmToChildrenType.NEGLECT)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .alcoholDrugAbuse(risksPresent
-                ? isPresentInList(risks.getFactorsAffectingParenting(),
-                    FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE, applicationLanguage)
+                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.ALCOHOL_DRUG_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .domesticAbuse(risksPresent
-                ? isPresentInList(risks.getFactorsAffectingParenting(),
-                    FactorsAffectingParentingType.DOMESTIC_ABUSE, applicationLanguage)
+                ? (risks.getFactorsAffectingParenting().contains(FactorsAffectingParentingType.DOMESTIC_ABUSE)
+                    ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage))
                 : DEFAULT_STRING)
             .anythingElse(risksPresent
                 ? risks.getAnythingElseAffectingParenting()
@@ -1069,7 +1069,7 @@ public class CaseSubmissionGenerationService
         }
     }
 
-    private String isPresentInList(List<String> givenList, Object givenObject,
+    private String isPresentInList(List<enum> givenList, Object givenObject,
                                     Language applicationLanguage) {
         return (givenList.contains(givenObject)) ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
     }
