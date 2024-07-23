@@ -7,15 +7,16 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.cmo.SendOrderReminderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.cmo.SendOrderReminderService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
-import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESClause;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
@@ -35,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
-import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.ORDER_NOT_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 import static uk.gov.hmcts.reform.fpl.utils.JobHelper.buildStats;
 import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
@@ -44,11 +44,11 @@ import static uk.gov.hmcts.reform.fpl.utils.JobHelper.paginate;
 @Component
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class CreateWAOrderChasingTasks implements Job {
+public class OrderChasingEmailJob implements Job {
 
     private final CaseConverter converter;
     private final SearchService searchService;
-    private final WorkAllocationTaskService workAllocationTaskService;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final SendOrderReminderService sendOrderReminderService;
 
     @Override
@@ -86,16 +86,16 @@ public class CreateWAOrderChasingTasks implements Job {
                     final Long caseId = caseDetails.getId();
                     try {
                         CaseData caseData = converter.convert(caseDetails);
-                        if (shouldCreateChaseTask(caseData)) {
-                            log.debug("Job '{}' creating chase task {}", jobName, caseId);
-                            workAllocationTaskService.createWorkAllocationTask(caseData, ORDER_NOT_UPLOADED);
+                        if (shouldSendChasingEmail(caseData)) {
+                            log.debug("Job '{}' sending chase email for case {}", jobName, caseId);
+                            applicationEventPublisher.publishEvent(new SendOrderReminderEvent(caseData));
                             chased++;
                         } else {
                             log.debug("Job '{}' skipped case {}", jobName, caseId);
                             skipped++;
                         }
                     } catch (Exception e) {
-                        log.error("Job '{}' could not create WA task on {} due to {}", jobName, caseId, e.getMessage(),
+                        log.error("Job '{}' could not send Email on {} due to {}", jobName, caseId, e.getMessage(),
                             e);
                         failed++;
                         Thread.sleep(2000); // If CCD is overwhelmed, stop for 2s before continuing
@@ -123,7 +123,7 @@ public class CreateWAOrderChasingTasks implements Job {
         return beforeRange && afterRange;
     }
 
-    private boolean shouldCreateChaseTask(CaseData caseData) {
+    private boolean shouldSendChasingEmail(CaseData caseData) {
         // Check if the hearings within 5(-6) days have an uploaded CMO
         if (isEmpty(caseData.getHearingDetails())) {
             return false;
