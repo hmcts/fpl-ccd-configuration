@@ -1069,11 +1069,6 @@ public class CaseSubmissionGenerationService
         }
     }
 
-    private String isPresentInList(List<enum> givenList, Object givenObject,
-                                    Language applicationLanguage) {
-        return (givenList.contains(givenObject)) ? YES.getValue(applicationLanguage) : NO.getValue(applicationLanguage);
-    }
-
     private String listToString(final List<String> givenList) {
         return ofNullable(givenList)
             .map(list -> join(NEW_LINE, list))
