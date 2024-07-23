@@ -7,6 +7,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
@@ -45,8 +48,8 @@ class RiskAndHarmCheckerIsStartedTest {
 
     private static Stream<Arguments> nonEmptyRisks() {
         return Stream.of(
-                Risks.builder().whatKindOfRiskAndHarmToChildren(List.of("Emotional harm")).build(),
-                Risks.builder().factorsAffectingParenting(List.of("Anything else")).build(),
+                Risks.builder().whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM)).build(),
+                Risks.builder().factorsAffectingParenting(List.of(FactorsAffectingParentingType.ANYTHING_ELSE)).build(),
                 Risks.builder().anythingElseAffectingParenting("Something else").build())
                 .map(Arguments::of);
     }

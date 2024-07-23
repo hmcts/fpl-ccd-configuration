@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.ColleagueRole;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
@@ -277,7 +278,7 @@ class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseData();
         CaseData caseDataWithRisks = caseData.toBuilder()
             .risks(Risks.builder()
-                .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
+                .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
                 .build())
             .build();
 

@@ -9,6 +9,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.RiskAndHarmToChildrenType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
@@ -89,8 +92,8 @@ class RiskAndHarmCheckerTest {
     private static Stream<Arguments> completeRisks() {
         return Stream.of(
             Risks.builder()
-                .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
-                .factorsAffectingParenting(List.of("Domestic abuse"))
+                .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+                .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ANYTHING_ELSE))
                 .build(),
             completedRisk()
                 .build()
@@ -99,8 +102,8 @@ class RiskAndHarmCheckerTest {
 
     private static Risks.RisksBuilder completedRisk() {
         return Risks.builder()
-            .whatKindOfRiskAndHarmToChildren(List.of("Emotional harm"))
-            .factorsAffectingParenting(List.of("Anything else"))
+            .whatKindOfRiskAndHarmToChildren(List.of(RiskAndHarmToChildrenType.EMOTIONAL_HARM))
+            .factorsAffectingParenting(List.of(FactorsAffectingParentingType.ANYTHING_ELSE))
             .anythingElseAffectingParenting("Something else");
     }
 }
