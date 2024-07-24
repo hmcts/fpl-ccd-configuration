@@ -217,11 +217,11 @@ class NewHearingJudgeEventHandlerTest {
             Optional.empty()
         ));
 
-        verify(judicialService).assignHearingJudge(any(),
-            eq("1234"),
-            eq(future.plusDays(2).atZone(ZoneId.systemDefault())),
-            any(),
-            anyBoolean());
+        verify(judicialService).assignHearingJudge(12345L,
+            "idamId",
+            future.plusDays(2).atZone(ZoneId.systemDefault()),
+            null,
+            false);
     }
 
     @Test
