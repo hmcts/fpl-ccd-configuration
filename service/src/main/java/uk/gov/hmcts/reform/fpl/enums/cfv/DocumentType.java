@@ -160,11 +160,11 @@ public enum DocumentType {
             .markAsConfidential(YesNo.from(bundle.isConfidential()).getValue())
             .translationRequirements(bundle.getTranslationRequirement())
             .build(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 220, DEFAULT_NOTIFICATION_CONFIG, "respondentWitnessStatements"),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 220, DEFAULT_NOTIFICATION_CONFIG, "parent_respondentsStatements"),
     RESPONDENTS_WITNESS_STATEMENTS("└─ Witness statements", standardResolver("respWitnessStmtList"),
         false, false, false,
         defaultWithDocumentBuilder(),
-        AA_PARENT_RESPONDENTS_STATEMENTS, 230, DEFAULT_NOTIFICATION_CONFIG, "applicantWitnessStatements"),
+        AA_PARENT_RESPONDENTS_STATEMENTS, 230, DEFAULT_NOTIFICATION_CONFIG, "respondentWitnessStatements"),
     GUARDIAN_EVIDENCE("Guardian's evidence", standardResolver("guardianEvidenceList"),
         false, false, false,
         defaultWithDocumentBuilder(),

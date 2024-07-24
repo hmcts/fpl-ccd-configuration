@@ -35,7 +35,7 @@ public class CafcassApiHelper {
             .orElse(null);
     }
 
-    public static  CafcassApiSolicitor getCafcassApiSolicitor(RespondentSolicitor respondentSolicitor) {
+    public static CafcassApiSolicitor getCafcassApiSolicitor(RespondentSolicitor respondentSolicitor) {
         CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder();
         if (respondentSolicitor != null) {
             builder = builder.email(respondentSolicitor.getEmail());
