@@ -1212,7 +1212,7 @@ public class MigrateCaseService {
 
         Element<Respondent> targetRespondent = ElementUtils.findElement(respondentId, respondents)
             .orElseThrow(() -> new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, could not find child with UUID %s",
+                "Migration {id = %s, case reference = %s}, could not find respondent with UUID %s",
                 migrationId, caseData.getId(), respondentId))
             );
 
@@ -1220,7 +1220,7 @@ public class MigrateCaseService {
 
         if (isEmpty(respondent.getParty().getTelephoneNumber())) {
             throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, child did not have social worker telephone",
+                "Migration {id = %s, case reference = %s}, respondent did not have telephone number",
                 migrationId, caseData.getId()));
         }
 
