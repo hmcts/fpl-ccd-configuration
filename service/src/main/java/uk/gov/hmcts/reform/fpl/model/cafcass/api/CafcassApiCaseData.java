@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 public class CafcassApiCaseData {
     private String familyManCaseNumber;

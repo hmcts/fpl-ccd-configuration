@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 @Builder
 public class CafcassApiColleague {
     private String role;

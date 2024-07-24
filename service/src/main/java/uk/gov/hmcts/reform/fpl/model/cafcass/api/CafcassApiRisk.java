@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 public class CafcassApiRisk {
     private List<String> neglectOccurrences;

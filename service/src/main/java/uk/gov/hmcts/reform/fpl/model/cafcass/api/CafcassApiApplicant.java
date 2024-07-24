@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 public class CafcassApiApplicant {
     private String id;
