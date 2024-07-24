@@ -413,7 +413,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersChildArrangementsOrderTypes CONTAINS \"CHILD_LIVE\"",
+    "FieldShowCondition": "manageOrdersChildArrangementsOrderTypes CONTAINS \"CHILD_LIVE\" AND manageOrdersMultiSelectListForC43 CONTAINS \"CHILD_ARRANGEMENT_ORDER\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -426,7 +426,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersChildArrangementsOrderTypes CONTAINS \"CHILD_CONTACT\"",
+    "FieldShowCondition": "manageOrdersChildArrangementsOrderTypes CONTAINS \"CHILD_CONTACT\" AND manageOrdersMultiSelectListForC43 CONTAINS \"CHILD_ARRANGEMENT_ORDER\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
