@@ -44,6 +44,7 @@ java:
     SCHEDULER_DB_PORT: 5432
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
     CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    UPLOAD_TIMESTAMP_FEATURED_CASE_TYPES: CARE_SUPERVISION_EPO
   keyVaults:
     fpl:
       resourceGroup: fpl
