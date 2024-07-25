@@ -24,7 +24,7 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
             .map(proceeding -> CafcassApiProceeding.builder()
                 .proceedingStatus(proceeding.getProceedingStatus())
                 .caseNumber(proceeding.getCaseNumber())
-                .started(proceeding.getProceedingStatus())
+                .started(proceeding.getStarted())
                 .ended(proceeding.getEnded())
                 .ordersMade(proceeding.getOrdersMade())
                 .judge(proceeding.getJudge())
