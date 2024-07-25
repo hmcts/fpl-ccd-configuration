@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiInternationalElement;
-import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiCaseDataConverter;
 
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
