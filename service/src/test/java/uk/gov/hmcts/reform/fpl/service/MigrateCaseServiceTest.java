@@ -28,33 +28,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.CaseSummary;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.CloseCase;
-import uk.gov.hmcts.reform.fpl.model.Colleague;
-import uk.gov.hmcts.reform.fpl.model.Court;
-import uk.gov.hmcts.reform.fpl.model.CourtBundle;
-import uk.gov.hmcts.reform.fpl.model.Grounds;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
-import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
-import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
-import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
-import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
-import uk.gov.hmcts.reform.fpl.model.Proceeding;
-import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
-import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.Supplement;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -3271,4 +3245,36 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () -> underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID));
         }
     }
+
+    @Nested
+    class RemoveRespondentsAwareReason {
+
+        @Test
+        void shouldRemoveRespondentsAwareReason() {
+            Hearing hearing = Hearing.builder()
+                .respondentsAwareReason("Before text.")
+                .reason("Reason text.")
+                .build();
+
+            Hearing expectedHearing = Hearing.builder()
+                .reason("Reason text.")
+                .build();
+
+            CaseData caseData = CaseData.builder().id(1L).hearing(hearing).build();
+
+            Map<String, Object> result = underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID);
+
+            assertThat(result).extracting("hearing").isEqualTo(expectedHearing);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenHearingEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s}, hearing not found", MIGRATION_ID));
+        }
+    }
+
 }

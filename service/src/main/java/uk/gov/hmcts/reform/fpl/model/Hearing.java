@@ -8,7 +8,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Hearing {
     private final String type;
