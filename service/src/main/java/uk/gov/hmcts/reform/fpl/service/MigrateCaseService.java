@@ -1208,7 +1208,7 @@ public class MigrateCaseService {
 
     public Map<String, Object> removeRespondentsAwareReason(CaseData caseData, String migrationId) {
 
-        if(caseData.getHearing() == null) {
+        if (caseData.getHearing() == null) {
             throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
         }
 
