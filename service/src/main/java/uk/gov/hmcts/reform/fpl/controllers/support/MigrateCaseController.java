@@ -27,7 +27,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2474", this::run2417
+        "DFPL-2417", this::run2417
     );
 
     @PostMapping("/about-to-submit")
