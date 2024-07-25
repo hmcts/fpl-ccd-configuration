@@ -76,8 +76,8 @@ public class ApproveDraftOrdersController extends CallbackController {
         List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
         // add temp variable if at least one draft order/cmo has been approved
-        if (caseData.getReviewDraftOrdersData().hasADraftBeenApproved()
-            || caseData.getReviewCMODecision().hasBeenApproved()) {
+        if ((caseData.getReviewDraftOrdersData() != null && caseData.getReviewDraftOrdersData().hasADraftBeenApproved())
+            || (caseData.getReviewCMODecision() != null && caseData.getReviewCMODecision().hasBeenApproved())) {
             data.put("draftOrdersApproved", "Yes");
         } else {
             data.put("draftOrdersApproved", "No");

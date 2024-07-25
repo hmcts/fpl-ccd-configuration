@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
+import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildPolicyData;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundles;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -53,6 +55,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static java.util.Collections.emptyList;
 import static java.util.Map.of;
 import static java.util.UUID.randomUUID;
@@ -89,6 +93,8 @@ class DraftOrderServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
     private DraftOrderService service;
+    @Mock
+    private ManageDocumentService manageDocumentService;
 
     @Mock
     private UserService userService;
@@ -97,7 +103,8 @@ class DraftOrderServiceTest {
     void init() {
         service = new DraftOrderService(new ObjectMapper(),
             time,
-            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()), userService
+            new HearingOrderKindEventDataBuilder(new IdentityService(), new OptionCountBuilder()),
+            manageDocumentService, userService
         );
     }
 
@@ -545,6 +552,9 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldAddNewCMOToListAndUpdateHearingIfCMOWasNotAlreadyInList() {
+            when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+            when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType
+                .DESIGNATED_LOCAL_AUTHORITY);
 
             List<Element<HearingBooking>> hearings = hearings();
 
@@ -562,7 +572,8 @@ class DraftOrderServiceTest {
                     DRAFT_CMO, newArrayList(),
                     AGREED_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             assertThat(unsealedOrders).hasSize(1)
                 .first()
@@ -578,6 +589,8 @@ class DraftOrderServiceTest {
                     .translationRequirements(TRANSLATION_REQUIREMENTS)
                     .order(eventData.getUploadedCaseManagementOrder())
                     .status(DRAFT)
+                    .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
+                    .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
                     .build());
 
             assertThat(hearings).hasSize(2)
@@ -615,7 +628,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             assertThat(ordersBundles).hasSize(1);
             assertThat(ordersBundles.get(0)).extracting(Element::getValue).isEqualTo(ordersBundle);
@@ -652,7 +666,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, emptyList(), bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings, emptyList(),
+                bundles);
 
             HearingOrdersBundle expectedOrdersBundle = originalOrdersBundle.toBuilder()
                 .orders(newArrayList(cmoOrder, hearingOrder1, hearingOrder2, hearingOrder3))
@@ -688,7 +703,8 @@ class DraftOrderServiceTest {
                     AGREED_CMO, ordersBundles,
                     DRAFT_CMO, newArrayList());
 
-            service.updateCase(eventData, hearings, emptyList(), bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings, emptyList(),
+                bundles);
 
             assertThat(ordersBundles).isEqualTo(
                 wrapElements(selectedHearingOrderBundle, otherOrdersBundle));
@@ -696,6 +712,10 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldRemoveDraftCMOIfExistingWhenUploadingAgreedCMOForTheSameHearing() {
+            when(manageDocumentService.getUploaderCaseRoles(any())).thenReturn(List.of(CaseRole.LASOLICITOR));
+            when(manageDocumentService.getUploaderType(any())).thenReturn(DocumentUploaderType
+                .DESIGNATED_LOCAL_AUTHORITY);
+
             List<Element<HearingBooking>> hearings = hearings();
 
             Element<HearingBooking> selectedHearing = hearings.get(0);
@@ -723,7 +743,8 @@ class DraftOrderServiceTest {
                     C21, c21OrdersBundles
             );
 
-            service.updateCase(eventData, hearings, unsealedOrders, bundles);
+            service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(), hearings,
+                unsealedOrders, bundles);
 
             HearingOrder expectedOrder = HearingOrder.builder()
                 .title("Agreed CMO discussed at hearing")
@@ -734,6 +755,8 @@ class DraftOrderServiceTest {
                 .hearing("Case management hearing, 2 March 2020")
                 .hearingId(selectedHearing.getId())
                 .judgeTitleAndName("His Honour Judge Dredd")
+                .uploaderType(DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY)
+                .uploaderCaseRoles(List.of(CaseRole.LASOLICITOR))
                 .build();
 
             assertThat(c21OrdersBundles).hasSize(1);
@@ -754,7 +777,8 @@ class DraftOrderServiceTest {
                 .build();
 
             Exception exception = assertThrows(Exception.class,
-                () -> service.updateCase(eventData, hearings, newArrayList(), of()));
+                () -> service.updateCase(CaseData.builder().uploadDraftOrdersEventData(eventData).build(),
+                    hearings, newArrayList(), of()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
         }
