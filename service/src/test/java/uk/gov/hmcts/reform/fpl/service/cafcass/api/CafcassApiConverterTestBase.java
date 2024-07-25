@@ -11,9 +11,13 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiColleague;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper;
 
+import java.util.UUID;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -29,6 +33,10 @@ public abstract class CafcassApiConverterTestBase {
         CafcassApiCaseData actual = underTest.convert(caseData, CafcassApiCaseData.builder()).build();
         assertEquals(actual, expected);
         return actual;
+    }
+
+    public CafcassApiCaseData testConvert(CaseData caseData) {
+        return underTest.convert(caseData, CafcassApiCaseData.builder()).build();
     }
 
     public static Address getTestAddress() {
@@ -125,6 +133,15 @@ public abstract class CafcassApiConverterTestBase {
             .email("respondentSolicitor" + solicitorNo + "@test.com")
             .organisationId(testOrg.getOrganisationID())
             .organisationName(testOrg.getOrganisationName())
+            .build();
+    }
+
+    public static DocumentReference getTestDocumentReference() {
+        UUID docId = UUID.randomUUID();
+        return DocumentReference.builder()
+            .filename(randomAlphanumeric(10))
+            .url("test.link/" + docId)
+            .binaryUrl("test.link/" + docId + "/binary")
             .build();
     }
 }
