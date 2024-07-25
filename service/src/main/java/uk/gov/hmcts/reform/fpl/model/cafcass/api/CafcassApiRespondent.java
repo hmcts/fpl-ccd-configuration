@@ -19,7 +19,7 @@ public class CafcassApiRespondent {
     private String telephoneNumber;
     private String litigationIssues;
     private String litigationIssuesDetails;
-    private String contactDetailsHidden;
+    private boolean contactDetailsHidden;
     private String contactDetailsHiddenReason;
     private String relationshipToChild;
     private CafcassApiSolicitor solicitor;

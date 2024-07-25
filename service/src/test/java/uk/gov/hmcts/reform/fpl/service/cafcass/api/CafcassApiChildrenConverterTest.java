@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiChild;
-import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSolicitor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,8 +55,10 @@ public class CafcassApiChildrenConverterTest extends CafcassApiConverterTestBase
                 .build())
             .build();
 
+        Child emptyChild = Child.builder().build();
+
         CaseData caseData = CaseData.builder()
-            .children1(wrapElements(childWithAllFields, childWithMandatoryFieldOnly))
+            .children1(wrapElements(childWithAllFields, childWithMandatoryFieldOnly, emptyChild))
             .build();
 
         testConvert(caseData, CafcassApiCaseData.builder()
@@ -87,8 +88,8 @@ public class CafcassApiChildrenConverterTest extends CafcassApiConverterTestBase
                     .lastName("Two")
                     .dateOfBirth(LocalDate.of(2023, 1, 1))
                     .gender(ChildGender.GIRL.toString())
-                    .solicitor(CafcassApiSolicitor.builder().build())
-                    .build()
+                    .build(),
+                CafcassApiChild.builder().build()
             )).build());
     }
 

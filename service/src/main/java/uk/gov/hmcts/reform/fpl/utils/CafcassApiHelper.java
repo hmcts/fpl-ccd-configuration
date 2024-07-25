@@ -36,18 +36,19 @@ public class CafcassApiHelper {
     }
 
     public static CafcassApiSolicitor getCafcassApiSolicitor(RespondentSolicitor respondentSolicitor) {
-        CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder();
-        if (respondentSolicitor != null) {
-            builder = builder.email(respondentSolicitor.getEmail());
-            builder = builder.firstName(respondentSolicitor.getFirstName());
-            builder = builder.lastName(respondentSolicitor.getLastName());
+        return Optional.ofNullable(respondentSolicitor)
+            .map(solicitor  -> {
+                CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder()
+                    .email(solicitor.getEmail())
+                    .firstName(solicitor.getFirstName())
+                    .lastName(solicitor.getLastName());
 
-            if (respondentSolicitor.getOrganisation() != null) {
-                builder = builder.organisationId(respondentSolicitor.getOrganisation().getOrganisationID());
-                builder = builder.organisationName(respondentSolicitor.getOrganisation().getOrganisationName());
-            }
-        }
-
-        return builder.build();
+                if (solicitor.getOrganisation() != null) {
+                    builder = builder.organisationId(solicitor.getOrganisation().getOrganisationID())
+                        .organisationName(solicitor.getOrganisation().getOrganisationName());
+                }
+                return builder.build();
+            })
+            .orElse(null);
     }
 }

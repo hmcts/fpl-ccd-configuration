@@ -79,7 +79,6 @@ public class CafcassApiHelperTest {
             .build();
 
         assertEquals(expected, CafcassApiHelper.getCafcassApiSolicitor(solicitor));
-        assertEquals(CafcassApiSolicitor.builder().build(),
-            CafcassApiHelper.getCafcassApiSolicitor(null));
+        assertNull(CafcassApiHelper.getCafcassApiSolicitor(null));
     }
 }

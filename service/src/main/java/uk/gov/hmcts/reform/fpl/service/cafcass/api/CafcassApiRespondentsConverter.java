@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiAddress;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiSolicitor;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getTelephoneNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 public class CafcassApiRespondentsConverter implements CafcassApiCaseDataConverter {
@@ -24,26 +26,27 @@ public class CafcassApiRespondentsConverter implements CafcassApiCaseDataConvert
     }
 
     private List<CafcassApiRespondent> getCafcassApiRespondents(CaseData caseData) {
-        return Optional.ofNullable(caseData.getRespondents1()).orElse(List.of()).stream()
-            .map(Element::getValue)
+        return unwrapElements(caseData.getRespondents1()).stream()
             .map(respondent -> {
+                CafcassApiRespondent.CafcassApiRespondentBuilder builder = CafcassApiRespondent.builder()
+                    .solicitor(getCafcassApiSolicitor(respondent.getSolicitor()));
                 RespondentParty respondentParty = respondent.getParty();
-                return CafcassApiRespondent.builder()
-                    .firstName(respondentParty.getFirstName())
-                    .lastName(respondentParty.getLastName())
-                    .gender(respondentParty.getGender())
-                    .addressKnown(isYes(respondentParty.getAddressKnow()))
-                    .addressUnknownReason(respondentParty.getAddressNotKnowReason())
-                    .address(getCafcassApiAddress(respondentParty.getAddress()))
-                    .dateOfBirth(respondentParty.getDateOfBirth())
-                    .telephoneNumber(getTelephoneNumber(respondentParty.getTelephoneNumber()))
-                    .litigationIssues(respondentParty.getLitigationIssues())
-                    .litigationIssuesDetails(respondentParty.getLitigationIssuesDetails())
-                    .contactDetailsHidden(respondentParty.getContactDetailsHidden())
-                    .contactDetailsHiddenReason(respondentParty.getContactDetailsHiddenReason())
-                    .relationshipToChild(respondentParty.getRelationshipToChild())
-                    .solicitor(getCafcassApiSolicitor(respondent.getSolicitor()))
-                    .build();
+                if (isNotEmpty(respondentParty)) {
+                    builder = builder.firstName(respondentParty.getFirstName())
+                        .lastName(respondentParty.getLastName())
+                        .gender(respondentParty.getGender())
+                        .addressKnown(isYes(respondentParty.getAddressKnow()))
+                        .addressUnknownReason(respondentParty.getAddressNotKnowReason())
+                        .address(getCafcassApiAddress(respondentParty.getAddress()))
+                        .dateOfBirth(respondentParty.getDateOfBirth())
+                        .telephoneNumber(getTelephoneNumber(respondentParty.getTelephoneNumber()))
+                        .litigationIssues(respondentParty.getLitigationIssues())
+                        .litigationIssuesDetails(respondentParty.getLitigationIssuesDetails())
+                        .contactDetailsHidden(isYes(respondentParty.getContactDetailsHidden()))
+                        .contactDetailsHiddenReason(respondentParty.getContactDetailsHiddenReason())
+                        .relationshipToChild(respondentParty.getRelationshipToChild());
+                }
+                return builder.build();
             })
             .toList();
     }
