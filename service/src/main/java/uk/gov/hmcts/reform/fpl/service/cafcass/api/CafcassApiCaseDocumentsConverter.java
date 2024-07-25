@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -53,62 +54,58 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     }
 
     private List<CafcassApiCaseDocument> getCaseDocuments(CaseData caseData) {
-        List<CafcassApiCaseDocument> resultList = new ArrayList<>();
-
-        resultList.addAll(getStandardAndUrgentDirectionOrder(caseData));
-        resultList.addAll(getDraftOrders(caseData));
-        resultList.addAll(getApprovedOrders(caseData));
-        resultList.addAll(getOriginalApplications(caseData));
-        resultList.addAll(getPlacementApplications(caseData));
-        resultList.addAll(getAdditionalApplications(caseData));
-        resultList.addAll(getHearingNotice(caseData));
-        resultList.addAll(getManageDocuments(caseData));
-
-        return ImmutableList.copyOf(resultList);
+        return Stream.of(
+                getStandardAndUrgentDirectionOrder(caseData),
+                getDraftOrders(caseData),
+                getApprovedOrders(caseData),
+                getOriginalApplications(caseData),
+                getPlacementApplications(caseData),
+                getAdditionalApplications(caseData),
+                getHearingNotice(caseData),
+                getManageDocuments(caseData))
+            .flatMap(List::stream)
+            //.parallel()
+            .toList();
     }
+
     private List<CafcassApiCaseDocument> getStandardAndUrgentDirectionOrder(CaseData caseData) {
         return Stream.of(caseData.getUrgentDirectionsOrder(), caseData.getStandardDirectionOrder())
             .filter(Objects::nonNull)
-            .map(sdo ->
-                Stream.of(sdo.getOrderDoc(), sdo.getTranslatedOrderDoc())
-                    .filter(Objects::nonNull)
-                    .map(docRef -> buildCafcassApiCaseDocument(AA_PARENT_ORDERS, docRef, false))
-                    .toList())
+            .map(sdo -> buildCafcassApiCaseDocumentList(AA_PARENT_ORDERS, false,
+                Stream.of(sdo.getOrderDoc(), sdo.getTranslatedOrderDoc())))
             .flatMap(List::stream)
             .toList();
     }
 
     private List<CafcassApiCaseDocument> getDraftOrders(CaseData caseData) {
         // Remarks: cafcass don't have permission to read draftUploadedCMOs and refusedHearingOrders
-        return Stream.of(
-                unwrapElements(caseData.getHearingOrdersBundlesDrafts()),
-                unwrapElements(caseData.getHearingOrdersBundlesDraftReview()))
-            .flatMap(List::stream)
-            .map(draftOrderBundles ->
-                Stream.of(draftOrderBundles.getOrders(), draftOrderBundles.getAllChildConfidentialOrders())
-                    .flatMap(List::stream)
-                    .map(Element::getValue)
-                    .toList())
-            .flatMap(List::stream)
-            .map(HearingOrder::getOrderOrOrderConfidential)
-            .map(draftOrderDoc -> buildCafcassApiCaseDocument("draftOrders", draftOrderDoc, false))
-            .toList();
+        return buildCafcassApiCaseDocumentList("draftOrders", false,
+            Stream.of(
+                    caseData.getHearingOrdersBundlesDrafts(),
+                    caseData.getHearingOrdersBundlesDraftReview())
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Element::getValue)
+                .flatMap(draftOrderBundles ->
+                    Stream.of(draftOrderBundles.getOrders(), draftOrderBundles.getAllChildConfidentialOrders())
+                        .flatMap(List::stream)
+                        .map(Element::getValue))
+                .map(HearingOrder::getOrderOrOrderConfidential));
     }
 
     private List<CafcassApiCaseDocument> getApprovedOrders(CaseData caseData) {
         // Remarks: cafcass don't have permission to read refusedHearingOrders
-        return Stream.concat(
+        return buildCafcassApiCaseDocumentList(AA_PARENT_ORDERS, false,
+            Stream.concat(
                 // approved CMOs
                 unwrapElements(caseData.getSealedCMOs()).stream().map(HearingOrder::getOrderOrOrderConfidential),
                 // approved orders (only those can be read by cafcass)
                 Stream.of(caseData.getOrderCollection(),
                         caseData.getConfidentialOrders().getAllChildConfidentialOrders())
+                    .filter(Objects::nonNull)
                     .flatMap(List::stream)
                     .map(Element::getValue)
-                    .map(GeneratedOrder::getDocumentOrDocumentConfidential)
-            )
-            .map(sealedCmoDoc -> buildCafcassApiCaseDocument(AA_PARENT_ORDERS, sealedCmoDoc, false))
-            .toList();
+                    .map(GeneratedOrder::getDocumentOrDocumentConfidential)));
     }
 
     private List<CafcassApiCaseDocument> getOriginalApplications(CaseData caseData) {
@@ -128,30 +125,27 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                 .toList());
         }
 
-        return documentReferences.stream()
-            .map(docRef -> buildCafcassApiCaseDocument("originalApplications", docRef, false))
-            .toList();
+        return buildCafcassApiCaseDocumentList("originalApplications", false, documentReferences);
     }
 
     private List<CafcassApiCaseDocument> getPlacementApplications(CaseData caseData) {
-        return unwrapElements(caseData.getPlacementEventData().getPlacements()).stream()
-            .map(placement -> {
-                List<DocumentReference> documentReferences = new ArrayList<>();
+        return buildCafcassApiCaseDocumentList(PLACEMENT_RESPONSES, false,
+            unwrapElements(caseData.getPlacementEventData().getPlacements()).stream()
+                .map(placement -> {
+                    List<DocumentReference> documentReferences = new ArrayList<>();
 
-                documentReferences.add(placement.getApplication());
-                documentReferences.add(placement.getPlacementNotice());
-                documentReferences.addAll(unwrapElements(placement.getConfidentialDocuments()).stream()
-                    .map(PlacementConfidentialDocument::getDocument).toList());
-                documentReferences.addAll(unwrapElements(placement.getSupportingDocuments()).stream()
-                    .map(PlacementSupportingDocument::getDocument).toList());
-                documentReferences.addAll(unwrapElements(placement.getNoticeDocuments()).stream()
-                    .map(PlacementNoticeDocument::getDocument).toList());
+                    documentReferences.add(placement.getApplication());
+                    documentReferences.add(placement.getPlacementNotice());
+                    documentReferences.addAll(unwrapElements(placement.getConfidentialDocuments()).stream()
+                        .map(PlacementConfidentialDocument::getDocument).toList());
+                    documentReferences.addAll(unwrapElements(placement.getSupportingDocuments()).stream()
+                        .map(PlacementSupportingDocument::getDocument).toList());
+                    documentReferences.addAll(unwrapElements(placement.getNoticeDocuments()).stream()
+                        .map(PlacementNoticeDocument::getDocument).toList());
 
-                return documentReferences;
-            })
-            .flatMap(List::stream)
-            .map(docRef -> buildCafcassApiCaseDocument(PLACEMENT_RESPONSES, docRef, false))
-            .toList();
+                    return documentReferences;
+                })
+                .flatMap(List::stream));
     }
 
     private List<CafcassApiCaseDocument> getAdditionalApplications(CaseData caseData) {
@@ -159,7 +153,6 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
 
         // additional application
         unwrapElements(caseData.getAdditionalApplicationsBundle()).forEach(additionalApplicationsBundle -> {
-
                 C2DocumentBundle c2Bundle = (additionalApplicationsBundle.isConfidentialC2UploadedByChildSolicitor())
                     ? additionalApplicationsBundle.getC2DocumentBundleConfidential()
                     : additionalApplicationsBundle.getC2DocumentBundle();
@@ -173,10 +166,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                     c2DocRef.addAll(unwrapElements(c2Bundle.getDraftOrdersBundle()).stream()
                         .map(DraftOrder::getDocument).toList());
 
-                    resultList.addAll(c2DocRef.stream()
-                        .map(docRef -> buildCafcassApiCaseDocument(C2_APPLICATION_DOCUMENTS, docRef,
-                            false))
-                        .toList());
+                    resultList.addAll(buildCafcassApiCaseDocumentList(C2_APPLICATION_DOCUMENTS, false, c2DocRef));
                 }
 
                 OtherApplicationsBundle otherBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
@@ -188,13 +178,9 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                     otherDocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
                         otherBundle.getSupportingEvidenceBundle()));
 
-                    resultList.addAll(otherDocRef.stream()
-                        .map(docRef -> buildCafcassApiCaseDocument(C1_APPLICATION_DOCUMENTS, docRef,
-                            false))
-                        .toList());
+                    resultList.addAll(buildCafcassApiCaseDocumentList(C1_APPLICATION_DOCUMENTS, false, otherDocRef));
                 }
         });
-
 
         return resultList;
     }
@@ -202,9 +188,10 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     private List<DocumentReference> getAllDocumentsFromSupportingEvidenceBundles(List<Element<SupportingEvidenceBundle>>
                                                                                      bundles) {
         return unwrapElements(bundles).stream()
-            .map(supportingEvidenceBundleElement -> List.of(supportingEvidenceBundleElement.getDocument(),
+            .flatMap(supportingEvidenceBundleElement -> Stream.of(
+                supportingEvidenceBundleElement.getDocument(),
                 supportingEvidenceBundleElement.getTranslatedDocument()))
-            .flatMap(List::stream).toList();
+            .toList();
     }
 
     private List<DocumentReference> getAllDocumentsFromSupplements(List<Element<Supplement>> bundles) {
@@ -212,35 +199,31 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     }
 
     private List<CafcassApiCaseDocument> getHearingNotice(CaseData caseData) {
-        return unwrapElements(caseData.getHearingDetails()).stream()
-            .map(hearingBooking -> List.of(hearingBooking.getNoticeOfHearing(),
-                hearingBooking.getTranslatedNoticeOfHearing()))
-            .flatMap(List::stream)
-            .map(docRef -> buildCafcassApiCaseDocument(NOTICE_OF_ACTING_OR_ISSUE, docRef, false))
-            .toList();
+        return buildCafcassApiCaseDocumentList(NOTICE_OF_ACTING_OR_ISSUE, false,
+            unwrapElements(caseData.getHearingDetails()).stream()
+                .flatMap(hearingBooking -> Stream.of(
+                    hearingBooking.getNoticeOfHearing(),
+                    hearingBooking.getTranslatedNoticeOfHearing())));
     }
 
     private List<CafcassApiCaseDocument> getManageDocuments(CaseData caseData) {
         return Arrays.stream(DocumentType.values())
-            .filter(documentType -> documentType.getBaseFieldNameResolver() != null)
-            .map(documentType ->
-                Stream.concat(
-                    Stream.of(ConfidentialLevel.NON_CONFIDENTIAL, ConfidentialLevel.LA)
-                        .map(confidentialLevel -> manageDocumentService
-                            .toFieldNameToListOfElementMap(caseData, documentType, confidentialLevel).values())
-                        .flatMap(Collection::stream).flatMap(List::stream),
-                    manageDocumentService.getListOfRemovedElement(caseData, documentType).stream())
+            .filter(documentType -> isNotEmpty(documentType.getBaseFieldNameResolver()))
+            .map(documentType -> buildCafcassApiCaseDocumentList(documentType, false,
+                Stream.of(ConfidentialLevel.NON_CONFIDENTIAL, ConfidentialLevel.LA)
+                    .map(confidentialLevel -> manageDocumentService
+                        .toFieldNameToListOfElementMap(caseData, documentType, confidentialLevel).values())
+                    .flatMap(Collection::stream).flatMap(List::stream)
                     .map(Element::getValue)
-//                    .filter(object -> object instanceof WithDocument)
+                    //.filter(object -> object instanceof WithDocument)
                     .map(object -> (WithDocument) object)
-                    .map(doc -> buildCafcassApiCaseDocument(documentType, doc.getDocument(), false))
-                    .toList())
+                    .map(WithDocument::getDocument)))
             .flatMap(List::stream)
             .toList();
     }
 
-    private CafcassApiCaseDocument buildCafcassApiCaseDocument(String category, DocumentReference docRef,
-                                                               boolean removed) {
+    private CafcassApiCaseDocument buildCafcassApiCaseDocument(String category, boolean removed,
+                                                               DocumentReference docRef) {
         return CafcassApiCaseDocument.builder()
             .documentId(getDocumentIdFromUrl(docRef.getUrl()).toString())
             .document_filename(docRef.getFilename())
@@ -249,8 +232,26 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
             .build();
     }
 
-    private CafcassApiCaseDocument buildCafcassApiCaseDocument(DocumentType docType, DocumentReference docRef,
-                                                               boolean removed) {
-        return buildCafcassApiCaseDocument(docType.getCategory(), docRef, removed);
+    private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(DocumentType docType, boolean removed,
+                                                                         List<DocumentReference> docRefList) {
+        return buildCafcassApiCaseDocumentList(docType.getCategory(), removed, docRefList);
+    }
+
+    private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(String category, boolean removed,
+                                                                         List<DocumentReference> docRefList) {
+        return buildCafcassApiCaseDocumentList(category, removed, docRefList.stream());
+    }
+
+    private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(DocumentType category, boolean removed,
+                                                                         Stream<DocumentReference> docRefList) {
+        return buildCafcassApiCaseDocumentList(category.getCategory(), removed, docRefList);
+    }
+
+    private List<CafcassApiCaseDocument> buildCafcassApiCaseDocumentList(String category, boolean removed,
+                                                                         Stream<DocumentReference> docRefList) {
+        return docRefList
+            .filter(Objects::nonNull)
+            .map(docRef -> buildCafcassApiCaseDocument(category, removed, docRef))
+            .toList();
     }
 }
