@@ -25,7 +25,8 @@ export class Organisation extends BasePage {
         await this.showcaseFilterButton.click();
         await this.caseNumberSearchText.fill(caseNumber);
         await this.applyFilterButton.click();
-        await expect(this.page.getByLabel('CARE_SUPERVISION_EPO')).toContainText('Showing 1 to 1 of 1 CARE_SUPERVISION_EPO cases');
+        await this.page.waitForLoadState("load");
+        await expect(this.page.getByText('of 1 CARE_SUPERVISION_EPO',{exact:true})).toBeVisible();
         await this.page.getByText('Showing 1 to 1 of 1 CARE_SUPERVISION_EPO casesSelect any CARE_SUPERVISION_EPO').click();
         await expect(this.page.getByText(`${caseName}`,{exact:true})).toBeVisible();
     }
