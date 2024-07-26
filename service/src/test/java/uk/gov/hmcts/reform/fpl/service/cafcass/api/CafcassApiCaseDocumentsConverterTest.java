@@ -8,6 +8,9 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getDocumentIdFromUrl;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTestBase {
     private static final ManageDocumentService manageDocumentService = mock(ManageDocumentService.class);
@@ -83,6 +87,52 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
         void shouldReturnEmptyListIfNull() {
             testConvert(CaseData.builder().standardDirectionOrder(null).urgentDirectionsOrder(null).build(),
                 CafcassApiCaseData.builder().caseDocuments(List.of()).build());
+        }
+    }
+
+    @Nested
+    class DraftOrders {
+        private final static DocumentReference DRAFT_ORDER = getTestDocumentReference();
+        private final static DocumentReference DRAFT_ORDER_CONFIDENTIAL = getTestDocumentReference();
+        private final static DocumentReference DRAFT_ORDER_REVIEW = getTestDocumentReference();
+        private final static DocumentReference DRAFT_ORDER_REVIEW_CONFIDENTIAL = getTestDocumentReference();
+
+        @Test
+        void shouldConvertDraftOrders() {
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = wrapElements(
+                HearingOrdersBundle.builder()
+                    .orders(wrapElements(HearingOrder.builder().order(DRAFT_ORDER).build()))
+                    .build(),
+                HearingOrdersBundle.builder()
+                    .ordersChild0(wrapElements(HearingOrder.builder()
+                        .orderConfidential(DRAFT_ORDER_CONFIDENTIAL).build()))
+                    .build());
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDraftReview = wrapElements(
+                HearingOrdersBundle.builder()
+                    .orders(wrapElements(HearingOrder.builder().order(DRAFT_ORDER_REVIEW).build()))
+                    .build(),
+                HearingOrdersBundle.builder()
+                    .ordersResp0(wrapElements(HearingOrder.builder()
+                        .orderConfidential(DRAFT_ORDER_REVIEW_CONFIDENTIAL).build()))
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
+                .hearingOrdersBundlesDraftReview(hearingOrdersBundlesDraftReview)
+                .build();
+
+            testCaseDocument(caseData, List.of(DRAFT_ORDER, DRAFT_ORDER_CONFIDENTIAL, DRAFT_ORDER_REVIEW),
+                "draftOrders");
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNullOrEmpty() {
+            CafcassApiCaseData expected = CafcassApiCaseData.builder().caseDocuments(List.of()).build();
+            testConvert(CaseData.builder().hearingOrdersBundlesDrafts(null)
+                    .hearingOrdersBundlesDraftReview(null).build(), expected);
+            testConvert(
+                CaseData.builder().hearingOrdersBundlesDrafts(List.of())
+                    .hearingOrdersBundlesDraftReview(List.of()).build(), expected);
         }
     }
 }
