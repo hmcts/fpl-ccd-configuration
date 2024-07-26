@@ -11,19 +11,25 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.document.SealType;
+import uk.gov.hmcts.reform.fpl.model.event.UploadTranslationsEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CCDConcurrencyHelper;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -32,6 +38,7 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,12 +51,23 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ITEM_TRANSLATED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.CASE_DATA_WITH_ALL_ORDERS;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.CONVERTED_DOC_BYTES;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.RENDERED_DYNAMIC_LIST;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.SEALED_DOC_BYTES;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.TEST_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.TRANSLATED_DOC_BYTES;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UPLOADED_TRANSFORMED_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_1;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_3;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.UUID_4;
+import static uk.gov.hmcts.reform.fpl.controllers.helper.UploadTranslationsControllerTestHelper.dlElement;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.ENGLISH_TO_WELSH;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -58,7 +76,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.WELSH;
 import static uk.gov.hmcts.reform.fpl.testingsupport.IntegrationTestConstants.COVERSHEET_PDF;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
@@ -131,14 +148,22 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
         .build();
 
+    private static final Court court = Court.builder().name("Family Court").build();
+
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataDelta;
 
     @Captor
     private ArgumentCaptor<LetterWithPdfsRequest> printRequest;
 
+    @Captor
+    private ArgumentCaptor<StartEventResponse> startEventResponseArgumentCaptor;
+
     @MockBean
     private SendLetterApi sendLetterApi;
+
+    @MockBean
+    private DocumentSealingService documentSealingService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -205,10 +230,20 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
                 new SendLetterResponse(LETTER_3_ID),
                 new SendLetterResponse(LETTER_4_ID)
             );
+
+        when(documentDownloadService.downloadDocument(TEST_DOCUMENT.getBinaryUrl())).thenReturn(TRANSLATED_DOC_BYTES);
+        when(documentConversionService.convertToPdf(TRANSLATED_DOC_BYTES, TEST_DOCUMENT.getFilename())).thenReturn(
+            CONVERTED_DOC_BYTES);
+        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.BILINGUAL))
+            .thenReturn(SEALED_DOC_BYTES);
+        when(uploadDocumentService.uploadDocument(SEALED_DOC_BYTES,
+            "noticeo_c6-Welsh.pdf",
+            RenderFormat.PDF.getMediaType()))
+            .thenReturn(UPLOADED_TRANSFORMED_DOCUMENT);
     }
 
     @Test
-    void shouldSendTranslatedNotificationToLocalAuthorityWhenTranslatedOrder() {
+    void shouldSendTranslatedNotificationToLocalAuthorityWhenTranslatedOrder() throws NotificationClientException {
         CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -222,11 +257,9 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(request);
 
-        checkUntil(() ->
-            verify(notificationClient).sendEmail(
-                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE, LOCAL_AUTHORITY_1_INBOX,
-                NOTIFICATION_PARAMETERS, notificationReference(CASE_ID)
-            )
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE, LOCAL_AUTHORITY_1_INBOX,
+            NOTIFICATION_PARAMETERS, notificationReference(CASE_ID)
         );
     }
 
@@ -241,11 +274,16 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        checkUntil(() -> {
-            verify(sendLetterApi, times(4)).sendLetter(eq(SERVICE_AUTH_TOKEN),
-                printRequest.capture());
-            verify(concurrencyHelper).submitEvent(any(), eq(CASE_ID), caseDataDelta.capture());
-        });
+        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(4)).sendLetter(eq(SERVICE_AUTH_TOKEN),
+            printRequest.capture());
+
+        // 2 post submits, one sealing, one posting
+        verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2))
+            .submitEvent(startEventResponseArgumentCaptor.capture(), eq(CASE_ID), caseDataDelta.capture());
+
+        // only sending post submits for these events (posting, sealing)
+        assertThat(startEventResponseArgumentCaptor.getAllValues().stream().map(StartEventResponse::getEventId))
+            .containsOnly("internal-change-UPDATE_CASE", "internal-change-translations");
 
         assertThat(printRequest.getAllValues()).usingRecursiveComparison()
             .isEqualTo(List.of(
@@ -292,7 +330,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesServedDigitallyWhenOrderTranslated() {
+    void shouldNotifyRepresentativesServedDigitallyWhenOrderTranslated() throws NotificationClientException {
         final CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -302,18 +340,17 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        checkUntil(() ->
-            verify(notificationClient).sendEmail(
-                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
-                REPRESENTATIVE_DIGITAL.getValue().getEmail(),
-                NOTIFICATION_PARAMETERS,
-                notificationReference(CASE_ID)
-            )
+
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+            REPRESENTATIVE_DIGITAL.getValue().getEmail(),
+            NOTIFICATION_PARAMETERS,
+            notificationReference(CASE_ID)
         );
     }
 
     @Test
-    void shouldNotifyRepresentativesServedByEmailWhenOrderTranslated() {
+    void shouldNotifyRepresentativesServedByEmailWhenOrderTranslated() throws NotificationClientException {
         final CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
             .caseDetails(asCaseDetails(caseData))
@@ -323,19 +360,66 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
         postSubmittedEvent(caseData);
 
-        checkUntil(() ->
-            verify(notificationClient).sendEmail(
-                ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
-                REPRESENTATIVE_EMAIL.getValue().getEmail(),
-                NOTIFICATION_PARAMETERS,
-                notificationReference(CASE_ID)
-            )
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            ITEM_TRANSLATED_NOTIFICATION_TEMPLATE,
+            REPRESENTATIVE_EMAIL.getValue().getEmail(),
+            NOTIFICATION_PARAMETERS,
+            notificationReference(CASE_ID)
         );
     }
 
+    @Test
+    void shouldFinaliseDocumentsSubmitted() {
+        final CaseData caseData = caseData();
+
+        when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
+            .caseDetails(asCaseDetails(caseData))
+            .eventId(i.getArgument(1))
+            .token("token")
+            .build());
+
+        postSubmittedEvent(caseData);
+
+        verify(concurrencyHelper).submitEvent(any(), any(), caseDataDelta.capture());
+
+        // should have translated document
+        assertThat(caseDataDelta.getValue())
+            .extracting("noticeOfProceedingsBundle")
+            .isEqualTo(List.of(element(UUID_3, DocumentBundle.builder()
+                .document(DocumentReference.builder()
+                    .filename("noticeo_c6.pdf")
+                    .build())
+                .translatedDocument(DocumentReference.buildFromDocument(UPLOADED_TRANSFORMED_DOCUMENT))
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .translationUploadDateTime(now())
+                .build()
+            ), element(UUID_4, DocumentBundle.builder()
+                .document(DocumentReference.builder()
+                    .filename("noticeo_c6a.pdf")
+                    .build())
+                .translationRequirements(ENGLISH_TO_WELSH)
+                .build()
+            )));
+
+        // should have cleared temp fields
+        assertThat(caseDataDelta.getValue()).extracting("uploadTranslationsOriginalDoc",
+            "uploadTranslationsRelatedToDocument", "uploadTranslationsTranslatedDoc")
+            .containsExactly(null, null, null);
+    }
+
     private CaseData caseData() {
-        return CaseData.builder()
+        return CASE_DATA_WITH_ALL_ORDERS.toBuilder()
             .id(CASE_ID)
+            .court(court)
+            .uploadTranslationsEventData(UploadTranslationsEventData.builder()
+                .uploadTranslationsRelatedToDocument(RENDERED_DYNAMIC_LIST.toBuilder()
+                    .value(dlElement(UUID_3, "Notice of proceedings (C6)"))
+                    .build())
+                .uploadTranslationsOriginalDoc(DocumentReference.builder()
+                    .filename("noticeo_c6.pdf")
+                    .build())
+                .uploadTranslationsTranslatedDoc(TEST_DOCUMENT)
+                .build())
             .children1(List.of(element(Child.builder()
                 .party(ChildParty.builder()
                     .lastName("ChildLast")
@@ -349,14 +433,14 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
                 .designated(YES.getValue())
                 .email(LOCAL_AUTHORITY_1_INBOX)
                 .build()))
-            .orderCollection(wrapElements(GeneratedOrder.builder()
+            .orderCollection(List.of(element(UUID_1, GeneratedOrder.builder()
                 .orderType("C32A_CARE_ORDER")
                 .type(ORDER_TYPE)
                 .translationUploadDateTime(now().plusSeconds(2))
                 .translatedDocument(TRANSLATED_ORDER)
                 .document(ORIGINAL_ORDER)
                 .translationRequirements(ENGLISH_TO_WELSH)
-                .build()))
+                .build())))
             .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
             .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
             .build();
@@ -366,7 +450,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         return Map.of(
             "childLastName", "ChildLast",
             "docType", orderType,
-            "callout", "^Jones, FMN1",
+            "callout", "^Jones, FMN1, hearing 3 Jan 2010",
             "courtName", "Family Court",
             "caseUrl", "http://fake-url/cases/case-details/1614860986487554"
         );
