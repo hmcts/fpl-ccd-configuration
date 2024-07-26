@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiInternationalElement;
 
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
-@Component
+@Service
 public class CafcassApiInternationalElementConverter implements CafcassApiCaseDataConverter {
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,

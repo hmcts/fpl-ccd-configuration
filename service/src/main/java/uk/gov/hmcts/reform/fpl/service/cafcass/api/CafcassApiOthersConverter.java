@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiOther;
@@ -10,11 +10,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiAddress;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Component
+@Service
 public class CafcassApiOthersConverter implements CafcassApiCaseDataConverter{
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,

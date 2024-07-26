@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -43,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getDocumentIdFromUrl;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@Component
+@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConverter {
     private final ManageDocumentService manageDocumentService;
