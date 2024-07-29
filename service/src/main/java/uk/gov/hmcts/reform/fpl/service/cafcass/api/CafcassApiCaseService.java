@@ -30,7 +30,7 @@ public class CafcassApiCaseService {
             .greaterThanOrEqual(startDate)
             .lessThanOrEqual(endDate).build();
 
-        List<CaseDetails> caseDetails = searchService.search(searchRange, 10000 , 0);
+        List<CaseDetails> caseDetails = searchService.search(searchRange, 10000, 0);
 
         return caseDetails.stream()
             .map(this::convertToCafcassApiCase)
