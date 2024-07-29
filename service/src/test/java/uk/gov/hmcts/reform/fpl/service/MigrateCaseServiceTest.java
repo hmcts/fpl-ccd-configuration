@@ -3344,7 +3344,7 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionIfNoRespondentWithId() {
+        void shouldThrowExceptionIfNoRespondentWithMatchingId() {
             UUID respondentId = UUID.randomUUID();
             UUID expectedId = UUID.randomUUID();
             Respondent respondent = Respondent.builder()
