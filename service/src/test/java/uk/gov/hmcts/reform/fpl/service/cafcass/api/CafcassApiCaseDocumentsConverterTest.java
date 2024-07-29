@@ -1,30 +1,65 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.Mockito;
+import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
+import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Placement;
+import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
+import uk.gov.hmcts.reform.fpl.model.PlacementSupportingDocument;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseDocument;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
+import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
+import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
+import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getDocumentIdFromUrl;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTestBase {
@@ -53,7 +88,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
     private void testCaseDocument(CaseData caseData, List<DocumentReference> documentReferences, String category) {
         CafcassApiCaseData actual = testConvert(caseData);
         assertThat(actual.getCaseDocuments())
-            .containsAll(getExpectedCafcassApiCaseDocuments(category, false, documentReferences));
+            .containsOnlyOnceElementsOf(getExpectedCafcassApiCaseDocuments(category, false, documentReferences));
 
     }
 
@@ -299,6 +334,271 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                     .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder().build()).build(),
                 List.of(),
                 "originalApplications");
+        }
+    }
+
+    @Nested
+    class PlacementApplications {
+        private static final DocumentReference PLACEMENT_APPLICATION_1 = getTestDocumentReference();
+        private static final DocumentReference PLACEMENT_APPLICATION_2 = getTestDocumentReference();
+        private static final DocumentReference PLACEMENT_NOTICE_DOCUMENT_1 = getTestDocumentReference();
+        private static final DocumentReference PLACEMENT_NOTICE_DOCUMENT_2 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOCUMENT_1 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOCUMENT_2 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOCUMENT_3 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOCUMENT_4 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_DOCUMENT_1 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_DOCUMENT_2 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_DOCUMENT_3 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_DOCUMENT_4 = getTestDocumentReference();
+        private static final DocumentReference NOTICE_DOCUMENT_1 = getTestDocumentReference();
+        private static final DocumentReference NOTICE_DOCUMENT_2 = getTestDocumentReference();
+        private static final DocumentReference NOTICE_DOCUMENT_3 = getTestDocumentReference();
+        private static final DocumentReference NOTICE_DOCUMENT_4 = getTestDocumentReference();
+
+        @Test
+        void shouldConvertAllPlacementApplications() {
+            final Placement placement1 = Placement.builder()
+                .application(PLACEMENT_APPLICATION_1)
+                .placementNotice(PLACEMENT_NOTICE_DOCUMENT_1)
+                .confidentialDocuments(wrapElements(
+                    PlacementConfidentialDocument.builder().document(CONFIDENTIAL_DOCUMENT_1).build(),
+                    PlacementConfidentialDocument.builder().document(CONFIDENTIAL_DOCUMENT_3).build()
+                ))
+                .supportingDocuments(wrapElements(
+                    PlacementSupportingDocument.builder().document(SUPPORTING_DOCUMENT_1).build(),
+                    PlacementSupportingDocument.builder().document(SUPPORTING_DOCUMENT_3).build()
+                ))
+                .noticeDocuments(wrapElements(
+                    PlacementNoticeDocument.builder().response(NOTICE_DOCUMENT_1).build(),
+                    PlacementNoticeDocument.builder().response(NOTICE_DOCUMENT_3).build()
+                ))
+                .build();
+
+
+            final Placement placement2 = Placement.builder()
+                .application(PLACEMENT_APPLICATION_2)
+                .placementNotice(PLACEMENT_NOTICE_DOCUMENT_2)
+                .confidentialDocuments(wrapElements(
+                    PlacementConfidentialDocument.builder().document(CONFIDENTIAL_DOCUMENT_2).build(),
+                    PlacementConfidentialDocument.builder().document(CONFIDENTIAL_DOCUMENT_4).build()
+                ))
+                .supportingDocuments(wrapElements(
+                    PlacementSupportingDocument.builder().document(SUPPORTING_DOCUMENT_2).build(),
+                    PlacementSupportingDocument.builder().document(SUPPORTING_DOCUMENT_4).build()
+                ))
+                .noticeDocuments(wrapElements(
+                    PlacementNoticeDocument.builder().response(NOTICE_DOCUMENT_2).build(),
+                    PlacementNoticeDocument.builder().response(NOTICE_DOCUMENT_4).build()
+                ))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(wrapElements(placement1, placement2))
+                    .build())
+                .build();
+
+            testCaseDocument(caseData, List.of(PLACEMENT_APPLICATION_1, PLACEMENT_APPLICATION_2,
+                PLACEMENT_NOTICE_DOCUMENT_1, PLACEMENT_NOTICE_DOCUMENT_2,
+                CONFIDENTIAL_DOCUMENT_1, CONFIDENTIAL_DOCUMENT_3, CONFIDENTIAL_DOCUMENT_2, CONFIDENTIAL_DOCUMENT_4,
+                SUPPORTING_DOCUMENT_1, SUPPORTING_DOCUMENT_3, SUPPORTING_DOCUMENT_2, SUPPORTING_DOCUMENT_4,
+                NOTICE_DOCUMENT_1, NOTICE_DOCUMENT_3, NOTICE_DOCUMENT_2, NOTICE_DOCUMENT_4), PLACEMENT_RESPONSES);
+        }
+
+        @Test
+        void shouldConvertPlacementApplicationIfOnlyApplicationDocumentExist() {
+            final Placement placement = Placement.builder().application(PLACEMENT_APPLICATION_1).build();
+
+            CaseData caseData = CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(wrapElements(placement))
+                    .build())
+                .build();
+
+            testCaseDocument(caseData, List.of(PLACEMENT_APPLICATION_1), PLACEMENT_RESPONSES);
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoPlacementExist() {
+            testCaseDocument(CaseData.builder().build(), List.of(), PLACEMENT_RESPONSES);
+            testCaseDocument(CaseData.builder()
+                .placementEventData(PlacementEventData.builder()
+                    .placements(wrapElements(Placement.builder().build()))
+                    .build()).build(), List.of(), PLACEMENT_RESPONSES);
+        }
+    }
+
+    @Nested
+    class AdditionalApplications {
+        private static final DocumentReference C2 = getTestDocumentReference();
+        private static final DocumentReference C2_2 = getTestDocumentReference();
+        private static final DocumentReference OTHER_APPLICATION = getTestDocumentReference();
+        private static final DocumentReference OTHER_APPLICATION_2 = getTestDocumentReference();
+        private static final DocumentReference SUPPLEMENT_1 = getTestDocumentReference();
+        private static final DocumentReference SUPPLEMENT_2 = getTestDocumentReference();
+        private static final DocumentReference SUPPLEMENT_3 = getTestDocumentReference();
+        private static final DocumentReference SUPPLEMENT_4 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_EVIDENCE_1 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_EVIDENCE_2 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_EVIDENCE_3 = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_EVIDENCE_4 = getTestDocumentReference();
+        private static final DocumentReference DRAFT_ORDER_1 = getTestDocumentReference();
+        private static final DocumentReference DRAFT_ORDER_2 = getTestDocumentReference();
+
+        @Test
+        void shouldConvertBothC2AndOtherAdditionalApplications() {
+            AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .document(C2)
+                    .supplementsBundle(wrapElements(
+                        Supplement.builder().document(SUPPLEMENT_1).build(),
+                        Supplement.builder().document(SUPPLEMENT_2).build()
+                        ))
+                    .supportingEvidenceBundle(wrapElements(
+                        SupportingEvidenceBundle.builder().document(SUPPORTING_EVIDENCE_1).build(),
+                        SupportingEvidenceBundle.builder().document(SUPPORTING_EVIDENCE_2).build()))
+                    .draftOrdersBundle(wrapElements(
+                        DraftOrder.builder().document(DRAFT_ORDER_1).build(),
+                        DraftOrder.builder().document(DRAFT_ORDER_2).build()))
+                    .build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .document(OTHER_APPLICATION)
+                    .supplementsBundle(wrapElements(
+                        Supplement.builder().document(SUPPLEMENT_3).build(),
+                        Supplement.builder().document(SUPPLEMENT_4).build()))
+                    .supportingEvidenceBundle(wrapElements(
+                        SupportingEvidenceBundle.builder().document(SUPPORTING_EVIDENCE_3).build(),
+                        SupportingEvidenceBundle.builder().document(SUPPORTING_EVIDENCE_4).build()))
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle)).build();
+
+            testAdditionalApplications(caseData,
+                List.of(C2, SUPPLEMENT_1, SUPPLEMENT_2, SUPPORTING_EVIDENCE_1, SUPPORTING_EVIDENCE_2,
+                    DRAFT_ORDER_1, DRAFT_ORDER_2),
+                List.of(
+                    OTHER_APPLICATION, SUPPLEMENT_3, SUPPLEMENT_4, SUPPORTING_EVIDENCE_3, SUPPORTING_EVIDENCE_4));
+        }
+
+        @Test
+        void shouldConvertAllAdditionalApplications() {
+            AdditionalApplicationsBundle additionalApplicationsBundle1 = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(C2).build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder().document(OTHER_APPLICATION).build())
+                .build();
+            AdditionalApplicationsBundle additionalApplicationsBundle2 = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder().document(C2_2).build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder().document(OTHER_APPLICATION_2).build())
+                .build();
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(
+                    additionalApplicationsBundle1, additionalApplicationsBundle2))
+                .build();
+
+            testAdditionalApplications(caseData,
+                List.of(C2, C2_2),
+                List.of(OTHER_APPLICATION, OTHER_APPLICATION_2));
+        }
+
+        @Test
+        void shouldConvertConfidentialC2UploadedByChildSolicitorOnly() {
+            AdditionalApplicationsBundle c2ByChildSolicitor = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundleConfidential(C2DocumentBundle.builder().document(C2).build())
+                .c2DocumentBundleChild0(C2DocumentBundle.builder().document(C2).build())
+                .build();
+            AdditionalApplicationsBundle c2ByLa = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundleConfidential(C2DocumentBundle.builder().document(C2_2).build())
+                .c2DocumentBundleLA(C2DocumentBundle.builder().document(C2_2).build())
+                .build();
+            AdditionalApplicationsBundle c2ByRespondentSolicitor = AdditionalApplicationsBundle.builder()
+                .c2DocumentBundleConfidential(C2DocumentBundle.builder().document(C2_2).build())
+                .c2DocumentBundleResp0(C2DocumentBundle.builder().document(C2_2).build())
+                .build();
+            testAdditionalApplications(CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(
+                    c2ByChildSolicitor, c2ByLa, c2ByRespondentSolicitor)).build(),
+                List.of(C2), List.of());
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoAdditionalApplication() {
+            testAdditionalApplications(CaseData.builder().build(), List.of(), List.of());
+            testAdditionalApplications(CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().build())).build(),
+                List.of(), List.of());
+        }
+
+        private void testAdditionalApplications(CaseData caseData, List<DocumentReference> c2Docs,
+                                                List<DocumentReference> c1Docs) {
+            CafcassApiCaseData actual = testConvert(caseData);
+            List<CafcassApiCaseDocument> expectedDocs = new ArrayList<>();
+            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(C2_APPLICATION_DOCUMENTS.getCategory(),
+                false, c2Docs));
+            expectedDocs.addAll(getExpectedCafcassApiCaseDocuments(C1_APPLICATION_DOCUMENTS.getCategory(),
+                false, c1Docs));
+
+            assertThat(actual.getCaseDocuments()).containsOnlyOnceElementsOf(expectedDocs);
+        }
+    }
+
+    @Nested
+    @DirtiesContext
+    class ManagedDocuments {
+        private static final DocumentReference NON_CONFIDENTIAL_DOC_1 = getTestDocumentReference();
+        private static final DocumentReference NON_CONFIDENTIAL_DOC_2 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOC_LA_1 = getTestDocumentReference();
+        private static final DocumentReference CONFIDENTIAL_DOC_LA_2 = getTestDocumentReference();
+
+        private static final List<Element<?>> NON_CONFIDENTIAL_DOCS = List.of(
+            element(ManagedDocument.builder().document(NON_CONFIDENTIAL_DOC_1).build()),
+            element(ManagedDocument.builder().document(NON_CONFIDENTIAL_DOC_2).build()));
+        private static final List<Element<?>> CONFIDENTIAL_DOC_LA = List.of(
+            element(ManagedDocument.builder().document(CONFIDENTIAL_DOC_LA_1).build()),
+            element(ManagedDocument.builder().document(CONFIDENTIAL_DOC_LA_2).build()));
+        private static final List<Element<?>> CONFIDENTIAL_DOC_CTSC = List.of(
+            element(ManagedDocument.builder().document(getTestDocumentReference()).build()),
+            element(ManagedDocument.builder().document(getTestDocumentReference()).build()));
+
+        @ParameterizedTest
+        @EnumSource(DocumentType.class)
+        void shouldConvertAllManagedDocuments(DocumentType documentType) {
+            Mockito.reset(manageDocumentService);
+            if (isNotEmpty(documentType.getBaseFieldNameResolver())) {
+                when(
+                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(NON_CONFIDENTIAL))
+                ).thenReturn(
+                    Map.of(documentType.getBaseFieldNameResolver().apply(NON_CONFIDENTIAL), NON_CONFIDENTIAL_DOCS)
+                );
+
+                when(
+                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(LA))
+                ).thenReturn(Map.of(documentType.getBaseFieldNameResolver().apply(LA), CONFIDENTIAL_DOC_LA));
+
+                when(
+                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(CTSC))
+                ).thenReturn(Map.of(documentType.getBaseFieldNameResolver().apply(CTSC), CONFIDENTIAL_DOC_CTSC));
+
+                testCaseDocument(CaseData.builder().build(),
+                    List.of(NON_CONFIDENTIAL_DOC_1, NON_CONFIDENTIAL_DOC_2, CONFIDENTIAL_DOC_LA_1,
+                        CONFIDENTIAL_DOC_LA_2),
+                    documentType);
+            } else {
+                testCaseDocument(CaseData.builder().build(), List.of(), documentType);
+            }
+            Mockito.reset(manageDocumentService);
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoDocumentFound() {
+            when(manageDocumentService.toFieldNameToListOfElementMap(any(), any(), any())).thenReturn(Map.of());
+            testCaseDocument(CaseData.builder().build(), List.of(), "");
+
+            when(manageDocumentService.toFieldNameToListOfElementMap(any(), any(), any()))
+                .thenReturn(Map.of("", List.of()));
+            testCaseDocument(CaseData.builder().build(), List.of(), "");
         }
     }
 }
