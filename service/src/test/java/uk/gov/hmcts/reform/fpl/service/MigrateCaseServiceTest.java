@@ -3287,7 +3287,6 @@ class MigrateCaseServiceTest {
                     .lastName("Smith")
                     .telephoneNumber(Telephone.builder()
                         .telephoneNumber("00000000000 - test")
-                        .contactDirection("contact xyz")
                         .build())
                     .build())
                 .build();
