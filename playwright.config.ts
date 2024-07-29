@@ -12,10 +12,12 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
 
   testDir: "./playwright-e2e",
+  testMatch:'*spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
-  timeout: 800000,
-  expect: { timeout: 800000 },
+  timeout: 3*60*1000, //each test execution time is set to 3 min
+  expect: { timeout: 1*45*1000 }, //wait time for the assertion to be true 45 sec
+
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -23,7 +25,7 @@ export default defineConfig({
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 4 : undefined,
+  workers: process.env.CI ? 5 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
@@ -55,6 +57,8 @@ export default defineConfig({
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
       retries: 3,
+        timeout: 3*60*1000,
+        expect: { timeout: 1*60*1000 },
     },
 
     /* Test against mobile viewports. */
