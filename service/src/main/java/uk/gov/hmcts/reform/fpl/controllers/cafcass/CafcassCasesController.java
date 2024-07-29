@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
-import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiCaseService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +33,7 @@ public class CafcassCasesController {
     private static final String DATE_TIME_FORMAT_IN = "yyyy-MM-dd'T'hh:mm:ss.SSS";
     private static final String DATE_TIME_FORMAT_OUT = "yyyy-MM-dd";
 
-    private final CafcassApiCaseService cafcassApiCaseService;
+    private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
 
     @GetMapping("")
     public CafcassApiSearchCasesResponse searchCases(
@@ -47,7 +47,7 @@ public class CafcassCasesController {
             throw new BadInputException();
         }
 
-        List<CafcassApiCase> caseDetails = cafcassApiCaseService.searchCaseByDateRange(startDate, endDate);
+        List<CafcassApiCase> caseDetails = cafcassApiSearchCaseService.searchCaseByDateRange(startDate, endDate);
 
         return CafcassApiSearchCasesResponse.builder()
             .total(caseDetails.size())

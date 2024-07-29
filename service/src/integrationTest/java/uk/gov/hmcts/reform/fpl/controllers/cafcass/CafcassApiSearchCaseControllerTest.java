@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
-import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiCaseService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 public class CafcassApiSearchCaseControllerTest extends CafcassApiControllerBaseTest {
     @MockBean
-    private CafcassApiCaseService cafcassApiCaseService;
+    private CafcassApiSearchCaseService cafcassApiSearchCaseService;
 
     @Test
     void searchCases() throws Exception {
@@ -34,7 +34,7 @@ public class CafcassApiSearchCaseControllerTest extends CafcassApiControllerBase
                 .caseData(CafcassApiCaseData.builder().build())
                 .build());
 
-        when(cafcassApiCaseService.searchCaseByDateRange(
+        when(cafcassApiSearchCaseService.searchCaseByDateRange(
             LocalDateTime.of(2024, 3, 28, 12,30,1,541000000),
             LocalDateTime.of(2024, 3, 28, 12,45,1,540000000))
         ).thenReturn(responseCases);

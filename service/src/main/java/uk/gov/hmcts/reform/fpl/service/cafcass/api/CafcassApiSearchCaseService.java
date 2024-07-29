@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CafcassApiCaseService {
+public class CafcassApiSearchCaseService {
     private final CaseConverter caseConverter;
     private final SearchService searchService;
     private final List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters;

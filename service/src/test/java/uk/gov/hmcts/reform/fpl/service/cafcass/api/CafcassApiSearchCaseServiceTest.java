@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CafcassApiCaseServiceTest {
+public class CafcassApiSearchCaseServiceTest {
     private static final LocalDateTime SEARCH_END_DATE = LocalDateTime.now();
     private static final LocalDateTime SEARCH_START_DATE = SEARCH_END_DATE.minusDays(1);
     private static final RangeQuery SEARCH_RANGE = RangeQuery.builder().field("last_modified")
@@ -59,11 +59,11 @@ public class CafcassApiCaseServiceTest {
     @Mock
     private CafcassApiCaseDataConverter cafcassApiCaseDataConverter3;
 
-    private CafcassApiCaseService underTest;
+    private CafcassApiSearchCaseService underTest;
 
     @BeforeEach
     void setUpWithMockConverters() {
-        underTest = new CafcassApiCaseService(caseConverter, searchService,
+        underTest = new CafcassApiSearchCaseService(caseConverter, searchService,
             List.of(cafcassApiCaseDataConverter1, cafcassApiCaseDataConverter2, cafcassApiCaseDataConverter3));
     }
 
