@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
@@ -3271,4 +3272,36 @@ class MigrateCaseServiceTest {
             assertThrows(AssertionError.class, () -> underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID));
         }
     }
+
+    @Nested
+    class RemoveRespondentsAwareReason {
+
+        @Test
+        void shouldRemoveRespondentsAwareReason() {
+            Hearing hearing = Hearing.builder()
+                .respondentsAwareReason("Before text.")
+                .reason("Reason text.")
+                .build();
+
+            Hearing expectedHearing = Hearing.builder()
+                .reason("Reason text.")
+                .build();
+
+            CaseData caseData = CaseData.builder().id(1L).hearing(hearing).build();
+
+            Map<String, Object> result = underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID);
+
+            assertThat(result).extracting("hearing").isEqualTo(expectedHearing);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenHearingEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s}, hearing not found", MIGRATION_ID));
+        }
+    }
+
 }

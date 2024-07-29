@@ -27,7 +27,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2474", this::run2474
+        "DFPL-2417", this::run2417
     );
 
     @PostMapping("/about-to-submit")
@@ -54,11 +54,11 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2474(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2474";
+    private void run2417(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2417";
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1719824920130559L, migrationId);
-        caseDetails.getData().remove("redDotAssessmentForm");
-        caseDetails.getData().remove("caseSummaryFlagAssessmentForm");
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1718373113606109L, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeRespondentsAwareReason(getCaseData(caseDetails),
+            migrationId));
     }
 }
