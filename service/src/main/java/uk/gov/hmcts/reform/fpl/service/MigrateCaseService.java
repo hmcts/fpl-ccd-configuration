@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
@@ -1204,4 +1205,18 @@ public class MigrateCaseService {
 
         return Map.of("proceeding", updatedProceeding);
     }
+
+    public Map<String, Object> removeRespondentsAwareReason(CaseData caseData, String migrationId) {
+
+        if (caseData.getHearing() == null) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .respondentsAwareReason(null)
+            .build();
+
+        return Map.of("hearing",hearing);
+    }
+
 }
