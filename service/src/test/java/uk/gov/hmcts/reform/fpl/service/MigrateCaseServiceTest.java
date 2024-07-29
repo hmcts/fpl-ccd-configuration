@@ -3367,6 +3367,7 @@ class MigrateCaseServiceTest {
         }
     }
 
+    @Nested
     class RemoveRespondentsAwareReason {
 
         @Test
