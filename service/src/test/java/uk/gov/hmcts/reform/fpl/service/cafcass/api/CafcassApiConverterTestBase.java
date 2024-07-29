@@ -24,7 +24,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public abstract class CafcassApiConverterTestBase {
     CafcassApiCaseDataConverter underTest;
 
-    private CafcassApiConverterTestBase() {}
+    private CafcassApiConverterTestBase() {
+    }
+
     CafcassApiConverterTestBase(CafcassApiCaseDataConverter converterUnderTest) {
         underTest = converterUnderTest;
     }

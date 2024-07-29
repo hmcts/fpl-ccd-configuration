@@ -15,7 +15,7 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CafcassApiRespondentsConverterTest extends CafcassApiConverterTestBase {
-    CafcassApiRespondentsConverterTest( ) {
+    CafcassApiRespondentsConverterTest() {
         super(new CafcassApiRespondentsConverter());
     }
 

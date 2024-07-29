@@ -47,7 +47,8 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     private final ManageDocumentService manageDocumentService;
 
     @Override
-    public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData, CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
+    public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
+                                                                CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
         return builder.caseDocuments(getCaseDocuments(caseData));
     }
 
@@ -113,7 +114,8 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
         if (isNotEmpty(submittedC1)) {
             documentReferences.add(submittedC1.getDocument());
             documentReferences.addAll(getAllDocumentsFromSupplements(submittedC1.getSupplementsBundle()));
-            documentReferences.addAll(getAllDocumentsFromSupportingEvidenceBundles(submittedC1.getSupportingEvidenceBundle()));
+            documentReferences.addAll(
+                getAllDocumentsFromSupportingEvidenceBundles(submittedC1.getSupportingEvidenceBundle()));
         }
 
         C110A c110a = caseData.getC110A();
@@ -151,33 +153,33 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
 
         // additional application
         unwrapElements(caseData.getAdditionalApplicationsBundle()).forEach(additionalApplicationsBundle -> {
-                C2DocumentBundle c2Bundle = (additionalApplicationsBundle.isConfidentialC2UploadedByChildSolicitor())
-                    ? additionalApplicationsBundle.getC2DocumentBundleConfidential()
-                    : additionalApplicationsBundle.getC2DocumentBundle();
-                if (isNotEmpty(c2Bundle)) {
-                    List<DocumentReference> c2DocRef = new ArrayList<>();
-                    c2DocRef.add(c2Bundle.getDocument());
+            C2DocumentBundle c2Bundle = (additionalApplicationsBundle.isConfidentialC2UploadedByChildSolicitor())
+                ? additionalApplicationsBundle.getC2DocumentBundleConfidential()
+                : additionalApplicationsBundle.getC2DocumentBundle();
+            if (isNotEmpty(c2Bundle)) {
+                List<DocumentReference> c2DocRef = new ArrayList<>();
+                c2DocRef.add(c2Bundle.getDocument());
 
-                    c2DocRef.addAll(getAllDocumentsFromSupplements(c2Bundle.getSupplementsBundle()));
-                    c2DocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
-                        c2Bundle.getSupportingEvidenceBundle()));
-                    c2DocRef.addAll(unwrapElements(c2Bundle.getDraftOrdersBundle()).stream()
-                        .map(DraftOrder::getDocument).toList());
+                c2DocRef.addAll(getAllDocumentsFromSupplements(c2Bundle.getSupplementsBundle()));
+                c2DocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
+                    c2Bundle.getSupportingEvidenceBundle()));
+                c2DocRef.addAll(unwrapElements(c2Bundle.getDraftOrdersBundle()).stream()
+                    .map(DraftOrder::getDocument).toList());
 
-                    resultList.addAll(buildCafcassApiCaseDocumentList(C2_APPLICATION_DOCUMENTS, false, c2DocRef));
-                }
+                resultList.addAll(buildCafcassApiCaseDocumentList(C2_APPLICATION_DOCUMENTS, false, c2DocRef));
+            }
 
-                OtherApplicationsBundle otherBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
-                if (isNotEmpty(otherBundle)) {
-                    List<DocumentReference> otherDocRef = new ArrayList<>();
+            OtherApplicationsBundle otherBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
+            if (isNotEmpty(otherBundle)) {
+                List<DocumentReference> otherDocRef = new ArrayList<>();
 
-                    otherDocRef.add(otherBundle.getDocument());
-                    otherDocRef.addAll(getAllDocumentsFromSupplements(otherBundle.getSupplementsBundle()));
-                    otherDocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
-                        otherBundle.getSupportingEvidenceBundle()));
+                otherDocRef.add(otherBundle.getDocument());
+                otherDocRef.addAll(getAllDocumentsFromSupplements(otherBundle.getSupplementsBundle()));
+                otherDocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
+                    otherBundle.getSupportingEvidenceBundle()));
 
-                    resultList.addAll(buildCafcassApiCaseDocumentList(C1_APPLICATION_DOCUMENTS, false, otherDocRef));
-                }
+                resultList.addAll(buildCafcassApiCaseDocumentList(C1_APPLICATION_DOCUMENTS, false, otherDocRef));
+            }
         });
 
         return resultList;
@@ -224,7 +226,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                                                                DocumentReference docRef) {
         return CafcassApiCaseDocument.builder()
             .documentId(getDocumentIdFromUrl(docRef.getUrl()).toString())
-            .document_filename(docRef.getFilename())
+            .documentFileName(docRef.getFilename())
             .documentCategory(category)
             .removed(removed)
             .build();

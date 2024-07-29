@@ -21,10 +21,10 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 @ExtendWith(MockitoExtension.class)
 public class CafcassApiInterceptorTest {
-    private final static String AUTH_TOKEN_TEST = "bearerToken";
-    private final static UserInfo CAFCASS_SYSTEM_UPDATE_USER =
+    private static final String AUTH_TOKEN_TEST = "bearerToken";
+    private static final UserInfo CAFCASS_SYSTEM_UPDATE_USER =
         UserInfo.builder().roles(List.of(CAFCASS_SYSTEM_UPDATE.getRoleName())).build();
-    private final static UserInfo LOCAL_AUTHORITY_UPDATE_USER =
+    private static final UserInfo LOCAL_AUTHORITY_UPDATE_USER =
         UserInfo.builder().roles(List.of(LOCAL_AUTHORITY.getRoleName())).build();
 
     @Mock

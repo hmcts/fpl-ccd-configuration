@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
-public class CafcassApiOthersConverter implements CafcassApiCaseDataConverter{
+public class CafcassApiOthersConverter implements CafcassApiCaseDataConverter {
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {

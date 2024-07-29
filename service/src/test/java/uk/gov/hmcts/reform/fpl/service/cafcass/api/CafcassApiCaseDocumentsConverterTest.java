@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mockito;
 import org.springframework.test.annotation.DirtiesContext;
-import uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel;
 import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
@@ -29,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.SubmittedC1WithSupplementBundle;
 import uk.gov.hmcts.reform.fpl.model.event.PlacementEventData;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
-import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.model.order.DraftOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -37,19 +34,14 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
@@ -73,7 +65,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                                                                             List<DocumentReference> docRefs) {
         return docRefs.stream().map(docRef -> CafcassApiCaseDocument.builder()
                 .documentId(getDocumentIdFromUrl(docRef.getUrl()).toString())
-                .document_filename(docRef.getFilename())
+                .documentFileName(docRef.getFilename())
                 .documentCategory(category)
                 .removed(removed)
                 .build())
@@ -135,8 +127,8 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
 
     @Nested
     class DraftOrders {
-        private final static DocumentReference DRAFT_ORDER = getTestDocumentReference();
-        private final static DocumentReference DRAFT_ORDER_CONFIDENTIAL = getTestDocumentReference();
+        private static final DocumentReference DRAFT_ORDER = getTestDocumentReference();
+        private static final DocumentReference DRAFT_ORDER_CONFIDENTIAL = getTestDocumentReference();
 
         @Test
         void shouldConvertDraftOrdersAndConfidentialOrdersUploadedByChildSolicitor() {
@@ -216,6 +208,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
         private static final DocumentReference SEALED_CMO_CONFIDENTIAL = getTestDocumentReference();
         private static final DocumentReference APPROVED_ORDER = getTestDocumentReference();
         private static final DocumentReference APPROVED_ORDER_CONFIDENTIAL = getTestDocumentReference();
+
         @Test
         void shouldConvertSealedCmosAndOrders() {
             CaseData caseData = CaseData.builder()
@@ -278,15 +271,15 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
 
     @Nested
     class OriginalApplications {
-        DocumentReference APPLICATION_DOC = getTestDocumentReference();
-        DocumentReference APPLICATION_TRANSLATED_DOC = getTestDocumentReference();
-        DocumentReference SUPPLEMENT_DOC = getTestDocumentReference();
-        Supplement SUPPLEMENT = Supplement.builder().document(SUPPLEMENT_DOC).build();
-        DocumentReference SUPPORTING_EVIDENCE_DOC = getTestDocumentReference();
-        DocumentReference SUPPORTING_EVIDENCE_TRANSLATEDDOC = getTestDocumentReference();
-        SupportingEvidenceBundle supportingEvidence = SupportingEvidenceBundle.builder()
+        private static final DocumentReference APPLICATION_DOC = getTestDocumentReference();
+        private static final DocumentReference APPLICATION_TRANSLATED_DOC = getTestDocumentReference();
+        private static final DocumentReference SUPPLEMENT_DOC = getTestDocumentReference();
+        private static final Supplement SUPPLEMENT = Supplement.builder().document(SUPPLEMENT_DOC).build();
+        private static final DocumentReference SUPPORTING_EVIDENCE_DOC = getTestDocumentReference();
+        private static final DocumentReference SUPPORTING_EVIDENCE_TRANSLATED_DOC = getTestDocumentReference();
+        private static final SupportingEvidenceBundle SUPPORTING_EVIDENCE_BUNDLE = SupportingEvidenceBundle.builder()
             .document(SUPPORTING_EVIDENCE_DOC)
-            .translatedDocument(SUPPORTING_EVIDENCE_TRANSLATEDDOC)
+            .translatedDocument(SUPPORTING_EVIDENCE_TRANSLATED_DOC)
             .build();
 
         @Test
@@ -295,13 +288,13 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                 .submittedC1WithSupplement(SubmittedC1WithSupplementBundle.builder()
                     .document(APPLICATION_DOC)
                     .supplementsBundle(wrapElements(SUPPLEMENT))
-                    .supportingEvidenceBundle(wrapElements(supportingEvidence))
+                    .supportingEvidenceBundle(wrapElements(SUPPORTING_EVIDENCE_BUNDLE))
                     .build())
                 .build();
 
             testCaseDocument(
                 caseData,
-                List.of(APPLICATION_DOC, SUPPLEMENT_DOC, SUPPORTING_EVIDENCE_DOC, SUPPORTING_EVIDENCE_TRANSLATEDDOC),
+                List.of(APPLICATION_DOC, SUPPLEMENT_DOC, SUPPORTING_EVIDENCE_DOC, SUPPORTING_EVIDENCE_TRANSLATED_DOC),
                 "originalApplications");
         }
 
