@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
 
-@Getter
+@Data
 @Builder
 public class CafcassApiSearchCasesResponse {
     private int total;

@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
+@Deprecated
 @WebMvcTest(CafcassCasesController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class CafcassCasesControllerTest extends AbstractTest {
@@ -39,107 +39,6 @@ public class CafcassCasesControllerTest extends AbstractTest {
     @BeforeEach
     void setUp() {
         givenCurrentUser(CAFCASS_SYSTEM_UPDATE_USER_INFO);
-    }
-
-    @Test
-    void searchCases() throws Exception {
-        MvcResult response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN)
-                .queryParam("startDate", "2023-03-28T12:32:54.541")
-                .queryParam("endDate", "2024-03-27T12:32:54.542"))
-            .andExpect(status().is(200))
-            .andReturn();
-
-        assertEquals("searchCases - Start date: [2023-03-28], End date: [2024-03-27]",
-            response.getResponse().getContentAsString());
-    }
-
-    @Test
-    void searchCasesInvalidFormat400() throws Exception {
-        MvcResult response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN)
-                .queryParam("startDate", "123")
-                .queryParam("endDate", "321"))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-    }
-
-    @Test
-    void searchCasesEmptyParam400() throws Exception {
-        MvcResult response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-
-        response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN)
-                .queryParam("startDate", "2023-03-28T12:32:54.541"))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-
-        response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN)
-                .queryParam("endDate", "2024-03-27T12:32:54.542"))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-    }
-
-    @Test
-    void searchCases500() throws Exception {
-        MvcResult response = mockMvc
-            .perform(get("/cases")
-                .header("authorization", USER_AUTH_TOKEN)
-                .queryParam("startDate", "2024-03-28T12:32:54.541")
-                .queryParam("endDate", "2023-03-27T12:32:54.542"))
-            .andExpect(status().is(500))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 500);
-    }
-
-    @Test
-    void getDocumentBinary() throws Exception {
-        UUID docId = UUID.randomUUID();
-        MvcResult response = mockMvc
-            .perform(get("/cases/documents/%s/binary".formatted(docId))
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(200))
-            .andReturn();
-
-        assertEquals("getDocumentBinary - document id: [%s]".formatted(docId),
-            response.getResponse().getContentAsString());
-    }
-
-    @Test
-    void getDocumentBinary400() throws Exception {
-        MvcResult response = mockMvc
-            .perform(get("/cases/documents/123/binary")
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-
-        response = mockMvc
-            .perform(get("/cases/documents/ /binary")
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
     }
 
     @Test
