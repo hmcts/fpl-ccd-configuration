@@ -11,7 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.service.*;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -28,8 +29,9 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2356", this::run2356
+        "DFPL-2492", this::run2492
     );
+    private final CaseConverter caseConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -55,13 +57,13 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2356(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2356";
-        final long expectedCaseId = 1578673256247168L;
-        final UUID respondentId = UUID.fromString("89d1398d-ab3d-40d2-a2d8-9547c105e8a1");
+    private void run2492(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2492";
+        final var thresholdDetailsStartIndex = 2377;
+        final var thresholdDetailsEndIndex = 2758;
+        final CaseData caseData = caseConverter.convert(caseDetails);
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeRespondentTelephoneNumber(getCaseData(caseDetails),
-            respondentId, migrationId));
+        migrateCaseService.removeCharactersFromThresholdDetails(caseData, migrationId,
+            thresholdDetailsStartIndex, thresholdDetailsEndIndex);
     }
 }
