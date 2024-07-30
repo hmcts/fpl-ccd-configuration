@@ -196,10 +196,10 @@ class NewHearingJudgeEventHandlerTest {
 
     @Test
     void shouldCreateHearingRoleInFutureIfMultipleHearings() {
-        LocalDateTime future = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
         HearingBooking hearing1 = HearingBooking.builder()
-            .startDate(future)
+            .startDate(now)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeJudicialUser(JudicialUser.builder()
                     .idamId("idamId")
@@ -208,7 +208,7 @@ class NewHearingJudgeEventHandlerTest {
             .build();
 
         HearingBooking hearing2 = hearing1.toBuilder()
-            .startDate(future.plusDays(2))
+            .startDate(now.plusDays(2))
             .build();
 
         underTest.handleNewHearingJudge(new NewHearingJudgeEvent(
@@ -219,7 +219,7 @@ class NewHearingJudgeEventHandlerTest {
 
         verify(judicialService).assignHearingJudge(12345L,
             "idamId",
-            future.plusDays(2).atZone(ZoneId.systemDefault()),
+            now.plusDays(2).atZone(ZoneId.systemDefault()),
             null,
             false);
     }

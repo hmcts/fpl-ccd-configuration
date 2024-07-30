@@ -51,10 +51,11 @@ public class NewHearingJudgeEventHandler {
         ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(ZoneId.systemDefault()))
             .orElse(null);
 
-        // if this is the first hearing, use now as the start date/time, else use the start of the hearing
-        ZonedDateTime startDate = event.getCaseData().getAllNonCancelledHearings().size() > 1
-            ? event.getHearing().getStartDate().atZone(ZoneId.systemDefault())
-            : ZonedDateTime.now();
+        final boolean isFirstHearing = event.getCaseData().getAllNonCancelledHearings().size() == 1;
+
+        ZonedDateTime startDate = isFirstHearing
+            ? ZonedDateTime.now()
+            : event.getHearing().getStartDate().atZone(ZoneId.systemDefault());
 
         if (!isEmpty(hearingJudge.getJudgeJudicialUser())
             && !isEmpty(hearingJudge.getJudgeJudicialUser().getIdamId())) {
