@@ -25,5 +25,18 @@
     "PageLabel": "Link cases",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createCaseLink",
+    "CaseFieldID": "caseNameHmctsInternal",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "createCaseLink",
+    "PageLabel": "Link cases",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "LinkedCasesComponentLauncher=\"DO_NOT_SHOW\""
   }
 ]
