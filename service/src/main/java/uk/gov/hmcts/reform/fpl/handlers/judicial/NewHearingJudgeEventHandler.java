@@ -53,7 +53,7 @@ public class NewHearingJudgeEventHandler {
 
         final boolean isFirstHearing = event.getCaseData().getAllNonCancelledHearings().size() == 1;
 
-        ZonedDateTime startDate = isFirstHearing
+        final ZonedDateTime startDate = isFirstHearing
             ? ZonedDateTime.now()
             : event.getHearing().getStartDate().atZone(ZoneId.systemDefault());
 
