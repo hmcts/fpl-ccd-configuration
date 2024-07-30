@@ -918,8 +918,9 @@ public class MigrateCaseService {
     }
 
     /**
-     * Returns the updated "grounds" object with a substring of characters removed from the thresholdDetails it contains.
-     * Note: \n, \t, etc. count as one character.
+     * Removes a substring of characters from thresholdDetails and returns an updated "grounds" object
+     * containing the updated thresholdDetails.
+     * Note: when calculating the index \n, \t, etc. count as one character.
      */
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
