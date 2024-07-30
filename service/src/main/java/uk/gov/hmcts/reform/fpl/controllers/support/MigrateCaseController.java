@@ -59,11 +59,12 @@ public class MigrateCaseController extends CallbackController {
 
     private void run2492(CaseDetails caseDetails) {
         final String migrationId = "DFPL-2492";
+        final long expectedCaseId = 1721043312380328L;
         final var thresholdDetailsStartIndex = 2377;
         final var thresholdDetailsEndIndex = 2758;
-        final CaseData caseData = caseConverter.convert(caseDetails);
 
-        migrateCaseService.removeCharactersFromThresholdDetails(caseData, migrationId,
-            thresholdDetailsStartIndex, thresholdDetailsEndIndex);
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(getCaseData(caseDetails),
+            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
     }
 }
