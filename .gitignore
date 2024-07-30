@@ -68,3 +68,11 @@ playwright-e2e/.env
 
 # Ignore .env file
 .env
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
