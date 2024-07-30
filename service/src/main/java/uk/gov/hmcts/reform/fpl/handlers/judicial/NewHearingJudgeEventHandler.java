@@ -40,45 +40,13 @@ public class NewHearingJudgeEventHandler {
             return;
         }
 
-        JudgeAndLegalAdvisor hearingJudge = event.getHearing().getJudgeAndLegalAdvisor();
-
         Optional<HearingBooking> nextHearing = event.getCaseData().getAllNonCancelledHearings()
             .stream()
             .map(Element::getValue)
             .filter(hearing -> hearing.getStartDate().isAfter(event.getHearing().getStartDate()))
             .min(Comparator.comparing(HearingBooking::getStartDate));
 
-        ZonedDateTime possibleEnd = nextHearing.map(hearing -> hearing.getStartDate().atZone(ZoneId.systemDefault()))
-            .orElse(null);
-
-
-        if (!isEmpty(hearingJudge.getJudgeJudicialUser())
-            && !isEmpty(hearingJudge.getJudgeJudicialUser().getIdamId())) {
-
-            // have an IDAM ID - use that to grant the role
-            judicialService.assignHearingJudge(event.getCaseData().getId(),
-                hearingJudge.getJudgeJudicialUser().getIdamId(),
-                event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
-                // if there's a hearing after the one added, we're going out of order, so set an end date
-                possibleEnd,
-                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle()));
-        } else if (!isEmpty(hearingJudge.getJudgeJudicialUser())
-            && !isEmpty(hearingJudge.getJudgeJudicialUser().getPersonalCode())) {
-
-            // no IDAM ID, but has personal code, lookup in JRD first
-            Optional<JudicialUserProfile> judge = judicialService
-                .getJudge(hearingJudge.getJudgeJudicialUser().getPersonalCode());
-
-            judge.ifPresentOrElse(judicialUserProfile ->
-                    judicialService.assignHearingJudge(event.getCaseData().getId(), judicialUserProfile.getSidamId(),
-                        event.getHearing().getStartDate().atZone(ZoneId.systemDefault()),
-                        possibleEnd,
-                        JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearingJudge.getJudgeTitle())),
-                () -> log.info("Could not lookup in JRD, no auto allocation of hearing judge on case {}",
-                    event.getCaseData().getId()));
-        } else {
-            log.info("No auto allocation of hearing judge on case {}", event.getCaseData().getId());
-        }
+        judicialService.assignHearingJudge(event.getCaseData().getId(), event.getHearing(), nextHearing);
     }
 
     private void handleEditedHearing(final NewHearingJudgeEvent event) {

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.am.model.RoleCategory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudgeCaseRole;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -352,6 +353,60 @@ class JudicialServiceTest {
 
         verify(roleAssignmentService).deleteRoleAssignmentOnCaseAtTime(eq(12345L), any(), eq("idam"),
             eq(List.of("hearing-judge", "hearing-legal-adviser")));
+    }
+
+    @Test
+    void shouldCreateTimeUnboundHearingJudgeRoleWhenNoFutureHearing() {
+        LocalDateTime startDate = LocalDateTime.now();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(startDate)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEnterManually(YesNo.NO)
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idam")
+                    .build())
+                .build())
+            .build();
+
+        underTest.assignHearingJudge(12345L, hearing, Optional.empty());
+
+        verify(roleAssignmentService).assignJudgesRole(
+            12345L,
+            List.of("idam"),
+            JudgeCaseRole.HEARING_JUDGE,
+            startDate.atZone(ZoneId.systemDefault()),
+            null);
+    }
+
+    @Test
+    void shouldCreateTimeBoundHearingJudgeRoleWithFutureHearing() {
+        LocalDateTime now = LocalDateTime.now();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(now)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEnterManually(YesNo.NO)
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idam")
+                    .build())
+                .build())
+            .build();
+
+        HearingBooking futureHearing = hearing.toBuilder()
+            .startDate(now.plusDays(2))
+            .build();
+
+        underTest.assignHearingJudge(12345L, hearing, Optional.of(futureHearing));
+
+        verify(roleAssignmentService).assignJudgesRole(
+            12345L,
+            List.of("idam"),
+            JudgeCaseRole.HEARING_JUDGE,
+            now.atZone(ZoneId.systemDefault()),
+            now.plusDays(2).atZone(ZoneId.systemDefault()));
     }
 
 }

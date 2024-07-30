@@ -2103,6 +2103,32 @@ class CaseDataTest {
         assertThat(caseData.getAllOrderCollections()).isEqualTo(expected);
     }
 
+    @Test
+    void shouldGetCorrectLastHearingBeforeDate() {
+        LocalDateTime now = LocalDateTime.now();
+        HearingBooking hearing = HearingBooking.builder().startDate(now).build();
+        HearingBooking hearingPrior = HearingBooking.builder().startDate(now.minusDays(2)).build();
+        HearingBooking hearingPrior2 = HearingBooking.builder().startDate(now.minusDays(4)).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(hearing, hearingPrior, hearingPrior2))
+            .build();
+
+        assertThat(caseData.getLastHearingBefore(now)).isEqualTo(Optional.of(hearingPrior));
+    }
+
+    @Test
+    void shouldReturnEmptyIfNoPriorHearingBeforeDate() {
+        LocalDateTime now = LocalDateTime.now();
+        HearingBooking futureHearing = HearingBooking.builder().startDate(now.plusDays(2)).build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(futureHearing))
+            .build();
+
+        assertThat(caseData.getLastHearingBefore(now)).isEqualTo(Optional.empty());
+    }
+
     private HearingOrder buildHearingOrder(HearingOrderType type) {
         return HearingOrder.builder().type(type).build();
     }
