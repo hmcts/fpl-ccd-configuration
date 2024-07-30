@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2354", this::run2354
+        "DFPL-2356", this::run2356
     );
 
     @PostMapping("/about-to-submit")
@@ -54,10 +55,13 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2354(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2354";
+    private void run2356(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2356";
+        final long expectedCaseId = 1578673256247168L;
+        final UUID respondentId = UUID.fromString("89d1398d-ab3d-40d2-a2d8-9547c105e8a1");
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1717512460432566L, migrationId);
-        caseDetails.getData().remove("urgentDirectionsOrder");
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeRespondentTelephoneNumber(getCaseData(caseDetails),
+            respondentId, migrationId));
     }
 }
