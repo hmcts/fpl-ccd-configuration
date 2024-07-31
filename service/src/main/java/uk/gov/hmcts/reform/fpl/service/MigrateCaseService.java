@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -1203,5 +1205,50 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("proceeding", updatedProceeding);
+    }
+
+
+    public Map<String, Object> removeRespondentTelephoneNumber(CaseData caseData, UUID respondentId,
+                                                               String migrationId) {
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
+
+        Element<Respondent> targetRespondent = ElementUtils.findElement(respondentId, respondents)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find respondent with UUID %s",
+                migrationId, caseData.getId(), respondentId))
+            );
+
+        final Respondent respondent = targetRespondent.getValue();
+
+        if (isEmpty(respondent.getParty().getTelephoneNumber())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, respondent did not have telephone number",
+                migrationId, caseData.getId()));
+        }
+
+        Respondent updatedRespondent = respondent.toBuilder()
+            .party(respondent.getParty().toBuilder()
+                .telephoneNumber(respondent.getParty().getTelephoneNumber().toBuilder()
+                    .telephoneNumber(null)
+                    .build())
+                .build())
+            .build();
+
+        targetRespondent.setValue(updatedRespondent);
+
+        return Map.of("respondents1", respondents);
+    }
+
+    public Map<String, Object> removeRespondentsAwareReason(CaseData caseData, String migrationId) {
+
+        if (caseData.getHearing() == null) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .respondentsAwareReason(null)
+            .build();
+
+        return Map.of("hearing",hearing);
     }
 }
