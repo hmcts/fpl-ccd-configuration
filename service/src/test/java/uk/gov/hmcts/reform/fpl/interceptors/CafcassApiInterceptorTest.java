@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -29,6 +30,8 @@ public class CafcassApiInterceptorTest {
 
     @Mock
     private IdamClient idamClient;
+    @Mock
+    private ObjectProvider<IdamClient> idamClientObjectProvider;
     @InjectMocks
     private CafcassApiInterceptor underTest;
 
@@ -36,6 +39,7 @@ public class CafcassApiInterceptorTest {
     public void shouldReturnTrueIfCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
+        when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
         when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(CAFCASS_SYSTEM_UPDATE_USER);
 
         assertTrue(underTest.preHandle(request, null, null));
@@ -45,6 +49,7 @@ public class CafcassApiInterceptorTest {
     public void shouldThrowAuthExceptionIfNotCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
+        when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
         when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(LOCAL_AUTHORITY_UPDATE_USER);
 
         assertThrows(AuthorizationException.class,
