@@ -41,8 +41,6 @@ public class CafcassCasesController {
         @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         log.info("searchCases, " + startDate + ", " + endDate);
 
-        // TODO a generice work flow for validation?
-        // TODO should put the 15 mins range to configuration instead?
         if (startDate.isAfter(endDate) || startDate.plusMinutes(15).isBefore(endDate)) {
             throw new BadInputException();
         }

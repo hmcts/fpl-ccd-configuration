@@ -63,7 +63,6 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                 getHearingNotice(caseData),
                 getManageDocuments(caseData))
             .flatMap(List::stream)
-            //.parallel()
             .toList();
     }
 
@@ -215,7 +214,6 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                         .toFieldNameToListOfElementMap(caseData, documentType, confidentialLevel).values())
                     .flatMap(Collection::stream).flatMap(List::stream)
                     .map(Element::getValue)
-                    //.filter(object -> object instanceof WithDocument)
                     .map(object -> (WithDocument) object)
                     .map(WithDocument::getDocument)))
             .flatMap(List::stream)
