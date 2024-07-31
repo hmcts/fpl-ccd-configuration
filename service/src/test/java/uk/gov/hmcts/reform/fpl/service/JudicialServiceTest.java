@@ -427,7 +427,8 @@ class JudicialServiceTest {
 
             underTest.getJudgeIdFromHearing(booking);
 
-            verify(judicialApi).findUsers(any(), any(), anyInt(), any(), eq(JudicialUserRequest.fromPersonalCode("code")));
+            verify(judicialApi).findUsers(any(), any(), anyInt(),
+                any(), eq(JudicialUserRequest.fromPersonalCode("code")));
         }
 
         @Test
