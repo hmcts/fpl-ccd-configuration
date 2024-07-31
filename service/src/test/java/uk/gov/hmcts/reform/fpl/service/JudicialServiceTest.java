@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.JudicialUser;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.rd.client.JudicialApi;
 import uk.gov.hmcts.reform.rd.model.JudicialUserProfile;
+import uk.gov.hmcts.reform.rd.model.JudicialUserRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,6 +41,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -407,6 +409,87 @@ class JudicialServiceTest {
             JudgeCaseRole.HEARING_JUDGE,
             now.atZone(ZoneId.systemDefault()),
             now.plusDays(2).atZone(ZoneId.systemDefault()));
+    }
+
+    @Nested
+    class GetJudgeId {
+        @Test
+        void shouldLookupJudgeIdWhenPersonalCodeOnly() {
+            HearingBooking booking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEnterManually(YesNo.NO)
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .personalCode("code")
+                        .build())
+                    .build())
+                .build();
+
+            underTest.getJudgeIdFromHearing(booking);
+
+            verify(judicialApi).findUsers(any(), any(), anyInt(), any(), eq(JudicialUserRequest.fromPersonalCode("code")));
+        }
+
+        @Test
+        void shouldReturnJudgeIdWhenIdamOnly() {
+            HearingBooking booking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEnterManually(YesNo.NO)
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .idamId("idam")
+                        .build())
+                    .build())
+                .build();
+
+            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
+
+            assertThat(idamId.get()).isEqualTo("idam");
+            verifyNoInteractions(judicialApi);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenNoIdamOrPersonalCode() {
+            HearingBooking booking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEnterManually(YesNo.NO)
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .judgeJudicialUser(JudicialUser.builder()
+                        .build())
+                    .build())
+                .build();
+
+            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
+
+            assertThat(idamId).isEqualTo(Optional.empty());
+            verifyNoInteractions(judicialApi);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenNoJudicialUser() {
+            HearingBooking booking = HearingBooking.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeEnterManually(YesNo.NO)
+                    .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                    .build())
+                .build();
+
+            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
+
+            assertThat(idamId).isEqualTo(Optional.empty());
+            verifyNoInteractions(judicialApi);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenNoHearingJudge() {
+            HearingBooking booking = HearingBooking.builder()
+                .build();
+
+            Optional<String> idamId = underTest.getJudgeIdFromHearing(booking);
+
+            assertThat(idamId).isEqualTo(Optional.empty());
+            verifyNoInteractions(judicialApi);
+        }
     }
 
 }
