@@ -44,7 +44,7 @@ public class CafcassApiSearchCaseService {
         final BooleanQuery searchCaseQuery = BooleanQuery.builder()
             .mustNot(CASE_STATES)
             .filter(Filter.builder()
-                .rangeQuery(searchRange)
+                .clauses(List.of(searchRange))
                 .build())
             .build();
 
