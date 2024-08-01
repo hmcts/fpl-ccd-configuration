@@ -464,7 +464,7 @@ public class ManageDocumentService {
         }
     }
 
-    private List<Element<?>> getListOfRemovedElement(CaseData caseData, DocumentType documentType) {
+    public List<Element<?>> getListOfRemovedElement(CaseData caseData, DocumentType documentType) {
         return Optional.ofNullable(readFromFieldName(caseData,
                 documentType.getFieldNameOfRemovedList())).orElse(new ArrayList<>());
     }
@@ -701,7 +701,7 @@ public class ManageDocumentService {
             .build());
     }
 
-    private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
+    public Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                         ConfidentialLevel level) {
         Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
         if (documentType.getBaseFieldNameResolver() != null) {

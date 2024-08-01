@@ -8,6 +8,7 @@ public enum UserRole {
     LOCAL_AUTHORITY("caseworker-publiclaw-solicitor"),
     HMCTS_ADMIN("caseworker-publiclaw-courtadmin"),
     CAFCASS("caseworker-publiclaw-cafcass"),
+    CAFCASS_SYSTEM_UPDATE("caseworker-publiclaw-cafcass"), // TODO set up new system-update role
     GATEKEEPER("caseworker-publiclaw-gatekeeper"),
     JUDICIARY("caseworker-publiclaw-judiciary"),
     HMCTS_SUPERUSER("caseworker-publiclaw-superuser");
