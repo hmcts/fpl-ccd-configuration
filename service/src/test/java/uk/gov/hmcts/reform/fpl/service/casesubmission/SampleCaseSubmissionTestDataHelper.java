@@ -224,12 +224,11 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisHearingPreferences expectedDocmosisHearingPreferences() {
         return DocmosisHearingPreferences.builder()
-            .interpreter("Yes\ninterpreter required")
-            .welshDetails("Yes\nwelsh proceedings")
-            .intermediary("Yes\nintermediary hearing required")
-            .disabilityAssistance("Yes\nlearning disability")
-            .extraSecurityMeasures("Yes\nsecurity needed")
-            .somethingElse("Yes\nI need this from someone")
+            .interpreter("Interpreter required")
+            .intermediary("Intermediary hearing required")
+            .disabilityAssistance("Learning disability")
+            .extraSecurityMeasures("Separate waiting room required")
+            .somethingElse("I need this from someone")
             .build();
     }
 
