@@ -917,6 +917,9 @@ public class MigrateCaseService {
             .build());
     }
 
+    /**
+     * NB when calculating the index: spaces, \n, \t, etc. count as one character.
+     */
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
                                                                     int startIndex,
