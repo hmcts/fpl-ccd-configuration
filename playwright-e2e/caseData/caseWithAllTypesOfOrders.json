@@ -1,0 +1,542 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "caseName": "e2e test case amend order",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+        "value": {
+          "party": {
+            "email": {
+              "email": "swansea@test.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "Swansea City Council",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sealedCMOs": [
+      {
+        "id": "7316a1b3-9d75-4596-a811-4fa60b3339c5",
+        "value": {
+          "type": "AGREED_CMO",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo6.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "title": "Agreed CMO discussed at hearing",
+          "status": "APPROVED",
+          "hearing": "Case management hearing, 1 March 2020",
+          "dateSent": "2021-07-06",
+          "dateIssued": "2021-07-06",
+          "supportingDocs": [
+            {
+              "id": "e2281677-bcb3-4bb4-b1cb-d359db96796f",
+              "value": {
+                "name": "case summary",
+                "notes": "this is the case summary",
+                "document": {
+                  "document_url": "${TEST_DOCUMENT_URL}",
+                  "document_filename": "mockFile.txt",
+                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+                },
+                "confidential": []
+              }
+            }
+          ],
+          "judgeTitleAndName": "Her Honour Judge Reed",
+          "lastUploadedOrder": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
+        }
+      },
+      {
+        "id": "22c004bf-17f1-4e86-ba6d-ce5b955d6227",
+        "value": {
+          "type": "AGREED_CMO",
+          "order": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "cmo5.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "title": "Agreed CMO discussed at hearing",
+          "status": "APPROVED",
+          "hearing": "Case management hearing, 1 January 2020",
+          "dateSent": "2021-07-05",
+          "dateIssued": "2021-07-05",
+          "supportingDocs": [],
+          "judgeTitleAndName": "Her Honour Judge Reed",
+          "lastUploadedOrder": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "mockFile.docx",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          }
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "name": "Swansea City Council",
+          "email": "test@test.com",
+          "phone": "02027725772",
+          "address": {
+            "County": "Swansea",
+            "Country": "United Kingdom",
+            "PostCode": "CR0 2GE",
+            "PostTown": "Swansea",
+            "AddressLine1": "Flat 1, Swansea Apartments",
+            "AddressLine2": "Swansea Central Square 11",
+            "AddressLine3": "40 Fleet street"
+          },
+          "pbaNumber": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ],
+          "designated": "Yes"
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "legalAdvisorName": null,
+      "judgeEmailAddress": "moley@example.com",
+      "allocatedJudgeLabel": null
+    },
+    "hearingDetails": [
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "endDate": "2050-01-02T16:30:00",
+          "startDate": "2050-01-01T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          }
+        }
+      }
+    ],
+    "orderCollection": [
+      {
+        "id": "50ef824b-0fc3-4786-9c0e-c675cf28d8cc",
+        "value": {
+          "date": null,
+          "type": "C23 - Emergency protection order",
+          "title": null,
+          "details": null,
+          "children": [
+            {
+              "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "lastName": "Jones",
+                  "firstName": "Timothy",
+                  "dateOfBirth": "2015-08-01"
+                },
+                "finalOrderIssued": "Yes"
+              }
+            }
+          ],
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploader": null,
+          "courtName": null,
+          "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
+          "expiryDate": null,
+          "amendedDate": null,
+          "dateOfIssue": null,
+          "markedFinal": "No",
+          "approvalDate": null,
+          "removalReason": null,
+          "dateTimeIssued": "2021-07-09T10:13:20.725018",
+          "approvalDateTime": "2021-07-09T10:11:05",
+          "furtherDirections": {},
+          "childrenDescription": "Timothy Jones",
+          "linkedApplicationId": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Moley",
+            "judgeEmailAddress": "moley@example.com"
+          },
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c23_emergency_protection_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedOrderDescription": null
+        }
+      },
+      {
+        "id": "81c1dcc9-78f3-469c-9bb5-c6c39f09a925",
+        "value": {
+          "date": null,
+          "type": "C23 - Emergency protection order",
+          "title": null,
+          "details": null,
+          "children": [
+            {
+              "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "lastName": "Jones",
+                  "firstName": "Timothy",
+                  "dateOfBirth": "2015-08-01"
+                },
+                "finalOrderIssued": "Yes"
+              }
+            }
+          ],
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C23 - Emergency protection order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploader": null,
+          "courtName": null,
+          "orderType": "C23_EMERGENCY_PROTECTION_ORDER",
+          "expiryDate": null,
+          "amendedDate": null,
+          "dateOfIssue": null,
+          "markedFinal": "No",
+          "approvalDate": null,
+          "removalReason": null,
+          "dateTimeIssued": "2021-07-07T10:12:42.925666",
+          "approvalDateTime": "2021-07-07T10:11:05",
+          "furtherDirections": {
+            "directions": null,
+            "directionsNeeded": null
+          },
+          "childrenDescription": "Timothy Jones",
+          "linkedApplicationId": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Moley",
+            "judgeEmailAddress": "moley@example.com"
+          },
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c23_emergency_protection_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedOrderDescription": null
+        }
+      },
+      {
+        "id": "7f59d034-89cf-4f85-9fa3-73f8fba7b266",
+        "value": {
+          "date": null,
+          "type": "Discharge of care order (C32B)",
+          "title": null,
+          "details": null,
+          "children": [
+            {
+              "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "lastName": "Jones",
+                  "firstName": "Timothy",
+                  "dateOfBirth": "2015-08-01"
+                },
+                "finalOrderIssued": "Yes"
+              }
+            }
+          ],
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "Discharge of care order (C32B).pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploader": null,
+          "courtName": null,
+          "orderType": "C32B_DISCHARGE_OF_CARE_ORDER",
+          "expiryDate": null,
+          "amendedDate": null,
+          "dateOfIssue": null,
+          "markedFinal": "Yes",
+          "approvalDate": "2021-07-07",
+          "removalReason": null,
+          "dateTimeIssued": "2021-07-07T10:12:15.71137",
+          "approvalDateTime": null,
+          "furtherDirections": {
+            "directions": null,
+            "directionsNeeded": null
+          },
+          "childrenDescription": "Timothy Jones",
+          "linkedApplicationId": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Moley",
+            "judgeEmailAddress": "moley@example.com"
+          },
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c32b_discharge_of_care_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploadedOrderDescription": null
+        }
+      },
+      {
+        "id": "3c4af2b9-1cd9-40c6-ac30-50c16821e869",
+        "value": {
+          "date": null,
+          "type": "C32 - Care order",
+          "title": null,
+          "details": null,
+          "children": [
+            {
+              "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "lastName": "Jones",
+                  "firstName": "Timothy",
+                  "dateOfBirth": "2015-08-01"
+                },
+                "finalOrderIssued": "Yes"
+              }
+            }
+          ],
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "C32 - Care order.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "uploader": null,
+          "courtName": null,
+          "orderType": "C32_CARE_ORDER",
+          "expiryDate": null,
+          "amendedDate": null,
+          "dateOfIssue": null,
+          "markedFinal": "Yes",
+          "approvalDate": "2012-11-03",
+          "removalReason": null,
+          "dateTimeIssued": "2021-07-07T10:11:44.069464",
+          "approvalDateTime": null,
+          "furtherDirections": {
+            "directions": null,
+            "directionsNeeded": null
+          },
+          "childrenDescription": "Timothy Jones",
+          "linkedApplicationId": null,
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Jack Nickolson",
+            "judgeEmailAddress": "jack.nickolson@judge.com"
+          },
+          "unsealedDocumentCopy": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "c32_care_order.doc",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH",
+          "uploadedOrderDescription": null
+        }
+      }
+    ],
+    "gatekeeperEmails": [
+      {
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
+        "value": {
+          "email": "familypubliclaw+gatekeeper@gmail.com"
+        }
+      }
+    ],
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "caseLocalAuthority": "SA",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "ORGSA",
+        "OrganisationName": "Swansea City Council"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "Swansea City Council",
+    "urgentHearingOrder": {
+      "order": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "uho.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "dateAdded": "2021-07-03",
+      "allocation": "Lay justices",
+      "amendedDate": null,
+      "unsealedOrder": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "mockFile.docx",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      }
+    },
+    "familyManCaseNumber": "mockcaseID",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "standardDirectionOrder": {
+      "orderDoc": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "sdo.pdf",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "uploader": "judiciary-only@mailnesia.com (judiciary)",
+      "orderStatus": "SEALED",
+      "dateOfUpload": "2021-07-04",
+      "lastUploadedOrder": {
+        "document_url": "${TEST_DOCUMENT_URL}",
+        "document_filename": "mockFile.docx",
+        "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+      },
+      "standardDirections": [],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Moley",
+        "judgeEmailAddress": "moley@example.com"
+      }
+    },
+    "noticeOfProceedingsBundle": [
+      {
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb91",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blah_c6.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH"
+        }
+      },
+      {
+        "id": "f9cd373f-1e26-4eb0-8ad3-a9da99c8cb92",
+        "value": {
+          "document": {
+            "document_url": "${TEST_DOCUMENT_URL}",
+            "document_filename": "blah_c6a.pdf",
+            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+          },
+          "needTranslation": "Yes",
+          "translationRequirements": "ENGLISH_TO_WELSH"
+        }
+      }
+    ]
+  }
+}

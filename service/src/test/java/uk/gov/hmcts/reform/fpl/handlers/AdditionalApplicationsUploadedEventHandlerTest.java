@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.Addit
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantLocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityRecipientsService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -70,6 +71,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE_PARTIES_AND_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicantType.CHILD;
@@ -152,10 +154,14 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     @Mock
     private ApplicantLocalAuthorityService applicantLocalAuthorityService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @BeforeEach
     void before() {
         given(caseData.getId()).willReturn(CASE_ID);
         given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(true);
     }
 
     @Test
@@ -705,6 +711,27 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
             verifyNoInteractions(notificationService);
         }
+    }
+
+    @Test
+    void shouldNotNotifyCourtAdminIfToggledOff() {
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .sendToCtsc("Yes")
+            .build();
+
+        given(requestData.userRoles()).willReturn(Set.of("caseworker-publiclaw-solicitor"));
+        given(courtService.getCourtEmail(caseData)).willReturn("Ctsc+test@gmail.com");
+
+        given(localAuthorityRecipients.getRecipients(
+            RecipientsRequest.builder().caseData(caseData).build()))
+            .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(contentProvider.getNotifyData(caseData)).willReturn(notifyData);
+        when(featureToggleService.isCourtNotificationEnabledForWa(any())).thenReturn(false);
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, caseDataBefore, ORDER_APPLICANT_LA));
+
+        verifyNoInteractions(notificationService);
     }
 
     private static Stream<Arguments> applicationDataParams() {

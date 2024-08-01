@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
@@ -48,6 +49,8 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
@@ -3269,6 +3272,129 @@ class MigrateCaseServiceTest {
         void shouldThrowExceptionWhenNullProceedings() {
             CaseData caseData = CaseData.builder().build();
             assertThrows(AssertionError.class, () -> underTest.removeNamesFromOtherProceedings(caseData, MIGRATION_ID));
+        }
+    }
+
+    @Nested
+    class RemoveRespondentTelephone {
+
+        @Test
+        void shouldRemoveRespondentTelephone() {
+            UUID respondentId = UUID.randomUUID();
+            Respondent respondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .telephoneNumber(Telephone.builder()
+                        .telephoneNumber("00000000000 - test")
+                        .build())
+                    .build())
+                .build();
+
+            Element<Respondent> unchangedRespondent = element(UUID.randomUUID(), Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Jack")
+                    .lastName("Smith")
+                    .build())
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondents1(List.of(element(respondentId, respondent), unchangedRespondent))
+                .build();
+
+            // should have the same child object, just missing a telephone number
+            Respondent updatedRespondent = respondent.toBuilder()
+                .party(respondent.getParty().toBuilder()
+                    .telephoneNumber(respondent.getParty().getTelephoneNumber().toBuilder()
+                        .telephoneNumber(null)
+                        .build())
+                    .build())
+                .build();
+
+            Map<String, Object> response = underTest.removeRespondentTelephoneNumber(caseData, respondentId,
+                MIGRATION_ID);
+
+            assertThat(response.get("respondents1")).asList()
+                .containsExactly(element(respondentId, updatedRespondent), unchangedRespondent);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoTelephoneNumber() {
+            UUID respondentId = UUID.randomUUID();
+            Respondent respondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .telephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondents1(List.of(element(respondentId, respondent)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentTelephoneNumber(caseData, respondentId, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "respondent did not have telephone number",
+                    MIGRATION_ID, 1));
+        }
+
+        @Test
+        void shouldThrowExceptionIfNoRespondentWithMatchingId() {
+            UUID respondentId = UUID.randomUUID();
+            UUID expectedId = UUID.randomUUID();
+            Respondent respondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
+                    .telephoneNumber(null)
+                    .build())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .id(1L)
+                .respondents1(List.of(element(respondentId, respondent)))
+                .build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentTelephoneNumber(caseData, expectedId, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s, case reference = %s}, "
+                        + "could not find respondent with UUID %s",
+                    MIGRATION_ID, 1, expectedId));
+        }
+    }
+
+    @Nested
+    class RemoveRespondentsAwareReason {
+
+        @Test
+        void shouldRemoveRespondentsAwareReason() {
+            Hearing hearing = Hearing.builder()
+                .respondentsAwareReason("Before text.")
+                .reason("Reason text.")
+                .build();
+
+            Hearing expectedHearing = Hearing.builder()
+                .reason("Reason text.")
+                .build();
+
+            CaseData caseData = CaseData.builder().id(1L).hearing(hearing).build();
+
+            Map<String, Object> result = underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID);
+
+            assertThat(result).extracting("hearing").isEqualTo(expectedHearing);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenHearingEmpty() {
+            CaseData caseData = CaseData.builder().id(1L).build();
+
+            assertThatThrownBy(() -> underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s}, hearing not found", MIGRATION_ID));
         }
     }
 }
