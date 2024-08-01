@@ -64,6 +64,7 @@
   "packageManager": "yarn@3.8.2",
   "license": "MIT",
   "dependencies": {
+    "@axe-core/playwright": "^4.9.1",
     "@types/lodash": "^4.14.202",
     "dotenv": "^16.4.1"
   }

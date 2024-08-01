@@ -1,6 +1,6 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
-import caseData from '../caseData/caseInPrepareForHearing.json' assert { type: "json" };
+import caseData from '../caseData/caseInPrepareForHearing.json' with { type: "json" };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
@@ -12,6 +12,7 @@ test.describe('Return application', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    
   });
 
   test('CTSC return Application',
