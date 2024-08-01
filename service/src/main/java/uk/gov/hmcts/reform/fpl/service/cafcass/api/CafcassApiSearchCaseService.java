@@ -10,6 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDateTime;
@@ -19,18 +23,32 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiSearchCaseService {
+    private static final MustNot CASE_STATES = MustNot.builder()
+        .clauses(List.of(
+            MatchQuery.of("state", "Open"),
+            MatchQuery.of("state", "CLOSED"),
+            MatchQuery.of("state", "Deleted"),
+            MatchQuery.of("state", "RETURNED")))
+        .build();
+
     private final CaseConverter caseConverter;
     private final SearchService searchService;
     private final List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters;
 
     public List<CafcassApiCase> searchCaseByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-
         final RangeQuery searchRange = RangeQuery.builder()
             .field("last_modified")
             .greaterThanOrEqual(startDate)
             .lessThanOrEqual(endDate).build();
 
-        List<CaseDetails> caseDetails = searchService.search(searchRange, 10000, 0);
+        final BooleanQuery searchCaseQuery = BooleanQuery.builder()
+            .mustNot(CASE_STATES)
+            .filter(Filter.builder()
+                .rangeQuery(searchRange)
+                .build())
+            .build();
+
+        List<CaseDetails> caseDetails = searchService.search(searchCaseQuery, 10000, 0);
 
         return caseDetails.stream()
             .map(this::convertToCafcassApiCase)
