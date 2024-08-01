@@ -29,6 +29,7 @@ public class CourtServiceChecker implements EventChecker {
         }
 
         return anyNonEmpty(
+            hearingPreferences.getWhichCourtServices(),
             hearingPreferences.getInterpreterDetails(),
             hearingPreferences.getIntermediaryDetails(),
             hearingPreferences.getDisabilityAssistanceDetails(),
