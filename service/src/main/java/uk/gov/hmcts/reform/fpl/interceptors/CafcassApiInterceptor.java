@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +27,7 @@ public class CafcassApiInterceptor implements HandlerInterceptor {
                              Object handler) throws Exception {
         String authToken = request.getHeader("Authorization");
         if (isNotEmpty(authToken)) {
-            UserInfo userInfo = idamClient.getIfAvailable().getUserInfo(authToken);
+            UserInfo userInfo = Objects.requireNonNull(idamClient.getIfAvailable()).getUserInfo(authToken);
             if (userInfo != null && userInfo.getRoles().contains(CAFCASS_SYSTEM_UPDATE.getRoleName())) {
                 return true;
             }
