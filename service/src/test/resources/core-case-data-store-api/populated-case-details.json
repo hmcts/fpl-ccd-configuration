@@ -363,17 +363,17 @@
       "proposalReason": "allocation proposal reason"
     },
     "hearingPreferences": {
-      "welsh": "Yes",
-      "interpreter": "Yes",
-      "intermediary": "Yes",
-      "welshDetails": "welsh proceedings",
-      "interpreterDetails": "interpreter required",
-      "disabilityAssistance": "Yes",
-      "intermediaryDetails": "intermediary hearing required",
-      "extraSecurityMeasures": "Yes",
-      "disabilityAssistanceDetails": "learning disability",
-      "extraSecurityMeasuresDetails": "security needed",
-      "somethingElse": "Yes",
+      "whichCourtServices": [
+        "INTERPRETER",
+        "INTERMEDIARY",
+        "FACILITIES_FOR_DISABILITY",
+        "SEPARATE_WAITING_ROOMS",
+        "SOMETHING_ELSE"
+      ],
+      "interpreterDetails": "Interpreter required",
+      "intermediaryDetails": "Intermediary hearing required",
+      "disabilityAssistanceDetails": "Learning disability",
+      "separateWaitingRoomsDetails": "security needed",
       "somethingElseDetails": "I need this from someone"
     },
     "internationalElement": {

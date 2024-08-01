@@ -380,18 +380,18 @@
         "proposalReason": "allocation proposal reason"
       },
       "hearingPreferences": {
-        "welsh": "Yes",
-        "litigation": "Yes",
-        "interpreter": "Yes",
-        "intermediary": "Yes",
-        "welshDetails": "welsh proceedings",
-        "litigationDetails": "litigation",
-        "interpreterDetails": "interpreter required",
-        "learningDisability": "Yes",
-        "intermediaryDetails": "intermediary hearing required",
-        "extraSecurityMeasures": "Yes",
-        "learningDisabilityDetails": "learning disability",
-        "extraSecurityMeasuresDetails": "security needed"
+        "whichCourtServices": [
+          "INTERPRETER",
+          "INTERMEDIARY",
+          "FACILITIES_FOR_DISABILITY",
+          "SEPARATE_WAITING_ROOMS",
+          "SOMETHING_ELSE"
+        ],
+        "interpreterDetails": "Interpreter required",
+        "intermediaryDetails": "Intermediary hearing required",
+        "disabilityAssistanceDetails": "Learning disability",
+        "separateWaitingRoomsDetails": "security needed",
+        "somethingElseDetails": "I need this from someone"
       },
       "internationalElement": {
         "whichCountriesInvolved": "Italy, Spain, France",
