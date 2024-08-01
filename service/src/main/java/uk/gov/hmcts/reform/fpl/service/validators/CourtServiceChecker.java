@@ -9,10 +9,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
-import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Component
@@ -31,53 +28,19 @@ public class CourtServiceChecker implements EventChecker {
             return false;
         }
 
-        return anyNonEmpty(hearingPreferences.getWelsh(),
-            hearingPreferences.getInterpreter(),
-            hearingPreferences.getIntermediary(),
-            hearingPreferences.getDisabilityAssistance(),
-            hearingPreferences.getExtraSecurityMeasures(),
-            hearingPreferences.getSomethingElse());
+        return anyNonEmpty(
+            hearingPreferences.getInterpreterDetails(),
+            hearingPreferences.getIntermediaryDetails(),
+            hearingPreferences.getDisabilityAssistanceDetails(),
+            hearingPreferences.getSeparateWaitingRoomsDetails(),
+            hearingPreferences.getSomethingElseDetails());
     }
 
     @Override
     public boolean isCompleted(CaseData caseData) {
         final HearingPreferences hearingPreferences = caseData.getHearingPreferences();
 
-        if (hearingPreferences == null || anyEmpty(hearingPreferences.getWelsh(),
-            hearingPreferences.getInterpreter(),
-            hearingPreferences.getIntermediary(),
-            hearingPreferences.getDisabilityAssistance(),
-            hearingPreferences.getExtraSecurityMeasures(),
-            hearingPreferences.getSomethingElse())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(hearingPreferences.getWelsh())
-            && isEmpty(hearingPreferences.getWelshDetails())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(hearingPreferences.getInterpreter())
-            && isEmpty(hearingPreferences.getInterpreterDetails())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(hearingPreferences.getIntermediary())
-            && isEmpty(hearingPreferences.getIntermediaryDetails())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(hearingPreferences.getDisabilityAssistance())
-            && isEmpty(hearingPreferences.getDisabilityAssistanceDetails())) {
-            return false;
-        }
-
-        if (YES.getValue().equals(hearingPreferences.getExtraSecurityMeasures())
-            && isEmpty(hearingPreferences.getExtraSecurityMeasuresDetails())) {
-            return false;
-        }
-        return NO.getValue().equals(hearingPreferences.getSomethingElse())
-            || !isEmpty(hearingPreferences.getSomethingElseDetails());
+        return !(hearingPreferences == null || isEmpty(hearingPreferences.getWhichCourtServices()));
     }
 
     @Override
