@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
 import java.util.Map;
@@ -27,8 +28,9 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2474", this::run2474
+        "DFPL-2492", this::run2492
     );
+    private final CaseConverter caseConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -54,11 +56,14 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2474(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2474";
+    private void run2492(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2492";
+        final long expectedCaseId = 1721043312380328L;
+        final var thresholdDetailsStartIndex = 2365;
+        final var thresholdDetailsEndIndex = 2743;
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1719824920130559L, migrationId);
-        caseDetails.getData().remove("redDotAssessmentForm");
-        caseDetails.getData().remove("caseSummaryFlagAssessmentForm");
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(getCaseData(caseDetails),
+            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
     }
 }
