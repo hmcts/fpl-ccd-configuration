@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
 
@@ -28,7 +29,8 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2492", this::run2492
+        "DFPL-2492", this::run2492,
+        "DFPL-2491", this::run2491
     );
     private final CaseConverter caseConverter;
 
@@ -65,5 +67,11 @@ public class MigrateCaseController extends CallbackController {
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
         caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(getCaseData(caseDetails),
             migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
+    }
+
+    private void run2491(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2492";
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, migrationId));
     }
 }
