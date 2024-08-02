@@ -26,7 +26,6 @@ public class CafcassApiSearchCaseService {
     private static final MustNot CASE_STATES = MustNot.builder()
         .clauses(List.of(
             MatchQuery.of("state", "Open"),
-            MatchQuery.of("state", "CLOSED"),
             MatchQuery.of("state", "Deleted"),
             MatchQuery.of("state", "RETURNED")))
         .build();
