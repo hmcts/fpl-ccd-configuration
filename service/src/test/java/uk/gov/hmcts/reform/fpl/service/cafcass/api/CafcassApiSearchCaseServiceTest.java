@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -13,6 +15,11 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDateTime;
@@ -31,8 +38,18 @@ import static org.mockito.Mockito.when;
 public class CafcassApiSearchCaseServiceTest {
     private static final LocalDateTime SEARCH_END_DATE = LocalDateTime.now();
     private static final LocalDateTime SEARCH_START_DATE = SEARCH_END_DATE.minusDays(1);
-    private static final RangeQuery SEARCH_RANGE = RangeQuery.builder().field("last_modified")
-        .greaterThanOrEqual(SEARCH_START_DATE).lessThanOrEqual(SEARCH_END_DATE).build();
+    private static final BooleanQuery SEARCH_QUERY = BooleanQuery.builder()
+        .mustNot(MustNot.builder()
+            .clauses(List.of(
+                MatchQuery.of("state", "Open"),
+                MatchQuery.of("state", "Deleted"),
+                MatchQuery.of("state", "RETURNED")))
+            .build())
+        .filter(Filter.builder()
+            .clauses(List.of(RangeQuery.builder().field("last_modified")
+                .greaterThanOrEqual(SEARCH_START_DATE).lessThanOrEqual(SEARCH_END_DATE).build()))
+            .build())
+        .build();
 
     private static final CaseData MOCK_CASE_DATA_1 = mock(CaseData.class);
     private static final CaseDetails MOCK_CASE_DETAILS_1 = CaseDetails.builder()
@@ -58,6 +75,8 @@ public class CafcassApiSearchCaseServiceTest {
     private CafcassApiCaseDataConverter cafcassApiCaseDataConverter2;
     @Mock
     private CafcassApiCaseDataConverter cafcassApiCaseDataConverter3;
+    @Captor
+    private ArgumentCaptor<ESQuery> searchQueryCaptor;
 
     private CafcassApiSearchCaseService underTest;
 
@@ -77,7 +96,7 @@ public class CafcassApiSearchCaseServiceTest {
         when(cafcassApiCaseDataConverter3.convert(any(), any())).thenReturn(mockBuilder);
 
         final List<CaseDetails> caseDetails = List.of(MOCK_CASE_DETAILS_1, MOCK_CASE_DETAILS_2);
-        when(searchService.search(eq(SEARCH_RANGE), anyInt(), anyInt())).thenReturn(caseDetails);
+        when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt())).thenReturn(caseDetails);
         when(caseConverter.convert(MOCK_CASE_DETAILS_1)).thenReturn(MOCK_CASE_DATA_1);
         when(caseConverter.convert(MOCK_CASE_DETAILS_2)).thenReturn(MOCK_CASE_DATA_2);
 
@@ -100,6 +119,7 @@ public class CafcassApiSearchCaseServiceTest {
         List<CafcassApiCase> expected = List.of(expectedCafcassApiCase1, expectedCafcassApiCase2);
 
         assertEquals(expected, actual);
+        assertEquals(SEARCH_QUERY.toMap(), searchQueryCaptor.getValue().toMap());
 
         // verify calling all converters to build CafcassApiCaseData
         verify(cafcassApiCaseDataConverter1).convert(eq(MOCK_CASE_DATA_1), any());
@@ -115,7 +135,7 @@ public class CafcassApiSearchCaseServiceTest {
 
     @Test
     void shouldReturnEmptyListIfNoCaseFound() {
-        when(searchService.search(eq(SEARCH_RANGE), anyInt(), anyInt())).thenReturn(List.of());
+        when(searchService.search(any(), anyInt(), anyInt())).thenReturn(List.of());
         List<CafcassApiCase> actual = underTest.searchCaseByDateRange(SEARCH_START_DATE, SEARCH_END_DATE);
 
         assertEquals(List.of(), actual);
