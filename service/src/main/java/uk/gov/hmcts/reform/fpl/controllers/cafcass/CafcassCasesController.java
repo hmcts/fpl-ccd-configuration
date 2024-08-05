@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
+import uk.gov.hmcts.reform.fpl.exceptions.api.NotFoundException;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 
 import java.time.LocalDateTime;
@@ -30,10 +33,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @RequestMapping("/cases")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassCasesController {
-    private static final String DATE_TIME_FORMAT_IN = "yyyy-MM-dd'T'hh:mm:ss.SSS";
-    private static final String DATE_TIME_FORMAT_OUT = "yyyy-MM-dd";
-
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
+    private final CafcassApiDocumentService cafcassApiDocumentService;
 
     @GetMapping("")
     public CafcassApiSearchCasesResponse searchCases(
@@ -56,14 +57,17 @@ public class CafcassCasesController {
     @GetMapping("documents/{documentId}/binary")
     public ResponseEntity<Object> getDocumentBinary(@PathVariable String documentId) {
         log.info("getDocumentBinary request received");
-        try {
-            return ResponseEntity.ok(String.format("getDocumentBinary - document id: [%s]",
-                UUID.fromString(documentId)));
 
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body("bad input parameter - " + e.getMessage());
+        try {
+            UUID validatedUid = UUID.fromString(documentId);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Internal server error");
+            throw new BadInputException("Case document Id is not valid");
+        }
+
+        try {
+            return ResponseEntity.ok(cafcassApiDocumentService.downloadDocumentByDocumentId(documentId));
+        } catch (EmptyFileException e) {
+            throw new NotFoundException("Case document not found");
         }
     }
 
