@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -49,7 +50,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
-import static uk.gov.hmcts.reform.fpl.Constants.COURT_2;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
@@ -281,8 +281,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndCourt() {
-
-            when(dfjAreaLookUpService.getDfjArea(COURT_2.getCode()))
+            when(dfjAreaLookUpService.getDfjArea("384"))
                 .thenReturn(dfjAreaCourtMapping);
 
             final Colleague existingSocialWorker = Colleague.builder()
@@ -305,8 +304,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER)
                 .courtsToTransfer(dynamicLists.from(1,
-                    Pair.of(COURT_1.getName(), COURT_1.getCode()),
-                    Pair.of(COURT_2.getName(), COURT_2.getCode())))
+                    Pair.of("Worcester", "380"),
+                    Pair.of("Wrexham", "384")))
                 .localAuthorityToTransfer(newDesignatedLocalAuthority)
                 .localAuthorityToTransferSolicitor(newDesignatedLocalAuthoritySolicitor)
                 .build();
@@ -329,6 +328,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .localAuthorityPolicy(organisationPolicy(LOCAL_AUTHORITY_1_ID, LOCAL_AUTHORITY_1_NAME, LASOLICITOR))
                 .localAuthoritiesEventData(eventData)
                 .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+                .caseManagementLocation(new CaseLocation("1111", "1"))
                 .build();
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
@@ -339,7 +339,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getSharedLocalAuthorityPolicy()).isNull();
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo(LOCAL_AUTHORITY_2_CODE);
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo(newDesignatedLocalAuthority.getName());
-            assertThat(updatedCaseData.getCourt()).isEqualTo(COURT_2);
+            assertThat(updatedCaseData.getCourt()).extracting("code", "name")
+                .containsExactly("384", "Family Court sitting at Wrexham");
             assertThat(updatedCaseData.getLocalAuthorities()).extracting(Element::getValue).containsExactly(
                 LocalAuthority.builder()
                     .id(newDesignatedLocalAuthority.getId())
@@ -359,6 +360,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                         .reference(existingSolicitor.getReference())
                         .build()))
                     .build());
+            assertThat(updatedCaseData.getCaseManagementLocation())
+                .isEqualTo(new CaseLocation("637145", "7"));
         }
 
         @Test
