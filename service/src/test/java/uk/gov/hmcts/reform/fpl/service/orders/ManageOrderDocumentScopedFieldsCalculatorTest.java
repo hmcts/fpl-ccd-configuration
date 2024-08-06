@@ -56,6 +56,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",
             "manageOrdersMultiSelectListForC43",
+            "manageOrdersChildArrangementsOrderTypes",
             "manageOrdersChildArrangementsLiveWithDetails",
             "manageOrdersChildArrangementsContactWithDetails",
             "manageOrdersSpecificIssueOrderDetails",
