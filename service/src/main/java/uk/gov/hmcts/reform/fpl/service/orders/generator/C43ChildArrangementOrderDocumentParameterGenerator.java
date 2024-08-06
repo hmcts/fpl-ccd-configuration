@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType.CHILD_CONTACT;
+import static uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType.CHILD_LIVE;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -104,22 +106,29 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     private String buildOrderDetails(ManageOrdersEventData eventData) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("The Court orders");
+        stringBuilder.append("The Court orders,");
 
         if (isChildArrangementOrderSelected(eventData)) {
-            stringBuilder.append("\n\nThe Child Arrangement Order is for the child to ");
-            stringBuilder.append(eventData.getManageOrdersChildArrangementsOrderTypes().stream()
-                .map(type -> {
-                    switch (type) {
-                        case CHILD_LIVE:
-                            return "live with";
-                        case CHILD_CONTACT:
-                            return "have contact with";
-                        default: return type.toString();
-                    }
-                })
-                .collect(Collectors.joining(" and ")));
-            stringBuilder.append(".");
+            stringBuilder.append("\n\nThe Child Arrangement Order is for the:");
+            if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_LIVE)) {
+                stringBuilder.append("\n\nChild to live with\n\n" +
+                    eventData.getManageOrdersChildArrangementsLiveWithDetails());
+            }
+
+            if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_CONTACT)) {
+                stringBuilder.append("\n\nChild to have contact with\n\n" +
+                    eventData.getManageOrdersChildArrangementsContactWithDetails());
+            }
+        }
+
+        if (isSpecificIssueOrderSelected(eventData)) {
+            stringBuilder.append("\n\nSpecific Issue\n\n" +
+                eventData.getManageOrdersSpecificIssueOrderDetails());
+        }
+
+        if (isProhibitedStepsOrderSelected(eventData)) {
+            stringBuilder.append("\n\nProhibited Steps\n\n" +
+                eventData.getManageOrdersProhibitedStepsOrderDetails());
         }
 
         return stringBuilder.toString();
@@ -162,6 +171,18 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
 
         return orders.contains(C43OrderType.CHILD_ARRANGEMENT_ORDER);
+    }
+
+    private Boolean isSpecificIssueOrderSelected(ManageOrdersEventData eventData) {
+        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
+
+        return orders.contains(C43OrderType.SPECIFIC_ISSUE_ORDER);
+    }
+
+    private Boolean isProhibitedStepsOrderSelected(ManageOrdersEventData eventData) {
+        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
+
+        return orders.contains(C43OrderType.PROHIBITED_STEPS_ORDER);
     }
 
     private void addChildArrangementOrderWarningMessage(
