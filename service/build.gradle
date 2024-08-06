@@ -354,7 +354,7 @@ dependencies {
 
   implementation 'org.postgresql:postgresql:42.7.3'
 
-  testImplementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
+  testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
   testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '1.2.1'
 
