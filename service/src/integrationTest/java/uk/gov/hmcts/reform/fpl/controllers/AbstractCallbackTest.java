@@ -288,7 +288,6 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
-                    .with(csrf())
                     .header("authorization", USER_AUTH_TOKEN)
                     .header("user-id", USER_ID)
                     .header("user-roles", String.join(",", userRoles))
