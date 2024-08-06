@@ -1037,27 +1037,13 @@ public class CaseSubmissionGenerationService
         final boolean internationalElementPresent = internationalElement != null;
 
         return DocmosisInternationalElement.builder()
-            .possibleCarer(internationalElementPresent
-                           ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getPossibleCarer(),
-                internationalElement.getPossibleCarerReason(), applicationLanguage) : DEFAULT_STRING)
-            .significantEvents(internationalElementPresent
-                               ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getSignificantEvents(),
-                internationalElement.getSignificantEventsReason(), applicationLanguage) : DEFAULT_STRING)
-            .proceedings(internationalElementPresent
-                         ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getProceedings(),
-                internationalElement.getProceedingsReason(), applicationLanguage) : DEFAULT_STRING)
-            .internationalAuthorityInvolvement(internationalElementPresent
-                                               ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getInternationalAuthorityInvolvement(),
-                internationalElement.getInternationalAuthorityInvolvementDetails(),
-                applicationLanguage) : DEFAULT_STRING)
-            .issues(internationalElementPresent
-                    ? concatenateYesOrNoKeyAndValue(
-                internationalElement.getIssues(),
-                internationalElement.getIssuesReason(), applicationLanguage) : DEFAULT_STRING)
+            .whichCountriesInvolved(internationalElementPresent
+                ? internationalElement.getWhichCountriesInvolved() : DEFAULT_STRING)
+            .outsideHagueConvention(internationalElementPresent
+                ? getValidAnswerOrDefaultValue(internationalElement.getOutsideHagueConvention(), applicationLanguage)
+                : DEFAULT_STRING)
+            .importantDetails(internationalElementPresent
+                ? internationalElement.getImportantDetails() : DEFAULT_STRING)
             .build();
     }
 

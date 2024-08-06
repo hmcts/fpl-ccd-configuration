@@ -1402,11 +1402,9 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = underTest.getTemplateData(updatedCaseData);
 
             DocmosisInternationalElement expectedInternationalElement = DocmosisInternationalElement.builder()
-                .internationalAuthorityInvolvement("-")
-                .issues("-")
-                .possibleCarer("-")
-                .proceedings("-")
-                .significantEvents("-")
+                .whichCountriesInvolved("-")
+                .outsideHagueConvention("-")
+                .importantDetails("-")
                 .build();
 
             assertThat(caseSubmission.getInternationalElement()).isEqualTo(expectedInternationalElement);
