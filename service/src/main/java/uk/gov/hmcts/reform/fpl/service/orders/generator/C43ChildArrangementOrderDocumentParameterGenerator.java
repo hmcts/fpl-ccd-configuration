@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType.CHILD_CONTACT;
@@ -111,24 +110,24 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         if (isChildArrangementOrderSelected(eventData)) {
             stringBuilder.append("\n\nThe Child Arrangement Order is for the:");
             if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_LIVE)) {
-                stringBuilder.append("\n\nChild to live with\n\n" +
-                    eventData.getManageOrdersChildArrangementsLiveWithDetails());
+                stringBuilder.append("\n\nChild to live with\n\n"
+                    + eventData.getManageOrdersChildArrangementsLiveWithDetails());
             }
 
             if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_CONTACT)) {
-                stringBuilder.append("\n\nChild to have contact with\n\n" +
-                    eventData.getManageOrdersChildArrangementsContactWithDetails());
+                stringBuilder.append("\n\nChild to have contact with\n\n"
+                    + eventData.getManageOrdersChildArrangementsContactWithDetails());
             }
         }
 
         if (isSpecificIssueOrderSelected(eventData)) {
-            stringBuilder.append("\n\nSpecific Issue\n\n" +
-                eventData.getManageOrdersSpecificIssueOrderDetails());
+            stringBuilder.append("\n\nSpecific Issue\n\n"
+                + eventData.getManageOrdersSpecificIssueOrderDetails());
         }
 
         if (isProhibitedStepsOrderSelected(eventData)) {
-            stringBuilder.append("\n\nProhibited Steps\n\n" +
-                eventData.getManageOrdersProhibitedStepsOrderDetails());
+            stringBuilder.append("\n\nProhibited Steps\n\n"
+                + eventData.getManageOrdersProhibitedStepsOrderDetails());
         }
 
         return stringBuilder.toString();

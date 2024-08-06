@@ -209,8 +209,8 @@ public class C43ChildArrangementOrderDocumentParameterGeneratorTest {
 
     private C43ChildArrangementOrderDocmosisParameters.C43ChildArrangementOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParametersChildArrangementOrder() {
-        String orderDetails = String.format("The Court orders,\n\nThe Child Arrangement Order is for the:" +
-            "\n\nChild to live with\n\n%s\n\nSpecific Issue\n\n%s\n\nProhibited Steps\n\n%s",
+        String orderDetails = String.format("The Court orders,\n\nThe Child Arrangement Order is for the:"
+            + "\n\nChild to live with\n\n%s\n\nSpecific Issue\n\n%s\n\nProhibited Steps\n\n%s",
             LIVE_WITH_DETAIL, SPECIFIC_ISSUE_DETAIL, PROHIBITED_STEPS_DETAIL);
         String directions = String.format("%s\n\n%s\n\n%s", DIRECTIONS, FURTHER_DIRECTIONS,
             CONDITIONS_MESSAGE);
