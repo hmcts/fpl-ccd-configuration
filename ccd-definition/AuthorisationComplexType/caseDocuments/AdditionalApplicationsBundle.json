@@ -182,6 +182,12 @@
     "AccessControl": [
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
