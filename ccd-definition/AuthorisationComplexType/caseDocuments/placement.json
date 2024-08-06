@@ -91,12 +91,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -139,12 +133,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -166,12 +154,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-cafcass",
           "caseworker-publiclaw-courtadmin",
           "[EPSMANAGING]",
@@ -191,12 +173,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementNoticeDocuments",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate"
-        ],
-        "CRUD": "R"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
@@ -260,12 +236,6 @@
     "CaseFieldID": "placement",
     "ListElementCode": "placementNotice",
     "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate"
-        ],
-        "CRUD": "R"
-      },
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
