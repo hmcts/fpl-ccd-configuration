@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
