@@ -325,7 +325,6 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
   implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
