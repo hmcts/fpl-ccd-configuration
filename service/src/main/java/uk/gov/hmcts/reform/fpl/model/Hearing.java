@@ -8,7 +8,7 @@ import lombok.Data;
 
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Hearing {
     private final String type;
