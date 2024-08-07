@@ -31,7 +31,7 @@ public class IdamErrorDecoder implements ErrorDecoder {
                 response.reason(),
                 response.request().httpMethod(),
                 exception,
-                0l,
+                0L,
                 response.request()
             );
         }
