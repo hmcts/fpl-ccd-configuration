@@ -36,17 +36,15 @@ public class JsonMatcher implements ArgumentMatcher<Object>, ContainsExtraTypeIn
         return ValuePrinter.print(object);
     }
 
-    @Override
-    public String toStringWithType(String s) {
-        return "(" + s + ") " + describe(wanted);
+    public String toStringWithType(String className) {
+        return "(" + className + ") " + this.describe(this.wanted);
     }
 
     public boolean typeMatches(Object target) {
         return wanted != null && target != null && target.getClass() == wanted.getClass();
     }
 
-    @Override
-    public Object getWanted() {
+    public final Object getWanted() {
         return this.wanted;
     }
 }

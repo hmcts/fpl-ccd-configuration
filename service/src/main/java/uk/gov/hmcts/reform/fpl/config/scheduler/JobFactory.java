@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config.scheduler;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 
 /**
  * Enables DI in classes bootstrapped by quartz.

@@ -113,9 +113,9 @@ class DraftOrderRemovalActionTest {
             .build());
 
         assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, ORDER_TO_REMOVE_ID, draftOrder.getValue()))
-            .usingRecursiveComparison()
-            .isEqualTo(new IllegalStateException(format("Failed to find hearing order bundle that contains order %s",
-                ORDER_TO_REMOVE_ID)));
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(format("Failed to find hearing order bundle that contains order %s",
+                ORDER_TO_REMOVE_ID));
     }
 
     @Test

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 
 import java.time.LocalDate;
-
-import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 

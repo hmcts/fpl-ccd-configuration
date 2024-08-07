@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.http.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.gargoylesoftware.htmlunit.util.MimeType.APPLICATION_JSON;
 import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -45,7 +45,7 @@ public class CaseService {
         int status = SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .get("/testing-support/case/" + caseData.getId())
             .thenReturn()
             .statusCode();
@@ -64,7 +64,7 @@ public class CaseService {
         CaseDetails caseDetails = SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .body(Map.of())
             .post("/testing-support/case/create")
             .then()
@@ -81,7 +81,7 @@ public class CaseService {
         if (populateData) {
             SerenityRest
                 .given()
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .headers(authenticationService.getAuthorizationHeaders(user))
                 .body(Map.of("state", Optional.ofNullable(caseData.getState())
                     .map(State::getValue)
@@ -100,7 +100,7 @@ public class CaseService {
         AboutToStartOrSubmitCallbackResponse response = SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .body(toCallbackRequest(caseData))
             .post(callback)
             .then()
@@ -122,7 +122,7 @@ public class CaseService {
         SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .body(toCallbackRequest(caseData, caseDataBefore))
             .post(callback)
             .then()
@@ -133,7 +133,7 @@ public class CaseService {
         CaseDetails caseDetails = SerenityRest
             .given()
             .headers(authenticationService.getAuthorizationHeaders(user))
-            .contentType(APPLICATION_JSON)
+            .contentType(ContentType.JSON)
             .body(Map.of())
             .get("/testing-support/case/" + id)
             .then()

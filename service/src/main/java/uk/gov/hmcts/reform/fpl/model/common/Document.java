@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -7,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasAttachedDocument;
 
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotBlank;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

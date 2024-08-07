@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import jakarta.validation.ClockProvider;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import javax.validation.ClockProvider;
 
 @Configuration
 @Import(TestConfiguration.class)
@@ -37,7 +37,7 @@ public class FixedTimeConfiguration {
     public LocalValidatorFactoryBean localValidatorFactoryBean() {
         return new LocalValidatorFactoryBean() {
             @Override
-            protected void postProcessConfiguration(javax.validation.Configuration<?> configuration) {
+            protected void postProcessConfiguration(jakarta.validation.Configuration<?> configuration) {
                 configuration.clockProvider(fixedClockProvider());
             }
         };

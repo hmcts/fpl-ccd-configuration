@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;

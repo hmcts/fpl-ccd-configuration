@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,9 +17,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasContactDirection;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasTelephoneOrMobile;
 
 import java.time.LocalDate;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

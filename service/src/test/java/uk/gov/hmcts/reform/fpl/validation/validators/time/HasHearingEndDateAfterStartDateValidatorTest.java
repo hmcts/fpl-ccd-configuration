@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
