@@ -65,6 +65,10 @@ public class ApplicantsListGenerator {
     }
 
     public DynamicList buildApplicantsList(CaseData caseData) {
+        return buildApplicantsList(caseData, true);
+    }
+
+    public DynamicList buildApplicantsList(CaseData caseData, boolean withOthersOption) {
 
         List<InterlocutoryApplicant> applicantsFullNames = new ArrayList<>();
 
@@ -84,10 +88,12 @@ public class ApplicantsListGenerator {
 
         applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
         applicantsFullNames.addAll(buildChildNameElements(caseData.getAllChildren()));
-        applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
 
-        applicantsFullNames.add(
-            InterlocutoryApplicant.builder().code(APPLICANT_SOMEONE_ELSE).name("Someone else").build());
+        if (withOthersOption) {
+            applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers())); // Others to give notice
+            applicantsFullNames.add(
+                InterlocutoryApplicant.builder().code(APPLICANT_SOMEONE_ELSE).name("Someone else").build());
+        }
 
         return dynamicLists.asDynamicList(
             applicantsFullNames,
