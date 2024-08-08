@@ -188,6 +188,42 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildArrangementsLiveWithDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add details for child to live with order",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildArrangementsContactWithDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add details for child to have contact with order",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSpecificIssueOrderDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add details for specific issue order",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersProhibitedStepsOrderDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add details for prohibited steps order",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersRecitalsAndPreambles",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "TextArea",

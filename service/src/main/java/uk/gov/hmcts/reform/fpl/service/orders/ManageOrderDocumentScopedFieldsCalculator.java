@@ -30,7 +30,8 @@ public class ManageOrderDocumentScopedFieldsCalculator {
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
-            "orderDetailsSectionSubHeader"
+            "orderDetailsSectionSubHeader",
+            "manageOrdersChildArrangementsOrderTypes"
         ));
 
         return fields;
