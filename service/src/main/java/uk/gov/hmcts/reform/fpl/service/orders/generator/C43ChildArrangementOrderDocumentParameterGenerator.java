@@ -103,31 +103,29 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     }
 
     private String buildOrderDetails(ManageOrdersEventData eventData) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("The Court orders,");
+        StringBuilder stringBuilder = new StringBuilder("The Court orders,");
 
         if (isChildArrangementOrderSelected(eventData)) {
             stringBuilder.append("\n\nThe Child Arrangement Order is for the:");
             if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_LIVE)) {
-                stringBuilder.append("\n\nChild to live with\n\n"
-                    + eventData.getManageOrdersChildArrangementsLiveWithDetails());
+                stringBuilder.append("\n\nChild to live with\n\n").append(
+                    eventData.getManageOrdersChildArrangementsLiveWithDetails());
             }
 
             if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_CONTACT)) {
-                stringBuilder.append("\n\nChild to have contact with\n\n"
-                    + eventData.getManageOrdersChildArrangementsContactWithDetails());
+                stringBuilder.append("\n\nChild to have contact with\n\n").append(
+                    eventData.getManageOrdersChildArrangementsContactWithDetails());
             }
         }
 
         if (isSpecificIssueOrderSelected(eventData)) {
-            stringBuilder.append("\n\nSpecific Issue\n\n"
-                + eventData.getManageOrdersSpecificIssueOrderDetails());
+            stringBuilder.append("\n\nSpecific Issue\n\n").append(
+                eventData.getManageOrdersSpecificIssueOrderDetails());
         }
 
         if (isProhibitedStepsOrderSelected(eventData)) {
-            stringBuilder.append("\n\nProhibited Steps\n\n"
-                + eventData.getManageOrdersProhibitedStepsOrderDetails());
+            stringBuilder.append("\n\nProhibited Steps\n\n").append(
+                eventData.getManageOrdersProhibitedStepsOrderDetails());
         }
 
         return stringBuilder.toString();
