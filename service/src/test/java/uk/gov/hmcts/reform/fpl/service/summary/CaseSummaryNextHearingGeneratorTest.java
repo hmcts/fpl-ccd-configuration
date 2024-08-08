@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.summary;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -42,7 +41,7 @@ class CaseSummaryNextHearingGeneratorTest {
 
     private final Time time = mock(Time.class);
 
-    CaseSummaryNextHearingGenerator underTest = new CaseSummaryNextHearingGenerator(time, new ObjectMapper());
+    private final CaseSummaryNextHearingGenerator underTest = new CaseSummaryNextHearingGenerator(time);
 
     private static final LocalDateTime NOW = LocalDateTime.of(2012, 10, 12, 13, 20, 44);
     private static final UUID CASE_MANAGEMENT_ORDER_ID = UUID.randomUUID();
@@ -283,9 +282,9 @@ class CaseSummaryNextHearingGeneratorTest {
 
         assertThat(actual).isEqualTo(Map.of(
             "caseSummaryHasNextHearing", "Yes",
-            "caseSummaryNextHearingDate", NOW.toLocalDate(),
-            "caseSummaryNextHearingDateTime", NOW,
-            "caseSummaryNextHearingType", "Case Management"
+            "caseSummaryNextHearingDate", NOW.toLocalDate().toString(),
+            "caseSummaryNextHearingDateTime", NOW.toString(),
+            "caseSummaryNextHearingType", "Case management"
         ));
     }
 

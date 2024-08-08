@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.summary;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,12 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.Comparator.comparing;
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class CaseSummaryNextHearingGenerator implements CaseSummaryFieldsGenerator {
 
     private final Time time;
-    private final ObjectMapper objectMapper;
 
     @Override
     public SyntheticCaseSummary generate(CaseData caseData) {
@@ -59,10 +57,11 @@ public class CaseSummaryNextHearingGenerator implements CaseSummaryFieldsGenerat
 
     public Map<String, Object> generateFields(CaseData caseData) {
         ObjectMapper mapper = new ObjectMapper();
-
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.registerModule(new JavaTimeModule());
         SyntheticCaseSummary syntheticCaseSummary = generate(caseData);
         // Convert to a map for CCD
-        return mapper.convertValue(syntheticCaseSummary, new TypeReference<Map<String, Object>>() {});
+        return mapper.convertValue(syntheticCaseSummary, new TypeReference<>() {});
     }
 
     private String generateSummaryNextHearingJudge(HearingBooking hearing, Judge allocatedJudge,
