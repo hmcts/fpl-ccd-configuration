@@ -33,19 +33,24 @@ This repository contains automation tests that can be run locally. To set up the
 2. Add the following environment variables to the .env file: (ask a team mate for details/values can be found in Azure Keyvault)
    - Can set ENVIRONMENT to use the default URLs for that environment (aat/demo/perftest/ithc) + skip manually defining the following 4
 
+3. Enable WA tests by setting WA_ENABLED to true (if testing on demo, or after WA release)
+
 ```
 # URLs
 ENVIRONMENT=aat
 FE_BASE_URL=https://example.com/login
 AAT_BASE_URL=https://example.com
-AAT_IDAM_URL=https://example.com
-AAT_SERVICE_URL=https://example.com
+IDAM_API_URL=https://example.com
+CASE_SERVICE_URL=https://example.com
 
 # userCredentials and Passwords
 E2E_TEST_PASSWORD=passwordhere
 SYSTEM_UPDATE_USER_USERNAME =systemUserloginEmail
 SYSTEM_UPDATE_USER_PASSWORD =systemUserPassword
 E2E_TEST_JUDGE_PASSWORD=passwordhere
+
+# Enable WA Tests (disabled by default)
+WA_ENABLED=true
 
 # Ports
 SERVER_PORT=

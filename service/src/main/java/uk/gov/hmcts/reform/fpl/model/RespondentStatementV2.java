@@ -15,4 +15,9 @@ import java.util.UUID;
 public class RespondentStatementV2 extends SupportingEvidenceBundle implements NotifyDocumentUploaded {
     private String respondentName;
     private UUID respondentId;
+
+    @Override
+    public String asLabel() {
+        return String.format("%s - %s", "Respondent Statement", getDocument().getFilename());
+    }
 }

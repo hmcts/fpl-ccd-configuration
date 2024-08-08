@@ -6,6 +6,18 @@
     "TabID": "Confidential",
     "TabLabel": "Confidential information",
     "TabDisplayOrder": 14,
+    "CaseFieldID": "caseSummaryFlagAddedTag",
+    "FieldShowCondition": "caseFlagAdded=\"Yes\"",
+    "TabFieldDisplayOrder": -1,
+    "TabShowCondition": "confidentialChildren = \"*\" OR confidentialRespondents = \"*\" OR confidentialOthers = \"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "Confidential",
+    "TabLabel": "Confidential information",
+    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialChildren",
     "TabFieldDisplayOrder": 1
   },
@@ -28,15 +40,5 @@
     "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialOthers",
     "TabFieldDisplayOrder": 3
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "Confidential",
-    "TabLabel": "Confidential information",
-    "TabDisplayOrder": 14,
-    "CaseFieldID": "documentsWithConfidentialAddress",
-    "TabFieldDisplayOrder": 4
   }
 ]

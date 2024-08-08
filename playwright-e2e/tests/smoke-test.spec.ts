@@ -1,27 +1,32 @@
-import { test } from "../fixtures/create-fixture";
+import { test, expect } from "../fixtures/fixtures";
 import { BasePage } from "../pages/base-page";
 import { newSwanseaLocalAuthorityUserOne } from "../settings/user-credentials";
 
-test("Smoke Test @smoke-test", async ({
+test("Smoke Test @smoke-test @accessibility", async ({
   signInPage,
   createCase,
   ordersAndDirectionSought,
   startApplication,
   hearingUrgency,
   groundsForTheApplication,
-  riskAndHarmToChildren,
-  factorsAffectingParenting,
+  applicantDetails,
   allocationProposal,
   addApplicationDocuments,
-  page
-}) => {
-  const basePage = new BasePage(page);
+  childDetails,
+  respondentDetails,
+  submitCase,
+  page,
+  makeAxeBuilder
+}, testInfo) => {
+ // Marking this test slow to increase the time for 3 times of other test
+    test.slow();
   // 1. Sign in as local-authority user
   await signInPage.visit();
   await signInPage.login(
     newSwanseaLocalAuthorityUserOne.email,
     newSwanseaLocalAuthorityUserOne.password,
   );
+  //sign in page
   await signInPage.isSignedIn();
 
   // Add application details
@@ -29,7 +34,8 @@ test("Smoke Test @smoke-test", async ({
   await createCase.caseName();
   await createCase.createCase();
   await createCase.submitCase(createCase.generatedCaseName);
-  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
+  //this has to be refracted to new test as the test execution time exceed 8m
+//  await createCase.checkCaseIsCreated(createCase.generatedCaseName);
 
   // Orders and directions sought
   await ordersAndDirectionSought.ordersAndDirectionsNeeded();
@@ -55,22 +61,46 @@ test("Smoke Test @smoke-test", async ({
   await groundsForTheApplication.groundsForTheApplicationSmokeTest();
   await startApplication.groundsForTheApplicationHasBeenUpdated();
 
-  // Risk and harm to children
-  await startApplication.riskAndHarmToChildren();
-  await riskAndHarmToChildren.riskAndHarmToChildrenSmokeTest();
-
-  // Factors affecting parenting
-  await factorsAffectingParenting.addFactorsAffectingParenting();
-  await startApplication.addApplicationDetailsHeading.isVisible();
-
   // Add application documents
   await startApplication.addApplicationDetailsHeading.isVisible();
   await startApplication.addApplicationDocuments();
   await addApplicationDocuments.uploadDocumentSmokeTest();
   await startApplication.addApplicationDocumentsInProgress();
 
+  // Applicant Details
+  await startApplication.applicantDetails();
+  await applicantDetails.applicantDetailsNeeded();
+  await startApplication.applicantDetails();
+  await applicantDetails.colleagueDetailsNeeded();
+  await startApplication.applicantDetailsHasBeenUpdated();
+
+  // Child details
+  await startApplication.childDetails();
+  await childDetails.childDetailsNeeded();
+  await startApplication.childDetailsHasBeenUpdated();
+
+  // Add respondents' details
+  await startApplication.respondentDetails();
+  await respondentDetails.respondentDetailsNeeded();
+
   // Allocation Proposal
   await startApplication.allocationProposal();
   await allocationProposal.allocationProposalSmokeTest();
   await startApplication.allocationProposalHasBeenUpdated();
+
+  // Submit the case
+  await startApplication.submitCase();
+  await submitCase.submitCaseSmokeTest();
+
+  const accessibilityScanResults = await makeAxeBuilder()
+    // Automatically uses the shared AxeBuilder configuration,
+    // but supports additional test-specific configuration too
+    .analyze();
+
+  await testInfo.attach('accessibility-scan-results', {
+    body: JSON.stringify(accessibilityScanResults, null, 2),
+    contentType: 'application/json'
+  });
+
+  expect(accessibilityScanResults.violations).toEqual([]);
 });

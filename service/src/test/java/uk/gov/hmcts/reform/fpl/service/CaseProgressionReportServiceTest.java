@@ -116,7 +116,7 @@ class CaseProgressionReportServiceTest {
         );
 
         String report = service.getHtmlReport(caseDataSelected);
-        assertThat(report).isEqualTo("<table>" 
+        assertThat(report).isEqualTo("<table>"
                 + "<tr><th class='search-result-column-label' colspan=\"9\">"
                 +  courtName
                 + "<br>"

@@ -57,6 +57,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetMonthsEndDate",
             "manageOrdersMultiSelectListForC43",
             "manageOrdersRecitalsAndPreambles",
+            "manageOrdersRecitalsAndPreamblesOptional",
             "orderPreview",
             "manageOrdersIsFinalOrder",
             "manageOrdersCloseCase",
@@ -133,7 +134,19 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersParentageAction",
             "manageOrdersParagraphs",
             "manageOrdersCostOrders",
-            "manageOrdersPreamblesText"
+            "manageOrdersPreamblesText",
+            "manageOrdersNonMolestationOrder",
+            "manageOrdersNonMolestationOrderApplicant",
+            "manageOrdersNonMolestationOrderRespondent",
+            "manageOrdersTransparencyOrderExpiration",
+            "manageOrdersTransparencyOrderEndDate",
+            "manageOrdersTransparencyOrderPublishInformationLabel",
+            "manageOrdersTransparencyOrderPublishInformationDetails",
+            "manageOrdersTransparencyOrderPublishIdentityLabel",
+            "manageOrdersTransparencyOrderPublishIdentityDetails",
+            "manageOrdersTransparencyOrderPublishDocumentsLabel",
+            "manageOrdersTransparencyOrderPublishDocumentsDetails",
+            "manageOrdersTransparencyOrderPermissionToReportEffectiveDate"
         );
     }
 }

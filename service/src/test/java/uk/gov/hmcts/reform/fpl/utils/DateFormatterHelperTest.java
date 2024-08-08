@@ -150,6 +150,11 @@ class DateFormatterHelperTest {
             () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, null, null));
     }
 
+    @Test
+    void shouldReturnEmptyIfDateTimeIsNull() {
+        assertThat(formatLocalDateTimeBaseUsingFormat(null, "h:mma, yyyy")).isEmpty();
+    }
+
     private LocalDate createDate() {
         return LocalDate.of(2019, 1, 1);
     }

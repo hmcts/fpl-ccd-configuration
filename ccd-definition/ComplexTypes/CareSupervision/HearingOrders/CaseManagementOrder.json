@@ -30,6 +30,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "orderConfidential",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public",
+    "RegularExpression": ".doc,.docx",
+    "CategoryID": "ordersConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
     "ListElementCode": "translatedOrder",
     "FieldType": "Document",
     "ElementLabel": "Translated document",
@@ -214,5 +224,37 @@
     "ElementLabel": "Tick to confirm this document is related to this case",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "uploaderEmail",
+    "FieldType": "Text",
+    "ElementLabel": "uploader email",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadedCaseManagementOrder",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "status=\"DO_NOT_SHOW\""
   }
 ]

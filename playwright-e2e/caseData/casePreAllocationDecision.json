@@ -238,7 +238,7 @@
     },
     "caseLocalAuthorityName": "Swansea City Council",
     "displayAmountToPay": "Yes",
-    "applicationDocuments": [
+    "temporaryApplicationDocuments": [
       {
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {

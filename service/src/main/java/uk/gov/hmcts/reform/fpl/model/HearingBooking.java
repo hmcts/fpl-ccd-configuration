@@ -26,8 +26,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import javax.validation.constraints.Future;
 
@@ -39,7 +37,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.SOMETHING_ELSE;
@@ -49,7 +46,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LIS
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement.NO;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingAttendance.PHONE;
@@ -63,7 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Jacksonized
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking implements TranslatableItem {
-    private final HearingType type;
+    private HearingType type;
     private HearingStatus status;
     private final String typeDetails;
     private final String typeReason;
@@ -103,6 +99,8 @@ public class HearingBooking implements TranslatableItem {
     private LanguageTranslationRequirement translationRequirements;
     private final PreviousHearingVenue previousHearingVenue;
     private String cancellationReason;
+    private String housekeepReason;
+    private DocumentReference noticeOfHearingVacated;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
@@ -155,11 +153,11 @@ public class HearingBooking implements TranslatableItem {
     }
 
     public String toLabel() {
-        HearingType hearingType = Optional.ofNullable(this.type)
-            .orElseThrow(() -> new IllegalStateException("Unexpected null hearing type. " + this));
-
-        String type = hearingType == OTHER ? capitalize(typeDetails) : hearingType.getLabel();
-        String label = format("%s hearing, %s", type, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        String hearingLabel = ofNullable(this.type)
+            .map(HearingType::getLabel)
+            .orElse("Other");
+        String label =
+            format("%s hearing, %s", hearingLabel, formatLocalDateTimeBaseUsingFormat(startDate, DATE));
         String status = isAdjourned() ? "adjourned" : isVacated() ? "vacated" : null;
 
         return ofNullable(status).map(suffix -> label + " - " + suffix).orElse(label);
@@ -235,7 +233,7 @@ public class HearingBooking implements TranslatableItem {
     @Override
     @JsonIgnore
     public boolean hasBeenTranslated() {
-        return Objects.nonNull(translatedNoticeOfHearing);
+        return nonNull(translatedNoticeOfHearing);
     }
 
     @Override
@@ -253,7 +251,7 @@ public class HearingBooking implements TranslatableItem {
     @Override
     @JsonIgnore
     public String asLabel() {
-        return String.format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
+        return format("Notice of hearing - %s", formatLocalDateTimeBaseUsingFormat(startDate, DATE));
     }
 
     @Override
@@ -267,5 +265,4 @@ public class HearingBooking implements TranslatableItem {
     public List<Element<Other>> getSelectedOthers() {
         return defaultIfNull(this.getOthers(), new ArrayList<>());
     }
-
 }

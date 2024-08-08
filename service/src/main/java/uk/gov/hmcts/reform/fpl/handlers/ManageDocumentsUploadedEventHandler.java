@@ -23,9 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationC
 import uk.gov.hmcts.reform.fpl.model.interfaces.NotifyDocumentUploaded;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassNotificationService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.CafcassRequestEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.translations.TranslationRequestService;
+import uk.gov.hmcts.reform.fpl.service.workallocation.WorkAllocationTaskService;
 import uk.gov.hmcts.reform.fpl.utils.CafcassHelper;
 
 import java.time.LocalDate;
@@ -46,6 +48,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.WorkAllocationTaskType.CORRESPONDENCE_UPLOADED;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
@@ -68,6 +71,8 @@ public class ManageDocumentsUploadedEventHandler {
     private final FurtherEvidenceNotificationService furtherEvidenceNotificationService;
     private final SendDocumentService sendDocumentService;
     private final TranslationRequestService translationRequestService;
+    private final WorkAllocationTaskService workAllocationTaskService;
+    private final UserService userService;
 
     private static final String BULLET_POINT = "•";
     public static final String FURTHER_DOCUMENTS_FOR_MAIN_APPLICATION = "Further documents for main application";
@@ -349,5 +354,17 @@ public class ManageDocumentsUploadedEventHandler {
             .map(Map::entrySet)
             .flatMap(Set::stream)
             .collect(groupingBy(Map.Entry::getKey, flatMapping(entry -> entry.getValue().stream(), toList())));
+    }
+
+    @EventListener
+    public void createWorkAllocationTask(ManageDocumentsUploadedEvent event) {
+        CaseData caseData = event.getCaseData();
+
+        if (!userService.isHmctsAdminUser()
+            && (isNotEmpty(event.getNewDocuments().get(COURT_CORRESPONDENCE))
+                || isNotEmpty(event.getNewDocumentsLA().get(COURT_CORRESPONDENCE))
+                || isNotEmpty(event.getNewDocumentsCTSC().get(COURT_CORRESPONDENCE)))) {
+            workAllocationTaskService.createWorkAllocationTask(caseData, CORRESPONDENCE_UPLOADED);
+        }
     }
 }

@@ -718,57 +718,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocuments",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocumentsLA",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageDocumentsSolicitor",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsV2",
     "AccessControl": [
       {
@@ -1173,12 +1122,7 @@
           "[LASOLICITOR]",
           "[LASHARED]",
           "[EPSMANAGING]",
-          "[LAMANAGING]"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
+          "[LAMANAGING]",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-courtadmin",
@@ -1635,6 +1579,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-placement",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-change-translations",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
   },

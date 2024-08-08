@@ -201,7 +201,8 @@ public class RoleAssignmentService {
     }
 
     @Retryable(value = {FeignException.class}, label = "Delete a single user's assignment on a case at time")
-    public void deleteRoleAssignmentOnCaseAtTime(Long caseId, ZonedDateTime time, String userId) {
+    public void deleteRoleAssignmentOnCaseAtTime(Long caseId, ZonedDateTime time, String userId,
+                                                 List<String> roleNames) {
         String systemUserToken = systemUserService.getSysUserToken();
         String authToken = authTokenGenerator.generate();
 
@@ -209,6 +210,7 @@ public class RoleAssignmentService {
             QueryRequest.builder()
                 .attributes(Map.of("caseId", List.of(caseId.toString())))
                 .actorId(List.of(userId))
+                .roleName(roleNames)
                 .validAt(time)
                 .build()
         );

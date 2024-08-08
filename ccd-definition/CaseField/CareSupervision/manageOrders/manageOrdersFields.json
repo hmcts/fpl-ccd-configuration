@@ -197,6 +197,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersRecitalsAndPreamblesOptional",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add recitals or preamble",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersEpoType",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
@@ -1088,6 +1097,115 @@
     "ID": "manageOrdersCostOrders",
     "FieldType": "TextArea",
     "Label": "Cost Orders",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderExpiration",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "TransparencyOrderExpirationType",
+    "Label": "The order will remain in force until:",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderEndDate",
+    "FieldType": "Date",
+    "Label": "End Date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersTransparencyOrderPublishInformationLabel",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "No person may publish any information relating to the proceedings to the public or a section of it, which includes: \n\n * The name or date of birth of any subject child in the case. \n * The name of any parent or family member who is a party or who is mentioned in the case, or whose name may lead to the child(ren) being identified. \n * The name of any person who is a party to, or intervening in, the proceedings. \n * The address of any child or family member. \n * The name or address of any foster carer. \n * The school/hospital/placement name or address, or any identifying features of a school of the child. \n * Photographs or images of the child, their parents, carer or any other identifying person, or any of the locations specified above in conjunction with other information relating to the proceedings. \n * The names of any medical professional who is or has been treating any of the children or family member. \n * In cases involving alleged sexual abuse, the details of such alleged abuse. \n * For the purposes of s.97(2) Children Act 1989, any other information likely to identify the child as a subject child or former subject child.",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderPublishInformationDetails",
+    "FieldType": "TextArea",
+    "Label": "If there are any more pieces of information relating to the proceedings, or a section of it, which may not be published to the public, please specify:",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersTransparencyOrderPublishIdentityLabel",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "For the avoidance of doubt, no body, agency or professionals may be identified in any information relating to the proceedings published to the general public or a section of it by a pilot reporter, save for: \n\n * The local authority/authorities involved in the proceedings. \n * The director and assistant director of Children's Services within the LA (but no other person from the local authority, including the social worker, without express permission of the court). \n * Cafcass (but not the children's guardian or reporting officer without express permission of the court). \n * Any NHS Trust. \n * Court appointed experts (but not treating clinicians or medical professionals). \n * Legal representatives and judges. \n * Anyone else named in a published judgment.",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderPublishIdentityDetails",
+    "FieldType": "TextArea",
+    "Label": "If there are any more bodies, agencies or professionals who may be identified in any information related to the proceedings, or a section of it, published to the general public, please specify:",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersTransparencyOrderPublishDocumentsLabel",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "A pilot reporter who attends a hearing in family proceedings in accordance with FPR r.27.11, or who indicates in advance that they wish to attend a hearing, is entitled to see, quote from, or publish: \n\n * Documents drafted by advocates (or litigants if a party is self-representing): i.e. Case outlines, skeleton arguments, summaries, position statements threshold documents and chronologies. \n * Any indices from the Court bundle. \n * Any suitably anonymised Orders within the case.",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderPublishDocumentsDetails",
+    "FieldType": "TextArea",
+    "Label": "If there are any more documents that may be seen, quoted from or published by a pilot reporter, please specify:",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersTransparencyOrderPermissionToReportEffectiveDate",
+    "FieldType": "Date",
+    "Label": "Permission to report is not effective until:",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersNonMolestationOrder",
+    "FieldType": "TextArea",
+    "Label": "The Court Orders",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersNonMolestationOrderApplicant",
+    "FieldType": "DynamicList",
+    "Label": "Applicant of this order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersNonMolestationOrderRespondent",
+    "FieldType": "DynamicList",
+    "Label": "Respondent of this order",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

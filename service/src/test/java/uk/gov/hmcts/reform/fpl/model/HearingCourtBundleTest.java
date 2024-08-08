@@ -67,23 +67,9 @@ public class HearingCourtBundleTest {
                 Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
             )));
 
-        List<Map<String, Object>> expectedNCCourtBundle = List.of(Map.of(
-            "id", TEST_ID.toString(),
-            "value", Map.ofEntries(
-                Map.entry("confidential", List.of()),
-                Map.entry("document", Map.of(
-                    "document_binary_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getBinaryUrl(),
-                    "document_filename", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getFilename(),
-                    "document_url", NON_CONFIDENTIAL_COURT_BUNDLE.getDocument().getUrl()
-                )),
-                Map.entry("documentAcknowledge", List.of(DOCUMENT_ACKNOWLEDGEMENT_KEY)),
-                Map.entry("hasConfidentialAddress", YesNo.NO.getValue())
-            )));
-
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle,
-            "courtBundleNC", List.of()
+            "courtBundle", expectedCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);
@@ -112,8 +98,7 @@ public class HearingCourtBundleTest {
 
         Map<String, Object> expectedHearingCourtBundle = Map.of(
             "hearing", TEST_HEARING,
-            "courtBundle", expectedCourtBundle,
-            "courtBundleNC", List.of()
+            "courtBundle", expectedCourtBundle
         );
 
         assertThat(serialised).isEqualTo(expectedHearingCourtBundle);

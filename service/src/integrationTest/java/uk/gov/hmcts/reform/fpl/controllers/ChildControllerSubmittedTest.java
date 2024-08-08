@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SO
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.CHILDSOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService.UPDATE_CASE_EVENT;
-import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ChildController.class)
@@ -206,7 +205,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldSendNotificationsToRegisteredRepresentatives() {
+    void shouldSendNotificationsToRegisteredRepresentatives() throws NotificationClientException {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .state(NON_RESTRICTED_STATE)
@@ -251,26 +250,24 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        checkUntil(() ->
-            verify(notificationClient).sendEmail(
-                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
-                MAIN_SOLICITOR_EMAIL,
-                Map.of(
-                    "salutation", format("Dear %s %s", MAIN_SOLICITOR_FIRST_NAME, MAIN_SOLICITOR_LAST_NAME),
-                    "clientFullName", format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1),
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME,
-                    "ccdNumber", CASE_ID.toString(),
-                    "caseName", CASE_NAME,
-                    "manageOrgLink", "https://manage-org.platform.hmcts.net",
-                    "childLastName", CHILD_SURNAME_1
-                ),
-                "localhost/" + CASE_ID
-            )
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+            MAIN_SOLICITOR_EMAIL,
+            Map.of(
+                "salutation", format("Dear %s %s", MAIN_SOLICITOR_FIRST_NAME, MAIN_SOLICITOR_LAST_NAME),
+                "clientFullName", format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1),
+                "localAuthority", LOCAL_AUTHORITY_1_NAME,
+                "ccdNumber", CASE_ID.toString(),
+                "caseName", CASE_NAME,
+                "manageOrgLink", "https://manage-org.platform.hmcts.net",
+                "childLastName", CHILD_SURNAME_1
+            ),
+            "localhost/" + CASE_ID
         );
     }
 
     @Test
-    void shouldSendNotificationsToUnregisteredRepresentatives() {
+    void shouldSendNotificationsToUnregisteredRepresentatives() throws NotificationClientException {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .state(NON_RESTRICTED_STATE)
@@ -315,19 +312,17 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        checkUntil(() ->
-            verify(notificationClient).sendEmail(
-                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
-                MAIN_SOLICITOR_EMAIL,
-                Map.of(
-                    "ccdNumber", "1234-5678-9012-3456",
-                    "localAuthority", LOCAL_AUTHORITY_1_NAME,
-                    "clientFullName", format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1),
-                    "caseName", CASE_NAME,
-                    "childLastName", CHILD_SURNAME_1
-                ),
-                "localhost/" + CASE_ID
-            )
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
+            UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
+            MAIN_SOLICITOR_EMAIL,
+            Map.of(
+                "ccdNumber", "1234-5678-9012-3456",
+                "localAuthority", LOCAL_AUTHORITY_1_NAME,
+                "clientFullName", format("%s %s", CHILD_NAME_1, CHILD_SURNAME_1),
+                "caseName", CASE_NAME,
+                "childLastName", CHILD_SURNAME_1
+            ),
+            "localhost/" + CASE_ID
         );
     }
 
@@ -412,7 +407,7 @@ class ChildControllerSubmittedTest extends AbstractCallbackTest {
             "salutation", "Dear first last"
         );
 
-        verify(notificationClient).sendEmail(
+        verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, legalCounsellorEmail, notifyData, "localhost/" + CASE_ID
         );
     }

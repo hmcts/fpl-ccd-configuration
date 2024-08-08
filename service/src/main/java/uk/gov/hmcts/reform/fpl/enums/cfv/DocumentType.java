@@ -204,7 +204,7 @@ public enum DocumentType {
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
         false, false, false, 
         defaultWithDocumentBuilder(),
-        null, 330, DEFAULT_NOTIFICATION_CONFIG),
+        null, 330, NO_CAFCASS_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
         false, false, false,
         null,
@@ -248,6 +248,10 @@ public enum DocumentType {
         return getBaseFieldNameResolver().apply(null);
     }
 
+    public String getJsonFieldNameOfRemovedList() {
+        return toJsonFieldName(getBaseFieldNameResolver().apply(null));
+    }
+
     private ConfidentialLevel getConfidentialLevel(DocumentUploaderType uploaderType, boolean isConfidential) {
         switch (uploaderType) {
             case DESIGNATED_LOCAL_AUTHORITY:
@@ -262,7 +266,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> courtBundleResolver() {
+    private static Function<ConfidentialLevel, String> courtBundleResolver() {
         return confidentialLevel -> {
             if (confidentialLevel == null) {
                 return "hearingDocuments.courtBundleListRemoved";
@@ -279,7 +283,7 @@ public enum DocumentType {
         };
     }
 
-    private static final String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
+    private static String standardNaming(ConfidentialLevel confidentialLevel, String baseFieldName) {
         if (confidentialLevel == null) {
             return baseFieldName + "Removed";
         }
@@ -295,7 +299,7 @@ public enum DocumentType {
         }
     }
 
-    private static final Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
+    private static Function<ConfidentialLevel, String> standardResolver(String baseFieldName) {
         return confidentialLevel -> standardNaming(confidentialLevel, baseFieldName);
     }
 

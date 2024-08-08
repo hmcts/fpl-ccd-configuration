@@ -17,8 +17,6 @@ public class TranslatableListItemProviders {
     private final TranslatableUrgentHearingOrderProvider translatableUrgentHearingOrderProvider;
     private final TranslatableNoticeOfHearingProvider translatableNoticeOfHearingProvider;
     private final TranslatableC110AProvider translatableC110AProvider;
-    private final TranslatableFurtherEvidenceProvider translatableFurtherEvidenceProvider;
-    private final TranslatableHearingFurtherEvidenceProvider translatableHearingFurtherEvidenceProvider;
     private final TranslatableRespondentStatementsProvider translatableRespondentStatementsProvider;
 
     public List<TranslatableListItemProvider> getAll() {
@@ -30,8 +28,6 @@ public class TranslatableListItemProviders {
             translatableUrgentHearingOrderProvider,
             translatableNoticeOfHearingProvider,
             translatableC110AProvider,
-            translatableFurtherEvidenceProvider,
-            translatableHearingFurtherEvidenceProvider,
             translatableRespondentStatementsProvider
         );
     }
