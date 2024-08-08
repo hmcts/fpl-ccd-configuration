@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
@@ -63,6 +64,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageLocalAuthoritiesService {
 
+    public static final String FAMILY_COURT_SITTING_AT = "Family Court sitting at ";
     private final Time time;
     private final CourtService courtService;
     private final ValidateEmailService emailService;
@@ -352,10 +354,8 @@ public class ManageLocalAuthoritiesService {
             .map(DynamicList::getValueCode)
             .flatMap(courtLookUpService::getCourtByCode);
         if (chosenCourt.isPresent()) {
-            boolean isHighCourt = chosenCourt.get().getCode().equals(RCJ_HIGH_COURT_CODE);
-            Court newCourt = chosenCourt.get().toBuilder()
+            Court newCourt = adjustCourtName(chosenCourt.get()).toBuilder()
                 .dateTransferred(time.now())
-                .name((isHighCourt ? "" : "Family Court sitting at ") + chosenCourt.get().getName())
                 .build();
             caseData.setPastCourtList(buildPastCourtsList(caseData));
             caseData.setCourt(newCourt);
@@ -421,7 +421,8 @@ public class ManageLocalAuthoritiesService {
 
         ofNullable(eventData.getCourtsToTransfer())
             .map(DynamicList::getValueCode)
-            .flatMap(courtLookup::getCourtByCode)
+            .flatMap(courtLookUpService::getCourtByCode)
+            .map(this::adjustCourtName)
             .ifPresent(caseData::setCourt);
 
         caseData.setCaseLocalAuthority(localAuthorityIds.getLocalAuthorityCode(newDesignatedLocalAuthority.getId())
@@ -486,6 +487,29 @@ public class ManageLocalAuthoritiesService {
         }
 
         return eventData.getLocalAuthoritiesToTransfer().getValueCode();
+    }
+
+    public Optional<CaseLocation> getCaseManagementLocation(Court court) {
+        String courtCode = court.getCode();
+        Optional<Court> lookedUpCourt = courtLookUpService.getCourtByCode(courtCode);
+
+        return lookedUpCourt.map(c -> CaseLocation.builder()
+            .baseLocation(c.getEpimmsId())
+            .region(c.getRegionId())
+            .build());
+    }
+
+    private Court adjustCourtName(Court court) {
+        boolean isHighCourt = court.getCode().equals(RCJ_HIGH_COURT_CODE);
+        boolean hasFamilyCourt = court.getName().contains("Family Court sitting at");
+
+        if (isHighCourt || hasFamilyCourt) {
+            return court;
+        } else {
+            return court.toBuilder()
+                .name(FAMILY_COURT_SITTING_AT + court.getName())
+                .build();
+        }
     }
 
 }
