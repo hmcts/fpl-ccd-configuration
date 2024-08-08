@@ -1711,5 +1711,18 @@
         "CRUD": "CR"
       }
     ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageGuardianReports",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
   }
 ]
