@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class CafcassApiCaseDocument {
-    @JsonProperty("document_filename")
     private String documentFileName;
     private boolean removed;
     private String documentCategory;
     private String documentId;
-    @JsonProperty("upload_timestamp")
     private LocalDateTime uploadTimestamp;
 }
