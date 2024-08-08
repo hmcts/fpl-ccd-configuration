@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.summary;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -34,7 +35,10 @@ public class SyntheticCaseSummary {
 
     String caseSummaryHasNextHearing;
     String caseSummaryNextHearingType;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     LocalDate caseSummaryNextHearingDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     LocalDateTime caseSummaryNextHearingDateTime;
     String caseSummaryNextHearingJudge;
     String caseSummaryNextHearingEmailAddress;
