@@ -6,6 +6,7 @@
     "CaseFieldID": "caseLinks",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
+    "DisplayContextParameter": "#ARGUMENT(UPDATE)",
     "PageID": "maintainCaseLinks",
     "PageLabel": "Manage case links",
     "PageDisplayOrder": 1,
