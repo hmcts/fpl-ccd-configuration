@@ -103,4 +103,16 @@ public class AdditionalApplicationsBundle {
     public YesNo getHasConfidentialC2() {
         return YesNo.from(isNotEmpty(c2DocumentBundleConfidential));
     }
+
+    @JsonIgnore
+    public boolean isConfidentialC2UploadedByChildSolicitor() {
+        return isNotEmpty(c2DocumentBundleChild0) || isNotEmpty(c2DocumentBundleChild1)
+               || isNotEmpty(c2DocumentBundleChild2) || isNotEmpty(c2DocumentBundleChild3)
+               || isNotEmpty(c2DocumentBundleChild4) || isNotEmpty(c2DocumentBundleChild5)
+               || isNotEmpty(c2DocumentBundleChild6) || isNotEmpty(c2DocumentBundleChild7)
+               || isNotEmpty(c2DocumentBundleChild8) || isNotEmpty(c2DocumentBundleChild9)
+               || isNotEmpty(c2DocumentBundleChild10) || isNotEmpty(c2DocumentBundleChild11)
+               || isNotEmpty(c2DocumentBundleChild12) || isNotEmpty(c2DocumentBundleChild13)
+               || isNotEmpty(c2DocumentBundleChild14);
+    }
 }

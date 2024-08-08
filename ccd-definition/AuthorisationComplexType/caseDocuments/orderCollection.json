@@ -252,7 +252,8 @@
           "[CHILDSOLICITORI]", "[CHILDSOLICITORJ]", "[CHILDSOLICITORK]", "[CHILDSOLICITORL]",
           "[CHILDSOLICITORM]", "[CHILDSOLICITORN]", "[CHILDSOLICITORO]",
           "caseworker-publiclaw-cafcass",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "R"
       }
