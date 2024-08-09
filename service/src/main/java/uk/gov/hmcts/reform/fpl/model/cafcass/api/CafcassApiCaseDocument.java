@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
