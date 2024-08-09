@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
@@ -144,6 +145,7 @@ public abstract class CafcassApiConverterTestBase {
             .filename(randomAlphanumeric(10))
             .url("test.link/" + docId)
             .binaryUrl("test.link/" + docId + "/binary")
+            .uploadedTimestamp(LocalDateTime.now())
             .build();
     }
 }

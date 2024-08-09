@@ -227,6 +227,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
             .documentFileName(docRef.getFilename())
             .documentCategory(category)
             .removed(removed)
+            .uploadTimestamp(docRef.getUploadedTimestamp())
             .build();
     }
 
