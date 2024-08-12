@@ -22,9 +22,9 @@ import javax.validation.constraints.NotNull;
 public class CaseDataParent {
 
     protected final List<Element<ManagedDocument>> guardianReportsList;
-    protected final List<Element<ManagedDocument>> guardianReportsListListLA;
-    protected final List<Element<ManagedDocument>> guardianReportsListListCTSC;
-    protected final List<Element<ManagedDocument>> guardianReportsListListRemoved;
+    protected final List<Element<ManagedDocument>> guardianReportsListLA;
+    protected final List<Element<ManagedDocument>> guardianReportsListCTSC;
+    protected final List<Element<ManagedDocument>> guardianReportsListRemoved;
     protected final List<Element<RespondentStatementV2>> respStmtList;
     protected final List<Element<RespondentStatementV2>> respStmtListLA;
     protected final List<Element<RespondentStatementV2>> respStmtListCTSC;

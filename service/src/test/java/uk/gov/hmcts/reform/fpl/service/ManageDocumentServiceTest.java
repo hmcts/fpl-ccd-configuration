@@ -101,6 +101,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_RE
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEDICAL_RECORDS;
@@ -406,6 +407,7 @@ class ManageDocumentServiceTest {
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
+                    toPair(GUARDIAN_REPORT),
                     toPair(AA_PARENT_EXPERT_REPORTS),
                     toPair(EXPERT_REPORTS),
                     toPair(DRUG_AND_ALCOHOL_REPORTS),
@@ -413,7 +415,7 @@ class ManageDocumentServiceTest {
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
-                    toPair(NOTICE_OF_ACTING_OR_ISSUE), 
+                    toPair(NOTICE_OF_ACTING_OR_ISSUE),
                     toPair(PREVIOUS_PROCEEDING),
                     b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
                 args.add(Arguments.of(i, b == 0, expected.stream()
