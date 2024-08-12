@@ -90,6 +90,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-update-guardians",
+    "Name": "Update guardians information received from Cafcass",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "handleSupplementaryEvidence",
     "Name": "Handle supplementary evidence",
     "Description": "Handle supplementary evidence",

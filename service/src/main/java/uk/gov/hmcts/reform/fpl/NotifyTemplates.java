@@ -105,4 +105,5 @@ public final class NotifyTemplates {
     public static final String COURT_ADMIN_UDO_LISTING_TEMPLATE = "bae4b7a8-44a2-4337-a720-04cc46607322";
     public static final String CHASE_OUTSTANDING_ORDER_LA_TEMPLATE = "a8b9812a-bc54-43f6-84e5-c3f8195320fa";
     public static final String VACATE_HEARING = "738d7a28-4699-4b32-a793-25436bf2d19c";
+    public static final String GUARDIAN_UPDATED = "efc77c28-c32a-43d3-93f6-d75542d3743b";
 }
