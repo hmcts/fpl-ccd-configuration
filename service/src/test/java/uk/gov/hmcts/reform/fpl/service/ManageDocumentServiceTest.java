@@ -407,7 +407,6 @@ class ManageDocumentServiceTest {
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
-                    toPair(GUARDIAN_REPORT),
                     toPair(AA_PARENT_EXPERT_REPORTS),
                     toPair(EXPERT_REPORTS),
                     toPair(DRUG_AND_ALCOHOL_REPORTS),

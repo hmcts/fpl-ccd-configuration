@@ -210,7 +210,7 @@ public enum DocumentType {
         null,
         null, 340, null),
     GUARDIAN_REPORT("Guardian report", standardResolver("guardianReportsList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         GUARDIAN_EVIDENCE, 350, null),
     ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),

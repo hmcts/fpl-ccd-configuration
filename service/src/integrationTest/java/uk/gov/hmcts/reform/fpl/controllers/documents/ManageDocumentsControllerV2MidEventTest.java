@@ -343,8 +343,7 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             DocumentType.MEDICAL_RECORDS,
             DocumentType.COURT_CORRESPONDENCE,
             DocumentType.NOTICE_OF_ACTING_OR_ISSUE,
-            DocumentType.PLACEMENT_RESPONSES,
-            DocumentType.GUARDIAN_REPORT
+            DocumentType.PLACEMENT_RESPONSES
         }).forEach(documentType -> {
             CaseData caseData = CaseData.builder()
                 .manageDocumentEventData(ManageDocumentEventData.builder()
@@ -386,7 +385,6 @@ class ManageDocumentsControllerV2MidEventTest extends AbstractCallbackTest {
             DocumentType.RESPONDENTS_STATEMENTS,
             DocumentType.RESPONDENTS_WITNESS_STATEMENTS,
             DocumentType.GUARDIAN_EVIDENCE,
-            DocumentType.GUARDIAN_REPORT,
             DocumentType.EXPERT_REPORTS,
             DocumentType.DRUG_AND_ALCOHOL_REPORTS,
             DocumentType.LETTER_OF_INSTRUCTION,
