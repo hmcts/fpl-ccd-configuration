@@ -478,7 +478,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.orderDetails=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.orderDetails=\"YES\" AND orderTempQuestions.childArrangementSpecificIssueProhibitedSteps=\"NO\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
