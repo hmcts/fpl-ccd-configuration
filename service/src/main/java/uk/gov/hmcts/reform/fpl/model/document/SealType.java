@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum SealType {
     ENGLISH("static_data/familycourtseal.png"),
-    BILINGUAL("static_data/familycourtseal-bilingual.png"),
+    WELSH("static_data/familycourtseal-welsh.png"),
     HIGHCOURT_ENGLISH("static_data/highcourtseal.png");
 
     private final String image;
