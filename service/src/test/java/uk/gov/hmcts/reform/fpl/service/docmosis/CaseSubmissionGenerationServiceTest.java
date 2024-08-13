@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
+import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
@@ -998,7 +999,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnBeyondParentalControlForGroundsThresholdReasonWhenThresholdReasonIsBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of("beyondControl"))
+                    .groundsReason(of(GroundsList.BEYOND_PARENTAL_CONTROL))
                     .build())
                 .build();
 
@@ -1011,7 +1012,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldNotAppendBeyondParentalControlToGroundsThresholdReasonWhenThresholdReasonIsNotBeyondControl() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of("test", "noCare"))
+                    .groundsReason(of(GroundsList.NO_CARE))
                     .build())
                 .build();
 
@@ -1036,7 +1037,7 @@ class CaseSubmissionGenerationServiceTest {
         void shouldReturnDefaultValueForGroundsThresholdReasonWhenTGroundsIsNotNullAndThresholdReasonEmpty() {
             CaseData updatedCasData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
-                    .thresholdReason(of())
+                    .groundsReason(of())
                     .build())
                 .build();
 
@@ -1146,7 +1147,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .grounds(Grounds.builder()
                     .thresholdDetails("")
-                    .thresholdReason(of("noCare"))
+                    .groundsReason(of(GroundsList.NO_CARE))
                     .build())
                 .build();
 
