@@ -364,7 +364,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "guardianReportsList",
     "FieldType": "Collection",
-    "FieldTypeParameter": "GuardianReportsList",
+    "FieldTypeParameter": "GuardianReport",
     "Label": "Guardian Report",
     "SecurityClassification": "Public",
     "Searchable": "N"
