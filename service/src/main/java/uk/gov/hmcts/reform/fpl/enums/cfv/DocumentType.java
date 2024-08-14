@@ -91,7 +91,7 @@ public enum DocumentType {
         false, false, false,
         null,
         null, 60, null),
-    JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
+    JUDGEMENTS("└─ Judgments/facts and reasons", standardResolver("judgementList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_ORDERS, 70, DEFAULT_NOTIFICATION_CONFIG),
