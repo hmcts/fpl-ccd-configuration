@@ -5,7 +5,7 @@
     "ID": "judgementList",
     "FieldType": "Collection",
     "FieldTypeParameter": "JudgementFactsAndReasons",
-    "Label": "Judgements/facts and reasons",
+    "Label": "Judgments/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -15,7 +15,7 @@
     "ID": "judgementListLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "JudgementFactsAndReasons",
-    "Label": "Judgements/facts and reasons",
+    "Label": "Judgments/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -25,7 +25,7 @@
     "ID": "judgementListCTSC",
     "FieldType": "Collection",
     "FieldTypeParameter": "JudgementFactsAndReasons",
-    "Label": "Judgements/facts and reasons",
+    "Label": "Judgments/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -35,7 +35,7 @@
     "ID": "judgementListRemoved",
     "FieldType": "Collection",
     "FieldTypeParameter": "JudgementFactsAndReasons",
-    "Label": "Judgements/facts and reasons",
+    "Label": "Judgments/facts and reasons",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
