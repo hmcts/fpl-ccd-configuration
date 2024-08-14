@@ -9,18 +9,7 @@
     "PageFieldDisplayOrder": 0,
     "PageColumnNumber": 1,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "submissionRequiredFieldsInfo = \"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "enterGrounds",
-    "CaseFieldID": "submissionRequiredFieldsInfo",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageFieldDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "DisplayContext": "READONLY"
+    "FieldShowCondition": "grounds = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -54,7 +43,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "grounds",
-    "CaseEventFieldLabel": "*How does this case meet the threshold criteria?",
+    "CaseEventFieldLabel": "Grounds for the application",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "COMPLEX",
     "PageID": 1,

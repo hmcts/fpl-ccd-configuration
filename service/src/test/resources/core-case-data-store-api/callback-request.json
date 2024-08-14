@@ -119,10 +119,11 @@
         ]
       },
       "grounds": {
-        "thresholdReason": [
-          "noCare",
-          "beyondControl"
+        "groundsReason": [
+          "NO_CARE",
+          "BEYOND_PARENTAL_CONTROL"
         ],
+        "hasThresholdDocument": "No",
         "thresholdDetails": "grounds for application criteria"
       },
       "hearing": {

@@ -2,15 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "beyondControl",
-    "ListElement": "Beyond parental control",
+    "ListElementCode": "NO_CARE",
+    "ListElement": "Child is not receiving care that would be reasonably expected from someone with parental responsibility",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "noCare",
-    "ListElement": "Not receiving care that would be reasonably expected from a parent",
+    "ListElementCode": "BEYOND_PARENTAL_CONTROL",
+    "ListElement": "Child is beyond parental control",
     "DisplayOrder": 2
   }
 ]
