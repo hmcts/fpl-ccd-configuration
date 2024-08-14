@@ -1719,7 +1719,6 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "CRUD"
