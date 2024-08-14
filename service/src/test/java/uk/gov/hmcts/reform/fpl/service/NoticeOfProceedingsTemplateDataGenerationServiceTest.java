@@ -124,7 +124,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .build())
             .todaysDate("13 March 2021")
             .crest("[userImage:crest.png]")
-            .courtseal("[userImage:familycourtseal.png]")
+            .courtseal("[userImage:FL-PLW-familycourtsealV2.png]")
             .build();
 
         assertThat(templateData).isEqualTo(expectedData);
