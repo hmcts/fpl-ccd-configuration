@@ -20,8 +20,6 @@ export class ShareCase extends BasePage {
     }
 
     async shareCaseWithinOrg(userEmail: string) {
-      //  getByRole('row', { name: 'go to case with Case' }).getByLabel('', { exact: true })
-       // await page.getByRole('row', { name: 'Case name ▼ FamilyMan case' }).getByLabel('').check();
         await this.selectCaseChckBox.getByLabel('').check();
         await this.shareCaseButton.click();
         await this.orgUserEmailText.click();
