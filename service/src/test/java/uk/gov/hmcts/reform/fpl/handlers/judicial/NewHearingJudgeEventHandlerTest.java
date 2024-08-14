@@ -158,7 +158,7 @@ class NewHearingJudgeEventHandlerTest {
         ));
 
         verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
-        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), false);
+        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), true);
         verifyNoMoreInteractions(judicialService);
     }
 
@@ -191,7 +191,7 @@ class NewHearingJudgeEventHandlerTest {
         ));
 
         verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
-        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), false);
+        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), true);
         verifyNoMoreInteractions(judicialService);
     }
 
