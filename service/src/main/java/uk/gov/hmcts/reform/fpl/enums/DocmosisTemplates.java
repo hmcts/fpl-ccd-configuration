@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public enum DocmosisTemplates {
-    C110A("FL-PLW-APP-ENG-C110A.doc", "FL-PLW-APP-WEL-00753.doc", "c110a_application_%s"),
-    C1("FL-PLW-APP-ENG-01084.doc", null, "c1_application_%s"),
+    C110A("FL-PLW-APP-ENG-C110A.doc", "FL-PLW-APP-WEL-00753-V2.doc", "c110a_application_%s"),
+    C1("FL-PLW-APP-ENG-01084-V2.doc", null, "c1_application_%s"),
     C14_SUPPLEMENT("FL-PLW-APP-ENG-01086.doc", null, "c14_supplement_%s"),
     C15_SUPPLEMENT("FL-PLW-APP-ENG-01088.doc", null, "c15_supplement_%s"),
     C16_SUPPLEMENT("FL-PLW-APP-ENG-01083.doc", null, "c16_supplement_%s"),
@@ -32,6 +32,7 @@ public enum DocmosisTemplates {
     A206("FL-PLW-LET-ENG-00768.doc", null, "placement_order_notification_a206"),
     A92("FL-PLW-HNO-ENG-notice-of-placement.doc", null, "notice_of_hearing_placement"),
     HIGH_COURT_SEAL("FL-PLW-ASS-ENG-HIGH-COURT-SEAL.docx", null, "high_court_seal"),
+    NON_MOLESTATION_ORDER("FL-PLW-GOR-ENG-non-molestation-order.doc", null, "non_molestation_order"),
     TRANSPARENCY_ORDER("FL-PLW-GOR-ENG-TRANSPARENCY-ORDER-TEMPLATE.doc", null, "transparency_order");
 
     private final String template;
