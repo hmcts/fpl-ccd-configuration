@@ -6,7 +6,7 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public",
-    "CategoryID": "GuardianReportsConfidential"
+    "CategoryID": "guardianReportsConfidential"
   },
   {
     "LiveFrom": "01/01/2017",
