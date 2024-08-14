@@ -23,7 +23,6 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
-    public static final String NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE = "f3757b68-2c94-44df-8a70-5af6a8c8fb71";
     public static final String URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN =
         "49b46d30-f719-4351-b634-9a75e700d9cb";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =

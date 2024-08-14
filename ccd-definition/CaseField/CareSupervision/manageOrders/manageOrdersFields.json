@@ -197,15 +197,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersRecitalsAndPreamblesOptional",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "TextArea",
-    "Label": "Add recitals or preamble",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersEpoType",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
@@ -1179,33 +1170,6 @@
     "ID": "manageOrdersTransparencyOrderPermissionToReportEffectiveDate",
     "FieldType": "Date",
     "Label": "Permission to report is not effective until:",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersNonMolestationOrder",
-    "FieldType": "TextArea",
-    "Label": "The Court Orders",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersNonMolestationOrderApplicant",
-    "FieldType": "DynamicList",
-    "Label": "Applicant of this order",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersNonMolestationOrderRespondent",
-    "FieldType": "DynamicList",
-    "Label": "Respondent of this order",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

@@ -9,12 +9,10 @@ import uk.gov.hmcts.reform.fpl.enums.LanguageTranslationRequirement;
 import uk.gov.hmcts.reform.fpl.events.order.AmendedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.order.GeneratedPlacementOrderEvent;
-import uk.gov.hmcts.reform.fpl.events.order.NonMolestationOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.AmendableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -46,7 +44,6 @@ class ManageOrdersEventBuilderTest {
     private final DocumentReference orderNotificationDocument = mock(DocumentReference.class);
     private final GeneratedOrder order = mock(GeneratedOrder.class);
     private final CaseData caseDataBefore = mock(CaseData.class);
-    private final ManageOrdersEventData eventData = mock(ManageOrdersEventData.class);
 
     @Mock
     private SealedOrderHistoryService historyService;
@@ -77,7 +74,7 @@ class ManageOrdersEventBuilderTest {
 
         when(finder.findOrderIfPresent(caseData, caseDataBefore)).thenReturn(Optional.of(amendableOrder));
 
-        assertThat(underTest.build(caseData, caseDataBefore, eventData)).isEqualTo(
+        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(
             new AmendedOrderEvent(caseData, expectedDocument, "Care order", selectedOthers)
         );
 
@@ -93,7 +90,7 @@ class ManageOrdersEventBuilderTest {
         when(order.asLabel()).thenReturn(ORDER_TITLE);
         when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
 
-        assertThat(underTest.build(caseData, caseDataBefore, eventData)).isEqualTo(new GeneratedOrderEvent(caseData,
+        assertThat(underTest.build(caseData, caseDataBefore)).isEqualTo(new GeneratedOrderEvent(caseData,
             orderDocument,
             TRANSLATION_REQUIREMENT,
             ORDER_TITLE,
@@ -110,22 +107,8 @@ class ManageOrdersEventBuilderTest {
         when(order.asLabel()).thenReturn(ORDER_TITLE);
         when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
 
-        assertThat(underTest.build(caseData, caseDataBefore, eventData))
+        assertThat(underTest.build(caseData, caseDataBefore))
             .isEqualTo(new GeneratedPlacementOrderEvent(caseData, orderDocument, orderNotificationDocument));
-    }
-
-    @Test
-    void shouldBuildNonMolestationOrderEvent() {
-        CaseData caseData = CaseData.builder().orderCollection(wrapElements(order)).build();
-        when(historyService.lastGeneratedOrder(caseData)).thenReturn(order);
-        when(order.getOrderType()).thenReturn(Order.FL404A_NON_MOLESTATION_ORDER.name());
-        when(order.getDocument()).thenReturn(orderDocument);
-        when(order.asLabel()).thenReturn(ORDER_TITLE);
-        when(order.getTranslationRequirements()).thenReturn(TRANSLATION_REQUIREMENT);
-
-        assertThat(underTest.build(caseData, caseDataBefore, eventData))
-            .isEqualTo(new NonMolestationOrderEvent(caseData, eventData, ORDER_TITLE, orderDocument,
-                TRANSLATION_REQUIREMENT));
     }
 
 }

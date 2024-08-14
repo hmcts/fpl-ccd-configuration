@@ -61,8 +61,10 @@ export class GatekeepingListing extends HearingDetailsMixin(BasePage)
   }
 
   async addHighCourtJudgeAndCompleteGatekeepingListing() {
+    await this.page.getByLabel('Search for Judge (Optional)').click();
     await this.page.getByLabel('Search for Judge (Optional)').fill('Arthur Ramirez');
-    await this.page.getByText('Mr Arthur Ramirez (HHJ.Arthur').click();
+    await this.page.waitForSelector('span:text("His Honour Judge Arthur Ramirez (HHJ.Arthur.Ramirez@ejudiciary.net)")');
+    await this.page.getByText('His Honour Judge Arthur Ramirez (HHJ.Arthur.Ramirez@ejudiciary.net)').click();
     await this.clickContinue();
     await this.completeHearingDetails();
     await this.page.getByRole('radio', { name: 'Yes' }).check();

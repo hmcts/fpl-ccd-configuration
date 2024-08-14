@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.ColleagueRole.SOLICITOR;
@@ -56,7 +55,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-task-list"),
             any());
@@ -79,7 +78,7 @@ class ApplicantLocalAuthorityControllerSubmittedTest extends AbstractCallbackTes
 
         postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).performPostSubmitCallback(
+        verify(coreCaseDataService).performPostSubmitCallback(
             eq(caseData.getId()),
             eq("internal-update-case-summary"),
             any());

@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPr
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.FamilyAssistancePrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkApplicationBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.NonMolestationOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ParentalResponsibilityPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.RespondentsRefusedBlockPrePopulator;
@@ -62,7 +61,6 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ChildPlacementOrderPrePopulator childPlacementOrderPrePopulator;
     private final AllowedContactPrePopulator allowedContactPrePopulator;
     private final FamilyAssistancePrePopulator familyAssistancePrePopulator;
-    private final NonMolestationOrderPrePopulator nonMolestationOrderPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -98,8 +96,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             parentalResponsibilityPrePopulator,
             allowedContactPrePopulator,
             declarationOfParentagePrePopulator,
-            familyAssistancePrePopulator,
-            nonMolestationOrderPrePopulator
+            familyAssistancePrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()

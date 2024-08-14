@@ -139,7 +139,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "judgementsFactsAndReasons",
-    "CategoryLabel": "Judgments/facts and reasons",
+    "CategoryLabel": "Judgements/facts and reasons",
     "ParentCategoryID": "orders",
     "DisplayOrder": "800"
   },

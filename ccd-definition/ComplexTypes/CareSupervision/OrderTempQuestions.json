@@ -439,14 +439,5 @@
     "ElementLabel": " ",
     "FieldShowCondition": "manageOrdersTransparencyOrder=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderTempQuestions",
-    "ListElementCode": "nonMolestationOrder",
-    "FieldType": "YesOrNo",
-    "ElementLabel": " ",
-    "FieldShowCondition": "nonMolestationOrder=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
   }
 ]

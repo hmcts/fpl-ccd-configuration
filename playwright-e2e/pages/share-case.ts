@@ -11,7 +11,7 @@ export class ShareCase extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.selectCaseChckBox = page.getByRole('row', { name: 'Case name ▼ FamilyMan case' });
+        this.selectCaseChckBox = page.getByLabel('Select all');
         this.shareCaseButton = page.getByRole('button', {name: 'Share Case'});
         this.orgUserEmailText = page.getByLabel('Search by name or email');
         this.addButton = page.getByRole('button', {name: 'Add user'});
@@ -20,7 +20,7 @@ export class ShareCase extends BasePage {
     }
 
     async shareCaseWithinOrg(userEmail: string) {
-        await this.selectCaseChckBox.getByLabel('').check();
+        await this.selectCaseChckBox.check();
         await this.shareCaseButton.click();
         await this.orgUserEmailText.click();
         await this.orgUserEmailText.pressSequentially(`${userEmail}`,{delay: 800})

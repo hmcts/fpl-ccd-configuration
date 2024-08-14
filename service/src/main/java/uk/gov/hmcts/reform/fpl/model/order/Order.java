@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLIC
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NON_MOLESTATION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_BY_CONSENT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_PLACED_CHILD_IN_CUSTODY;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ORDER_TO_AMEND;
@@ -526,22 +525,6 @@ public enum Order {
             SELECT_SINGLE_CHILD,
             DECLARATION_OF_PARENTAGE,
             CLOSE_CASE,
-            REVIEW_DRAFT_ORDER
-        )
-    ),
-    FL404A_NON_MOLESTATION_ORDER(
-        DIGITAL,
-        "Non-molestation order (FL404A)",
-        "Section 42 Family Law Act 1996",
-        "Non-molestation order (FL404A)",
-        IsFinalOrder.NO,
-        List.of(
-            LINKED_TO_HEARING,
-            APPROVER,
-            APPROVAL_DATE,
-            WHICH_CHILDREN,
-            NON_MOLESTATION_ORDER,
-            ORDER_BY_CONSENT,
             REVIEW_DRAFT_ORDER
         )
     ),

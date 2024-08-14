@@ -61,7 +61,6 @@ public class ManageOrdersEventData {
     String manageOrdersIncludePhrase;
     List<C43OrderType> manageOrdersMultiSelectListForC43;
     String manageOrdersRecitalsAndPreambles;
-    String manageOrdersRecitalsAndPreamblesOptional;
     String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;
@@ -152,10 +151,6 @@ public class ManageOrdersEventData {
     String manageOrdersPreamblesText;
     String manageOrdersParagraphs;
     String manageOrdersCostOrders;
-
-    String manageOrdersNonMolestationOrder;
-    DynamicList manageOrdersNonMolestationOrderApplicant;
-    DynamicList manageOrdersNonMolestationOrderRespondent;
 
     TransparencyOrderExpirationType manageOrdersTransparencyOrderExpiration;
     LocalDate manageOrdersTransparencyOrderEndDate;
