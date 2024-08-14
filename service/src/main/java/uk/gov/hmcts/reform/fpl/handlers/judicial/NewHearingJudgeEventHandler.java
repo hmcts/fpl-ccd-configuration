@@ -41,7 +41,10 @@ public class NewHearingJudgeEventHandler {
             .filter(hearing -> hearing.getStartDate().isAfter(event.getHearing().getStartDate()))
             .min(Comparator.comparing(HearingBooking::getStartDate));
 
-        judicialService.assignHearingJudge(event.getCaseData().getId(), event.getHearing(), nextHearing);
+        final boolean isFirstHearing = event.getCaseData().getAllNonCancelledHearings().size() == 1;
+
+        judicialService
+            .assignHearingJudge(event.getCaseData().getId(), event.getHearing(), nextHearing, isFirstHearing);
     }
 
     private void handleEditedHearing(final NewHearingJudgeEvent event) {

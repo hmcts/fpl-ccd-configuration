@@ -27,6 +27,7 @@ public class HandleHearingModificationRolesEventHandler {
         // when relisting. it has to be caught though to make sure nothing else afterward is impacted in case of
         // failure
         final Long caseId = event.getCaseData().getId();
+        final boolean isFirstHearing = event.getCaseData().getAllNonCancelledHearings().size() == 1;
 
         try {
             nullSafeList(event.getCaseData().getCancelledHearingDetails())
@@ -46,7 +47,8 @@ public class HandleHearingModificationRolesEventHandler {
                             Optional<HearingBooking> possibleNextHearing = event.getCaseData()
                                 .getNextHearingAfter(lastHearing.get().getStartDate());
 
-                            judicialService.assignHearingJudge(caseId, lastHearing.get(), possibleNextHearing);
+                            judicialService
+                                .assignHearingJudge(caseId, lastHearing.get(), possibleNextHearing, isFirstHearing);
                         }
                     }
                 });

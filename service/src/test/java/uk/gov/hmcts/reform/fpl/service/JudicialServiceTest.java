@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.am.model.RoleAssignment;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -372,7 +374,7 @@ class JudicialServiceTest {
                 .build())
             .build();
 
-        underTest.assignHearingJudge(12345L, hearing, Optional.empty());
+        underTest.assignHearingJudge(12345L, hearing, Optional.empty(), false);
 
         verify(roleAssignmentService).assignJudgesRole(
             12345L,
@@ -380,6 +382,36 @@ class JudicialServiceTest {
             JudgeCaseRole.HEARING_JUDGE,
             startDate.atZone(ZoneId.systemDefault()),
             null);
+    }
+
+    @Test
+    void shouldCreateRoleStartingNowNotStartDateIfOnlyHearing() {
+        LocalDateTime now = LocalDateTime.now();
+        final ZonedDateTime nowZoned = now.atZone(ZoneId.systemDefault());
+
+        HearingBooking hearing = HearingBooking.builder()
+            .startDate(now.plusDays(2))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeEnterManually(YesNo.NO)
+                .judgeTitle(JudgeOrMagistrateTitle.OTHER)
+                .judgeJudicialUser(JudicialUser.builder()
+                    .idamId("idam")
+                    .build())
+                .build())
+            .build();
+
+        try (MockedStatic<ZonedDateTime> zonedStatic = mockStatic(ZonedDateTime.class)) {
+            zonedStatic.when(ZonedDateTime::now).thenReturn(nowZoned);
+
+            underTest.assignHearingJudge(12345L, hearing, Optional.empty(), true);
+
+            verify(roleAssignmentService).assignJudgesRole(
+                12345L,
+                List.of("idam"),
+                JudgeCaseRole.HEARING_JUDGE,
+                nowZoned,
+                null);
+        }
     }
 
     @Test
@@ -401,7 +433,7 @@ class JudicialServiceTest {
             .startDate(now.plusDays(2))
             .build();
 
-        underTest.assignHearingJudge(12345L, hearing, Optional.of(futureHearing));
+        underTest.assignHearingJudge(12345L, hearing, Optional.of(futureHearing), false);
 
         verify(roleAssignmentService).assignJudgesRole(
             12345L,

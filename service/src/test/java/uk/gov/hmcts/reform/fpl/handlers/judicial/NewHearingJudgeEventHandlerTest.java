@@ -69,14 +69,14 @@ class NewHearingJudgeEventHandlerTest {
             .build();
 
         NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
-            .caseData(CaseData.builder().id(12345L).build())
+            .caseData(CaseData.builder().id(12345L).hearingDetails(wrapElements(booking)).build())
             .hearing(booking)
             .oldHearing(Optional.empty())
             .build();
 
         underTest.handleNewHearingJudge(event);
 
-        verify(judicialService).assignHearingJudge(12345L, booking, Optional.empty());
+        verify(judicialService).assignHearingJudge(12345L, booking, Optional.empty(), true);
     }
 
     @Test
@@ -105,30 +105,32 @@ class NewHearingJudgeEventHandlerTest {
 
         underTest.handleNewHearingJudge(event);
 
-        verify(judicialService).assignHearingJudge(12345L, booking, Optional.of(existingBookingAfter));
+        verify(judicialService).assignHearingJudge(12345L, booking, Optional.of(existingBookingAfter), false);
     }
 
 
     @Test
     void shouldAttemptAssignIfHearingJudgeJudicialUserWithPersonalCodeOnly() {
-        NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
-            .caseData(CaseData.builder().id(12345L).build())
-            .hearing(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
-                    .judgeLastName("Test")
-                    .judgeJudicialUser(JudicialUser.builder()
-                        .personalCode("personal")
-                        .build())
+        HearingBooking booking = HearingBooking.builder()
+            .startDate(LocalDateTime.now())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                .judgeLastName("Test")
+                .judgeJudicialUser(JudicialUser.builder()
+                    .personalCode("personal")
                     .build())
                 .build())
+            .build();
+
+        NewHearingJudgeEvent event = NewHearingJudgeEvent.builder()
+            .caseData(CaseData.builder().id(12345L).hearingDetails(wrapElements(booking)).build())
+            .hearing(booking)
             .oldHearing(Optional.empty())
             .build();
 
         underTest.handleNewHearingJudge(event);
 
-        verify(judicialService).assignHearingJudge(12345L, event.getHearing(), Optional.empty());
+        verify(judicialService).assignHearingJudge(12345L, event.getHearing(), Optional.empty(), true);
     }
 
     @Test
@@ -156,7 +158,7 @@ class NewHearingJudgeEventHandlerTest {
         ));
 
         verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
-        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty());
+        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), false);
         verifyNoMoreInteractions(judicialService);
     }
 
@@ -189,7 +191,7 @@ class NewHearingJudgeEventHandlerTest {
         ));
 
         verify(judicialService).deleteSpecificHearingRole(12345L, oldHearing);
-        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty());
+        verify(judicialService).assignHearingJudge(12345L, newHearing, Optional.empty(), false);
         verifyNoMoreInteractions(judicialService);
     }
 

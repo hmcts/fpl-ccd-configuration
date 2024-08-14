@@ -156,7 +156,8 @@ public class JudicialService {
         }
     }
 
-    public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing) {
+    public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing,
+                                   boolean startNow) {
         Optional<String> judgeId = getJudgeIdFromHearing(hearing);
         ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
             .map(ld -> ld.atZone(ZoneId.systemDefault()))
@@ -164,7 +165,7 @@ public class JudicialService {
 
         judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
                 s,
-                hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                startNow ? ZonedDateTime.now() : hearing.getStartDate().atZone(ZoneId.systemDefault()),
                 possibleEndDate,
                 JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
             () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",

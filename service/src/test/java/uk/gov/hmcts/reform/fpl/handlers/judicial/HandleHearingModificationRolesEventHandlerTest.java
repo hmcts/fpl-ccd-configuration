@@ -101,7 +101,7 @@ class HandleHearingModificationRolesEventHandlerTest {
 
         verify(judicialService).deleteSpecificHearingRole(12345L, cancelledBooking);
         verify(judicialService).deleteSpecificHearingRole(12345L, prevBooking);
-        verify(judicialService).assignHearingJudge(12345L, prevBooking, Optional.empty());
+        verify(judicialService).assignHearingJudge(12345L, prevBooking, Optional.empty(), true);
     }
 
     @Test
@@ -159,7 +159,7 @@ class HandleHearingModificationRolesEventHandlerTest {
 
         verify(judicialService).deleteSpecificHearingRole(12345L, cancelledBooking);
         verify(judicialService).deleteSpecificHearingRole(12345L, prevBooking);
-        verify(judicialService).assignHearingJudge(12345L, prevBooking, Optional.of(futureHearing));
+        verify(judicialService).assignHearingJudge(12345L, prevBooking, Optional.of(futureHearing), false);
     }
 
     @Test
