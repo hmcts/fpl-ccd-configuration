@@ -13,5 +13,5 @@ public class Guardian {
     private String guardianName;
     private String telephoneNumber;
     private String email;
-    private List<String> childrenRepresenting;
+    private List<String> children;
 }
