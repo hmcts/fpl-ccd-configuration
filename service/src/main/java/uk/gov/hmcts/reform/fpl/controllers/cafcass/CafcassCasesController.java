@@ -98,12 +98,14 @@ public class CafcassCasesController {
 
     @PostMapping("{caseId}/guardians")
     public ResponseEntity<Object> uploadGuardians(@PathVariable String caseId,
-                                                  @RequestBody @Valid @NotNull List<@NotNull Guardian> guardians) {
+                                                  @RequestBody List<Guardian> guardians) {
         log.info("uploadGuardians request received - caseId: [{}]", caseId);
         CaseData caseData = getCaseData(caseId);
 
         if (cafcassApiGuardianService.checkIfAnyGuardianUpdated(caseData, guardians)) {
             cafcassApiGuardianService.updateGuardians(caseData, guardians);
+        } else {
+            log.info("uploadGuardians - no changes");
         }
         return ResponseEntity.ok().build();
     }
