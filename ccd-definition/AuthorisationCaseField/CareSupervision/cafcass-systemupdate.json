@@ -486,6 +486,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
     "UserRole": "caseworker-publiclaw-cafcasssystemupdate",
-    "CRUD": "CRUD"
+    "CRUD": "R"
   }
 ]
