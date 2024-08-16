@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.RoleAssignmentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.testingsupport.controllers.TestingSupportController;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,9 @@ class TestingSupportControllerTest {
 
     @MockBean
     private DocumentUploadClientApi uploadClient;
+
+    @MockBean
+    private IdamClient idamClient;
 
     @BeforeEach
     void init() {
