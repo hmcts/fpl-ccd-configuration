@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Colleague;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -66,8 +67,13 @@ public class RepresentativesInbox {
     }
 
     public Set<String> getRespondentSolicitorEmails(CaseData caseData,
-                                                        RepresentativeServingPreferences preference) {
-        return caseData.getAllRespondents().stream()
+                                                    RepresentativeServingPreferences preference) {
+        return getRespondentSolicitorEmailsFromList(caseData.getAllRespondents(), preference);
+    }
+
+    public Set<String> getRespondentSolicitorEmailsFromList(List<Element<Respondent>> respondents,
+                                                                RepresentativeServingPreferences preference) {
+        return respondents.stream()
             .filter(respondent -> shouldSend(preference, respondent))
             .map(this::extractEmailsForSolicitorAndColleagues)
             .flatMap(Collection::stream).toList()
@@ -99,7 +105,12 @@ public class RepresentativesInbox {
 
     public Set<String> getChildrenSolicitorEmails(CaseData caseData,
                                                   RepresentativeServingPreferences preference) {
-        return caseData.getAllChildren().stream()
+        return getChildrenSolicitorEmailsFromList(caseData.getAllChildren(), preference);
+    }
+
+    public Set<String> getChildrenSolicitorEmailsFromList(List<Element<Child>> children,
+                                                              RepresentativeServingPreferences preference) {
+        return children.stream()
             .filter(child -> shouldSend(preference, child))
             .map(this::extractEmailsForSolicitorAndColleagues)
             .flatMap(Collection::stream).toList()
