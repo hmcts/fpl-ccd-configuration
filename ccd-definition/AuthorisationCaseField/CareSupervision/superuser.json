@@ -1697,28 +1697,28 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsList",
-    "UserRole": "caseworker-publiclaw-judiciary",
+    "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsListLA",
-    "UserRole": "caseworker-publiclaw-judiciary",
+    "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsListCTSC",
-    "UserRole": "caseworker-publiclaw-judiciary",
+    "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsListRemoved",
-    "UserRole": "caseworker-publiclaw-judiciary",
+    "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "R"
   }
 ]
