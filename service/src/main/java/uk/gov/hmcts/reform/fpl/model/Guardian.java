@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @EqualsAndHashCode
-@Builder
+@Builder(toBuilder = true)
 public class Guardian {
     private String guardianName;
     private String telephoneNumber;
