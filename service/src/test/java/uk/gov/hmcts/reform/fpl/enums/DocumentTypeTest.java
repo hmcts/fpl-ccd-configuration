@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ARCHIVED_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
 
@@ -66,10 +67,13 @@ class DocumentTypeTest {
     @Test
     void shouldHiddenFromUploadNewDocument() {
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromLAUpload()))
-            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
+                GUARDIAN_REPORT);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromCTSCUpload()))
-            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
+                GUARDIAN_REPORT);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromSolicitorUpload()))
-            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
+                GUARDIAN_REPORT);
     }
 }

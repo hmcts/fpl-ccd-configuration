@@ -681,6 +681,34 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsList",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListLA",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListCTSC",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListRemoved",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardians",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "R"

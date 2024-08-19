@@ -541,6 +541,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submissionDeclaration",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsentLabel",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
@@ -2112,6 +2119,34 @@
     "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsList",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListLA",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListCTSC",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "guardianReportsListRemoved",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -123,6 +123,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .familyAssistanceOrder(NO)
             .partyAllowedContactsAndConditions(NO)
             .manageOrdersTransparencyOrder(NO)
+            .nonMolestationOrder(NO)
             .build()
         );
     }
@@ -193,6 +194,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .partyAllowedContactsAndConditions(NO)
             .familyAssistanceOrder(NO)
             .manageOrdersTransparencyOrder(NO)
+            .nonMolestationOrder(NO)
             .build()
         );
     }
