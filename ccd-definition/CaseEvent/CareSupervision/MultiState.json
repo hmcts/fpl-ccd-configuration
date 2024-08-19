@@ -1115,7 +1115,7 @@
     "Name": "Manage Guardian Report",
     "Description": "Manage Guardian Report",
     "DisplayOrder": 1000,
-    "PreConditionState(s)": "Open;Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED;Deleted;RETURNED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;GATEKEEPING_LISTING;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED;Deleted;RETURNED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
