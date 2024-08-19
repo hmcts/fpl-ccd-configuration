@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Guardian;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.util.List;
@@ -19,21 +18,38 @@ public class CafcassApiGuardianServiceTest {
         .guardianName("Guardian 1")
         .email("guardian1@test.com")
         .telephoneNumber("0123456789")
-        .childrenRepresenting(List.of("Child 1", "Child 2"))
+        .children(List.of("Child 1", "Child 2"))
         .build();
     private static final Guardian EXISTING_GUARDIAN_2 = Guardian.builder()
         .guardianName("Guardian 2")
         .email("guardian2@test.com")
         .telephoneNumber("0123456789")
-        .childrenRepresenting(List.of("Child 3"))
+        .children(List.of("Child 3"))
         .build();
     private static final List<Element<Guardian>> EXISTING_GUARDIANS =
         wrapElementsWithUUIDs(EXISTING_GUARDIAN_1, EXISTING_GUARDIAN_2);
     private static final CaseData CASE_DATA = CaseData.builder().guardians(EXISTING_GUARDIANS).build();
-
-    private final CaseConverter caseConverter = mock(CaseConverter.class);
     private final CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
-    private CafcassApiGuardianService underTest = new CafcassApiGuardianService(caseConverter, coreCaseDataService);
+    private CafcassApiGuardianService underTest = new CafcassApiGuardianService(coreCaseDataService);
+
+    @Test
+    void shouldReturnFalseIfGuardiansIsInvalid() {
+        assertFalse(underTest.validateGuardians(List.of(Guardian.builder().build())));
+        assertFalse(underTest.validateGuardians(List.of(Guardian.builder().guardianName("Guardian Name").build())));
+        assertFalse(underTest.validateGuardians(List.of(Guardian.builder()
+            .guardianName("Guardian Name")
+                .children(List.of())
+            .build())));
+        assertFalse(underTest.validateGuardians(List.of(Guardian.builder()
+            .guardianName("Guardian Name")
+            .children(List.of(""))
+            .build())));
+    }
+
+    @Test
+    void shouldReturnTrueIfGuardiansIsValid() {
+        assertTrue(underTest.validateGuardians(List.of(EXISTING_GUARDIAN_1)));
+    }
 
     @Test
     void shouldReturnFalseIfGuardianListsAreIdentical() {
@@ -68,7 +84,7 @@ public class CafcassApiGuardianServiceTest {
     @Test
     void shouldReturnTrueIfOnlyChildrenRepresentingUpdated() {
         List<Guardian> updatedGuardians = List.of(
-            EXISTING_GUARDIAN_1.toBuilder().childrenRepresenting(List.of("Child 123")).build(),
+            EXISTING_GUARDIAN_1.toBuilder().children(List.of("Child 123")).build(),
             EXISTING_GUARDIAN_2);
         assertTrue(underTest.checkIfAnyGuardianUpdated(CASE_DATA,
             updatedGuardians));

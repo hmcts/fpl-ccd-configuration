@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.NotFoundException;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.Guardian;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiGuardianService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
@@ -30,14 +32,13 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Slf4j
 @RestController
 @RequestMapping("/cases")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassCasesController {
+    private final EventService eventPublisher;
     private final CaseConverter caseConverter;
     private final CoreCaseDataService coreCaseDataService;
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
@@ -102,8 +103,13 @@ public class CafcassCasesController {
         log.info("uploadGuardians request received - caseId: [{}]", caseId);
         CaseData caseData = getCaseData(caseId);
 
+        if (!cafcassApiGuardianService.validateGuardians(guardians)) {
+            throw new BadInputException();
+        }
+
         if (cafcassApiGuardianService.checkIfAnyGuardianUpdated(caseData, guardians)) {
-            cafcassApiGuardianService.updateGuardians(caseData, guardians);
+            CaseData updatedCaseData = getCaseData(cafcassApiGuardianService.updateGuardians(caseData, guardians));
+            eventPublisher.publishEvent(UpdateGuardianEvent.builder().caseData(updatedCaseData).build());
         } else {
             log.info("uploadGuardians - no changes");
         }
@@ -111,12 +117,14 @@ public class CafcassCasesController {
     }
 
     private CaseData getCaseData(String caseId) {
-        CaseDetails caseDetails;
         try {
-            caseDetails = coreCaseDataService.findCaseDetailsById(caseId);
+            return getCaseData(coreCaseDataService.findCaseDetailsById(caseId));
         } catch (Exception e) {
             throw new NotFoundException("Case reference not found");
         }
+    }
+
+    private CaseData getCaseData(CaseDetails caseDetails) {
         return caseConverter.convert(caseDetails);
     }
 }
