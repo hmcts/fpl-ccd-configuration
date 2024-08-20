@@ -25,7 +25,8 @@ public class AsyncConfiguration implements AsyncConfigurer {
     private final ApplicationContext context;
     private final int corePoolSize;
 
-    public AsyncConfiguration(@Autowired ApplicationContext context, @Value("${fpl.core_pool_size:10}") int corePoolSize) {
+    public AsyncConfiguration(@Autowired ApplicationContext context,
+                              @Value("${fpl.core_pool_size:10}") int corePoolSize) {
         this.context = context;
         this.corePoolSize = corePoolSize;
     }
