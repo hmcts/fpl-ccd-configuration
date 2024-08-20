@@ -1,0 +1,35 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Guardian",
+    "ListElementCode": "guardianName",
+    "FieldType": "Text",
+    "ElementLabel": "Name of Guardian",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Guardian",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Guardian",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Guardian",
+    "ListElementCode": "children",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Representing",
+    "SecurityClassification": "Public"
+  }
+]
