@@ -33,6 +33,7 @@ public class CafcassApiRespondentsConverter implements CafcassApiCaseDataConvert
                     builder = builder.firstName(respondentParty.getFirstName())
                         .lastName(respondentParty.getLastName())
                         .gender(respondentParty.getGender())
+                        .genderIdentification(respondentParty.getGenderIdentification())
                         .addressKnown(isYes(respondentParty.getAddressKnow()))
                         .addressUnknownReason(respondentParty.getAddressNotKnowReason())
                         .address(getCafcassApiAddress(respondentParty.getAddress()))
