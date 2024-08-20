@@ -101,11 +101,11 @@ public class CafcassCasesController {
     public ResponseEntity<Object> uploadGuardians(@PathVariable String caseId,
                                                   @RequestBody List<Guardian> guardians) {
         log.info("uploadGuardians request received - caseId: [{}]", caseId);
-        CaseData caseData = getCaseData(caseId);
-
         if (!cafcassApiGuardianService.validateGuardians(guardians)) {
             throw new BadInputException();
         }
+
+        CaseData caseData = getCaseData(caseId);
 
         if (cafcassApiGuardianService.checkIfAnyGuardianUpdated(caseData, guardians)) {
             CaseData updatedCaseData = getCaseData(cafcassApiGuardianService.updateGuardians(caseData, guardians));
