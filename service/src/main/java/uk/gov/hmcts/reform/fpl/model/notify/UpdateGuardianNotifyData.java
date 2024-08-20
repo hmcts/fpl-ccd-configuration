@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.notify;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
