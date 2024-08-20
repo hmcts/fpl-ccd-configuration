@@ -711,6 +711,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "internal-update-guardians",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsV2",
     "AccessControl": [
       {
@@ -1709,6 +1716,20 @@
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageGuardianReports",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate",
+          "caseworker-publiclaw-cafcasssystemupdate"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   }

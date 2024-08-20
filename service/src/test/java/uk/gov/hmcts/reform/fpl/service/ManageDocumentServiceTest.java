@@ -413,7 +413,7 @@ class ManageDocumentServiceTest {
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
-                    toPair(NOTICE_OF_ACTING_OR_ISSUE), 
+                    toPair(NOTICE_OF_ACTING_OR_ISSUE),
                     toPair(PREVIOUS_PROCEEDING),
                     b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
                 args.add(Arguments.of(i, b == 0, expected.stream()

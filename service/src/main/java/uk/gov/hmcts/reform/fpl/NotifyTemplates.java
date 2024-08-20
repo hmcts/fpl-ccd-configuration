@@ -23,6 +23,7 @@ public final class NotifyTemplates {
     public static final String PLACEMENT_ORDER_GENERATED_NOTIFICATION_TEMPLATE =
         "673ff6f1-2a1f-4f0a-8e3b-d2044047304d";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
+    public static final String NON_MOLESTATION_ORDER_NOTIFICATION_TEMPLATE = "f3757b68-2c94-44df-8a70-5af6a8c8fb71";
     public static final String URGENT_ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN =
         "49b46d30-f719-4351-b634-9a75e700d9cb";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
@@ -105,4 +106,5 @@ public final class NotifyTemplates {
     public static final String COURT_ADMIN_UDO_LISTING_TEMPLATE = "bae4b7a8-44a2-4337-a720-04cc46607322";
     public static final String CHASE_OUTSTANDING_ORDER_LA_TEMPLATE = "a8b9812a-bc54-43f6-84e5-c3f8195320fa";
     public static final String VACATE_HEARING = "738d7a28-4699-4b32-a793-25436bf2d19c";
+    public static final String GUARDIAN_UPDATED = "efc77c28-c32a-43d3-93f6-d75542d3743b";
 }
