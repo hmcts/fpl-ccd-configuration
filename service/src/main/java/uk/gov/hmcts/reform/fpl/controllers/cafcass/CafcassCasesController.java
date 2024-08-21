@@ -13,28 +13,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.NotFoundException;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Guardian;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiGuardianService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Slf4j
 @RestController
 @RequestMapping("/cases")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassCasesController {
+    private final EventService eventPublisher;
+    private final CaseConverter caseConverter;
+    private final CoreCaseDataService coreCaseDataService;
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
     private final CafcassApiDocumentService cafcassApiDocumentService;
+    private final CafcassApiGuardianService cafcassApiGuardianService;
 
     @GetMapping("")
     public CafcassApiSearchCasesResponse searchCases(
@@ -88,33 +97,34 @@ public class CafcassCasesController {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("{caseId}/guardians")
     public ResponseEntity<Object> uploadGuardians(@PathVariable String caseId,
-                                                  @RequestBody List<Map<String, Object>> guardians) {
-        log.info("uploadGuardians request received");
-        try {
-            if (isEmpty(guardians)) {
-                throw new IllegalArgumentException("list empty");
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("uploadGuardians - caseId: [%s], no of guardians: [%s]\n"
-                    .formatted(UUID.fromString(caseId), guardians.size()));
-            log.info("uploadGuardians guardians size " + guardians.size());
-
-            guardians.forEach(guardian -> {
-                sb.append("guardianName: [%s], ".formatted(guardian.get("guardianName")));
-                sb.append("children: [%s]".formatted(String.join(", ",
-                    ((List<String>) guardian.get("children")))));
-                sb.append("\n");
-            });
-
-            return ResponseEntity.ok(sb);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body("bad input parameter - " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Internal server error");
+                                                  @RequestBody List<Guardian> guardians) {
+        log.info("uploadGuardians request received - caseId: [{}]", caseId);
+        if (!cafcassApiGuardianService.validateGuardians(guardians)) {
+            throw new BadInputException();
         }
+
+        CaseData caseData = getCaseData(caseId);
+
+        if (cafcassApiGuardianService.checkIfAnyGuardianUpdated(caseData, guardians)) {
+            CaseData updatedCaseData = getCaseData(cafcassApiGuardianService.updateGuardians(caseData, guardians));
+            eventPublisher.publishEvent(UpdateGuardianEvent.builder().caseData(updatedCaseData).build());
+        } else {
+            log.info("uploadGuardians - no changes");
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    private CaseData getCaseData(String caseId) {
+        try {
+            return getCaseData(coreCaseDataService.findCaseDetailsById(caseId));
+        } catch (Exception e) {
+            throw new NotFoundException("Case reference not found");
+        }
+    }
+
+    private CaseData getCaseData(CaseDetails caseDetails) {
+        return caseConverter.convert(caseDetails);
     }
 }
