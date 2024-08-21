@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Guardian;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSearchCasesResponse;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiGuardianService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -87,9 +90,33 @@ public class CafcassCasesController {
         log.info("uploadDocument request received");
 
         try {
+            if (!cafcassApiDocumentService.isValidFile(file)) {
+                throw new IllegalArgumentException("invalid file provided, is empty or not in pdf format");
+            }
+
+            CaseData caseData = getCaseData(caseId);
+            DocumentReference documentReference = cafcassApiDocumentService.uploadDocumentToDocStore(file);
+
+            switch (typeOfDocument) {
+                case "GUARDIAN_REPORT":
+                    CaseData updatedCaseData =
+                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(documentReference, caseData));
+                    eventPublisher.publishEvent(
+                        ManageDocumentsUploadedEvent.builder().caseData(updatedCaseData).build());
+                    break;
+                case "POSITION_STATEMENT":
+                    //Insert logic for position statement upload here
+                    break;
+                default:
+                    return ResponseEntity.status(400)
+                        .body("bad input parameter " + typeOfDocument + " is not a valid type");
+            }
+
             return ResponseEntity.ok(String.format(
                 "uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]",
                 UUID.fromString(caseId), file.getSize(), typeOfDocument));
+        } catch (IOException e) {
+            return ResponseEntity.status(415).body("bad document input");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body("bad input parameter - " + e.getMessage());
         } catch (Exception e) {
