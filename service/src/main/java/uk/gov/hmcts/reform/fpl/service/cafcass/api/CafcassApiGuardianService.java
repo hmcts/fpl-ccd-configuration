@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeCollection;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
@@ -32,11 +33,8 @@ public class CafcassApiGuardianService {
     public boolean checkIfAnyGuardianUpdated(CaseData caseData, List<Guardian> guardianUpdateList) {
         List<Element<Guardian>> existingGuardians = caseData.getGuardians();
 
-        if (!isEmpty(guardianUpdateList)) {
-            return !(new HashSet<>(guardianUpdateList).equals(new HashSet<>(unwrapElements(existingGuardians))));
-        } else {
-            return !isEmpty(existingGuardians);
-        }
+        return !(new HashSet<>(nullSafeCollection(guardianUpdateList))
+            .equals(new HashSet<>(unwrapElements(existingGuardians))));
     }
 
     public CaseDetails updateGuardians(CaseData caseData, List<Guardian> guardianUpdateList) {

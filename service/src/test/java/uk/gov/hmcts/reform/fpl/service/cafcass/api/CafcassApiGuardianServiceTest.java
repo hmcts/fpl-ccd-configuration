@@ -56,7 +56,11 @@ public class CafcassApiGuardianServiceTest {
         List<Guardian> updatedGuardians = List.of(EXISTING_GUARDIAN_1.toBuilder().build(),
             EXISTING_GUARDIAN_2.toBuilder().build());
 
+        List<Guardian> updatedGuardiansInDifferentOrder = List.of(EXISTING_GUARDIAN_2.toBuilder().build(),
+            EXISTING_GUARDIAN_1.toBuilder().build());
+
         assertFalse(underTest.checkIfAnyGuardianUpdated(CASE_DATA, updatedGuardians));
+        assertFalse(underTest.checkIfAnyGuardianUpdated(CASE_DATA, updatedGuardiansInDifferentOrder));
         assertFalse(underTest.checkIfAnyGuardianUpdated(CaseData.builder().guardians(null).build(), List.of()));
         assertFalse(underTest.checkIfAnyGuardianUpdated(CaseData.builder().guardians(List.of()).build(), List.of()));
         assertFalse(underTest.checkIfAnyGuardianUpdated(CaseData.builder().guardians(null).build(), null));
