@@ -161,6 +161,10 @@ public class ManageDocumentService {
         if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
             return CAFCASS;
         }
+        if(Optional.ofNullable(userService.getIdamRoles())
+            .orElse(Set.of()).contains(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName())) {
+            return CAFCASS;
+        }
 
         throw new IllegalStateException("Unable to determine document uploader type");
     }

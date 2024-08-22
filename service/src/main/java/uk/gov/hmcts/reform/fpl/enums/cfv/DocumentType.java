@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.LA;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.ConfidentialLevel.NON_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG;
+import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CAFCASS_API_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.CASE_SUMMARY_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_BUNDLE_NOTIFICATION_CONFIG;
 import static uk.gov.hmcts.reform.fpl.model.configuration.DocumentUploadedNotificationConfiguration.COURT_CORRESPONDENCE_NOTIFICATION_CONFIG;
@@ -212,7 +213,7 @@ public enum DocumentType {
     GUARDIAN_REPORT("Guardian report", standardResolver("guardianReportsList"),
         true, true, true,
         defaultWithDocumentBuilder(),
-        GUARDIAN_EVIDENCE, 350, null, "guardianReports"),
+        GUARDIAN_EVIDENCE, 350, CAFCASS_API_NOTIFICATION_CONFIG, "guardianReports"),
     ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),
         true, true, true,
     defaultWithDocumentBuilder(),

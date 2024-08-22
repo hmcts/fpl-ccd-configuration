@@ -30,11 +30,14 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiGuardianService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 
 @Slf4j
 @RestController
@@ -47,6 +50,7 @@ public class CafcassCasesController {
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
     private final CafcassApiDocumentService cafcassApiDocumentService;
     private final CafcassApiGuardianService cafcassApiGuardianService;
+    private final ManageDocumentService manageDocumentService;
 
     @GetMapping("")
     public CafcassApiSearchCasesResponse searchCases(
@@ -94,15 +98,15 @@ public class CafcassCasesController {
                 throw new IllegalArgumentException("invalid file provided, is empty or not in pdf format");
             }
 
-            CaseData caseData = getCaseData(caseId);
+            CaseData caseDataBefore = getCaseData(caseId);
             DocumentReference documentReference = cafcassApiDocumentService.uploadDocumentToDocStore(file);
 
             switch (typeOfDocument) {
                 case "GUARDIAN_REPORT":
                     CaseData updatedCaseData =
-                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(documentReference, caseData));
+                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(documentReference, caseDataBefore));
                     eventPublisher.publishEvent(
-                        ManageDocumentsUploadedEvent.builder().caseData(updatedCaseData).build());
+                        manageDocumentService.buildManageDocumentsUploadedEvent(updatedCaseData, caseDataBefore));
                     break;
                 case "POSITION_STATEMENT":
                     //Insert logic for position statement upload here
