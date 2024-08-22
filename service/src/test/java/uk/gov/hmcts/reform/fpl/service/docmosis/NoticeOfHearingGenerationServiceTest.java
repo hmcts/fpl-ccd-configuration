@@ -248,7 +248,7 @@ class NoticeOfHearingGenerationServiceTest {
             .postingDate("3 March 2021")
             .additionalNotes(NOTES)
             .courtName(DEFAULT_LA_COURT)
-            .courtseal("[userImage:familycourtseal.png]")
+            .courtseal("[userImage:FL-PLW-familycourtsealV2.png]")
             .isHighCourtCase(false)
             .crest("[userImage:crest.png]")
             .build();
