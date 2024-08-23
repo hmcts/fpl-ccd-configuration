@@ -11,6 +11,7 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiAddress;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiSolicitor;
+import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getGenderForApiResponse;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getTelephoneNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -32,7 +33,7 @@ public class CafcassApiRespondentsConverter implements CafcassApiCaseDataConvert
                 if (isNotEmpty(respondentParty)) {
                     builder = builder.firstName(respondentParty.getFirstName())
                         .lastName(respondentParty.getLastName())
-                        .gender(respondentParty.getGender())
+                        .gender(getGenderForApiResponse(respondentParty.getGender()))
                         .genderIdentification(respondentParty.getGenderIdentification())
                         .addressKnown(isYes(respondentParty.getAddressKnow()))
                         .addressUnknownReason(respondentParty.getAddressNotKnowReason())
