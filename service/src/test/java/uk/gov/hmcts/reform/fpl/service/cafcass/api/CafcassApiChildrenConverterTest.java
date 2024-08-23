@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiChild;
+import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -67,7 +68,7 @@ public class CafcassApiChildrenConverterTest extends CafcassApiConverterTestBase
                     .firstName("Child")
                     .lastName("One")
                     .dateOfBirth(LocalDate.of(2024, 1, 1))
-                    .gender(ChildGender.BOY.toString())
+                    .gender(Gender.MALE.toString())
                     .genderIdentification("genderIdentification")
                     .livingSituation("livingSituation")
                     .livingSituationDetails("livingSituationDetails")
@@ -87,7 +88,7 @@ public class CafcassApiChildrenConverterTest extends CafcassApiConverterTestBase
                     .firstName("Child")
                     .lastName("Two")
                     .dateOfBirth(LocalDate.of(2023, 1, 1))
-                    .gender(ChildGender.GIRL.toString())
+                    .gender(Gender.FEMALE.toString())
                     .build(),
                 CafcassApiChild.builder().build()
             )).build());

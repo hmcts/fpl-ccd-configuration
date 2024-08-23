@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -78,5 +79,21 @@ public class CafcassApiHelperTest {
 
         assertEquals(expected, CafcassApiHelper.getCafcassApiSolicitor(solicitor));
         assertNull(CafcassApiHelper.getCafcassApiSolicitor(null));
+    }
+
+    @Test
+    public void testGetGenderForApiResponse() {
+        assertEquals("MALE", CafcassApiHelper.getGenderForApiResponse(Gender.MALE.getValue()));
+        assertEquals("MALE", CafcassApiHelper.getGenderForApiResponse(Gender.MALE.toString()));
+        assertEquals("MALE", CafcassApiHelper.getGenderForApiResponse(Gender.MALE.getLabel()));
+        assertEquals("FEMALE", CafcassApiHelper.getGenderForApiResponse(Gender.FEMALE.getValue()));
+        assertEquals("FEMALE", CafcassApiHelper.getGenderForApiResponse(Gender.FEMALE.toString()));
+        assertEquals("FEMALE", CafcassApiHelper.getGenderForApiResponse(Gender.FEMALE.getLabel()));
+        assertEquals("OTHER", CafcassApiHelper.getGenderForApiResponse(Gender.OTHER.getValue()));
+        assertEquals("OTHER", CafcassApiHelper.getGenderForApiResponse(Gender.OTHER.toString()));
+        assertEquals("OTHER", CafcassApiHelper.getGenderForApiResponse(Gender.OTHER.getLabel()));
+        assertEquals(null,  CafcassApiHelper.getGenderForApiResponse(""));
+        assertEquals(null,  CafcassApiHelper.getGenderForApiResponse(null));
+        assertEquals(null, CafcassApiHelper.getGenderForApiResponse(Gender.NONE.getLabel()));
     }
 }
