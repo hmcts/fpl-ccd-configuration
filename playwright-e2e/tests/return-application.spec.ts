@@ -1,10 +1,12 @@
 import { test } from '../fixtures/create-fixture';
 import { createCase, updateCase } from "../utils/api-helper";
 import caseData from '../caseData/caseInPrepareForHearing.json' with { type: "json" };
+import returned from '../caseData/returnCase.json' with { type: "json" };
 import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from "../settings/user-credentials";
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
+import { ReturnApplication } from '../pages/return-application';
 
 test.describe('Return application', () => {
   const dateTime = new Date().toISOString();
@@ -25,7 +27,6 @@ test.describe('Return application', () => {
       await returnApplication.gotoNextStep('Return application');
 
       //complete task
-      await page.getByRole('button', { name: 'Go' }).click
       await page.getByLabel('Application Incomplete').check();
       await page.getByLabel('Let the local authority know').click();
       await page.getByLabel('Let the local authority know').fill('test');
@@ -36,12 +37,12 @@ test.describe('Return application', () => {
     });
 
   test('LA submit application',
-    async ({ page, signInPage, submitCase }) => {
+    async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, caseData,);
+      await updateCase(caseName, caseNumber, ReturnApplication,);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
-      await submitCase.gotoNextStep('Submit application')
+      await returnApplication.gotoNextStep('Submit application');
 
     });
 });
