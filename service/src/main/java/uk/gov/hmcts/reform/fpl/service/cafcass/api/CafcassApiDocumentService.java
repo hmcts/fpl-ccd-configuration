@@ -10,15 +10,21 @@ import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.SecureDocStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
 
 @Service
@@ -45,11 +51,11 @@ public class CafcassApiDocumentService {
             .document(documentReference)
             .build();
 
-        List<ManagedDocument> updatedGuardianReports = unwrapElements(caseData.getGuardianReportsList());
-        updatedGuardianReports.add(guardianReport);
+        List<Element<ManagedDocument>> updatedGuardianReports = caseData.getGuardianReportsList();
+        updatedGuardianReports.add(element(guardianReport));
 
         return coreCaseDataService.performPostSubmitCallback(caseData.getId(), "internal-upload-document",
-            caseDetails -> Map.of("guardianReportsList", wrapElementsWithUUIDs(updatedGuardianReports)));
+            caseDetails -> Map.of("guardianReportsList", updatedGuardianReports));
     }
 
     public boolean isValidFile(MultipartFile file) throws IOException {
