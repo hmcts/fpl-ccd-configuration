@@ -234,7 +234,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         when(documentDownloadService.downloadDocument(TEST_DOCUMENT.getBinaryUrl())).thenReturn(TRANSLATED_DOC_BYTES);
         when(documentConversionService.convertToPdf(TRANSLATED_DOC_BYTES, TEST_DOCUMENT.getFilename())).thenReturn(
             CONVERTED_DOC_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.BILINGUAL))
+        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.WELSH))
             .thenReturn(SEALED_DOC_BYTES);
         when(uploadDocumentService.uploadDocument(SEALED_DOC_BYTES,
             "noticeo_c6-Welsh.pdf",
