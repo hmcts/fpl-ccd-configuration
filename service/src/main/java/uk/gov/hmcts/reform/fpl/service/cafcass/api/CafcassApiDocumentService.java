@@ -41,13 +41,13 @@ public class CafcassApiDocumentService {
     }
 
     public CaseDetails uploadGuardianReport(DocumentReference documentReference, CaseData caseData) {
-         ManagedDocument guardianReport = ManagedDocument.builder()
+        ManagedDocument guardianReport = ManagedDocument.builder()
             .uploaderType(DocumentUploaderType.CAFCASS)
             .document(documentReference)
             .build();
 
-         List<ManagedDocument> updatedGuardianReports = unwrapElements(caseData.getGuardianReportsList());
-         updatedGuardianReports.add(guardianReport);
+        List<ManagedDocument> updatedGuardianReports = unwrapElements(caseData.getGuardianReportsList());
+        updatedGuardianReports.add(guardianReport);
 
         return coreCaseDataService.performPostSubmitCallback(caseData.getId(), "internal-upload-document",
             caseDetails -> Map.of("guardianReportsList", wrapElementsWithUUIDs(updatedGuardianReports)));

@@ -161,7 +161,7 @@ public class ManageDocumentService {
         if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
             return CAFCASS;
         }
-        if(Optional.ofNullable(userService.getIdamRoles())
+        if (Optional.ofNullable(userService.getIdamRoles())
             .orElse(Set.of()).contains(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName())) {
             return CAFCASS;
         }

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.fpl.service.SecureDocStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;

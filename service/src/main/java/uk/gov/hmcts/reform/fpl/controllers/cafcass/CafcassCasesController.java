@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.ManageDocumentsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
@@ -36,8 +35,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
 
 @Slf4j
 @RestController
