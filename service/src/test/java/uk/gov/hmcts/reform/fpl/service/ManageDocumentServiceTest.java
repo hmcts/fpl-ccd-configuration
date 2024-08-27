@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -381,41 +382,45 @@ class ManageDocumentServiceTest {
         List<Arguments> args = new ArrayList<>();
         for (int i = 1; i < 7; i++) {
             for (int b = 0; b < 2; b++) {
-                List<Pair<String, String>> expected = List.of(
-                    toPair(COURT_BUNDLE),
-                    toPair(CASE_SUMMARY),
-                    toPair(POSITION_STATEMENTS),
-                    toPair(THRESHOLD),
-                    toPair(SKELETON_ARGUMENTS),
-                    toPair(AA_PARENT_ORDERS),
-                    toPair(JUDGEMENTS),
-                    toPair(TRANSCRIPTS),
-                    toPair(AA_PARENT_APPLICANTS_DOCUMENTS),
-                    toPair(DOCUMENTS_FILED_ON_ISSUE),
-                    toPair(APPLICANTS_WITNESS_STATEMENTS),
-                    toPair(CARE_PLAN),
-                    toPair(PARENT_ASSESSMENTS),
-                    toPair(FAMILY_AND_VIABILITY_ASSESSMENTS),
-                    toPair(APPLICANTS_OTHER_DOCUMENTS),
-                    toPair(MEETING_NOTES),
-                    toPair(CONTACT_NOTES),
-                    toPair(AA_PARENT_APPLICATIONS),
-                    toPair(C1_APPLICATION_DOCUMENTS),
-                    toPair(C2_APPLICATION_DOCUMENTS),
-                    toPair(AA_PARENT_RESPONDENTS_STATEMENTS),
-                    toPair(RESPONDENTS_STATEMENTS),
-                    toPair(RESPONDENTS_WITNESS_STATEMENTS),
-                    toPair(GUARDIAN_EVIDENCE),
-                    toPair(AA_PARENT_EXPERT_REPORTS),
-                    toPair(EXPERT_REPORTS),
-                    toPair(DRUG_AND_ALCOHOL_REPORTS),
-                    toPair(LETTER_OF_INSTRUCTION),
-                    toPair(POLICE_DISCLOSURE),
-                    toPair(MEDICAL_RECORDS),
-                    toPair(COURT_CORRESPONDENCE),
-                    toPair(NOTICE_OF_ACTING_OR_ISSUE), 
-                    toPair(PREVIOUS_PROCEEDING),
-                    b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
+                final boolean isHmcts = i == HMCTS_LOGIN_TYPE;
+                List<Pair<String, String>> expected = Stream.of(
+                        COURT_BUNDLE,
+                        CASE_SUMMARY,
+                        POSITION_STATEMENTS,
+                        THRESHOLD,
+                        SKELETON_ARGUMENTS,
+                        AA_PARENT_ORDERS,
+                        JUDGEMENTS,
+                        TRANSCRIPTS,
+                        AA_PARENT_APPLICANTS_DOCUMENTS,
+                        DOCUMENTS_FILED_ON_ISSUE,
+                        APPLICANTS_WITNESS_STATEMENTS,
+                        CARE_PLAN,
+                        PARENT_ASSESSMENTS,
+                        FAMILY_AND_VIABILITY_ASSESSMENTS,
+                        APPLICANTS_OTHER_DOCUMENTS,
+                        MEETING_NOTES,
+                        CONTACT_NOTES,
+                        AA_PARENT_APPLICATIONS,
+                        isHmcts ? C1_APPLICATION_DOCUMENTS : null,
+                        isHmcts ? C2_APPLICATION_DOCUMENTS : null,
+                        AA_PARENT_RESPONDENTS_STATEMENTS,
+                        RESPONDENTS_STATEMENTS,
+                        RESPONDENTS_WITNESS_STATEMENTS,
+                        GUARDIAN_EVIDENCE,
+                        AA_PARENT_EXPERT_REPORTS,
+                        EXPERT_REPORTS,
+                        DRUG_AND_ALCOHOL_REPORTS,
+                        LETTER_OF_INSTRUCTION,
+                        POLICE_DISCLOSURE,
+                        MEDICAL_RECORDS,
+                        COURT_CORRESPONDENCE,
+                        NOTICE_OF_ACTING_OR_ISSUE,
+                        PREVIOUS_PROCEEDING,
+                        b == 0 ? PLACEMENT_RESPONSES : null)
+                    .filter(Objects::nonNull)
+                    .map(ManageDocumentServiceTest::toPair)
+                    .toList();
                 args.add(Arguments.of(i, b == 0, expected.stream()
                     .filter(p -> !Pair.of("", "").equals(p))
                     .collect(Collectors.toList())
