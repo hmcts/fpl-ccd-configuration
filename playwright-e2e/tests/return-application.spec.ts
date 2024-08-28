@@ -41,6 +41,7 @@ test.describe('Return application', () => {
       await updateCase(caseName, caseNumber, returned,);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
+      await signInPage.navigateTOCaseDetails(caseNumber);
       await returnApplication.gotoNextStep('Submit application');
 
     });
