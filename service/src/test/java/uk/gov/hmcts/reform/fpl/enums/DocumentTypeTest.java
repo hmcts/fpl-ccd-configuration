@@ -71,7 +71,8 @@ class DocumentTypeTest {
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromCTSCUpload()))
-            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT);
+            .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
+                C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromSolicitorUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS);
