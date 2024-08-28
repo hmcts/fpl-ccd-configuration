@@ -576,8 +576,6 @@ class ManageLocalAuthoritiesServiceTest {
         void init() {
             when(courtLookup.getCourtByCode("C1")).thenReturn(Optional.of(oldCourt));
             when(courtLookup.getCourtByCode("C2")).thenReturn(Optional.of(newCourt));
-            when(courtLookUpService.getCourtByCode("C1")).thenReturn(Optional.of(oldCourt));
-            when(courtLookUpService.getCourtByCode("C2")).thenReturn(Optional.of(newCourt));
             when(localAuthorityIds.getLocalAuthorityCode(newDesignatedLocalAuthorityOrgId))
                 .thenReturn(Optional.of(newDesignatedLocalAuthorityCode));
         }
@@ -638,8 +636,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(expectedLocalAuthority);
             assertThat(caseData.getCaseLocalAuthority()).isEqualTo(newDesignatedLocalAuthorityCode);
             assertThat(caseData.getCaseLocalAuthorityName()).isEqualTo(newDesignatedLocalAuthorityName);
-            assertThat(caseData.getCourt()).extracting("name", "code")
-                .containsExactly("Family Court sitting at Court 2", "C2");
+            assertThat(caseData.getCourt()).isEqualTo(newCourt);
         }
 
         @Test
@@ -860,8 +857,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(expectedLocalAuthority);
             assertThat(caseData.getCaseLocalAuthority()).isEqualTo(newDesignatedLocalAuthorityCode);
             assertThat(caseData.getCaseLocalAuthorityName()).isEqualTo(newDesignatedLocalAuthorityName);
-            assertThat(caseData.getCourt()).extracting("name", "code")
-                .containsExactly("Family Court sitting at Court 2", "C2");
+            assertThat(caseData.getCourt()).isEqualTo(newCourt);
         }
 
         @Test
@@ -918,8 +914,7 @@ class ManageLocalAuthoritiesServiceTest {
                 .containsExactly(expectedLocalAuthority, sharedLocalAuthority);
             assertThat(caseData.getCaseLocalAuthority()).isEqualTo(newDesignatedLocalAuthorityCode);
             assertThat(caseData.getCaseLocalAuthorityName()).isEqualTo(newDesignatedLocalAuthorityName);
-            assertThat(caseData.getCourt()).extracting("name", "code")
-                .containsExactly("Family Court sitting at Court 2", "C2");
+            assertThat(caseData.getCourt()).isEqualTo(newCourt);
         }
     }
 

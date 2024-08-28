@@ -44,7 +44,7 @@ class DocmosisCommonElementDecoratorTest {
     private static final String CHILDREN_ACT = "Children act for order";
     private static final String CREST = "[userImage:crest.png]";
     private static final String WATERMARK = "[userImage:draft-watermark.png]";
-    private static final String SEAL = "[userImage:FL-PLW-familycourtsealV2.png]";
+    private static final String SEAL = "[userImage:familycourtseal.png]";
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2021, 4, 20);
     private static final String EXPECTED_APPROVAL_DATE = "20 April 2021";
     private static final JudgeAndLegalAdvisor JUDGE = mock(JudgeAndLegalAdvisor.class);

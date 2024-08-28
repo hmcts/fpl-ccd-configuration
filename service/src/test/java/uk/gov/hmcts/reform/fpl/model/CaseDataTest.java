@@ -74,7 +74,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.document.SealType.WELSH;
+import static uk.gov.hmcts.reform.fpl.model.document.SealType.BILINGUAL;
 import static uk.gov.hmcts.reform.fpl.model.document.SealType.ENGLISH;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -2037,7 +2037,7 @@ class CaseDataTest {
 
         @Test
         void testIfLanguageRequirementYes() {
-            assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(WELSH);
+            assertThat(CaseData.builder().languageRequirement("Yes").build().getSealType()).isEqualTo(BILINGUAL);
         }
     }
 

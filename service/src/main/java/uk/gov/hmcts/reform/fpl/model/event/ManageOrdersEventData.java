@@ -60,10 +60,6 @@ public class ManageOrdersEventData {
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     List<C43OrderType> manageOrdersMultiSelectListForC43;
-    String manageOrdersChildArrangementsLiveWithDetails;
-    String manageOrdersChildArrangementsContactWithDetails;
-    String manageOrdersSpecificIssueOrderDetails;
-    String manageOrdersProhibitedStepsOrderDetails;
     String manageOrdersRecitalsAndPreambles;
     String manageOrdersRecitalsAndPreamblesOptional;
     String manageOrdersIsByConsent;

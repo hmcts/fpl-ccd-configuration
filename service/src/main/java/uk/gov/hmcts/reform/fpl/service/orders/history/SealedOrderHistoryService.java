@@ -89,11 +89,6 @@ public class SealedOrderHistoryService {
             .childrenDescription(getChildrenForOrder(selectedChildren, caseData))
             .specialGuardians(appointedGuardianFormatter.getGuardiansNamesForTab(caseData))
             .othersNotified(othersNotifiedGenerator.getOthersNotified(selectedOthers))
-            .childArrangementsContactWithDetails(
-                manageOrdersEventData.getManageOrdersChildArrangementsContactWithDetails())
-            .childArrangementsLiveWithDetails(manageOrdersEventData.getManageOrdersChildArrangementsLiveWithDetails())
-            .specificIssueOrderDetails(manageOrdersEventData.getManageOrdersSpecificIssueOrderDetails())
-            .prohibitedStepsOrderDetails(manageOrdersEventData.getManageOrdersProhibitedStepsOrderDetails())
             .document(order)
             .translationRequirements(languageRequirementGenerator.translationRequirements(caseData))
             .unsealedDocumentCopy(plainWordOrder);

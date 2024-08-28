@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.config;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,16 +20,10 @@ import javax.annotation.Nonnull;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AsyncConfiguration implements AsyncConfigurer {
 
     private final ApplicationContext context;
-    private final int corePoolSize;
-
-    public AsyncConfiguration(@Autowired ApplicationContext context,
-                              @Value("${fpl.core_pool_size:10}") int corePoolSize) {
-        this.context = context;
-        this.corePoolSize = corePoolSize;
-    }
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
@@ -49,7 +43,6 @@ public class AsyncConfiguration implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setTaskDecorator(new AsyncTaskDecorator(context));
-        taskExecutor.setCorePoolSize(corePoolSize);
         return taskExecutor;
     }
 

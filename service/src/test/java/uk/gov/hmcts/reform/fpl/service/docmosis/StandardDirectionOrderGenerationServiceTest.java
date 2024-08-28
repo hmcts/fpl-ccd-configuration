@@ -226,7 +226,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .directions(getExpectedDirections())
             .applicantName("Bran Stark")
             .crest("[userImage:crest.png]")
-            .courtseal("[userImage:FL-PLW-familycourtsealV2.png]")
+            .courtseal("[userImage:familycourtseal.png]")
             .build();
     }
 

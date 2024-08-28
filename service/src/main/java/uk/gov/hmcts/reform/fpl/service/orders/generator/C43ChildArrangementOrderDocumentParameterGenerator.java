@@ -15,10 +15,9 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderMessageGenerator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType.CHILD_CONTACT;
-import static uk.gov.hmcts.reform.fpl.enums.ChildArrangementsOrderType.CHILD_LIVE;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -79,10 +78,6 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
             .builder()
             .orderTitle(c43TitleGenerator.getOrderTitle(eventData))
             .recitalsOrPreamble(getOrderRecitalsAndPreambles(eventData))
-            .prohibitedStepsOrderDetails(getProhibitedStepsOrderDetails(eventData))
-            .specificIssueOrderDetails(getSpecificIssueOrderDetails(eventData))
-            .childArrangementsContactWithDetails(getChildArrangementsContactWithDetails(eventData))
-            .childArrangementsLiveWithDetails(getChildArrangementsLiveWithDetails(eventData))
             .orderByConsent(orderMessageGenerator.getOrderByConsentMessage(eventData))
             .orderDetails(buildOrderDetails(eventData))
             .furtherDirections(getOrderDirections(eventData))
@@ -103,29 +98,24 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
     }
 
     private String buildOrderDetails(ManageOrdersEventData eventData) {
-        StringBuilder stringBuilder = new StringBuilder("The Court orders,");
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("The Court orders");
 
         if (isChildArrangementOrderSelected(eventData)) {
-            stringBuilder.append("\n\nThe Child Arrangement Order is for the:");
-            if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_LIVE)) {
-                stringBuilder.append("\n\nChild to live with\n\n").append(
-                    eventData.getManageOrdersChildArrangementsLiveWithDetails());
-            }
-
-            if (eventData.getManageOrdersChildArrangementsOrderTypes().contains(CHILD_CONTACT)) {
-                stringBuilder.append("\n\nChild to have contact with\n\n").append(
-                    eventData.getManageOrdersChildArrangementsContactWithDetails());
-            }
-        }
-
-        if (isSpecificIssueOrderSelected(eventData)) {
-            stringBuilder.append("\n\nSpecific Issue\n\n").append(
-                eventData.getManageOrdersSpecificIssueOrderDetails());
-        }
-
-        if (isProhibitedStepsOrderSelected(eventData)) {
-            stringBuilder.append("\n\nProhibited Steps\n\n").append(
-                eventData.getManageOrdersProhibitedStepsOrderDetails());
+            stringBuilder.append("\n\nThe Child Arrangement Order is for the child to ");
+            stringBuilder.append(eventData.getManageOrdersChildArrangementsOrderTypes().stream()
+                .map(type -> {
+                    switch (type) {
+                        case CHILD_LIVE:
+                            return "live with";
+                        case CHILD_CONTACT:
+                            return "have contact with";
+                        default: return type.toString();
+                    }
+                })
+                .collect(Collectors.joining(" and ")));
+            stringBuilder.append(".");
         }
 
         return stringBuilder.toString();
@@ -133,22 +123,6 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
 
     private String getOrderRecitalsAndPreambles(ManageOrdersEventData eventData) {
         return eventData.getManageOrdersRecitalsAndPreambles();
-    }
-
-    private String getProhibitedStepsOrderDetails(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersProhibitedStepsOrderDetails();
-    }
-
-    private String getSpecificIssueOrderDetails(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersSpecificIssueOrderDetails();
-    }
-
-    private String getChildArrangementsContactWithDetails(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersChildArrangementsContactWithDetails();
-    }
-
-    private String getChildArrangementsLiveWithDetails(ManageOrdersEventData eventData) {
-        return eventData.getManageOrdersChildArrangementsLiveWithDetails();
     }
 
     private String getOrderDirections(ManageOrdersEventData eventData) {
@@ -168,18 +142,6 @@ public class C43ChildArrangementOrderDocumentParameterGenerator implements Docmo
         List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
 
         return orders.contains(C43OrderType.CHILD_ARRANGEMENT_ORDER);
-    }
-
-    private Boolean isSpecificIssueOrderSelected(ManageOrdersEventData eventData) {
-        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
-
-        return orders.contains(C43OrderType.SPECIFIC_ISSUE_ORDER);
-    }
-
-    private Boolean isProhibitedStepsOrderSelected(ManageOrdersEventData eventData) {
-        List<C43OrderType> orders = eventData.getManageOrdersMultiSelectListForC43();
-
-        return orders.contains(C43OrderType.PROHIBITED_STEPS_ORDER);
     }
 
     private void addChildArrangementOrderWarningMessage(

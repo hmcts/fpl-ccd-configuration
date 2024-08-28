@@ -144,7 +144,7 @@ class GatekeepingOrderGenerationServiceTest {
 
     private DocmosisStandardDirectionOrder fullSealedOrderFromLegacyApplicant() {
         return baseDocmosisOrder().toBuilder()
-            .courtseal("[userImage:FL-PLW-familycourtsealV2.png]")
+            .courtseal("[userImage:familycourtseal.png]")
             .dateOfIssue("29 November 2019")
             .isUrgentOrder(false)
             .orderDocumentTitle("Standard Directions Order")

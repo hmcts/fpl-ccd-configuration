@@ -78,10 +78,6 @@ public class GeneratedOrder implements RemovableOrder, AmendableOrder, Translata
     private String linkedApplicationId;
     private String markedFinal;
     private final DocumentReference notificationDocument;
-    private String childArrangementsLiveWithDetails;
-    private String childArrangementsContactWithDetails;
-    private String specificIssueOrderDetails;
-    private String prohibitedStepsOrderDetails;
 
     @JsonIgnore
     public boolean isRemovable() {
