@@ -95,8 +95,6 @@ public class CafcassCasesControllerTest extends AbstractTest {
 
     @Test
     void uploadDocument() throws Exception {
-        UUID caseId = UUID.randomUUID();
-
         final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .caseName("Test case")
@@ -124,16 +122,14 @@ public class CafcassCasesControllerTest extends AbstractTest {
         when(userService.getUserDetails()).thenReturn(CAFCASS_SYSTEM_UPDATE_USER_DETAIL);
 
         MvcResult response = mockMvc
-            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(caseId))
+            .perform(MockMvcRequestBuilders.multipart("/cases/%s/document".formatted(CASE_ID))
                 .file(FILE)
                 .param("typeOfDocument", "GUARDIAN_REPORT")
                 .header("authorization", USER_AUTH_TOKEN))
             .andExpect(status().is(200))
             .andReturn();
 
-        assertEquals("uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]"
-                .formatted(caseId, FILE_BYTES.length, "GUARDIAN_REPORT"),
-            response.getResponse().getContentAsString());
+        assertEquals(response.getResponse().getStatus(), 200);
     }
 
     @Test

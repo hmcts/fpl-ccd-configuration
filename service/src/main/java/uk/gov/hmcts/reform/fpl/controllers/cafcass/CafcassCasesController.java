@@ -113,9 +113,7 @@ public class CafcassCasesController {
                         .body("bad input parameter " + typeOfDocument + " is not a valid type");
             }
 
-            return ResponseEntity.ok(String.format(
-                "uploadDocument - caseId: [%s], file length: [%s], typeOfDocument: [%s]",
-                UUID.fromString(caseId), file.getSize(), typeOfDocument));
+            return ResponseEntity.ok().build();
         } catch (IOException e) {
             return ResponseEntity.status(415).body("bad document input");
         } catch (IllegalArgumentException e) {
