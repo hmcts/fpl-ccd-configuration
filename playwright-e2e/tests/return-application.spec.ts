@@ -6,7 +6,6 @@ import { CTSCUser, newSwanseaLocalAuthorityUserOne, HighCourtAdminUser } from ".
 import { expect } from "@playwright/test";
 import { testConfig } from "../settings/test-config";
 import { setHighCourt } from '../utils/update-case-details';
-import { ReturnApplication } from '../pages/return-application';
 
 test.describe('Return application', () => {
   const dateTime = new Date().toISOString();
@@ -39,7 +38,7 @@ test.describe('Return application', () => {
   test('LA submit application',
     async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
-      await updateCase(caseName, caseNumber, ReturnApplication,);
+      await updateCase(caseName, caseNumber, returned,);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await returnApplication.gotoNextStep('Submit application');
