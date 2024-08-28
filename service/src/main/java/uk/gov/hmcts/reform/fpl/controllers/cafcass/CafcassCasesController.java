@@ -36,6 +36,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.String.format;
+
 @Slf4j
 @RestController
 @RequestMapping("/cases")
@@ -113,7 +115,9 @@ public class CafcassCasesController {
                         .body("bad input parameter " + typeOfDocument + " is not a valid type");
             }
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity
+                .status(200)
+                .body(format("%s uploaded succesfully to case with Id: %s", typeOfDocument, caseId));
         } catch (IOException e) {
             return ResponseEntity.status(415).body("bad document input");
         } catch (IllegalArgumentException e) {
