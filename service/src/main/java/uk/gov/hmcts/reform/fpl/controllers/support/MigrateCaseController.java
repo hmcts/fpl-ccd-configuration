@@ -70,7 +70,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2491(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2492";
+        final String migrationId = "DFPL-2491";
         final CaseData caseData = getCaseData(caseDetails);
         caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, migrationId));
     }
