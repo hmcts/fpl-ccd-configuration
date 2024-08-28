@@ -263,6 +263,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         );
     }
 
+    @Test
     void shouldSendOrdersByPostWhenOrderTranslated() {
         final CaseData caseData = caseData();
         when(concurrencyHelper.startEvent(any(), any(String.class))).thenAnswer(i -> StartEventResponse.builder()
