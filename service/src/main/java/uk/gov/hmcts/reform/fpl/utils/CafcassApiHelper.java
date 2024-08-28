@@ -5,9 +5,12 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiAddress;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 public class CafcassApiHelper {
@@ -50,5 +53,16 @@ public class CafcassApiHelper {
                 return builder.build();
             })
             .orElse(null);
+    }
+
+    public static String getGenderForApiResponse(String genderStr) {
+        return (isEmpty(genderStr)) ? null :
+            Stream.of(Gender.MALE, Gender.FEMALE, Gender.OTHER)
+                .filter(gender -> gender.toString().equalsIgnoreCase(genderStr)
+                                  || gender.getLabel().equalsIgnoreCase(genderStr)
+                                  || gender.getValue().equalsIgnoreCase(genderStr))
+                .findFirst()
+                .map(Gender::getValue)
+                .orElse(Gender.OTHER.getValue());
     }
 }
