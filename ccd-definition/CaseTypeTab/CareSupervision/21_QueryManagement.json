@@ -9,7 +9,7 @@
     "CaseFieldID": "QueryManagementComponentLauncher",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "queries!=\"\""
+    "TabShowCondition": "qmCaseQueriesCollection!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +18,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Query Management",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "queries",
+    "CaseFieldID": "qmCaseQueriesCollection",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""

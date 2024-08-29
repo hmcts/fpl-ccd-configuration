@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "queryManagementRespondQuery",
-    "CaseFieldID": "queries",
+    "CaseFieldID": "qmCaseQueriesCollection",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "DisplayContextParameter": "#ARGUMENT(UPDATE)",
