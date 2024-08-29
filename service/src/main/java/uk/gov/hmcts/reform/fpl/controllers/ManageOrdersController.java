@@ -57,6 +57,10 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        /* Working data for some cases was accidentally stored.
+        This line removes the key so that a new order starts afresh. */
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
+
         caseDetails.getData().put("manageOrdersAmendmentList", amendableOrderListBuilder.buildList(caseData));
 
         return respond(caseDetails);

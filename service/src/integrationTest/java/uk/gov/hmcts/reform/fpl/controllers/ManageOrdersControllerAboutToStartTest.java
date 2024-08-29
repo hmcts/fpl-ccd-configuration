@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.api.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -8,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
+import uk.gov.hmcts.reform.fpl.model.event.*;
+import uk.gov.hmcts.reform.fpl.model.order.*;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert.assertThat;
@@ -70,5 +72,24 @@ class ManageOrdersControllerAboutToStartTest extends AbstractCallbackTest {
                 Pair.of(sdoId, "Gatekeeping order - 2 February 0002"),
                 Pair.of(orderId, "some type of order - 1 January 0001")
             );
+    }
+
+    @Test
+    void shouldRemoveTemporaryFields() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .orderTempQuestions(
+                        OrderTempQuestions.builder()
+                            .manageOrdersExclusionRequirementDetails("NO")
+                            .manageOrdersVaryOrExtendSupervisionOrder("NO")
+                            .manageOrdersExpiryDateWithEndOfProceedings("NO")
+                            .build()
+                    ).build()
+            ).build();
+
+        CaseData responseData = extractCaseData(postAboutToStartEvent(asCaseDetails(caseData)));
+
+        Assertions.assertThat(responseData.getManageOrdersEventData().getOrderTempQuestions()).isNull();
     }
 }
