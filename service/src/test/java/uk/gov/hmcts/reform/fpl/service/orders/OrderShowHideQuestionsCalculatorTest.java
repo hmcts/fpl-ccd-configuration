@@ -238,7 +238,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
         Map<String, String> childArrangementSpecificOrder = new HashMap<>(allQuestions);
         childArrangementSpecificOrder.put("approvalDate", "YES");
-        childArrangementSpecificOrder.put("furtherDirections", "YES");
+        childArrangementSpecificOrder.put("furtherDirections", "NO");
         childArrangementSpecificOrder.put("orderDetails", "YES");
         childArrangementSpecificOrder.put("whichChildren", "YES");
         childArrangementSpecificOrder.put("childArrangementSpecificIssueProhibitedSteps", "YES");
