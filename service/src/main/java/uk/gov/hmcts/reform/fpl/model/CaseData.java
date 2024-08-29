@@ -537,7 +537,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public SealType getSealType() {
-        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+        return isWelshLanguageRequested() ? SealType.WELSH : SealType.ENGLISH;
     }
 
     @JsonIgnore
