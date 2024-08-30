@@ -172,6 +172,19 @@ class FeatureToggleServiceTest {
             eq(true));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForCafcassAPIEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isCafcassAPIEnabled(Court.builder().code("151").build()))
+            .isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("cafcass-api-court"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(true));
+    }
+
     private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
         List<UserAttribute> attributes = new ArrayList<>();
 

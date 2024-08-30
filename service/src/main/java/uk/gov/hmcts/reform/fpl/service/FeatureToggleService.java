@@ -100,6 +100,11 @@ public class FeatureToggleService {
             createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
     }
 
+    public boolean isCafcassAPIEnabled(Court court) {
+        return ldClient.boolVariation("cafcass-api-court",
+            createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

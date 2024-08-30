@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.CaseDefinitionConstants;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
@@ -75,6 +77,8 @@ public class CafcassApiSearchCaseServiceTest {
     private CafcassApiCaseDataConverter cafcassApiCaseDataConverter2;
     @Mock
     private CafcassApiCaseDataConverter cafcassApiCaseDataConverter3;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @Captor
     private ArgumentCaptor<ESQuery> searchQueryCaptor;
 
@@ -83,7 +87,8 @@ public class CafcassApiSearchCaseServiceTest {
     @BeforeEach
     void setUpWithMockConverters() {
         underTest = new CafcassApiSearchCaseService(caseConverter, searchService,
-            List.of(cafcassApiCaseDataConverter1, cafcassApiCaseDataConverter2, cafcassApiCaseDataConverter3));
+            List.of(cafcassApiCaseDataConverter1, cafcassApiCaseDataConverter2, cafcassApiCaseDataConverter3),
+            featureToggleService);
     }
 
     @Test
@@ -94,6 +99,7 @@ public class CafcassApiSearchCaseServiceTest {
         when(cafcassApiCaseDataConverter1.convert(any(), any())).thenReturn(mockBuilder);
         when(cafcassApiCaseDataConverter2.convert(any(), any())).thenReturn(mockBuilder);
         when(cafcassApiCaseDataConverter3.convert(any(), any())).thenReturn(mockBuilder);
+        when(featureToggleService.isCafcassAPIEnabled(any())).thenReturn(true);
 
         final List<CaseDetails> caseDetails = List.of(MOCK_CASE_DETAILS_1, MOCK_CASE_DETAILS_2);
         when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt())).thenReturn(caseDetails);
@@ -139,5 +145,44 @@ public class CafcassApiSearchCaseServiceTest {
         List<CafcassApiCase> actual = underTest.searchCaseByDateRange(SEARCH_START_DATE, SEARCH_END_DATE);
 
         assertEquals(List.of(), actual);
+    }
+
+    @Test
+    void shouldFilterCaseByCourtIfFeatureToggleEnabled() {
+        final CafcassApiCaseData.CafcassApiCaseDataBuilder mockBuilder =
+            mock(CafcassApiCaseData.CafcassApiCaseDataBuilder.class);
+        when(mockBuilder.build()).thenReturn(MOCK_CONVERTED_CAFCASSAPICASEDATA);
+        when(cafcassApiCaseDataConverter1.convert(any(), any())).thenReturn(mockBuilder);
+        when(cafcassApiCaseDataConverter2.convert(any(), any())).thenReturn(mockBuilder);
+        when(cafcassApiCaseDataConverter3.convert(any(), any())).thenReturn(mockBuilder);
+
+        Court enabledCourt = Court.builder().code("151").build();
+        Court disabledCourt = Court.builder().code("000").build();
+        when(featureToggleService.isCafcassAPIEnabled(enabledCourt)).thenReturn(true);
+        when(featureToggleService.isCafcassAPIEnabled(disabledCourt)).thenReturn(false);
+
+        CaseData enabledCase = CaseData.builder().court(enabledCourt).build();
+        CaseData filteredCase = CaseData.builder().court(disabledCourt).build();
+
+        final List<CaseDetails> caseDetails = List.of(MOCK_CASE_DETAILS_1, MOCK_CASE_DETAILS_2);
+        when(searchService.search(any(), anyInt(), anyInt())).thenReturn(caseDetails);
+        when(caseConverter.convert(MOCK_CASE_DETAILS_1)).thenReturn(enabledCase);
+        when(caseConverter.convert(MOCK_CASE_DETAILS_2)).thenReturn(filteredCase);
+
+
+        CafcassApiCase expectedCafcassApiCase1 = CafcassApiCase.builder()
+            .caseId(1L)
+            .jurisdiction(CaseDefinitionConstants.JURISDICTION)
+            .state(State.CASE_MANAGEMENT.getValue())
+            .caseTypeId(CaseDefinitionConstants.CASE_TYPE)
+            .createdDate(MOCK_CASE_DETAILS_1.getCreatedDate())
+            .lastModified(MOCK_CASE_DETAILS_1.getLastModified())
+            .caseData(MOCK_CONVERTED_CAFCASSAPICASEDATA)
+            .build();
+
+        List<CafcassApiCase> actual = underTest.searchCaseByDateRange(SEARCH_START_DATE, SEARCH_END_DATE);
+        List<CafcassApiCase> expected = List.of(expectedCafcassApiCase1);
+
+        assertEquals(expected, actual);
     }
 }

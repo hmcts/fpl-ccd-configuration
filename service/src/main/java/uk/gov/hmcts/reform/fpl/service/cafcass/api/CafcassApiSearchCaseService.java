@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -33,6 +35,7 @@ public class CafcassApiSearchCaseService {
     private final CaseConverter caseConverter;
     private final SearchService searchService;
     private final List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters;
+    private final FeatureToggleService featureToggleService;
 
     public List<CafcassApiCase> searchCaseByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         final RangeQuery searchRange = RangeQuery.builder()
@@ -51,19 +54,25 @@ public class CafcassApiSearchCaseService {
 
         return caseDetails.stream()
             .map(this::convertToCafcassApiCase)
+            .filter(Objects::nonNull)
             .toList();
     }
 
     private CafcassApiCase convertToCafcassApiCase(CaseDetails caseDetails) {
-        return CafcassApiCase.builder()
-            .caseId(caseDetails.getId())
-            .jurisdiction(caseDetails.getJurisdiction())
-            .state(caseDetails.getState())
-            .caseTypeId(caseDetails.getCaseTypeId())
-            .createdDate(caseDetails.getCreatedDate())
-            .lastModified(caseDetails.getLastModified())
-            .caseData(getCafcassApiCaseData(caseConverter.convert(caseDetails)))
-            .build();
+        CaseData caseData = caseConverter.convert(caseDetails);
+        if (featureToggleService.isCafcassAPIEnabled(caseData.getCourt())) {
+            return CafcassApiCase.builder()
+                .caseId(caseDetails.getId())
+                .jurisdiction(caseDetails.getJurisdiction())
+                .state(caseDetails.getState())
+                .caseTypeId(caseDetails.getCaseTypeId())
+                .createdDate(caseDetails.getCreatedDate())
+                .lastModified(caseDetails.getLastModified())
+                .caseData(getCafcassApiCaseData(caseData))
+                .build();
+        } else {
+            return null;
+        }
     }
 
     private CafcassApiCaseData getCafcassApiCaseData(CaseData caseData) {
