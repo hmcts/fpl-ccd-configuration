@@ -90,7 +90,7 @@ public class CafcassNotificationService {
                           CafcassRequestEmailContentProvider provider,
                           CafcassData cafcassData) {
         if (featureToggleService.isCafcassAPIEnabled(caseData.getCourt())) {
-            log.info("For case id: {} Cafcass API is enabled, skip notifying Cafcass for: {} via SendGrid",
+            log.info("For case id: {} Cafcass API is enabled, skip notifying Cafcass for: {}",
                 caseData.getId(),
                 provider.name());
             return;
