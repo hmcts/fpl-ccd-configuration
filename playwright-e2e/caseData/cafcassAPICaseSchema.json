@@ -1,0 +1,1455 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+    "total",
+    "cases"
+  ],
+  "properties": {
+    "total": {
+      "type": "integer"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "caseId",
+          "jurisdiction",
+          "state",
+          "caseTypeId",
+          "createdDate",
+          "lastModified",
+          "lastStateModifiedDate",
+          "caseData"
+        ],
+        "properties": {
+          "caseId": {
+            "type": "number"
+          },
+          "jurisdiction": {
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "Submitted",
+              "Gatekeeping",
+              "GATEKEEPING_LISTING",
+              "PREPARE_FOR_HEARING",
+              "FINAL_HEARING",
+              "Closed"
+            ]
+          },
+          "caseTypeId": {
+            "type": "string"
+          },
+          "createdDate": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string"
+          },
+          "lastStateModifiedDate": {
+            "type": ["null","string"]
+          },
+          "caseData": {
+            "type": "object",
+            "required": [
+              "familyManCaseNumber",
+              "dateSubmitted",
+              "applicationType",
+              "ordersSought",
+              "dateOfCourtIssue",
+              "citizenIsApplicant",
+              "applicantLA",
+              "respondentLA",
+              "applicants",
+              "respondents",
+              "children",
+              "others",
+              "hearingDetails",
+              "internationalElement",
+              "previousProceedings",
+              "risks",
+              "factorsParenting",
+              "caseManagementLocation",
+              "caseDocuments"
+            ],
+            "properties": {
+              "familyManCaseNumber": {
+                "type": ["null","string"]
+              },
+              "dateSubmitted": {
+                "type": "string"
+              },
+              "applicationType": {
+                "enum": [
+                  "C110A",
+                  "C1"
+                ]
+              },
+              "ordersSought": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "CARE_ORDER",
+                    "INTERIM_CARE_ORDER",
+                    "SUPERVISION_ORDER",
+                    "INTERIM_SUPERVISION_ORDER",
+                    "EDUCATION_SUPERVISION_ORDER",
+                    "EMERGENCY_PROTECTION_ORDER",
+                    "OTHER",
+                    "CHILD_ASSESSMENT_ORDER",
+                    "SECURE_ACCOMMODATION_ORDER",
+                    "REFUSE_CONTACT_WITH_CHILD",
+                    "CONTACT_WITH_CHILD_IN_CARE",
+                    "CHILD_RECOVERY_ORDER"
+                  ]
+                }
+              },
+              "dateOfCourtIssue": {
+                "type": ["null","string"]
+              },
+              "citizenIsApplicant": {
+                "type": "boolean"
+              },
+              "applicantLA": {
+                "enum": [
+                  null,
+                  "SA",
+                  "CDF",
+                  "SCC",
+                  "PCC",
+                  "STF",
+                  "SN",
+                  "SNW",
+                  "RCC",
+                  "HN",
+                  "NLC",
+                  "NELC",
+                  "LCC",
+                  "KBC",
+                  "ERY",
+                  "RCT",
+                  "MTC",
+                  "NCC",
+                  "OCC",
+                  "FPLA",
+                  "DCC",
+                  "LEI",
+                  "LCO",
+                  "MKC",
+                  "DBC",
+                  "HCC",
+                  "SOT",
+                  "BSC",
+                  "BDB",
+                  "SOC",
+                  "CEB",
+                  "DER",
+                  "LAN",
+                  "LIC",
+                  "TAM",
+                  "MWC",
+                  "WMD",
+                  "NGC",
+                  "NHC",
+                  "DSC",
+                  "WSC",
+                  "HFC",
+                  "OLC",
+                  "STC",
+                  "DMC",
+                  "CCC",
+                  "WCC",
+                  "BCP",
+                  "MDB",
+                  "BIR",
+                  "SOL",
+                  "STO",
+                  "CER",
+                  "COR",
+                  "WOL",
+                  "SMC",
+                  "TWB",
+                  "SHR",
+                  "WAL",
+                  "BCC",
+                  "CMB",
+                  "LBM",
+                  "BOL",
+                  "HBC",
+                  "WIR",
+                  "GTE",
+                  "YCC",
+                  "BHC",
+                  "TBC",
+                  "DEV",
+                  "PEM",
+                  "BNS",
+                  "GCC",
+                  "NSC",
+                  "LBC",
+                  "NYS",
+                  "WIC",
+                  "PET",
+                  "SGL",
+                  "HAM",
+                  "VOG",
+                  "NPT",
+                  "CAR",
+                  "GSCC",
+                  "LBTH",
+                  "BRD",
+                  "SUF",
+                  "WRX",
+                  "NFK",
+                  "NWT",
+                  "SHF",
+                  "ROT",
+                  "DON",
+                  "BAR",
+                  "IOA",
+                  "KECH",
+                  "WMS",
+                  "DEN",
+                  "CWC",
+                  "BRE",
+                  "CPY",
+                  "WAR",
+                  "BGW",
+                  "NHB",
+                  "STH",
+                  "MON",
+                  "DOR",
+                  "BRO",
+                  "KKL",
+                  "LEE",
+                  "BED",
+                  "GWY",
+                  "FCC",
+                  "CON",
+                  "SBC",
+                  "HRW",
+                  "HPL",
+                  "CBF",
+                  "SWK",
+                  "HUL",
+                  "BLA",
+                  "NTY",
+                  "KEN",
+                  "MCC",
+                  "CAM",
+                  "POW",
+                  "SUN",
+                  "IOW",
+                  "BFO",
+                  "WBC",
+                  "SCF",
+                  "WIM",
+                  "WOK",
+                  "TCBC",
+                  "STY",
+                  "KGN",
+                  "RMD",
+                  "SUT",
+                  "WAD",
+                  "GRW",
+                  "TOR",
+                  "PLY",
+                  "BRA",
+                  "CAL",
+                  "RBC",
+                  "SAL",
+                  "ESX",
+                  "HAF",
+                  "REC",
+                  "NTHW",
+                  "NTHN",
+                  "LAM",
+                  "ISL",
+                  "CDN",
+                  "LEW",
+                  "BNT",
+                  "HLW",
+                  "WSX",
+                  "BAD",
+                  "ENF",
+                  "WAF",
+                  "CRY",
+                  "RED",
+                  "HAR",
+                  "EAL",
+                  "BEX",
+                  "BUR",
+                  "THK",
+                  "ESS",
+                  "HAC",
+                  "COL",
+                  "HAV",
+                  "NEW",
+                  "RTL",
+                  "WMF",
+                  "SOS"
+                ]
+              },
+              "respondentLA": {
+                "enum": [
+                  null,
+                  "SA",
+                  "CDF",
+                  "SCC",
+                  "PCC",
+                  "STF",
+                  "SN",
+                  "SNW",
+                  "RCC",
+                  "HN",
+                  "NLC",
+                  "NELC",
+                  "LCC",
+                  "KBC",
+                  "ERY",
+                  "RCT",
+                  "MTC",
+                  "NCC",
+                  "OCC",
+                  "FPLA",
+                  "DCC",
+                  "LEI",
+                  "LCO",
+                  "MKC",
+                  "DBC",
+                  "HCC",
+                  "SOT",
+                  "BSC",
+                  "BDB",
+                  "SOC",
+                  "CEB",
+                  "DER",
+                  "LAN",
+                  "LIC",
+                  "TAM",
+                  "MWC",
+                  "WMD",
+                  "NGC",
+                  "NHC",
+                  "DSC",
+                  "WSC",
+                  "HFC",
+                  "OLC",
+                  "STC",
+                  "DMC",
+                  "CCC",
+                  "WCC",
+                  "BCP",
+                  "MDB",
+                  "BIR",
+                  "SOL",
+                  "STO",
+                  "CER",
+                  "COR",
+                  "WOL",
+                  "SMC",
+                  "TWB",
+                  "SHR",
+                  "WAL",
+                  "BCC",
+                  "CMB",
+                  "LBM",
+                  "BOL",
+                  "HBC",
+                  "WIR",
+                  "GTE",
+                  "YCC",
+                  "BHC",
+                  "TBC",
+                  "DEV",
+                  "PEM",
+                  "BNS",
+                  "GCC",
+                  "NSC",
+                  "LBC",
+                  "NYS",
+                  "WIC",
+                  "PET",
+                  "SGL",
+                  "HAM",
+                  "VOG",
+                  "NPT",
+                  "CAR",
+                  "GSCC",
+                  "LBTH",
+                  "BRD",
+                  "SUF",
+                  "WRX",
+                  "NFK",
+                  "NWT",
+                  "SHF",
+                  "ROT",
+                  "DON",
+                  "BAR",
+                  "IOA",
+                  "KECH",
+                  "WMS",
+                  "DEN",
+                  "CWC",
+                  "BRE",
+                  "CPY",
+                  "WAR",
+                  "BGW",
+                  "NHB",
+                  "STH",
+                  "MON",
+                  "DOR",
+                  "BRO",
+                  "KKL",
+                  "LEE",
+                  "BED",
+                  "GWY",
+                  "FCC",
+                  "CON",
+                  "SBC",
+                  "HRW",
+                  "HPL",
+                  "CBF",
+                  "SWK",
+                  "HUL",
+                  "BLA",
+                  "NTY",
+                  "KEN",
+                  "MCC",
+                  "CAM",
+                  "POW",
+                  "SUN",
+                  "IOW",
+                  "BFO",
+                  "WBC",
+                  "SCF",
+                  "WIM",
+                  "WOK",
+                  "TCBC",
+                  "STY",
+                  "KGN",
+                  "RMD",
+                  "SUT",
+                  "WAD",
+                  "GRW",
+                  "TOR",
+                  "PLY",
+                  "BRA",
+                  "CAL",
+                  "RBC",
+                  "SAL",
+                  "ESX",
+                  "HAF",
+                  "REC",
+                  "NTHW",
+                  "NTHN",
+                  "LAM",
+                  "ISL",
+                  "CDN",
+                  "LEW",
+                  "BNT",
+                  "HLW",
+                  "WSX",
+                  "BAD",
+                  "ENF",
+                  "WAF",
+                  "CRY",
+                  "RED",
+                  "HAR",
+                  "EAL",
+                  "BEX",
+                  "BUR",
+                  "THK",
+                  "ESS",
+                  "HAC",
+                  "COL",
+                  "HAV",
+                  "NEW",
+                  "RTL",
+                  "WMF",
+                  "SOS"
+                ]
+              },
+              "applicants": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "phone",
+                    "address",
+                    "colleagues",
+                    "designated"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "address": {
+                      "type": "object",
+                      "required": [
+                        "addressLine1",
+                        "addressLine2",
+                        "addressLine3",
+                        "postTown",
+                        "county",
+                        "postcode",
+                        "country"
+                      ],
+                      "properties": {
+                        "addressLine1": {
+                          "type": ["null","string"]
+                        },
+                        "addressLine2": {
+                          "type": ["null","string"]
+                        },
+                        "addressLine3": {
+                          "type": ["null","string"]
+                        },
+                        "postTown": {
+                          "type": ["null","string"]
+                        },
+                        "county": {
+                          "type": ["null","string"]
+                        },
+                        "postcode": {
+                          "type": ["null","string"]
+                        },
+                        "country": {
+                          "type": ["null","string"]
+                        }
+                      }
+                    },
+                    "colleagues": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "role",
+                          "title",
+                          "email",
+                          "phone",
+                          "fullName",
+                          "mainContact",
+                          "notificationRecipient"
+                        ],
+                        "properties": {
+                          "role": {
+                            "type": "string",
+                            "enum": [
+                              "SOLICITOR",
+                              "SOCIAL_WORKER",
+                              "OTHER"
+                            ]
+                          },
+                          "title": {
+                            "type": [
+                              "null",
+                              "string"
+                            ]
+                          },
+                          "email": {
+                            "type": ["null","string"]
+                          },
+                          "phone": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "fullName": {
+                            "type": "string"
+                          },
+                          "mainContact": {
+                            "type": "boolean"
+                          },
+                          "notificationRecipient": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "designated": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              "respondents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "firstName",
+                    "lastName",
+                    "gender",
+                    "genderIdentification",
+                    "addressKnown",
+                    "addressUnknownReason",
+                    "address",
+                    "dateOfBirth",
+                    "telephoneNumber",
+                    "litigationIssues",
+                    "litigationIssuesDetails",
+                    "contactDetailsHidden",
+                    "contactDetailsHiddenReason",
+                    "relationshipToChild",
+                    "solicitor"
+                  ],
+                  "properties": {
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    },
+                    "gender": {
+                      "enum": [
+                        "Male",
+                        "Female",
+                        "Other",
+                        null
+                      ]
+                    },
+                    "genderIdentification": {
+                      "type": ["null","string"]
+                    },
+                    "addressKnown": {
+                      "type": "boolean"
+                    },
+                    "addressUnknownReason": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "address": {
+                      "type": "object",
+                      "required": [
+                        "addressLine1",
+                        "addressLine2",
+                        "addressLine3",
+                        "postTown",
+                        "county",
+                        "postcode",
+                        "country"
+                      ],
+                      "properties": {
+                        "addressLine1": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "addressLine2": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "addressLine3": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "postTown": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "county": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "postcode": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "country": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "dateOfBirth": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "telephoneNumber": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "litigationIssues": {
+                      "enum": [
+                        "YES",
+                        "NO",
+                        "DONT_KNOW",
+                        null
+                      ]
+                    },
+                    "litigationIssuesDetails": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "contactDetailsHidden": {
+                      "type": "boolean"
+                    },
+                    "contactDetailsHiddenReason": {
+                      "type": ["null","string"]
+                    },
+                    "relationshipToChild": {
+                      "type": ["null","string"]
+                    },
+                    "solicitor": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "organisationId",
+                        "organisationName"
+                      ],
+                      "properties": {
+                        "email": {
+                          "type": "string"
+                        },
+                        "firstName": {
+                          "type": "string"
+                        },
+                        "lastName": {
+                          "type": "string"
+                        },
+                        "organisationId": {
+                          "type": "string"
+                        },
+                        "organisationName": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "firstName",
+                    "lastName",
+                    "dateOfBirth",
+                    "gender",
+                    "genderIdentification",
+                    "livingSituation",
+                    "livingSituationDetails",
+                    "address",
+                    "careAndContactPlan",
+                    "detailsHidden",
+                    "socialWorkerName",
+                    "socialWorkerTelephoneNumber",
+                    "additionalNeeds",
+                    "additionalNeedsDetails",
+                    "litigationIssues",
+                    "litigationIssuesDetails",
+                    "solicitor",
+                    "fathersResponsibility"
+                  ],
+                  "properties": {
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    },
+                    "dateOfBirth": {
+                      "type": "string"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": [
+                        "GIRL",
+                        "BOY",
+                        "OTHER"
+                      ]
+                    },
+                    "genderIdentification": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "livingSituation": {
+                      "enum": [
+                        "Living with respondents",
+                        "Living with other family or friends",
+                        "Removed by Police, powers ending soon",
+                        "Voluntarily in section 20 care order",
+                        "In hospital and soon to be discharged",
+                        "Other",
+                        null
+                      ]
+                    },
+                    "livingSituationDetails": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "address": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "addressLine1",
+                        "addressLine2",
+                        "addressLine3",
+                        "postTown",
+                        "county",
+                        "postcode",
+                        "country"
+                      ],
+                      "properties": {
+                        "addressLine1": {
+                          "type": ["null","string"]
+                        },
+                        "addressLine2": {
+                          "type": ["null","string"]
+                        },
+                        "addressLine3": {
+                          "type": ["null","string"]
+                        },
+                        "postTown": {
+                          "type": ["null","string"]
+                        },
+                        "county": {
+                          "type": ["null","string"]
+                        },
+                        "postcode": {
+                          "type": ["null","string"]
+                        },
+                        "country": {
+                          "type": ["null","string"]
+                        }
+                      }
+                    },
+                    "careAndContactPlan": {
+                      "type": ["null","string"]
+                    },
+                    "detailsHidden": {
+                      "type": "boolean"
+                    },
+                    "socialWorkerName": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "socialWorkerTelephoneNumber": {
+                      "type": ["null","string"]
+                    },
+                    "additionalNeeds": {
+                      "type": "boolean"
+                    },
+                    "additionalNeedsDetails": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "litigationIssues": {
+                      "enum": [
+                        "YES",
+                        "NO",
+                        "DONT_KNOW",
+                        null
+                      ]
+                    },
+                    "litigationIssuesDetails": {
+                      "type": ["null","string"]
+                    },
+                    "solicitor": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "organisationId",
+                        "organisationName"
+                      ],
+                      "properties": {
+                        "email": {
+                          "type": "string"
+                        },
+                        "firstName": {
+                          "type": "string"
+                        },
+                        "lastName": {
+                          "type": "string"
+                        },
+                        "organisationName": {
+                          "type": "string"
+                        },
+                        "organisationId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "fathersResponsibility": {
+                      "enum": [
+                        "Yes",
+                        "No",
+                        "Don't know",
+                        null
+                      ]
+                    }
+                  }
+                }
+              },
+              "others": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "dateOfBirth",
+                    "gender",
+                    "genderIdentification",
+                    "birthPlace",
+                    "addressKnown",
+                    "addressUnknownReason",
+                    "address",
+                    "telephone",
+                    "litigationIssues",
+                    "litigationIssuesDetails",
+                    "detailsHidden",
+                    "detailsHiddenReason"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "dateOfBirth": {
+                      "type": "string"
+                    },
+                    "gender": {
+                      "type": "string"
+                    },
+                    "genderIdentification": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "birthPlace": {
+                      "type": "string"
+                    },
+                    "addressKnown": {
+                      "type": "boolean"
+                    },
+                    "addressUnknownReason": {
+                      "type": "string",
+                      "enum": [
+                        "No fixed abode",
+                        "Person deceased"
+                      ]
+                    },
+                    "address": {
+                      "type": "object",
+                      "required": [
+                        "addressLine1",
+                        "addressLine2",
+                        "addressLine3",
+                        "postTown",
+                        "county",
+                        "postcode",
+                        "country"
+                      ],
+                      "properties": {
+                        "addressLine1": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "addressLine2": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "addressLine3": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "postTown": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "county": {
+                          "type": "null"
+                        },
+                        "postcode": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        },
+                        "country": {
+                          "type": [
+                            "null",
+                            "string"
+                          ]
+                        }
+                      }
+                    },
+                    "telephone": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "litigationIssues": {
+                      "enum": [
+                        "YES",
+                        "NO",
+                        "DONT_KNOW"
+                      ]
+                    },
+                    "litigationIssuesDetails": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "detailsHidden": {
+                      "type": "boolean"
+                    },
+                    "detailsHiddenReason": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              },
+              "hearingDetails": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "type",
+                    "typeDetails",
+                    "venue",
+                    "status",
+                    "startDate",
+                    "endDate",
+                    "attendance",
+                    "cancellationReason",
+                    "preAttendanceDetails",
+                    "attendanceDetails"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "EMERGENCY_PROTECTION_ORDER",
+                        "FACT_FINDING",
+                        "CASE_MANAGEMENT",
+                        "FURTHER_CASE_MANAGEMENT",
+                        "ISSUE_RESOLUTION",
+                        "FINAL",
+                        "JUDGMENT_AFTER_HEARING",
+                        "INTERIM_CARE_ORDER",
+                        "ACCELERATED_DISCHARGE_OF_CARE",
+                        "FAMILY_DRUG_ALCOHOL_COURT",
+                        "PLACEMENT_HEARING",
+                        "OTHER"
+                      ]
+                    },
+                    "typeDetails": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "venue": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "ADJOURNED",
+                        "ADJOURNED_AND_RE_LISTED",
+                        "ADJOURNED_TO_BE_RE_LISTED",
+                        "VACATED",
+                        "VACATED_AND_RE_LISTED",
+                        "VACATED_TO_BE_RE_LISTED"
+                      ]
+                    },
+                    "startDate": {
+                      "type": "string"
+                    },
+                    "endDate": {
+                      "type": "string"
+                    },
+                    "attendance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "IN_PERSON",
+                          "PHONE",
+                          "VIDEO"
+                        ]
+                      }
+                    },
+                    "cancellationReason": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "CAFCASS not allocated/present",
+                        "No/poor CAFCASS analysis",
+                        "Late expert report/assessment/ Poor expert report/assessment",
+                        "New expert report/assessment required following a change in circumstances",
+                        "No/poor medical records etc from other agency",
+                        "Police disclosure/documents incomplete/not available",
+                        "No courtroom available",
+                        "No special measures",
+                        "Interpreter not available",
+                        "Lack of judicial continuity",
+                        "Insufficient time listed or to complete hearing",
+                        "Lawyers not instructed, present or ready, party or witness fail to attend",
+                        "No key issue analysis",
+                        "No/poor parental evidence",
+                        "Official Solicitor not instructed/ready",
+                        "Prior authority from LSC not available",
+                        "Other legal aid",
+                        "No/poor pre-proceedings preparation by LA, other than (core) social work assessment of the family",
+                        "No friends/family identified before the hearing by LA",
+                        "No/poor kinship assessments by LA",
+                        "No expert instructed by LA",
+                        "No/poor/late (core) social work assessment of the family by LA",
+                        "New social work report/assessment required following a change in circumstances",
+                        "No timetable for the child",
+                        "New/alternative care plan",
+                        "Placement order proceedings delay",
+                        "No/poor placement evidence by LA",
+                        "No threshold document",
+                        "Case transferred",
+                        "Need for an interim contested hearing",
+                        "Other non compliance with directions",
+                        "Consolidation with other family proceedings",
+                        "Parallel proceedings",
+                        "New baby/pregnancy",
+                        "New Party joined",
+                        "Immigration and international difficulties",
+                        "Severe weather",
+                        "Industrial action",
+                        "Covid 19"
+                      ]
+                    },
+                    "preAttendanceDetails": {
+                      "type": "string"
+                    },
+                    "attendanceDetails": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "internationalElement": {
+                "type": "object",
+                "required": [
+                  "possibleCarer",
+                  "possibleCarerReason",
+                  "significantEvents",
+                  "significantEventsReason",
+                  "issues",
+                  "issuesReason",
+                  "proceedings",
+                  "proceedingsReason",
+                  "internationalAuthorityInvolvement",
+                  "internationalAuthorityInvolvementDetails"
+                ],
+                "properties": {
+                  "possibleCarer": {
+                    "type": "boolean"
+                  },
+                  "possibleCarerReason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "significantEvents": {
+                    "type": "boolean"
+                  },
+                  "significantEventsReason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "issues": {
+                    "type": "boolean"
+                  },
+                  "issuesReason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "proceedings": {
+                    "type": "boolean"
+                  },
+                  "proceedingsReason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "internationalAuthorityInvolvement": {
+                    "type": "boolean"
+                  },
+                  "internationalAuthorityInvolvementDetails": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "previousProceedings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "proceedingStatus",
+                    "caseNumber",
+                    "started",
+                    "ended",
+                    "ordersMade",
+                    "judge",
+                    "children",
+                    "guardian",
+                    "sameGuardianNeeded",
+                    "sameGuardianDetails"
+                  ],
+                  "properties": {
+                    "proceedingStatus": {
+                      "type": "string",
+                      "enum": [
+                        "Ongoing",
+                        "Previous"
+                      ]
+                    },
+                    "caseNumber": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "started": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "ended": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "ordersMade": {
+                      "type": [
+                        "null",
+                        "string"
+                      ]
+                    },
+                    "judge": {
+                      "type": ["null","string"]
+                    },
+                    "children": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "guardian": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sameGuardianNeeded": {
+                      "type": "boolean"
+                    },
+                    "sameGuardianDetails": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              },
+              "risks": {
+                "type": "object",
+                "required": [
+                  "neglectOccurrences",
+                  "sexualAbuseOccurrences",
+                  "physicalHarmOccurrences",
+                  "emotionalHarmOccurrences"
+                ],
+                "properties": {
+                  "neglectOccurrences": {
+                    "type": ["null","array"],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sexualAbuseOccurrences": {
+                    "type": ["null","array"],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "physicalHarmOccurrences": {
+                    "type": ["null","array"],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "emotionalHarmOccurrences": {
+                    "type": ["null","array"],
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "factorsParenting": {
+                "type": "object",
+                "required": [
+                  "alcoholDrugAbuse",
+                  "alcoholDrugAbuseReason",
+                  "domesticViolence",
+                  "domesticViolenceReason",
+                  "anythingElse",
+                  "anythingElseReason"
+                ],
+                "properties": {
+                  "alcoholDrugAbuse": {
+                    "type": "boolean"
+                  },
+                  "alcoholDrugAbuseReason": {
+                    "type": ["null","string"]
+                  },
+                  "domesticViolence": {
+                    "type": "boolean"
+                  },
+                  "domesticViolenceReason": {
+                    "type": ["null","string"]
+                  },
+                  "anythingElse": {
+                    "type": "boolean"
+                  },
+                  "anythingElseReason": {
+                    "type": ["null","string"]
+                  }
+                }
+              },
+              "caseManagementLocation": {
+                "type": "object",
+                "required": [
+                  "region",
+                  "baseLocation"
+                ],
+                "properties": {
+                  "region": {
+                    "type": "string"
+                  },
+                  "baseLocation": {
+                    "type": "string"
+                  }
+                }
+              },
+              "caseDocuments": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "removed",
+                    "documentCategory",
+                    "documentId",
+                    "document_filename"
+                  ],
+                  "properties": {
+                    "removed": {
+                      "type": "boolean"
+                    },
+                    "documentCategory": {
+                      "type": "string"
+                    },
+                    "documentId": {
+                      "type": "string"
+                    },
+                    "document_filename": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

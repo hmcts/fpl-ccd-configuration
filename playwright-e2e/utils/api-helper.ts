@@ -106,3 +106,34 @@ export const giveAccessToCase = async (caseID: string,user: {email: string ,pass
 
 }
 
+export const cafcassAPICaseSearch = async(request,accessToken:string,startTime: string, endTime:string)=>{
+
+    let response= await request.get(urlConfig.cafcassAPISearch,
+        {headers:{
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+            ,params:{
+                'startDate': `${startTime}`,
+                'endDate':`${endTime}`
+            }
+        })
+    return response;
+}
+
+export const cafcassAPIDocSearch = async(request,accessToken:string)=>{
+
+    let response= await request.get(urlConfig.cafcassAPISearch+ '//documents//' ,
+        {headers:{
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+                '':''
+            }
+            ,params:{
+                'startDate': `${startTime}`,
+                'endDate':`${endTime}`
+            }
+        })
+    return response;
+}
+
