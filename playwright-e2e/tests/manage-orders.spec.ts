@@ -65,7 +65,7 @@ test.describe('manage orders', () => {
             });
     })
 
-    test('@test Amend order under slip rule', async ({signInPage, orders}) => {
+    test('Amend order under slip rule', async ({signInPage, orders}) => {
         caseName = 'Amend EPO order ' + dateTime.slice(0, 10);
         await updateCase(caseName, caseNumber, caseWithOrderData);
         await signInPage.visit();
