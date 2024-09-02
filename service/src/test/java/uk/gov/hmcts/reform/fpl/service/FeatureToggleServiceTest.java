@@ -167,18 +167,6 @@ class FeatureToggleServiceTest {
             eq(true));
     }
 
-    private static List<UserAttribute> buildAttributes(String... additionalAttributes) {
-        List<UserAttribute> attributes = new ArrayList<>();
-
-        attributes.add(UserAttribute.forName("timestamp"));
-        attributes.add(UserAttribute.forName("environment"));
-        Arrays.stream(additionalAttributes)
-            .map(UserAttribute::forName)
-            .forEach(attributes::add);
-
-        return attributes;
-    }
-
     private void givenToggle(boolean state) {
         when(ldClient.boolVariation(anyString(), any(), anyBoolean())).thenReturn(state);
     }
