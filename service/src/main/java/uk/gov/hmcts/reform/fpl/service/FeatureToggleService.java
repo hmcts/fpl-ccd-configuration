@@ -89,7 +89,7 @@ public class FeatureToggleService {
     }
 
     public String getUserIdsToRemoveRolesFrom() {
-        return ldClient.stringVariation("migrate-user-roles", createLDUser(), "");
+        return ldClient.stringVariation("migrate-user-roles", createLDContext(), "");
     }
 
     public boolean isElinksEnabled() {
@@ -98,11 +98,7 @@ public class FeatureToggleService {
 
     public boolean isCourtNotificationEnabledForWa(Court court) {
         return ldClient.boolVariation("wa-test-court-notification",
-            createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
-    }
-
-    private LDUser createLDUser() {
-        return createLDUser(Map.of());
+            createLDContext(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
     }
 
     private LDContext createLDContext() {
