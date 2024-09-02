@@ -536,7 +536,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public SealType getSealType() {
-        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+        return isWelshLanguageRequested() ? SealType.WELSH : SealType.ENGLISH;
     }
 
     @JsonIgnore
@@ -765,6 +765,13 @@ public class CaseData extends CaseDataParent {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public Optional<HearingBooking> getLastHearingBefore(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isBefore(time))
+            .max(comparing(HearingBooking::getStartDate));
     }
 
     @JsonIgnore

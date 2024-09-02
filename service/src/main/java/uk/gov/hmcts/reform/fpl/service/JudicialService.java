@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.rd.JudicialUsersConfiguration;
 import uk.gov.hmcts.reform.fpl.config.rd.LegalAdviserUsersConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -143,8 +144,8 @@ public class JudicialService {
      * @param userId   the user to assign hearing-judge to
      * @param starting the time to start the new role at, and the old roles to END at (- HEARING_EXPIRY_OFFSET_MINS)
      */
-    public void assignHearingJudge(Long caseId, String userId, ZonedDateTime starting, ZonedDateTime ending,
-                                   boolean isLegalAdviser) {
+    private void assignHearingJudgeRole(Long caseId, String userId, ZonedDateTime starting, ZonedDateTime ending,
+                                       boolean isLegalAdviser) {
         setExistingHearingJudgesAndLegalAdvisersToExpire(caseId, starting.minusMinutes(HEARING_EXPIRY_OFFSET_MINS));
 
         if (isLegalAdviser) {
@@ -153,6 +154,40 @@ public class JudicialService {
         } else {
             roleAssignmentService.assignJudgesRole(caseId, List.of(userId), HEARING_JUDGE, starting, ending);
         }
+    }
+
+    public void assignHearingJudge(Long caseId, HearingBooking hearing, Optional<HearingBooking> nextHearing,
+                                   boolean startNow) {
+        Optional<String> judgeId = getJudgeIdFromHearing(hearing);
+        ZonedDateTime possibleEndDate = nextHearing.map(HearingBooking::getStartDate)
+            .map(ld -> ld.atZone(ZoneId.systemDefault()))
+            .orElse(null);
+
+        judgeId.ifPresentOrElse(s -> assignHearingJudgeRole(caseId,
+                s,
+                startNow ? ZonedDateTime.now() : hearing.getStartDate().atZone(ZoneId.systemDefault()),
+                possibleEndDate,
+                JudgeOrMagistrateTitle.LEGAL_ADVISOR.equals(hearing.getJudgeAndLegalAdvisor().getJudgeTitle())),
+            () -> log.error("No judge details on hearing starting at {} on case {} to assign roles to",
+                hearing.getStartDate(), caseId));
+    }
+
+    public Optional<String> getJudgeIdFromHearing(HearingBooking booking) {
+        if (isEmpty(booking)
+            || isEmpty(booking.getJudgeAndLegalAdvisor())
+            || isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser())) {
+            return Optional.empty();
+        }
+
+        if (!isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId())) {
+            return Optional.of(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getIdamId());
+        }
+
+        if (!isEmpty(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getPersonalCode())) {
+            return this.getJudge(booking.getJudgeAndLegalAdvisor().getJudgeJudicialUser().getPersonalCode())
+                .map(JudicialUserProfile::getSidamId);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -420,7 +455,7 @@ public class JudicialService {
                     .build();
             } else {
                 return List.of("No Judge could be found, please retry your search or enter their"
-                        + " details manually.");
+                    + " details manually.");
             }
         } else {
             // entered the judge manually - lookup in our mappings and add UUID manually
