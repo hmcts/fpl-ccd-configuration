@@ -7,6 +7,7 @@ import com.launchdarkly.sdk.server.LDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.Court;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class FeatureToggleService {
     private final String environment;
 
     private static final String LOCAL_AUTHORITY_NAME_KEY = "localAuthorityName";
+    private static final String COURT_CODE_KEY = "courtCode";
 
     @Autowired
     public FeatureToggleService(LDClient ldClient, @Value("${ld.user_key}") String ldUserKey,
@@ -86,8 +88,21 @@ public class FeatureToggleService {
         return ldClient.boolVariation("secure-docstore-enabled", createLDContext(), false);
     }
 
+    public String getUserIdsToRemoveRolesFrom() {
+        return ldClient.stringVariation("migrate-user-roles", createLDUser(), "");
+    }
+
     public boolean isElinksEnabled() {
         return ldClient.boolVariation("elinks-enabled", createLDContext(), false);
+    }
+
+    public boolean isCourtNotificationEnabledForWa(Court court) {
+        return ldClient.boolVariation("wa-test-court-notification",
+            createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
+    }
+
+    private LDUser createLDUser() {
+        return createLDUser(Map.of());
     }
 
     private LDContext createLDContext() {

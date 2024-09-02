@@ -541,6 +541,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submissionDeclaration",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsentLabel",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
@@ -1346,13 +1353,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "UserRole": "[LAMANAGING]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respStmtList",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
@@ -1459,6 +1459,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2Type",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isC2Confidential",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
   },
@@ -2096,6 +2103,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryApplicationDocuments",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderNeedsReviewUploaded",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderUrgency",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRUD"
   }

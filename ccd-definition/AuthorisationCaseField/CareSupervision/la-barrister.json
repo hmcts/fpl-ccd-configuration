@@ -233,6 +233,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submissionDeclaration",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "submissionConsentLabel",
     "UserRole": "[LABARRISTER]",
     "CRUD": "R"
@@ -451,13 +458,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "displayAmountToPay",
-    "UserRole": "[LABARRISTER]",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "[LABARRISTER]",
     "CRUD": "CRUD"
   },
@@ -934,6 +934,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2Type",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isC2Confidential",
     "UserRole": "[LABARRISTER]",
     "CRUD": "CRU"
   },
@@ -1489,5 +1496,19 @@
     "CaseFieldID": "previousProceedingListLA",
     "UserRole": "[LABARRISTER]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderNeedsReviewUploaded",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "draftOrderUrgency",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "CRUD"
   }
 ]
