@@ -157,7 +157,7 @@ class CafcassNotificationServiceTest {
                 entry("newApplication", "APPLICATION")
 
             ));
-        when(featureToggleService.isCafcassAPIEnabled(any())).thenReturn(false);
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(false);
     }
 
     @ParameterizedTest
@@ -766,7 +766,7 @@ class CafcassNotificationServiceTest {
 
     @Test
     void shouldNotNotifyIfAPIEnabled() {
-        when(featureToggleService.isCafcassAPIEnabled(any())).thenReturn(true);
+        when(featureToggleService.isCafcassAPIEnabledForCourt(any())).thenReturn(true);
 
         underTest.sendEmail(caseData,
             of(getDocumentReference()),

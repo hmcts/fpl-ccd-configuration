@@ -89,7 +89,7 @@ public class CafcassNotificationService {
                           Set<DocumentReference> documentReferences,
                           CafcassRequestEmailContentProvider provider,
                           CafcassData cafcassData) {
-        if (featureToggleService.isCafcassAPIEnabled(caseData.getCourt())) {
+        if (featureToggleService.isCafcassAPIEnabledForCourt(caseData.getCourt())) {
             log.info("For case id: {} Cafcass API is enabled, skip notifying Cafcass for: {}",
                 caseData.getId(),
                 provider.name());

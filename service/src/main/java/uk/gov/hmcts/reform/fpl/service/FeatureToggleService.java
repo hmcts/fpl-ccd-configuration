@@ -7,8 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Court;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
 
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Service
 public class FeatureToggleService {
@@ -100,9 +105,31 @@ public class FeatureToggleService {
             createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
     }
 
-    public boolean isCafcassAPIEnabled(Court court) {
-        return ldClient.boolVariation("cafcass-api-court",
-            createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
+    public boolean isCafcassAPIEnabledForCourt(Court court) {
+        CafcassApiFeatureFlag flag = getCafcassAPIFlag();
+
+        if (flag.isEnableApi()) {
+            if (isEmpty(flag.getWhitelist())) {
+                return true;
+            } else {
+                return flag.getWhitelist().stream()
+                    .anyMatch(whiteListCode -> court.getCode().equalsIgnoreCase(whiteListCode));
+            }
+        }
+        return false;
+    }
+
+    public CafcassApiFeatureFlag getCafcassAPIFlag() {
+        LDValue flag = ldClient.jsonValueVariation("cafcass-api-court", createLDUser(), LDValue.ofNull());
+
+        LDValue whiteList = flag.get("whitelist");
+        return CafcassApiFeatureFlag.builder()
+            .enableApi(flag.get("enableApi").booleanValue())
+            .whitelist((!whiteList.isNull())
+                ? StreamSupport.stream(whiteList.valuesAs(LDValue.Convert.String).spliterator(), false)
+                    .collect(Collectors.toList())
+                : null)
+            .build();
     }
 
     private LDUser createLDUser() {
