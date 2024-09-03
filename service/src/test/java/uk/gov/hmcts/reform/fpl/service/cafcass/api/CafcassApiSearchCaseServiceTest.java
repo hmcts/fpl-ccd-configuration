@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -193,8 +194,7 @@ public class CafcassApiSearchCaseServiceTest {
                 .build())
             .must(Must.builder()
                 .clauses(List.of(
-                    MatchQuery.of("court.code", "123"),
-                    MatchQuery.of("court.code", "321")))
+                    TermsQuery.of("data.court.code", List.of("123", "321"))))
                 .build())
             .build();
 

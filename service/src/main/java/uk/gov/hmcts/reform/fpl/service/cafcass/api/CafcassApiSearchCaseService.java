@@ -13,12 +13,12 @@ import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
-import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESClause;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,9 +58,7 @@ public class CafcassApiSearchCaseService {
 
             if (isNotEmpty(flag.getWhitelist())) {
                 searchCaseQuery.must(Must.builder()
-                    .clauses(flag.getWhitelist().stream()
-                        .map(courtCode -> (ESClause) MatchQuery.of("court.code", courtCode))
-                        .toList())
+                    .clauses(List.of(TermsQuery.of("data.court.code", flag.getWhitelist())))
                     .build());
             }
 
