@@ -141,11 +141,11 @@ public enum DocumentType {
         null,
         null, 180, null, "applications"),
     C1_APPLICATION_DOCUMENTS("└─ C1 application supporting documents", standardResolver("c1ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 190, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG, "c1AndOtherApplications"),
     C2_APPLICATION_DOCUMENTS("└─ C2 application supporting documents", standardResolver("c2ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 200, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG, "c2Applications"),
     AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
@@ -241,7 +241,7 @@ public enum DocumentType {
     private final String category;
 
     public boolean isUploadable() {
-        if (isHiddenFromSolicitorUpload() || isHiddenFromLAUpload() || isHiddenFromCTSCUpload()) {
+        if (isHiddenFromSolicitorUpload() && isHiddenFromLAUpload() && isHiddenFromCTSCUpload()) {
             return false;
         }
         return nonNull(baseFieldNameResolver) || PLACEMENT_RESPONSES == this;

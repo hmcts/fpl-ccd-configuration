@@ -769,6 +769,13 @@ public class CaseData extends CaseDataParent {
     }
 
     @JsonIgnore
+    public Optional<HearingBooking> getLastHearingBefore(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isBefore(time))
+            .max(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
     public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
         return getNextHearingAfter(time).orElseThrow(NoHearingBookingException::new);
     }
