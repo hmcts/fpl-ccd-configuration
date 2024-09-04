@@ -1528,6 +1528,174 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "adultPsychiatricReportParentsList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssessNonResList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssesResList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "haematologistList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "independentSocialWorkerList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "multiDisciplinaryAssessList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "neuroSurgeonList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ophthalmologistList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherExpertReportList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherMedicalReportList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricRadiologistList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDNATestingList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDrugAlcoholList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalHairStrandList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalOtherList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychiatricChildOnlyList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychChildParentAndCarersList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportOnChildOnlyClinicalList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportOnChildOnlyEdList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportOnParentAndChildList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFullCogList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFuncList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "toxicologyReportStatementList",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "expertReportListLA",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
@@ -1535,7 +1703,343 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "adultPsychReportParentsListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssessNonResListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssesResListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "haematologistListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "independentSocialWorkerListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "multiDisciplinaryAssessListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "neuroSurgeonListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ophthalmologistListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherExpertReportListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherMedicalReportListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricRadiologistListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDNATestingListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDrugAlcoholListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalHairStrandListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalOtherListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychiatricChildOnlyListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychChildParentAndCarersListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportChildOnlyClinicalListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportOnChildOnlyEdListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportOnParentAndChildListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFullCogListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFuncListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "toxicologyReportStatementListLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "expertReportListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "adultPsychReportParentsListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssessNonResListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyCentreAssesResCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "haematologistListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "independentSocialWorkerListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "multiDisciplinaryAssessListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "neuroSurgeonListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ophthalmologistListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherExpertReportListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "otherMedicalReportListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pediatricRadiologistListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDNATestingListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "profDrugAlcoholListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalHairStrandListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "professionalOtherListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychiatricChildOnlyListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychChildParentAndCarersListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportChildClinicalListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psycReportOnChildOnlyEdListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentAndChildListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFullCogListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "psychReportParentFuncListCTSC",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "toxicologyReportStatementListCTSC",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },

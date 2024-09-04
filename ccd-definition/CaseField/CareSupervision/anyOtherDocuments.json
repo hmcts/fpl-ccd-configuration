@@ -202,6 +202,966 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adultPsychiatricReportParentsList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdultPsychiatricReportOnParents",
+    "Label": "Adult Psychiatric Report On Parent(s)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adultPsychReportParentsListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdultPsychiatricReportOnParentsConfidential",
+    "Label": "Adult Psychiatric Report On Parent(s)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adultPsychReportParentsListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdultPsychiatricReportOnParentsConfidential",
+    "Label": "Adult Psychiatric Report On Parent(s)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "adultPsychRepParentsListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdultPsychiatricReportOnParents",
+    "Label": "Adult Psychiatric Report On Parent(s)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssessNonResList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentsNonResidential",
+    "Label": "Family Centre Assessments - Non-Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssessNonResListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentsNonResidentialConfidential",
+    "Label": "Family Centre Assessments - Non-Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssessNonResListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentsNonResidentialConfidential",
+    "Label": "Family Centre Assessments - Non-Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "famCentreAssessNonResListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentsNonResidential",
+    "Label": "Family Centre Assessments - Non-Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssesResList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentResidential",
+    "Label": "Family Centre Assessments - Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssesResListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentResidentialConfidential",
+    "Label": "Family Centre Assessments - Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssesResCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentResidentialConfidential",
+    "Label": "Family Centre Assessments - Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "familyCentreAssesResListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "FamilyCentreAssessmentResidential",
+    "Label": "Family Centre Assessments - Residential",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "haematologistList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Haematologist",
+    "Label": "Haematologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "haematologistListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HaematologistConfidential",
+    "Label": "Haematologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "haematologistListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HaematologistConfidential",
+    "Label": "Haematologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "haematologistListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Haematologist",
+    "Label": "Haematologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "independentSocialWorkerList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "IndependentSocialWorker",
+    "Label": "Independent Social Worker",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "independentSocialWorkerListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "IndependentSocialWorkerConfidential",
+    "Label": "Independent Social Worker",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "independentSocialWorkerListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "IndependentSocialWorkerConfidential",
+    "Label": "Independent Social Worker",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "indepSocialWorkerListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "IndependentSocialWorker",
+    "Label": "Independent Social Worker",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiDisciplinaryAssessList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MultiDisciplinaryAssessment",
+    "Label": "Multi Disciplinary Assessment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiDisciplinaryAssessListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MultiDisciplinaryAssessmentConfidential",
+    "Label": "Multi Disciplinary Assessment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiDisciplinaryAssessListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MultiDisciplinaryAssessmentConfidential",
+    "Label": "Multi Disciplinary Assessment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "multiDisciplinAssessListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "MultiDisciplinaryAssessment",
+    "Label": "Multi Disciplinary Assessment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "neuroSurgeonList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NeuroSurgeon",
+    "Label": "Neurosurgeon",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "neuroSurgeonListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NeuroSurgeonConfidential",
+    "Label": "Neurosurgeon",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "neuroSurgeonListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NeuroSurgeonConfidential",
+    "Label": "Neurosurgeon",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "neuroSurgeonListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "NeuroSurgeon",
+    "Label": "Neurosurgeon",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ophthalmologistList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Ophthalmologist",
+    "Label": "Ophthalmologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ophthalmologistListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OphthalmologistConfidential",
+    "Label": "Ophthalmologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ophthalmologistListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OphthalmologistConfidential",
+    "Label": "Ophthalmologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "ophthalmologistListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Ophthalmologist",
+    "Label": "Ophthalmologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherExpertReportList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherExpertReport",
+    "Label": "Other Expert Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherExpertReportListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherExpertReportConfidential",
+    "Label": "Other Expert Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherExpertReportListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherExpertReportConfidential",
+    "Label": "Other Expert Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherExpertReportListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherExpertReport",
+    "Label": "Other Expert Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherMedicalReportList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherMedicalReport",
+    "Label": "Other Medical Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherMedicalReportListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherMedicalReportConfidential",
+    "Label": "Other Medical Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherMedicalReportListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherMedicalReportConfidential",
+    "Label": "Other Medical Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherMedicalReportListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherMedicalReport",
+    "Label": "Other Medical Report",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Pediatric",
+    "Label": "Pediatric",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricConfidential",
+    "Label": "Pediatric",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricConfidential",
+    "Label": "Pediatric",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Pediatric",
+    "Label": "Pediatric",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricRadiologistList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricRadiologist",
+    "Label": "Pediatric Radiologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricRadiologistListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricRadiologistConfidential",
+    "Label": "Pediatric Radiologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricRadiologistListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricRadiologistConfidential",
+    "Label": "Pediatric Radiologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "pediatricRadiologistListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PediatricRadiologist",
+    "Label": "Pediatric Radiologist",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDNATestingList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDNATesting",
+    "Label": "Professional: DNA Testing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDNATestingListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDNATestingConfidential",
+    "Label": "Professional: DNA Testing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDNATestingListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDNATestingConfidential",
+    "Label": "Professional: DNA Testing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDNATestingListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDNATesting",
+    "Label": "Professional: DNA Testing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDrugAlcoholList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDrugAndAlcohol",
+    "Label": "Professional: Drug/Alcohol",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDrugAlcoholListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDrugAndAlcoholConfidential",
+    "Label": "Professional: Drug/Alcohol",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDrugAlcoholListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDrugAndAlcoholConfidential",
+    "Label": "Professional: Drug/Alcohol",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "profDrugAlcoholListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalDrugAndAlcohol",
+    "Label": "Professional: Drug/Alcohol",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalHairStrandList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalHairStrand",
+    "Label": "Professional: Hair Strand",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalHairStrandListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalHairStrandConfidential",
+    "Label": "Professional: Hair Strand",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalHairStrandListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalHairStrandConfidential",
+    "Label": "Professional: Hair Strand",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalHairStrandListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalHairStrand",
+    "Label": "Professional: Hair Strand",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalOtherList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalOther",
+    "Label": "Professional: Other",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalOtherListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalOtherConfidential",
+    "Label": "Professional: Other",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalOtherListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalOtherConfidential",
+    "Label": "Professional: Other",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "professionalOtherListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProfessionalOther",
+    "Label": "Professional: Other",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychiatricChildOnlyList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricChildOnly",
+    "Label": "Psychiatric - On child only",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychiatricChildOnlyListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricChildOnlyConfidential",
+    "Label": "Psychiatric - On child only",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychiatricChildOnlyListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricChildOnlyConfidential",
+    "Label": "Psychiatric - On child only",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychiatricChildOnlyListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricChildOnly",
+    "Label": "Psychiatric - On child only",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychChildParentAndCarersList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricOnChildAndParentCarers",
+    "Label": "Psychiatric - On child and Parent(s)/carers",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychChildParentAndCarersListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricOnChildAndParentCarersConfidential",
+    "Label": "Psychiatric - On child and Parent(s)/carers",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychChildParentAndCarersListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricOnChildAndParentCarersConfidential",
+    "Label": "Psychiatric - On child and Parent(s)/carers",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychChildParentCarersListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychiatricOnChildAndParentCarers",
+    "Label": "Psychiatric - On child and Parent(s)/carers",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportOnChildOnlyClinicalList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinical",
+    "Label": "Psychological Report on Child Only - Clinical",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportChildOnlyClinicalListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinicalConfidential",
+    "Label": "Psychological Report on Child Only - Clinical",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportChildClinicalListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinicalConfidential",
+    "Label": "Psychological Report on Child Only - Clinical",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportChildClinListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinical",
+    "Label": "Psychological Report on Child Only - Clinical",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportOnChildOnlyEdList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyEducational",
+    "Label": "Psychological Report on Child Only - Educational",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportOnChildOnlyEdListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyEducationalConfidential",
+    "Label": "Psychological Report on Child Only - Educational",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportOnChildOnlyEdListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyEducationalConfidential",
+    "Label": "Psychological Report on Child Only - Educational",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psycReportChildOnlyEdListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnChildOnlyEducational",
+    "Label": "Psychological Report on Child Only - Educational",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportOnParentAndChildList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentAndChild",
+    "Label": "Psychological Report on Parent(s) and child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportOnParentAndChildListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentAndChildConfidential",
+    "Label": "Psychological Report on Parent(s) and child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentAndChildListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentAndChildConfidential",
+    "Label": "Psychological Report on Parent(s) and child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentChildListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentAndChild",
+    "Label": "Psychological Report on Parent(s) and child",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFullCogList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFullCognitive",
+    "Label": "Psychological Report on Parent(s) - full cognitive",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFullCogListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFullCognitiveConfidential",
+    "Label": "Psychological Report on Parent(s) - full cognitive",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFullCogListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFullCognitiveConfidential",
+    "Label": "Psychological Report on Parent(s) - full cognitive",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychRepParentFullCogListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFullCognitive",
+    "Label": "Psychological Report on Parent(s) - full cognitive",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFuncList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFunctioning",
+    "Label": "Psychological Report on Parent(s) - functioning",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFuncListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFunctioningConfidential",
+    "Label": "Psychological Report on Parent(s) - functioning",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychReportParentFuncListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFunctioningConfidential",
+    "Label": "Psychological Report on Parent(s) - functioning",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "psychRepParentFuncListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PsychologicalReportOnParentFunctioning",
+    "Label": "Psychological Report on Parent(s) - functioning",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "toxicologyReportStatementList",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ToxicologyReportStatement",
+    "Label": "Toxicology report/statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "toxicologyReportStatementListLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ToxicologyReportStatementConfidential",
+    "Label": "Toxicology report/statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "toxicologyReportStatementListCTSC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ToxicologyReportStatementConfidential",
+    "Label": "Toxicology report/statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "toxicologyStatementListRemoved",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ToxicologyReportStatement",
+    "Label": "Toxicology report/statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "noticeOfActingOrIssueList",
     "FieldType": "Collection",
     "FieldTypeParameter": "NoticeOfActingOrIssue",
@@ -232,7 +1192,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "noticeOfActingOrIssueListRemoved",
+    "ID": "noticeOfActingListRemoved",
     "FieldType": "Collection",
     "FieldTypeParameter": "NoticeOfActingOrIssue",
     "Label": "Notice of acting / Notice of issue",
