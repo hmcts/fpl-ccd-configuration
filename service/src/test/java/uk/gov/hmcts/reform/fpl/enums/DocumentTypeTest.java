@@ -70,7 +70,7 @@ class DocumentTypeTest {
     void shouldHiddenFromUploadNewDocument() {
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromLAUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
-                C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS);
+                C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS, GUARDIAN_REPORT);
         assertThat(Arrays.stream(DocumentType.values()).filter(dt -> dt.isHiddenFromCTSCUpload()))
             .containsExactlyInAnyOrder(ARCHIVED_DOCUMENTS, POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT,
                 C1_APPLICATION_DOCUMENTS, C2_APPLICATION_DOCUMENTS, GUARDIAN_REPORT);
