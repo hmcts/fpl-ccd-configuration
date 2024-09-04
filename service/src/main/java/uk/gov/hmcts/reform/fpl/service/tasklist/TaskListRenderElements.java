@@ -26,8 +26,10 @@ public class TaskListRenderElements {
     }
 
     public String renderLink(Event event) {
-        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
-            JURISDICTION, CASE_TYPE, event.getId(), event.getName());
+        return format(
+            "<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
+            event.getId(), event.getName()
+        );
     }
 
     public String renderDisabledLink(Task event) {
