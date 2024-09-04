@@ -341,7 +341,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.0'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
-  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.4'
+  implementation group: 'com.github.hmcts', name: 'auth-checker-lib', version: '2.1.5'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.3-RELEASE'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.89'
