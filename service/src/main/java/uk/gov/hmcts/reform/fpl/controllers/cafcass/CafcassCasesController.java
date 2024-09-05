@@ -122,8 +122,6 @@ public class CafcassCasesController {
             return ResponseEntity.status(415).body("bad document input");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body("bad input parameter - " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Internal server error");
         }
     }
 
