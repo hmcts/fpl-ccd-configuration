@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
+import uk.gov.hmcts.reform.fpl.config.CafcassSystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -24,12 +25,16 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 public class CafcassApiInterceptorTest {
     private static final String AUTH_TOKEN_TEST = "bearerToken";
     private static final UserInfo CAFCASS_SYSTEM_UPDATE_USER =
-        UserInfo.builder().roles(List.of(CAFCASS_SYSTEM_UPDATE.getRoleName())).build();
+        UserInfo.builder().sub("cafcass-system-update-user@example.com")
+            .roles(List.of(CAFCASS_SYSTEM_UPDATE.getRoleName())).build();
     private static final UserInfo LOCAL_AUTHORITY_UPDATE_USER =
-        UserInfo.builder().roles(List.of(LOCAL_AUTHORITY.getRoleName())).build();
+        UserInfo.builder().sub("la-user@example.com")
+            .roles(List.of(LOCAL_AUTHORITY.getRoleName())).build();
 
     @Mock
     private IdamClient idamClient;
+    @Mock
+    private CafcassSystemUpdateUserConfiguration userConfig;
     @Mock
     private ObjectProvider<IdamClient> idamClientObjectProvider;
     @InjectMocks
@@ -39,6 +44,7 @@ public class CafcassApiInterceptorTest {
     public void shouldReturnTrueIfCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
+        when(userConfig.getUserName()).thenReturn("cafcass-system-update-user@example.com");
         when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
         when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(CAFCASS_SYSTEM_UPDATE_USER);
 
@@ -49,6 +55,7 @@ public class CafcassApiInterceptorTest {
     public void shouldThrowAuthExceptionIfNotCafcassSystemUpdateUser() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader("Authorization")).thenReturn(AUTH_TOKEN_TEST);
+        when(userConfig.getUserName()).thenReturn("cafcass-system-update-user@example.com");
         when(idamClientObjectProvider.getIfAvailable()).thenReturn(idamClient);
         when(idamClient.getUserInfo(AUTH_TOKEN_TEST)).thenReturn(LOCAL_AUTHORITY_UPDATE_USER);
 
