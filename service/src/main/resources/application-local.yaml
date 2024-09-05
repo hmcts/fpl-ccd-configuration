@@ -126,6 +126,9 @@ fpl:
   system_update:
     username: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
     password: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+  cafcass_system_update:
+    username: ${CAFCASS_SYSTEM_USER_USERNAME}
+    password: ${CAFCASS_SYSTEM_USER_PASSWORD}
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
   ctsc_team_lead_inbox: 'FamilyPublicLaw+ctsc-team-lead@gmail.com'
   rcj_family_high_court_inbox: 'FamilyPublicLaw+rcjfamilyhighcourt@gmail.com'

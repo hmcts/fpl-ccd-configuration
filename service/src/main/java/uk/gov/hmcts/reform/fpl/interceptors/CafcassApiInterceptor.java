@@ -6,7 +6,9 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
+import uk.gov.hmcts.reform.fpl.config.CafcassSystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
+import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassSystemUserService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -22,13 +24,14 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiInterceptor implements HandlerInterceptor {
     private final ObjectProvider<IdamClient> idamClient;
+    private final CafcassSystemUpdateUserConfiguration userConfig;
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         String authToken = request.getHeader("Authorization");
         if (isNotEmpty(authToken)) {
             UserInfo userInfo = Objects.requireNonNull(idamClient.getIfAvailable()).getUserInfo(authToken);
-            if (userInfo != null && userInfo.getRoles().contains(CAFCASS_SYSTEM_UPDATE.getRoleName())) {
+            if (userInfo != null && userInfo.getSub().equalsIgnoreCase(userConfig.getUserName())) {
                 return true;
             }
         }
