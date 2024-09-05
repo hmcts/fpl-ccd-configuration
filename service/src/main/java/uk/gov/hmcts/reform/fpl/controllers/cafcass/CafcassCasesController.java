@@ -89,7 +89,8 @@ public class CafcassCasesController {
     @PostMapping("{caseId}/document")
     public ResponseEntity<Object> uploadDocument(@PathVariable String caseId,
                                                  @RequestParam(value = "file") MultipartFile file,
-                                                 @RequestParam(value = "typeOfDocument") String typeOfDocument) {
+                                                 @RequestParam(value = "typeOfDocument") String typeOfDocument)
+            throws Exception {
         log.info("uploadDocument request received");
 
         try {
