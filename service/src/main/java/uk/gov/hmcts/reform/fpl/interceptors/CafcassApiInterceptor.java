@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.fpl.config.CafcassSystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
-import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassSystemUserService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
 @Slf4j
 @Service
