@@ -117,6 +117,8 @@ fpl:
   system_update:
     username: ${SYSTEM_UPDATE_USER_USERNAME:}
     password: ${SYSTEM_UPDATE_USER_PASSWORD:}
+  cafcass_system_update:
+    username: ${CAFCASS_SYSTEM_USER_USERNAME}
   ctsc_inbox: 'FamilyPublicLaw+ctsc@gmail.com'
   court_to_court_admin:
     mapping: "344=>FamilyPublicLaw+ctsc@gmail.com;332=>FamilyPublicLaw+PublicLawEmail@gmail.com"
