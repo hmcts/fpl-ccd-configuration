@@ -6,15 +6,15 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -24,17 +24,17 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>
 
 <span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>
 
 <span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
 
@@ -48,7 +48,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -58,15 +58,15 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -76,7 +76,7 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -88,19 +88,19 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>
+<a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
@@ -130,23 +130,23 @@ Why can't I submit my application?
 
 <div class='govuk-details__text'>
 
-Enter a case name in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a>
+Enter a case name in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a>
 
-Add the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
+Add the orders and directions sought in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
 
-Add the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>
+Add the hearing urgency details in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>
 
-Add the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
+Add the grounds for the application in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>
 
-Add applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+Add applicant's details in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
 
-Add the applicant's solicitor's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
+Add the applicant's solicitor's details in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>
 
-Add the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
+Add the child's details in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>
 
-Add the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>
+Add the respondents' details in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>
 
-Add the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>
+Add the allocation proposal in the <a href='/cases/case-details/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>
 
 </div>
 
