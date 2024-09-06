@@ -95,13 +95,13 @@ class CafcassSystemUserServiceTest {
 
     @Test
     void shouldNotInterfereAnyOtherCache() {
-        String cafcass_token = RandomStringUtils.randomAlphanumeric(10);
-        String sys_token = RandomStringUtils.randomAlphanumeric(10);
+        String cafcassToken = RandomStringUtils.randomAlphanumeric(10);
+        String sysToken = RandomStringUtils.randomAlphanumeric(10);
 
         given(sysUserConfig.getUserName()).willReturn("SYS_USER");
         given(sysUserConfig.getPassword()).willReturn("SYS_USER_PWD");
-        given(idamClient.getAccessToken(CAFCASS_SYS_USER_NAME, CAFCASSS_SYS_USER_PASS)).willReturn(cafcass_token);
-        given(idamClient.getAccessToken("SYS_USER", "SYS_USER_PWD")).willReturn(sys_token);
+        given(idamClient.getAccessToken(CAFCASS_SYS_USER_NAME, CAFCASSS_SYS_USER_PASS)).willReturn(cafcassToken);
+        given(idamClient.getAccessToken("SYS_USER", "SYS_USER_PWD")).willReturn(sysToken);
 
         underTest.getUserToken();
         systemUserService.getSysUserToken();
@@ -110,26 +110,26 @@ class CafcassSystemUserServiceTest {
             underTest.getUserToken();
             systemUserService.getSysUserToken();
             assertThat(localCacheManager.getCache(SYS_USER_CACHE).get(SYS_USER_TOKEN_CACHE_KEY, String.class))
-                .isEqualTo(sys_token);
-            assertThat(getCachedToken()).isEqualTo(cafcass_token);
+                .isEqualTo(sysToken);
+            assertThat(getCachedToken()).isEqualTo(cafcassToken);
 
             systemUserService.getSysUserToken();
             underTest.getUserToken();
             assertThat(localCacheManager.getCache(SYS_USER_CACHE).get(SYS_USER_TOKEN_CACHE_KEY, String.class))
-                .isEqualTo(sys_token);
-            assertThat(getCachedToken()).isEqualTo(cafcass_token);
+                .isEqualTo(sysToken);
+            assertThat(getCachedToken()).isEqualTo(cafcassToken);
 
             underTest.getUserToken();
             systemUserService.getSysUserToken();
-            assertThat(getCachedToken()).isEqualTo(cafcass_token);
+            assertThat(getCachedToken()).isEqualTo(cafcassToken);
             assertThat(localCacheManager.getCache(SYS_USER_CACHE).get(SYS_USER_TOKEN_CACHE_KEY, String.class))
-                .isEqualTo(sys_token);
+                .isEqualTo(sysToken);
 
             systemUserService.getSysUserToken();
             underTest.getUserToken();
-            assertThat(getCachedToken()).isEqualTo(cafcass_token);
+            assertThat(getCachedToken()).isEqualTo(cafcassToken);
             assertThat(localCacheManager.getCache(SYS_USER_CACHE).get(SYS_USER_TOKEN_CACHE_KEY, String.class))
-                .isEqualTo(sys_token);
+                .isEqualTo(sysToken);
         }
     }
 

@@ -26,7 +26,8 @@ public class CafcassApiDocumentServiceTest {
         UUID docId = UUID.randomUUID();
         byte[] docBinary = "This is a document".getBytes();
         when(cafcassSysUser.getUserToken()).thenReturn("test token");
-        when(secureDocStoreService.downloadDocument(docId.toString(), cafcassSysUser.getUserToken())).thenReturn(docBinary);
+        when(secureDocStoreService.downloadDocument(docId.toString(), cafcassSysUser.getUserToken()))
+            .thenReturn(docBinary);
 
         assertArrayEquals(docBinary, underTest.downloadDocumentByDocumentId(docId.toString()));
     }
