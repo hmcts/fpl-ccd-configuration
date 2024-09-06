@@ -23,6 +23,7 @@ public class CacheConfiguration {
 
     public static final String ORGANISATION_CACHE = "organisationCache";
     public static final String SYS_USER_CACHE = "systemUserCache";
+    public static final String CAFCASS_SYS_USER_CACHE = "cafcassSystemUserCache";
 
     public static final int SYSTEM_USER_CACHE_EXPIRY = 120;
 
@@ -40,12 +41,11 @@ public class CacheConfiguration {
     @Bean
     @Scope(value = WebApplicationContext.SCOPE_APPLICATION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public CacheManager localCacheManager() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager(SYS_USER_CACHE);
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager(SYS_USER_CACHE, CAFCASS_SYS_USER_CACHE);
         caffeineCacheManager.setCaffeine(Caffeine.newBuilder()
             .initialCapacity(10)
             .maximumSize(100)
             .expireAfterWrite(Duration.ofMinutes(SYSTEM_USER_CACHE_EXPIRY)));
         return caffeineCacheManager;
     }
-
 }

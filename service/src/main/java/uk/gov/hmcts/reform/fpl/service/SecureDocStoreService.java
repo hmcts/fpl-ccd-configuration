@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +35,6 @@ public class SecureDocStoreService {
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final RequestData requestData;
-    private final IdamClient idamClient;
 
     public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
 
@@ -56,10 +54,6 @@ public class SecureDocStoreService {
         log.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
 
         return document;
-    }
-
-    public byte[] downloadDocument(final String documentUrlString, final String userName, final String password) {
-        return downloadDocument(documentUrlString, idamClient.getAccessToken(userName, password));
     }
 
     public byte[] downloadDocument(final String documentUrlString) {
