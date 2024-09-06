@@ -83,6 +83,10 @@ java:
           alias: fpl.system_update.username
         - name: system-update-user-password
           alias: fpl.system_update.password
+        - name: cafcass-system-update-user-username
+          alias: fpl.cafcass_system_update.username
+        - name: cafcass-system-update-user-password
+          alias: fpl.cafcass_system_update.password
         - name: robotics-notification-sender
           alias: robotics.notification.sender
         - name: robotics-notification-recipient
