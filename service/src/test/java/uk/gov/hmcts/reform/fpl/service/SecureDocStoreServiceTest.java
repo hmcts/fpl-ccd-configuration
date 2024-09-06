@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.UUID;
 
@@ -40,6 +41,8 @@ class SecureDocStoreServiceTest {
     private CaseDocumentClientApi caseDocumentClientApi;
     @Mock
     private RequestData requestData;
+    @Mock
+    private IdamClient idamClient;
 
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;

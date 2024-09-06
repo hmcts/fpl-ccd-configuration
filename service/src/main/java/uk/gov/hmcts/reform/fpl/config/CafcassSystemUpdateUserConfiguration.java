@@ -8,8 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CafcassSystemUpdateUserConfiguration {
     private final String userName;
+    private final String password;
 
-    public CafcassSystemUpdateUserConfiguration(@Value("${fpl.cafcass_system_update.username}") String userName) {
+    public CafcassSystemUpdateUserConfiguration(@Value("${fpl.cafcass_system_update.username}") String userName,
+                                                @Value("${fpl.cafcass_system_update.password}") String password) {
         this.userName = userName;
+        this.password = password;
     }
 }
