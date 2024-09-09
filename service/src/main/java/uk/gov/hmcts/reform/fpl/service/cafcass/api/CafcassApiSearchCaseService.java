@@ -8,16 +8,22 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCase;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Filter;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
@@ -33,25 +39,37 @@ public class CafcassApiSearchCaseService {
     private final CaseConverter caseConverter;
     private final SearchService searchService;
     private final List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters;
+    private final FeatureToggleService featureToggleService;
 
     public List<CafcassApiCase> searchCaseByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        final RangeQuery searchRange = RangeQuery.builder()
-            .field("last_modified")
-            .greaterThanOrEqual(startDate)
-            .lessThanOrEqual(endDate).build();
+        CafcassApiFeatureFlag flag = featureToggleService.getCafcassAPIFlag();
 
-        final BooleanQuery searchCaseQuery = BooleanQuery.builder()
-            .mustNot(CASE_STATES)
-            .filter(Filter.builder()
-                .clauses(List.of(searchRange))
-                .build())
-            .build();
+        if (flag.isEnableApi()) {
+            final RangeQuery searchRange = RangeQuery.builder()
+                .field("last_modified")
+                .greaterThanOrEqual(startDate)
+                .lessThanOrEqual(endDate).build();
 
-        List<CaseDetails> caseDetails = searchService.search(searchCaseQuery, 10000, 0);
+            final BooleanQuery.BooleanQueryBuilder searchCaseQuery = BooleanQuery.builder()
+                .mustNot(CASE_STATES)
+                .filter(Filter.builder()
+                    .clauses(List.of(searchRange))
+                    .build());
 
-        return caseDetails.stream()
-            .map(this::convertToCafcassApiCase)
-            .toList();
+            if (isNotEmpty(flag.getWhitelist())) {
+                searchCaseQuery.must(Must.builder()
+                    .clauses(List.of(TermsQuery.of("data.court.code", flag.getWhitelist())))
+                    .build());
+            }
+
+            List<CaseDetails> caseDetails = searchService.search(searchCaseQuery.build(), 10000, 0);
+
+            return caseDetails.stream()
+                .map(this::convertToCafcassApiCase)
+                .toList();
+        } else {
+            return List.of();
+        }
     }
 
     private CafcassApiCase convertToCafcassApiCase(CaseDetails caseDetails) {
