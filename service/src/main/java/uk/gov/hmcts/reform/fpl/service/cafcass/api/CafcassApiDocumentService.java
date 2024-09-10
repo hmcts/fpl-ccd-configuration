@@ -16,9 +16,13 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -27,6 +31,7 @@ public class CafcassApiDocumentService {
     private final SecureDocStoreService secureDocStoreService;
     private final UploadDocumentService uploadDocumentService;
     private final CoreCaseDataService coreCaseDataService;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final String MIME_TYPE_PDF = "application/pdf";
     private static final String MIME_TYPE_PDF_X = "application/x-pdf";
 
@@ -34,9 +39,14 @@ public class CafcassApiDocumentService {
         return secureDocStoreService.downloadDocument(documentId);
     }
 
-    public DocumentReference uploadDocumentToDocStore(MultipartFile file) throws IOException {
+    public DocumentReference uploadDocumentToDocStore(MultipartFile file, String typeOfDocument) throws IOException {
         return DocumentReference.buildFromDocument(uploadDocumentService
-            .uploadDocument(file.getBytes(), file.getName(), file.getContentType()));
+            .uploadDocument(file.getBytes(), generateFileName(typeOfDocument), file.getContentType()));
+    }
+
+    public String generateFileName(String typeOfDocument) {
+       return format("%s-%s", typeOfDocument, ZonedDateTime.now(ZoneId.of("Europe/London"))
+           .format(DATE_TIME_FORMATTER));
     }
 
     public CaseDetails uploadGuardianReport(DocumentReference documentReference, CaseData caseData) {

@@ -99,7 +99,8 @@ public class CafcassCasesController {
             }
 
             CaseData caseDataBefore = getCaseData(caseId);
-            DocumentReference documentReference = cafcassApiDocumentService.uploadDocumentToDocStore(file);
+            DocumentReference documentReference =
+                    cafcassApiDocumentService.uploadDocumentToDocStore(file, typeOfDocument);
 
             switch (typeOfDocument) {
                 case "GUARDIAN_REPORT":
