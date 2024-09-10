@@ -36,7 +36,8 @@
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 3,
     "FieldShowCondition": "[STATE] = \"CLOSED\"",
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "RetainHiddenValue": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +49,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 4,
-    "FieldShowCondition": "manageOrdersOperation = \"AMEND\" OR manageOrdersOperationClosedState = \"AMEND\"",
+    "FieldShowCondition": "manageOrdersOperation = \"AMEND\" OR ([STATE] = \"CLOSED\" AND manageOrdersOperationClosedState = \"AMEND\")",
     "ShowSummaryChangeOption": "Y"
   }
 ]

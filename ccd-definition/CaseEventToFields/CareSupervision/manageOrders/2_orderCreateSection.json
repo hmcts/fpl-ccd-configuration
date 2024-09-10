@@ -11,7 +11,7 @@
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "createOrderSectionHeader = \"DO NOT SHOW\"",
-    "PageShowCondition": "manageOrdersState != \"CLOSED\" AND manageOrdersOperation != \"AMEND\" AND manageOrdersOperationClosedState != \"AMEND\"",
+    "PageShowCondition": "manageOrdersOperation = \"CREATE\" OR manageOrdersOperation = \"UPLOAD\" OR ([STATE] = \"CLOSED\" AND manageOrdersOperationClosedState = \"CREATE\")",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-selection/mid-event"
   },
   {
