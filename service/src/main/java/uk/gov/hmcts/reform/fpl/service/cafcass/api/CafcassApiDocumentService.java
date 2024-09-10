@@ -45,8 +45,8 @@ public class CafcassApiDocumentService {
     }
 
     public String generateFileName(String typeOfDocument) {
-       return format("%s-%s", typeOfDocument, ZonedDateTime.now(ZoneId.of("Europe/London"))
-           .format(DATE_TIME_FORMATTER));
+        return format("%s-%s",
+           typeOfDocument, ZonedDateTime.now(ZoneId.of("Europe/London")).format(DATE_TIME_FORMATTER));
     }
 
     public CaseDetails uploadGuardianReport(DocumentReference documentReference, CaseData caseData) {
