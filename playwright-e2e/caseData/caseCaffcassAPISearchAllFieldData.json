@@ -1,7 +1,7 @@
 
 {
   "state": "PREPARE_FOR_HEARING",
-  "case_data": {
+  "caseData": {
     "guardianEvidenceList": [
       {
         "id": "71ed840f-ae3d-468f-8278-264888d6cd7b",
@@ -87,25 +87,6 @@
     ],
     "caseSummaryNextHearingType": "Judgment after hearing",
     "caseSummaryNextHearingDateTime": "2024-10-12T10:00:00",
-    "scannedDocuments": [
-      {
-        "id": "f5269955-16a5-44c8-b5e6-23da474eb6f1",
-        "value": {
-          "fileName": "AOS",
-          "exceptionRecordReference": null,
-          "scannedDate": null,
-          "subtype": "form",
-          "type": "form",
-          "deliveryDate": null,
-          "url": {
-            "upload_timestamp": "2024-08-27T16:43:49.228382814",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-            "document_filename": "Supplement doc in word format.docx",
-            "document_url": "${TEST_DOCUMENT_URL}"          },
-          "controlNumber": "4355645574557556"
-        }
-      }
-    ],
     "caseSummaryFlagAddedByFullName": null,
     "caseSummaryPreviousHearingDate": "2024-03-12",
     "parentAssessmentList": [
@@ -120,35 +101,6 @@
             "document_url": "${TEST_DOCUMENT_URL}"          },
           "uploaderType": "HMCTS",
           "uploaderCaseRoles": []
-        }
-      }
-    ],
-    "courtBundleListLA": [
-      {
-        "id": "3621d91d-fc1b-457c-8f43-c239e29170d8",
-        "value": {
-          "courtBundle": [
-            {
-              "id": "b8a104cc-896b-4873-ba9b-0235caf10431",
-              "value": {
-                "markAsConfidential": "Yes",
-                "hasConfidentialAddress": "No",
-                "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
-                "document": {
-                  "upload_timestamp": "2024-08-27T16:36:41.235667068",
-                  "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-                  "document_filename": "D10.pdf",
-                  "document_url": "${TEST_DOCUMENT_URL}"                },
-                "documentAcknowledge": [
-                  "ACK_RELATED_TO_CASE"
-                ],
-                "uploaderCaseRoles": [
-                  "LASOLICITOR"
-                ]
-              }
-            }
-          ],
-          "hearing": null
         }
       }
     ],
@@ -180,8 +132,8 @@
                     },
                     "colleaguesToBeNotified": [],
                     "organisation": {
-                      "OrganisationID": "HEBFGBR",
-                      "OrganisationName": "NFD Solicitor Organisation"
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
                     },
                     "email": "asfsd@mailinator.com",
                     "unregisteredOrganisation": {
@@ -296,8 +248,8 @@
                     },
                     "colleaguesToBeNotified": [],
                     "organisation": {
-                      "OrganisationID": "HEBFGBR",
-                      "OrganisationName": "NFD Solicitor Organisation"
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
                     },
                     "email": "asfsd@mailinator.com",
                     "unregisteredOrganisation": {
@@ -407,8 +359,8 @@
                     },
                     "colleaguesToBeNotified": [],
                     "organisation": {
-                      "OrganisationID": "HEBFGBR",
-                      "OrganisationName": "NFD Solicitor Organisation"
+                      "OrganisationID": "D25VR7V",
+                      "OrganisationName": "Private solicitors"
                     },
                     "email": "asfsd@mailinator.com",
                     "unregisteredOrganisation": {
@@ -632,51 +584,6 @@
     ],
     "caseSummaryLASolicitorName": "applicant Solicitor",
     "dfjArea": "WEST_LONDON",
-    "proceeding": {
-      "proceedingStatus": "Ongoing",
-      "sameGuardianDetails": null,
-      "sameGuardianNeeded": "Yes",
-      "children": null,
-      "caseNumber": "346456463453453453",
-      "ordersMade": null,
-      "ended": null,
-      "additionalProceedings": [
-        {
-          "id": "4c25082d-8fc9-4b4d-acf0-eca09e7dbe34",
-          "value": {
-            "proceedingStatus": "Previous",
-            "sameGuardianDetails": null,
-            "sameGuardianNeeded": "Yes",
-            "children": "child one",
-            "caseNumber": "3464564575676",
-            "ordersMade": "Expectional Order",
-            "ended": "12/4/2005",
-            "started": "12/4/2004",
-            "judge": "Judge Joe",
-            "guardian": "Guardian"
-          }
-        },
-        {
-          "id": "f9758932-bf76-42db-a835-51edc09b8b31",
-          "value": {
-            "proceedingStatus": "Previous",
-            "sameGuardianDetails": null,
-            "sameGuardianNeeded": null,
-            "children": null,
-            "caseNumber": null,
-            "ordersMade": null,
-            "ended": null,
-            "started": null,
-            "judge": null,
-            "guardian": null
-          }
-        }
-      ],
-      "started": null,
-      "judge": null,
-      "guardian": null,
-      "onGoingProceeding": "Yes"
-    },
     "caseSummaryPreviousHearingType": "Final",
     "caseLocalAuthority": "SA",
     "caseLocalAuthorityName": "Swansea City Council",
@@ -730,27 +637,6 @@
             "document_url": "${TEST_DOCUMENT_URL}"          },
           "uploaderType": "HMCTS",
           "uploaderCaseRoles": []
-        }
-      }
-    ],
-    "caseSummaryList": [
-      {
-        "id": "bd81d690-8d32-4d70-8262-82025173755e",
-        "value": {
-          "markAsConfidential": "No",
-          "hasConfidentialAddress": "No",
-          "uploaderType": "DESIGNATED_LOCAL_AUTHORITY",
-          "document": {
-            "upload_timestamp": "2024-08-27T16:36:41.235667068",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-            "document_filename": "D10.pdf",
-            "document_url": "${TEST_DOCUMENT_URL}"          },
-          "documentAcknowledge": [
-            "ACK_RELATED_TO_CASE"
-          ],
-          "uploaderCaseRoles": [
-            "LASOLICITOR"
-          ]
         }
       }
     ],
@@ -864,28 +750,6 @@
       "region": "1"
     },
     "caseSummaryOrdersRequested": "Supervision order",
-    "confidentialChildren": [
-      {
-        "id": "a2ef436b-c22e-4206-96b6-17e039f5cf46",
-        "value": {
-          "legalCounsellors": [],
-          "party": {
-            "lastName": "One",
-            "firstName": "Child",
-            "showAddressInConfidentialTab": "Yes",
-            "address": {
-              "AddressLine3": "Line2",
-              "AddressLine2": "line1",
-              "AddressLine1": "1",
-              "Country": "United Kingdom",
-              "PostTown": "Town",
-              "PostCode": "TW3 1XZ",
-              "County": "County"
-            }
-          }
-        }
-      }
-    ],
     "hearingDetails": [
       {
         "id": "efddcb27-bab1-42ae-94dd-ca88196551c4",
@@ -1661,8 +1525,8 @@
                   },
                   "colleaguesToBeNotified": [],
                   "organisation": {
-                    "OrganisationID": "HEBFGBR",
-                    "OrganisationName": "NFD Solicitor Organisation"
+                    "OrganisationID": "D25VR7V",
+                    "OrganisationName": "Private solicitors"
                   },
                   "email": "asfsd@mailinator.com",
                   "unregisteredOrganisation": {
@@ -1801,21 +1665,6 @@
       "anythingElseReason": "Given details of other harms",
       "alcoholDrugAbuseReason": "Test"
     },
-    "transcriptList": [
-      {
-        "id": "6bac7f76-f4ac-4d3f-94a4-146b69b9a9db",
-        "value": {
-          "markAsConfidential": "No",
-          "document": {
-            "upload_timestamp": "2024-08-28T18:15:00.043284148",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-            "document_filename": "C20.pdf",
-            "document_url": "${TEST_DOCUMENT_URL}"          },
-          "uploaderType": "HMCTS",
-          "uploaderCaseRoles": []
-        }
-      }
-    ],
     "caseManagementCategory": {
       "value": {
         "code": "FPL",
@@ -2198,8 +2047,8 @@
             },
             "colleaguesToBeNotified": [],
             "organisation": {
-              "OrganisationID": "HEBFGBR",
-              "OrganisationName": "NFD Solicitor Organisation"
+              "OrganisationID": "D25VR7V",
+              "OrganisationName": "Private solicitors"
             },
             "email": "asfsd@mailinator.com",
             "unregisteredOrganisation": {},
@@ -2312,8 +2161,6 @@
         "document_url": "${TEST_DOCUMENT_URL}"      }
     },
     "caseSummaryAllocatedJudgeEmail": "Susan.Calderon.JP@ejudiciary.net",
-    "evidenceHandled": "Yes",
-    "caseNameHmctsInternal": "Test",
     "caseSummaryFirstRespondentLegalRep": null,
     "SearchCriteria": {
       "SearchParties": [
@@ -2434,45 +2281,6 @@
         }
       }
     ],
-    "risks": {
-      "sexualAbuse": "Yes",
-      "neglectOccurrences": [
-        "Future risk of harm",
-        "Past harm"
-      ],
-      "physicalHarmOccurrences": [
-        "Future risk of harm",
-        "Past harm"
-      ],
-      "physicalHarm": "Yes",
-      "emotionalHarm": "Yes",
-      "sexualAbuseOccurrences": [
-        "Future risk of harm",
-        "Past harm"
-      ],
-      "emotionalHarmOccurrences": [
-        "Future risk of harm",
-        "Past harm"
-      ],
-      "neglect": "Yes"
-    },
-    "respWitnessStmtList": [
-      {
-        "id": "9cd52013-1cf2-4106-a472-aafbe7414cdc",
-        "value": {
-          "markAsConfidential": "No",
-          "document": {
-            "upload_timestamp": "2024-08-28T18:08:33.204941478",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-            "document_filename": "D10.pdf",
-            "document_url": "${TEST_DOCUMENT_URL}"          },
-          "uploaderType": "SOLICITOR",
-          "uploaderCaseRoles": [
-            "SOLICITORB"
-          ]
-        }
-      }
-    ],
     "expertReportList": [
       {
         "id": "463c8a65-a39d-47cb-a561-2c34afcded0e",
@@ -2491,39 +2299,6 @@
     "caseSummaryNextHearingJudge": "Mrs Calderon",
     "caseSummaryHasPreviousHearing": "Yes",
     "caseSummaryPreviousHearingCMO": null,
-    "internationalElement": {
-      "possibleCarer": "Yes",
-      "proceedingsReason": "Yes proceeding in France regarding the domestic abuse",
-      "internationalAuthorityInvolvementDetails": "Yes child prevention authority of France has to be involved",
-      "significantEvents": "No",
-      "issuesReason": "Yes",
-      "possibleCarerReason": "Carer outside UK",
-      "significantEventsReason": null,
-      "internationalAuthorityInvolvement": "Yes",
-      "proceedings": "Yes",
-      "issues": "Yes"
-    },
-    "judgementList": [
-      {
-        "id": "3c419411-28f8-418e-a2eb-bffa9e3123bb",
-        "value": {
-          "markAsConfidential": "No",
-          "document": {
-            "upload_timestamp": "2024-08-28T18:06:25.115911210",
-            "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}",
-            "document_filename": "Family and viability assessment.docx",
-            "document_url": "${TEST_DOCUMENT_URL}"          },
-          "uploaderType": "HMCTS",
-          "uploaderCaseRoles": []
-        }
-      }
-    ],
-    "allocationDecision": {
-      "proposal": "District judge",
-      "judgeLevelRadio": null,
-      "allocationProposalPresent": "Yes",
-      "proposalReason": "Give details"
-    },
     "lettersOfInstructionList": [
       {
         "id": "41f40654-5192-4967-bfe3-5d1a8b94f55e",
