@@ -2445,175 +2445,175 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorA",
-    "UserRoles": ["[SOLICITORA]"],
+    "UserRole": "[SOLICITORA]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorB",
-    "UserRoles": ["[SOLICITORB]"],
+    "UserRole": "[SOLICITORB]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorC",
-    "UserRoles": ["[SOLICITORC]"],
+    "UserRole": "[SOLICITORC]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorD",
-    "UserRoles": ["[SOLICITORD]"],
+    "UserRole": "[SOLICITORD]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorE",
-    "UserRoles": ["[SOLICITORE]"],
+    "UserRole": "[SOLICITORE]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorF",
-    "UserRoles": ["[SOLICITORF]"],
+    "UserRole": "[SOLICITORF]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorG",
-    "UserRoles": ["[SOLICITORG]"],
+    "UserRole": "[SOLICITORG]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorH",
-    "UserRoles": ["[SOLICITORH]"],
+    "UserRole": "[SOLICITORH]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorI",
-    "UserRoles": ["[SOLICITORI]"],
+    "UserRole": "[SOLICITORI]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionSolicitorJ",
-    "UserRoles": ["[SOLICITORJ]"],
+    "UserRole": "[SOLICITORJ]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
-    "UserRoles": ["[CHILDSOLICITORA]"],
+    "UserRole": "[CHILDSOLICITORA]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
-    "UserRoles": ["[CHILDSOLICITORB]"],
+    "UserRole": "[CHILDSOLICITORB]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolC",
-    "UserRoles": ["[CHILDSOLICITORC]"],
+    "UserRole": "[CHILDSOLICITORC]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolD",
-    "UserRoles": ["[CHILDSOLICITORD]"],
+    "UserRole": "[CHILDSOLICITORD]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolE",
-    "UserRoles": ["[CHILDSOLICITORE]"],
+    "UserRole": "[CHILDSOLICITORE]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolF",
-    "UserRoles": ["[CHILDSOLICITORF]"],
+    "UserRole": "[CHILDSOLICITORF]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolG",
-    "UserRoles": ["[CHILDSOLICITORG]"],
+    "UserRole": "[CHILDSOLICITORG]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolH",
-    "UserRoles": ["[CHILDSOLICITORH]"],
+    "UserRole": "[CHILDSOLICITORH]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolI",
-    "UserRoles": ["[CHILDSOLICITORI]"],
+    "UserRole": "[CHILDSOLICITORI]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolJ",
-    "UserRoles": ["[CHILDSOLICITORJ]"],
+    "UserRole": "[CHILDSOLICITORJ]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolK",
-    "UserRoles": ["[CHILDSOLICITORK]"],
+    "UserRole": "[CHILDSOLICITORK]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolL",
-    "UserRoles": ["[CHILDSOLICITORL]"],
+    "UserRole": "[CHILDSOLICITORL]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolM",
-    "UserRoles": ["[CHILDSOLICITORM]"],
+    "UserRole": "[CHILDSOLICITORM]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolN",
-    "UserRoles": ["[CHILDSOLICITORN]"],
+    "UserRole": "[CHILDSOLICITORN]",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "qmCaseQueriesCollectionChildSolO",
-    "UserRoles": ["[CHILDSOLICITORO]"],
+    "UserRole": "[CHILDSOLICITORO]",
     "CRUD": "CRUD"
   },
   {
