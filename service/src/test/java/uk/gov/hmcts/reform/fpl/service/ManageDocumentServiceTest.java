@@ -400,8 +400,6 @@ class ManageDocumentServiceTest {
                     toPair(MEETING_NOTES),
                     toPair(CONTACT_NOTES),
                     toPair(AA_PARENT_APPLICATIONS),
-                    toPair(C1_APPLICATION_DOCUMENTS),
-                    toPair(C2_APPLICATION_DOCUMENTS),
                     toPair(AA_PARENT_RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_STATEMENTS),
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
@@ -413,7 +411,7 @@ class ManageDocumentServiceTest {
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
-                    toPair(NOTICE_OF_ACTING_OR_ISSUE), 
+                    toPair(NOTICE_OF_ACTING_OR_ISSUE),
                     toPair(PREVIOUS_PROCEEDING),
                     b == 0 ? toPair(PLACEMENT_RESPONSES) : Pair.of("", ""));
                 args.add(Arguments.of(i, b == 0, expected.stream()
@@ -1916,118 +1914,6 @@ class ManageDocumentServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
-        void shouldReturnDynamicListWhenC2ApplicationSupportingDocumentUploadedByThemselves(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundle(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(loginType))
-                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, 2, EXT_SOL_LOGIN_TYPE, HMCTS_LOGIN_TYPE, 5})
-        void shouldReturnDynamicListWhenC1ApplicationSupportingDocumentUploadedByThemselves(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(loginType))
-                            .uploaderCaseRoles(getUploaderCaseRoles(loginType))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
-        void shouldReturnDynamicListWhenC1WithSupplementSupportingDocumentUploadedByLA(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.submittedC1WithSupplement(
-                SubmittedC1WithSupplementBundle.builder()
-                    .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                        .document(testDocumentReference(filename1))
-                        .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                        .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                        .build())))
-                    .build());
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C1_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {LA_LOGIN_TYPE, HMCTS_LOGIN_TYPE})
-        void shouldReturnDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByLA(
-            int loginType) {
-            initialiseUserService(loginType);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            builder.additionalApplicationsBundle(List.of(
-                element(AdditionalApplicationsBundle.builder()
-                    .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                            .build())))
-                        .build())
-                    .c2DocumentBundleLA(C2DocumentBundle.builder()
-                        .document(additionalApplicationDocument)
-                        .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                            .document(testDocumentReference(filename1))
-                            .uploaderType(getUploaderType(LA_LOGIN_TYPE))
-                            .uploaderCaseRoles(getUploaderCaseRoles(LA_LOGIN_TYPE))
-                            .build())))
-                        .build())
-                    .build())
-            ));
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
         @ValueSource(ints = {EXT_SOL_LOGIN_TYPE, LEGACY_LOGIN_TYPE})
         void laShouldGetEmptyDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByOtherSolicitor(
             int uploaderLoginType) {
@@ -2055,64 +1941,6 @@ class ManageDocumentServiceTest {
             ));
 
             when(dynamicListService.asDynamicList(List.of())).thenReturn(expectedDynamicList1);
-
-            DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
-            assertThat(dynamicList).isEqualTo(expectedDynamicList1);
-        }
-
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shouldGetDynamicListWhenConfidentialC2ApplicationSupportingDocumentUploadedByOtherSolicitor(
-            boolean isChildSolicitor) {
-            initialiseUserService(EXT_SOL_LOGIN_TYPE, isChildSolicitor);
-            CaseData.CaseDataBuilder builder = createCaseDataBuilderForRemovalDocumentJourney();
-            if (isChildSolicitor) {
-                builder.additionalApplicationsBundle(List.of(
-                    element(AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, true))
-                                .build())))
-                            .build())
-                        .c2DocumentBundleChild0(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, true))
-                                .build())))
-                            .build())
-                        .build())
-                ));
-            } else {
-                builder.additionalApplicationsBundle(List.of(
-                    element(AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundleConfidential(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, false))
-                                .build())))
-                            .build())
-                        .c2DocumentBundleResp0(C2DocumentBundle.builder()
-                            .document(additionalApplicationDocument)
-                            .supportingEvidenceBundle(List.of(element(elementId1, SupportingEvidenceBundle.builder()
-                                .document(testDocumentReference(filename1))
-                                .uploaderType(getUploaderType(EXT_SOL_LOGIN_TYPE))
-                                .uploaderCaseRoles(getUploaderCaseRoles(EXT_SOL_LOGIN_TYPE, false))
-                                .build())))
-                            .build())
-                        .build())
-                ));
-            }
-
-            when(dynamicListService.asDynamicList(List.of(
-                Pair.of(format("%s###%s", C2_APPLICATION_DOCUMENTS.name(), elementId1), filename1)
-            ))).thenReturn(expectedDynamicList1);
 
             DynamicList dynamicList = underTest.buildAvailableDocumentsToBeRemoved(builder.build());
             assertThat(dynamicList).isEqualTo(expectedDynamicList1);
