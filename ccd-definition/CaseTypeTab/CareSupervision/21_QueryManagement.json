@@ -8,8 +8,7 @@
     "TabDisplayOrder": 21,
     "CaseFieldID": "QueryManagementComponentLauncher",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
-    "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "qmCaseQueriesCollection!=\"\""
+    "TabFieldDisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -18,7 +17,19 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Query Management",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollection",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
+    "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "QueryManagementTab",
+    "TabLabel": "Query Management",
+    "TabDisplayOrder": 21,
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
