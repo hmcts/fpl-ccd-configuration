@@ -51,7 +51,10 @@
             "type": "string"
           },
           "lastStateModifiedDate": {
-            "type": ["null","string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "caseData": {
             "type": "object",
@@ -78,7 +81,10 @@
             ],
             "properties": {
               "familyManCaseNumber": {
-                "type": ["null","string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "dateSubmitted": {
                 "type": "string"
@@ -109,7 +115,10 @@
                 }
               },
               "dateOfCourtIssue": {
-                "type": ["null","string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "citizenIsApplicant": {
                 "type": "boolean"
@@ -513,25 +522,46 @@
                       ],
                       "properties": {
                         "addressLine1": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "addressLine2": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "addressLine3": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "postTown": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "county": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "postcode": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "country": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         }
                       }
                     },
@@ -564,7 +594,10 @@
                             ]
                           },
                           "email": {
-                            "type": ["null","string"]
+                            "type": [
+                              "null",
+                              "string"
+                            ]
                           },
                           "phone": {
                             "type": [
@@ -620,22 +653,26 @@
                     },
                     "gender": {
                       "enum": [
-                        "Male",
-                        "Female",
-                        "Other",
+                        "MALE",
+                        "FEMALE",
+                        "OTHER",
                         null
                       ]
                     },
                     "genderIdentification": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "addressKnown": {
                       "type": "boolean"
                     },
                     "addressUnknownReason": {
-                      "type": [
-                        "string",
-                        "null"
+                      "enum": [
+                        "No fixed abode",
+                        "Person deceased",
+                        null
                       ]
                     },
                     "address": {
@@ -724,10 +761,16 @@
                       "type": "boolean"
                     },
                     "contactDetailsHiddenReason": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "relationshipToChild": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "solicitor": {
                       "type": [
@@ -799,8 +842,8 @@
                     "gender": {
                       "type": "string",
                       "enum": [
-                        "GIRL",
-                        "BOY",
+                        "MALE",
+                        "FEMALE",
                         "OTHER"
                       ]
                     },
@@ -843,30 +886,54 @@
                       ],
                       "properties": {
                         "addressLine1": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "addressLine2": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "addressLine3": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "postTown": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "county": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "postcode": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "country": {
-                          "type": ["null","string"]
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         }
                       }
                     },
                     "careAndContactPlan": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "detailsHidden": {
                       "type": "boolean"
@@ -878,7 +945,10 @@
                       ]
                     },
                     "socialWorkerTelephoneNumber": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "additionalNeeds": {
                       "type": "boolean"
@@ -898,7 +968,10 @@
                       ]
                     },
                     "litigationIssuesDetails": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "solicitor": {
                       "type": [
@@ -983,10 +1056,10 @@
                       "type": "boolean"
                     },
                     "addressUnknownReason": {
-                      "type": "string",
                       "enum": [
                         "No fixed abode",
-                        "Person deceased"
+                        "Person deceased",
+                        null
                       ]
                     },
                     "address": {
@@ -1026,7 +1099,10 @@
                           ]
                         },
                         "county": {
-                          "type": "null"
+                          "type": [
+                            "null",
+                            "string"
+                          ]
                         },
                         "postcode": {
                           "type": [
@@ -1126,7 +1202,8 @@
                         "ADJOURNED_TO_BE_RE_LISTED",
                         "VACATED",
                         "VACATED_AND_RE_LISTED",
-                        "VACATED_TO_BE_RE_LISTED"
+                        "VACATED_TO_BE_RE_LISTED",
+                        null
                       ]
                     },
                     "startDate": {
@@ -1147,10 +1224,6 @@
                       }
                     },
                     "cancellationReason": {
-                      "type": [
-                        "string",
-                        "null"
-                      ],
                       "enum": [
                         "CAFCASS not allocated/present",
                         "No/poor CAFCASS analysis",
@@ -1190,14 +1263,21 @@
                         "Immigration and international difficulties",
                         "Severe weather",
                         "Industrial action",
-                        "Covid 19"
+                        "Covid 19",
+                        null
                       ]
                     },
                     "preAttendanceDetails": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "attendanceDetails": {
-                      "type": "string"
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   }
                 }
@@ -1285,7 +1365,8 @@
                       "type": "string",
                       "enum": [
                         "Ongoing",
-                        "Previous"
+                        "Previous",
+                        null
                       ]
                     },
                     "caseNumber": {
@@ -1313,7 +1394,10 @@
                       ]
                     },
                     "judge": {
-                      "type": ["null","string"]
+                      "type": [
+                        "null",
+                        "string"
+                      ]
                     },
                     "children": {
                       "type": [
@@ -1349,25 +1433,37 @@
                 ],
                 "properties": {
                   "neglectOccurrences": {
-                    "type": ["null","array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "string"
                     }
                   },
                   "sexualAbuseOccurrences": {
-                    "type": ["null","array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "string"
                     }
                   },
                   "physicalHarmOccurrences": {
-                    "type": ["null","array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "string"
                     }
                   },
                   "emotionalHarmOccurrences": {
-                    "type": ["null","array"],
+                    "type": [
+                      "null",
+                      "array"
+                    ],
                     "items": {
                       "type": "string"
                     }
@@ -1389,19 +1485,28 @@
                     "type": "boolean"
                   },
                   "alcoholDrugAbuseReason": {
-                    "type": ["null","string"]
+                    "type": [
+                      "null",
+                      "string"
+                    ]
                   },
                   "domesticViolence": {
                     "type": "boolean"
                   },
                   "domesticViolenceReason": {
-                    "type": ["null","string"]
+                    "type": [
+                      "null",
+                      "string"
+                    ]
                   },
                   "anythingElse": {
                     "type": "boolean"
                   },
                   "anythingElseReason": {
-                    "type": ["null","string"]
+                    "type": [
+                      "null",
+                      "string"
+                    ]
                   }
                 }
               },
@@ -1413,10 +1518,16 @@
                 ],
                 "properties": {
                   "region": {
-                    "type": "string"
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   },
                   "baseLocation": {
-                    "type": "string"
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   }
                 }
               },
