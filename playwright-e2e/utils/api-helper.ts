@@ -145,4 +145,25 @@ export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { em
         })
     return response;
 }
+export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, user: {
+    email: string,
+    password: string
+}, caseID: string, data: {
+    guardianName: string;
+    telephoneNumber: string;
+    email: string;
+    children: string[];
+}[] | undefined) => {
+    const UserAuthToken = await getAccessToken({user: user});
+    let url = `${urlConfig.cafcassAPISearch}/${caseID}/guardians`
+    let response = await request.post(url,
+        {
+            headers: {
+                'Authorization': `Bearer ${UserAuthToken}`,
+                'Content-Type': 'application/json',
+            },
+            data: data,
 
+        })
+    return response;
+}
