@@ -14,10 +14,13 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
 
 @Slf4j
 @RestController
@@ -26,11 +29,11 @@ import java.util.function.Consumer;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2492", this::run2492,
-        "DFPL-2491", this::run2491
+        "DFPL-2527", this::run2527
     );
     private final CaseConverter caseConverter;
 
@@ -58,15 +61,23 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2492(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2492";
-        final long expectedCaseId = 1721043312380328L;
-        final var thresholdDetailsStartIndex = 2365;
-        final var thresholdDetailsEndIndex = 2743;
+    private void run2527(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2527";
+        final long expectedCaseId = 1682671655271774L;
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-        caseDetails.getData().putAll(migrateCaseService.removeCharactersFromThresholdDetails(getCaseData(caseDetails),
-            migrationId, thresholdDetailsStartIndex, thresholdDetailsEndIndex));
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        Long caseId = caseData.getId();
+        if (caseId != expectedCaseId) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, expected case id %d",
+                migrationId, caseId, expectedCaseId
+            ));
+        }
+
+        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
     }
 
     private void run2491(CaseDetails caseDetails) {
