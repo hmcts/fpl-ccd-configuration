@@ -82,40 +82,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_APPLICANTS_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_APPLICATIONS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_EXPERT_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_OTHER_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_WITNESS_STATEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CARE_PLAN;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CASE_SUMMARY;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CONTACT_NOTES;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DOCUMENTS_FILED_ON_ISSUE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEDICAL_RECORDS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEETING_NOTES;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NOTICE_OF_ACTING_OR_ISSUE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PARENT_ASSESSMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POLICE_DISCLOSURE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PREVIOUS_PROCEEDING;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_STATEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_WITNESS_STATEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.THRESHOLD;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TRANSCRIPTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.*;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -405,9 +372,31 @@ class ManageDocumentServiceTest {
                     toPair(RESPONDENTS_WITNESS_STATEMENTS),
                     toPair(GUARDIAN_EVIDENCE),
                     toPair(AA_PARENT_EXPERT_REPORTS),
-                    toPair(EXPERT_REPORTS),
-                    toPair(DRUG_AND_ALCOHOL_REPORTS),
+                    toPair(ADULT_PSYCHIATRIC_REPORT_ON_PARENTS),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL),
+                    toPair(HAEMATOLOGIST),
+                    toPair(INDEPENDENT_SOCIAL_WORKER),
+                    toPair(MULTI_DISCIPLINARY_ASSESSMENT),
+                    toPair(NEUROSURGEON),
+                    toPair(OPHTHALMOLOGIST),
+                    toPair(OTHER_EXPERT_REPORT),
+                    toPair(OTHER_MEDICAL_REPORT),
+                    toPair(PEDIATRIC),
+                    toPair(PEDIATRIC_RADIOLOGIST),
+                    toPair(PROFESSIONAL_DNA_TESTING),
+                    toPair(PROFESSIONAL_DRUG_ALCOHOL),
+                    toPair(PROFESSIONAL_HAIR_STRAND),
+                    toPair(PROFESSIONAL_OTHER),
+                    toPair(PSYCHIATRIC_CHILD_ONLY),
+                    toPair(PSYCHIATRIC_CHILD_AND_PARENT),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING),
                     toPair(LETTER_OF_INSTRUCTION),
+                    toPair(TOXICOLOGY_REPORT),
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
