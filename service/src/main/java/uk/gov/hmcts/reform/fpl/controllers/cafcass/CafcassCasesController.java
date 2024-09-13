@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.events.UpdateGuardianEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.EmptyFileException;
 import uk.gov.hmcts.reform.fpl.exceptions.api.BadInputException;
@@ -99,31 +100,33 @@ public class CafcassCasesController {
             }
 
             CaseData caseDataBefore = getCaseData(caseId);
+
             DocumentReference documentReference =
                     cafcassApiDocumentService.uploadDocumentToDocStore(file, typeOfDocument);
 
             switch (typeOfDocument) {
                 case "GUARDIAN_REPORT":
                     CaseData updatedCaseData =
-                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(documentReference, caseDataBefore));
+                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(
+                            documentReference, caseDataBefore.getId()));
                     eventPublisher.publishEvent(
-                        manageDocumentService.buildManageDocumentsUploadedEvent(updatedCaseData, caseDataBefore));
-                    break;
-                case "POSITION_STATEMENT":
-                    //Insert logic for position statement upload here
+                        cafcassApiDocumentService.generateDocumentUploadedEvent(documentReference,
+                            DocumentType.GUARDIAN_REPORT, updatedCaseData));
                     break;
                 default:
-                    return ResponseEntity.status(400)
-                        .body("bad input parameter " + typeOfDocument + " is not a valid type");
+                    log.error("bad input parameter " + typeOfDocument + " is not a valid type");
+                    return ResponseEntity.status(400).build();
             }
 
             return ResponseEntity
                 .status(200)
                 .body(format("%s uploaded succesfully to case with Id: %s", typeOfDocument, caseId));
         } catch (IOException e) {
-            return ResponseEntity.status(415).body("bad document input");
+            log.error("Bad document input", e);
+            return ResponseEntity.status(415).build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body("bad input parameter - " + e.getMessage());
+            log.error("Bad input parameter", e);
+            return ResponseEntity.status(400).build();
         }
     }
 
