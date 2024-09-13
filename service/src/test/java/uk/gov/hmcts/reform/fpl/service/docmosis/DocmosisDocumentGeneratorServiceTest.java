@@ -49,7 +49,7 @@ class DocmosisDocumentGeneratorServiceTest {
     void shouldInvokesTornado() {
         Map<String, Object> placeholders = getTemplatePlaceholders();
 
-        when(restTemplate.exchange(eq(configuration.getUrl() + "/rs/render"),
+        when(restTemplate.exchange(eq(configuration.getUrl() + "/api/render"),
             eq(HttpMethod.POST), argumentCaptor.capture(), eq(byte[].class))).thenReturn(tornadoResponse);
 
         byte[] expectedResponse = {1, 2, 3};
