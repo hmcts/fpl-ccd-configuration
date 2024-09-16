@@ -13,6 +13,10 @@ public class CafcassApiConfiguration implements WebMvcConfigurer {
     private final CafcassApiInterceptor cafcassApiInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(cafcassApiInterceptor).addPathPatterns("/cases");
+        registry.addInterceptor(cafcassApiInterceptor).addPathPatterns(
+            "/cases",
+            "/cases/documents/*/binary",
+            "/cases/*/document",
+            "/cases/*/guardians");
     }
 }
