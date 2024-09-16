@@ -303,6 +303,7 @@ public class CaseData extends CaseDataParent {
     @NotEmpty(message = "Add the child's details")
     @Valid
     private final List<@NotNull(message = "Add the child's details") Element<Child>> children1;
+    private final List<Element<Guardian>> guardians;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
@@ -536,7 +537,7 @@ public class CaseData extends CaseDataParent {
 
     @JsonIgnore
     public SealType getSealType() {
-        return isWelshLanguageRequested() ? SealType.BILINGUAL : SealType.ENGLISH;
+        return isWelshLanguageRequested() ? SealType.WELSH : SealType.ENGLISH;
     }
 
     @JsonIgnore
@@ -765,6 +766,13 @@ public class CaseData extends CaseDataParent {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
             .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public Optional<HearingBooking> getLastHearingBefore(LocalDateTime time) {
+        return unwrapElements(hearingDetails).stream()
+            .filter(hearingBooking -> hearingBooking.getStartDate().isBefore(time))
+            .max(comparing(HearingBooking::getStartDate));
     }
 
     @JsonIgnore

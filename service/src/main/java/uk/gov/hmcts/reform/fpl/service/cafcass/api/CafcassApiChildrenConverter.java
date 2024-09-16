@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.cafcass.api;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiChild;
+import uk.gov.hmcts.reform.fpl.model.robotics.Gender;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class CafcassApiChildrenConverter implements CafcassApiCaseDataConverter 
                     builder = builder.firstName(childParty.getFirstName())
                         .lastName(childParty.getLastName())
                         .dateOfBirth(childParty.getDateOfBirth())
-                        .gender(childParty.getGender().toString())
+                        .gender(getChildGenderForResponse(childParty.getGender()))
                         .genderIdentification(childParty.getGenderIdentification())
                         .livingSituation(childParty.getLivingSituation())
                         .livingSituationDetails(childParty.getLivingSituationDetails())
@@ -51,5 +53,13 @@ public class CafcassApiChildrenConverter implements CafcassApiCaseDataConverter 
                 return builder.build();
             })
             .toList();
+    }
+
+    private String getChildGenderForResponse(ChildGender childGender) {
+        return switch (childGender) {
+            case BOY -> Gender.MALE.toString();
+            case GIRL -> Gender.FEMALE.toString();
+            case OTHER -> Gender.OTHER.toString();
+        };
     }
 }

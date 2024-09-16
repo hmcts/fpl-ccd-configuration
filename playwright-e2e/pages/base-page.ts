@@ -101,4 +101,12 @@ export class BasePage {
       await this.page.getByLabel('Select an address').selectOption('1: Object');
 
   }
+    getCurrentDate():string {
+        let date = new Date();
+        let year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date);
+        let day = new Intl.DateTimeFormat('en', { day: 'numeric'}).format(date);
+        let todayDate = `${day} ${month} ${year}`;
+        return todayDate;
+    }
 }

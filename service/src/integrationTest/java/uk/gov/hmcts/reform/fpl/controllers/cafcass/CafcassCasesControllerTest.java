@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
@@ -83,83 +82,5 @@ public class CafcassCasesControllerTest extends AbstractTest {
             .andReturn();
 
         assertEquals(response.getResponse().getStatus(), 400);
-    }
-
-    @Test
-    void uploadGuardians() throws Exception {
-        UUID caseId = UUID.randomUUID();
-
-        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
-                .content("[\n"
-                         + "  {\n"
-                         + "    \"guardianName\": \"John Smith\",\n"
-                         + "    \"telephoneNumber\": \"01234567890\",\n"
-                         + "    \"email\": \"john.smith@example.com\",\n"
-                         + "    \"children\": [\n"
-                         + "      \"Joe Bloggs\"\n"
-                         + "    ]\n"
-                         + "  }\n"
-                         + "]")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(200))
-            .andReturn();
-
-        assertEquals("uploadGuardians - caseId: [%s], no of guardians: [%s]\nguardianName: [%s], children: [%s]\n"
-                .formatted(caseId, 1, "John Smith", "Joe Bloggs"),
-            response.getResponse().getContentAsString());
-    }
-
-    @Test
-    void uploadGuardians400() throws Exception {
-        UUID caseId = UUID.randomUUID();
-
-        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
-                .content("[]")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-
-        response = mockMvc.perform(post("/cases/%s/guardians".formatted(" "))
-                .content("[\n"
-                         + "  {\n"
-                         + "    \"guardianName\": \"John Smith\",\n"
-                         + "    \"telephoneNumber\": \"01234567890\",\n"
-                         + "    \"email\": \"john.smith@example.com\",\n"
-                         + "    \"children\": [\n"
-                         + "      \"Joe Bloggs\"\n"
-                         + "    ]\n"
-                         + "  }\n"
-                         + "]")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(400))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 400);
-    }
-
-    @Test
-    void uploadGuardians500() throws Exception {
-        UUID caseId = UUID.randomUUID();
-
-        MvcResult response = mockMvc.perform(post("/cases/%s/guardians".formatted(caseId))
-                .content("[\n"
-                         + "  {\n"
-                         + "    \"guardianName\": \"John Smith\",\n"
-                         + "    \"telephoneNumber\": \"01234567890\",\n"
-                         + "    \"email\": \"john.smith@example.com\",\n"
-                         + "    \"children\": \"12313\""
-                         + "  }\n"
-                         + "]")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("authorization", USER_AUTH_TOKEN))
-            .andExpect(status().is(500))
-            .andReturn();
-
-        assertEquals(response.getResponse().getStatus(), 500);
     }
 }

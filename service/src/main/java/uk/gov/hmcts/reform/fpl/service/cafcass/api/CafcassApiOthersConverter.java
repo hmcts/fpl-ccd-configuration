@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getCafcassApiAddress;
+import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.getGenderForApiResponse;
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -30,7 +31,7 @@ public class CafcassApiOthersConverter implements CafcassApiCaseDataConverter {
                 .map(other -> CafcassApiOther.builder()
                     .name(other.getName())
                     .dateOfBirth(other.getDateOfBirth())
-                    .gender(other.getGender())
+                    .gender(getGenderForApiResponse(other.getGender()))
                     .genderIdentification(other.getGenderIdentification())
                     .birthPlace(other.getBirthPlace())
                     .addressKnown(isYes(other.getAddressKnow()))
