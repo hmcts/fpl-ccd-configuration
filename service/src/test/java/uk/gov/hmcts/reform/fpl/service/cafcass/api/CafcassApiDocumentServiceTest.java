@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.SecureDocStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
@@ -20,13 +22,17 @@ public class CafcassApiDocumentServiceTest {
     private SecureDocStoreService secureDocStoreService = mock(SecureDocStoreService.class);
     private UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
     private CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
+    private CaseConverter caseConverter = mock(CaseConverter.class);
+    private UserService userService = mock(UserService.class);
     private CafcassApiDocumentService underTest;
 
     @BeforeEach
     void setUpWithMockConverters() {
         underTest = new CafcassApiDocumentService(secureDocStoreService,
             uploadDocumentService,
-            coreCaseDataService);
+            coreCaseDataService,
+            caseConverter,
+            userService);
     }
 
     @Test
