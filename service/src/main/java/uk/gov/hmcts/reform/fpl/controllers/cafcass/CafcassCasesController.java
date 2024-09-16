@@ -120,7 +120,7 @@ public class CafcassCasesController {
 
             return ResponseEntity
                 .status(200)
-                .body(format("%s uploaded succesfully to case with Id: %s", typeOfDocument, caseId));
+                .body(format("%s uploaded successfully to case with Id: %s", typeOfDocument, caseId));
         } catch (IOException e) {
             log.error("Bad document input", e);
             return ResponseEntity.status(415).build();

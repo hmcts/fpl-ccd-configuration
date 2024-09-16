@@ -89,6 +89,8 @@ public class CafcassApiDocumentService {
         return ManageDocumentsUploadedEvent.builder()
             .caseData(caseData)
             .newDocuments(newDocument)
+            .newDocumentsLA(new HashMap<>())
+            .newDocumentsCTSC(new HashMap<>())
             .uploadedUserType(CAFCASS)
             .initiatedBy(userService.getUserDetails())
             .build();
