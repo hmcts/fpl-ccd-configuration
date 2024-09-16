@@ -88,8 +88,7 @@ test.describe('manage orders', () => {
 
         await orders.tabNavigation('Orders');
         await expect(orders.page.getByText('Amended', {exact: true})).toBeVisible();
-        let amendDate = new Intl.DateTimeFormat('en-GB', {dateStyle: 'medium'}).format(new Date());
-        await expect(orders.page.locator('#case-viewer-field-read--orderCollection')).toContainText(amendDate);
+        await expect(orders.page.locator('#case-viewer-field-read--orderCollection')).toContainText(orders.getCurrentDate());
         await expect(orders.page.getByRole('link', { name: 'amended_C23 - Emergency' })).toBeVisible();
         await orders.openOrderDoc('amended_C23 - Emergency');
         await expect(orders.orderPage.getByText('Amended under the slip rule')).toBeVisible();
