@@ -68,6 +68,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                 .documentFileName(docRef.getFilename())
                 .documentCategory(category)
                 .removed(removed)
+                .uploadTimestamp(docRef.getUploadedTimestamp())
                 .build())
             .toList();
     }
