@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
