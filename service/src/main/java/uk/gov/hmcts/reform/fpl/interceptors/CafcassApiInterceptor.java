@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
+import uk.gov.hmcts.reform.fpl.exceptions.api.ServiceUnavailableException;
+import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
@@ -21,10 +24,16 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiInterceptor implements HandlerInterceptor {
+    private final FeatureToggleService featureToggleService;
     private final ObjectProvider<IdamClient> idamClient;
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
+        if (!isCafcassApiToggledOn()) {
+            log.info("Cafcass API is disabled.");
+            throw new ServiceUnavailableException();
+        }
+
         String authToken = request.getHeader("Authorization");
         if (isNotEmpty(authToken)) {
             UserInfo userInfo = Objects.requireNonNull(idamClient.getIfAvailable()).getUserInfo(authToken);
@@ -33,5 +42,10 @@ public class CafcassApiInterceptor implements HandlerInterceptor {
             }
         }
         throw new AuthorizationException();
+    }
+
+    private boolean isCafcassApiToggledOn() {
+        CafcassApiFeatureFlag featureFlag = featureToggleService.getCafcassAPIFlag();
+        return isNotEmpty(featureFlag) && featureFlag.isEnableApi();
     }
 }
