@@ -68,7 +68,7 @@ public class CafcassApiDocumentService {
                     .document(documentReference)
                     .build();
 
-                switch(documentType) {
+                switch (documentType) {
                     case GUARDIAN_REPORT:
                         List<Element<ManagedDocument>> updatedGuardianReports = caseData.getGuardianReportsList();
                         updatedGuardianReports.add(element(managedDocument));
