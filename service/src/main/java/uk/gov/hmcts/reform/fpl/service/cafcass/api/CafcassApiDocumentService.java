@@ -57,19 +57,32 @@ public class CafcassApiDocumentService {
            typeOfDocument, ZonedDateTime.now(ZoneId.of("Europe/London")).format(DATE_TIME_FORMATTER), ".pdf");
     }
 
-    public CaseDetails uploadGuardianReport(DocumentReference documentReference, long caseId) {
+    public CaseDetails uploadDocument(DocumentReference documentReference,
+                                            long caseId,
+                                            DocumentType documentType) {
         return coreCaseDataService.performPostSubmitCallback(caseId, "internal-upload-document",
             caseDetails -> {
                 CaseData caseData = getCaseData(caseDetails);
-                ManagedDocument guardianReport = ManagedDocument.builder()
+                ManagedDocument managedDocument = ManagedDocument.builder()
                     .uploaderType(CAFCASS)
                     .document(documentReference)
                     .build();
 
-                List<Element<ManagedDocument>> updatedGuardianReports = caseData.getGuardianReportsList();
-                updatedGuardianReports.add(element(guardianReport));
+                switch(documentType) {
+                    case GUARDIAN_REPORT:
+                        List<Element<ManagedDocument>> updatedGuardianReports = caseData.getGuardianReportsList();
+                        updatedGuardianReports.add(element(managedDocument));
 
-                return Map.of("guardianReportsList", updatedGuardianReports);
+                        return Map.of("guardianReportsList", updatedGuardianReports);
+                    case POSITION_STATEMENTS:
+                        List<Element<ManagedDocument>> updatedPositionStatements = caseData.getHearingDocuments()
+                                .getPosStmtList();
+                        updatedPositionStatements.add(element(managedDocument));
+
+                        return Map.of("posStmtList", updatedPositionStatements);
+                    default:
+                        throw new IllegalArgumentException("Document type invalid");
+                }
             });
     }
 

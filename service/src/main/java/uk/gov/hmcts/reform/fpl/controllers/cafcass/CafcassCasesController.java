@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiDocumentService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiGuardianService;
 import uk.gov.hmcts.reform.fpl.service.cafcass.api.CafcassApiSearchCaseService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -50,7 +49,6 @@ public class CafcassCasesController {
     private final CafcassApiSearchCaseService cafcassApiSearchCaseService;
     private final CafcassApiDocumentService cafcassApiDocumentService;
     private final CafcassApiGuardianService cafcassApiGuardianService;
-    private final ManageDocumentService manageDocumentService;
 
     @GetMapping("")
     public CafcassApiSearchCasesResponse searchCases(
@@ -106,12 +104,20 @@ public class CafcassCasesController {
 
             switch (typeOfDocument) {
                 case "GUARDIAN_REPORT":
-                    CaseData updatedCaseData =
-                        getCaseData(cafcassApiDocumentService.uploadGuardianReport(
-                            documentReference, caseDataBefore.getId()));
+                    CaseData updatedCaseDataGuardianReport =
+                        getCaseData(cafcassApiDocumentService.uploadDocument(
+                            documentReference, caseDataBefore.getId(), DocumentType.GUARDIAN_REPORT));
                     eventPublisher.publishEvent(
                         cafcassApiDocumentService.generateDocumentUploadedEvent(documentReference,
-                            DocumentType.GUARDIAN_REPORT, updatedCaseData));
+                            DocumentType.GUARDIAN_REPORT, updatedCaseDataGuardianReport));
+                    break;
+                case "POSITION_STATEMENT":
+                    CaseData updatedCaseDataPosStmt =
+                        getCaseData(cafcassApiDocumentService.uploadDocument(
+                            documentReference, caseDataBefore.getId(), DocumentType.POSITION_STATEMENTS));
+                    eventPublisher.publishEvent(
+                        cafcassApiDocumentService.generateDocumentUploadedEvent(documentReference,
+                            DocumentType.POSITION_STATEMENTS, updatedCaseDataPosStmt));
                     break;
                 default:
                     log.error("bad input parameter " + typeOfDocument + " is not a valid type");
