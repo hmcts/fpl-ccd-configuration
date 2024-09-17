@@ -5,18 +5,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractTest;
+import uk.gov.hmcts.reform.fpl.interceptors.CafcassApiInterceptor;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
@@ -32,11 +36,14 @@ public class CafcassCasesControllerTest extends AbstractTest {
     private static final MockMultipartFile FILE = new MockMultipartFile(
         "file", "MOCK_FILE.pdf", MediaType.TEXT_PLAIN_VALUE, FILE_BYTES);
 
+    @MockBean
+    private CafcassApiInterceptor cafcassApiInterceptor;
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        when(cafcassApiInterceptor.preHandle(any(), any(), any())).thenReturn(true);
         givenCurrentUser(CAFCASS_SYSTEM_UPDATE_USER_INFO);
     }
 
