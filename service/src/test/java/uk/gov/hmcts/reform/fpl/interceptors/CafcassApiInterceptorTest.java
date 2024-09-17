@@ -38,14 +38,11 @@ public class CafcassApiInterceptorTest {
     private FeatureToggleService featureToggleService;
     @Mock
     private ObjectProvider<IdamClient> idamClientObjectProvider;
-//    @Mock
-//    private ObjectProvider<FeatureToggleService> featureToggleServiceProvider;
     @InjectMocks
     private CafcassApiInterceptor underTest;
 
     @BeforeEach
     public void setUp() {
-//        when(featureToggleServiceProvider.getIfAvailable()).thenReturn(featureToggleService);
         when(featureToggleService.getCafcassAPIFlag())
             .thenReturn(CafcassApiFeatureFlag.builder().enableApi(true).build());
     }
