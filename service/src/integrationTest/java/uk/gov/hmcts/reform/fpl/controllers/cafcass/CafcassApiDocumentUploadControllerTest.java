@@ -50,10 +50,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS_SYSTEM_UPDATE;
 
-@Deprecated
 @WebMvcTest(CafcassCasesController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class CafcassCasesControllerTest extends AbstractTest {
+public class CafcassApiDocumentUploadControllerTest extends AbstractTest {
     private static final UserInfo CAFCASS_SYSTEM_UPDATE_USER_INFO = UserInfo.builder()
         .roles(List.of(CAFCASS_SYSTEM_UPDATE.getRoleName()))
             .name("Cafcass")

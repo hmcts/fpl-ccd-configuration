@@ -94,7 +94,7 @@ public class CafcassCasesController {
 
         try {
             if (!cafcassApiDocumentService.isValidFile(file)) {
-                throw new IllegalArgumentException("invalid file provided, is empty or not in pdf format");
+                throw new BadInputException("invalid file provided, is empty or not in pdf format");
             }
 
             CaseData caseDataBefore = getCaseData(caseId);
@@ -129,10 +129,7 @@ public class CafcassCasesController {
                 .body(format("%s uploaded successfully to case with Id: %s", typeOfDocument, caseId));
         } catch (IOException e) {
             log.error("Bad document input", e);
-            return ResponseEntity.status(415).build();
-        } catch (IllegalArgumentException e) {
-            log.error("Bad input parameter", e);
-            return ResponseEntity.status(400).build();
+            throw new BadInputException(e.getMessage());
         }
     }
 
