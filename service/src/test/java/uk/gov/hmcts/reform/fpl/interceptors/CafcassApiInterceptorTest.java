@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import uk.gov.hmcts.reform.fpl.exceptions.api.AuthorizationException;
+import uk.gov.hmcts.reform.fpl.exceptions.api.ServiceUnavailableException;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFeatureFlag;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -82,9 +83,11 @@ public class CafcassApiInterceptorTest {
         when(featureToggleService.getCafcassAPIFlag())
             .thenReturn(CafcassApiFeatureFlag.builder().enableApi(false).build());
         HttpServletRequest request = mock(HttpServletRequest.class);
-        assertFalse(underTest.preHandle(request, null, null));
+        assertThrows(ServiceUnavailableException.class,
+            () -> underTest.preHandle(request, null, null));
 
         when(featureToggleService.getCafcassAPIFlag()).thenReturn(null);
-        assertFalse(underTest.preHandle(request, null, null));
+        assertThrows(ServiceUnavailableException.class,
+            () -> underTest.preHandle(request, null, null));
     }
 }
