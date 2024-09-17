@@ -17,7 +17,8 @@ class DocumentTypeTest {
     @Test
     void testGetCaseDataJsonPropertyNames() {
         assertThat(DocumentType.TOXICOLOGY_REPORT.getJsonFieldNames()).hasSize(3)
-            .containsExactly("toxicologyStatementList", "toxicologyStatementListLA", "toxicologyStatementListCTSC");
+            .containsExactly("toxicologyStatementList", "toxicologyStatementListLA",
+                "toxicologyStatementListCTSC");
         assertThat(DocumentType.COURT_BUNDLE.getJsonFieldNames()).hasSize(3)
             .containsExactly("courtBundleListV2", "courtBundleListLA", "courtBundleListCTSC");
         assertThat(DocumentType.CASE_SUMMARY.getJsonFieldNames()).hasSize(3)
@@ -27,7 +28,8 @@ class DocumentTypeTest {
 
     @Test
     void testFromJsonFieldName() {
-        assertThat(DocumentType.fromJsonFieldName("toxicologyStatementListCTSC")).isEqualTo(DocumentType.TOXICOLOGY_REPORT);
+        assertThat(DocumentType.fromJsonFieldName("toxicologyStatementListCTSC")).isEqualTo(
+            DocumentType.TOXICOLOGY_REPORT);
         assertThat(DocumentType.fromJsonFieldName("courtBundleListV2")).isEqualTo(DocumentType.COURT_BUNDLE);
         assertThat(DocumentType.fromJsonFieldName("caseSummaryListLA")).isEqualTo(DocumentType.CASE_SUMMARY);
     }
