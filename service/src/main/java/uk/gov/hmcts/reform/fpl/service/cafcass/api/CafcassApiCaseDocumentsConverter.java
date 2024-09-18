@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -204,18 +203,20 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
     }
 
     private List<CafcassApiCaseDocument> getManageDocuments(CaseData caseData) {
-        return Arrays.stream(DocumentType.values())
+        var resultList = Arrays.stream(DocumentType.values())
             .filter(documentType -> isNotEmpty(documentType.getBaseFieldNameResolver()))
             .map(documentType -> buildCafcassApiCaseDocumentList(documentType, false,
                 Stream.of(ConfidentialLevel.NON_CONFIDENTIAL, ConfidentialLevel.LA)
-                    .map(confidentialLevel -> manageDocumentService
-                        .toFieldNameToListOfElementMap(caseData, documentType, confidentialLevel).values())
-                    .flatMap(Collection::stream).flatMap(List::stream)
+                    .map(confidentialLevel -> manageDocumentService.readFromFieldName(caseData,
+                            documentType.getBaseFieldNameResolver().apply(confidentialLevel)))
+                    .filter(Objects::nonNull)
+                    .flatMap(List::stream)
                     .map(Element::getValue)
                     .map(object -> (WithDocument) object)
                     .map(WithDocument::getDocument)))
             .flatMap(List::stream)
             .toList();
+        return resultList;
     }
 
     private CafcassApiCaseDocument buildCafcassApiCaseDocument(String category, boolean removed,
