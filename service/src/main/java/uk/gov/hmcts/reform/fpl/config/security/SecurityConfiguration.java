@@ -62,11 +62,10 @@ public class SecurityConfiguration {
         authCheckerUserOnlyFilter.setAuthenticationManager(authenticationManager);
 
         http
+            .securityMatcher("/sendRPAEmailByID/**", "/support/**")
             .authorizeRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/sendRPAEmailByID/*", "/support/**")
-                .authenticated()
-                .anyRequest()
-                .permitAll())
+                .authenticated())
             .csrf(csrf -> csrf.disable())
             .addFilter(authCheckerUserOnlyFilter);
 
