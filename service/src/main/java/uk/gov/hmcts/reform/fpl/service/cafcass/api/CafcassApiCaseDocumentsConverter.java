@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -63,6 +64,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                 getHearingNotice(caseData),
                 getManageDocuments(caseData))
             .flatMap(List::stream)
+            .distinct()
             .toList();
     }
 
@@ -162,8 +164,6 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
                 c2DocRef.addAll(getAllDocumentsFromSupplements(c2Bundle.getSupplementsBundle()));
                 c2DocRef.addAll(getAllDocumentsFromSupportingEvidenceBundles(
                     c2Bundle.getSupportingEvidenceBundle()));
-                c2DocRef.addAll(unwrapElements(c2Bundle.getDraftOrdersBundle()).stream()
-                    .map(DraftOrder::getDocument).toList());
 
                 resultList.addAll(buildCafcassApiCaseDocumentList(C2_APPLICATION_DOCUMENTS, false, c2DocRef));
             }

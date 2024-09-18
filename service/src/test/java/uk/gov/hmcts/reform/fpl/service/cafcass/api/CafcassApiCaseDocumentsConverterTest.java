@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ConfidentialGeneratedOrders;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementConfidentialDocument;
 import uk.gov.hmcts.reform.fpl.model.PlacementNoticeDocument;
@@ -83,6 +84,30 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
         assertThat(actual.getCaseDocuments())
             .containsOnlyOnceElementsOf(getExpectedCafcassApiCaseDocuments(category, false, documentReferences));
 
+    }
+
+    @Test
+    void shouldReturnDistinctDocument() {
+        DocumentReference c2 = getTestDocumentReference();
+        DocumentReference supplementDoc = getTestDocumentReference();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .document(c2)
+                .supplementsBundle(wrapElements(
+                    Supplement.builder().document(supplementDoc).build(),
+                    Supplement.builder().document(supplementDoc).build()))
+                .supportingEvidenceBundle(wrapElements(
+                    SupportingEvidenceBundle.builder().document(supplementDoc).build()))
+                .build())
+            .build();
+
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+            .build();
+
+        testCaseDocument(caseData, List.of(c2, supplementDoc), C2_APPLICATION_DOCUMENTS);
     }
 
     @Nested
@@ -471,8 +496,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle)).build();
 
             testAdditionalApplications(caseData,
-                List.of(C2, SUPPLEMENT_1, SUPPLEMENT_2, SUPPORTING_EVIDENCE_1, SUPPORTING_EVIDENCE_2,
-                    DRAFT_ORDER_1, DRAFT_ORDER_2),
+                List.of(C2, SUPPLEMENT_1, SUPPLEMENT_2, SUPPORTING_EVIDENCE_1, SUPPORTING_EVIDENCE_2),
                 List.of(
                     OTHER_APPLICATION, SUPPLEMENT_3, SUPPLEMENT_4, SUPPORTING_EVIDENCE_3, SUPPORTING_EVIDENCE_4));
         }
