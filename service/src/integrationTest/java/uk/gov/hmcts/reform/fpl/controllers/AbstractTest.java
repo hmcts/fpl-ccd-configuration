@@ -8,10 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRole;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesResource;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -24,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -32,6 +35,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 
 @ActiveProfiles("integration-test")
 public abstract class AbstractTest {
@@ -135,5 +139,13 @@ public abstract class AbstractTest {
 
     protected String notificationReference(Long caseId) {
         return "localhost/" + caseId;
+    }
+
+    protected CaseDetails asCaseDetails(CaseData caseData) {
+        return CaseDetails.builder()
+            .id(caseData.getId())
+            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
+            .data(mapper.convertValue(caseData, MAP_TYPE))
+            .build();
     }
 }
