@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder(toBuilder = true)
 public class CafcassApiCase {
-    private Long caseId;
+    private Long id;
     private String jurisdiction;
     private String state;
     private String caseTypeId;

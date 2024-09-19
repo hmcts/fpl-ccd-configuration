@@ -22,13 +22,13 @@ public class CafcassApiSearchCaseControllerTest extends CafcassApiControllerBase
     void searchCases() throws Exception {
         List<CafcassApiCase> responseCases = List.of(
             CafcassApiCase.builder()
-                .caseId(1L).jurisdiction("jurisdiction").state("state").caseTypeId("caseTypeId")
+                .id(1L).jurisdiction("jurisdiction").state("state").caseTypeId("caseTypeId")
                 .createdDate(LocalDateTime.of(2023, 1, 1, 10, 0, 0))
                 .lastModified(LocalDateTime.of(2024, 3, 28, 12,32,0))
                 .caseData(CafcassApiCaseData.builder().build())
                 .build(),
             CafcassApiCase.builder()
-                .caseId(2L).jurisdiction("jurisdiction").state("state").caseTypeId("caseTypeId")
+                .id(2L).jurisdiction("jurisdiction").state("state").caseTypeId("caseTypeId")
                 .createdDate(LocalDateTime.of(2024, 1, 1, 10, 0, 0))
                 .lastModified(LocalDateTime.of(2024, 3, 28, 12,40,0))
                 .caseData(CafcassApiCaseData.builder().build())

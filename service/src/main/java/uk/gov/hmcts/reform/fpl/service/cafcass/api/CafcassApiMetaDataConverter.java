@@ -10,14 +10,15 @@ public class CafcassApiMetaDataConverter implements CafcassApiCaseDataConverter 
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
+        final boolean citizenIsApplicant = YesNo.NO.equals(caseData.getIsLocalAuthority());
         return builder
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .dateSubmitted(caseData.getDateSubmitted())
             .applicationType(caseData.isC1Application() ? "C1" : "C110A")
             .ordersSought(caseData.getOrders().getOrderType())
             .dateOfCourtIssue(caseData.getDateOfIssue())
-            .citizenIsApplicant(YesNo.NO.equals(caseData.getIsLocalAuthority()))
-            .applicantLA(caseData.getCaseLocalAuthority())
-            .respondentLA(caseData.getRelatingLA());
+            .citizenIsApplicant(citizenIsApplicant)
+            .applicantLA(citizenIsApplicant ? null : caseData.getCaseLocalAuthority())
+            .respondentLA(citizenIsApplicant ? caseData.getRelatingLA() : null);
     }
 }
