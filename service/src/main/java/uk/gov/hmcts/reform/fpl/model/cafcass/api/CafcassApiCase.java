@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CafcassApiCase {
-    private Long caseId;
+    private Long id;
     private String jurisdiction;
     private String state;
     private String caseTypeId;

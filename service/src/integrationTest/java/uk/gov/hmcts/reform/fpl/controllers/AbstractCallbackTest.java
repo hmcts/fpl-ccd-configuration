@@ -9,16 +9,13 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 public abstract class AbstractCallbackTest extends AbstractTest {
@@ -258,14 +255,6 @@ public abstract class AbstractCallbackTest extends AbstractTest {
 
     protected CaseData extractCaseData(CaseDetails caseDetails) {
         return caseConverter.convert(caseDetails);
-    }
-
-    protected CaseDetails asCaseDetails(CaseData caseData) {
-        return CaseDetails.builder()
-            .id(caseData.getId())
-            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
-            .data(mapper.convertValue(caseData, MAP_TYPE))
-            .build();
     }
 
     protected CallbackRequest toCallBackRequest(CaseDetails caseDetails, CaseDetails caseDetailsBefore) {

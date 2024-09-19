@@ -161,6 +161,10 @@ public class ManageDocumentService {
         if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
             return CAFCASS;
         }
+        if (Optional.ofNullable(userService.getIdamRoles())
+            .orElse(Set.of()).contains(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName())) {
+            return CAFCASS;
+        }
 
         throw new IllegalStateException("Unable to determine document uploader type");
     }
@@ -632,7 +636,7 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
+    public List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 1) {
             try {
@@ -701,7 +705,7 @@ public class ManageDocumentService {
             .build());
     }
 
-    public Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
+    private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                         ConfidentialLevel level) {
         Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
         if (documentType.getBaseFieldNameResolver() != null) {

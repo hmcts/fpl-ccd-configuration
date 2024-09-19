@@ -74,7 +74,7 @@ public class CafcassApiSearchCaseService {
 
     private CafcassApiCase convertToCafcassApiCase(CaseDetails caseDetails) {
         return CafcassApiCase.builder()
-            .caseId(caseDetails.getId())
+            .id(caseDetails.getId())
             .jurisdiction(caseDetails.getJurisdiction())
             .state(caseDetails.getState())
             .caseTypeId(caseDetails.getCaseTypeId())
