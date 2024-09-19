@@ -636,7 +636,7 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
+    public List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 1) {
             try {
@@ -705,7 +705,7 @@ public class ManageDocumentService {
             .build());
     }
 
-    public Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
+    private Map<String, List<Element<?>>> toFieldNameToListOfElementMap(CaseData caseData, DocumentType documentType,
                                                                         ConfidentialLevel level) {
         Map<String, List<Element<?>>> ret = new LinkedHashMap<>();
         if (documentType.getBaseFieldNameResolver() != null) {
