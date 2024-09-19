@@ -765,14 +765,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "adultPsychiatricReportParentsList",
+    "CaseFieldID": "adultPsychRepParentsList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "familyCentreAssessNonResList",
+    "CaseFieldID": "famCentreAssessNonResList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -793,14 +793,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "independentSocialWorkerList",
+    "CaseFieldID": "indepSocialWorkerList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "multiDisciplinaryAssessList",
+    "CaseFieldID": "multiDisciplinAssessList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -884,21 +884,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychChildParentAndCarersList",
+    "CaseFieldID": "psychChildParentCarersList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyClinicalList",
+    "CaseFieldID": "psycReportChildOnlyEdList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyEdList",
+    "CaseFieldID": "psycReportChildOnlyEdList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -912,21 +912,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFullCogList",
+    "CaseFieldID": "psychRepParentFullCogList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFuncList",
+    "CaseFieldID": "psychRepParentFuncList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "toxicologyReportStatementList",
+    "CaseFieldID": "toxicologyStatementList",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -940,14 +940,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "adultPsychReportParentsListLA",
+    "CaseFieldID": "adultPsychRepParentsListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "familyCentreAssessNonResListLA",
+    "CaseFieldID": "famCentreAssessNonResListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -968,14 +968,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "independentSocialWorkerListLA",
+    "CaseFieldID": "indepSocialWorkerListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "multiDisciplinaryAssessListLA",
+    "CaseFieldID": "multiDisciplinAssessListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -1059,7 +1059,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychChildParentAndCarersListLA",
+    "CaseFieldID": "psychChildParentCarersListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -1073,7 +1073,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyEdListLA",
+    "CaseFieldID": "psycReportChildOnlyEdListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
@@ -1087,21 +1087,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFullCogListLA",
+    "CaseFieldID": "psychRepParentFullCogListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFuncListLA",
+    "CaseFieldID": "psychRepParentFuncListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "toxicologyReportStatementListLA",
+    "CaseFieldID": "toxicologyStatementListLA",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },

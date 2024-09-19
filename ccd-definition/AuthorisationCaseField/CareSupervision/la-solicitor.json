@@ -2226,14 +2226,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "adultPsychiatricReportParentsList",
+    "CaseFieldID": "adultPsychRepParentsList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "familyCentreAssessNonResList",
+    "CaseFieldID": "famCentreAssessNonResList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2254,14 +2254,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "independentSocialWorkerList",
+    "CaseFieldID": "indepSocialWorkerList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "multiDisciplinaryAssessList",
+    "CaseFieldID": "multiDisciplinAssessList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2345,21 +2345,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychChildParentAndCarersList",
+    "CaseFieldID": "psychChildParentCarersList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyClinicalList",
+    "CaseFieldID": "psycReportChildOnlyEdList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyEdList",
+    "CaseFieldID": "psycReportChildOnlyEdList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2373,35 +2373,35 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFullCogList",
+    "CaseFieldID": "psychRepParentFullCogList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFuncList",
+    "CaseFieldID": "psychRepParentFuncList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "toxicologyReportStatementList",
+    "CaseFieldID": "toxicologyStatementList",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "adultPsychReportParentsListLA",
+    "CaseFieldID": "adultPsychRepParentsListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "familyCentreAssessNonResListLA",
+    "CaseFieldID": "famCentreAssessNonResListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2422,14 +2422,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "independentSocialWorkerListLA",
+    "CaseFieldID": "indepSocialWorkerListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "multiDisciplinaryAssessListLA",
+    "CaseFieldID": "multiDisciplinAssessListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2513,7 +2513,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychChildParentAndCarersListLA",
+    "CaseFieldID": "psychChildParentCarersListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2527,7 +2527,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psycReportOnChildOnlyEdListLA",
+    "CaseFieldID": "psycReportChildOnlyEdListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -2541,21 +2541,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFullCogListLA",
+    "CaseFieldID": "psychRepParentFullCogListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportParentFuncListLA",
+    "CaseFieldID": "psychRepParentFuncListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "toxicologyReportStatementListLA",
+    "CaseFieldID": "toxicologyStatementListLA",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
