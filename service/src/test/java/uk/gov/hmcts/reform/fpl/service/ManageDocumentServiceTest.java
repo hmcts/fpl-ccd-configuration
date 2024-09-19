@@ -105,7 +105,6 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.HAEMATOLOGIST;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.INDEPENDENT_SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEDICAL_RECORDS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEETING_NOTES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MULTI_DISCIPLINARY_ASSESSMENT;
@@ -450,7 +449,6 @@ class ManageDocumentServiceTest {
                     toPair(PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD),
                     toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE),
                     toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING),
-                    toPair(LETTER_OF_INSTRUCTION),
                     toPair(TOXICOLOGY_REPORT),
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
