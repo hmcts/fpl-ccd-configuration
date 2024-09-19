@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,6 +82,30 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
         assertThat(actual.getCaseDocuments())
             .containsOnlyOnceElementsOf(getExpectedCafcassApiCaseDocuments(category, false, documentReferences));
 
+    }
+
+    @Test
+    void shouldReturnDistinctDocument() {
+        DocumentReference c2 = getTestDocumentReference();
+        DocumentReference supplementDoc = getTestDocumentReference();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(C2DocumentBundle.builder()
+                .document(c2)
+                .supplementsBundle(wrapElements(
+                    Supplement.builder().document(supplementDoc).build(),
+                    Supplement.builder().document(supplementDoc).build()))
+                .supportingEvidenceBundle(wrapElements(
+                    SupportingEvidenceBundle.builder().document(supplementDoc).build()))
+                .build())
+            .build();
+
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+            .build();
+
+        testCaseDocument(caseData, List.of(c2, supplementDoc), C2_APPLICATION_DOCUMENTS);
     }
 
     @Nested
@@ -471,8 +494,7 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
                 .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle)).build();
 
             testAdditionalApplications(caseData,
-                List.of(C2, SUPPLEMENT_1, SUPPLEMENT_2, SUPPORTING_EVIDENCE_1, SUPPORTING_EVIDENCE_2,
-                    DRAFT_ORDER_1, DRAFT_ORDER_2),
+                List.of(C2, SUPPLEMENT_1, SUPPLEMENT_2, SUPPORTING_EVIDENCE_1, SUPPORTING_EVIDENCE_2),
                 List.of(
                     OTHER_APPLICATION, SUPPLEMENT_3, SUPPLEMENT_4, SUPPORTING_EVIDENCE_3, SUPPORTING_EVIDENCE_4));
         }
@@ -562,18 +584,25 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
             Mockito.reset(manageDocumentService);
             if (isNotEmpty(documentType.getBaseFieldNameResolver())) {
                 when(
-                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(NON_CONFIDENTIAL))
+                    manageDocumentService.readFromFieldName(any(),
+                        eq(documentType.getBaseFieldNameResolver().apply(NON_CONFIDENTIAL)))
                 ).thenReturn(
-                    Map.of(documentType.getBaseFieldNameResolver().apply(NON_CONFIDENTIAL), NON_CONFIDENTIAL_DOCS)
+                    NON_CONFIDENTIAL_DOCS
                 );
 
                 when(
-                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(LA))
-                ).thenReturn(Map.of(documentType.getBaseFieldNameResolver().apply(LA), CONFIDENTIAL_DOC_LA));
+                    manageDocumentService.readFromFieldName(any(),
+                        eq(documentType.getBaseFieldNameResolver().apply(LA)))
+                ).thenReturn(
+                    CONFIDENTIAL_DOC_LA
+                );
 
                 when(
-                    manageDocumentService.toFieldNameToListOfElementMap(any(), eq(documentType), eq(CTSC))
-                ).thenReturn(Map.of(documentType.getBaseFieldNameResolver().apply(CTSC), CONFIDENTIAL_DOC_CTSC));
+                    manageDocumentService.readFromFieldName(any(),
+                        eq(documentType.getBaseFieldNameResolver().apply(CTSC)))
+                ).thenReturn(
+                    CONFIDENTIAL_DOC_CTSC
+                );
 
                 testCaseDocument(CaseData.builder().build(),
                     List.of(NON_CONFIDENTIAL_DOC_1, NON_CONFIDENTIAL_DOC_2, CONFIDENTIAL_DOC_LA_1,
@@ -587,11 +616,10 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
 
         @Test
         void shouldReturnEmptyListIfNoDocumentFound() {
-            when(manageDocumentService.toFieldNameToListOfElementMap(any(), any(), any())).thenReturn(Map.of());
+            when(manageDocumentService.readFromFieldName(any(), any())).thenReturn(List.of());
             testCaseDocument(CaseData.builder().build(), List.of(), "");
 
-            when(manageDocumentService.toFieldNameToListOfElementMap(any(), any(), any()))
-                .thenReturn(Map.of("", List.of()));
+            when(manageDocumentService.readFromFieldName(any(), any())).thenReturn(null);
             testCaseDocument(CaseData.builder().build(), List.of(), "");
         }
     }

@@ -70,7 +70,7 @@ public class CafcassApiSearchCaseServiceTest {
     private static final CafcassApiCaseData MOCK_CONVERTED_CAFCASSAPICASEDATA = mock(CafcassApiCaseData.class);
 
     private static final CafcassApiCase EXPECTED_CAFCASS_CASE_1 = CafcassApiCase.builder()
-        .caseId(1L)
+        .id(1L)
         .jurisdiction(CaseDefinitionConstants.JURISDICTION)
         .state(State.CASE_MANAGEMENT.getValue())
         .caseTypeId(CaseDefinitionConstants.CASE_TYPE)
@@ -80,7 +80,7 @@ public class CafcassApiSearchCaseServiceTest {
         .build();
 
     private static final CafcassApiCase EXPECTED_CAFCASS_CASE_2 = EXPECTED_CAFCASS_CASE_1.toBuilder()
-        .caseId(2L)
+        .id(2L)
         .caseData(MOCK_CONVERTED_CAFCASSAPICASEDATA)
         .build();
 
