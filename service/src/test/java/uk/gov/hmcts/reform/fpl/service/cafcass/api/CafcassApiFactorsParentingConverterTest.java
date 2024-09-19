@@ -40,7 +40,7 @@ public class CafcassApiFactorsParentingConverterTest extends CafcassApiConverter
     @Test
     void shouldReturnEmptyIfNullOrEmpty() {
         CafcassApiCaseData expected = CafcassApiCaseData.builder()
-            .factorsParenting(CafcassApiFactorsParenting.builder().build())
+            .factorsParenting(null)
             .build();
         testConvert(CaseData.builder().factorsParenting(null).build(), expected);
         testConvert(CaseData.builder().factorsParenting(FactorsParenting.builder().build()).build(), expected);

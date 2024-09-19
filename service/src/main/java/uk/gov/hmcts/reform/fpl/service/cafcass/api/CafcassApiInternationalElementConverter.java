@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiInternationalElementConverter implements CafcassApiCaseDataConverter {
+    private final static CafcassApiInternationalElement EMPTY = CafcassApiInternationalElement.builder().build();
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -35,6 +36,7 @@ public class CafcassApiInternationalElementConverter implements CafcassApiCaseDa
                     .getInternationalAuthorityInvolvementDetails());
         }
 
-        return builder.build();
+        CafcassApiInternationalElement cafcassApiInternationalElement = builder.build();
+        return EMPTY.equals(cafcassApiInternationalElement) ? null : cafcassApiInternationalElement;
     }
 }

@@ -50,7 +50,7 @@ public class CafcassApiInternationalElementConverterTest extends CafcassApiConve
     @Test
     void shouldReturnEmptyObjectIfNull() {
         CafcassApiCaseData expected = CafcassApiCaseData.builder()
-            .internationalElement(CafcassApiInternationalElement.builder().build())
+            .internationalElement(null)
             .build();
 
         testConvert(CaseData.builder().internationalElement(null).build(), expected);
