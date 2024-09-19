@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiInternationalElement {
     private boolean possibleCarer;
     private String possibleCarerReason;

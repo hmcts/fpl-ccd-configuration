@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiOther {
     private String name;
     private String dateOfBirth;

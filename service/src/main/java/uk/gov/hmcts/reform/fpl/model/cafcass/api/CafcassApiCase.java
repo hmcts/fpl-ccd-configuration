@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiCase {
     private Long id;
     private String jurisdiction;

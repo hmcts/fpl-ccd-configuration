@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiRespondent {
     private String firstName;
     private String lastName;

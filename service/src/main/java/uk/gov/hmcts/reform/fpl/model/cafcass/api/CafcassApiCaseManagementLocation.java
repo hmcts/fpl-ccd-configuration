@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiCaseManagementLocation {
     private String region;
     private String baseLocation;

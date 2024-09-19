@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiRisk {
     private List<String> neglectOccurrences;
     private List<String> sexualAbuseOccurrences;
