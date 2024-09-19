@@ -922,7 +922,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "psycReportChildOnlyEdList",
+    "ID": "psycReportChildClinList",
     "FieldType": "Collection",
     "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinical",
     "Label": "Psychological Report on Child Only - Clinical",
@@ -932,7 +932,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "psycReportChildOnlyClinicalListLA",
+    "ID": "psycReportChildClinListLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "PsychologicalReportOnChildOnlyClinicalConfidential",
     "Label": "Psychological Report on Child Only - Clinical",
