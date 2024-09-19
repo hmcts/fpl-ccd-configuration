@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseManagementLocatio
 
 @Service
 public class CafcassApiCaseManagementLocationConverter implements CafcassApiCaseDataConverter {
+    private static final CafcassApiCaseManagementLocation EMPTY = CafcassApiCaseManagementLocation.builder().build();
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -22,6 +23,8 @@ public class CafcassApiCaseManagementLocationConverter implements CafcassApiCase
         if (caseLocation != null) {
             builder = builder.region(caseLocation.getRegion()).baseLocation(caseLocation.getBaseLocation());
         }
-        return builder.build();
+
+        CafcassApiCaseManagementLocation cafcassApiCaseManagementLocation = builder.build();
+        return EMPTY.equals(cafcassApiCaseManagementLocation) ? null : cafcassApiCaseManagementLocation;
     }
 }

@@ -26,9 +26,9 @@ public class CafcassApiCaseManagementLocationConverterTest extends CafcassApiCon
     }
 
     @Test
-    void shouldReturnEmptyObjectIfNullOrEmpty() {
+    void shouldReturnNullIfNullOrEmpty() {
         CafcassApiCaseData expected = CafcassApiCaseData.builder()
-            .caseManagementLocation(CafcassApiCaseManagementLocation.builder().build())
+            .caseManagementLocation(null)
             .build();
 
         testConvert(CaseData.builder().caseManagementLocation(null).build(), expected);

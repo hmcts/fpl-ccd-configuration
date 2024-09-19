@@ -14,8 +14,11 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 public class CafcassApiHelper {
+    private final static CafcassApiAddress EMPTY_ADDRESS = CafcassApiAddress.builder().build();
+    private final static CafcassApiSolicitor EMPTY_SOLICITOR = CafcassApiSolicitor.builder().build();
+
     public static CafcassApiAddress getCafcassApiAddress(Address address) {
-        return Optional.ofNullable(address)
+        CafcassApiAddress cafcassApiAddress = Optional.ofNullable(address)
             .map(add -> CafcassApiAddress.builder()
                 .addressLine1(add.getAddressLine1())
                 .addressLine2(add.getAddressLine2())
@@ -26,6 +29,8 @@ public class CafcassApiHelper {
                 .country(add.getCountry())
                 .build())
             .orElse(null);
+
+        return EMPTY_ADDRESS.equals(cafcassApiAddress) ? null : cafcassApiAddress;
     }
 
     public static boolean isYes(String yesNo) {
@@ -39,7 +44,7 @@ public class CafcassApiHelper {
     }
 
     public static CafcassApiSolicitor getCafcassApiSolicitor(RespondentSolicitor respondentSolicitor) {
-        return Optional.ofNullable(respondentSolicitor)
+        CafcassApiSolicitor cafcassApiSolicitor = Optional.ofNullable(respondentSolicitor)
             .map(solicitor  -> {
                 CafcassApiSolicitor.CafcassApiSolicitorBuilder builder = CafcassApiSolicitor.builder()
                     .email(solicitor.getEmail())
@@ -53,6 +58,8 @@ public class CafcassApiHelper {
                 return builder.build();
             })
             .orElse(null);
+
+        return EMPTY_SOLICITOR.equals(cafcassApiSolicitor) ? null : cafcassApiSolicitor;
     }
 
     public static String getGenderForApiResponse(String genderStr) {
