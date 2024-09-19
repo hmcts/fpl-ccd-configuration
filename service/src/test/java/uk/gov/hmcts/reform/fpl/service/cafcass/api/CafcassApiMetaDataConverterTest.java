@@ -70,4 +70,9 @@ public class CafcassApiMetaDataConverterTest extends CafcassApiConverterTestBase
 
         testConvert(caseData, expected);
     }
+
+    @Test
+    void shouldConvertIfAllFieldsAreEmptyOrNull() {
+        testConvert(CaseData.builder().build(), CafcassApiCaseData.builder().applicationType("C110A").build());
+    }
 }
