@@ -374,22 +374,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "expertReports",
-    "CategoryLabel": "Expert reports",
-    "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1201"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CategoryID": "expertReportsConfidential",
-    "CategoryLabel": "Confidential",
-    "ParentCategoryID": "expertReports",
-    "DisplayOrder": "12010"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "adultPsychiatricReportOnParents",
     "CategoryLabel": "Adult Psychiatric Report On Parent(s)",
     "ParentCategoryID": "parent_expertReports",
@@ -774,10 +758,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "expertReports",
+    "CategoryLabel": "Expert reports",
+    "ParentCategoryID": "parent_expertReports",
+    "DisplayOrder": "1228"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "expertReportsConfidential",
+    "CategoryLabel": "Confidential",
+    "ParentCategoryID": "expertReports",
+    "DisplayOrder": "12208"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "drugAndAlcoholReports",
     "CategoryLabel": "Drug and alcohol reports",
     "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1202"
+    "DisplayOrder": "1229"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -785,7 +785,7 @@
     "CategoryID": "drugAndAlcoholReportsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "drugAndAlcoholReports",
-    "DisplayOrder": "12020"
+    "DisplayOrder": "12209"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -793,7 +793,7 @@
     "CategoryID": "lettersOfInstructionReferrals",
     "CategoryLabel": "Letters of instruction/referrals",
     "ParentCategoryID": "parent_expertReports",
-    "DisplayOrder": "1203"
+    "DisplayOrder": "1230"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -801,7 +801,7 @@
     "CategoryID": "lettersOfInstructionReferralsConfidential",
     "CategoryLabel": "Confidential",
     "ParentCategoryID": "lettersOfInstructionReferrals",
-    "DisplayOrder": "12030"
+    "DisplayOrder": "12210"
   },
   {
     "LiveFrom": "01/01/2017",
