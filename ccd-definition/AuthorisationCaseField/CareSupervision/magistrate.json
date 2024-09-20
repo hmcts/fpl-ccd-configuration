@@ -1766,7 +1766,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportOnParentAndChildList",
+    "CaseFieldID": "psychReportParentChildList",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"
   },
@@ -1941,7 +1941,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "psychReportOnParentAndChildListLA",
+    "CaseFieldID": "psychReportParentChildListLA",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"
   },
