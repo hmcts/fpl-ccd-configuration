@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.notification.DocumentUploaderType;
+import uk.gov.hmcts.reform.fpl.interceptors.CafcassApiInterceptor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
@@ -84,10 +85,13 @@ public class CafcassApiDocumentUploadControllerTest extends AbstractTest {
     private CoreCaseDataService coreCaseDataService;
     @MockBean
     private UserService userService;
+    @MockBean
+    private CafcassApiInterceptor cafcassApiInterceptor;
 
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        when(cafcassApiInterceptor.preHandle(any(), any(), any())).thenReturn(true);
         givenCurrentUser(CAFCASS_SYSTEM_UPDATE_USER_INFO);
         givenCurrentUser(CAFCASS_SYSTEM_UPDATE_USER_DETAIL);
     }
