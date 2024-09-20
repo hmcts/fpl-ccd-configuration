@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiFactorsParentingConverter implements CafcassApiCaseDataConverter {
+    private final static CafcassApiFactorsParenting EMPTY = CafcassApiFactorsParenting.builder().build();
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -17,18 +18,19 @@ public class CafcassApiFactorsParentingConverter implements CafcassApiCaseDataCo
     }
 
     private CafcassApiFactorsParenting getCafcassApiFactorsParenting(CaseData caseData) {
+        CafcassApiFactorsParenting.CafcassApiFactorsParentingBuilder builder = CafcassApiFactorsParenting.builder();
+
         FactorsParenting factorsParenting = caseData.getFactorsParenting();
         if (factorsParenting != null) {
-            return CafcassApiFactorsParenting.builder()
-                .alcoholDrugAbuse(isYes(factorsParenting.getAlcoholDrugAbuse()))
+            builder = builder.alcoholDrugAbuse(isYes(factorsParenting.getAlcoholDrugAbuse()))
                 .alcoholDrugAbuseReason(factorsParenting.getAlcoholDrugAbuseReason())
                 .domesticViolence(isYes(factorsParenting.getDomesticViolence()))
                 .domesticViolenceReason(factorsParenting.getDomesticViolenceReason())
                 .anythingElse(isYes(factorsParenting.getAnythingElse()))
-                .anythingElseReason(factorsParenting.getAnythingElseReason())
-                .build();
+                .anythingElseReason(factorsParenting.getAnythingElseReason());
         }
 
-        return null;
+        CafcassApiFactorsParenting cafcassApiFactorsParenting = builder.build();
+        return EMPTY.equals(cafcassApiFactorsParenting) ? null : cafcassApiFactorsParenting;
     }
 }

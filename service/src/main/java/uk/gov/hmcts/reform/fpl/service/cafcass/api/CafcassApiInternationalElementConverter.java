@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiInternationalElementConverter implements CafcassApiCaseDataConverter {
+    private final static CafcassApiInternationalElement EMPTY = CafcassApiInternationalElement.builder().build();
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -17,10 +18,12 @@ public class CafcassApiInternationalElementConverter implements CafcassApiCaseDa
     }
 
     private CafcassApiInternationalElement getCafcassApiInternationalElement(CaseData caseData) {
+        CafcassApiInternationalElement.CafcassApiInternationalElementBuilder builder =
+            CafcassApiInternationalElement.builder();
+
         final InternationalElement internationalElement = caseData.getInternationalElement();
         if (internationalElement != null) {
-            return CafcassApiInternationalElement.builder()
-                .possibleCarer(isYes(internationalElement.getPossibleCarer()))
+            builder = builder.possibleCarer(isYes(internationalElement.getPossibleCarer()))
                 .possibleCarerReason(internationalElement.getPossibleCarerReason())
                 .significantEvents(isYes(internationalElement.getSignificantEvents()))
                 .significantEventsReason(internationalElement.getSignificantEventsReason())
@@ -30,10 +33,10 @@ public class CafcassApiInternationalElementConverter implements CafcassApiCaseDa
                 .proceedingsReason(internationalElement.getProceedingsReason())
                 .internationalAuthorityInvolvement(isYes(internationalElement.getInternationalAuthorityInvolvement()))
                 .internationalAuthorityInvolvementDetails(internationalElement
-                    .getInternationalAuthorityInvolvementDetails())
-                .build();
+                    .getInternationalAuthorityInvolvementDetails());
         }
 
-        return null;
+        CafcassApiInternationalElement cafcassApiInternationalElement = builder.build();
+        return EMPTY.equals(cafcassApiInternationalElement) ? null : cafcassApiInternationalElement;
     }
 }
