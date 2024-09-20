@@ -233,7 +233,7 @@ public enum DocumentType {
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_EXPERT_REPORTS, 380, DEFAULT_NOTIFICATION_CONFIG),
-    PROFESSIONAL_DRUG_ALCOHOL("└─ Professional: Drug/Alcoho", standardResolver(
+    PROFESSIONAL_DRUG_ALCOHOL("└─ Professional: Drug/Alcohol", standardResolver(
         "profDrugAlcoholList"),
         false, false, false,
         defaultWithDocumentBuilder(),
