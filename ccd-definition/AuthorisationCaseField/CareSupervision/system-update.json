@@ -331,6 +331,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "isLocalAuthority",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "relatingLA",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseLocalAuthority",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
@@ -1853,13 +1867,6 @@
     "CaseFieldID": "representativeType",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isLocalAuthority",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
