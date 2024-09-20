@@ -7,7 +7,7 @@ import * as qs from 'qs';
 import lodash from 'lodash';
 import {APIRequestContext} from '@playwright/test';
 
-export const getAccessToken = async ({user}: { user: any }) => {
+export const getAccessToken = async (user: { email: string, password: string }) => {
     let response;
     try {
         let axiosConfig = {
@@ -72,7 +72,7 @@ export const updateCase = async (caseName = 'e2e Test', caseID: string, caseData
 }
 
 export const apiRequest = async (postURL: string, authUser: any, method: string = 'get', data: any = {}) => {
-    const systemUserAuthToke = await getAccessToken({user: authUser});
+    const systemUserAuthToke = await getAccessToken(authUser);
     const requestConfig = {
         method: method,
         url: postURL,
@@ -116,7 +116,7 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, user: {
     email: string,
     password: string
 }, startTime: string, endTime: string) => {
-    const UserAuthToken = await getAccessToken({user: user});
+    const UserAuthToken = await getAccessToken(user);
 
     let response = await request.get(urlConfig.cafcassAPISearch,
         {
@@ -133,15 +133,13 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, user: {
 }
 
 export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { email: string, password: string }) => {
-    const UserAuthToken = await getAccessToken({user: user});
-    let response = await request.get(urlConfig.cafcassAPISearch + '//documents//',
+    const UserAuthToken = await getAccessToken(user);
+    let response = await request.get(urlConfig.cafcassAPISearch + '/documents/d4e7fad0-3a89-48e4-af75-63d8b30aad32/binary',
         {
             headers: {
                 'Authorization': `Bearer ${UserAuthToken}`,
-                'Content-Type': 'application/json',
-                '': ''
+
             }
-            , params: {}
         })
     return response;
 }
@@ -154,7 +152,7 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
     email: string;
     children: string[];
 }[] | undefined) => {
-    const UserAuthToken = await getAccessToken({user: user});
+    const UserAuthToken = await getAccessToken(user);
     let url = `${urlConfig.cafcassAPISearch}/${caseID}/guardians`
     let response = await request.post(url,
         {
@@ -164,6 +162,22 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
             },
             data: data,
 
+        })
+    return response;
+}
+export const cafcassAPICaseDocSearch = async (request: APIRequestContext, user: {
+    email: string,
+    password: string
+}, documentId:string) => {
+    const UserAuthToken = await getAccessToken(user);
+    let url = `${urlConfig.cafcassAPISearch}/documents/{documentId}/binary`
+
+    let response = await request.get(urlConfig.cafcassAPISearch,
+        {
+            headers: {
+                'Authorization': `Bearer ${UserAuthToken}`,
+                'Content-Type': 'application/json'
+            }
         })
     return response;
 }

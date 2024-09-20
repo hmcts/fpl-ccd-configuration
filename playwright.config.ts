@@ -39,6 +39,11 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+
+    {
+        name: 'access token setup',
+        testMatch: /global\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
@@ -60,8 +65,17 @@ export default defineConfig({
         timeout: 3*60*1000,
         expect: { timeout: 1*60*1000 },
     },
+      {
+          name: "CafcassAPI",
+          use: { ...devices["Desktop Chrome"] },
+          retries: 3,
+          timeout: 3*60*1000,
+          expect: { timeout: 1*60*1000 },
+          dependencies:
+      },
 
-    /* Test against mobile viewports. */
+
+      /* Test against mobile viewports. */
     // {
     //   name: "Mobile Chrome",
     //   use: { ...devices["Pixel 5"] },

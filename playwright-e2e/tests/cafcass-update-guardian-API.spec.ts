@@ -8,7 +8,7 @@ import {
 } from "../settings/user-credentials";
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 
-test.describe(' CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
+test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
     let startTime = new Date().toISOString();
 
     test(' Cafcass user update the gaurdian details',
@@ -52,7 +52,7 @@ test.describe(' CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
             await expect(page.locator('#case-viewer-field-read--guardians')).toContainText('tom.mac@mail.com');
 
         })
-    test('@guardian update gaurdian details for cases in not valid state', async ({request}) => {
+    test(' update gaurdian details for cases in not valid state', async ({request}) => {
         let caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
         console.log("case " + caseNumber);
         let data = [
