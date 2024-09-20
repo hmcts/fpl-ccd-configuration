@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiRisk;
 
 @Service
 public class CafcassApiRisksConverter implements CafcassApiCaseDataConverter {
-    private final static CafcassApiRisk EMPTY_RISK = CafcassApiRisk.builder().build();
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -16,18 +15,16 @@ public class CafcassApiRisksConverter implements CafcassApiCaseDataConverter {
     }
 
     private CafcassApiRisk getCafcassApiRisk(CaseData caseData) {
-        CafcassApiRisk.CafcassApiRiskBuilder builder = CafcassApiRisk.builder();
-
         Risks risk = caseData.getRisks();
         if (risk != null) {
-            builder = builder
+            return CafcassApiRisk.builder()
                 .neglectOccurrences(risk.getNeglectOccurrences())
                 .sexualAbuseOccurrences(risk.getSexualAbuseOccurrences())
                 .physicalHarmOccurrences(risk.getPhysicalHarmOccurrences())
-                .emotionalHarmOccurrences(risk.getEmotionalHarmOccurrences());
+                .emotionalHarmOccurrences(risk.getEmotionalHarmOccurrences())
+                .build();
         }
 
-        CafcassApiRisk cafcassApiRisk = builder.build();
-        return EMPTY_RISK.equals(cafcassApiRisk) ? null : cafcassApiRisk;
+        return null;
     }
 }
