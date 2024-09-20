@@ -19,7 +19,8 @@ public class CafcassApiInternationalElementConverter implements CafcassApiCaseDa
     private CafcassApiInternationalElement getCafcassApiInternationalElement(CaseData caseData) {
         final InternationalElement internationalElement = caseData.getInternationalElement();
         if (internationalElement != null) {
-            return CafcassApiInternationalElement.builder().possibleCarer(isYes(internationalElement.getPossibleCarer()))
+            return CafcassApiInternationalElement.builder()
+                .possibleCarer(isYes(internationalElement.getPossibleCarer()))
                 .possibleCarerReason(internationalElement.getPossibleCarerReason())
                 .significantEvents(isYes(internationalElement.getSignificantEvents()))
                 .significantEventsReason(internationalElement.getSignificantEventsReason())

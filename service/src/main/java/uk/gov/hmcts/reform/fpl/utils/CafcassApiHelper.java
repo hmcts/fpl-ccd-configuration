@@ -14,8 +14,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 public class CafcassApiHelper {
-    private final static CafcassApiAddress EMPTY_ADDRESS = CafcassApiAddress.builder().build();
-    private final static CafcassApiSolicitor EMPTY_SOLICITOR = CafcassApiSolicitor.builder().build();
+    private static final CafcassApiAddress EMPTY_ADDRESS = CafcassApiAddress.builder().build();
+    private static final CafcassApiSolicitor EMPTY_SOLICITOR = CafcassApiSolicitor.builder().build();
 
     public static CafcassApiAddress getCafcassApiAddress(Address address) {
         CafcassApiAddress cafcassApiAddress = Optional.ofNullable(address)
