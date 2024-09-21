@@ -98,7 +98,6 @@ withNightlyPipeline(type, product, component) {
         env.TEST_RETRIES = 5
         env.TESTS_FOR_ACCESSIBILITY = true
         env.ENV = 'aat'
-        env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
     }
 
     afterAlways('fullFunctionalTest') {
