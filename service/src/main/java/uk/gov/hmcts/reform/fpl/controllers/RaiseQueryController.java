@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/callback/raise-query")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
