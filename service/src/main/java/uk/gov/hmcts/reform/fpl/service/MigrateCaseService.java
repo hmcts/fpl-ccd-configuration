@@ -1147,6 +1147,25 @@ public class MigrateCaseService {
         return hearingDetailsMap;
     }
 
+    public Map<String, Object> updateCancelledHearingDetailsType(CaseData caseData, String migrationId) {
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
+        }
+
+        return hearingDetailsMap;
+    }
+
     private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
