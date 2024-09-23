@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import static java.util.Collections.emptyList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/callback/raise-query")
@@ -21,8 +21,8 @@ public class RaiseQueryController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        caseDetails.getData().put("qmCaseQueriesCollectionChildSolA", emptyList());
-        caseDetails.getData().put("qmCaseQueriesCollectionChildSolB", emptyList());
+        caseDetails.getData().put("qmCaseQueriesCollectionChildSolA", null);
+        caseDetails.getData().put("qmCaseQueriesCollectionChildSolB", null);
 
         return respond(caseDetails);
     }
