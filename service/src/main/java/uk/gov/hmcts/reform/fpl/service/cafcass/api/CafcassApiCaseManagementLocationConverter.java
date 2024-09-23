@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseManagementLocatio
 @Service
 public class CafcassApiCaseManagementLocationConverter implements CafcassApiCaseDataConverter {
     private static final CafcassApiCaseManagementLocation EMPTY = CafcassApiCaseManagementLocation.builder().build();
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {

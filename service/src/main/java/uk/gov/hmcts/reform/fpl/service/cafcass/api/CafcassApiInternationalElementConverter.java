@@ -10,7 +10,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiInternationalElementConverter implements CafcassApiCaseDataConverter {
-    private final static CafcassApiInternationalElement EMPTY = CafcassApiInternationalElement.builder().build();
+    private static final CafcassApiInternationalElement EMPTY = CafcassApiInternationalElement.builder().build();
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
