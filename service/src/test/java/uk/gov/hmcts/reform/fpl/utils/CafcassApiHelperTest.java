@@ -40,6 +40,7 @@ public class CafcassApiHelperTest {
         CafcassApiAddress actual = CafcassApiHelper.getCafcassApiAddress(address);
         assertEquals(expected, actual);
         assertNull(CafcassApiHelper.getCafcassApiAddress(null));
+        assertNull(CafcassApiHelper.getCafcassApiAddress(Address.builder().build()));
     }
 
     @Test
@@ -79,6 +80,7 @@ public class CafcassApiHelperTest {
 
         assertEquals(expected, CafcassApiHelper.getCafcassApiSolicitor(solicitor));
         assertNull(CafcassApiHelper.getCafcassApiSolicitor(null));
+        assertNull(CafcassApiHelper.getCafcassApiSolicitor(RespondentSolicitor.builder().build()));
     }
 
     @Test

@@ -10,6 +10,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiFactorsParentingConverter implements CafcassApiCaseDataConverter {
+    private static final CafcassApiFactorsParenting EMPTY = CafcassApiFactorsParenting.builder().build();
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -28,6 +30,8 @@ public class CafcassApiFactorsParentingConverter implements CafcassApiCaseDataCo
                 .anythingElse(isYes(factorsParenting.getAnythingElse()))
                 .anythingElseReason(factorsParenting.getAnythingElseReason());
         }
-        return builder.build();
+
+        CafcassApiFactorsParenting cafcassApiFactorsParenting = builder.build();
+        return EMPTY.equals(cafcassApiFactorsParenting) ? null : cafcassApiFactorsParenting;
     }
 }

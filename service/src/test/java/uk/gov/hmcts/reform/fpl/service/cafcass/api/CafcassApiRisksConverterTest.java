@@ -41,7 +41,7 @@ public class CafcassApiRisksConverterTest extends CafcassApiConverterTestBase {
 
     @Test
     void shouldReturnEmptyObjectIfNullOrEmpty() {
-        CafcassApiCaseData expected = CafcassApiCaseData.builder().risks(CafcassApiRisk.builder().build()).build();
+        CafcassApiCaseData expected = CafcassApiCaseData.builder().risks(null).build();
 
         testConvert(CaseData.builder().risks(null).build(), expected);
         testConvert(CaseData.builder().risks(Risks.builder().build()).build(), expected);

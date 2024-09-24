@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.cafcass.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiRespondent {
     private String firstName;
     private String lastName;
