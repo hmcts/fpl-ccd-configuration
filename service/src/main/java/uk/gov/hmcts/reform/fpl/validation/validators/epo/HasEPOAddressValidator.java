@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.epo;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOAddress;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
-import static org.apache.logging.log4j.util.Strings.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 
 public class HasEPOAddressValidator implements ConstraintValidator<HasEPOAddress, Orders> {
