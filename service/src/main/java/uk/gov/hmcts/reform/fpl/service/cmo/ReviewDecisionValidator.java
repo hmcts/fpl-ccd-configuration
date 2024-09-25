@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 
