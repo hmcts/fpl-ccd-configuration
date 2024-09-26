@@ -565,9 +565,8 @@ class DraftCMORemovalActionTest {
             .build());
 
         assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO))
-            .usingRecursiveComparison()
-            .isEqualTo(new IllegalStateException(format("Failed to find hearing order bundle that contains order %s",
-                TO_REMOVE_ORDER_ID)));
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(format("Failed to find hearing order bundle that contains order %s", TO_REMOVE_ORDER_ID));
     }
 
     @Test
@@ -582,9 +581,9 @@ class DraftCMORemovalActionTest {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
 
         assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO))
-            .usingRecursiveComparison()
-            .isEqualTo(new IllegalStateException(format("Failed to find hearing order that contains order %s",
-                TO_REMOVE_ORDER_ID)));
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(format("Failed to find hearing order that contains order %s",
+                TO_REMOVE_ORDER_ID));
     }
 
     @Test
