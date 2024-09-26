@@ -213,7 +213,7 @@ public enum DocumentType {
     GUARDIAN_REPORT("Guardian report", standardResolver("guardianReportsList"),
         true, true, true,
         defaultWithDocumentBuilder(),
-        GUARDIAN_EVIDENCE, 350, CAFCASS_API_NOTIFICATION_CONFIG, "guardianReports"),
+        null, 350, CAFCASS_API_NOTIFICATION_CONFIG, "guardianReports"),
     ARCHIVED_DOCUMENTS("Archived migrated data", standardResolver("archivedDocumentsList"),
         true, true, true,
     defaultWithDocumentBuilder(),
