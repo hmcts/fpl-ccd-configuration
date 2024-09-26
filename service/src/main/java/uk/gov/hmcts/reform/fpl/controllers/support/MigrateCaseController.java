@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import static java.lang.String.format;
-
 @Slf4j
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -33,7 +31,7 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2527", this::run2527,
+        "DFPL-2551", this::run2551,
         "DFPL-2507", this::run2507
     );
     private final CaseConverter caseConverter;
@@ -62,29 +60,14 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2527(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2527";
-        final long expectedCaseId = 1682671655271774L;
+    private void run2551(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2551";
+        final long expectedCaseId = 1726735474157650L;
 
         migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
 
-        CaseData caseData = getCaseData(caseDetails);
-
-        Long caseId = caseData.getId();
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
-    }
-
-    private void run2491(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2491";
         final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, migrationId));
+        caseDetails.getData().putAll(migrateCaseService.removeAddressFromEPO(caseData, migrationId));
     }
 
     private void run2507(CaseDetails caseDetails) {

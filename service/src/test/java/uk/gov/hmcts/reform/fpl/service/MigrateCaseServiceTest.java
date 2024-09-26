@@ -22,9 +22,11 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.UrgencyTimeFrameType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -45,6 +47,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingDocuments;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.ManagedDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
@@ -101,6 +104,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.JUDGMENT_AFTER_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElementsWithUUIDs;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @ExtendWith({MockitoExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -3432,6 +3436,53 @@ class MigrateCaseServiceTest {
             assertThatThrownBy(() -> underTest.removeRespondentsAwareReason(caseData, MIGRATION_ID))
                 .isInstanceOf(AssertionError.class)
                 .hasMessage(format("Migration {id = %s}, hearing not found", MIGRATION_ID));
+        }
+    }
+
+    @Nested
+    class RemoveEPOAddress {
+        @Test
+        void shouldRemoveAddressFieldOnly() {
+            Orders orders = Orders.builder()
+                .address(testAddress())
+                .orderType(List.of(OrderType.CHILD_RECOVERY_ORDER, OrderType.EMERGENCY_PROTECTION_ORDER))
+                .court("court")
+                .directions("direction")
+                .childAssessmentOrderContactDirections("childAssessmentOrderContactDirections")
+                .directionDetails("directionDetails")
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .childRecoveryOrderDirectionsAppliedFor("childRecoveryOrderDirectionsAppliedFor")
+                .emergencyProtectionOrderDetails("emergencyProtectionOrderDetails")
+                .otherOrder("otherOrder")
+                .build();
+
+            CaseData caseData = CaseData.builder().id(1L).orders(orders).build();
+
+            assertThat(underTest.removeAddressFromEPO(caseData, MIGRATION_ID))
+                .extracting("orders")
+                .isEqualTo(orders.toBuilder().address(null).build());
+        }
+
+        @Test
+        void shouldValidateCaseIsEPO() {
+            Orders orders = Orders.builder()
+                .address(testAddress())
+                .orderType(List.of(OrderType.CHILD_RECOVERY_ORDER))
+                .court("court")
+                .directions("direction")
+                .childAssessmentOrderContactDirections("childAssessmentOrderContactDirections")
+                .directionDetails("directionDetails")
+                .epoType(EPOType.PREVENT_REMOVAL)
+                .childRecoveryOrderDirectionsAppliedFor("childRecoveryOrderDirectionsAppliedFor")
+                .emergencyProtectionOrderDetails("emergencyProtectionOrderDetails")
+                .otherOrder("otherOrder")
+                .build();
+
+            CaseData caseData = CaseData.builder().id(1L).orders(orders).build();
+
+            assertThatThrownBy(() -> underTest.removeAddressFromEPO(caseData, MIGRATION_ID))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage(format("Migration {id = %s}, this is not an EPO", MIGRATION_ID));
         }
     }
 }

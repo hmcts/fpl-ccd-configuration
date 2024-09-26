@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -1272,5 +1273,13 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
+        if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+            throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
+        }
+
+        return Map.of("orders", caseData.getOrders().toBuilder().address(null).build());
     }
 }
