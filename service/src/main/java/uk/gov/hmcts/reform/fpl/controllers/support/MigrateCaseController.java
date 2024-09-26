@@ -33,7 +33,6 @@ public class MigrateCaseController extends CallbackController {
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2527", this::run2527,
         "DFPL-2551", this::run2551
     );
     private final CaseConverter caseConverter;
@@ -60,31 +59,6 @@ public class MigrateCaseController extends CallbackController {
 
     private void runLog(CaseDetails caseDetails) {
         log.info("Logging migration on case {}", caseDetails.getId());
-    }
-
-    private void run2527(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2527";
-        final long expectedCaseId = 1682671655271774L;
-
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
-
-        CaseData caseData = getCaseData(caseDetails);
-
-        Long caseId = caseData.getId();
-        if (caseId != expectedCaseId) {
-            throw new AssertionError(format(
-                "Migration {id = %s, case reference = %s}, expected case id %d",
-                migrationId, caseId, expectedCaseId
-            ));
-        }
-
-        fieldsCalculator.calculate().forEach(caseDetails.getData()::remove);
-    }
-
-    private void run2491(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2491";
-        final CaseData caseData = getCaseData(caseDetails);
-        caseDetails.getData().putAll(migrateCaseService.setCaseManagementLocation(caseData, migrationId));
     }
 
     private void run2551(CaseDetails caseDetails) {
