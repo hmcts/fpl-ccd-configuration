@@ -7,6 +7,7 @@ export class ReturnApplication extends BasePage {
   readonly reasonForRejection: Locator;
   readonly needToChange: Locator;
   readonly submitApplication: Locator;
+  readonly saveAndContinue: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -15,20 +16,26 @@ export class ReturnApplication extends BasePage {
     this.reasonForRejection = page.getByLabel('Application Incomplete');
     this.needToChange = page.getByLabel('Let the local authority know');
     this.submitApplication = page.getByRole('button', { name: 'Submit application' });
+    this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
 
   }
 
   async ReturnApplication() {
-    await this.returnApplication.check();
-    await this.updateAndSubmit.check();
-    await this.reasonForRejection.fill('test');
+    await this.reasonForRejection.check();
+    await this.needToChange.fill('test');
     await this.submitApplication.click();
+    await this.saveAndContinue.click();
   }
 
   public async payForApplication() {
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
-    await this.clickContinue();
+    await this.checkYourAnsAndSubmit();
+  }
+
+  async SubmitApplication() {
+    await this.submitApplication.check();
+    await this.saveAndContinue.click();
     await this.checkYourAnsAndSubmit();
   }
 }
