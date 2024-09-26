@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import static java.lang.String.format;
-
 @Slf4j
 @RestController
 @RequestMapping("/callback/migrate-case")
