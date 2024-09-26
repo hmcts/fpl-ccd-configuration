@@ -5,25 +5,40 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.service.ApplicantService;
+import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
+@Import({PbaNumberService.class, ValidateEmailService.class})
 class ApplicantMidEventControllerTest extends AbstractCallbackTest {
     private static final String ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
+
+    @MockBean
+    private ApplicantService applicantService;
+
+    @MockBean
+    private OrganisationService organisationService;
 
     ApplicantMidEventControllerTest() {
         super("enter-applicant");
     }
 
+    @WithMockUser
     @ParameterizedTest
     @ValueSource(strings = {"1234567", "pba1234567", "PBA1234567"})
     void shouldReturnNoErrorsWhenValidPbaNumber(String input) {
@@ -38,6 +53,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }
 
+    @WithMockUser
     @ParameterizedTest
     @ValueSource(strings = {"  ", "\t", "\n", "123", "12345678"})
     void shouldReturnErrorsWhenThereIsInvalidPbaNumber(String input) {
@@ -48,6 +64,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
+    @WithMockUser
     @Test
     void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() {
         CaseData caseData = CaseData.builder()
@@ -66,6 +83,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
+    @WithMockUser
     @Test
     void shouldReturnErrorsWhenApplicantAndSolicitorEmailsAreInvalid() {
         CaseData caseData = CaseData.builder()
@@ -86,6 +104,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
             "Solicitor: Enter an email address in the correct format, for example name@example.com");
     }
 
+    @WithMockUser
     @Test
     void shouldNotReturnErrorsWhenApplicantAndSolicitorEmailsAreValid() {
         CaseData caseData = CaseData.builder()
@@ -101,6 +120,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
+    @WithMockUser
     @Test
     void shouldReturnErrorsWhenSolicitorEmailsIsNull() {
         CaseData caseData = CaseData.builder()
