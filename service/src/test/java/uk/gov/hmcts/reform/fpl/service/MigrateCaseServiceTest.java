@@ -3238,11 +3238,10 @@ class MigrateCaseServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyMapWhenNoHearingDetailsPresent() {
-            CaseData caseData = CaseData.builder()
-                .build();
-            Map<String, Object> updates = underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID);
-            assertThat(updates).isEmpty();
+        void shouldThrowAErrorWhenNoCancelledHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThrows(AssertionError.class, () -> underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
         }
     }
 
