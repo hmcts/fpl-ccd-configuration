@@ -13,12 +13,12 @@ public class CafcassApiOther {
     private String gender;
     private String genderIdentification;
     private String birthPlace;
-    private boolean addressKnown;
+    private Boolean addressKnown;
     private String addressUnknownReason;
     private CafcassApiAddress address;
     private String telephone;
     private String litigationIssues;
     private String litigationIssuesDetails;
-    private boolean detailsHidden;
+    private Boolean detailsHidden;
     private String detailsHiddenReason;
 }

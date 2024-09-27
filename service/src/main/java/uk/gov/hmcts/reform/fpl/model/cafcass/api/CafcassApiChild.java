@@ -19,10 +19,10 @@ public class CafcassApiChild {
     private String livingSituationDetails;
     private CafcassApiAddress address;
     private String careAndContactPlan;
-    private boolean detailsHidden;
+    private Boolean detailsHidden;
     private String socialWorkerName;
     private String socialWorkerTelephoneNumber;
-    private boolean additionalNeeds;
+    private Boolean additionalNeeds;
     private String additionalNeedsDetails;
     private String litigationIssues;
     private String litigationIssuesDetails;

@@ -13,6 +13,6 @@ public class CafcassApiColleague {
     private String email;
     private String phone;
     private String fullName;
-    private boolean mainContact;
-    private boolean notificationRecipient;
+    private Boolean mainContact;
+    private Boolean notificationRecipient;
 }

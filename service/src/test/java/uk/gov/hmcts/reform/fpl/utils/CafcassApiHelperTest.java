@@ -47,8 +47,8 @@ public class CafcassApiHelperTest {
     public void testIsYes() {
         assertTrue(CafcassApiHelper.isYes("yes"));
         assertFalse(CafcassApiHelper.isYes("no"));
-        assertFalse(CafcassApiHelper.isYes(null));
-        assertFalse(CafcassApiHelper.isYes(""));
+        assertNull(CafcassApiHelper.isYes(null));
+        assertNull(CafcassApiHelper.isYes(""));
     }
 
     @Test

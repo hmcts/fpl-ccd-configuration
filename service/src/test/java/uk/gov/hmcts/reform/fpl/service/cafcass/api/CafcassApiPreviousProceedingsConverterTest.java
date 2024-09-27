@@ -61,8 +61,7 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
                 .proceedingStatus("Previous")
                 .caseNumber("123")
                 .sameGuardianNeeded(false)
-                .build(),
-            CafcassApiProceeding.builder().build()
+                .build()
         );
 
         testConvert(caseData, CafcassApiCaseData.builder().previousProceedings(expectedList).build());

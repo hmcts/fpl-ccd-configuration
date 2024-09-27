@@ -12,6 +12,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDataConverter {
+    private static final CafcassApiProceeding EMPTY = CafcassApiProceeding.builder().build();
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
@@ -33,6 +35,7 @@ public class CafcassApiPreviousProceedingsConverter implements CafcassApiCaseDat
                 .sameGuardianNeeded(isYes(proceeding.getSameGuardianNeeded()))
                 .sameGuardianDetails(proceeding.getSameGuardianDetails())
                 .build())
+            .filter(proceeding -> !EMPTY.equals(proceeding))
             .toList();
     }
 }

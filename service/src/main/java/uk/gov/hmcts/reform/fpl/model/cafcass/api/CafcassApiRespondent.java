@@ -14,14 +14,14 @@ public class CafcassApiRespondent {
     private String lastName;
     private String gender;
     private String genderIdentification;
-    private boolean addressKnown;
+    private Boolean addressKnown;
     private String addressUnknownReason;
     private CafcassApiAddress address;
     private LocalDate dateOfBirth;
     private String telephoneNumber;
     private String litigationIssues;
     private String litigationIssuesDetails;
-    private boolean contactDetailsHidden;
+    private Boolean contactDetailsHidden;
     private String contactDetailsHiddenReason;
     private String relationshipToChild;
     private CafcassApiSolicitor solicitor;
