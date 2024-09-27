@@ -3211,7 +3211,7 @@ class MigrateCaseServiceTest {
     }
 
     @Nested
-    class updatingCancelledHearingDetailsType {
+    class UpdatingCancelledHearingDetailsType {
         private final UUID cancelledHearingBookingId = UUID.randomUUID();
 
         @Test
