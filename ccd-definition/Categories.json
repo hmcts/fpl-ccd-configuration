@@ -369,8 +369,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "guardianReports",
     "CategoryLabel": "Guardian's reports",
-    "DisplayOrder": "1101",
-    "ParentCategoryID": "guardiansEvidence"
+    "DisplayOrder": "1101"
   },
   {
     "LiveFrom": "01/01/2017",
