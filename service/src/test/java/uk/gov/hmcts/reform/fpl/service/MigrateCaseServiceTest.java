@@ -3241,7 +3241,8 @@ class MigrateCaseServiceTest {
         void shouldThrowAErrorWhenNoCancelledHearingDetailsPresent() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThrows(AssertionError.class, () -> underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
+            assertThrows(AssertionError.class, () -> 
+                underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
         }
     }
 
