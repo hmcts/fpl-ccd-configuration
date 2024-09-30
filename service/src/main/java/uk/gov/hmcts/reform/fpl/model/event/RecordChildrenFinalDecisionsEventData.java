@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -13,7 +14,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.PastOrPresent;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
