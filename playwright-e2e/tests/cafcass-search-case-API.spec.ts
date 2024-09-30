@@ -1,6 +1,6 @@
 import {expect, test} from "../fixtures/fixtures";
 import {cafcassAPICaseSearch, createCase, getAccessToken, updateCase} from "../utils/api-helper";
-import {cafcassAPIUser, newSwanseaLocalAuthorityUserOne, systemUpdateUser} from "../settings/user-credentials";
+import {authToken, newSwanseaLocalAuthorityUserOne} from "../settings/user-credentials";
 import Ajv from 'ajv';
 import cafcassAPISearchSchema from '../caseData/cafcassAPICaseSchema.json' assert {type: 'json'};
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
@@ -16,7 +16,6 @@ test.describe('@new CafcassAPI @cafcassAPI', () => {
 
     test.beforeAll(async () => {
 
-        let accessToken = await getAccessToken({user: cafcassAPIUser});
         let currentTime = new Date();
         intervalStartTime = new Date().toISOString();
 
@@ -32,7 +31,7 @@ test.describe('@new CafcassAPI @cafcassAPI', () => {
     });
     test(' Cafcass user search cases for given time frame',
         async ({request}) => {
-            let response = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, intervalEndTime);
+            let response = await cafcassAPICaseSearch(request,authToken.cafcassAuth, intervalStartTime, intervalEndTime);
 
             //assert the response
             expect(response.status()).toBe(200);
@@ -45,14 +44,14 @@ test.describe('@new CafcassAPI @cafcassAPI', () => {
         })
     test('search case by user without cafcass role', async ({request}) => {
 
-        let response = await cafcassAPICaseSearch(request, systemUpdateUser, intervalStartTime, intervalEndTime);
+        let response = await cafcassAPICaseSearch(request,authToken.systemAuth, intervalStartTime, intervalEndTime);
         //assertion
         expect(response.status()).toBe(403);
         expect(response.statusText()).toBe('Forbidden');
     })
     test('Search cases with invalid parameter', async ({request}) => {
         let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, endTime.toString());
+        let response = await cafcassAPICaseSearch(request,authToken.cafcassAuth, intervalStartTime, endTime.toString());
         //assertion
         expect(response.status()).toEqual(400);
         expect(response.statusText()).toEqual('Bad Request');

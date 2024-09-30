@@ -1,7 +1,5 @@
 import {systemUpdateUser} from '../settings/user-credentials';
 import {urlConfig} from '../settings/urls';
-
-
 import axios from 'axios';
 import * as qs from 'qs';
 import lodash from 'lodash';
@@ -112,16 +110,13 @@ export const giveAccessToCase = async (caseID: string, user: { email: string, pa
 
 }
 
-export const cafcassAPICaseSearch = async (request: APIRequestContext, user: {
-    email: string,
-    password: string
-}, startTime: string, endTime: string) => {
-    const UserAuthToken = await getAccessToken(user);
+export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken:string, startTime: string, endTime: string) => {
+   /// const UserAuthToken = await getAccessToken(user);
 
     let response = await request.get(urlConfig.cafcassAPISearch,
         {
             headers: {
-                'Authorization': `Bearer ${UserAuthToken}`,
+                'Authorization': `Bearer ${AuthToken}`,
                 'Content-Type': 'application/json'
             }
             , params: {
@@ -132,32 +127,29 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, user: {
     return response;
 }
 
-export const cafcassAPIDocSearch = async (request: APIRequestContext, user: { email: string, password: string }) => {
-    const UserAuthToken = await getAccessToken(user);
+export const cafcassAPIDocSearch = async (request: APIRequestContext, AuthToken:string) => {
+   // const UserAuthToken = await getAccessToken(user);
     let response = await request.get(urlConfig.cafcassAPISearch + '/documents/d4e7fad0-3a89-48e4-af75-63d8b30aad32/binary',
         {
             headers: {
-                'Authorization': `Bearer ${UserAuthToken}`,
+                'Authorization': `Bearer ${AuthToken}`,
 
             }
         })
     return response;
 }
-export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, user: {
-    email: string,
-    password: string
-}, caseID: string, data: {
+export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, AuthToken:string, caseID: string, data: {
     guardianName: string;
     telephoneNumber: string;
     email: string;
     children: string[];
 }[] | undefined) => {
-    const UserAuthToken = await getAccessToken(user);
+   /// const UserAuthToken = await getAccessToken(user);
     let url = `${urlConfig.cafcassAPISearch}/${caseID}/guardians`
     let response = await request.post(url,
         {
             headers: {
-                'Authorization': `Bearer ${UserAuthToken}`,
+                'Authorization': `Bearer ${AuthToken}`,
                 'Content-Type': 'application/json',
             },
             data: data,
@@ -165,17 +157,27 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, u
         })
     return response;
 }
-export const cafcassAPICaseDocSearch = async (request: APIRequestContext, user: {
-    email: string,
-    password: string
-}, documentId:string) => {
-    const UserAuthToken = await getAccessToken(user);
+export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthToken:string, documentId:string) => {
+  //  const UserAuthToken = await getAccessToken(user);
     let url = `${urlConfig.cafcassAPISearch}/documents/{documentId}/binary`
 
     let response = await request.get(urlConfig.cafcassAPISearch,
         {
             headers: {
-                'Authorization': `Bearer ${UserAuthToken}`,
+                'Authorization': `Bearer ${AuthToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+    return response;
+}
+export const cafcassAPIUploadDoc = async (request: APIRequestContext,AuthToken:string, documentId:string) => {
+    //  const UserAuthToken = await getAccessToken(user);
+    let url = `${urlConfig.cafcassAPISearch}/documents/{documentId}/binary`
+
+    let response = await request.get(urlConfig.cafcassAPISearch,
+        {
+            headers: {
+                'Authorization': `Bearer ${AuthToken}`,
                 'Content-Type': 'application/json'
             }
         })

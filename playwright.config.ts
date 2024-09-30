@@ -41,7 +41,7 @@ export default defineConfig({
   projects: [
 
     {
-        name: 'access token setup',
+        name: 'usertoken',
         testMatch: /global\.setup\.ts/,
     },
     {
@@ -71,7 +71,7 @@ export default defineConfig({
           retries: 3,
           timeout: 3*60*1000,
           expect: { timeout: 1*60*1000 },
-          dependencies:
+          dependencies:['usertoken'],
       },
 
 
