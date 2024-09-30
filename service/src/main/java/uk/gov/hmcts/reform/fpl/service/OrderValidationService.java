@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
 
 import java.util.List;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;

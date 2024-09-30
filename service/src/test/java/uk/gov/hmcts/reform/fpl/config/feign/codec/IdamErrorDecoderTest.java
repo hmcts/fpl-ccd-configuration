@@ -28,7 +28,7 @@ class IdamErrorDecoderTest {
     private static final int STATUS_NOT_5XX = 404;
 
     private static final Exception NON_RETRYABLE_EXCEPTION = new Exception();
-    private static final Exception RETRYABLE_EXCEPTION = new RetryableException(500, "", null, null, REQUEST);
+    private static final Exception RETRYABLE_EXCEPTION = new RetryableException(500, "", null, 0L, REQUEST);
 
     private static final String EMPTY_METHOD_KEY = "";
 
@@ -58,7 +58,7 @@ class IdamErrorDecoderTest {
 
         Exception decodedException = idamErrorDecoder.decode(EMPTY_METHOD_KEY, response);
         RetryableException expectedException = new RetryableException(
-            STATUS_5XX, EMPTY_REASON, GET, NON_RETRYABLE_EXCEPTION, null, REQUEST
+            STATUS_5XX, EMPTY_REASON, GET, NON_RETRYABLE_EXCEPTION, 0L, REQUEST
         );
 
         assertThat(decodedException).usingRecursiveComparison().isEqualTo(expectedException);

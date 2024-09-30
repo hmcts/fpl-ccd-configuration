@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -16,9 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.WithSolicitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
