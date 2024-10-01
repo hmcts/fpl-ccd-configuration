@@ -17,7 +17,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Query Management",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""
@@ -29,7 +29,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Query Management",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolTwo",
     "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "QueryManagementComponentLauncher!=\"\""

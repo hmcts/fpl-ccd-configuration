@@ -1437,14 +1437,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolA",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "qmCaseQueriesCollectionChildSolB",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolTwo",
     "UserRole": "caseworker-publiclaw-superuser",
     "CRUD": "CRUD"
   },

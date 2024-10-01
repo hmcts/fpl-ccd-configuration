@@ -40,10 +40,10 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         assertThat(response.getData()).containsKey(
-            "qmCaseQueriesCollectionChildSolA"
+            "qmCaseQueriesCollectionChildSolOne"
         );
         assertThat(response.getData()).doesNotContainKey(
-            "qmCaseQueriesCollectionChildSolB"
+            "qmCaseQueriesCollectionChildSolTwo"
         );
     }
 
@@ -59,10 +59,10 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         assertThat(response.getData()).containsKey(
-            "qmCaseQueriesCollectionChildSolB"
+            "qmCaseQueriesCollectionChildSolTwo"
         );
         assertThat(response.getData()).doesNotContainKey(
-            "qmCaseQueriesCollectionChildSolA"
+            "qmCaseQueriesCollectionChildSolOne"
         );
     }
 
@@ -74,18 +74,18 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
                 Map.entry("Id", caseId),
-                Map.entry("qmCaseQueriesCollectionChildSolA", "some data")
+                Map.entry("qmCaseQueriesCollectionChildSolOne", "some data")
             ))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         assertThat(response.getData()).containsKey(
-            "qmCaseQueriesCollectionChildSolA"
+            "qmCaseQueriesCollectionChildSolOne"
         );
         assertThat(response.getData()).doesNotContainKey(
-            "qmCaseQueriesCollectionChildSolB"
+            "qmCaseQueriesCollectionChildSolTwo"
         );
-        assertThat(response.getData().get("qmCaseQueriesCollectionChildSolA")).isEqualTo("some data");
+        assertThat(response.getData().get("qmCaseQueriesCollectionChildSolOne")).isEqualTo("some data");
     }
 }
