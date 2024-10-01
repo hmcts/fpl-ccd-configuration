@@ -15,6 +15,7 @@ export class ReturnApplication extends BasePage {
   readonly MakeChangesToAllocation: Locator;
   readonly GiveReasonsOptional: Locator;
   readonly MakeChangesToTheRespodentDetails: Locator;
+  readonly GiveReasons: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -31,6 +32,7 @@ export class ReturnApplication extends BasePage {
     this.MakeChangesToAllocation = page.getByRole('link', { name: 'Make changes to allocation' });
     this.GiveReasonsOptional = page.getByLabel('*Give reason (Optional)');
     this.MakeChangesToTheRespodentDetails = page.getByRole('link', { name: 'Make changes to the respondents\' details' });
+    this.GiveReasons = page.getByLabel('*Give reason (Optional)');
   }
 
   async ReturnApplication() {
@@ -64,6 +66,8 @@ export class ReturnApplication extends BasePage {
 
     await this.MakeChangesToAllocation.click();
     await this.GiveReasonsOptional.click();
+    await this.GiveReasons.fill('test');
+    await this.continueButton.click();
     await this.checkYourAnsAndSubmit();
 
   }
