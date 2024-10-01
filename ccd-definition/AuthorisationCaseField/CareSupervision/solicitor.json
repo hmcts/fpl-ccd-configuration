@@ -1934,15 +1934,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseHistory",
-    "UserRoles": [
-      "[SOLICITORA]", "[CHILDSOLICITORA]"
-    ],
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
     "UserRoles": [
       "[SOLICITORA]", "[CHILDSOLICITORA]"

@@ -81,6 +81,7 @@ xui-webapp:
       FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
+      FEATURE_JRD_E_LINKS_V2_ENABLED: true
       NOW: false
       REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
