@@ -8,6 +8,13 @@ export class ReturnApplication extends BasePage {
   readonly needToChange: Locator;
   readonly submitApplication: Locator;
   readonly saveAndContinue: Locator;
+  readonly IAgreeWithThisStatement: Locator;
+  readonly DoTheyHaveLegal: Locator;
+  readonly DoYouBelieveThisPerson: Locator;
+  readonly DoYouNeedContactDetailsHidden: Locator;
+  readonly MakeChangesToAllocation: Locator;
+  readonly GiveReasonsOptional: Locator;
+  readonly MakeChangesToTheRespodentDetails: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -17,7 +24,13 @@ export class ReturnApplication extends BasePage {
     this.needToChange = page.getByLabel('Let the local authority know');
     this.submitApplication = page.getByRole('button', { name: 'Submit application' });
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
-
+    this.IAgreeWithThisStatement = page.getByLabel('I agree with this statement');
+    this.DoTheyHaveLegal = page.getByRole('group', { name: '*Do they have legal' }).getByLabel('No');
+    this.DoYouBelieveThisPerson = page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true });
+    this.DoYouNeedContactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' }).getByLabel('No');
+    this.MakeChangesToAllocation = page.getByRole('link', { name: 'Make changes to allocation' });
+    this.GiveReasonsOptional = page.getByLabel('*Give reason (Optional)');
+    this.MakeChangesToTheRespodentDetails = page.getByRole('link', { name: 'Make changes to the respondents\' details' });
   }
 
   async ReturnApplication() {
@@ -28,14 +41,30 @@ export class ReturnApplication extends BasePage {
   }
 
   public async payForApplication() {
+
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.checkYourAnsAndSubmit();
   }
 
   async SubmitApplication() {
-    await this.submitApplication.check();
-    await this.saveAndContinue.click();
+
+    await this.IAgreeWithThisStatement.check();
+    await this.clickSubmit();
+  }
+  async UpdateRespondent() {
+
+    await this.DoTheyHaveLegal.check();
+    await this.DoYouNeedContactDetailsHidden.check();
+    await this.clickContinue();
     await this.checkYourAnsAndSubmit();
+
+  }
+  async updateProposal() {
+
+    await this.MakeChangesToAllocation.click();
+    await this.GiveReasonsOptional.click();
+    await this.checkYourAnsAndSubmit();
+
   }
 }

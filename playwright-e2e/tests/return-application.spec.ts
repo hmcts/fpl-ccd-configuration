@@ -15,7 +15,7 @@ test.describe('Return application', () => {
   let caseName: string;
   test.beforeEach(async () => {
     caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-    
+
   });
 
   test('CTSC return Application',
@@ -29,19 +29,23 @@ test.describe('Return application', () => {
       await returnApplication.ReturnApplication();
 
       //complete task
-        await returnApplication.tabNavigation('History');
-        await expect(page.getByText('Returned')).toBeVisible();
-        await signInPage.logout();
+      await returnApplication.tabNavigation('History');
+      await expect(page.getByText('Returned')).toBeVisible();
+      await signInPage.logout();
 
     });
 
   test('LA submit application',
-    async ({ page, signInPage, returnApplication}) => {
+    async ({ page, signInPage, returnApplication }) => {
       caseName = 'LA submit application ' + dateTime.slice(0, 10);
       await updateCase(caseName, caseNumber, returnedCase);
       await signInPage.visit();
       await signInPage.login(newSwanseaLocalAuthorityUserOne.email, newSwanseaLocalAuthorityUserOne.password);
       await signInPage.navigateTOCaseDetails(caseNumber);
+      await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
+      await returnApplication.UpdateRespondent();
+      await page.getByRole('link', { name: 'Make changes to allocation' }).click();
+      await returnApplication.updateProposal();
       await returnApplication.gotoNextStep('Submit application');
       await returnApplication.SubmitApplication();
 
@@ -49,6 +53,6 @@ test.describe('Return application', () => {
       await returnApplication.tabNavigation('History');
       await expect(page.getByText('Submitted')).toBeVisible();
       await signInPage.logout();
- 
+
     });
 })
