@@ -8,7 +8,7 @@
     "DisplayContext": "OPTIONAL",
     "DisplayContextParameter": "#ARGUMENT(CREATE)",
     "PageID": "queryManagementRaiseQuery",
-    "PageLabel": "Raise a query",
+    "PageLabel": "Raise a new query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\"",
@@ -23,7 +23,7 @@
     "DisplayContext": "OPTIONAL",
     "DisplayContextParameter": "#ARGUMENT(CREATE)",
     "PageID": "queryManagementRaiseQuery",
-    "PageLabel": "Raise a query",
+    "PageLabel": "Raise a new query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
     "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\"",
@@ -38,7 +38,7 @@
     "DisplayContext": "OPTIONAL",
     "DisplayContextParameter" : "#ARGUMENT(CREATE,QueryManagement)",
     "PageID": "queryManagementRaiseQuery",
-    "PageLabel": "Raise a query",
+    "PageLabel": "Raise a new query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "N"
   }
