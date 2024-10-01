@@ -3260,7 +3260,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "guardianReportsListRemoved",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "R"
+    "CRUD": "U"
   },
   {
     "LiveFrom": "01/01/2017",
