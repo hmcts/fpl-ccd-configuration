@@ -16,5 +16,5 @@ public class CafcassApiApplicant {
     private String phone;
     private CafcassApiAddress address;
     private List<CafcassApiColleague> colleagues;
-    private boolean designated;
+    private Boolean designated;
 }

@@ -8,10 +8,10 @@ import lombok.Data;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiFactorsParenting {
-    private boolean alcoholDrugAbuse;
+    private Boolean alcoholDrugAbuse;
     private String alcoholDrugAbuseReason;
-    private boolean domesticViolence;
+    private Boolean domesticViolence;
     private String domesticViolenceReason;
-    private boolean anythingElse;
+    private Boolean anythingElse;
     private String anythingElseReason;
 }

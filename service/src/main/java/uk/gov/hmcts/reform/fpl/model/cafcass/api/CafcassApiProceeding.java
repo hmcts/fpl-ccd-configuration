@@ -16,6 +16,6 @@ public class CafcassApiProceeding {
     private String judge;
     private String children;
     private String guardian;
-    private boolean sameGuardianNeeded;
+    private Boolean sameGuardianNeeded;
     private String sameGuardianDetails;
 }

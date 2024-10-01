@@ -8,14 +8,14 @@ import lombok.Data;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CafcassApiInternationalElement {
-    private boolean possibleCarer;
+    private Boolean possibleCarer;
     private String possibleCarerReason;
-    private boolean significantEvents;
+    private Boolean significantEvents;
     private String significantEventsReason;
-    private boolean issues;
+    private Boolean issues;
     private String issuesReason;
-    private boolean proceedings;
+    private Boolean proceedings;
     private String proceedingsReason;
-    private boolean internationalAuthorityInvolvement;
+    private Boolean internationalAuthorityInvolvement;
     private String internationalAuthorityInvolvementDetails;
 }

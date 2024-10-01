@@ -33,8 +33,8 @@ public class CafcassApiHelper {
         return EMPTY_ADDRESS.equals(cafcassApiAddress) ? null : cafcassApiAddress;
     }
 
-    public static boolean isYes(String yesNo) {
-        return YES.getValue().equalsIgnoreCase(yesNo);
+    public static Boolean isYes(String yesNo) {
+        return (isEmpty(yesNo)) ? null : YES.getValue().equalsIgnoreCase(yesNo);
     }
 
     public static String getTelephoneNumber(Telephone telephone) {
