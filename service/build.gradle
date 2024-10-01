@@ -263,17 +263,13 @@ sonarqube {
 repositories {
   mavenLocal()
   mavenCentral()
-  // TODO: that's the only dependency to move (confirm with ops when that's migrated) https://tools.hmcts.net/jira/browse/FPLA-2978
-  maven {
-    url "https://dl.bintray.com/hmcts/hmcts-maven"
-  }
+  maven { url 'https://jitpack.io' }
   maven {
     url "https://repo.spring.io/milestone"
   }
   maven {
     url mirrorUrl
   }
-  maven { url 'https://jitpack.io' }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -378,7 +374,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
-  testImplementation 'com.github.hmcts:fortify-client:1.4.1'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
