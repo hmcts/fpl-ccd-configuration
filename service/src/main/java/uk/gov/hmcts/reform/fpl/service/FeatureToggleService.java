@@ -121,7 +121,7 @@ public class FeatureToggleService {
     }
 
     public CafcassApiFeatureFlag getCafcassAPIFlag() {
-        LDValue flag = ldClient.jsonValueVariation("cafcass-api-court", createLDUser(), LDValue.ofNull());
+        LDValue flag = ldClient.jsonValueVariation("cafcass-api-court", createLDContext(), LDValue.ofNull());
 
         LDValue whiteList = flag.get("whitelist");
         return CafcassApiFeatureFlag.builder()
@@ -133,8 +133,8 @@ public class FeatureToggleService {
             .build();
     }
 
-    private LDUser createLDUser() {
-        return createLDUser(Map.of());
+    private LDContext createLDContext() {
+        return createLDContext(Map.of());
     }
 
     private LDContext createLDContext(Map<String, LDValue> values) {
