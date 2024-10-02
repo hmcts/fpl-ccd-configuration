@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.ContextBuilder;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDValue;
 import com.launchdarkly.sdk.server.LDClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,86 +31,86 @@ public class FeatureToggleService {
 
     public boolean isCaseCreationForNotOnboardedUsersEnabled(String localAuthorityCode) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
+            createLDContext(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
     public boolean isRestrictedFromPrimaryApplicantEmails(String caseId) {
         return ldClient.boolVariation("restrict-primary-applicant-emails",
-            createLDUser(Map.of("caseId", LDValue.of(caseId))), false);
+            createLDContext(Map.of("caseId", LDValue.of(caseId))), false);
     }
 
     public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {
         return ldClient.boolVariation("restrict-case-submission",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDContext(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
     public boolean emailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
+            createLDContext(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), true);
     }
 
     public boolean isSummaryTabFirstCronRunEnabled() {
-        return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
+        return ldClient.boolVariation("summary-tab-first-run", createLDContext(), false);
     }
 
     public boolean isResendCafcassEmailsEnabled() {
-        return ldClient.boolVariation("resend-cafcass-emails-job", createLDUser(), false);
+        return ldClient.boolVariation("resend-cafcass-emails-job", createLDContext(), false);
     }
 
     public boolean isFeeAndPayCaseTypeEnabled() {
-        return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
+        return ldClient.boolVariation("fee-and-pay-case-type", createLDContext(), false);
     }
 
     public boolean isNewDocumentUploadNotificationEnabled() {
         return ldClient.boolVariation("document-upload-new-notification",
-            createLDUser(), false);
+            createLDContext(), false);
 
     }
 
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
-            createLDUser(), false);
+            createLDContext(), false);
     }
 
     public boolean isApplicantAdditionalContactsEnabled() {
-        return ldClient.boolVariation("applicant-additional-contacts", createLDUser(), false);
+        return ldClient.boolVariation("applicant-additional-contacts", createLDContext(), false);
     }
 
     public boolean isLanguageRequirementsEnabled() {
-        return ldClient.boolVariation("language-requirements", createLDUser(), false);
+        return ldClient.boolVariation("language-requirements", createLDContext(), false);
     }
 
     public boolean isCafcassSubjectCategorised() {
-        return ldClient.boolVariation("cafcass-subject-category", createLDUser(), false);
+        return ldClient.boolVariation("cafcass-subject-category", createLDContext(), false);
     }
 
     public boolean isSecureDocstoreEnabled() {
-        return ldClient.boolVariation("secure-docstore-enabled", createLDUser(), false);
+        return ldClient.boolVariation("secure-docstore-enabled", createLDContext(), false);
     }
 
     public String getUserIdsToRemoveRolesFrom() {
-        return ldClient.stringVariation("migrate-user-roles", createLDUser(), "");
+        return ldClient.stringVariation("migrate-user-roles", createLDContext(), "");
     }
 
     public boolean isElinksEnabled() {
-        return ldClient.boolVariation("elinks-enabled", createLDUser(), false);
+        return ldClient.boolVariation("elinks-enabled", createLDContext(), false);
     }
 
     public boolean isCourtNotificationEnabledForWa(Court court) {
         return ldClient.boolVariation("wa-test-court-notification",
-            createLDUser(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
+            createLDContext(Map.of(COURT_CODE_KEY, LDValue.of(court.getCode()))), true);
     }
 
-    private LDUser createLDUser() {
-        return createLDUser(Map.of());
+    private LDContext createLDContext() {
+        return createLDContext(Map.of());
     }
 
-    private LDUser createLDUser(Map<String, LDValue> values) {
-        LDUser.Builder builder = new LDUser.Builder(ldUserKey)
-            .custom("timestamp", String.valueOf(System.currentTimeMillis()))
-            .custom("environment", environment);
+    private LDContext createLDContext(Map<String, LDValue> values) {
+        ContextBuilder builder = LDContext.builder(ldUserKey)
+            .set("timestamp", String.valueOf(System.currentTimeMillis()))
+            .set("environment", environment);
 
-        values.forEach(builder::custom);
+        values.forEach(builder::set);
         return builder.build();
     }
 }
