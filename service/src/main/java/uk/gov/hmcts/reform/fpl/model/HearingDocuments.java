@@ -113,9 +113,11 @@ public class HearingDocuments {
     public List<Element<ManagedDocument>> getPosStmtList() {
         return defaultIfNull(posStmtList, new ArrayList<>());
     }
+
     public List<Element<ManagedDocument>> getPosStmtListLA() {
         return defaultIfNull(posStmtListLA, new ArrayList<>());
     }
+
     public List<Element<ManagedDocument>> getPosStmtListCTSC() {
         return defaultIfNull(posStmtListCTSC, new ArrayList<>());
     }
