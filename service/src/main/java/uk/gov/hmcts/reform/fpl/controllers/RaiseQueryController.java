@@ -33,19 +33,19 @@ public class RaiseQueryController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+//        CaseData caseData = getCaseData(caseDetails);
 
-        Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
-
-        log.info("CURRENT USER ROLES: " + currentUserRoles);
-
-        for (CaseRole user : currentUserRoles) {
-            log.info("CURRENT USER: " + user);
-            if (isNull(caseDetails.getData().getOrDefault(COLLECTION_MAPPING.get(user), null))) {
-                log.info(COLLECTION_MAPPING.get(user) + " has been initialised!");
-                caseDetails.getData().put(COLLECTION_MAPPING.get(user), null);
-            }
-        }
+//        Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
+//
+//        log.info("CURRENT USER ROLES: " + currentUserRoles);
+//
+//        for (CaseRole user : currentUserRoles) {
+//            log.info("CURRENT USER: " + user);
+//            if (isNull(caseDetails.getData().getOrDefault(COLLECTION_MAPPING.get(user), null))) {
+//                log.info(COLLECTION_MAPPING.get(user) + " has been initialised!");
+//                caseDetails.getData().put(COLLECTION_MAPPING.get(user), null);
+//            }
+//        }
 
         return respond(caseDetails);
     }
