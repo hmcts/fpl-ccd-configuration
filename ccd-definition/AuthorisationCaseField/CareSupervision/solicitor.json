@@ -2449,6 +2449,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolThree",
+    "UserRole": "[CHILDSOLICITORC]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "QueryManagementComponentLauncher",
     "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
       "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]",

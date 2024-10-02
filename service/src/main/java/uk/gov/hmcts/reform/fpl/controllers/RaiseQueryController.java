@@ -55,6 +55,7 @@ public class RaiseQueryController extends CallbackController {
 
         collectionMapping.put(CaseRole.CHILDSOLICITORA, "qmCaseQueriesCollectionChildSolOne");
         collectionMapping.put(CaseRole.CHILDSOLICITORB, "qmCaseQueriesCollectionChildSolTwo");
+        collectionMapping.put(CaseRole.CHILDSOLICITORC, "qmCaseQueriesCollectionChildSolThree");
 
         return collectionMapping;
     }
