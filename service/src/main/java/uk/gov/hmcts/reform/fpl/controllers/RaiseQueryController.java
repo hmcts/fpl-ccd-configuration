@@ -32,10 +32,19 @@ public class RaiseQueryController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
+
         Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
         log.info("Current logged-in user's case roles are: {}", currentUserRoles);
 
         initialiseRelevantQueryCollectionsForUser(caseDetails, currentUserRoles);
+
+        log.info("Final values of query collections: ");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
+        logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
 
         return respond(caseDetails);
     }
@@ -49,7 +58,7 @@ public class RaiseQueryController extends CallbackController {
         if (userQueryCollectionRole != null) {
             String queryCollectionKey = COLLECTION_MAPPING.get(userQueryCollectionRole);
             log.info("Query collection for user role {} is {}.", userQueryCollectionRole, queryCollectionKey);
-            caseDetails.getData().putIfAbsent(queryCollectionKey, null);
+            caseDetails.getData().putIfAbsent(queryCollectionKey, "Test"); // FOR TESTING PURPOSES ONLY
             log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
         }
 
@@ -61,6 +70,14 @@ public class RaiseQueryController extends CallbackController {
                 caseDetails.getData().remove(queryCollectionKey);
             }
         });
+    }
+
+    private void logQueryCollection(CaseDetails caseDetails, String collectionKey) {
+        if (caseDetails.getData().containsKey(collectionKey)) {
+            log.info("{} is present with value: {}", collectionKey, caseDetails.getData().get(collectionKey));
+        } else {
+            log.info("{} is not present on case data.", collectionKey);
+        }
     }
 
     private static Map<CaseRole, String> initialiseCollectionMapping() {
