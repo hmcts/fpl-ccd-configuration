@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
@@ -29,11 +30,12 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiSearchCaseService {
-    private static final MustNot CASE_STATES = MustNot.builder()
+    private static final MustNot MUST_NOT = MustNot.builder()
         .clauses(List.of(
             MatchQuery.of("state", "Open"),
             MatchQuery.of("state", "Deleted"),
-            MatchQuery.of("state", "RETURNED")))
+            MatchQuery.of("state", "RETURNED"),
+            TermQuery.of("data.court.regionId", "7")))
         .build();
 
     private final CaseConverter caseConverter;
@@ -51,7 +53,7 @@ public class CafcassApiSearchCaseService {
                 .lessThanOrEqual(endDate).build();
 
             final BooleanQuery.BooleanQueryBuilder searchCaseQuery = BooleanQuery.builder()
-                .mustNot(CASE_STATES)
+                .mustNot(MUST_NOT)
                 .filter(Filter.builder()
                     .clauses(List.of(searchRange))
                     .build());

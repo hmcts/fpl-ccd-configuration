@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
@@ -47,7 +48,8 @@ public class CafcassApiSearchCaseServiceTest {
             .clauses(List.of(
                 MatchQuery.of("state", "Open"),
                 MatchQuery.of("state", "Deleted"),
-                MatchQuery.of("state", "RETURNED")))
+                MatchQuery.of("state", "RETURNED"),
+                TermQuery.of("data.court.regionId", "7")))
             .build())
         .filter(Filter.builder()
             .clauses(List.of(RangeQuery.builder().field("last_modified")
