@@ -30,11 +30,12 @@ public class RaiseQueryController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
 
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolOne");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolTwo");
         logQueryCollection(caseDetails, "qmCaseQueriesCollectionChildSolThree");
+
+        CaseData caseData = getCaseData(caseDetails);
 
         Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
         log.info("Current logged-in user's case roles are: {}", currentUserRoles);
