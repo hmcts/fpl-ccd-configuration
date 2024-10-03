@@ -44,7 +44,8 @@ test.describe('Return application', () => {
       await signInPage.navigateTOCaseDetails(caseNumber);
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
-      await page.getByRole('link', { name: 'Make changes to allocation' }).click();
+      await signInPage.navigateTOCaseDetails(caseNumber);
+      //await page.getByRole('link', { name: 'Make changes to allocation' }).click();
       await returnApplication.updateProposal();
       await returnApplication.gotoNextStep('Submit application');
       await returnApplication.SubmitApplication();

@@ -16,6 +16,7 @@ export class ReturnApplication extends BasePage {
   readonly GiveReasonsOptional: Locator;
   readonly MakeChangesToTheRespodentDetails: Locator;
   readonly GiveReasons: Locator;
+  readonly continueButton: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -33,6 +34,7 @@ export class ReturnApplication extends BasePage {
     this.GiveReasonsOptional = page.getByLabel('*Give reason (Optional)');
     this.MakeChangesToTheRespodentDetails = page.getByRole('link', { name: 'Make changes to the respondents\' details' });
     this.GiveReasons = page.getByLabel('*Give reason (Optional)');
+    this.continueButton = page.getByRole('button', { name: 'Continue' });
   }
 
   async ReturnApplication() {
@@ -43,32 +45,28 @@ export class ReturnApplication extends BasePage {
   }
 
   public async payForApplication() {
-
     await this.page.getByLabel('Payment by account (PBA) number').fill('PBA1234567');
     await this.page.getByLabel('Customer reference').fill('Customer reference');
     await this.checkYourAnsAndSubmit();
   }
 
   async SubmitApplication() {
-
     await this.IAgreeWithThisStatement.check();
     await this.clickSubmit();
   }
-  async UpdateRespondent() {
 
+  async UpdateRespondent() {
     await this.DoTheyHaveLegal.check();
     await this.DoYouNeedContactDetailsHidden.check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
 
   }
+
   async updateProposal() {
-
     await this.MakeChangesToAllocation.click();
-    await this.GiveReasonsOptional.click();
     await this.GiveReasons.fill('test');
-    await this.continueButton.click();
+    await this.clickContinue();
     await this.checkYourAnsAndSubmit();
-
   }
 }
