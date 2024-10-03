@@ -18,8 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Objects.isNull;
-
 @Slf4j
 @RestController
 @RequestMapping("/callback/raise-query")
@@ -27,43 +25,49 @@ import static java.util.Objects.isNull;
 public class RaiseQueryController extends CallbackController {
 
     private final UserService userService;
-
-    private static final Map<CaseRole, String> COLLECTION_MAPPING = initialiseUserTypeToQMCollectionMapping();
+    private static final Map<CaseRole, String> COLLECTION_MAPPING = initialiseCollectionMapping();
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         Set<CaseRole> currentUserRoles = userService.getCaseRoles(caseData.getId());
+        log.info("Current logged-in user's case roles are: {}", currentUserRoles);
 
-        log.info("CURRENT USER ROLES: " + currentUserRoles);
-
-        for (CaseRole user : currentUserRoles) {
-            log.info("CURRENT USER: " + user);
-            if (isNull(caseDetails.getData().getOrDefault(COLLECTION_MAPPING.get(user), null))) {
-                log.info(COLLECTION_MAPPING.get(user) + " has been initialised!");
-                caseDetails.getData().put(COLLECTION_MAPPING.get(user), null);
-            }
-        }
-
-        log.info("CHILDSOLA Query Collection: " + caseDetails.getData().getOrDefault(COLLECTION_MAPPING
-            .get(CaseRole.CHILDSOLICITORA), null));
-        log.info("CHILDSOLB Query Collection: " + caseDetails.getData().getOrDefault(COLLECTION_MAPPING
-            .get(CaseRole.CHILDSOLICITORB), null));
-        log.info("CHILDSOLC Query Collection: " + caseDetails.getData().getOrDefault(COLLECTION_MAPPING
-            .get(CaseRole.CHILDSOLICITORC), null));
+        initialiseRelevantQueryCollectionsForUser(caseDetails, currentUserRoles);
 
         return respond(caseDetails);
     }
 
-    private static Map<CaseRole, String> initialiseUserTypeToQMCollectionMapping() {
-        Map<CaseRole, String> collectionMapping = new LinkedHashMap<>();
+    private void initialiseRelevantQueryCollectionsForUser(CaseDetails caseDetails, Set<CaseRole> currentUserRoles) {
+        CaseRole userQueryCollectionRole = currentUserRoles.stream()
+            .filter(COLLECTION_MAPPING::containsKey)
+            .findFirst()
+            .orElse(null);
 
+        if (userQueryCollectionRole != null) {
+            String queryCollectionKey = COLLECTION_MAPPING.get(userQueryCollectionRole);
+            log.info("Query collection for user role {} is {}.", userQueryCollectionRole, queryCollectionKey);
+            caseDetails.getData().putIfAbsent(queryCollectionKey, null);
+            log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
+        }
+
+        // Remove query collections which don't correspond to the logged-in user's user role
+        COLLECTION_MAPPING.forEach((queryCollectionRole, queryCollectionKey) -> {
+            if (queryCollectionRole != userQueryCollectionRole
+                && caseDetails.getData().containsKey(queryCollectionKey)) {
+                log.info("Removing query collection: {}", queryCollectionKey);
+                caseDetails.getData().remove(queryCollectionKey);
+            }
+        });
+    }
+
+    private static Map<CaseRole, String> initialiseCollectionMapping() {
+        Map<CaseRole, String> collectionMapping = new LinkedHashMap<>();
         collectionMapping.put(CaseRole.CHILDSOLICITORA, "qmCaseQueriesCollectionChildSolOne");
         collectionMapping.put(CaseRole.CHILDSOLICITORB, "qmCaseQueriesCollectionChildSolTwo");
         collectionMapping.put(CaseRole.CHILDSOLICITORC, "qmCaseQueriesCollectionChildSolThree");
-
         return collectionMapping;
     }
 }

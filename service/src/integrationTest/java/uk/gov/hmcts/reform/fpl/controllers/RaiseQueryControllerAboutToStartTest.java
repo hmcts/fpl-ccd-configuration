@@ -74,7 +74,8 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
                 Map.entry("Id", caseId),
-                Map.entry("qmCaseQueriesCollectionChildSolOne", "some data")
+                Map.entry("qmCaseQueriesCollectionChildSolOne", "some data"),
+                Map.entry("qmCaseQueriesCollectionChildSolTwo", "some more data")
             ))
             .build();
 
