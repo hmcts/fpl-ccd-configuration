@@ -188,7 +188,8 @@ public class CafcassApiSearchCaseServiceTest {
                 .clauses(List.of(
                     MatchQuery.of("state", "Open"),
                     MatchQuery.of("state", "Deleted"),
-                    MatchQuery.of("state", "RETURNED")))
+                    MatchQuery.of("state", "RETURNED"),
+                    TermQuery.of("data.court.regionId", "7")))
                 .build())
             .filter(Filter.builder()
                 .clauses(List.of(RangeQuery.builder().field("last_modified")
