@@ -59,7 +59,7 @@ public class RaiseQueryController extends CallbackController {
         if (userQueryCollectionRole != null) {
             String queryCollectionKey = COLLECTION_MAPPING.get(userQueryCollectionRole);
             log.info("Query collection for user role {} is {}.", userQueryCollectionRole, queryCollectionKey);
-            caseDetails.getData().putIfAbsent(queryCollectionKey, "Test"); // FOR TESTING PURPOSES ONLY
+            caseDetails.getData().putIfAbsent(queryCollectionKey, null);
             log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
         }
 
