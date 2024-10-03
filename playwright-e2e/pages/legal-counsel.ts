@@ -37,7 +37,7 @@ export class LegalCounsel extends BasePage {
     async enterLegalCounselDetails() {
         await this.firstName.fill('FPLOrg');
         await this.lastName.fill('Solicitor');
-        await this.email.fill('solicitoroneorg2@mailinator.com');
+        await this.email.fill('fpl_sol_org_01@mailinator.com');
         await this.organisation.fill('FPLSolicitorOrg');
         await this.selectOrg.click();
     }
