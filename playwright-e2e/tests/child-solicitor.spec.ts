@@ -2,6 +2,7 @@ import { test } from '../fixtures/create-fixture';
 import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
 import caseWithChildrenCafcassSolicitor from '../caseData/caseWithMultipleChildCafcassSolicitor.json' assert { type: "json" }
 import caseWithMultipleChild from '../caseData/mandatorySubmissionFields.json' assert { type: "json" }
+import caseWithChildrenCafcassSolicitorDemo from '../caseData/caseWithMultipleChildCafcassSolicitorDemo.json' assert{ type: "json"}
 import {
     newSwanseaLocalAuthorityUserOne,
     privateSolicitorOrgUser,
@@ -9,6 +10,7 @@ import {
     CTSCTeamLeadUser
 } from '../settings/user-credentials';
 import { expect } from '@playwright/test';
+import {urlConfig} from "../settings/urls";
 
 test.describe('Manage child representatives ', () => {
     const dateTime = new Date().toISOString();
@@ -86,7 +88,12 @@ test.describe('Manage child representatives ', () => {
     test('CTSC user remove child solicitors',
         async ({page, signInPage, childDetails}) => {
             casename = 'CTSC change child solicitor ' + dateTime.slice(0, 10);
-            await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
+            if(urlConfig.env=='demo') {
+                await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitorDemo);
+            }
+            else{
+                await updateCase(casename, caseNumber, caseWithChildrenCafcassSolicitor);
+            }
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[CHILDSOLICITORA]');
             await signInPage.visit();
             await signInPage.login(CTSCTeamLeadUser.email, CTSCTeamLeadUser.password)
