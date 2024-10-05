@@ -22,7 +22,7 @@ class TaskListRenderElementsTest {
             .event(Event.ALLOCATION_PROPOSAL)
             .build());
 
-        assertThat(actual).isEqualTo("<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/"
+        assertThat(actual).isEqualTo("<a href='/cases/case-details/"
             + "${[CASE_REFERENCE]}/trigger/otherProposal'>"
             + "Allocation proposal</a>");
     }
