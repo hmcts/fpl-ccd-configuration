@@ -6,7 +6,7 @@ import cafcassAPISearchSchema from '../caseData/cafcassAPICaseSchema.json' asser
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import cafcassCase from '../caseData/caseCaffcassAPISearchAllFieldData.json' assert {type: 'json'};
 
-test.describe.only('CafcassAPI search cases @cafcassAPI', () => {
+test.describe('CafcassAPI search cases @cafcassAPI', () => {
     let startTime = new Date().toISOString();
     let intervalEndTime: string;
     let intervalStartTime: string;

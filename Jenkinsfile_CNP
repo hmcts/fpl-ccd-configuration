@@ -228,6 +228,24 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/functionalTest/**/*'
       }
     }
+    stage('cafCassAPITest') {
+      try {
+        yarnBuilder.yarn('test:functional-API')
+      } catch (Error) {
+        unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+      } finally {
+        publishHTML([
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "../test-results/functionalTest",
+          reportFiles          : 'index.html',
+          reportName           : 'cafcass API Test Report'
+        ])
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/tests/functionalTest/**/*'
+      }
+    }
+
       }
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
