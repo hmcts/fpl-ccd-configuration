@@ -7,13 +7,18 @@ const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
-  email: 'local-authority-swansea-0001@maildrop.cc',
-  password: e2ePw,
+  email: 'sam@hillingdon.gov.uk',
+  password: defaultPwd,
 };
 
 export const systemUpdateUser = {
   email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
   password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPwd,
+};
+
+export const cafcassAPIUser={
+    email: 'chakshing.lo@justice.gov.uk',
+    password: defaultPwd,
 };
 
 export const CTSCUser = {
@@ -85,3 +90,7 @@ export const WiltshireOrgCAAUser = {
     email: 'admin@wiltshire.gov.uk',
     password: defaultPwd,
 };
+export const authToken={
+    cafcassAuth:process.env.CAFCASSAUTH || '',
+    systemAuth:process.env.SYSUSERAUTH || ''
+}

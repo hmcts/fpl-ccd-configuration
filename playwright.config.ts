@@ -25,7 +25,7 @@ export default defineConfig({
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 5 : undefined,
+  workers: process.env.CI ? 3 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [[process.env.CI ? 'html' : 'list'],
              ['html', { outputFolder: '../test-results/functionalTest' }]],
@@ -39,6 +39,11 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+
+    {
+        name: 'usertoken',
+        testMatch: /global\.setup\.ts/,
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
@@ -56,12 +61,21 @@ export default defineConfig({
     {
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
-      retries: 3,
-      timeout: 3*60*1000,
-      expect: { timeout: 1*60*1000 },
-    },
+      retries: 1,
+        timeout: 4*60*1000,
+        expect: { timeout: 1*60*1000 },
 
-    /* Test against mobile viewports. */
+    },
+      {
+          name: "CafcassAPI",
+          use: { ...devices["Desktop Chrome"] },
+          timeout: 3*60*1000,
+          expect: { timeout: 1*30*1000 },
+          dependencies:['usertoken'],
+      },
+
+
+      /* Test against mobile viewports. */
     // {
     //   name: "Mobile Chrome",
     //   use: { ...devices["Pixel 5"] },

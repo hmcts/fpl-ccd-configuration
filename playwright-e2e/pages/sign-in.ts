@@ -27,7 +27,11 @@ export class SignInPage extends BasePage{
   }
 
   async visit(url:string = this.url) {
-    await this.page.goto(url);
+      await expect(async () => {
+          await this.page.goto(url);
+          await expect(this.page.getByText('Sign in or create an account')).toBeVisible({timeout:1*10*1000});
+      }).toPass();
+
   }
   async navigateTOCaseDetails(caseNumber:string) {
     await this.page.goto(`${urlConfig.frontEndBaseURL}/case-details/${caseNumber}`);

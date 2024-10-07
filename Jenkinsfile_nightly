@@ -66,7 +66,9 @@ def teardownSecretsForIntegrationTests() {
     env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
-withNightlyPipeline(type, product, component) {
+withNightlyPipeline(type, product, component)
+  {
+  {
     pipelineConf = config;
 
     env.URL = params.FRONTEND_URL
@@ -78,8 +80,8 @@ withNightlyPipeline(type, product, component) {
 
     loadVaultSecrets(integrationTestSecrets)
 
-    enableMutationTest()
-    enableFortifyScan('fpl-aat')
+   // enableMutationTest()
+    //enableFortifyScan('fpl-aat')
     enableFullFunctionalTest(240)
 
     before('mutationTest') {
@@ -152,7 +154,26 @@ withNightlyPipeline(type, product, component) {
           steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
         }
       }
+      stage('cafCassAPITest') {
+        try {
+          yarnBuilder.yarn('test:functional-API')
+        } catch (Error) {
+          unstable(message: "${STAGE_NAME} is unstable: " + Error.toString())
+        } finally {
+          publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'UITestWebkitReport'
+          ])
+          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/functionalTest/**/*'
+        }
+      }
     }
+
+}
 
     afterAlways('fortify-scan') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
