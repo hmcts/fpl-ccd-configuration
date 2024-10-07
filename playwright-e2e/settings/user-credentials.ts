@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const e2ePw = process.env.E2E_TEST_PASSWORD || '';
-const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || '';
-const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || '';
+const e2ePw = process.env.E2E_TEST_PASSWORD || 'Password1234';
+const defaultPwd = process.env.SYSTEM_UPDATE_USER_PASSWORD || 'Password12';
+const judgePwd = process.env.E2E_TEST_JUDGE_PASSWORD || 'Hmcts1234';
 
 
 export const newSwanseaLocalAuthorityUserOne = {
-  email: 'sam@hillingdon.gov.uk',
-  password: defaultPwd,
+  email: 'local-authority-swansea-0001@maildrop.cc',
+  password: e2ePw,
 };
 
 export const systemUpdateUser = {
