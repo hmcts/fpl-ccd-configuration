@@ -21,7 +21,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 3 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
@@ -64,6 +64,7 @@ export default defineConfig({
       retries: 1,
         timeout: 4*60*1000,
         expect: { timeout: 1*60*1000 },
+
     },
       {
           name: "CafcassAPI",

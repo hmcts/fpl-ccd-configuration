@@ -67,7 +67,7 @@ export const privateSolicitorOrgUserTwo = {
 };
 
 export const FPLSolicitorOrgUser = {
-  email: process.env.FPL_SOLICITOR_ORG_USER_USERNAME || 'solicitoroneorg2@mailinator.com',
+  email: process.env.FPL_SOLICITOR_ORG_USER_USERNAME || 'fpl_sol_org_01@mailinator.com',
   password: process.env.FPL_SOLICITOR_ORG_USER_PASSWORD || defaultPwd,
 };
 
