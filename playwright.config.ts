@@ -47,20 +47,24 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+        grepInvert:/.*API.spec.ts/,
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
+        grepInvert:/.*API.spec.ts/,
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+      grepInvert:/.*API.spec.ts/,
     },
     {
       name: "preview",
       use: { ...devices["Desktop Chrome"] },
+      grepInvert:/.*API.spec.ts/,
       retries: 1,
         timeout: 4*60*1000,
         expect: { timeout: 1*60*1000 },
@@ -69,6 +73,7 @@ export default defineConfig({
       {
           name: "CafcassAPI",
           use: { ...devices["Desktop Chrome"] },
+          grep:/.*API.spec.ts/,
           timeout: 3*60*1000,
           expect: { timeout: 1*30*1000 },
           dependencies:['usertoken'],

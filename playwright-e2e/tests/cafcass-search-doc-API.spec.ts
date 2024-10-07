@@ -10,7 +10,7 @@ import {
 } from "../settings/user-credentials";
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 
-test.describe('@new CafcassAPI Document Search @cafcassAPI', () => {
+test.describe('@new CafcassAPI Document Search', () => {
     let startTime = new Date().toISOString();
     let currentTime = new Date();
     let caseNumber:string;
