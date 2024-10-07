@@ -4,7 +4,7 @@ import {authToken, CTSCTeamLeadUser, newSwanseaLocalAuthorityUserOne} from "../s
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 import {CreateCaseName} from "../utils/create-case-name";
 
-test.describe('Cafcass upload guardian report @cafcassAPI', () => {
+test.describe('Cafcass upload guardian report ', () => {
     let startTime = new Date().toISOString();
     let caseNumber: string
     test.beforeEach(async () => {

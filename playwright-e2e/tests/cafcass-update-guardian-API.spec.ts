@@ -7,7 +7,7 @@ import {
 } from "../settings/user-credentials";
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 
-test.describe('CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
+test.describe('CafcassAPI Update Gaurdian Details', () => {
     let startTime = new Date().toISOString();
     let caseNumber:string;
     test.beforeEach(async () => {
