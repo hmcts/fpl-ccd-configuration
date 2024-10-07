@@ -57,7 +57,6 @@
           "caseData": {
             "type": "object",
             "required": [
-              "familyManCaseNumber",
               "dateSubmitted",
               "applicationType",
               "ordersSought",
