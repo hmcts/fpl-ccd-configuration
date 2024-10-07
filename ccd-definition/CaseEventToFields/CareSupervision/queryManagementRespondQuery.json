@@ -10,8 +10,7 @@
     "PageLabel": "Respond to a query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Y"
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -24,8 +23,7 @@
     "PageLabel": "Respond to a query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Y"
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2018",
@@ -38,8 +36,7 @@
     "PageLabel": "Respond to a query",
     "PageDisplayOrder": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\"",
-    "RetainHiddenValue": "Y"
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2018",
