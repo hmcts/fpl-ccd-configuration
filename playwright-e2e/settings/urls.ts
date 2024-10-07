@@ -13,6 +13,5 @@ export const urlConfig: UrlConfig = {
    // frontEndBaseURL: process.env.FE_BASE_URL || `https://manage-case.${env}.platform.hmcts.net`,
     frontEndBaseURL: process.env.FE_BASE_URL || `https://xui-fpl-case-service-pr-5570.preview.platform.hmcts.net`,
   manageOrgURL: process.env.MO_BASE_URL || `https://manage-org.${env}.platform.hmcts.net`,
-  cafcassAPISearch: process.env.CAFCASS_SEARCH_URL || `https://fpl-case-service-pr-5570.preview.platform.hmcts.net/cases`
     // You can add other URLs as needed
 };

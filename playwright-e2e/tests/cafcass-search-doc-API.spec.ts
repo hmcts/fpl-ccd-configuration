@@ -1,15 +1,12 @@
 import {expect, test} from "../fixtures/fixtures";
 import {
-    cafcassAPICaseDocSearch,
     cafcassAPICaseSearch, cafcassAPIDocSearch,
     createCase,
-    getAccessToken,
     updateCase
 } from "../utils/api-helper";
 import {
     authToken,
     newSwanseaLocalAuthorityUserOne,
-    systemUpdateUser
 } from "../settings/user-credentials";
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 
@@ -48,23 +45,5 @@ test.describe('@new CafcassAPI Document Search @cafcassAPI', () => {
         expect(response.statusText()).toEqual('Forbidden');
 
     })
-    test.skip('cafcass search case document does not exist', async ({request}) => {
-        let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
-        //assertion
-        expect(response.status()).toEqual(404);
-        expect(response.statusText()).toEqual('Case document not found');
-
-    })
-
-    test.skip('cafcass search document with invalid DocId', async ({request}) => {
-        let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
-        //assertion
-        expect(response.status()).toEqual(400);
-        expect(response.statusText()).toEqual('Case document Id is not valid');
-
-    })
-
 
 })

@@ -114,7 +114,7 @@ export const giveAccessToCase = async (caseID: string, user: { email: string, pa
 
 export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken: string, startTime: string, endTime: string) => {
 
-    let response = await request.get(urlConfig.cafcassAPISearch,
+    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
         {
             headers: {
                 'Authorization': `Bearer ${AuthToken}`,
@@ -129,7 +129,7 @@ export const cafcassAPICaseSearch = async (request: APIRequestContext, AuthToken
 }
 
 export const cafcassAPIDocSearch = async (request: APIRequestContext, AuthToken: string,docId:string) => {
-    let response = await request.get(urlConfig.cafcassAPISearch + `/documents/${docId}/binary`,
+    let response = await request.get(`${urlConfig.serviceUrl}/cases/documents/${docId}/binary`,
         {
             headers: {
                 'Authorization': `Bearer ${AuthToken}`,
@@ -144,7 +144,7 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, A
     email: string;
     children: string[];
 }[] | undefined) => {
-    let url = `${urlConfig.cafcassAPISearch}/${caseID}/guardians`
+    let url = `${urlConfig.serviceUrl}/cases/${caseID}/guardians`
     let response = await request.post(url,
         {
             headers: {
@@ -157,9 +157,9 @@ export const cafcassUpdateGuardianDetails = async (request: APIRequestContext, A
     return response;
 }
 export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthToken: string, documentId: string) => {
-    let url = `${urlConfig.cafcassAPISearch}/documents/{documentId}/binary`
+    let url = `${urlConfig.serviceUrl}/cases/documents/{documentId}/binary`
 
-    let response = await request.get(urlConfig.cafcassAPISearch,
+    let response = await request.get(`${urlConfig.serviceUrl}/cases`,
         {
             headers: {
                 'Authorization': `Bearer ${AuthToken}`,
@@ -169,7 +169,7 @@ export const cafcassAPICaseDocSearch = async (request: APIRequestContext, AuthTo
     return response;
 }
 export const cafcassAPIUploadDoc = async (request: APIRequestContext,AuthToken:string, caseID:string,docType:string,fileType:string='pdf') => {
-    let url = `${urlConfig.cafcassAPISearch}/${caseID}/document`;
+    let url = `${urlConfig.serviceUrl}/cases/${caseID}/document`;
     let docUpload = fs.readFileSync(config.testPdfFile);
 
     let response = await request.post(url,
