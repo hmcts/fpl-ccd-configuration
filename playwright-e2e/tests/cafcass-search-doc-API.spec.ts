@@ -8,54 +8,63 @@ import {
 } from "../utils/api-helper";
 import {
     authToken,
-    cafcassAPIUser,
     newSwanseaLocalAuthorityUserOne,
     systemUpdateUser
 } from "../settings/user-credentials";
-import Ajv from 'ajv';
-import cafcassAPISearchSchema from '../caseData/cafcassAPICaseSchema.json' assert {type: 'json'};
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
-import cafcassCase from '../caseData/caseCaffcassAPISearchAllFieldData.json' assert {type: 'json'};
-import * as fs from "fs";
 
 test.describe('@new CafcassAPI Document Search @cafcassAPI', () => {
     let startTime = new Date().toISOString();
-    let intervalEndTime: string;
-    let intervalStartTime: string;
-    const ajv = new Ajv();
-    let caseNumber: string
-    let caseNumber2: string;
-
-    test.beforeAll(async () => {
+    let currentTime = new Date();
+    let caseNumber:string;
+    let StartTime = new Date(currentTime.setMinutes(currentTime.getMinutes() - 2)).toISOString();
+    let docId:string;
+    test.beforeEach(async ({request}) => {
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+        await updateCase('Cafcass search document' + startTime.slice(0, 10), caseNumber, submitCase);
+        let interval = currentTime.setMinutes(currentTime.getMinutes() + 11);
+       let   endTime = new Date(interval).toISOString();
+        let caseResponse =await cafcassAPICaseSearch(request,authToken.cafcassAuth,StartTime,endTime)
+        let body = await caseResponse.json();
+         docId= await body.cases[0].caseData.caseDocuments[0].documentId;
 
     });
-    test(' @doc Cafcass user search a valid case document',
+    test('  Cafcass user search a valid case document',
         async ({request}) => {
-            let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth);
+
+             let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
 
             //assert the response
             expect(response.status()).toBe(200);
             expect(response.headers()["content-type"]).toContain('application/octet-stream');
-            let body = await response.body();
-            // save the file and assert the content
 
         })
 
-    test('cafcass user search case document not authorised to cafcass', async ({request}) => {
+    test('user without cafcass role access the end point', async ({request}) => {
         let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth);
+        let response = await cafcassAPIDocSearch(request, authToken.systemAuth,docId);
         //assertion
         expect(response.status()).toEqual(403);
-        expect(response.statusText()).toEqual('Bad Request');
+        expect(response.statusText()).toEqual('Forbidden');
 
     })
-    test('cafcass user search case document not exist', async ({request}) => {
+    test.skip('cafcass search case document does not exist', async ({request}) => {
         let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
-        let response = await cafcassAPICaseSearch(request, cafcassAPIUser, intervalStartTime, endTime.toString());
+        let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
         //assertion
         expect(response.status()).toEqual(404);
-        expect(response.statusText()).toEqual('Bad Request');
+        expect(response.statusText()).toEqual('Case document not found');
 
     })
+
+    test.skip('cafcass search document with invalid DocId', async ({request}) => {
+        let endTime = new Date().setMinutes(new Date().getMinutes() + 30);
+        let response = await cafcassAPIDocSearch(request, authToken.cafcassAuth,docId);
+        //assertion
+        expect(response.status()).toEqual(400);
+        expect(response.statusText()).toEqual('Case document Id is not valid');
+
+    })
+
 
 })

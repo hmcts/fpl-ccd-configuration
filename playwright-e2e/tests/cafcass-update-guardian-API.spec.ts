@@ -1,20 +1,21 @@
 import {expect, test} from "../fixtures/fixtures";
 import {cafcassUpdateGuardianDetails, createCase, updateCase} from "../utils/api-helper";
 import {
-    cafcassAPIUser,
+    authToken,
     CTSCTeamLeadUser,
-    newSwanseaLocalAuthorityUserOne,
-    systemUpdateUser
+    newSwanseaLocalAuthorityUserOne
 } from "../settings/user-credentials";
 import submitCase from '../caseData/mandatorySubmissionFields.json' assert {type: 'json'};
 
-test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
+test.describe('CafcassAPI Update Gaurdian Details @cafcassAPI', () => {
     let startTime = new Date().toISOString();
+    let caseNumber:string;
+    test.beforeEach(async () => {
+        caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
+    });
 
-    test(' Cafcass user update the gaurdian details',
-        async ({request, page, signInPage}) => {
-            let caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-            await updateCase('submit case' + startTime.slice(0, 10), caseNumber, submitCase);
+    test(' Cafcass user update the gaurdian details', async ({request, page, signInPage}) => {
+            await updateCase('Cafcass update gaurdian details' + startTime.slice(0, 10), caseNumber, submitCase);
             let data = [
                 {
                     "guardianName": "June Thacher",
@@ -33,7 +34,7 @@ test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => 
                     ]
                 }
             ]
-            let response = await cafcassUpdateGuardianDetails(request, cafcassAPIUser, caseNumber, data);
+            let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, data);
 
             //assert the response
             expect(response.status()).toBe(200);
@@ -52,9 +53,8 @@ test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => 
             await expect(page.locator('#case-viewer-field-read--guardians')).toContainText('tom.mac@mail.com');
 
         })
-    test(' update gaurdian details for cases in not valid state', async ({request}) => {
-        let caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        console.log("case " + caseNumber);
+    test('Cafcass update gaurdian details for cases in not valid state', async ({request}) => {
+
         let data = [
             {
                 "guardianName": "June Thacher",
@@ -74,15 +74,14 @@ test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => 
             }
         ]
 
-        let response = await cafcassUpdateGuardianDetails(request, cafcassAPIUser, caseNumber, data);
+        let response = await cafcassUpdateGuardianDetails(request, authToken.cafcassAuth, caseNumber, data);
         //assertion
         expect(response.status()).toBe(404);
         expect(response.statusText()).toBe('Not Found');
     })
-    test.skip('Update guardian details by user without cafcass role', async ({request}) => {
+    test('Cafcass Update guardian details by user without cafcass role', async ({request}) => {
 
-        let caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('submit case' + startTime.slice(0, 10), caseNumber, submitCase);
+        await updateCase('Not authorised user update guardian details' + startTime.slice(0, 10), caseNumber, submitCase);
         let data = [
             {
                 "guardianName": "June Thacher",
@@ -102,10 +101,10 @@ test.describe('@guardian CafcassAPI Update Gaurdian Details @cafcassAPI', () => 
             }
         ]
 
-        let response = await cafcassUpdateGuardianDetails(request, systemUpdateUser, caseNumber, data);
+        let response = await cafcassUpdateGuardianDetails(request, authToken.systemAuth, caseNumber, data);
         //assertion
         expect(response.status()).toEqual(403);
-        expect(response.statusText()).toEqual('Bad Request');
+        expect(response.statusText()).toEqual('Forbidden');
 
     })
 

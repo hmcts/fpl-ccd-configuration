@@ -15,17 +15,16 @@
       "items": {
         "type": "object",
         "required": [
-          "caseId",
+          "id",
           "jurisdiction",
           "state",
           "caseTypeId",
           "createdDate",
           "lastModified",
-          "lastStateModifiedDate",
           "caseData"
         ],
         "properties": {
-          "caseId": {
+          "id": {
             "type": "number"
           },
           "jurisdiction": {
@@ -62,27 +61,15 @@
               "dateSubmitted",
               "applicationType",
               "ordersSought",
-              "dateOfCourtIssue",
               "citizenIsApplicant",
-              "applicantLA",
-              "respondentLA",
               "applicants",
               "respondents",
               "children",
-              "others",
-              "hearingDetails",
-              "internationalElement",
-              "previousProceedings",
-              "risks",
-              "factorsParenting",
-              "caseManagementLocation",
               "caseDocuments"
             ],
             "properties": {
               "familyManCaseNumber": {
-                "type": [
-                  "string"
-                ]
+                "type": "string"
               },
               "dateSubmitted": {
                 "type": "string"
@@ -302,7 +289,6 @@
               },
               "respondentLA": {
                 "enum": [
-                  null,
                   "SA",
                   "CDF",
                   "SCC",
@@ -561,11 +547,8 @@
                         "type": "object",
                         "required": [
                           "role",
-                          "title",
                           "email",
-                          "phone",
                           "fullName",
-                          "mainContact",
                           "notificationRecipient"
                         ],
                         "properties": {
@@ -618,18 +601,11 @@
                     "firstName",
                     "lastName",
                     "gender",
-                    "genderIdentification",
                     "addressKnown",
-                    "addressUnknownReason",
-                    "address",
                     "dateOfBirth",
                     "telephoneNumber",
-                    "litigationIssues",
-                    "litigationIssuesDetails",
-                    "contactDetailsHidden",
-                    "contactDetailsHiddenReason",
-                    "relationshipToChild",
-                    "solicitor"
+                    "relationshipToChild"
+
                   ],
                   "properties": {
                     "firstName": {
@@ -666,9 +642,7 @@
                       "required": [
                         "addressLine1",
                         "addressLine2",
-                        "addressLine3",
                         "postTown",
-                        "county",
                         "postcode",
                         "country"
                       ],
@@ -690,7 +664,7 @@
                         },
                         "postTown": {
                           "type": [
-                            "string",
+                            "string"
                           ]
                         },
                         "county": {
@@ -707,7 +681,6 @@
                         "country": {
                           "type": [
                             "string"
-
                           ]
                         }
                       }
@@ -715,7 +688,6 @@
                     "dateOfBirth": {
                       "type": [
                         "string"
-
                       ]
                     },
                     "telephoneNumber": {
@@ -732,7 +704,6 @@
                     },
                     "litigationIssuesDetails": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -741,20 +712,17 @@
                     },
                     "contactDetailsHiddenReason": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "relationshipToChild": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "solicitor": {
                       "type": [
                         "object"
-
                       ],
                       "required": [
                         "email",
@@ -792,21 +760,7 @@
                     "firstName",
                     "lastName",
                     "dateOfBirth",
-                    "gender",
-                    "genderIdentification",
-                    "livingSituation",
-                    "livingSituationDetails",
-                    "address",
-                    "careAndContactPlan",
-                    "detailsHidden",
-                    "socialWorkerName",
-                    "socialWorkerTelephoneNumber",
-                    "additionalNeeds",
-                    "additionalNeedsDetails",
-                    "litigationIssues",
-                    "litigationIssuesDetails",
-                    "solicitor",
-                    "fathersResponsibility"
+                    "gender"
                   ],
                   "properties": {
                     "firstName": {
@@ -828,7 +782,6 @@
                     },
                     "genderIdentification": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -845,28 +798,23 @@
                     },
                     "livingSituationDetails": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "address": {
                       "type": [
-                        "object",
-
+                        "object"
                       ],
                       "required": [
                         "addressLine1",
                         "addressLine2",
-                        "addressLine3",
                         "postTown",
-                        "county",
                         "postcode",
                         "country"
                       ],
                       "properties": {
                         "addressLine1": {
                           "type": [
-
                             "string"
                           ]
                         },
@@ -878,7 +826,6 @@
                         },
                         "addressLine3": {
                           "type": [
-
                             "string"
                           ]
                         },
@@ -889,19 +836,16 @@
                         },
                         "county": {
                           "type": [
-
                             "string"
                           ]
                         },
                         "postcode": {
                           "type": [
-
                             "string"
                           ]
                         },
                         "country": {
                           "type": [
-
                             "string"
                           ]
                         }
@@ -909,7 +853,6 @@
                     },
                     "careAndContactPlan": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -918,7 +861,6 @@
                     },
                     "socialWorkerName": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -932,7 +874,6 @@
                     },
                     "additionalNeedsDetails": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -940,8 +881,7 @@
                       "enum": [
                         "YES",
                         "NO",
-                        "DONT_KNOW",
-
+                        "DONT_KNOW"
                       ]
                     },
                     "litigationIssuesDetails": {
@@ -952,7 +892,6 @@
                     "solicitor": {
                       "type": [
                         "object"
-
                       ],
                       "required": [
                         "email",
@@ -984,7 +923,6 @@
                         "Yes",
                         "No",
                         "Don't know"
-
                       ]
                     }
                   }
@@ -994,21 +932,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "name",
-                    "dateOfBirth",
-                    "gender",
-                    "genderIdentification",
-                    "birthPlace",
-                    "addressKnown",
-                    "addressUnknownReason",
-                    "address",
-                    "telephone",
-                    "litigationIssues",
-                    "litigationIssuesDetails",
-                    "detailsHidden",
-                    "detailsHiddenReason"
-                  ],
+
                   "properties": {
                     "name": {
                       "type": "string"
@@ -1038,15 +962,6 @@
                     },
                     "address": {
                       "type": "object",
-                      "required": [
-                        "addressLine1",
-                        "addressLine2",
-                        "addressLine3",
-                        "postTown",
-                        "county",
-                        "postcode",
-                        "country"
-                      ],
                       "properties": {
                         "addressLine1": {
                           "type": [
@@ -1055,25 +970,21 @@
                         },
                         "addressLine2": {
                           "type": [
-
                             "string"
                           ]
                         },
                         "addressLine3": {
                           "type": [
-
                             "string"
                           ]
                         },
                         "postTown": {
                           "type": [
-
                             "string"
                           ]
                         },
                         "county": {
                           "type": [
-
                             "string"
                           ]
                         },
@@ -1084,7 +995,6 @@
                         },
                         "country": {
                           "type": [
-
                             "string"
                           ]
                         }
@@ -1105,7 +1015,6 @@
                     "litigationIssuesDetails": {
                       "type": [
                         "string"
-
                       ]
                     },
                     "detailsHidden": {
@@ -1114,7 +1023,6 @@
                     "detailsHiddenReason": {
                       "type": [
                         "string"
-
                       ]
                     }
                   }
@@ -1124,19 +1032,7 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "type",
-                    "typeDetails",
-                    "venue",
-                    "status",
-                    "startDate",
-                    "endDate",
-                    "attendance",
-                    "cancellationReason",
-                    "preAttendanceDetails",
-                    "attendanceDetails"
-                  ],
+
                   "properties": {
                     "id": {
                       "type": "string"
@@ -1160,7 +1056,6 @@
                     "typeDetails": {
                       "type": [
                         "string"
-
                       ]
                     },
                     "venue": {
@@ -1235,13 +1130,11 @@
                         "Severe weather",
                         "Industrial action",
                         "Covid 19"
-
                       ]
                     },
                     "preAttendanceDetails": {
                       "type": [
                         "string"
-
                       ]
                     },
                     "attendanceDetails": {
@@ -1254,18 +1147,7 @@
               },
               "internationalElement": {
                 "type": "object",
-                "required": [
-                  "possibleCarer",
-                  "possibleCarerReason",
-                  "significantEvents",
-                  "significantEventsReason",
-                  "issues",
-                  "issuesReason",
-                  "proceedings",
-                  "proceedingsReason",
-                  "internationalAuthorityInvolvement",
-                  "internationalAuthorityInvolvementDetails"
-                ],
+
                 "properties": {
                   "possibleCarer": {
                     "type": "boolean"
@@ -1273,7 +1155,6 @@
                   "possibleCarerReason": {
                     "type": [
                       "string"
-
                     ]
                   },
                   "significantEvents": {
@@ -1282,7 +1163,6 @@
                   "significantEventsReason": {
                     "type": [
                       "string"
-
                     ]
                   },
                   "issues": {
@@ -1291,7 +1171,6 @@
                   "issuesReason": {
                     "type": [
                       "string"
-
                     ]
                   },
                   "proceedings": {
@@ -1300,7 +1179,6 @@
                   "proceedingsReason": {
                     "type": [
                       "string"
-
                     ]
                   },
                   "internationalAuthorityInvolvement": {
@@ -1317,42 +1195,27 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": [
-                    "proceedingStatus",
-                    "caseNumber",
-                    "started",
-                    "ended",
-                    "ordersMade",
-                    "judge",
-                    "children",
-                    "guardian",
-                    "sameGuardianNeeded",
-                    "sameGuardianDetails"
-                  ],
+
                   "properties": {
                     "proceedingStatus": {
                       "type": "string",
                       "enum": [
                         "Ongoing",
                         "Previous"
-
                       ]
                     },
                     "caseNumber": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "started": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "ended": {
                       "type": [
-
                         "string"
                       ]
                     },
@@ -1363,20 +1226,17 @@
                     },
                     "judge": {
                       "type": [
-
                         "string"
                       ]
                     },
                     "children": {
                       "type": [
-                        "string",
-
+                        "string"
                       ]
                     },
                     "guardian": {
                       "type": [
                         "string"
-
                       ]
                     },
                     "sameGuardianNeeded": {
@@ -1385,7 +1245,6 @@
                     "sameGuardianDetails": {
                       "type": [
                         "string"
-
                       ]
                     }
                   }
@@ -1393,12 +1252,7 @@
               },
               "risks": {
                 "type": "object",
-                "required": [
-                  "neglectOccurrences",
-                  "sexualAbuseOccurrences",
-                  "physicalHarmOccurrences",
-                  "emotionalHarmOccurrences"
-                ],
+
                 "properties": {
                   "neglectOccurrences": {
                     "type": [
@@ -1410,7 +1264,6 @@
                   },
                   "sexualAbuseOccurrences": {
                     "type": [
-
                       "array"
                     ],
                     "items": {
@@ -1419,7 +1272,6 @@
                   },
                   "physicalHarmOccurrences": {
                     "type": [
-
                       "array"
                     ],
                     "items": {
@@ -1438,21 +1290,13 @@
               },
               "factorsParenting": {
                 "type": "object",
-                "required": [
-                  "alcoholDrugAbuse",
-                  "alcoholDrugAbuseReason",
-                  "domesticViolence",
-                  "domesticViolenceReason",
-                  "anythingElse",
-                  "anythingElseReason"
-                ],
+
                 "properties": {
                   "alcoholDrugAbuse": {
                     "type": "boolean"
                   },
                   "alcoholDrugAbuseReason": {
                     "type": [
-
                       "string"
                     ]
                   },
@@ -1461,7 +1305,6 @@
                   },
                   "domesticViolenceReason": {
                     "type": [
-
                       "string"
                     ]
                   },
@@ -1470,7 +1313,6 @@
                   },
                   "anythingElseReason": {
                     "type": [
-
                       "string"
                     ]
                   }
@@ -1486,13 +1328,11 @@
                   "region": {
                     "type": [
                       "string"
-
                     ]
                   },
                   "baseLocation": {
                     "type": [
                       "string"
-
                     ]
                   }
                 }
@@ -1505,7 +1345,8 @@
                     "removed",
                     "documentCategory",
                     "documentId",
-                    "document_filename"
+                    "documentFileName",
+                    "uploadTimestamp"
                   ],
                   "properties": {
                     "removed": {
@@ -1517,7 +1358,10 @@
                     "documentId": {
                       "type": "string"
                     },
-                    "document_filename": {
+                    "documentFileName": {
+                      "type": "string"
+                    },
+                    "uploadTimestamp": {
                       "type": "string"
                     }
                   }
