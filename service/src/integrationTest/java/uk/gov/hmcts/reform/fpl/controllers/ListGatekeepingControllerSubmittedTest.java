@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.Language;
+import uk.gov.hmcts.reform.fpl.model.summary.NextHearingDetails;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -49,7 +50,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -281,7 +281,7 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(),
             eq(CASE_ID),
             eq(caseSummary("Yes", "Case management",
-                LocalDate.of(2050, 5, 20))));
+                LocalDateTime.of(2050, 5, 20, 13, 0, 0))));
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT))
             .startEvent(CASE_ID, "internal-change-add-gatekeeping");
         verify(concurrencyHelper, timeout(ASYNC_METHOD_CALL_TIMEOUT)).submitEvent(any(), eq(CASE_ID), anyMap());
@@ -772,12 +772,13 @@ class ListGatekeepingControllerSubmittedTest extends ManageHearingsControllerTes
         return Direction.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
     }
 
-    private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDate hearingDate) {
+    private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDateTime hearingDate) {
         return caseConverter.toMap(SyntheticCaseSummary.builder()
             .caseSummaryHasNextHearing(hasNextHearing)
             .caseSummaryNextHearingType(hearingType)
-            .caseSummaryNextHearingDate(hearingDate)
-            .caseSummaryNextHearingDateTime(LocalDateTime.of(hearingDate, LocalTime.of(13, 0, 0)))
+            .caseSummaryNextHearingDate(hearingDate.toLocalDate())
+            .caseSummaryNextHearingDateTime(hearingDate)
+            .nextHearingDetails(NextHearingDetails.builder().hearingDateTime(hearingDate).build())
             .caseSummaryCourtName(COURT_NAME)
             .caseSummaryLanguageRequirement("No")
             .caseSummaryLALanguageRequirement("No")
