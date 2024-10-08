@@ -65,7 +65,7 @@ public class DocmosisDocumentGeneratorService {
 
         try {
             byte[] response = restTemplate.exchange(
-                configuration.getUrl() + "/rs/render", HttpMethod.POST, request, byte[].class)
+                configuration.getUrl() + "/api/render", HttpMethod.POST, request, byte[].class)
                 .getBody();
             return new DocmosisDocument(template.getDocumentTitle(), response);
         } catch (HttpClientErrorException.BadRequest ex) {
