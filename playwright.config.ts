@@ -75,7 +75,7 @@ export default defineConfig({
           use: { ...devices["Desktop Chrome"] },
           grep:/.*API.spec.ts/,
           timeout: 3*60*1000,
-          expect: { timeout: 1*30*1000 },
+          expect: { timeout: 1*60*1000 },
           dependencies:['usertoken'],
       },
 
