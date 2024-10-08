@@ -3,12 +3,12 @@
   "caseData": {
     "caseName": "e2e test case",
     "court": {
-      "code": "127",
-      "name": "Family Court sitting at Birmingham",
+      "code": "123",
+      "name": "Bath",
       "email": null,
-      "region": "Midlands",
-      "epimmsId": "231596",
-      "regionId": "2",
+      "region": "South West",
+      "epimmsId": "411234",
+      "regionId": "6",
       "dateTransferred": null
     },
     "orders": {
@@ -170,7 +170,7 @@
       {
         "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
         "value": {
-          "name": "Barnaby Dutton",
+          "name": "Swansea City Council",
           "email": "test@test.com",
           "phone": "02027725772",
           "address": {
