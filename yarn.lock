@@ -2814,7 +2814,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7":
+"axios@npm:1.7.7, axios@npm:^1.7.4":
   version: 1.7.7
   resolution: "axios@npm:1.7.7"
   dependencies:
@@ -2822,17 +2822,6 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 882d4fe0ec694a07c7f5c1f68205eb6dc5a62aecdb632cc7a4a3d0985188ce3030e0b277e1a8260ac3f194d314ae342117660a151fabffdc5081ca0b5a8b47fe
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.6.7":
-  version: 1.6.8
-  resolution: "axios@npm:1.6.8"
-  dependencies:
-    follow-redirects: ^1.15.6
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: bf007fa4b207d102459300698620b3b0873503c6d47bf5a8f6e43c0c64c90035a4f698b55027ca1958f61ab43723df2781c38a99711848d232cad7accbcdfcdd
   languageName: node
   linkType: hard
 
@@ -5356,7 +5345,7 @@ __metadata:
     "@types/lodash": ^4.14.202
     "@types/node": ^20.10.7
     "@types/qs": ^6.9.11
-    axios: ^1.6.7
+    axios: ^1.7.4
     codeceptjs: 3.6.7
     dateformat: ^4.6.3
     debug: 4.3.7
