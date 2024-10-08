@@ -47,8 +47,8 @@ import lodash from 'lodash';
         let docDetail = await apiRequest(urlConfig.serviceUrl + '/testing-support/test-document', systemUpdateUser);
         let docParameter = {
             TEST_DOCUMENT_URL: docDetail.document_url,
-            TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url
-
+            TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url,
+            TEST_DOCUMENT_UPLOAD_TIMESTAMP: docDetail.upload_timestamp
         };
         const dateTime = new Date().toISOString();
         caseDataJson.caseData.caseName = caseName;

@@ -1,5 +1,5 @@
 // aat, demo, perftest, ithc
-const env = process.env.ENVIRONMENT || "aat";
+const env = "demo";
 
 interface UrlConfig {
     [key: string]: string;
