@@ -280,7 +280,7 @@ def versions = [
   log4j           : '2.23.1',
   logbackVersion  : '1.5.6',
   jackson         : '2.15.4',
-  pdfbox          : '2.0.31',
+  pdfbox          : '2.0.32',
   mockito         : '5.2.0',
   serenity        : '4.1.6',
   pact_version    : '4.1.7',
@@ -364,7 +364,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
   testImplementation group: 'org.springframework.retry', name: 'spring-retry'
-  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.1'
+  testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.2'
 
   testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
