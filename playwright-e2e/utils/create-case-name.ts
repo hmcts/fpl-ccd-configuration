@@ -4,14 +4,12 @@ export class CreateCaseName {
     return date.toISOString();
   }
     static generateFileName(docType: string){
-        let date = new Date();
-        let year  = date.getFullYear();
-        let month = (date.getMonth() + 1).toString().padStart(2, "0");
-        let  day   = date.getDate().toString().padStart(2, "0");
-        let hour = date.getHours().toString().padStart(2, "0");
-        let min = date.getMinutes().toString().padStart(2, "0");
-        let fileName = docType + '-'+ day+month+year+ ' ' + hour + min + '.pdf';
-
-return fileName
+        let date = new Date().toLocaleString('en-gb',{timeZone:'Europe/London' });
+        date= date.replaceAll('/','');
+        date= date.replaceAll(',','');
+        date= date.replaceAll(':','');
+        date= date.substring(0,13);
+        let fileName = docType + '-'+ date + '.pdf';
+    return fileName
     }
 }
