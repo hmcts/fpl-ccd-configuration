@@ -495,10 +495,7 @@
                       "type": "object",
                       "required": [
                         "addressLine1",
-                        "addressLine2",
-                        "addressLine3",
                         "postTown",
-                        "county",
                         "postcode",
                         "country"
                       ],
@@ -640,7 +637,6 @@
                       "type": "object",
                       "required": [
                         "addressLine1",
-                        "addressLine2",
                         "postTown",
                         "postcode",
                         "country"
