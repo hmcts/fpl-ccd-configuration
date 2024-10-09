@@ -34,12 +34,6 @@
 
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
-<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>
-
-<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>
-
-<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
-
 <br/>
 
 ## Add application documents

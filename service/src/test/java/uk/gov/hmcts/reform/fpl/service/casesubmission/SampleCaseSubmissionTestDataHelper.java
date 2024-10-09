@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC18Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisC20Supplement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
@@ -68,7 +67,6 @@ public class SampleCaseSubmissionTestDataHelper {
                 + "from a parent.\nBeyond parental control.")
             .thresholdDetails("grounds for application criteria")
             .risks(expectedDocmosisRisks())
-            .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
             .relevantProceedings("Yes")
             .build();
@@ -237,28 +235,21 @@ public class SampleCaseSubmissionTestDataHelper {
 
     private static DocmosisInternationalElement expectedDocmosisInternationalElement() {
         return DocmosisInternationalElement.builder()
-            .possibleCarer("Yes\nAunt outside UK")
-            .significantEvents("Yes\nSomething happened in France")
-            .proceedings("Yes\nOutside of the UK")
-            .internationalAuthorityInvolvement("Yes\nFrench authorities were involved")
-            .issues("Yes\nBrussels 2 regulation")
+            .whichCountriesInvolved("Italy, Spain, France")
+            .outsideHagueConvention("Yes")
+            .importantDetails("Something happened in France")
             .build();
     }
 
     private static DocmosisRisks expectedDocmosisRisks() {
         return DocmosisRisks.builder()
-            .neglectDetails("Yes\nPast harm\nFuture risk of harm")
-            .sexualAbuseDetails("Yes\nPast harm\nFuture risk of harm")
-            .physicalHarmDetails("Yes\nPast harm\nFuture risk of harm")
-            .emotionalHarmDetails("Yes\nPast harm\nFuture risk of harm")
-            .build();
-    }
-
-    private static DocmosisFactorsParenting expectedDocmosisFactorsParenting() {
-        return DocmosisFactorsParenting.builder()
-            .anythingElse("No")
-            .alcoholDrugAbuseDetails("Yes\nhistory of drug abuse")
-            .domesticViolenceDetails("Yes\nhistory of domestic violence")
+            .physicalHarm("Yes")
+            .emotionalHarm("Yes")
+            .sexualAbuse("Yes")
+            .neglect("Yes")
+            .alcoholDrugAbuse("Yes")
+            .domesticAbuse("Yes")
+            .anythingElse("Something else")
             .build();
     }
 
