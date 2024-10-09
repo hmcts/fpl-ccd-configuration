@@ -96,6 +96,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ACCELERATED_DISCHARGE_OF_CARE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FAMILY_DRUG_ALCOHOL_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
@@ -3206,6 +3207,42 @@ class MigrateCaseServiceTest {
 
             assertThat(updates).containsEntry("hearingDetails", expectedHearingDetails);
             assertThat(updates).containsEntry("cancelledHearingDetails", expectedCancelledHearingDetails);
+        }
+    }
+
+    @Nested
+    class UpdatingCancelledHearingDetailsType {
+        private final UUID cancelledHearingBookingId = UUID.randomUUID();
+
+        @Test
+        void shouldSetTypeToEmergencyProtectionOrdertWhenTypeDetailsMatchEPO() {
+            List<Element<HearingBooking>> bookings = new ArrayList<>();
+            bookings.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(OTHER)
+                .typeDetails("EPO")
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .cancelledHearingDetails(bookings)
+                .build();
+
+            Map<String, Object> updates = underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID);
+
+            List<Element<HearingBooking>> expected = new ArrayList<>();
+            expected.add(element(cancelledHearingBookingId, HearingBooking.builder()
+                .type(EMERGENCY_PROTECTION_ORDER)
+                .typeDetails("EPO")
+                .build()));
+
+            assertThat(updates).containsEntry("cancelledHearingDetails", expected);
+        }
+
+        @Test
+        void shouldThrowAErrorWhenNoCancelledHearingDetailsPresent() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThrows(AssertionError.class, () -> 
+                underTest.updateCancelledHearingDetailsType(caseData, MIGRATION_ID));
         }
     }
 
