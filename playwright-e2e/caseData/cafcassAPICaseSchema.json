@@ -493,12 +493,6 @@
                     },
                     "address": {
                       "type": "object",
-                      "required": [
-                        "addressLine1",
-                        "postTown",
-                        "postcode",
-                        "country"
-                      ],
                       "properties": {
                         "addressLine1": {
                           "type": [
@@ -635,12 +629,6 @@
                     },
                     "address": {
                       "type": "object",
-                      "required": [
-                        "addressLine1",
-                        "postTown",
-                        "postcode",
-                        "country"
-                      ],
                       "properties": {
                         "addressLine1": {
                           "type": [
@@ -800,13 +788,7 @@
                       "type": [
                         "object"
                       ],
-                      "required": [
-                        "addressLine1",
-                        "addressLine2",
-                        "postTown",
-                        "postcode",
-                        "country"
-                      ],
+
                       "properties": {
                         "addressLine1": {
                           "type": [
