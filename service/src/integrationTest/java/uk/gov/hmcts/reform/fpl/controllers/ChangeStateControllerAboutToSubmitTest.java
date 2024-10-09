@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -8,10 +11,14 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING_LISTING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -23,13 +30,14 @@ class ChangeStateControllerAboutToSubmitTest extends AbstractCallbackTest {
         super("change-state");
     }
 
-    @Test
-    void shouldChangeStateToCaseManagementWhenCurrentStateIsFinalHearingAndYesIsSelected() {
-        CaseData caseData = caseData(FINAL_HEARING, YES.getValue());
+    @ParameterizedTest
+    @MethodSource("stateChangeSource")
+    void shouldChangeStateWhenYesIsSelected(State beforeState, State expectedState) {
+        CaseData caseData = caseData(beforeState, YES.getValue());
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
 
-        assertThat(response.getData()).extracting("state").isEqualTo(CASE_MANAGEMENT.getValue());
+        assertThat(response.getData()).extracting("state").isEqualTo(expectedState.getValue());
     }
 
     @Test
@@ -62,5 +70,14 @@ class ChangeStateControllerAboutToSubmitTest extends AbstractCallbackTest {
             .state(state)
             .confirmChangeState(changeState)
             .build();
+    }
+
+    private static Stream<Arguments> stateChangeSource() {
+        return Stream.of(
+            Arguments.of(FINAL_HEARING, CASE_MANAGEMENT),
+            Arguments.of(CASE_MANAGEMENT, FINAL_HEARING),
+            Arguments.of(GATEKEEPING, CASE_MANAGEMENT),
+            Arguments.of(GATEKEEPING_LISTING, CASE_MANAGEMENT)
+        );
     }
 }

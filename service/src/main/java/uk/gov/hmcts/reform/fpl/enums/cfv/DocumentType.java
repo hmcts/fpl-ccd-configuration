@@ -91,7 +91,7 @@ public enum DocumentType {
         false, false, false,
         null,
         null, 60, null),
-    JUDGEMENTS("└─ Judgements/facts and reasons", standardResolver("judgementList"),
+    JUDGEMENTS("└─ Judgments/facts and reasons", standardResolver("judgementList"),
         false, false, false,
         defaultWithDocumentBuilder(),
         AA_PARENT_ORDERS, 70, DEFAULT_NOTIFICATION_CONFIG),
@@ -140,11 +140,11 @@ public enum DocumentType {
         null,
         null, 180, null),
     C1_APPLICATION_DOCUMENTS("└─ C1 application supporting documents", standardResolver("c1ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 190, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     C2_APPLICATION_DOCUMENTS("└─ C2 application supporting documents", standardResolver("c2ApplicationDocList"),
-        false, false, false,
+        true, true, true,
         defaultWithDocumentBuilder(),
         AA_PARENT_APPLICATIONS, 200, ADDITIONAL_APPLCIATION_NOTIFICAITON_CONFIG),
     AA_PARENT_RESPONDENTS_STATEMENTS("Respondent statements", null,
@@ -202,7 +202,7 @@ public enum DocumentType {
         defaultWithDocumentBuilder(),
         null, 320, DEFAULT_NOTIFICATION_CONFIG),
     PREVIOUS_PROCEEDING("Previous Proceeding", standardResolver("previousProceedingList"),
-        false, false, false, 
+        false, false, false,
         defaultWithDocumentBuilder(),
         null, 330, NO_CAFCASS_NOTIFICATION_CONFIG),
     PLACEMENT_RESPONSES("Placement responses", null,
@@ -234,7 +234,7 @@ public enum DocumentType {
     private final DocumentUploadedNotificationConfiguration notificationConfiguration;
 
     public boolean isUploadable() {
-        if (isHiddenFromSolicitorUpload() || isHiddenFromLAUpload() || isHiddenFromCTSCUpload()) {
+        if (isHiddenFromSolicitorUpload() && isHiddenFromLAUpload() && isHiddenFromCTSCUpload()) {
             return false;
         }
         return nonNull(baseFieldNameResolver) || PLACEMENT_RESPONSES == this;

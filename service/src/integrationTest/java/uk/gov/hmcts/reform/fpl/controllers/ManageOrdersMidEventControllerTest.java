@@ -129,7 +129,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("leaveToChangeChildSurname", "NO"),
         Map.entry("partyAllowedContactsAndConditions", "NO"),
         Map.entry("familyAssistanceOrder", "NO"),
-        Map.entry("manageOrdersTransparencyOrder", "NO")
+        Map.entry("manageOrdersTransparencyOrder", "NO"),
+        Map.entry("nonMolestationOrder", "NO")
     ));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -436,7 +437,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotReturnErrorsWhenEPOOrderDetailsAreValidForPreventRemoval() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
+                buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
             .build();
 
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO_V2), eq(PDF), eq(ENGLISH)))
@@ -595,7 +596,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
             Map.entry("familyAssistanceOrder", "NO"),
-            Map.entry("manageOrdersTransparencyOrder", "NO")
+            Map.entry("manageOrdersTransparencyOrder", "NO"),
+            Map.entry("nonMolestationOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -658,7 +660,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("leaveToChangeChildSurname", "NO"),
             Map.entry("partyAllowedContactsAndConditions", "NO"),
             Map.entry("familyAssistanceOrder", "NO"),
-            Map.entry("manageOrdersTransparencyOrder", "NO")
+            Map.entry("manageOrdersTransparencyOrder", "NO"),
+            Map.entry("nonMolestationOrder", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
