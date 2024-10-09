@@ -1,0 +1,54 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "CategoryID": "psychologicalReportOnParentFunctioningConfidential"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "uploaderType",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DocumentUploaderType",
+    "ElementLabel": "Document Uploader Type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "uploaderCaseRoles",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "CaseRole",
+    "ElementLabel": "Document Uploader Case Roles",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "markAsConfidential",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is confidential?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PsychologicalReportOnParentFunctioningConfidential",
+    "ListElementCode": "translationRequirements",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LanguageTranslationRequirement",
+    "ElementLabel": "Is translation needed?",
+    "SecurityClassification": "Public"
+  }
+]
