@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,8 +102,8 @@ class FeeServiceTest {
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
-                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[]{},
-                    Map.of())
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null),
+                    new byte[]{}, Collections.emptyMap())
                 );
 
             List<FeeType> feeTypes = List.of(CARE_ORDER);
@@ -199,8 +200,8 @@ class FeeServiceTest {
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
-                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[]{},
-                    Map.of())
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null),
+                    new byte[]{}, Collections.emptyMap())
                 );
 
             Orders orders = Orders.builder()
