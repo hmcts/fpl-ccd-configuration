@@ -9,8 +9,8 @@ properties([
             description: 'The URL of case service callbacks'),
         string(name: 'IDAM_API_URL', defaultValue: 'https://idam-api.aat.platform.hmcts.net',
             description: 'The URL of idam api'),
-        string(name: 'MO_BASE_URL', defaultValue: 'https://manage-org.aat.platform.hmcts.net',
-          description: 'The URL of manage organisation'),
+        string(name: 'ENVIRONMENT', defaultValue: 'aat',
+          description: 'Envirnonment of  test execution'),
     ])
 ])
 
@@ -98,7 +98,6 @@ withNightlyPipeline(type, product, component) {
         env.TEST_RETRIES = 5
         env.TESTS_FOR_ACCESSIBILITY = true
         env.ENV = 'aat'
-        env.CASE_SERVICE_URL = "http://fpl-case-service-aat.service.core-compute-aat.internal"
     }
 
     afterAlways('fullFunctionalTest') {

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
@@ -7,8 +9,6 @@ import uk.gov.hmcts.reform.fpl.validation.models.ValidationDocumentMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;

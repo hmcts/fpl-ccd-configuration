@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
@@ -88,6 +89,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 @WebMvcTest(UploadTranslationsController.class)
 @OverrideAutoConfiguration(enabled = true)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 1614860986487554L;
@@ -234,7 +236,7 @@ class UploadTranslationsSubmittedControllerTest extends AbstractCallbackTest {
         when(documentDownloadService.downloadDocument(TEST_DOCUMENT.getBinaryUrl())).thenReturn(TRANSLATED_DOC_BYTES);
         when(documentConversionService.convertToPdf(TRANSLATED_DOC_BYTES, TEST_DOCUMENT.getFilename())).thenReturn(
             CONVERTED_DOC_BYTES);
-        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.BILINGUAL))
+        when(documentSealingService.sealDocument(CONVERTED_DOC_BYTES, court, SealType.WELSH))
             .thenReturn(SEALED_DOC_BYTES);
         when(uploadDocumentService.uploadDocument(SEALED_DOC_BYTES,
             "noticeo_c6-Welsh.pdf",

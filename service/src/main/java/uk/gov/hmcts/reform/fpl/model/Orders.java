@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -16,8 +19,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEPOType;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.epo.HasEnteredEPOExcluded;
 
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CHILD_ASSESSMENT_ORDER;
@@ -62,10 +63,12 @@ public class Orders {
     private final String educationSupervisionOrderPriorConsultationOtherLA;
     private final List<PriorConsultationType> educationSupervisionOrderPriorConsultationType;
 
+    @JsonIgnore
     public boolean orderContainsEPO() {
         return isNotEmpty(orderType) && this.getOrderType().contains(EMERGENCY_PROTECTION_ORDER);
     }
 
+    @JsonIgnore
     public boolean isC1Order() {
         return isNotEmpty(orderType) && (this.getOrderType().contains(CHILD_ASSESSMENT_ORDER)
                 || isSecureAccommodationOrder()
@@ -75,58 +78,72 @@ public class Orders {
                 || isEducationSupervisionOrder());
     }
 
+    @JsonIgnore
     public boolean isDischargeOfCareOrder() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(OTHER);
     }
 
+    @JsonIgnore
     public boolean isSecureAccommodationOrder() {
         return isNotEmpty(orderType) && this.getOrderType().contains(SECURE_ACCOMMODATION_ORDER);
     }
 
+    @JsonIgnore
     public boolean isRefuseContactWithChildApplication() {
         return isNotEmpty(orderType) && this.getOrderType().contains(REFUSE_CONTACT_WITH_CHILD);
     }
 
+    @JsonIgnore
     public boolean isChildRecoveryOrder() {
         return isNotEmpty(orderType) && this.getOrderType().contains(CHILD_RECOVERY_ORDER);
     }
 
+    @JsonIgnore
     public boolean isContactWithChildInCareOrder() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CONTACT_WITH_CHILD_IN_CARE);
     }
 
+    @JsonIgnore
     public boolean isEducationSupervisionOrder() {
         return isNotEmpty(orderType) && orderType.contains(EDUCATION_SUPERVISION_ORDER);
     }
 
+    @JsonIgnore
     public boolean containsInterimCareOrder() {
         return isNotEmpty(orderType) && orderType.contains(INTERIM_CARE_ORDER);
     }
 
+    @JsonIgnore
     public boolean containsCareOrder() {
         return isNotEmpty(orderType) && orderType.contains(OrderType.CARE_ORDER);
     }
 
+    @JsonIgnore
     public boolean isCareOrderCombinedWithEPOorICO() {
         return isNotEmpty(orderType) && (containsCareOrder() && (containsInterimCareOrder() || orderContainsEPO()));
     }
 
+    @JsonIgnore
     public boolean isEmergencyProtectionOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(EMERGENCY_PROTECTION_ORDER);
     }
 
+    @JsonIgnore
     public boolean isInterimCareOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(INTERIM_CARE_ORDER);
     }
 
+    @JsonIgnore
     public boolean isSecureAccommodationOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(SECURE_ACCOMMODATION_ORDER);
     }
 
+    @JsonIgnore
     public boolean isChildRecoveryOrderOnly() {
         return isNotEmpty(orderType) && orderType.size() == 1 && orderType.contains(CHILD_RECOVERY_ORDER);
     }
 
+    @JsonIgnore
     public boolean isEPOCombinedWithICO() {
         return isNotEmpty(orderType) && containsInterimCareOrder() && orderContainsEPO();
     }
