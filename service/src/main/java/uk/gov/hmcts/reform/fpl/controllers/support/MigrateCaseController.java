@@ -11,7 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.MigrateCaseService;
+import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,11 +27,13 @@ import java.util.function.Consumer;
 public class MigrateCaseController extends CallbackController {
     public static final String MIGRATION_ID_KEY = "migrationId";
     private final MigrateCaseService migrateCaseService;
+    private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
 
     private final Map<String, Consumer<CaseDetails>> migrations = Map.of(
         "DFPL-log", this::runLog,
-        "DFPL-2474", this::run2474
+        "DFPL-2551", this::run2551
     );
+    private final CaseConverter caseConverter;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -54,11 +59,13 @@ public class MigrateCaseController extends CallbackController {
         log.info("Logging migration on case {}", caseDetails.getId());
     }
 
-    private void run2474(CaseDetails caseDetails) {
-        final String migrationId = "DFPL-2474";
+    private void run2551(CaseDetails caseDetails) {
+        final String migrationId = "DFPL-2551";
+        final long expectedCaseId = 1726735474157650L;
 
-        migrateCaseService.doCaseIdCheck(caseDetails.getId(), 1719824920130559L, migrationId);
-        caseDetails.getData().remove("redDotAssessmentForm");
-        caseDetails.getData().remove("caseSummaryFlagAssessmentForm");
+        migrateCaseService.doCaseIdCheck(caseDetails.getId(), expectedCaseId, migrationId);
+
+        final CaseData caseData = getCaseData(caseDetails);
+        caseDetails.getData().putAll(migrateCaseService.removeAddressFromEPO(caseData, migrationId));
     }
 }

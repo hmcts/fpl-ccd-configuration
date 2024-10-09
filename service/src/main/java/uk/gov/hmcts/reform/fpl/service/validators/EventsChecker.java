@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.EnumMap;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
