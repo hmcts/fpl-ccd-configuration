@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +108,12 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
                 .build());
 
         String fileContent = Base64.getEncoder().encodeToString(DOCUMENT_CONTENT);
-        Map<String, Object> jsonFileObject =  Map.of("file", fileContent, "is_csv", false);
+        Map<String, Object> jsonFileObject =  new HashMap<>() {{
+            put("retention_period", null);
+            put("filename", null);
+            put("confirm_email_before_download", null);
+            put("file", fileContent);
+        }};
 
         ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder()
             .caseUrl("")
