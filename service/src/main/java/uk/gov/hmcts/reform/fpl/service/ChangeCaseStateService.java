@@ -51,14 +51,11 @@ public class ChangeCaseStateService {
     }
 
     private State getNextState(State state) {
-        switch (state) {
-            case CASE_MANAGEMENT:
-                return FINAL_HEARING;
-            case FINAL_HEARING:
-                return CASE_MANAGEMENT;
-            default:
-                throw new IllegalStateException("Should not be able to change from: " + state);
-        }
+        return switch (state) {
+            case GATEKEEPING, GATEKEEPING_LISTING, FINAL_HEARING -> CASE_MANAGEMENT;
+            case CASE_MANAGEMENT -> FINAL_HEARING;
+            default -> throw new IllegalStateException("Should not be able to change from: " + state);
+        };
     }
 
     private boolean isInClosedState(CaseData caseData) {
