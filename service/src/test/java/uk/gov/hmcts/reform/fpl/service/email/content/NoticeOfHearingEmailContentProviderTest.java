@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -128,7 +128,14 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
     private NoticeOfHearingTemplate buildExpectedEmailTemplate() {
         return buildCommonParameters().toBuilder()
             .caseUrl("")
-            .documentLink(Map.of("file", ENCODED_BINARY, "is_csv", false))
+            .documentLink(
+                new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }}
+            )
             .digitalPreference(NO.getValue())
             .build();
     }

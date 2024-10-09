@@ -19,8 +19,8 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -156,7 +156,12 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl() {
-        return returnedCaseTemplate().applicationDocumentUrl(Map.of("file", ENCODED_BINARY, "is_csv", false));
+        return returnedCaseTemplate().applicationDocumentUrl(new HashMap<>() {{
+            put("retention_period", null);
+            put("filename", null);
+            put("confirm_email_before_download", null);
+            put("file", ENCODED_BINARY);
+        }});
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplate() {
