@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyE
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Service
+@Deprecated
 public class FactorsAffectingParentingChecker implements EventChecker {
 
     @Override
