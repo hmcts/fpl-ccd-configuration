@@ -3,8 +3,7 @@
   "$id": "http://example.com/example.json",
   "type": "object",
   "required": [
-    "total",
-    "cases"
+    "total"
   ],
   "properties": {
     "total": {
