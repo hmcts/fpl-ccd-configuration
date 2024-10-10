@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.summary.NextHearingDetails;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -75,6 +76,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -101,6 +105,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -121,6 +128,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -142,6 +152,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -168,6 +181,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
@@ -194,6 +210,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .caseSummaryNextHearingJudge(HEARING_JUDGE_LABEL)
             .caseSummaryNextHearingEmailAddress(HEARING_JUDGE_EMAIL_ADDRESS)
@@ -222,6 +241,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .caseSummaryNextHearingCMO(DOCUMENT_REFERENCE)
             .build());
@@ -253,6 +275,9 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingDateTime(NOW)
+            .nextHearingDetails(NextHearingDetails.builder()
+                .hearingDateTime(NOW)
+                .build())
             .caseSummaryNextHearingType("Case management")
             .build());
     }
