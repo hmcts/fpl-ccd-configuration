@@ -21,9 +21,9 @@ test.describe('CafcassAPI search cases', () => {
         // set up the test data
         // return case, case with minimum data , case with all data
         caseNumber = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('submit case' + startTime.slice(0, 10), caseNumber, submitCase);
+        await updateCase('Cafcass search case1' + startTime.slice(0, 10), caseNumber, submitCase);
         caseNumber2 = await createCase('e2e case', newSwanseaLocalAuthorityUserOne);
-        await updateCase('submit case' + startTime.slice(0, 10), caseNumber2, cafcassCase);
+        await updateCase('Cafcass search case2' + startTime.slice(0, 10), caseNumber2, cafcassCase);
         let interval = currentTime.setMinutes(currentTime.getMinutes() + 5);
         intervalEndTime = new Date(interval).toISOString();
 
