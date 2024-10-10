@@ -592,7 +592,6 @@
                     "gender",
                     "addressKnown",
                     "dateOfBirth",
-                    "telephoneNumber",
                     "relationshipToChild"
 
                   ],
