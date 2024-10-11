@@ -1,0 +1,433 @@
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "caseName": "e2e test case",
+    "familyManCaseNumber": "FP24L10003",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "court": {
+      "code": "123",
+      "name": "Family Court sitting at Bath",
+      "region": "South West",
+      "epimmsId": "411234",
+      "regionId": "6"
+    },
+    "caseManagementLocation": {
+      "region": "6",
+      "baseLocation": "411234"
+    },
+    "orders": {
+      "court": "123",
+      "orderType": [
+        "CARE_ORDER"
+      ],
+      "directions": "No"
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "type": "Standard case management hearing",
+      "timeFrame": "Within 18 days",
+      "reducedNotice": "No",
+      "withoutNotice": "No",
+      "type_GiveReason": "Because this is a Standard case",
+      "respondentsAware": "No"
+    },
+    "allocationProposal": {
+      "proposal": "Circuit judge",
+      "proposalReason": "Because we need a Circuit judge for this case"
+    },
+    "gatekeeperEmails": [
+      {
+        "id": "6083cb16-4058-4d20-a909-ef8e2b9e5c75",
+        "value": {
+          "email": "gatekeeper@mailnesia.com"
+        }
+      }
+    ],
+    "standardDirectionOrder": {
+      "orderDoc": {
+        "document_url": "${TEST_SDO_URL}",
+        "upload_timestamp": "${TEST_SDO_UPLOAD_TIMESTAMP}",
+        "document_filename": "standard-directions-order.pdf",
+        "document_binary_url": "${TEST_SDO_BINARY_URL}"
+      },
+      "dateOfIssue": "11 October 2024",
+      "orderStatus": "SEALED",
+      "needTranslation": "NO",
+      "standardDirections": [
+        {
+          "id": "a1e952f5-6209-4709-97f3-2a3a3123458a",
+          "value": {
+            "type": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+            "title": "Request permission for expert evidence",
+            "assignee": "ALL_PARTIES",
+            "description": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
+            "dueDateType": "DAYS",
+            "daysBeforeHearing": 2
+          }
+        }
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "LastnameoftheJudge",
+        "judgeEmailAddress": "judiciary@mailnesia.com",
+        "judgeJudicialUser": {}
+      },
+      "translationRequirements": "NO"
+    },
+    "hearingDetails": [
+      {
+        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
+        "value": {
+          "endDate": "2050-01-02T16:30:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SPOKEN_OR_WRITTEN_WELSH",
+            "SOMETHING_ELSE"
+          ],
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeLastName": "Test",
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "legalAdvisorName": "Test Test"
+          },
+          "startDate": "2050-01-01T15:15:00",
+          "attendance": [
+            "IN_PERSON"
+          ],
+          "type": "FURTHER_CASE_MANAGEMENT",
+          "typeDetails": "test type details",
+          "venue": "111"
+        }
+      }
+    ],
+    "children1": [
+      {
+        "id": "5c578fcc-7e41-45b0-82f7-46c38a769cb3",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      },
+      {
+        "id": "c367fc87-fbc1-4e7b-a312-480c047d97b3",
+        "value": {
+          "party": {
+            "gender": "They identify in another way",
+            "adoption": "Yes",
+            "keyDates": "Key dates for this child (Optional)",
+            "lastName": "one",
+            "firstName": "child",
+            "dateOfBirth": "2023-01-01",
+            "fathersName": "Father's full name (Optional)",
+            "mothersName": "Mother's full name (Optional)",
+            "detailsHidden": "Yes",
+            "placementCourt": "Are you considering adoption at this stage? (Optional)Are you submitting an application for a placement order? (Optional)\n Which court are you applying to? (Optional)",
+            "additionalNeeds": "Yes",
+            "livingSituation": "Living with other family or friends",
+            "litigationIssues": "YES",
+            "socialWorkerName": "Name of social worker (Optional)",
+            "addressChangeDate": "2020-11-01",
+            "careAndContactPlan": "Brief summary of care and contact plan (Optional)",
+            "detailsHiddenReason": "Do you need contact details hidden from other parties? (Optional)Give reason (Optional)",
+            "genderIdentification": "test",
+            "fathersResponsibility": "Yes",
+            "additionalNeedsDetails": "Does the child have any additional needs? (Optional)Give details (Optional)",
+            "litigationIssuesDetails": "Give details, including assessment outcomes and referrals to health services (Optional)",
+            "placementOrderApplication": "Yes",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "020 2772 5772",
+              "contactDirection": "Name of person to contact (Optional)"
+            }
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "583fe873-f0f2-4b38-bc8b-825c07ebdd41",
+        "value": {
+          "party": {
+            "email": {
+              "email": "swansea@test.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "a77f0692-60c8-44e1-aae7-f067851bbc89",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "Swansea City Council",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "localAuthorities": [
+      {
+        "id": "048aa1fd-e3a5-4651-99b0-53776bd03773",
+        "value": {
+          "id": "IWGOT5W",
+          "name": "London Borough Hillingdon",
+          "email": "FamilyPublicLaw+hn@gmail.com",
+          "phone": "123456",
+          "address": {
+            "PostCode": "CR0 2GE",
+            "PostTown": "London",
+            "AddressLine1": "Flat 1, Hillingdon Apartments",
+            "AddressLine2": "Hillingdon Central Square 1"
+          },
+          "pbaNumber": "PBA1234567",
+          "clientCode": "",
+          "designated": "Yes",
+          "customerReference": "PBA1234567",
+          "colleagues": [
+            {
+              "id": "1a44928d-6dcd-4943-86c6-5dca0f6ba376",
+              "value": {
+                "role": "SOLICITOR",
+                "email": "test@test.com",
+                "fullName": "Solicitor 1",
+                "notificationRecipient": "Yes"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "respondents1": [
+      {
+        "id": "c8484a6b-e1ad-4112-82a5-e74ce964003a",
+        "value": {
+          "party": {
+            "gender": "They identify in another way",
+            "partyId": "86d6641f-eb50-47bd-ab97-eef52e50941e",
+            "lastName": "one",
+            "firstName": "Respondent",
+            "addressKnow": "No",
+            "dateOfBirth": "1980-01-01",
+            "litigationIssues": "YES",
+            "relationshipToChild": "Relationship to the child",
+            "addressNotKnowReason": "No fixed abode",
+            "contactDetailsHidden": "Yes",
+            "genderIdentification": "other gender",
+            "litigationIssuesDetails": "Give details, including assessment outcomes and referrals to health services (Optional)",
+            "contactDetailsHiddenReason": "Do you need contact details hidden from other parties? (Optional)\nGive reason (Optional)"
+          },
+          "solicitor": {
+            "email": "solicitor1@solicitors.uk",
+            "lastName": "Representative's last name",
+            "firstName": "Representative's first name",
+            "organisation": {
+              "OrganisationID": "W98ZZ5W",
+              "OrganisationName": "Uday2 Test Org"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "020 2772 5772"
+            },
+            "regionalOfficeAddress": {
+              "Country": "United Kingdom",
+              "PostCode": "SW1H 9AJ",
+              "PostTown": "London",
+              "AddressLine1": "Ministry Of Justice",
+              "AddressLine2": "Seventh Floor 102 Petty France"
+            }
+          },
+          "legalRepresentation": "Yes"
+        }
+      },
+      {
+        "id": "6e3b4492-3a0d-4eb8-8a18-a4a42a7b158a",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": {
+      "document_url": "${TEST_DOCUMENT_URL}",
+      "upload_timestamp": "${TEST_DOCUMENT_UPLOAD_TIMESTAMP}",
+      "document_filename": "c110a.pdf",
+      "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
+    },
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "caseLocalAuthority": "HN",
+    "localAuthorityPolicy": {
+      "Organisation": {
+        "OrganisationID": "IWGOT5W",
+        "OrganisationName": "London Borough Hillingdon"
+      },
+      "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+    },
+    "caseLocalAuthorityName": "London Borough Hillingdon",
+    "allocatedJudge": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "judgeLastName": "Moley",
+      "judgeEmailAddress": "moley@example.com"
+    },
+    "internationalElement": {
+      "issues": "Yes",
+      "proceedings": "Yes",
+      "issuesReason": "Are you aware of any issues with the jurisdiction of this case - for example under the Brussels 2 regulation? (Optional)",
+      "possibleCarer": "Yes",
+      "proceedingsReason": "Are you aware of any proceedings outside the UK? (Optional)",
+      "significantEvents": "Yes",
+      "possibleCarerReason": "Are there any suitable carers outside of the UK? (Optional)",
+      "significantEventsReason": "Are you aware of any significant events that have happened outside the UK? (Optional)",
+      "internationalAuthorityInvolvement": "Yes",
+      "internationalAuthorityInvolvementDetails": "Has, or should, a government or central authority in another country been involved in this case? (Optional)\nYes"
+    },
+    "factorsParenting": {
+      "anythingElse": "Yes",
+      "alcoholDrugAbuse": "Yes",
+      "domesticViolence": "Yes",
+      "anythingElseReason": "Anything else (Optional)",
+      "alcoholDrugAbuseReason": "Alcohol or drug abuse (Optional)",
+      "domesticViolenceReason": "Domestic violence (Optional)"
+    },
+    "risks": {
+      "neglect": "Yes",
+      "sexualAbuse": "Yes",
+      "physicalHarm": "Yes",
+      "emotionalHarm": "Yes",
+      "neglectOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ],
+      "sexualAbuseOccurrences": [
+        "Future risk of harm",
+        "Past harm"
+      ],
+      "physicalHarmOccurrences": [
+        "Future risk of harm",
+        "Past harm"
+      ],
+      "emotionalHarmOccurrences": [
+        "Future risk of harm",
+        "Past harm"
+      ]
+    },
+    "others": {
+      "firstOther": {
+        "DOB": "1980-01-01",
+        "name": "Other people in the case",
+        "gender": "They identify in another way",
+        "address": {
+          "Country": "United Kingdom",
+          "PostCode": "SW1H 9AJ",
+          "PostTown": "London",
+          "AddressLine1": "Ministry Of Justice",
+          "AddressLine2": "Seventh Floor 102 Petty France"
+        },
+        "telephone": "123456",
+        "birthPlace": "town",
+        "addressKnow": "Yes",
+        "detailsHidden": "No",
+        "childInformation": "What is this person's relationship to the child or children in this case? (Optional)",
+        "litigationIssues": "YES",
+        "genderIdentification": "test",
+        "litigationIssuesDetails": "Give details, including assessment outcomes and referrals to health services (Optional"
+      },
+      "additionalOthers": [
+        {
+          "id": "4e40f003-764c-4569-af73-cf3d3d8aeb27",
+          "value": {
+            "DOB": "1960-01-01",
+            "name": "Other 2",
+            "gender": "Female",
+            "birthPlace": "city",
+            "addressKnow": "No",
+            "detailsHidden": "Yes",
+            "childInformation": "relationship",
+            "litigationIssues": "NO",
+            "detailsHiddenReason": "reason",
+            "addressNotKnowReason": "No fixed abode"
+          }
+        }
+      ]
+    },
+    "proceeding": {
+      "ended": "2023-01-02",
+      "judge": "Judge (Optional)",
+      "started": "2023-01-01",
+      "children": "Names of children involved",
+      "guardian": "Name of guardian (Optional)",
+      "caseNumber": "1111111",
+      "ordersMade": "None",
+      "proceedingStatus": "Previous",
+      "onGoingProceeding": "Yes",
+      "sameGuardianNeeded": "Yes",
+      "additionalProceedings": [
+        {
+          "id": "054c0dc7-c1a5-41ba-b753-abaffbc95834",
+          "value": {
+            "ended": "2024-01-01",
+            "judge": "IDK",
+            "started": "2024-01-01",
+            "children": "IDK",
+            "guardian": "IDK",
+            "caseNumber": "1231312313",
+            "ordersMade": "IDK",
+            "proceedingStatus": "Ongoing",
+            "sameGuardianNeeded": "Yes"
+          }
+        }
+      ]
+    }
+  }
+}

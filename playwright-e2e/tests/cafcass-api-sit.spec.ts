@@ -11,6 +11,18 @@ import case08 from "../caseData/Cafcass-integration-test/08.json" assert { type:
 import case09 from "../caseData/Cafcass-integration-test/09.json" assert { type: "json" };
 import case10 from "../caseData/Cafcass-integration-test/10.json" assert { type: "json" };
 import case11 from "../caseData/Cafcass-integration-test/11.json" assert { type: "json" };
+import case12 from "../caseData/Cafcass-integration-test/12.json" assert { type: "json" };
+import case13 from "../caseData/Cafcass-integration-test/13.json" assert { type: "json" };
+import case14 from "../caseData/Cafcass-integration-test/14.json" assert { type: "json" };
+import case15 from "../caseData/Cafcass-integration-test/15.json" assert { type: "json" };
+import case16 from "../caseData/Cafcass-integration-test/16.json" assert { type: "json" };
+import case17 from "../caseData/Cafcass-integration-test/17.json" assert { type: "json" };
+import case26 from "../caseData/Cafcass-integration-test/26.json" assert { type: "json" };
+import case27 from "../caseData/Cafcass-integration-test/27.json" assert { type: "json" };
+import case28 from "../caseData/Cafcass-integration-test/28.json" assert { type: "json" };
+import case30 from "../caseData/Cafcass-integration-test/30.json" assert { type: "json" };
+import case31 from "../caseData/Cafcass-integration-test/31.json" assert { type: "json" };
+import case32 from "../caseData/Cafcass-integration-test/32.json" assert { type: "json" };
 import { urlConfig } from "../settings/urls";
 import { systemUpdateUser } from "../settings/user-credentials";
 import lodash from "lodash";
@@ -25,6 +37,7 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
+    let familManNumPrefix = 'FP24A00';
     // test.beforeEach(async ()  => {
     //     caseNumber = await createCase(caseName, laUser);
     //     if (caseNumber != null) {
@@ -35,21 +48,31 @@ test.describe('Cafcass API Integration test', () => {
     // });
 
     test("Integration Test", async ({page}, testInfo) => {
+        let caseNo = [
+            "case01", "case02", "case03", "case04", "case05", "case06", "case07", "case08", "case09", "case10",
+            "case11", "case12", "case13", "case14", "case15", "case16", "case17",
+            "case26", "case27", "case28",
+            "case30", "case31", "case32"
+        ];
         let cases = [
             case01, case02, case03, case04, case05, case06, case07, case08, case09, case10,
-            case11
+            case11, case12, case13, case14, case15, case16, case17,
+            case26, case27, case28,
+            case30, case31, case32
         ];
-        for(let i = 10; i < cases.length; i++) {
+        for(let i = 0; i < cases.length; i++) {
+            let familyNumCount = ('00' + i).slice(-3);
             caseNumber = await createCase(caseName, laUser);
             if (caseNumber != null) {
                 try {
+                    cases[i].caseData.familyManCaseNumber = familManNumPrefix + familyNumCount;
                     await updateCase(caseName, caseNumber, cases[i]);
-                    console.log('Case ' + (i + 1) + ': ' + caseNumber);
+                    console.log(caseNo[i] + ': ' + caseNumber);
                 } catch (e) {
-                    console.log('Case ' + (i + 1) + ': Failed');
+                    console.log(caseNo[i] + ': Failed');
                 }
             } else {
-                console.log('Case ' + (i + 1) + ': Failed');
+                console.log(caseNo[i] + ': Failed');
             }
         }
     });

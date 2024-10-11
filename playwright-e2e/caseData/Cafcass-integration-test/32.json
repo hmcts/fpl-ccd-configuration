@@ -50,7 +50,7 @@
       "orderDoc": {
         "document_url": "${TEST_SDO_URL}",
         "upload_timestamp": "${TEST_SDO_UPLOAD_TIMESTAMP}",
-        "document_filename": "standard-directions-order.pdf",
+        "document_filename": "same-doc-name.pdf",
         "document_binary_url": "${TEST_SDO_BINARY_URL}"
       },
       "dateOfIssue": "11 October 2024",
@@ -260,7 +260,7 @@
     "submittedForm": {
       "document_url": "${TEST_DOCUMENT_URL}",
       "upload_timestamp": "${TEST_DOCUMENT_UPLOAD_TIMESTAMP}",
-      "document_filename": "c110a.pdf",
+      "document_filename": "same-doc-name.pdf",
       "document_binary_url": "${TEST_DOCUMENT_BINARY_URL}"
     },
     "submissionConsent": [
