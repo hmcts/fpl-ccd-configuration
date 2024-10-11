@@ -115,7 +115,7 @@
             "gender": "Boy",
             "lastName": "Jones",
             "firstName": "Timothy",
-            "dateOfBirth": null
+            "dateOfBirth": "2015-08-01"
           }
         }
       },
@@ -246,7 +246,7 @@
             },
             "lastName": "Bloggs",
             "firstName": "Joe",
-            "dateOfBirth": "1980-01-01",
+            "dateOfBirth": null,
             "placeOfBirth": "London",
             "telephoneNumber": {
               "telephoneNumber": "00000 000000"

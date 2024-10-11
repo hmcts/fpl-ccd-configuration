@@ -5,6 +5,8 @@ import case02 from "../caseData/Cafcass-integration-test/02.json" assert { type:
 import case03 from "../caseData/Cafcass-integration-test/03.json" assert { type: "json" };
 import case04 from "../caseData/Cafcass-integration-test/04.json" assert { type: "json" };
 import case05 from "../caseData/Cafcass-integration-test/05.json" assert { type: "json" };
+import case06 from "../caseData/Cafcass-integration-test/06.json" assert { type: "json" };
+import case07 from "../caseData/Cafcass-integration-test/07.json" assert { type: "json" };
 import { urlConfig } from "../settings/urls";
 import { systemUpdateUser } from "../settings/user-credentials";
 import lodash from "lodash";
@@ -19,38 +21,33 @@ test.describe('Cafcass API Integration test', () => {
     const dateTime = new Date().toISOString();
     let caseNumber : string;
     let caseName = 'Cafcass Integration Test ' + dateTime;
-    test.beforeEach(async ()  => {
-        caseNumber = await createCase(caseName, laUser);
-        if (caseNumber != null) {
-            // do nothing
-        } else {
-            throw "Fail to create case";
+    // test.beforeEach(async ()  => {
+    //     caseNumber = await createCase(caseName, laUser);
+    //     if (caseNumber != null) {
+    //         // do nothing
+    //     } else {
+    //         throw "Fail to create case";
+    //     }
+    // });
+
+    test("Integration Test", async ({page}, testInfo) => {
+        let cases = [
+            case01, case02, case03, case04, case05, case06,
+            case07
+        ];
+        for(let i = 6; i < cases.length; i++) {
+            caseNumber = await createCase(caseName, laUser);
+            if (caseNumber != null) {
+                try {
+                    await updateCase(caseName, caseNumber, cases[i]);
+                    console.log('Case ' + (i + 1) + ': ' + caseNumber);
+                } catch (e) {
+                    console.log('Case ' + (i + 1) + ': Failed');
+                }
+            } else {
+                console.log('Case ' + (i + 1) + ': Failed');
+            }
         }
-    });
-
-    // test("Integration Test - 01", async ({page}, testInfo) => {
-    //     await updateCase(caseName, caseNumber, case01);
-    //     console.log('Case 01: ' + caseNumber);
-    // });
-    //
-    // test("Integration Test - 02", async ({page}, testInfo) => {
-    //     await updateCase(caseName, caseNumber, case02);
-    //     console.log('Case 02: ' + caseNumber);
-    // });
-
-    // test("Integration Test - 03", async ({page}, testInfo) => {
-    //     await updateCase(caseName, caseNumber, case03);
-    //     console.log('Case 03: ' + caseNumber);
-    // });
-
-    // test("Integration Test - 04", async ({page}, testInfo) => {
-    //     await updateCase(caseName, caseNumber, case03);
-    //     console.log('Case 04: ' + caseNumber);
-    // });
-
-    test("Integration Test - 05", async ({page}, testInfo) => {
-        await updateCase(caseName, caseNumber, case03);
-        console.log('Case 04: ' + caseNumber);
     });
 });
 
@@ -76,13 +73,10 @@ const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: a
     }
 
     let data = lodash.template(JSON.stringify(caseDataJson))(docParameter);
-    // console.log('data ' + data);
     let postURL = `${urlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
     try {
         await apiRequest(postURL, systemUpdateUser, 'post', data);
     } catch (error) {
-        console.log("Fail case: " + caseID);
-        // console.log(error);
         throw error;
     }
 }
