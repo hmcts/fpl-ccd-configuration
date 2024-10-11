@@ -36,7 +36,7 @@ test.describe('Cafcass API Integration test', () => {
     //     console.log('Case 02: ' + caseNumber);
     // });
 
-    test("Integration Test - 03", async ({page, internationalElement}, testInfo) => {
+    test("Integration Test - 03", async ({page}, testInfo) => {
         await updateCase(caseName, caseNumber, case03);
         console.log('Case 03: ' + caseNumber);
     });
