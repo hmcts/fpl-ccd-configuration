@@ -2,7 +2,7 @@
   "state": "PREPARE_FOR_HEARING",
   "caseData": {
     "caseName": "e2e test case",
-    "familyManCaseNumber": "FP24L10001",
+    "familyManCaseNumber": "FP24L10002",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
     "court": {
       "code": "123",
@@ -84,7 +84,7 @@
       {
         "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
         "value": {
-          "endDate": "2050-01-02T16:30:00",
+          "endDate": "2020-01-01T10:00:00",
           "hearingNeedsBooked": [
             "INTERPRETER",
             "SPOKEN_OR_WRITTEN_WELSH",
