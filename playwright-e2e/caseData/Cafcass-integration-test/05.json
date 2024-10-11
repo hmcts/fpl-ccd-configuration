@@ -115,7 +115,7 @@
             "gender": "Boy",
             "lastName": "Jones",
             "firstName": "Timothy",
-            "dateOfBirth": "2015-08-01"
+            "dateOfBirth": null
           }
         }
       },

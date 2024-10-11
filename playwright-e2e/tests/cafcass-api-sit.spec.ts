@@ -8,6 +8,9 @@ import case05 from "../caseData/Cafcass-integration-test/05.json" assert { type:
 import case06 from "../caseData/Cafcass-integration-test/06.json" assert { type: "json" };
 import case07 from "../caseData/Cafcass-integration-test/07.json" assert { type: "json" };
 import case08 from "../caseData/Cafcass-integration-test/08.json" assert { type: "json" };
+import case09 from "../caseData/Cafcass-integration-test/09.json" assert { type: "json" };
+import case10 from "../caseData/Cafcass-integration-test/10.json" assert { type: "json" };
+import case11 from "../caseData/Cafcass-integration-test/11.json" assert { type: "json" };
 import { urlConfig } from "../settings/urls";
 import { systemUpdateUser } from "../settings/user-credentials";
 import lodash from "lodash";
@@ -33,9 +36,10 @@ test.describe('Cafcass API Integration test', () => {
 
     test("Integration Test", async ({page}, testInfo) => {
         let cases = [
-            case01, case02, case03, case04, case05, case06, case07, case08
+            case01, case02, case03, case04, case05, case06, case07, case08, case09, case10,
+            case11
         ];
-        for(let i = 7; i < cases.length; i++) {
+        for(let i = 10; i < cases.length; i++) {
             caseNumber = await createCase(caseName, laUser);
             if (caseNumber != null) {
                 try {

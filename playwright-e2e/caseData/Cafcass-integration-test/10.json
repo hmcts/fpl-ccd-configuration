@@ -205,7 +205,7 @@
           "email": "FamilyPublicLaw+hn@gmail.com",
           "phone": "123456",
           "address": {
-            "PostCode": null,
+            "PostCode": "CR0 2GE",
             "PostTown": "London",
             "AddressLine1": "Flat 1, Hillingdon Apartments",
             "AddressLine2": "Hillingdon Central Square 1"
@@ -238,7 +238,7 @@
             "address": {
               "County": "",
               "Country": "United Kingdom",
-              "PostCode": "RG4 7AA",
+              "PostCode": null,
               "PostTown": "Reading",
               "AddressLine1": "Flat 2",
               "AddressLine2": "Caversham House 15-17",

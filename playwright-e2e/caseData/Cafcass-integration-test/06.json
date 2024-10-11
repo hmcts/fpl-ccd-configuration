@@ -1,5 +1,5 @@
 {
-  "state": "PREPARE_FOR_HEARING",
+  "state": "Submitted",
   "caseData": {
     "caseName": "e2e test case",
     "familyManCaseNumber": "FP24L10001",
@@ -43,67 +43,6 @@
         "id": "6083cb16-4058-4d20-a909-ef8e2b9e5c75",
         "value": {
           "email": "gatekeeper@mailnesia.com"
-        }
-      }
-    ],
-    "standardDirectionOrder": {
-      "orderDoc": {
-        "document_url": "${TEST_SDO_URL}",
-        "upload_timestamp": "${TEST_SDO_UPLOAD_TIMESTAMP}",
-        "document_filename": "standard-directions-order.pdf",
-        "document_binary_url": "${TEST_SDO_BINARY_URL}"
-      },
-      "dateOfIssue": "11 October 2024",
-      "orderStatus": "SEALED",
-      "needTranslation": "NO",
-      "standardDirections": [
-        {
-          "id": "a1e952f5-6209-4709-97f3-2a3a3123458a",
-          "value": {
-            "type": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
-            "title": "Request permission for expert evidence",
-            "assignee": "ALL_PARTIES",
-            "description": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
-            "dueDateType": "DAYS",
-            "daysBeforeHearing": 2
-          }
-        }
-      ],
-      "judgeAndLegalAdvisor": {
-        "judgeTitle": "HER_HONOUR_JUDGE",
-        "judgeLastName": "LastnameoftheJudge",
-        "judgeEmailAddress": "judiciary@mailnesia.com",
-        "judgeJudicialUser": {
-          "idamId": null,
-          "personalCode": null
-        }
-      },
-      "translationRequirements": "NO"
-    },
-    "hearingDetails": [
-      {
-        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
-        "value": {
-          "endDate": "2050-01-02T16:30:00",
-          "hearingNeedsBooked": [
-            "INTERPRETER",
-            "SPOKEN_OR_WRITTEN_WELSH",
-            "SOMETHING_ELSE"
-          ],
-          "hearingNeedsDetails": "Some details",
-          "judgeAndLegalAdvisor": {
-            "judgeLastName": "Test",
-            "judgeTitle": "HER_HONOUR_JUDGE",
-            "legalAdvisorName": "Test Test"
-          },
-          "startDate": "2050-01-01T15:15:00",
-          "attendance": [
-            "IN_PERSON"
-          ],
-          "type": "FURTHER_CASE_MANAGEMENT",
-          "typeDetails": "test type details",
-          "venue": "111",
-          "venueCustomAddress": {}
         }
       }
     ],
