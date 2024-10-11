@@ -3,6 +3,8 @@ import { apiRequest, createCase } from "../utils/api-helper";
 import case01 from "../caseData/Cafcass-integration-test/01.json" assert { type: "json" };
 import case02 from "../caseData/Cafcass-integration-test/02.json" assert { type: "json" };
 import case03 from "../caseData/Cafcass-integration-test/03.json" assert { type: "json" };
+import case04 from "../caseData/Cafcass-integration-test/04.json" assert { type: "json" };
+import case05 from "../caseData/Cafcass-integration-test/05.json" assert { type: "json" };
 import { urlConfig } from "../settings/urls";
 import { systemUpdateUser } from "../settings/user-credentials";
 import lodash from "lodash";
@@ -36,9 +38,19 @@ test.describe('Cafcass API Integration test', () => {
     //     console.log('Case 02: ' + caseNumber);
     // });
 
-    test("Integration Test - 03", async ({page}, testInfo) => {
+    // test("Integration Test - 03", async ({page}, testInfo) => {
+    //     await updateCase(caseName, caseNumber, case03);
+    //     console.log('Case 03: ' + caseNumber);
+    // });
+
+    // test("Integration Test - 04", async ({page}, testInfo) => {
+    //     await updateCase(caseName, caseNumber, case03);
+    //     console.log('Case 04: ' + caseNumber);
+    // });
+
+    test("Integration Test - 05", async ({page}, testInfo) => {
         await updateCase(caseName, caseNumber, case03);
-        console.log('Case 03: ' + caseNumber);
+        console.log('Case 04: ' + caseNumber);
     });
 });
 
@@ -64,13 +76,13 @@ const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: a
     }
 
     let data = lodash.template(JSON.stringify(caseDataJson))(docParameter);
-    console.log('data ' + data);
+    // console.log('data ' + data);
     let postURL = `${urlConfig.serviceUrl}/testing-support/case/populate/${caseID}`;
     try {
         await apiRequest(postURL, systemUpdateUser, 'post', data);
     } catch (error) {
         console.log("Fail case: " + caseID);
-        console.log(error);
+        // console.log(error);
         throw error;
     }
 }
