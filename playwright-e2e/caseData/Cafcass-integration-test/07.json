@@ -205,10 +205,9 @@
           "email": "FamilyPublicLaw+hn@gmail.com",
           "phone": "123456",
           "address": {
-            "PostCode": "CR0 2GE",
-            "PostTown": "London",
-            "AddressLine1": "Flat 1, Hillingdon Apartments",
-            "AddressLine2": "Hillingdon Central Square 1"
+            "PostCode": "fictitous",
+            "PostTown": "fictitous",
+            "AddressLine1": "fictitouss"
           },
           "pbaNumber": "PBA1234567",
           "clientCode": "",
@@ -246,7 +245,7 @@
             },
             "lastName": "Bloggs",
             "firstName": "Joe",
-            "dateOfBirth": null,
+            "dateOfBirth": "1980-01-01",
             "placeOfBirth": "London",
             "telephoneNumber": {
               "telephoneNumber": "00000 000000"
