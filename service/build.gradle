@@ -348,7 +348,7 @@ dependencies {
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.4.12'
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.4.12'
 
-  implementation 'org.postgresql:postgresql:42.7.3'
+  implementation 'org.postgresql:postgresql:42.7.4'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: '1.16.1'
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
