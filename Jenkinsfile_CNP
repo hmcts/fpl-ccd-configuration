@@ -321,5 +321,6 @@ withPipeline(type, product, component) {
   //def branchesToSync = ['demo', 'perftest', 'ithc'] TODO: uncomment demo migration for DFPL-1855 completed
 //    def branchesToSync = ['perftest','ithc'] TODO: uncomment perftest for Cafcass API perf test completed
 //    def branchesToSync = ['ithc'] TODO: uncomment ithc for Cafcass API ithc test completed
-//  syncBranchesWithMaster(branchesToSync)
+  def branchesToSync = []
+  syncBranchesWithMaster(branchesToSync)
 }
