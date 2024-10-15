@@ -88,6 +88,6 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
             "qmCaseQueriesCollectionChildSolTwo"
         );
         assertThat(response.getData().get("qmCaseQueriesCollectionChildSolOne")).isEqualTo("some data");
-        assertThat(response.getData().get("qmCaseQueriesCollectionChildSolTwo")).isEqualTo("some more data";
+        assertThat(response.getData().get("qmCaseQueriesCollectionChildSolTwo")).isEqualTo("some more data");
     }
 }
