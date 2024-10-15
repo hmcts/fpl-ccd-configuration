@@ -62,15 +62,6 @@ public class RaiseQueryController extends CallbackController {
             caseDetails.getData().putIfAbsent(queryCollectionKey, null);
             log.info("Setting {} to value {}", queryCollectionKey, caseDetails.getData().get(queryCollectionKey));
         }
-
-        // Remove query collections which don't correspond to the logged-in user's user role
-        COLLECTION_MAPPING.forEach((queryCollectionRole, queryCollectionKey) -> {
-            if (queryCollectionRole != userQueryCollectionRole
-                && caseDetails.getData().containsKey(queryCollectionKey)) {
-                log.info("Removing query collection: {}", queryCollectionKey);
-                caseDetails.getData().remove(queryCollectionKey);
-            }
-        });
     }
 
     private void logQueryCollection(CaseDetails caseDetails, String collectionKey) {

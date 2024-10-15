@@ -84,9 +84,10 @@ public class RaiseQueryControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(response.getData()).containsKey(
             "qmCaseQueriesCollectionChildSolOne"
         );
-        assertThat(response.getData()).doesNotContainKey(
+        assertThat(response.getData()).containsKey(
             "qmCaseQueriesCollectionChildSolTwo"
         );
         assertThat(response.getData().get("qmCaseQueriesCollectionChildSolOne")).isEqualTo("some data");
+        assertThat(response.getData().get("qmCaseQueriesCollectionChildSolTwo")).isEqualTo("some more data";
     }
 }
