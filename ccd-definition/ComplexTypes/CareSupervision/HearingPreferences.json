@@ -6,6 +6,7 @@
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "CourtServicesNeeded",
     "ElementLabel": "Choose which court services you need to be considered before first hearing",
+    "HintText": "Select all options that are relevant to you",
     "SecurityClassification": "Public"
   },
   {
