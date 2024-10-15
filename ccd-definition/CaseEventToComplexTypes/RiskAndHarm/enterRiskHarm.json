@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "CaseEventID": "enterRiskHarm",
+    "CaseFieldID": "risks",
+    "ListElementCode": "whatKindOfRiskAndHarmToChildren",
+    "EventElementLabel": "What kind of harm is the child at risk of?",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "CaseEventID": "enterRiskHarm",
+    "CaseFieldID": "risks",
+    "ListElementCode": "factorsAffectingParenting",
+    "EventElementLabel": "Is there anything affecting any respondent's ability to parent?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RiskAndHarm",
+    "CaseEventID": "enterRiskHarm",
+    "CaseFieldID": "risks",
+    "ListElementCode": "anythingElseAffectingParenting",
+    "EventElementLabel": "Tell us what else is affecting their ability to parent",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  }
+]
