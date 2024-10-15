@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,10 +95,12 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .documentLink(Map.of(
-                "file", "AQIDBAU=",
-                "is_csv", false
-            ))
+            .documentLink( new HashMap<>() {{
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", "AQIDBAU=");
+            }})
             .courtName("Family Court")
             .caseNumber("FAM NUM")
             .isReasonPresent("yes")
@@ -136,10 +138,12 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .documentLink(Map.of(
-                "file", "AQIDBAU=",
-                "is_csv", false
-            ))
+            .documentLink( new HashMap<>() {{
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", "AQIDBAU=");
+            }})
             .courtName("Family Court")
             .caseNumber("FAM NUM")
             .isReasonPresent("no")

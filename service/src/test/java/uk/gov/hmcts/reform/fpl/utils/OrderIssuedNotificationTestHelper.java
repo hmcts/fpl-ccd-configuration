@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.PlacementOrderIssuedNotifyData;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -67,7 +68,12 @@ public class OrderIssuedNotificationTestHelper {
             .orderType(orderType.toLowerCase())
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
-            .documentLink(Map.of("file", ENCODED_PDF, "is_csv", false))
+            .documentLink(new HashMap<>() {{
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", ENCODED_PDF);
+            }})
             .lastName("Bailey")
             .build();
     }
@@ -77,7 +83,12 @@ public class OrderIssuedNotificationTestHelper {
             .callout(childCallout)
             .courtName(EXAMPLE_COURT)
             .caseUrl("http://fake-url/cases/case-details/12345#Orders")
-            .documentLink(Map.of("file", ENCODED_PDF, "is_csv", false))
+            .documentLink((new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_PDF);
+                }}))
             .childLastName("Bailey")
             .build();
     }
