@@ -65,7 +65,7 @@ public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConve
         // Approved Orders
         tmpSource.add("data.sealedCMOs");
         tmpSource.add("data.orderCollection");
-        for(int i = 0 ; i < 15; i++) {
+        for (int i = 0; i < 15; i++) {
             tmpSource.add("data.orderCollectionChild" + i);
         }
 
