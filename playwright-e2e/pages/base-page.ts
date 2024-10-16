@@ -16,12 +16,12 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.nextStep = page.getByLabel("Next step");
+    this.nextStep = page.getByLabel('Next step');
     this.goButton = page.getByRole('button', { name: 'Go', exact: true });
-    this.continueButton = page.getByRole("button", { name: "Continue" });
+    this.continueButton = page.getByRole("button", { name: 'Continue' });
     this.signOut = page.getByText('Sign out');
     this.checkYourAnswersHeader = page.getByRole('heading', { name: 'Check your answers' });
-    this.saveAndContinue = page.getByRole("button", { name: "Save and Continue"});
+    this.saveAndContinue = page.getByRole("button", { name: 'Save and Continue'});
     this.submit = page.getByRole('button', { name: 'Submit' });
     this.postCode = page.getByRole('textbox', { name: 'Enter a UK postcode' });
     this.findAddress = page.getByRole('button', { name: 'Find address' });

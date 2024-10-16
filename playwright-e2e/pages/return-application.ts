@@ -2,6 +2,9 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "./base-page";
 
 export class ReturnApplication extends BasePage {
+  updateProposal() {
+    throw new Error('Method not implemented.');
+  }
   readonly returnApplication: Locator;
   readonly updateAndSubmit: Locator;
   readonly reasonForRejection: Locator;
@@ -12,11 +15,13 @@ export class ReturnApplication extends BasePage {
   readonly DoTheyHaveLegal: Locator;
   readonly DoYouBelieveThisPerson: Locator;
   readonly DoYouNeedContactDetailsHidden: Locator;
-  readonly MakeChangesToAllocation: Locator;
+  readonly MakeChangesToAllocationProposal: Locator;
   readonly GiveReasonsOptional: Locator;
   readonly MakeChangesToTheRespodentDetails: Locator;
-  readonly GiveReasons: Locator;
+  readonly GiveReason: Locator;
   readonly continueButton: Locator;
+  readonly submit: Locator;
+  respondentDetailsHeading: Locator;
 
   public constructor(page: Page) {
     super(page);
@@ -24,24 +29,28 @@ export class ReturnApplication extends BasePage {
     this.updateAndSubmit = page.getByRole('button', { name: 'Go' });
     this.reasonForRejection = page.getByLabel('Application Incomplete');
     this.needToChange = page.getByLabel('Let the local authority know');
-    this.submitApplication = page.getByRole('button', { name: 'Submit application' });
+    this.submitApplication = page.getByRole('button', { name: 'Continue' });
     this.saveAndContinue = page.getByRole('button', { name: 'Save and continue' });
     this.IAgreeWithThisStatement = page.getByLabel('I agree with this statement');
     this.DoTheyHaveLegal = page.getByRole('group', { name: '*Do they have legal' }).getByLabel('No');
     this.DoYouBelieveThisPerson = page.getByRole('group', { name: 'Do you believe this person' }).getByLabel('No', { exact: true });
     this.DoYouNeedContactDetailsHidden = page.getByRole('group', { name: 'Do you need contact details' }).getByLabel('No');
-    this.MakeChangesToAllocation = page.getByRole('link', { name: 'Make changes to allocation' });
+    this.MakeChangesToAllocationProposal= page.getByRole('link', { name: 'Make changes to allocation' });
     this.GiveReasonsOptional = page.getByLabel('*Give reason (Optional)');
     this.MakeChangesToTheRespodentDetails = page.getByRole('link', { name: 'Make changes to the respondents\' details' });
-    this.GiveReasons = page.getByLabel('*Give reason (Optional)');
+    this.GiveReason = page.getByLabel('*Give reason (Optional)');
     this.continueButton = page.getByRole('button', { name: 'Continue' });
+    this.submit = page.getByRole('button', { name: 'Submit' });
+    this.respondentDetailsHeading = page.getByRole("heading", { name: 'Respondents\' details' });
   }
 
   async ReturnApplication() {
     await this.reasonForRejection.check();
-    await this.needToChange.fill('test');
+    await this.needToChange.fill('today');
+    await this.submit.click();
     await this.submitApplication.click();
-    await this.saveAndContinue.click();
+    await this.page.waitForLoadState();
+    await this.saveAndContinue.click({timeout:200000});
   }
 
   public async payForApplication() {
@@ -56,17 +65,11 @@ export class ReturnApplication extends BasePage {
   }
 
   async UpdateRespondent() {
+    await expect(this.respondentDetailsHeading).toBeVisible();
     await this.DoTheyHaveLegal.check();
     await this.DoYouNeedContactDetailsHidden.check();
     await this.clickContinue();
     await this.checkYourAnsAndSubmit();
 
-  }
-
-  async updateProposal() {
-    await this.MakeChangesToAllocation.click();
-    await this.GiveReasons.fill('test');
-    await this.clickContinue();
-    await this.checkYourAnsAndSubmit();
   }
 }

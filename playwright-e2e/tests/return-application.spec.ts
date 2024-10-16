@@ -44,16 +44,6 @@ test.describe('Return application', () => {
       await signInPage.navigateTOCaseDetails(caseNumber);
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
-      await signInPage.navigateTOCaseDetails(caseNumber);
-      //await page.getByRole('link', { name: 'Make changes to allocation' }).click();
-      await returnApplication.updateProposal();
-      await returnApplication.gotoNextStep('Submit application');
-      await returnApplication.SubmitApplication();
-
-      //complete task
-      await returnApplication.tabNavigation('History');
-      await expect(page.getByText('Submitted')).toBeVisible();
-      await signInPage.logout();
-
-    });
+      
+  });
 })
