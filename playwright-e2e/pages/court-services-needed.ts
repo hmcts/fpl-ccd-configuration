@@ -13,7 +13,7 @@ export class CourtServicesNeeded extends BasePage {
 
     public constructor(page: Page) {
         super(page);
-        this.courtServicesNeededHeading = page.getByRole('heading', { name: 'Court services needed', exact: true });
+        this.courtServicesNeededHeading = page.getByRole('heading', { name: 'Court services', exact: true });
         this.interpreterOptional = page.getByRole('group', { name: 'Interpreter (Optional)' });
         this.giveDetailsIncludingPerson = page.getByRole('group', { name: 'Give details including person' });
         this.SpokenOrWrittenWelsh = page.getByRole('group', { name: 'Spoken or written Welsh (' });

@@ -962,29 +962,20 @@ public class CaseSubmissionGenerationService
 
         return DocmosisHearingPreferences.builder()
             .interpreter(hearingPreferencesPresent
-                         ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getInterpreter(),
-                hearingPreferences.getInterpreterDetails(), applicationLanguage) : DEFAULT_STRING)
-            .welshDetails(hearingPreferencesPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getWelsh(),
-                hearingPreferences.getWelshDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getInterpreterDetails()
+                            : DEFAULT_STRING)
             .intermediary(hearingPreferencesPresent
-                          ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getIntermediary(),
-                hearingPreferences.getIntermediaryDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getIntermediaryDetails()
+                            : DEFAULT_STRING)
             .disabilityAssistance(hearingPreferencesPresent
-                                  ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getDisabilityAssistance(),
-                hearingPreferences.getDisabilityAssistanceDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getDisabilityAssistanceDetails()
+                            : DEFAULT_STRING)
             .extraSecurityMeasures(hearingPreferencesPresent
-                                   ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getExtraSecurityMeasures(),
-                hearingPreferences.getExtraSecurityMeasuresDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getSeparateWaitingRoomsDetails()
+                            : DEFAULT_STRING)
             .somethingElse(hearingPreferencesPresent
-                           ? concatenateYesOrNoKeyAndValue(
-                hearingPreferences.getSomethingElse(),
-                hearingPreferences.getSomethingElseDetails(), applicationLanguage) : DEFAULT_STRING)
+                            ? hearingPreferences.getSomethingElseDetails()
+                            : DEFAULT_STRING)
             .build();
     }
 
