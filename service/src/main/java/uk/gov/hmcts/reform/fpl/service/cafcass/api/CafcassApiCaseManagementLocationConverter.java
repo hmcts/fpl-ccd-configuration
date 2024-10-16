@@ -6,9 +6,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseManagementLocation;
 
+import java.util.List;
+
 @Service
 public class CafcassApiCaseManagementLocationConverter implements CafcassApiCaseDataConverter {
+    private static final List<String> SOURCE = List.of("data.caseManagementLocation");
     private static final CafcassApiCaseManagementLocation EMPTY = CafcassApiCaseManagementLocation.builder().build();
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
 
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,

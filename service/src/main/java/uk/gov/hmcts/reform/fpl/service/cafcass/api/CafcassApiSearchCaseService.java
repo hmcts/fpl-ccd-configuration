@@ -22,7 +22,10 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -42,6 +45,33 @@ public class CafcassApiSearchCaseService {
     private final SearchService searchService;
     private final List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters;
     private final FeatureToggleService featureToggleService;
+    private final List<String> sources;
+
+    CafcassApiSearchCaseService(@Autowired CaseConverter caseConverter, @Autowired SearchService searchService,
+                                @Autowired List<CafcassApiCaseDataConverter> cafcassApiCaseDataConverters,
+                                @Autowired FeatureToggleService featureToggleService) {
+        this.caseConverter = caseConverter;
+        this.searchService = searchService;
+        this.cafcassApiCaseDataConverters = cafcassApiCaseDataConverters;
+        this.featureToggleService = featureToggleService;
+
+        List<String> sources = new ArrayList<>();
+        sources.add("reference");
+        sources.add("jurisdiction");
+        sources.add("state");
+        sources.add("case_type_id");
+        sources.add("last_modified");
+        sources.add("created_date");
+
+        sources.addAll(cafcassApiCaseDataConverters.stream()
+            .map(CafcassApiCaseDataConverter::getEsSearchSources)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .distinct()
+            .toList());
+
+        this.sources = Collections.unmodifiableList(sources);
+    }
 
     public List<CafcassApiCase> searchCaseByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         CafcassApiFeatureFlag flag = featureToggleService.getCafcassAPIFlag();
@@ -64,7 +94,7 @@ public class CafcassApiSearchCaseService {
                     .build());
             }
 
-            List<CaseDetails> caseDetails = searchService.search(searchCaseQuery.build(), 10000, 0);
+            List<CaseDetails> caseDetails = searchService.search(searchCaseQuery.build(), 10000, 0, sources);
 
             return caseDetails.stream()
                 .map(this::convertToCafcassApiCase)

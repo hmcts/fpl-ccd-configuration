@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -34,15 +35,85 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C2_APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CASE_SUMMARY;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NOTICE_OF_ACTING_OR_ISSUE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS_RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.getDocumentIdFromUrl;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiCaseDocumentsConverter implements CafcassApiCaseDataConverter {
+    private static final List<String> SOURCE = initSource();
+
+    private static List<String> initSource() {
+        List<String> tmpSource = new ArrayList<>();
+
+        // SDO and UDO
+        tmpSource.add("data.standardDirectionOrder");
+        tmpSource.add("data.urgentDirectionsOrder");
+
+        // Draft orders
+        tmpSource.add("data.hearingOrdersBundlesDrafts");
+        tmpSource.add("data.hearingOrdersBundlesDraftReview");
+
+        // Approved Orders
+        tmpSource.add("data.sealedCMOs");
+        tmpSource.add("data.orderCollection");
+        for(int i = 0 ; i < 15; i++) {
+            tmpSource.add("data.orderCollectionChild" + i);
+        }
+
+        // Submitted C1 / C110A form
+        tmpSource.add("data.submittedC1WithSupplement");
+        tmpSource.add("data.submittedForm");
+        tmpSource.add("data.translatedSubmittedForm");
+        tmpSource.add("data.supplementDocument");
+
+        // Placement
+        tmpSource.add("data.placements");
+
+        // Additional applications
+        tmpSource.add("data.additionalApplicationsBundle");
+
+        // for hearing notice
+        tmpSource.add("data.hearingDetails");
+
+        // Manege Documents
+        final List<DocumentType> hearingDocTypes = List.of(COURT_BUNDLE, CASE_SUMMARY, POSITION_STATEMENTS,
+            POSITION_STATEMENTS_CHILD, POSITION_STATEMENTS_RESPONDENT, SKELETON_ARGUMENTS);
+
+        tmpSource.addAll(Arrays.stream(DocumentType.values())
+            .filter(documentType -> isNotEmpty(documentType.getBaseFieldNameResolver()))
+            .flatMap(documentType -> {
+                List<String> dataFieldName =
+                    List.of(documentType.getBaseFieldNameResolver().apply(ConfidentialLevel.NON_CONFIDENTIAL),
+                        documentType.getBaseFieldNameResolver().apply(ConfidentialLevel.LA));
+                if (hearingDocTypes.contains(documentType)) {
+                    return dataFieldName.stream()
+                        .map(fieldName -> fieldName.replace("hearingDocuments.", ""));
+                } else {
+                    return dataFieldName.stream();
+                }
+            })
+            .distinct()
+            .map(dataFieldName -> "data." + dataFieldName)
+            .toList());
+
+        return Collections.unmodifiableList(tmpSource);
+    }
+
     private final ManageDocumentService manageDocumentService;
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
 
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,

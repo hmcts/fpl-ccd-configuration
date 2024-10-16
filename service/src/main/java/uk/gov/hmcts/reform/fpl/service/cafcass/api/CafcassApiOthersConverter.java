@@ -17,6 +17,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class CafcassApiOthersConverter implements CafcassApiCaseDataConverter {
+    private static final List<String> SOURCE = List.of("data.others");
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
