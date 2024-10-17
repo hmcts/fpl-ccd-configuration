@@ -19,11 +19,11 @@ public interface ESQuery extends ESClause {
         );
     }
 
-    default JSONObject toQueryContext(int size, int from, List<String> soruce) {
+    default JSONObject toQueryContext(int size, int from, List<String> source) {
         return new JSONObject(Map.of(
             "size", size,
             "from", from,
             "query", this.toMap(),
-            "_source", soruce));
+            "_source", source));
     }
 }

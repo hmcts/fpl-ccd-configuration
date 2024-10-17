@@ -31,7 +31,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CafcassApiSearchCaseService {
     private static final MustNot MUST_NOT = MustNot.builder()
         .clauses(List.of(
