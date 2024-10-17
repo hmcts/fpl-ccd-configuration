@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.service.email.EmailService;
-
-import javax.mail.internet.MimeMessage;
 
 import static java.lang.String.join;
 import static java.util.Set.of;
