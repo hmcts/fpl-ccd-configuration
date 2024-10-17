@@ -1,0 +1,677 @@
+
+{
+  "state": "PREPARE_FOR_HEARING",
+  "caseData": {
+    "familyManCaseNumber": "Famil1234",
+    "dateSubmitted": "2024-09-04",
+    "applicationType": "C110A",
+    "ordersSought": [
+      "CARE_ORDER"
+    ],
+    "dateOfCourtIssue": null,
+    "citizenIsApplicant": false,
+    "applicantLA": "HN",
+    "respondentLA": null,
+    "applicants": [
+      {
+        "id": "7e821664-7f7f-4d4c-938d-e3de4b9f8877",
+        "name": "London Borough Hillingdon",
+        "email": "FamilyPublicLaw+hn@gmail.com",
+        "phone": "111111111111",
+        "address": {
+          "addressLine1": "Flat 1, Hillingdon Apartments",
+          "addressLine2": "Hillingdon Central Square 1",
+          "addressLine3": null,
+          "postTown": "London",
+          "county": null,
+          "postcode": "CR0 2GE",
+          "country": null
+        },
+        "colleagues": [
+          {
+            "role": "SOLICITOR",
+            "title": null,
+            "email": "solicitor@email.com",
+            "phone": null,
+            "fullName": "Solicitor",
+            "mainContact": false,
+            "notificationRecipient": true
+          },
+          {
+            "role": "SOCIAL_WORKER",
+            "title": null,
+            "email": "social@email.com",
+            "phone": "1111111111",
+            "fullName": "social",
+            "mainContact": true,
+            "notificationRecipient": true
+          },
+          {
+            "role": "OTHER",
+            "title": "Team leader",
+            "email": "collegue@email.com",
+            "phone": null,
+            "fullName": "Collegue",
+            "mainContact": false,
+            "notificationRecipient": true
+          }
+        ],
+        "designated": true
+      }
+    ],
+    "respondents": [
+      {
+        "firstName": "Respondent",
+        "lastName": "One",
+        "gender": "MALE",
+        "genderIdentification": null,
+        "addressKnown": false,
+        "addressUnknownReason": "No fixed abode",
+        "address": {
+          "addressLine1": null,
+          "addressLine2": null,
+          "addressLine3": null,
+          "postTown": null,
+          "county": null,
+          "postcode": null,
+          "country": null
+        },
+        "dateOfBirth": "1998-04-04",
+        "telephoneNumber": "678675986",
+        "litigationIssues": "NO",
+        "litigationIssuesDetails": null,
+        "contactDetailsHidden": false,
+        "contactDetailsHiddenReason": null,
+        "relationshipToChild": "Aunty",
+        "solicitor": {
+          "email": "asfsd@mailinator.com",
+          "firstName": "Solicitor",
+          "lastName": "Respon1",
+          "organisationId": "D25VR7V",
+          "organisationName": "Private solicitors"
+        }
+      },
+      {
+        "firstName": "Respondent",
+        "lastName": "two",
+        "gender": "FEMALE",
+        "genderIdentification": null,
+        "addressKnown": true,
+        "addressUnknownReason": null,
+        "address": {
+          "addressLine1": "20",
+          "addressLine2": "Dashwood Court",
+          "addressLine3": "40 Livingstone Road",
+          "postTown": "Hounslow",
+          "county": "",
+          "postcode": "TW3 1XZ",
+          "country": "United Kingdom"
+        },
+        "dateOfBirth": "1998-03-03",
+        "telephoneNumber": "01534756978",
+        "litigationIssues": "NO",
+        "litigationIssuesDetails": null,
+        "contactDetailsHidden": false,
+        "contactDetailsHiddenReason": null,
+        "relationshipToChild": "Mother",
+        "solicitor": null
+      },
+      {
+        "firstName": "Respondent",
+        "lastName": "Three",
+        "gender": "OTHER",
+        "genderIdentification": "Dad",
+        "addressKnown": true,
+        "addressUnknownReason": null,
+        "address": {
+          "addressLine1": "26",
+          "addressLine2": "Dashwood Court",
+          "addressLine3": "40 Livingstone Road",
+          "postTown": "Hounslow",
+          "county": "yrteueetyey",
+          "postcode": "TW3 1XZ",
+          "country": "United Kingdom"
+        },
+        "dateOfBirth": "2000-05-05",
+        "telephoneNumber": "01534756978",
+        "litigationIssues": "NO",
+        "litigationIssuesDetails": null,
+        "contactDetailsHidden": false,
+        "contactDetailsHiddenReason": null,
+        "relationshipToChild": "Daddy",
+        "solicitor": null
+      }
+    ],
+    "children": [
+      {
+        "firstName": "child",
+        "lastName": "one",
+        "dateOfBirth": "2000-05-02",
+        "gender": "MALE",
+        "genderIdentification": null,
+        "livingSituation": "Other",
+        "livingSituationDetails": "Other details",
+        "address": null,
+        "careAndContactPlan": "Brief summary of care and contact plan (Optional)",
+        "detailsHidden": true,
+        "socialWorkerName": "social worker",
+        "socialWorkerTelephoneNumber": "03453464574",
+        "additionalNeeds": false,
+        "additionalNeedsDetails": null,
+        "litigationIssues": "YES",
+        "litigationIssuesDetails": "yes",
+        "solicitor": {
+          "email": "fr_applicant_sol@sharklasers.com",
+          "firstName": "child",
+          "lastName": "respresntative",
+          "organisationId": "4ZYL0HK",
+          "organisationName": "FPLSolicitorOrg"
+        },
+        "fathersResponsibility": "Yes"
+      },
+      {
+        "firstName": "Child",
+        "lastName": "Two",
+        "dateOfBirth": "2015-04-03",
+        "gender": "FEMALE",
+        "genderIdentification": null,
+        "livingSituation": "Living with other family or friends",
+        "livingSituationDetails": null,
+        "address": null,
+        "careAndContactPlan": null,
+        "detailsHidden": true,
+        "socialWorkerName": "Social worker",
+        "socialWorkerTelephoneNumber": "0877787345345",
+        "additionalNeeds": true,
+        "additionalNeedsDetails": "test",
+        "litigationIssues": "NO",
+        "litigationIssuesDetails": null,
+        "solicitor": {
+          "email": "fr_applicant_sol@sharklasers.com",
+          "firstName": "child",
+          "lastName": "respresntative",
+          "organisationId": "4ZYL0HK",
+          "organisationName": "FPLSolicitorOrg"
+        },
+        "fathersResponsibility": "Yes"
+      },
+      {
+        "firstName": "Child",
+        "lastName": "Three",
+        "dateOfBirth": "2024-05-05",
+        "gender": "OTHER",
+        "genderIdentification": "Not Yet Know",
+        "livingSituation": "Voluntarily in section 20 care order",
+        "livingSituationDetails": null,
+        "address": {
+          "addressLine1": "26 Cranston Close",
+          "addressLine2": null,
+          "addressLine3": null,
+          "postTown": "Hounslow",
+          "county": null,
+          "postcode": "TW3 3DQ",
+          "country": "United Kingdom"
+        },
+        "careAndContactPlan": "Brief Sumaary",
+        "detailsHidden": false,
+        "socialWorkerName": "soc",
+        "socialWorkerTelephoneNumber": null,
+        "additionalNeeds": false,
+        "additionalNeedsDetails": null,
+        "litigationIssues": "DONT_KNOW",
+        "litigationIssuesDetails": null,
+        "solicitor": {
+          "email": "fr_applicant_sol@sharklasers.com",
+          "firstName": "child",
+          "lastName": "respresntative",
+          "organisationId": "4ZYL0HK",
+          "organisationName": "FPLSolicitorOrg"
+        },
+        "fathersResponsibility": "Don't know"
+      }
+    ],
+    "others": [
+      {
+        "name": "Full Name",
+        "dateOfBirth": "1980-05-03",
+        "gender": "OTHER",
+        "genderIdentification": "11111111",
+        "birthPlace": "london",
+        "addressKnown": false,
+        "addressUnknownReason": "Person deceased",
+        "address": {
+          "addressLine1": null,
+          "addressLine2": null,
+          "addressLine3": null,
+          "postTown": null,
+          "county": null,
+          "postcode": null,
+          "country": null
+        },
+        "telephone": "657567567875",
+        "litigationIssues": "YES",
+        "litigationIssuesDetails": null,
+        "detailsHidden": false,
+        "detailsHiddenReason": null
+      },
+      {
+        "name": "other person2",
+        "dateOfBirth": "1980-05-04",
+        "gender": "FEMALE",
+        "genderIdentification": null,
+        "birthPlace": "Spain",
+        "addressKnown": true,
+        "addressUnknownReason": null,
+        "address": {
+          "addressLine1": "13",
+          "addressLine2": "Dashwood Court",
+          "addressLine3": "40 Livingstone Road",
+          "postTown": "Hounslow",
+          "county": "",
+          "postcode": "TW3 1XZ",
+          "country": "United Kingdom"
+        },
+        "telephone": "01534756978",
+        "litigationIssues": "YES",
+        "litigationIssuesDetails": "tes",
+        "detailsHidden": false,
+        "detailsHiddenReason": null
+      }
+    ],
+    "hearingDetails": [
+      {
+        "id": "7ceab4f6-f383-466b-ba58-33a34e7e4f90",
+        "type": "FACT_FINDING",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2024-12-19T15:00:00",
+        "endDate": "2024-12-24T15:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "fdsg"
+      },
+      {
+        "id": "18ade35c-a036-4051-b7f8-4588987899b4",
+        "type": "JUDGMENT_AFTER_HEARING",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2024-12-19T10:00:00",
+        "endDate": "2024-12-23T10:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "Add Details"
+      },
+      {
+        "id": "608b283c-146a-4b36-b71b-73128d64e5dd",
+        "type": "INTERIM_CARE_ORDER",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2024-12-19T10:00:00",
+        "endDate": "2024-12-24T10:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "add details"
+      },
+      {
+        "id": "ae046c1d-712f-45f8-abff-ff706f4e2133",
+        "type": "ISSUE_RESOLUTION",
+        "typeDetails": null,
+        "venue": "97",
+        "status": null,
+        "startDate": "2024-11-19T10:00:00",
+        "endDate": "2024-11-19T16:04:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "dsa"
+      },
+      {
+        "id": "0cf4fe7c-f22f-4ea1-b114-b64a5fd7158e",
+        "type": "CASE_MANAGEMENT",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2024-11-12T10:00:00",
+        "endDate": "2024-11-12T15:03:00",
+        "attendance": [
+          "VIDEO",
+          "PHONE",
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "dfg"
+      },
+      {
+        "id": "ac413a69-992e-4e09-9f1e-6306cd674c9e",
+        "type": "EMERGENCY_PROTECTION_ORDER",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2023-11-05T10:00:00",
+        "endDate": "2023-11-05T10:00:00",
+        "attendance": [
+          "VIDEO"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": "add"
+      },
+      {
+        "id": "c71f247b-80c9-432d-9449-9346e6bf4a87",
+        "type": "ACCELERATED_DISCHARGE_OF_CARE",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2023-02-19T10:00:00",
+        "endDate": "2025-04-04T10:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "1 hour before the hearing",
+        "attendanceDetails": null
+      },
+      {
+        "id": "6bcf81bf-c290-4e2c-8b7d-1295033543cb",
+        "type": "PLACEMENT_HEARING",
+        "typeDetails": null,
+        "venue": "98",
+        "status": null,
+        "startDate": "2025-01-19T10:00:00",
+        "endDate": "2025-01-20T10:00:00",
+        "attendance": [
+          "IN_PERSON"
+        ],
+        "cancellationReason": null,
+        "preAttendanceDetails": "2 hour before the hearing",
+        "attendanceDetails": "sdff"
+      }
+    ],
+    "internationalElement": {
+      "possibleCarer": false,
+      "possibleCarerReason": null,
+      "significantEvents": true,
+      "significantEventsReason": "give",
+      "issues": true,
+      "issuesReason": "give",
+      "proceedings": false,
+      "proceedingsReason": null,
+      "internationalAuthorityInvolvement": false,
+      "internationalAuthorityInvolvementDetails": null
+    },
+    "previousProceedings": [
+      {
+        "proceedingStatus": "Ongoing",
+        "caseNumber": "456456456456",
+        "started": "12/9/2022",
+        "ended": null,
+        "ordersMade": "No",
+        "judge": "Judge Damien",
+        "children": "child one",
+        "guardian": null,
+        "sameGuardianNeeded": false,
+        "sameGuardianDetails": "not available"
+      },
+      {
+        "proceedingStatus": "Previous",
+        "caseNumber": "5675675675",
+        "started": "2/4/2021",
+        "ended": "5/7/2022",
+        "ordersMade": "protection order",
+        "judge": "judge Claire",
+        "children": "child two",
+        "guardian": "guardina",
+        "sameGuardianNeeded": true,
+        "sameGuardianDetails": null
+      }
+    ],
+    "risks": {
+      "neglectOccurrences": [
+
+      ],
+      "sexualAbuseOccurrences": [
+        "Past harm"
+      ],
+      "physicalHarmOccurrences": [
+
+      ],
+      "emotionalHarmOccurrences": [
+        "Future risk of harm",
+        "Past harm"
+      ]
+    },
+    "factorsParenting": {
+      "alcoholDrugAbuse": true,
+      "alcoholDrugAbuseReason": "give details",
+      "domesticViolence": false,
+      "domesticViolenceReason": null,
+      "anythingElse": true,
+      "anythingElseReason": null
+    },
+    "caseManagementLocation": {
+      "region": "4",
+      "baseLocation": "102476"
+    },
+    "caseDocuments": [
+      {
+        "removed": false,
+        "documentCategory": "orders",
+        "documentId": "62ee4e5e-f208-44c9-b17c-ea2394eb65d4",
+        "document_filename": "Gauardian report.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "orders",
+        "documentId": "61f6139c-c8b0-459e-a15b-24639851327e",
+        "document_filename": "c38a_discharge_education_supervision_order.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "originalApplications",
+        "documentId": "c3574343-ea1c-4fdc-8658-900ea4a5f542",
+        "document_filename": "cafcass_API_DFPL-5494__02.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "c1AndOtherApplications",
+        "documentId": "a8e86f31-e97b-4293-9755-a5a112d2d16d",
+        "document_filename": "C1 application.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "a6e46a83-1b7b-4a4a-ae15-be6c680cf085",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "25218d1f-64fe-4b8d-97e9-ef2e0aa4a324",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "d680865a-2cf9-42c2-b737-5c3285606ddc",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "3557c510-524b-42e3-b11b-18dc92501f23",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "31932a6d-c824-44c0-9de9-5b0a8166081f",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "hearingNotices",
+        "documentId": "52b00817-3697-43cd-8351-38d9a289578d",
+        "document_filename": "Notice_of_hearing_04September.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "bundle",
+        "documentId": "81b5fa56-47bc-490a-a762-f2e593e42461",
+        "document_filename": "C20.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "caseSummary",
+        "documentId": "d972e6ac-7285-4e21-a2c6-f7a99d155007",
+        "document_filename": "Supplement doc in word format.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "positionStatements",
+        "documentId": "e9eadde6-ec41-47a6-849c-95f2da42bc1b",
+        "document_filename": "dummy.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "threshold",
+        "documentId": "0eeee234-3571-4a01-8a1c-ac28d68583da",
+        "document_filename": "Supplement doc in word format.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "threshold",
+        "documentId": "00b25220-35eb-4173-959a-a2edf1ff5618",
+        "document_filename": "C20.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "skeletonArguments",
+        "documentId": "67d525dd-6f5f-4f9e-afd3-0624c16c604f",
+        "document_filename": "Urgent Direction order.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "a309eeba-a778-4b33-b5c7-b2c179e1f87b",
+        "document_filename": "C2 application for the sealing.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "ffee1178-8a56-486c-bb7c-cfc88b37d650",
+        "document_filename": "Secure accomadation.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "b19cc784-e629-481a-8499-e29559870bcd",
+        "document_filename": "D10.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "c1ab52d9-6806-4f2e-9775-718c60042941",
+        "document_filename": "D10.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "3afa3bd6-4ff6-4447-afe1-65f73c09ef5c",
+        "document_filename": "C17a.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "eb92429f-1a26-478e-a1cd-9a94dab491d5",
+        "document_filename": "Birth Certificate.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "documentsFiledOnIssue",
+        "documentId": "bc00b76f-79eb-4dfb-946b-47ad39ca27f7",
+        "document_filename": "dummy.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "carePlan",
+        "documentId": "f93d664a-2125-4f35-80d8-b407cb8784c5",
+        "document_filename": "Cafcass c2 support docuement.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "parent_respondentsStatements",
+        "documentId": "a9df5490-59ae-442c-a37c-03943f40010d",
+        "document_filename": "C20.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "guardiansEvidence",
+        "documentId": "c0f8ab93-d4c5-4526-94b0-afa354d1b35c",
+        "document_filename": "Discharge education supervision order.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "expertReports",
+        "documentId": "788ba0dd-a4c0-4621-9bc6-d8c10594d24f",
+        "document_filename": "C23_0109_out_of_hours_save.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "drugAndAlcoholReports",
+        "documentId": "493f8110-c3ac-4d0c-99bd-9b3a42fd7570",
+        "document_filename": "Supplement doc in word format.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "lettersOfInstructionReferrals",
+        "documentId": "e8a3ba58-092d-401a-a8a3-8d27b9424b0c",
+        "document_filename": "C13A.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "policeDisclosure",
+        "documentId": "d077df08-32ea-4add-bbf2-72dfd64357bd",
+        "document_filename": "C2 application for the sealing.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "policeDisclosure",
+        "documentId": "7f1f2662-ef4c-4bf1-ba2e-b95b4e14729b",
+        "document_filename": "dummy.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "medicalRecords",
+        "documentId": "845ec5fe-e922-409d-98a2-81a6ca0a2ac8",
+        "document_filename": "C2 application for the sealing.pdf"
+      },
+      {
+        "removed": false,
+        "documentCategory": "courtCorrespondence",
+        "documentId": "a19b8116-1e1c-4e12-a904-1bac78366373",
+        "document_filename": "Supplement doc in word format.docx"
+      },
+      {
+        "removed": false,
+        "documentCategory": "previousProceedings",
+        "documentId": "9244a9b5-11c7-461a-888f-3738d71993d3",
+        "document_filename": "C1 supporting document.docx"
+      }
+    ]
+  }
+}
