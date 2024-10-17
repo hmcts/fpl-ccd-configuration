@@ -118,39 +118,6 @@
             "dateOfBirth": "2015-08-01"
           }
         }
-      },
-      {
-        "id": "cc792469-47f1-4cc8-8979-6b36bcf6b0a6",
-        "value": {
-          "party": {
-            "gender": "Boy",
-            "lastName": "Black",
-            "firstName": "John",
-            "dateOfBirth": "2016-09-02"
-          }
-        }
-      },
-      {
-        "id": "d56b23ee-ca80-42cc-bf9f-2e65cec00985",
-        "value": {
-          "party": {
-            "gender": "Boy",
-            "lastName": "Black",
-            "firstName": "William",
-            "dateOfBirth": "2017-10-01"
-          }
-        }
-      },
-      {
-        "id": "2135caa3-62d1-4692-99a9-3524397c6b05",
-        "value": {
-          "party": {
-            "gender": "Girl",
-            "lastName": "Black",
-            "firstName": "Sarah",
-            "dateOfBirth": "2010-05-02"
-          }
-        }
       }
     ],
     "solicitor": {

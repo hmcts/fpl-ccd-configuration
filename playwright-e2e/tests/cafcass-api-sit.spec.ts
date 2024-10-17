@@ -66,6 +66,21 @@ test.describe('Cafcass API Integration test', () => {
             if (caseNumber != null) {
                 try {
                     cases[i].caseData.familyManCaseNumber = familManNumPrefix + familyNumCount;
+                    if (caseNo[i] != "case13" && caseNo[i] != "case15" && caseNo[i] != "case16"
+                        && cases[i].caseData.respondents1 != null) {
+                        for (let x = 0; x < cases[i].caseData.respondents1.length; x++) {
+                            cases[i].caseData.respondents1[x].value.party.firstName = caseNo[i] + 'respFirstname' + x;
+                            cases[i].caseData.respondents1[x].value.party.lastName = caseNo[i] + 'respLastName' + x;
+                        }
+                    }
+
+                    if (cases[i].caseData.children1 != null) {
+                        for (let x = 0; x < cases[i].caseData.children1.length; x++) {
+                            cases[i].caseData.respondents1[x].value.party.firstName = caseNo[i] + 'childFirstname' + x;
+                            cases[i].caseData.respondents1[x].value.party.lastName = caseNo[i] + 'childLastName' + x;
+                        }
+                    }
+
                     await updateCase(caseName, caseNumber, cases[i]);
                     console.log(caseNo[i] + ': ' + caseNumber);
                 } catch (e) {
