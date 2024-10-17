@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.fpl.enums.DocumentStatus;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.UUID;
+
 @Slf4j
 public class DocumentsHelper {
 
@@ -42,5 +44,12 @@ public class DocumentsHelper {
             return FilenameUtils.removeExtension(filename).concat("." + newExtension);
         }
         return filename;
+    }
+
+    public static UUID getDocumentIdFromUrl(final String documentUrlString) {
+        String selfHref = documentUrlString.replace("/binary", "");
+        UUID documentId = UUID.fromString(selfHref.substring(selfHref.length() - 36));
+
+        return documentId;
     }
 }
