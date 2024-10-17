@@ -1,0 +1,353 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "QueryManagementComponentLauncher",
+    "FieldType": "ComponentLauncher",
+    "Label": "Component Launcher",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSuperUser",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionJudiciary",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionBarrister",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionCafcass",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionCafcassSol",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionEps",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionGatekeeper",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionLaBarrister",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionLaManaging",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionLaShared",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionLaSol",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionMagistrate",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorA",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorB",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorC",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorD",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorE",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorF",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorG",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorH",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorI",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionSolicitorJ",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolA",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolB",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolC",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolD",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolE",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolF",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolG",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolH",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolI",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolJ",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolK",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolL",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolM",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolN",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionChildSolO",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "qmCaseQueriesCollectionCourtAdmin",
+    "FieldType": "CaseQueriesCollection",
+    "Label": "Queries",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
