@@ -23,6 +23,11 @@ public class CafcassApiHearingDetailsConverterTest extends CafcassApiConverterTe
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.hearingDetails"));
+    }
+
+    @Test
     void shouldConvertHearingDetails() {
         HearingBooking vacatedHearing = HearingBooking.builder()
             .type(HearingType.OTHER)

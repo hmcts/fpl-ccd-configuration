@@ -85,6 +85,47 @@ public class CafcassApiCaseDocumentsConverterTest extends CafcassApiConverterTes
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.standardDirectionOrder", "data.urgentDirectionsOrder",
+            "data.hearingOrdersBundlesDrafts", "data.hearingOrdersBundlesDraftReview",
+            "data.sealedCMOs", "data.orderCollection", "data.orderCollectionChild0", "data.orderCollectionChild1",
+            "data.orderCollectionChild2", "data.orderCollectionChild3", "data.orderCollectionChild4",
+            "data.orderCollectionChild5", "data.orderCollectionChild6", "data.orderCollectionChild7",
+            "data.orderCollectionChild8", "data.orderCollectionChild9", "data.orderCollectionChild10",
+            "data.orderCollectionChild11", "data.orderCollectionChild12", "data.orderCollectionChild13",
+            "data.orderCollectionChild14",
+            "data.submittedC1WithSupplement", "data.submittedForm", "data.translatedSubmittedForm",
+            "data.supplementDocument", "data.placements", "data.additionalApplicationsBundle", "data.hearingDetails",
+            "data.courtBundleListV2", "data.courtBundleListLA",
+            "data.caseSummaryList", "data.caseSummaryListLA", "data.posStmtChildList", "data.posStmtChildListLA",
+            "data.posStmtRespList", "data.posStmtRespListLA", "data.posStmtList", "data.posStmtListLA",
+            "data.skeletonArgumentList", "data.skeletonArgumentListLA",
+            "data.thresholdList", "data.thresholdListLA", "data.judgementList", "data.judgementListLA",
+            "data.transcriptList", "data.transcriptListLA",
+            "data.documentsFiledOnIssueList", "data.documentsFiledOnIssueListLA",
+            "data.applicantWitnessStmtList", "data.applicantWitnessStmtListLA",
+            "data.carePlanList", "data.carePlanListLA", "data.parentAssessmentList", "data.parentAssessmentListLA",
+            "data.famAndViabilityList", "data.famAndViabilityListLA",
+            "data.applicantOtherDocList", "data.applicantOtherDocListLA",
+            "data.meetingNoteList", "data.meetingNoteListLA", "data.contactNoteList", "data.contactNoteListLA",
+            "data.c1ApplicationDocList", "data.c1ApplicationDocListLA",
+            "data.c2ApplicationDocList", "data.c2ApplicationDocListLA",
+            "data.respStmtList", "data.respStmtListLA", "data.respWitnessStmtList", "data.respWitnessStmtListLA",
+            "data.guardianEvidenceList", "data.guardianEvidenceListLA",
+            "data.guardianReportsList", "data.guardianReportsListLA",
+            "data.expertReportList", "data.expertReportListLA",
+            "data.drugAndAlcoholReportList", "data.drugAndAlcoholReportListLA",
+            "data.lettersOfInstructionList", "data.lettersOfInstructionListLA",
+            "data.policeDisclosureList", "data.policeDisclosureListLA",
+            "data.medicalRecordList", "data.medicalRecordListLA",
+            "data.correspondenceDocList", "data.correspondenceDocListLA",
+            "data.noticeOfActingOrIssueList", "data.noticeOfActingOrIssueListLA",
+            "data.previousProceedingList", "data.previousProceedingListLA",
+            "data.archivedDocumentsList", "data.archivedDocumentsListLA"
+        ));
+    }
+
+    @Test
     void shouldReturnDistinctDocument() {
         DocumentReference c2 = getTestDocumentReference();
         DocumentReference supplementDoc = getTestDocumentReference();

@@ -11,6 +11,13 @@ import java.util.Optional;
 
 @Service
 public class CafcassApiHearingDetailsConverter implements CafcassApiCaseDataConverter {
+    private static final List<String> SOURCE = List.of("data.hearingDetails");
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {
