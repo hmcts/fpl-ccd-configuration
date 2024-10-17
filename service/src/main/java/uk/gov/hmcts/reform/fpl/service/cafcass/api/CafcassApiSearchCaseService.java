@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.TermsQuery;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,22 +51,12 @@ public class CafcassApiSearchCaseService {
         this.cafcassApiCaseDataConverters = cafcassApiCaseDataConverters;
         this.featureToggleService = featureToggleService;
 
-        List<String> sources = new ArrayList<>();
-        sources.add("reference");
-        sources.add("jurisdiction");
-        sources.add("state");
-        sources.add("case_type_id");
-        sources.add("last_modified");
-        sources.add("created_date");
-
-        sources.addAll(cafcassApiCaseDataConverters.stream()
+        this.sources = cafcassApiCaseDataConverters.stream()
             .map(CafcassApiCaseDataConverter::getEsSearchSources)
             .filter(Objects::nonNull)
             .flatMap(List::stream)
             .distinct()
-            .toList());
-
-        this.sources = Collections.unmodifiableList(sources);
+            .toList();
     }
 
     public List<CafcassApiCase> searchCaseByDateRange(LocalDateTime startDate, LocalDateTime endDate) {

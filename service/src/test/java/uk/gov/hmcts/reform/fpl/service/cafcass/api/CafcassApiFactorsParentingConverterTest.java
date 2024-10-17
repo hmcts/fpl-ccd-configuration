@@ -7,9 +7,16 @@ import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiFactorsParenting;
 
+import java.util.List;
+
 public class CafcassApiFactorsParentingConverterTest extends CafcassApiConverterTestBase {
     CafcassApiFactorsParentingConverterTest() {
         super(new CafcassApiFactorsParentingConverter());
+    }
+
+    @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.factorsParenting"));
     }
 
     @Test

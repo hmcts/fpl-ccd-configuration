@@ -18,6 +18,13 @@ public class CafcassApiMetaDataConverterTest extends CafcassApiConverterTestBase
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of(
+            "data.familyManCaseNumber", "data.dateSubmitted", "data.ordersSolicitor", "data.orders", "data.dateOfIssue",
+            "data.isLocalAuthority", "data.relatingLA"));
+    }
+
+    @Test
     void shouldConvertC1MetaData() {
         CaseData caseData = CaseData.builder()
             .familyManCaseNumber("familyManCaseNumber")

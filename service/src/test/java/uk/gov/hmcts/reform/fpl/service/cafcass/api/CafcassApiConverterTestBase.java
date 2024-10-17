@@ -16,9 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -30,6 +32,10 @@ public abstract class CafcassApiConverterTestBase {
 
     CafcassApiConverterTestBase(CafcassApiCaseDataConverter converterUnderTest) {
         underTest = converterUnderTest;
+    }
+
+    public void testSource(List<String> source) {
+        assertThat(underTest.getEsSearchSources()).containsExactlyInAnyOrderElementsOf(source);
     }
 
     public CafcassApiCaseData testConvert(CaseData caseData, CafcassApiCaseData expected) {

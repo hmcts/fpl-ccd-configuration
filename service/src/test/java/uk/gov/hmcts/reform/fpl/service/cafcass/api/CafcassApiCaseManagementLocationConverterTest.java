@@ -6,10 +6,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseManagementLocation;
 
+import java.util.List;
+
 public class CafcassApiCaseManagementLocationConverterTest extends CafcassApiConverterTestBase {
 
     CafcassApiCaseManagementLocationConverterTest() {
         super(new CafcassApiCaseManagementLocationConverter());
+    }
+
+    @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.caseManagementLocation"));
     }
 
     @Test

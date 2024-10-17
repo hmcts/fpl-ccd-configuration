@@ -22,6 +22,11 @@ public class CafcassApiChildrenConverterTest extends CafcassApiConverterTestBase
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.children1"));
+    }
+
+    @Test
     void shouldConvertAllChildren() {
         Child childWithAllFields = Child.builder()
             .party(ChildParty.builder()

@@ -17,6 +17,11 @@ public class CafcassApiPreviousProceedingsConverterTest extends CafcassApiConver
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.proceeding"));
+    }
+
+    @Test
     void shouldConvertPreviousProceedings() {
         Proceeding additionalProceeding = Proceeding.builder()
             .proceedingStatus("Previous")
