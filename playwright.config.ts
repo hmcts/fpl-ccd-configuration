@@ -21,7 +21,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
  // forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 3 : 0,
+  retries: process.env.CI ? 2 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
   maxFailures: process.env.CI ? 35 : 0,
   /* Opt out of parallel tests on CI. */
@@ -34,8 +34,6 @@ export default defineConfig({
   use: {
     // Record trace only when retrying a test for the first time.
     trace: 'on-first-retry',
-      video: 'retain-on-failure'
-
   },
 
   /* Configure projects for major browsers */
