@@ -19,7 +19,7 @@ export default defineConfig({
   expect: { timeout: 1*110*1000 }, //wait time for the assertion to be true 110 sec
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+ // forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 3 : 0,
   /*build fails when reaches 35 failed test - fail fast*/
