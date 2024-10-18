@@ -54,7 +54,7 @@ public class AmendOrderToDownloadPrePopulator implements QuestionBlockOrderPrePo
 
         if (foundOrder.isPresent()) {
             GeneratedOrder order = foundOrder.get().getValue();
-            return (order.isConfidential()) ? order.getDocumentConfidential() : order.getDocument();
+            return order.getDocumentOrDocumentConfidential();
         }
 
         Optional<Element<HearingOrder>> foundCMO = caseData.getSealedCMOs()

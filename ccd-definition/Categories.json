@@ -367,6 +367,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "guardianReports",
+    "CategoryLabel": "Guardian's reports",
+    "DisplayOrder": "1101"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CategoryID": "guardianReportsConfidential",
+    "CategoryLabel": "Confidential",
+    "DisplayOrder": "1110",
+    "ParentCategoryID": "guardianReports"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CategoryID": "parent_expertReports",
     "CategoryLabel": "Expert reports",
     "DisplayOrder": "12"
