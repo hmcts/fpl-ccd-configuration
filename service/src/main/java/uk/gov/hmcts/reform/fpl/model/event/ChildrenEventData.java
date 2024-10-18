@@ -91,7 +91,9 @@ public class ChildrenEventData {
             fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
                 .collect(Collectors.toList());
-        } else if (YesNo.YES.getValue().equals(childrenHaveSameRepresentation)) {
+        }
+
+        if (YesNo.YES.getValue().equals(childrenHaveSameRepresentation)) {
             List<String> excludedFields = List.of("childrenMainRepresentative", "childrenHaveSameRepresentation");
             fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
