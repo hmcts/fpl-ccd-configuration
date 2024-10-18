@@ -53,7 +53,7 @@
     "TabID": "QueryManagementTab",
     "TabLabel": "Query Management",
     "TabDisplayOrder": 21,
-    "CaseFieldID": "caseNameHmctsInternal",
+    "CaseFieldID": "caseName",
     "TabFieldDisplayOrder": 1,
     "FieldShowCondition": "qmCaseQueriesCollectionChildSolOne=\"DO_NOT_SHOW\""
   }

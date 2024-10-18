@@ -55,7 +55,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "queryManagementRespondQuery",
-    "CaseFieldID": "caseNameHmctsInternal",
+    "CaseFieldID": "caseName",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "queryManagementRespondQuery",
