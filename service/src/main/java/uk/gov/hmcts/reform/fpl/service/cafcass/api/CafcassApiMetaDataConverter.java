@@ -13,7 +13,7 @@ import java.util.Optional;
 public class CafcassApiMetaDataConverter implements CafcassApiCaseDataConverter {
     private static final List<String> SOURCE = List.of(
         "data.familyManCaseNumber", "data.dateSubmitted", "data.ordersSolicitor", "data.orders", "data.dateOfIssue",
-        "data.isLocalAuthority", "data.relatingLA");
+        "data.isLocalAuthority", "data.relatingLA", "data.caseLocalAuthority");
 
     @Override
     public List<String> getEsSearchSources() {
