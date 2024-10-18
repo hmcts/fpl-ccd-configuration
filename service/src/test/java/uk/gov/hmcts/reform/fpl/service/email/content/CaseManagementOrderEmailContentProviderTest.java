@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.Base64;
-import java.util.Map;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -65,10 +65,13 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .digitalPreference("No")
             .hearing("test hearing, 20th June")
             .caseUrl("")
-            .documentLink(Map.of(
-                "file", ENCODED_DOC,
-                "is_csv", false
-            ))
+            .documentLink(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_DOC);
+                }}
+            )
             .childLastName("Some last name")
             .build();
 
