@@ -161,7 +161,8 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
                 put("filename", null);
                 put("confirm_email_before_download", null);
                 put("file", ENCODED_BINARY);
-            }});
+            }}
+        );
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplate() {

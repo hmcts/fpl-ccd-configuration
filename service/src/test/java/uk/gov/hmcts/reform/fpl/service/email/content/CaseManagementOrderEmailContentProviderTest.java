@@ -66,11 +66,11 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .hearing("test hearing, 20th June")
             .caseUrl("")
             .documentLink(new HashMap<>() {{
-                      put("retention_period", null);
-                      put("filename", null);
-                      put("confirm_email_before_download", null);
-                      put("file", ENCODED_DOC);
-                    }}
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_DOC);
+                }}
             )
             .childLastName("Some last name")
             .build();

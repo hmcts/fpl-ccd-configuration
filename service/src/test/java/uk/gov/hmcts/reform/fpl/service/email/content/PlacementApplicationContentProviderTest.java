@@ -97,11 +97,11 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
             .documentUrl("http://fake-url/testUrl")
             .hasDocumentDownloadUrl("yes")
             .documentDownloadUrl(new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", new String(encodeBase64(result)));
-            }})
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", new String(encodeBase64(result)));
+                }})
             .build();
 
         assertThat(actual).isEqualTo(expected);
