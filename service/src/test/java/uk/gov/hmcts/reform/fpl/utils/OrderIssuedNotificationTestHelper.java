@@ -69,11 +69,11 @@ public class OrderIssuedNotificationTestHelper {
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
             .documentLink(new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", ENCODED_PDF);
-            }})
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_PDF);
+                }})
             .lastName("Bailey")
             .build();
     }
@@ -83,12 +83,12 @@ public class OrderIssuedNotificationTestHelper {
             .callout(childCallout)
             .courtName(EXAMPLE_COURT)
             .caseUrl("http://fake-url/cases/case-details/12345#Orders")
-            .documentLink((new HashMap<>() {{
-                    put("retention_period", null);
-                    put("filename", null);
-                    put("confirm_email_before_download", null);
-                    put("file", ENCODED_PDF);
-                }}))
+            .documentLink(new HashMap<>() {{
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", ENCODED_PDF);
+            }})
             .childLastName("Bailey")
             .build();
     }

@@ -130,11 +130,11 @@ class NoticeOfHearingEmailContentProviderTest extends AbstractEmailContentProvid
             .caseUrl("")
             .documentLink(
                 new HashMap<>() {{
-                    put("retention_period", null);
-                    put("filename", null);
-                    put("confirm_email_before_download", null);
-                    put("file", ENCODED_BINARY);
-                }}
+                        put("retention_period", null);
+                        put("filename", null);
+                        put("confirm_email_before_download", null);
+                        put("file", ENCODED_BINARY);
+                    }}
             )
             .digitalPreference(NO.getValue())
             .build();

@@ -59,11 +59,11 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
         NotifyData expectedParameters = SDONotifyData.builder()
             .lastName("Smith")
             .documentLink(new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", ENCODED_BINARY);
-            }})
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }})
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
             .directionsOrderTypeShort(SDO.getShortForm())
             .directionsOrderTypeLong(SDO.getLongForm())

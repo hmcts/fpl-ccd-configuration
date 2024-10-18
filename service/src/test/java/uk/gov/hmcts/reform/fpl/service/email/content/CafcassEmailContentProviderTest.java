@@ -75,11 +75,11 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
             .documentLink(new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", ENCODED_BINARY);
-            }})
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }})
             .childLastName(CHILD_LAST_NAME)
             .build();
 
@@ -107,8 +107,10 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .build();
 
         SubmitCaseCafcassTemplate template = underTest.buildCafcassSubmissionNotification(caseData);
-        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink").isEqualTo(cafcassSubmissionTemplate);
-        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf((HashMap) cafcassSubmissionTemplate.getDocumentLink());
+        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink")
+            .isEqualTo(cafcassSubmissionTemplate);
+        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf(
+            (HashMap) cafcassSubmissionTemplate.getDocumentLink());
     }
 
     @Test
@@ -127,7 +129,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink( new HashMap<>() {{
+            .documentLink(new HashMap<>() {{
                     put("retention_period", null);
                     put("filename", null);
                     put("confirm_email_before_download", null);
@@ -161,8 +163,10 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .build();
 
         SubmitCaseCafcassTemplate template = underTest.buildCafcassSubmissionNotification(caseData);
-        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink").isEqualTo(cafcassSubmissionTemplate);
-        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf((HashMap) cafcassSubmissionTemplate.getDocumentLink());
+        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink")
+            .isEqualTo(cafcassSubmissionTemplate);
+        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf(
+            (HashMap) cafcassSubmissionTemplate.getDocumentLink());
     }
 
     @Test

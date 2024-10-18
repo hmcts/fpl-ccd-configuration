@@ -157,11 +157,11 @@ class ReturnedCaseContentProviderTest extends AbstractEmailContentProviderTest {
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplateWithApplicationUrl() {
         return returnedCaseTemplate().applicationDocumentUrl(new HashMap<>() {{
-            put("retention_period", null);
-            put("filename", null);
-            put("confirm_email_before_download", null);
-            put("file", ENCODED_BINARY);
-        }});
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", ENCODED_BINARY);
+            }});
     }
 
     private ReturnedCaseTemplateBuilder returnedCaseTemplate() {

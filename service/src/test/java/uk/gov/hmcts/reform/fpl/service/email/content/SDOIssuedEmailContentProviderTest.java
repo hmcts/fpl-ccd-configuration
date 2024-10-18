@@ -95,12 +95,12 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .documentLink( new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", "AQIDBAU=");
-            }})
+            .documentLink(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", "AQIDBAU=");
+                }})
             .courtName("Family Court")
             .caseNumber("FAM NUM")
             .isReasonPresent("yes")
@@ -138,12 +138,12 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .documentLink( new HashMap<>() {{
-                put("retention_period", null);
-                put("filename", null);
-                put("confirm_email_before_download", null);
-                put("file", "AQIDBAU=");
-            }})
+            .documentLink(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", "AQIDBAU=");
+                }})
             .courtName("Family Court")
             .caseNumber("FAM NUM")
             .isReasonPresent("no")

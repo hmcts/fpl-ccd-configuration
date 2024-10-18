@@ -109,11 +109,11 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
 
         String fileContent = Base64.getEncoder().encodeToString(DOCUMENT_CONTENT);
         Map<String, Object> jsonFileObject =  new HashMap<>() {{
-            put("retention_period", null);
-            put("filename", null);
-            put("confirm_email_before_download", null);
-            put("file", fileContent);
-        }};
+                put("retention_period", null);
+                put("filename", null);
+                put("confirm_email_before_download", null);
+                put("file", fileContent);
+            }};
 
         ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder()
             .caseUrl("")
