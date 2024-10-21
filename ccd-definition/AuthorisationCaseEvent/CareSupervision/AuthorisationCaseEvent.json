@@ -1218,7 +1218,13 @@
         "UserRoles": [
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin"
+        ],
+        "CRUD": "R"
       }
     ]
   },
