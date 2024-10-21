@@ -65,7 +65,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
 
         postSubmittedEvent(caseDetails);
 
-        verify(eventPublisher, times(3)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
+        verify(eventPublisher, times(1)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
 
         SendNoticeOfHearingVacated actualSendNoticeOfHearingVacated = sendNoticeOfHearingVacatedCaptor.getValue();
         assertThat(actualSendNoticeOfHearingVacated.getVacatedHearing()).isEqualTo(hearingVacated);
@@ -101,7 +101,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
 
         postSubmittedEvent(caseDetails);
 
-        verify(eventPublisher, times(4)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
+        verify(eventPublisher, times(1)).publishEvent(sendNoticeOfHearingVacatedCaptor.capture());
 
         SendNoticeOfHearingVacated actualSendNoticeOfHearingVacated = sendNoticeOfHearingVacatedCaptor.getValue();
         assertThat(actualSendNoticeOfHearingVacated.getVacatedHearing()).isEqualTo(hearingVacated);

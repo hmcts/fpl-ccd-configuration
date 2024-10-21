@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionReasonList;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.Court;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
+import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingCourtBundle;
 import uk.gov.hmcts.reform.fpl.model.IncorrectCourtCodeConfig;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementChild;
 import uk.gov.hmcts.reform.fpl.model.PositionStatementRespondent;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.SkeletonArgument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -915,6 +918,9 @@ public class MigrateCaseService {
             .build());
     }
 
+    /**
+     * NB when calculating the index: spaces, \n, \t, etc. count as one character.
+     */
     public Map<String, Object> removeCharactersFromThresholdDetails(CaseData caseData,
                                                                     String migrationId,
                                                                     int startIndex,
@@ -1142,6 +1148,25 @@ public class MigrateCaseService {
         return hearingDetailsMap;
     }
 
+    public Map<String, Object> updateCancelledHearingDetailsType(CaseData caseData, String migrationId) {
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
+        }
+
+        return hearingDetailsMap;
+    }
+
     private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
@@ -1203,5 +1228,58 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("proceeding", updatedProceeding);
+    }
+
+
+    public Map<String, Object> removeRespondentTelephoneNumber(CaseData caseData, UUID respondentId,
+                                                               String migrationId) {
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
+
+        Element<Respondent> targetRespondent = ElementUtils.findElement(respondentId, respondents)
+            .orElseThrow(() -> new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, could not find respondent with UUID %s",
+                migrationId, caseData.getId(), respondentId))
+            );
+
+        final Respondent respondent = targetRespondent.getValue();
+
+        if (isEmpty(respondent.getParty().getTelephoneNumber())) {
+            throw new AssertionError(format(
+                "Migration {id = %s, case reference = %s}, respondent did not have telephone number",
+                migrationId, caseData.getId()));
+        }
+
+        Respondent updatedRespondent = respondent.toBuilder()
+            .party(respondent.getParty().toBuilder()
+                .telephoneNumber(respondent.getParty().getTelephoneNumber().toBuilder()
+                    .telephoneNumber(null)
+                    .build())
+                .build())
+            .build();
+
+        targetRespondent.setValue(updatedRespondent);
+
+        return Map.of("respondents1", respondents);
+    }
+
+    public Map<String, Object> removeRespondentsAwareReason(CaseData caseData, String migrationId) {
+
+        if (caseData.getHearing() == null) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .respondentsAwareReason(null)
+            .build();
+
+        return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {
+        if (!caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+            throw new AssertionError(format("Migration {id = %s}, this is not an EPO", migrationId));
+        }
+
+        return Map.of("orders", caseData.getOrders().toBuilder().address(null).build());
     }
 }

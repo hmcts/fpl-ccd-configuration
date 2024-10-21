@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import jakarta.validation.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +26,7 @@ class ValidateGroupServiceTest {
     private ValidateGroupService validateGroupService;
 
     @BeforeEach()
-    private void setup() {
+    public void setup() {
         validateGroupService = new ValidateGroupService(Validation
             .buildDefaultValidatorFactory()
             .getValidator());

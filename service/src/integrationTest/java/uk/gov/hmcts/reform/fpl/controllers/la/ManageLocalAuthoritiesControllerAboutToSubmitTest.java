@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.CaseLocation;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
@@ -49,7 +50,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.Constants.COURT_1;
-import static uk.gov.hmcts.reform.fpl.Constants.COURT_2;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_ID;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
@@ -79,6 +79,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 @OverrideAutoConfiguration(enabled = true)
 class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallbackTest {
 
+    private static final Court WREXHAM = new Court("Wrexham", "", "384", "Wales", "637145", "7", null);
+    private static final Court WORCESTER = new Court("Worcester", "", "380", "Midlands", "102050", "2", null);
+    private static final Pair<String, String> WORCESTER_LIST_ENTRY = Pair.of(WORCESTER.getName(), WORCESTER.getCode());
+    private static final Pair<String, String> WREXHAM_LIST_ENTRY = Pair.of(WREXHAM.getName(), WREXHAM.getCode());
     @Autowired
     private Time time;
 
@@ -281,8 +285,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferCaseToSecondaryLocalAuthorityAndCourt() {
-
-            when(dfjAreaLookUpService.getDfjArea(COURT_2.getCode()))
+            when(dfjAreaLookUpService.getDfjArea(WREXHAM.getCode()))
                 .thenReturn(dfjAreaCourtMapping);
 
             final Colleague existingSocialWorker = Colleague.builder()
@@ -305,8 +308,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER)
                 .courtsToTransfer(dynamicLists.from(1,
-                    Pair.of(COURT_1.getName(), COURT_1.getCode()),
-                    Pair.of(COURT_2.getName(), COURT_2.getCode())))
+                    WORCESTER_LIST_ENTRY,
+                    WREXHAM_LIST_ENTRY))
                 .localAuthorityToTransfer(newDesignatedLocalAuthority)
                 .localAuthorityToTransferSolicitor(newDesignatedLocalAuthoritySolicitor)
                 .build();
@@ -329,6 +332,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                 .localAuthorityPolicy(organisationPolicy(LOCAL_AUTHORITY_1_ID, LOCAL_AUTHORITY_1_NAME, LASOLICITOR))
                 .localAuthoritiesEventData(eventData)
                 .localAuthorities(wrapElements(designatedLocalAuthority, secondaryLocalAuthority))
+                .caseManagementLocation(new CaseLocation("1111", "1"))
                 .build();
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
@@ -339,7 +343,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getSharedLocalAuthorityPolicy()).isNull();
             assertThat(updatedCaseData.getCaseLocalAuthority()).isEqualTo(LOCAL_AUTHORITY_2_CODE);
             assertThat(updatedCaseData.getCaseLocalAuthorityName()).isEqualTo(newDesignatedLocalAuthority.getName());
-            assertThat(updatedCaseData.getCourt()).isEqualTo(COURT_2);
+            assertThat(updatedCaseData.getCourt()).extracting("code", "name")
+                .containsExactly(WREXHAM.getCode(), "Family Court sitting at Wrexham");
             assertThat(updatedCaseData.getLocalAuthorities()).extracting(Element::getValue).containsExactly(
                 LocalAuthority.builder()
                     .id(newDesignatedLocalAuthority.getId())
@@ -359,6 +364,8 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
                         .reference(existingSolicitor.getReference())
                         .build()))
                     .build());
+            assertThat(updatedCaseData.getCaseManagementLocation())
+                .isEqualTo(new CaseLocation(WREXHAM.getEpimmsId(), WREXHAM.getRegionId()));
         }
 
         @Test
@@ -415,14 +422,14 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferToOrdinaryCourt() {
-            when(dfjAreaLookUpService.getDfjArea("384"))
+            when(dfjAreaLookUpService.getDfjArea(WREXHAM.getCode()))
                 .thenReturn(dfjAreaCourtMapping);
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of("Worcester", "380"),
-                    Pair.of("Wrexham", "384")))
+                    WORCESTER_LIST_ENTRY,
+                    WREXHAM_LIST_ENTRY))
                 .build();
 
             final CaseData initialCaseData = CaseData.builder()
@@ -436,7 +443,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final CaseData updatedCaseData = extractCaseData(resp);
 
             Court currentCourt = updatedCaseData.getCourt();
-            assertThat(currentCourt.getCode()).isEqualTo("384");
+            assertThat(currentCourt.getCode()).isEqualTo(WREXHAM.getCode());
             assertThat(currentCourt.getName()).isEqualTo("Family Court sitting at Wrexham");
             assertThat(currentCourt.getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);
@@ -450,19 +457,19 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             assertThat(updatedCaseData.getDfjArea()).isEqualTo(dfjAreaCourtMapping.getDfjArea());
             assertThat(updatedCaseData.getCourtField()).isNull();
             assertThat(resp.getData()).extracting("caseManagementLocation")
-                .extracting("baseLocation", "region").containsExactly("637145", "7");
+                .extracting("baseLocation", "region").containsExactly(WREXHAM.getEpimmsId(), WREXHAM.getRegionId());
         }
 
         @Test
         void shouldTransferToOrdinaryCourtAgain() {
-            when(dfjAreaLookUpService.getDfjArea("384"))
+            when(dfjAreaLookUpService.getDfjArea(WREXHAM.getCode()))
                 .thenReturn(dfjAreaCourtMapping);
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of("Worcester", "380"),
-                    Pair.of("Wrexham", "384")))
+                    WORCESTER_LIST_ENTRY,
+                    WREXHAM_LIST_ENTRY))
                 .build();
 
             final CaseData initialCaseData = CaseData.builder()
@@ -488,7 +495,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
             Court currentCourt = updatedCaseData.getCourt();
-            assertThat(currentCourt.getCode()).isEqualTo("384");
+            assertThat(currentCourt.getCode()).isEqualTo(WREXHAM.getCode());
             assertThat(currentCourt.getName()).isEqualTo("Family Court sitting at Wrexham");
             assertThat(currentCourt.getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(2);
@@ -510,7 +517,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(1,
-                    Pair.of("Worcester", "380"),
+                    WORCESTER_LIST_ENTRY,
                     Pair.of(RCJ_HIGH_COURT_NAME, RCJ_HIGH_COURT_CODE)))
                 .build();
 
@@ -543,13 +550,13 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
         @Test
         void shouldTransferOutOfTheHighCourt() {
-            when(dfjAreaLookUpService.getDfjArea("380"))
+            when(dfjAreaLookUpService.getDfjArea(WORCESTER.getCode()))
                 .thenReturn(dfjAreaCourtMapping);
 
             final LocalAuthoritiesEventData eventData = LocalAuthoritiesEventData.builder()
                 .localAuthorityAction(TRANSFER_COURT)
                 .courtsToTransferWithoutTransferLA(dynamicLists.from(0,
-                    Pair.of("Worcester", "380"),
+                    WORCESTER_LIST_ENTRY,
                     Pair.of(RCJ_HIGH_COURT_NAME, RCJ_HIGH_COURT_CODE)))
                 .build();
 
@@ -563,7 +570,7 @@ class ManageLocalAuthoritiesControllerAboutToSubmitTest extends AbstractCallback
 
             final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
-            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo("380");
+            assertThat(updatedCaseData.getCourt().getCode()).isEqualTo(WORCESTER.getCode());
             assertThat(updatedCaseData.getCourt().getName()).isEqualTo("Family Court sitting at Worcester");
             assertThat(updatedCaseData.getCourt().getDateTransferred()).isNotNull();
             assertThat(updatedCaseData.getPastCourtList()).hasSize(1);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.order.generated;
 
+import jakarta.validation.constraints.Future;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType;
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
-import javax.validation.constraints.Future;
 
 @Data
 @Builder
