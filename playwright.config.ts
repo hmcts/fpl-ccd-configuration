@@ -12,11 +12,11 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
 
     testDir: "./playwright-e2e",
-  testMatch:'*spec.ts',
+    testMatch:'*spec.ts',
     /* Run tests in files in parallel */
     fullyParallel: true,
-  timeout: 3*60*1000, //each test execution time is set to 3 min
-  expect: { timeout: 1*110*1000 }, //wait time for the assertion to be true 110 sec
+    timeout: 3*60*1000, //each test execution time is set to 3 min
+    expect: { timeout: 1*110*1000 }, //wait time for the assertion to be true 110 sec
 
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
@@ -28,7 +28,7 @@ export default defineConfig({
     workers: process.env.CI ? 5 : undefined,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [[process.env.CI ? 'html' : 'list'],
-             ['html', { outputFolder: '../test-results/functionalTest' }]],
+        ['html', { outputFolder: '../test-results/functionalTest' }]],
 
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
@@ -41,24 +41,24 @@ export default defineConfig({
     projects: [
         {
             name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+            use: { ...devices["Desktop Chrome"] },
         },
 
         {
             name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+            use: { ...devices["Desktop Firefox"] },
         },
 
         {
             name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+            use: { ...devices["Desktop Safari"] },
         },
         {
             name: "preview",
-      use: { ...devices["Desktop Chrome"] },
+            use: { ...devices["Desktop Chrome"] },
             retries: 3,
-      timeout: 3*60*1000,
-      expect: { timeout: 1*60*1000 },
+            timeout: 3*60*1000,
+            expect: { timeout: 1*60*1000 },
         },
 
         /* Test against mobile viewports. */
