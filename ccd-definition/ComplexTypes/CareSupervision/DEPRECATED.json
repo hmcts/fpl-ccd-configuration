@@ -399,16 +399,5 @@
     "ElementLabel": "Select all that apply",
     "FieldShowCondition": "whatKindOfRiskAndHarmToChildren=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Grounds",
-    "ListElementCode": "thresholdReason",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "GroundsList",
-    "ElementLabel": "The child concerned is suffering or is likely to suffer significant harm because they are:",
-    "HintText": "Select all that apply",
-    "FieldShowCondition": "groundsReason=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
   }
 ]
