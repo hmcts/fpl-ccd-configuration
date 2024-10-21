@@ -120,8 +120,8 @@
       },
       "grounds": {
         "groundsReason": [
-          "NO_CARE",
-          "BEYOND_PARENTAL_CONTROL"
+          "beyondControl",
+          "noCare"
         ],
         "hasThresholdDocument": "No",
         "thresholdDetails": "grounds for application criteria"
