@@ -39,7 +39,7 @@ public class CoreCaseDataService {
     private final RequestData requestData;
     private final SystemUserService systemUserService;
     private final CCDConcurrencyHelper concurrencyHelper;
-    public final ConcurrentHashMap<Long, AtomicInteger> concurrentMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, AtomicInteger> concurrentMap = new ConcurrentHashMap<>();
 
     // Required so calls to the same class get proxied correctly and have the retry annotation applied
     @Lazy
