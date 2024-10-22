@@ -313,6 +313,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "amendHearingNeeded",
+    "Name": "Amend hearing urgency",
+    "Description": "Selecting the hearing needed for application",
+    "DisplayOrder": 25,
+    "PreConditionState(s)": "Submitted;GATEKEEPING_LISTING;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterChildren",
     "Name": "Child's details",
     "Description": "Entering the children for the case",
