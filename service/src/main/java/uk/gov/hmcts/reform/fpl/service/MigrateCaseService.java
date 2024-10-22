@@ -1148,6 +1148,25 @@ public class MigrateCaseService {
         return hearingDetailsMap;
     }
 
+    public Map<String, Object> updateCancelledHearingDetailsType(CaseData caseData, String migrationId) {
+        List<Element<HearingBooking>> updatedCancelledHearingDetails = Optional.ofNullable(caseData
+                .getCancelledHearingDetails())
+            .map(List::stream)
+            .orElseGet(Stream::empty)
+            .peek(MigrateCaseService::processHearingBooking)
+            .collect(toList());
+
+        Map<String, Object> hearingDetailsMap = new HashMap<>();
+
+        if (!updatedCancelledHearingDetails.isEmpty()) {
+            hearingDetailsMap.put("cancelledHearingDetails", updatedCancelledHearingDetails);
+        } else {
+            throw new AssertionError(format("Migration {id = %s}, CancelledHearingDetails not found", migrationId));
+        }
+
+        return hearingDetailsMap;
+    }
+
     private static Optional<HearingType> evaluateType(String typeDetails) {
         return HEARING_TYPE_DETAILS_MAPPING.entrySet().stream()
             .filter(key -> typeDetails.toUpperCase().contains(key.getKey()))
@@ -1254,6 +1273,20 @@ public class MigrateCaseService {
             .build();
 
         return Map.of("hearing",hearing);
+    }
+
+    public Map<String, Object> redactTypeReason(CaseData caseData, String migrationId, int startLoc, int endLoc) {
+        if (isEmpty(caseData.getHearing()) || isEmpty(caseData.getHearing().getTypeGiveReason())) {
+            throw new AssertionError(format("Migration {id = %s}, hearing not found", migrationId));
+        }
+
+        final String typeGiveReason = caseData.getHearing().getTypeGiveReason();
+
+        Hearing hearing = caseData.getHearing().toBuilder()
+            .typeGiveReason(typeGiveReason.replace(typeGiveReason.substring(startLoc, endLoc), "***"))
+            .build();
+
+        return Map.of("hearing", hearing);
     }
 
     public Map<String, Object> removeAddressFromEPO(CaseData caseData, String migrationId) {

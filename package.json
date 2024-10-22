@@ -49,7 +49,7 @@
     "test:functional-API": "yarn playwright install chromium  &&  yarn playwright test --project=CafcassAPI ",
     "test:functional-nightly-preview": "yarn playwright install chromium && yarn playwright test --project=preview --workers=2 ",
     "test:smoke": "yarn npm audit --recursive --environment production && MOCHAWESOME_REPORTFILENAME=smoke REPORT_DIR=test-results/smokeTest REPORT_FILE=test-results/smokeTest/results.xml codeceptjs run --grep '@smoke-tests' --reporter mocha-multi --verbose",
-    "test:local": "yarn playwright install chromium && yarn playwright test   --project=CafcassAPI  --headed --debug --retries=1 --repeat-each=1 --workers=1  --trace on",
+    "test:local": "yarn playwright test --project=webkit --repeat-each=1",
     "prepare": "husky install",
     "yarn-update": "yarn set version 3.x",
     "install-dependencies": "/usr/bin/yarn install --silent",
