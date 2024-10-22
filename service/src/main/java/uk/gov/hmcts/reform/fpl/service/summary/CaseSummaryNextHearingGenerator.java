@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.summary.NextHearingDetails;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -39,6 +40,7 @@ public class CaseSummaryNextHearingGenerator implements CaseSummaryFieldsGenerat
                 .caseSummaryNextHearingType(nextHearing.getType().getLabel())
                 .caseSummaryNextHearingDate(nextHearing.getStartDate().toLocalDate())
                 .caseSummaryNextHearingDateTime(nextHearing.getStartDate())
+                .nextHearingDetails(new NextHearingDetails(nextHearing.getStartDate()))
                 .caseSummaryNextHearingJudge(generateSummaryNextHearingJudge(nextHearing,
                     caseData.getAllocatedJudge(),
                     HearingBooking::getHearingJudgeLabel))
