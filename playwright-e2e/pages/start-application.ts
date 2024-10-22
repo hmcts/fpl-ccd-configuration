@@ -58,7 +58,7 @@ export class StartApplication {
     this.internationalElementsHeading = page.getByRole('link', { name: 'International element' });
     this.submitApplicationLink = page.getByRole('link', { name: 'Submit application' })
     this.otherProceedingsLink = page.getByRole('link', { name: "Other Proceedings", });
-    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services needed'}); 
+    this.courtServicesNeeded = page.getByRole('link', { name: 'Court services'}); 
     this.otherPeopleInCaseLink = page.getByRole('link', { name: 'Other people in the case'}); 
   }
 
