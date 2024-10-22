@@ -373,7 +373,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
   // Fortify client for Fortify scans
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.4', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.5', classifier: 'all'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
