@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderReasonsType;
 import uk.gov.hmcts.reform.fpl.enums.ChildRecoveryOrderGround;
 import uk.gov.hmcts.reform.fpl.enums.FactorsAffectingParentingType;
+import uk.gov.hmcts.reform.fpl.enums.GroundsList;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.ParticularsOfChildren;
 import uk.gov.hmcts.reform.fpl.enums.PriorConsultationType;
@@ -340,7 +341,7 @@ public class CaseSubmissionGenerationService
                 applicationLanguage)
                                  : DEFAULT_STRING)
             .groundsThresholdReason(caseData.getGrounds() != null
-                                    ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason(),
+                                    ? buildGroundsThresholdReason(caseData.getGrounds().getGroundsReason(),
                 applicationLanguage) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData, applicationLanguage))
@@ -547,16 +548,16 @@ public class CaseSubmissionGenerationService
                ? grounds.getThresholdDetails() : DEFAULT_STRING;
     }
 
-    private String buildGroundsThresholdReason(final List<String> thresholdReasons,
+    private String buildGroundsThresholdReason(final List<GroundsList> thresholdReasons,
                                                Language applicationLanguage) {
         StringBuilder stringBuilder = new StringBuilder();
         if (isNotEmpty(thresholdReasons)) {
             thresholdReasons.forEach(thresholdReason -> {
-                if ("noCare".equals(thresholdReason)) {
+                if (GroundsList.NO_CARE.equals(thresholdReason)) {
                     stringBuilder.append(getThresholdReasonNoCare(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
 
-                } else if ("beyondControl".equals(thresholdReason)) {
+                } else if (GroundsList.BEYOND_PARENTAL_CONTROL.equals(thresholdReason)) {
                     stringBuilder.append(getThresholdReasonBeyondControl(applicationLanguage));
                     stringBuilder.append(NEW_LINE);
                 }
