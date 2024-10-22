@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NextHearingDetails",
+    "ListElementCode": "hearingDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Next hearing date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

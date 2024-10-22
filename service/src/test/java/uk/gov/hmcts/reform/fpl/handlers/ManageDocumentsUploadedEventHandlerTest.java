@@ -450,7 +450,7 @@ public class ManageDocumentsUploadedEventHandlerTest {
     void shouldNotNotifyTranslationTeamIfTranslationIsNotRequiredForTheCase()
         throws Exception {
         CaseData caseDataBefore = commonCaseBuilder().languageRequirement(YesNo.NO.getValue()).build();
-        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.EXPERT_REPORTS),
+        CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(DocumentType.TOXICOLOGY_REPORT),
                 List.of(ConfidentialLevel.NON_CONFIDENTIAL));
         caseData = caseData.toBuilder().languageRequirement(YesNo.NO.getValue()).build();
 
