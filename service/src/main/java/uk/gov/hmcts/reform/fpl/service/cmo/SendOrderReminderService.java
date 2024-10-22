@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
