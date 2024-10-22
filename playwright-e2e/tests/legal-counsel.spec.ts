@@ -1,6 +1,7 @@
 import { test } from '../fixtures/create-fixture';
 import caseWithResSolicitor  from '../caseData/caseWithRespondentSolicitor.json' assert { type: "json" };
 import caseWithResSolCounsel from '../caseData/caseWithRespondentSolicitorAndCounsel.json' assert { type: "json" } ;
+import caseWithResSolCounselDemo from '../caseData/caseWithRespondentSolicitorAndCounselDemo.json' assert {type: "json"};
 import {
     newSwanseaLocalAuthorityUserOne,
     privateSolicitorOrgUser,
@@ -9,6 +10,7 @@ import {
 } from '../settings/user-credentials';
 import { expect } from '@playwright/test';
 import {createCase, giveAccessToCase, updateCase} from "../utils/api-helper";
+import {urlConfig} from "../settings/urls";
 
 test.describe('Respondent solicitor counsel ', () => {
     const dateTime = new Date().toISOString();
@@ -67,7 +69,12 @@ test.describe('Respondent solicitor counsel ', () => {
     test('Legal counsel removed when respondent representation removed',
         async ({page, signInPage, legalCounsel}) => {
             caseName = 'Respondent representative removed ' + dateTime.slice(0, 10);
-            await updateCase(caseName, caseNumber, caseWithResSolCounsel);
+            if (urlConfig.env== 'demo'){
+                await updateCase(caseName, caseNumber, caseWithResSolCounselDemo);
+            }
+            else{
+                await updateCase(caseName, caseNumber, caseWithResSolCounsel);
+            }
             await giveAccessToCase(caseNumber, privateSolicitorOrgUser, '[SOLICITORA]');
             await giveAccessToCase(caseNumber, FPLSolicitorOrgUser, '[BARRISTER]');
             await signInPage.visit();
