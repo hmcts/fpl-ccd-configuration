@@ -31,6 +31,7 @@
     "moment": "2.30.1",
     "node-fetch": "^2.6.9",
     "node-gyp": "^9.4.0",
+    "playwright-core": "^1.43.1",
     "qs": "^6.11.2",
     "typescript": "^5.4.5",
     "webdriverio": "8.36.1"
