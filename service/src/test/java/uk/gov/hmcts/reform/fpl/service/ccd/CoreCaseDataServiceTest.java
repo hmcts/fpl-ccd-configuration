@@ -5,11 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -27,6 +30,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.quality.Strictness.LENIENT;
@@ -92,6 +99,62 @@ class CoreCaseDataServiceTest {
             when(concurrencyHelper.startEvent(CASE_ID, eventId)).thenReturn(startEventResponse);
             service.performPostSubmitCallbackWithoutChange(CASE_ID, eventId);
             verify(concurrencyHelper).submitEvent(startEventResponse, CASE_ID, Map.of());
+        }
+
+        @Test
+        void shouldSynchroniseSameCase() throws InterruptedException {
+            final StartEventResponse firstStartEventRsp =
+                buildStartEventResponse(eventId, "firstStartEventRsp");
+            final StartEventResponse secondStartEventRsp =
+                buildStartEventResponse(eventId, "secondStartEventRsp");
+
+            when(concurrencyHelper.startEvent(1L, "event1")).thenAnswer(new Answer<StartEventResponse>() {
+                @Override
+                public StartEventResponse answer(InvocationOnMock invocationOnMock) throws Throwable {
+                    Thread.sleep(1000);
+                    return firstStartEventRsp;
+                }
+            });
+            when(concurrencyHelper.startEvent(1L, "event2")).thenReturn(secondStartEventRsp);
+
+
+            Thread t1 = new Thread(() -> service.performPostSubmitCallbackWithoutChange(1L, "event1"));
+            t1.start();
+            Thread.sleep(100);
+
+            service.performPostSubmitCallbackWithoutChange(1L, "event2");
+
+            InOrder inOrder = inOrder(concurrencyHelper);
+
+            inOrder.verify(concurrencyHelper).submitEvent(firstStartEventRsp, 1L, Map.of());
+            inOrder.verify(concurrencyHelper, timeout(2000)).submitEvent(secondStartEventRsp, 1L, Map.of());
+        }
+
+        @Test
+        void shouldNotSynchroniseDifferentCase() throws InterruptedException {
+            final StartEventResponse firstStartEventRsp =
+                buildStartEventResponse(eventId, "firstStartEventRsp");
+            final StartEventResponse secondStartEventRsp =
+                buildStartEventResponse(eventId, "secondStartEventRsp");
+
+
+            when(concurrencyHelper.startEvent(1L, eventId))
+                .thenAnswer((Answer<StartEventResponse>) invocationOnMock -> {
+                    Thread.sleep(1000);
+                    return firstStartEventRsp;
+                });
+            when(concurrencyHelper.startEvent(2L, eventId)).thenReturn(secondStartEventRsp);
+
+
+            Thread t1 = new Thread(() -> service.performPostSubmitCallbackWithoutChange(1L, eventId));
+
+            t1.start();
+            Thread.sleep(100);
+            service.performPostSubmitCallbackWithoutChange(2L, eventId);
+
+            InOrder inOrder = inOrder(concurrencyHelper);
+            inOrder.verify(concurrencyHelper).submitEvent(secondStartEventRsp, 2L, Map.of());
+            inOrder.verify(concurrencyHelper, timeout(2000)).submitEvent(firstStartEventRsp, 1L, Map.of());
         }
     }
 
