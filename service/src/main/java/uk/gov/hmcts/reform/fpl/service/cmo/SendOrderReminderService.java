@@ -22,14 +22,15 @@ public class SendOrderReminderService {
         return caseData.getAllNonCancelledHearings().stream()
             .filter(booking -> booking.getValue().getEndDate().isBefore(now())
                 && !booking.getValue().hasCMOAssociation()
-                && !checkSealedCMOExistsForHearing(caseData, booking.getId()))
+                && !checkSealedCMOExistsForHearing(caseData, booking))
             .map(Element::getValue)
             .sorted(Comparator.comparing(HearingBooking::getStartDate))
             .collect(Collectors.toList());
     }
 
-    public boolean checkSealedCMOExistsForHearing(CaseData caseData, UUID hearingId) {
+    public boolean checkSealedCMOExistsForHearing(CaseData caseData, Element<HearingBooking> hearingBooking) {
         return caseData.getSealedCMOs().stream()
-            .anyMatch(el -> hearingId.equals(el.getValue().getHearingId()));
+            .anyMatch(el -> hearingBooking.getId().equals(el.getValue().getHearingId())
+                || hearingBooking.getValue().toLabel().equals(el.getValue().getHearing()));
     }
 }
