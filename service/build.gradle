@@ -409,7 +409,9 @@ dependencies {
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1'
+  contractTestImplementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1') {
+    exclude group: "org.bouncycastle", module: "bcprov-jdk15on"
+  }
   contractTestImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.7.6'
   contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 }
