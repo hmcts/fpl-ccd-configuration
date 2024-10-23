@@ -46,11 +46,9 @@ export class ReturnApplication extends BasePage {
 
   async ReturnApplication() {
     await this.reasonForRejection.check();
-    await this.needToChange.fill('today');
+    await this.needToChange.fill('incomplete application');
     await this.submit.click();
     await this.submitApplication.click();
-    await this.page.waitForLoadState();
-    await this.saveAndContinue.click({timeout:200000});
   }
 
   public async payForApplication() {
