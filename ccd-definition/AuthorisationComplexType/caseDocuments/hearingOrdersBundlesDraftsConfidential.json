@@ -15,7 +15,8 @@
         "UserRoles": [
           "[BARRISTER]",
           "[CAFCASSSOLICITOR]",
-          "caseworker-publiclaw-cafcass"
+          "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate"
         ],
         "CRUD": "CR"
       },
@@ -72,6 +73,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -140,6 +142,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -199,6 +202,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORB]",
@@ -262,6 +266,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -325,6 +330,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -388,6 +394,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -451,6 +458,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -514,6 +522,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -577,6 +586,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -640,6 +650,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -703,6 +714,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -766,6 +778,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "[BARRISTER]",
           "[SOLICITOR]",
           "[SOLICITORA]",
@@ -823,6 +836,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -886,6 +900,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -949,6 +964,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1012,6 +1028,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1075,6 +1092,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1138,6 +1156,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1201,6 +1220,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1264,6 +1284,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1327,6 +1348,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1390,6 +1412,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1453,6 +1476,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1516,6 +1540,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1579,6 +1604,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1642,6 +1668,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
@@ -1705,6 +1732,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-cafcass",
+          "caseworker-publiclaw-cafcasssystemupdate",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"

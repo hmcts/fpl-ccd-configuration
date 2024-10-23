@@ -161,6 +161,10 @@ public class ManageDocumentService {
         if (Optional.ofNullable(userService.getIdamRoles()).orElse(Set.of()).contains(UserRole.CAFCASS.getRoleName())) {
             return CAFCASS;
         }
+        if (Optional.ofNullable(userService.getIdamRoles())
+            .orElse(Set.of()).contains(UserRole.CAFCASS_SYSTEM_UPDATE.getRoleName())) {
+            return CAFCASS;
+        }
 
         throw new IllegalStateException("Unable to determine document uploader type");
     }
@@ -464,7 +468,7 @@ public class ManageDocumentService {
         }
     }
 
-    private List<Element<?>> getListOfRemovedElement(CaseData caseData, DocumentType documentType) {
+    public List<Element<?>> getListOfRemovedElement(CaseData caseData, DocumentType documentType) {
         return Optional.ofNullable(readFromFieldName(caseData,
                 documentType.getFieldNameOfRemovedList())).orElse(new ArrayList<>());
     }
@@ -632,7 +636,7 @@ public class ManageDocumentService {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
+    public List<Element<?>> readFromFieldName(CaseData caseData, String fieldName) {
         String[] splitFieldName = fieldName.split("\\.");
         if (splitFieldName.length == 1) {
             try {

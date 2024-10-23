@@ -129,7 +129,7 @@ class AmendOrderToDownloadPrePopulatorTest {
             .build();
 
         when(amendedOrderList.getValueCodeAsUUID()).thenReturn(ORDER_ID);
-        when(order.getDocument()).thenReturn(orderDocument);
+        when(order.getDocumentOrDocumentConfidential()).thenReturn(orderDocument);
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("manageOrdersOrderToAmend", orderDocument));
     }
