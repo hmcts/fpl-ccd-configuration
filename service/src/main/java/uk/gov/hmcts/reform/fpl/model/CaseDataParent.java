@@ -169,7 +169,7 @@ public class CaseDataParent {
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueList;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListLA;
     protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListCTSC;
-    protected final List<Element<ManagedDocument>> noticeOfActingListRemoved;
+    protected final List<Element<ManagedDocument>> noticeOfActingOrIssueListRemoved;
 
     protected final List<Element<ManagedDocument>> parentAssessmentList;
     protected final List<Element<ManagedDocument>> parentAssessmentListLA;
