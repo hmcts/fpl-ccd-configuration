@@ -20,6 +20,11 @@ public class CafcassApiApplicantsConverterTest extends CafcassApiConverterTestBa
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.localAuthorities"));
+    }
+
+    @Test
     void shouldConvertAllApplicant() {
         LocalAuthority la1 = LocalAuthority.builder()
             .name("Applicant 1 name")

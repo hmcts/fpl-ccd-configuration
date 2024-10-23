@@ -87,6 +87,7 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_APPLICATI
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.AA_PARENT_RESPONDENTS_STATEMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.ADULT_PSYCHIATRIC_REPORT_ON_PARENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_OTHER_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.APPLICANTS_WITNESS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.C1_APPLICATION_DOCUMENTS;
@@ -97,25 +98,45 @@ import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.CONTACT_NOTES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.COURT_CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DOCUMENTS_FILED_ON_ISSUE;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.DRUG_AND_ALCOHOL_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_AND_VIABILITY_ASSESSMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_EVIDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.GUARDIAN_REPORT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.HAEMATOLOGIST;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.INDEPENDENT_SOCIAL_WORKER;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.JUDGEMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.LETTER_OF_INSTRUCTION;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEDICAL_RECORDS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MEETING_NOTES;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.MULTI_DISCIPLINARY_ASSESSMENT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NEUROSURGEON;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.NOTICE_OF_ACTING_OR_ISSUE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OPHTHALMOLOGIST;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OTHER_EXPERT_REPORT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.OTHER_MEDICAL_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PARENT_ASSESSMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PEDIATRIC;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PEDIATRIC_RADIOLOGIST;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PLACEMENT_RESPONSES;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POLICE_DISCLOSURE;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.POSITION_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PREVIOUS_PROCEEDING;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_DNA_TESTING;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_DRUG_ALCOHOL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_HAIR_STRAND;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PROFESSIONAL_OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHIATRIC_CHILD_AND_PARENT;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHIATRIC_CHILD_ONLY;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.RESPONDENTS_WITNESS_STATEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.SKELETON_ARGUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.THRESHOLD;
+import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TOXICOLOGY_REPORT;
 import static uk.gov.hmcts.reform.fpl.enums.cfv.DocumentType.TRANSCRIPTS;
 import static uk.gov.hmcts.reform.fpl.handlers.ManageDocumentsUploadedEventTestData.buildSubmittedCaseDataWithNewDocumentUploaded;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -407,9 +428,30 @@ class ManageDocumentServiceTest {
                     toPair(GUARDIAN_EVIDENCE),
                     i == 4 ? toPair(GUARDIAN_REPORT) : Pair.of("", ""),
                     toPair(AA_PARENT_EXPERT_REPORTS),
-                    toPair(EXPERT_REPORTS),
-                    toPair(DRUG_AND_ALCOHOL_REPORTS),
-                    toPair(LETTER_OF_INSTRUCTION),
+                    toPair(ADULT_PSYCHIATRIC_REPORT_ON_PARENTS),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_NON_RESIDENTIAL),
+                    toPair(FAMILY_CENTRE_ASSESSMENTS_RESIDENTIAL),
+                    toPair(HAEMATOLOGIST),
+                    toPair(INDEPENDENT_SOCIAL_WORKER),
+                    toPair(MULTI_DISCIPLINARY_ASSESSMENT),
+                    toPair(NEUROSURGEON),
+                    toPair(OPHTHALMOLOGIST),
+                    toPair(OTHER_EXPERT_REPORT),
+                    toPair(OTHER_MEDICAL_REPORT),
+                    toPair(PEDIATRIC),
+                    toPair(PEDIATRIC_RADIOLOGIST),
+                    toPair(PROFESSIONAL_DNA_TESTING),
+                    toPair(PROFESSIONAL_DRUG_ALCOHOL),
+                    toPair(PROFESSIONAL_HAIR_STRAND),
+                    toPair(PROFESSIONAL_OTHER),
+                    toPair(PSYCHIATRIC_CHILD_ONLY),
+                    toPair(PSYCHIATRIC_CHILD_AND_PARENT),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_CLINICAL),
+                    toPair(PSYCHOLOGICAL_REPORT_CHILD_ONLY_EDUCATIONAL),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_AND_CHILD),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_COGNITIVE),
+                    toPair(PSYCHOLOGICAL_REPORT_PARENT_FULL_FUNCTIONING),
+                    toPair(TOXICOLOGY_REPORT),
                     toPair(POLICE_DISCLOSURE),
                     toPair(MEDICAL_RECORDS),
                     toPair(COURT_CORRESPONDENCE),
@@ -734,7 +776,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                    && list.contains(element(elementIdTwo, ManagedDocument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -759,7 +801,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                    && list.contains(element(elementIdTwo, CaseSummary.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -783,7 +825,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                    && list.contains(element(elementIdTwo, SkeletonArgument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -808,7 +850,7 @@ class ManageDocumentServiceTest {
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .translationRequirements(LanguageTranslationRequirement.ENGLISH_TO_WELSH)
                 .build()))
-                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                    && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -830,7 +872,7 @@ class ManageDocumentServiceTest {
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
-                        || elementIdTwo.equals(((Element) p).getId()))
+                                 || elementIdTwo.equals(((Element) p).getId()))
                     .collect(Collectors.toList());
                 if (flist.size() != 2) {
                     return false;
@@ -911,7 +953,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, ManagedDocument.builder()
+                    && list.contains(element(elementIdTwo, ManagedDocument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -931,7 +973,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, CaseSummary.builder()
+                    && list.contains(element(elementIdTwo, CaseSummary.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -951,7 +993,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, SkeletonArgument.builder()
+                    && list.contains(element(elementIdTwo, SkeletonArgument.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -972,7 +1014,7 @@ class ManageDocumentServiceTest {
                 .uploaderType(getUploaderType(loginType))
                 .uploaderCaseRoles(getUploaderCaseRoles(loginType))
                 .build()))
-                && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
+                    && list.contains(element(elementIdTwo, RespondentStatementV2.builder()
                 .document(expectedDocumentTwo)
                 .markAsConfidential(YesNo.from(confidentiality == Confidentiality.YES).getValue())
                 .uploaderType(getUploaderType(loginType))
@@ -991,7 +1033,7 @@ class ManageDocumentServiceTest {
             list -> {
                 List<Element> flist = (List<Element>) list.stream()
                     .filter(p -> elementIdOne.equals(((Element) p).getId())
-                        || elementIdTwo.equals(((Element) p).getId()))
+                                 || elementIdTwo.equals(((Element) p).getId()))
                     .toList();
                 if (flist.size() != 2) {
                     return false;
@@ -1908,7 +1950,7 @@ class ManageDocumentServiceTest {
             if (uploaderType == DocumentUploaderType.HMCTS) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList2);
             } else if (uploaderType == DocumentUploaderType.DESIGNATED_LOCAL_AUTHORITY
-                || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
+                       || uploaderType == DocumentUploaderType.SECONDARY_LOCAL_AUTHORITY) {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList3);
             } else {
                 assertThat(dynamicList).isEqualTo(expectedDynamicList1);
@@ -2774,7 +2816,7 @@ class ManageDocumentServiceTest {
             CaseData caseDataBefore = ManageDocumentsUploadedEventTestData.commonCaseBuilder().build();
 
             CaseData caseData = buildSubmittedCaseDataWithNewDocumentUploaded(List.of(documentType),
-                    List.of(confidentialLevel));
+                List.of(confidentialLevel));
 
             List<Element<Object>> documentList = ObjectHelper.getFieldValue(caseData,
                 documentType.getBaseFieldNameResolver().apply(confidentialLevel), List.class);

@@ -20,6 +20,11 @@ public class CafcassApiOthersConverterTest extends CafcassApiConverterTestBase {
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.others"));
+    }
+
+    @Test
     void shouldConvertOthers() {
         Other firstOthers = Other.builder()
             .name("First Other")

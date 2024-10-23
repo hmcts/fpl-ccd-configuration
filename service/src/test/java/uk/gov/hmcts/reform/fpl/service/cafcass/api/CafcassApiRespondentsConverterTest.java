@@ -20,6 +20,11 @@ public class CafcassApiRespondentsConverterTest extends CafcassApiConverterTestB
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.respondents1"));
+    }
+
+    @Test
     void shouldConvertAllRespondents() {
         Respondent respondentWithAddressHidden = Respondent.builder()
             .solicitor(getTestRespondentSolicitor())

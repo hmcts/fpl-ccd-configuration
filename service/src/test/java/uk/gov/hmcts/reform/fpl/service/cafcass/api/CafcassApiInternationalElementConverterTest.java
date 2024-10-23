@@ -7,9 +7,16 @@ import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiInternationalElement;
 
+import java.util.List;
+
 public class CafcassApiInternationalElementConverterTest extends CafcassApiConverterTestBase {
     CafcassApiInternationalElementConverterTest() {
         super(new CafcassApiInternationalElementConverter());
+    }
+
+    @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.internationalElement"));
     }
 
     @Test

@@ -16,6 +16,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiApplicantsConverter implements CafcassApiCaseDataConverter {
+    private static final List<String> SOURCE = List.of("data.localAuthorities");
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
+
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,
                                                                 CafcassApiCaseData.CafcassApiCaseDataBuilder builder) {

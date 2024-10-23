@@ -6,11 +6,19 @@ import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiCaseData;
 import uk.gov.hmcts.reform.fpl.model.cafcass.api.CafcassApiInternationalElement;
 
+import java.util.List;
+
 import static uk.gov.hmcts.reform.fpl.utils.CafcassApiHelper.isYes;
 
 @Service
 public class CafcassApiInternationalElementConverter implements CafcassApiCaseDataConverter {
     private static final CafcassApiInternationalElement EMPTY = CafcassApiInternationalElement.builder().build();
+    private static final List<String> SOURCE = List.of("data.internationalElement");
+
+    @Override
+    public List<String> getEsSearchSources() {
+        return SOURCE;
+    }
 
     @Override
     public CafcassApiCaseData.CafcassApiCaseDataBuilder convert(CaseData caseData,

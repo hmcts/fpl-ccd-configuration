@@ -33,6 +33,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -86,6 +87,10 @@ public class CafcassApiSearchCaseServiceTest {
         .caseData(MOCK_CONVERTED_CAFCASSAPICASEDATA)
         .build();
 
+    private static final List<String> CONVERTER1_SOURCE = List.of("field1");
+    private static final List<String> CONVERTER2_SOURCE = List.of("field2");
+    private static final List<String> CONVERTER3_SOURCE = List.of("field3");
+
     @Mock
     private CaseConverter caseConverter;
     @Mock
@@ -107,6 +112,9 @@ public class CafcassApiSearchCaseServiceTest {
     void setUpWithMockConverters() {
         when(featureToggleService.getCafcassAPIFlag())
             .thenReturn(CafcassApiFeatureFlag.builder().enableApi(true).build());
+        when(cafcassApiCaseDataConverter1.getEsSearchSources()).thenReturn(CONVERTER1_SOURCE);
+        when(cafcassApiCaseDataConverter2.getEsSearchSources()).thenReturn(CONVERTER2_SOURCE);
+        when(cafcassApiCaseDataConverter3.getEsSearchSources()).thenReturn(CONVERTER3_SOURCE);
         underTest = new CafcassApiSearchCaseService(caseConverter, searchService,
             List.of(cafcassApiCaseDataConverter1, cafcassApiCaseDataConverter2, cafcassApiCaseDataConverter3),
             featureToggleService);
@@ -122,7 +130,8 @@ public class CafcassApiSearchCaseServiceTest {
         when(cafcassApiCaseDataConverter3.convert(any(), any())).thenReturn(mockBuilder);
 
         final List<CaseDetails> caseDetails = List.of(MOCK_CASE_DETAILS_1, MOCK_CASE_DETAILS_2);
-        when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt())).thenReturn(caseDetails);
+        when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt(),
+            eq(List.of("field1", "field2", "field3")))).thenReturn(caseDetails);
         when(caseConverter.convert(MOCK_CASE_DETAILS_1)).thenReturn(MOCK_CASE_DATA_1);
         when(caseConverter.convert(MOCK_CASE_DETAILS_2)).thenReturn(MOCK_CASE_DATA_2);
 
@@ -146,7 +155,7 @@ public class CafcassApiSearchCaseServiceTest {
 
     @Test
     void shouldReturnEmptyListIfNoCaseFound() {
-        when(searchService.search(any(), anyInt(), anyInt())).thenReturn(List.of());
+        when(searchService.search(any(), anyInt(), anyInt(), anyList())).thenReturn(List.of());
         List<CafcassApiCase> actual = underTest.searchCaseByDateRange(SEARCH_START_DATE, SEARCH_END_DATE);
 
         assertEquals(List.of(), actual);
@@ -176,7 +185,7 @@ public class CafcassApiSearchCaseServiceTest {
             .enableApi(true).whitelist(List.of("123", "321")).build());
 
         final List<CaseDetails> caseDetails = List.of(MOCK_CASE_DETAILS_1, MOCK_CASE_DETAILS_2);
-        when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt())).thenReturn(caseDetails);
+        when(searchService.search(searchQueryCaptor.capture(), anyInt(), anyInt(), anyList())).thenReturn(caseDetails);
         when(caseConverter.convert(MOCK_CASE_DETAILS_1)).thenReturn(MOCK_CASE_DATA_1);
         when(caseConverter.convert(MOCK_CASE_DETAILS_2)).thenReturn(MOCK_CASE_DATA_2);
 

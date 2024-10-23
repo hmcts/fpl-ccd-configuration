@@ -15,6 +15,11 @@ public class CafcassApiRisksConverterTest extends CafcassApiConverterTestBase {
     }
 
     @Test
+    void shouldReturnSource() {
+        testSource(List.of("data.risks"));
+    }
+
+    @Test
     void shouldConvertRisk() {
         CaseData caseData = CaseData.builder()
             .risks(Risks.builder()
