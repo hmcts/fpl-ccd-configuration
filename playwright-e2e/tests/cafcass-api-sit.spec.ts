@@ -105,13 +105,13 @@ const updateCase = async (caseName = 'e2e Test', caseID: string, caseDataJson: a
     let docParameter : any = {
         TEST_DOCUMENT_URL: docDetail.document_url,
         TEST_DOCUMENT_BINARY_URL: docDetail.document_binary_url,
-        TEST_DOCUMENT_UPLOAD_TIMESTAMP: docDetail.upload_timestamp,
+        TEST_DOCUMENT_UPLOAD_TIMESTAMP: '2024-10-18T11:58:54.951442988',
     };
     if (caseDataJson.caseData.standardDirectionOrder != null && caseDataJson.caseData.standardDirectionOrder.orderDoc != null ) {
         let sdoDocDetail = await apiRequest(urlConfig.serviceUrl + '/testing-support/test-document', systemUpdateUser);
         docParameter.TEST_SDO_URL = sdoDocDetail.document_url;
         docParameter.TEST_SDO_BINARY_URL = sdoDocDetail.document_binary_url;
-        docParameter.TEST_SDO_UPLOAD_TIMESTAMP = sdoDocDetail.upload_timestamp;
+        docParameter.TEST_SDO_UPLOAD_TIMESTAMP = '2024-10-18T11:58:54.951442988';
     }
 
     let data = lodash.template(JSON.stringify(caseDataJson))(docParameter);
