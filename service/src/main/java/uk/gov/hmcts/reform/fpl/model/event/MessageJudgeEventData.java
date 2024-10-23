@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageJudgeEventData {
-    Object additionalApplicationsDynamicList;
+    DynamicList additionalApplicationsDynamicList;
     Object judicialMessageDynamicList;
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;

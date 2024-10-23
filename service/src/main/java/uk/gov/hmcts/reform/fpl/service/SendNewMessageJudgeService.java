@@ -24,9 +24,12 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.SelectableItem;
 import uk.gov.hmcts.reform.fpl.model.interfaces.WithDocument;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +38,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
@@ -76,7 +82,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         }
 
         data.putAll(prePopulateSenderAndRecipient());
-
         data.put("documentTypesDynamicList", manageDocumentService.buildDocumentTypeDynamicList(caseData));
 
         return data;
@@ -87,15 +92,9 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         MessageRegardingDocuments type = getMessageAttachmentType(caseData);
 
         if (type == DOCUMENT) {
-            DocumentType documentTypeSelected = DocumentType.valueOf(caseData.getMessageJudgeEventData()
-                .getDocumentTypesDynamicList().getValue().getCode());
-
-            DynamicList documentDynamicList = manageDocumentService
-                .buildAvailableDocumentsDynamicList(caseData, documentTypeSelected);
-
-            data.put("documentDynamicList", documentDynamicList);
+            data.put("documentDynamicList", getDocumentList(caseData));
         } else if (type == APPLICATION) {
-            data.put("additionalApplicationsDynamicList", getApplicationsLists(caseData, null));
+            data.put("additionalApplicationsDynamicList", getApplicationsLists(caseData));
         }
 
         return data;
@@ -113,7 +112,6 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             final SelectableItem selectedApplication = getElement(selectedApplicationId, applications).getValue();
 
             data.put("relatedDocumentsLabel", getRelatedDocumentNames(selectedApplication));
-            data.put("additionalApplicationsDynamicList", getApplicationsLists(caseData, selectedApplicationId));
         } else if (hasSelectedDocument(caseData)) {
             final String selectedDocumentLabel =
                 caseData.getMessageJudgeEventData().getDocumentDynamicList().getValueLabel();
@@ -133,6 +131,21 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
             return validateEmailService.validate(email);
         }
         return Optional.empty();
+    }
+
+    public List<String> validateDynamicLists(CaseData caseData) {
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+
+        if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(DOCUMENT) &&
+            getDocumentList(caseData).getListItems().isEmpty()) {
+            return List.of(format("No documents available of type: %s",
+                messageJudgeEventData.getDocumentTypesDynamicList().getValue().getLabel()));
+        } else if (messageJudgeEventData.getIsMessageRegardingDocuments().equals(APPLICATION) &&
+            getApplicationsLists(caseData).getListItems().isEmpty()) {
+            return List.of("No applications available");
+        }
+
+        return Collections.emptyList();
     }
 
     public List<Element<JudicialMessage>> addNewJudicialMessage(CaseData caseData) {
@@ -236,12 +249,17 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
     }
 
     private boolean hasSelectedAdditionalApplication(CaseData caseData) {
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+
         return (hasAdditionalApplications(caseData) || hasC2s(caseData) || hasPlacementApplications(caseData))
-            && caseData.getMessageJudgeEventData().getAdditionalApplicationsDynamicList() != null;
+            && messageJudgeEventData.getAdditionalApplicationsDynamicList() != null
+            && messageJudgeEventData.getIsMessageRegardingDocuments().equals(APPLICATION);
     }
 
     private boolean hasSelectedDocument(CaseData caseData) {
-        return caseData.getMessageJudgeEventData().getDocumentDynamicList() != null;
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+        return messageJudgeEventData.getDocumentDynamicList() != null
+            && messageJudgeEventData.getIsMessageRegardingDocuments().equals(DOCUMENT);
     }
 
     private MessageRegardingDocuments getMessageAttachmentType(CaseData caseData) {
@@ -272,7 +290,7 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
         return getElement(applicationId, getApplications(caseData)).getValue();
     }
 
-    private DynamicList getApplicationsLists(CaseData caseData, UUID selected) {
+    private DynamicList getApplicationsLists(CaseData caseData) {
 
         final List<Element<SelectableItem>> applications = getApplications(caseData);
 
@@ -283,7 +301,15 @@ public class SendNewMessageJudgeService extends MessageJudgeService {
 
         applications.sort(comparing(sortOrderExtractor).thenComparing(comparing(timeExtractor).reversed()));
 
-        return asDynamicList(applications, selected, SelectableItem::toLabel);
+        return asDynamicList(applications, SelectableItem::toLabel);
+    }
+
+    public DynamicList getDocumentList(CaseData caseData){
+        DocumentType documentTypeSelected = DocumentType.valueOf(caseData.getMessageJudgeEventData()
+            .getDocumentTypesDynamicList().getValue().getCode());
+
+        return manageDocumentService
+            .buildAvailableDocumentsDynamicList(caseData, documentTypeSelected);
     }
 
     private Optional<DocumentReference> getSelectedDocumentReference(CaseData caseData) {

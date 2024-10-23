@@ -49,8 +49,9 @@ public class MessageJudgeController extends CallbackController {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
         caseDetailsMap.putAll(messageJudgeService.populateDynamicLists(caseData));
+        List<String> errors = messageJudgeService.validateDynamicLists(caseData);
 
-        return respond(caseDetailsMap);
+        return respond(caseDetailsMap, errors);
     }
 
     @PostMapping("/populate-document-labels/mid-event")
