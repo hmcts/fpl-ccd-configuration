@@ -11,5 +11,4 @@ export const urlConfig: UrlConfig = {
   serviceUrl: process.env.CASE_SERVICE_URL || `http://fpl-case-service-${env}.service.core-compute-${env}.internal`,
   frontEndBaseURL: process.env.FE_BASE_URL || `https://manage-case.${env}.platform.hmcts.net`,
   // You can add other URLs as needed
-
 };
