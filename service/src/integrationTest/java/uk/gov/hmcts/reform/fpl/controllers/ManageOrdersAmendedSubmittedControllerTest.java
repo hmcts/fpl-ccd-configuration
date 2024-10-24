@@ -213,6 +213,7 @@ class ManageOrdersAmendedSubmittedControllerTest extends AbstractCallbackTest {
 
     private CaseData buildCaseData(UUID selectedId, DocumentReference originalDocument) {
         return CaseData.builder()
+            .id(1L)
             .state(SUBMITTED)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
