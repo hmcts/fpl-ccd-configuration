@@ -28,7 +28,7 @@ test.describe('Return application', () => {
       await returnApplication.gotoNextStep('Return application');
       await returnApplication.ReturnApplication();
 
-      //complete task
+     // complete task
       await returnApplication.tabNavigation('History');
       await expect(page.getByText('Returned')).toBeVisible();
       await signInPage.logout();
@@ -45,5 +45,5 @@ test.describe('Return application', () => {
       await page.getByRole('link', { name: 'Make changes to the respondents\' details' }).click();
       await returnApplication.UpdateRespondent();
       
-  });
+   });
 })
