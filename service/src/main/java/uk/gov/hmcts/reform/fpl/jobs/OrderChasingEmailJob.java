@@ -134,7 +134,7 @@ public class OrderChasingEmailJob implements Job {
 
         // ES cannot index nulls (automatically), also sometimes the cmo field is not present at all => manual check
         return hearingsWithinRange.stream().anyMatch(booking -> !booking.getValue().hasCMOAssociation()
-            && !sendOrderReminderService.checkSealedCMOExistsForHearing(caseData, booking.getId()));
+            && !sendOrderReminderService.checkSealedCMOExistsForHearing(caseData, booking));
     }
 
     private MustNot getInvalidStates() {
