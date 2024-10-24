@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils.elasticsearch;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ESQuery extends ESClause {
@@ -16,5 +17,13 @@ public interface ESQuery extends ESClause {
                 "query", this.toMap(),
                 "sort", sort.toMap())
         );
+    }
+
+    default JSONObject toQueryContext(int size, int from, List<String> source) {
+        return new JSONObject(Map.of(
+            "size", size,
+            "from", from,
+            "query", this.toMap(),
+            "_source", source));
     }
 }
