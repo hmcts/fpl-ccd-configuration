@@ -38,15 +38,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "factorsAffectingParentingLink",
-    "FieldType": "Label",
-    "Label": "[Make changes to factors affecting parenting](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterParentingFactors)",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherProceedingsLink",
     "FieldType": "Label",
     "Label": "[Make changes to other proceedings for the child](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/otherProceedings)",
