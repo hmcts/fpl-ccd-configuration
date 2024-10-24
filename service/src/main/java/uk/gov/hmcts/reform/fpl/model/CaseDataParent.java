@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validation.groups.SecureAccommodationGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonSubTypes({
@@ -21,6 +22,10 @@ import java.util.List;
 @Data
 public class CaseDataParent {
 
+    protected final List<Element<ManagedDocument>> guardianReportsList;
+    protected final List<Element<ManagedDocument>> guardianReportsListLA;
+    protected final List<Element<ManagedDocument>> guardianReportsListCTSC;
+    protected final List<Element<ManagedDocument>> guardianReportsListRemoved;
     protected final List<Element<RespondentStatementV2>> respStmtList;
     protected final List<Element<RespondentStatementV2>> respStmtListLA;
     protected final List<Element<RespondentStatementV2>> respStmtListCTSC;
@@ -260,4 +265,8 @@ public class CaseDataParent {
     protected final YesNo shouldSendOrderReminder;
 
     protected final CaseLocation caseManagementLocation;
+
+    public List<Element<ManagedDocument>> getGuardianReportsList() {
+        return guardianReportsList != null ? guardianReportsList : new ArrayList<>();
+    }
 }

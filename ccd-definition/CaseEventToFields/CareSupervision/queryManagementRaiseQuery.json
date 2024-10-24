@@ -1,0 +1,67 @@
+[
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolOne",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "queryManagementRaiseQuery",
+    "PageLabel": "Raise a new query",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolTwo",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "queryManagementRaiseQuery",
+    "PageLabel": "Raise a new query",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "CaseFieldID": "qmCaseQueriesCollectionChildSolThree",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "queryManagementRaiseQuery",
+    "PageLabel": "Raise a new query",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "CaseFieldID": "QueryManagementComponentLauncher",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "DisplayContextParameter" : "#ARGUMENT(QueryManagement)",
+    "PageID": "queryManagementRaiseQuery",
+    "PageLabel": "Raise a new query",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "queryManagementRaiseQuery",
+    "CaseFieldID": "caseName",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "queryManagementRaiseQuery",
+    "PageLabel": "Raise a new query",
+    "PageDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "QueryManagementComponentLauncher=\"DO_NOT_SHOW\""
+  }
+]
