@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -59,6 +59,7 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldReturnCompletedNotifyData() {
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
             .cafcass(CAFCASS_NAME)
@@ -73,10 +74,12 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(Map.of(
-                "file", ENCODED_BINARY,
-                "is_csv", false
-            ))
+            .documentLink(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }})
             .childLastName(CHILD_LAST_NAME)
             .build();
 
@@ -103,10 +106,15 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .build())
             .build();
 
-        assertThat(underTest.buildCafcassSubmissionNotification(caseData)).isEqualTo(cafcassSubmissionTemplate);
+        SubmitCaseCafcassTemplate template = underTest.buildCafcassSubmissionNotification(caseData);
+        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink")
+            .isEqualTo(cafcassSubmissionTemplate);
+        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf(
+            (HashMap) cafcassSubmissionTemplate.getDocumentLink());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldReturnCompletedNotifyDataEvenWhenCaseLocalAuthorityDoesntExist() {
         SubmitCaseCafcassTemplate cafcassSubmissionTemplate = SubmitCaseCafcassTemplate.builder()
             .cafcass(CAFCASS_NAME)
@@ -121,10 +129,13 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
             .firstRespondentName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE))
-            .documentLink(Map.of(
-                "file", ENCODED_BINARY,
-                "is_csv", false
-            ))
+            .documentLink(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", ENCODED_BINARY);
+                }}
+            )
             .childLastName(CHILD_LAST_NAME)
             .build();
 
@@ -151,7 +162,11 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
                 .build())
             .build();
 
-        assertThat(underTest.buildCafcassSubmissionNotification(caseData)).isEqualTo(cafcassSubmissionTemplate);
+        SubmitCaseCafcassTemplate template = underTest.buildCafcassSubmissionNotification(caseData);
+        assertThat(template).usingRecursiveComparison().ignoringFields("documentLink")
+            .isEqualTo(cafcassSubmissionTemplate);
+        assertThat((HashMap) template.getDocumentLink()).containsExactlyInAnyOrderEntriesOf(
+            (HashMap) cafcassSubmissionTemplate.getDocumentLink());
     }
 
     @Test

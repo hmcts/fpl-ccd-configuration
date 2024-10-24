@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.jobs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.UndeliveredEmail;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationList;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -35,7 +36,7 @@ public class UndeliveredEmailsFinder implements Job {
         log.info("Job '{}' started", jobName);
 
         try {
-            DateTime reportFrom = DateTime.now().minusDays(REPORT_PERIOD_IN_DAYS);
+            ZonedDateTime reportFrom = ZonedDateTime.now().minus(REPORT_PERIOD_IN_DAYS, ChronoUnit.DAYS);
 
             NotificationList undeliveredEmailsReport = notifications.getNotifications("failed", "email", null, null);
 

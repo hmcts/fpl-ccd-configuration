@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.notify.PlacementNotifyData;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,7 +96,12 @@ class PlacementApplicationContentProviderTest extends AbstractEmailContentProvid
             .localAuthority(caseData.getCaseLocalAuthorityName())
             .documentUrl("http://fake-url/testUrl")
             .hasDocumentDownloadUrl("yes")
-            .documentDownloadUrl(Map.of("is_csv", false, "file", new String(encodeBase64(result))))
+            .documentDownloadUrl(new HashMap<>() {{
+                    put("retention_period", null);
+                    put("filename", null);
+                    put("confirm_email_before_download", null);
+                    put("file", new String(encodeBase64(result)));
+                }})
             .build();
 
         assertThat(actual).isEqualTo(expected);
